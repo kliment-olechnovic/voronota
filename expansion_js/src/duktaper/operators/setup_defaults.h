@@ -28,8 +28,9 @@ public:
 	bool no_load_voromqa_potentials;
 	bool no_load_alt_voromqa_potential;
 	bool faster_load_voromqa_potentials;
+	bool no_load_more_atom_types;
 
-	SetupDefaults() : no_load_voromqa_potentials(false), no_load_alt_voromqa_potential(false), faster_load_voromqa_potentials(false)
+	SetupDefaults() : no_load_voromqa_potentials(false), no_load_alt_voromqa_potential(false), faster_load_voromqa_potentials(false), no_load_more_atom_types(false)
 	{
 	}
 
@@ -38,6 +39,7 @@ public:
 		no_load_voromqa_potentials=input.get_flag("no-load-voromqa-potentials");
 		no_load_alt_voromqa_potential=input.get_flag("no-load-alt-voromqa-potential");
 		faster_load_voromqa_potentials=input.get_flag("faster-load-voromqa-potentials");
+		no_load_more_atom_types=input.get_flag("no-load-more-atom-types");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -45,6 +47,7 @@ public:
 		doc.set_option_decription(CDOD("no-load-voromqa-potentials", CDOD::DATATYPE_BOOL, "flag to not load VoroMQA potentials, to save time"));
 		doc.set_option_decription(CDOD("no-load-alt-voromqa-potential", CDOD::DATATYPE_BOOL, "flag to not load alternative VoroMQA potential, to save time"));
 		doc.set_option_decription(CDOD("faster-load-voromqa-potentials", CDOD::DATATYPE_BOOL, "flag to load VoroMQA potentials faster"));
+		doc.set_option_decription(CDOD("no-load-more-atom-types", CDOD::DATATYPE_BOOL, "flag to not load more atom types, to save time"));
 	}
 
 	Result run(void*) const
@@ -78,6 +81,13 @@ public:
 						.set("means-and-sds", tmp_voromqa_v1_energy_means_and_sds.filename())
 						.set("faster", faster_load_voromqa_potentials)).run(0);
 			}
+		}
+
+		if(!no_load_more_atom_types)
+		{
+			scripting::VirtualFileStorage::TemporaryFile tmp_more_atom_types;
+			voronota::scripting::VirtualFileStorage::set_file(tmp_more_atom_types.filename(), voronota::duktaper::resources::data_more_atom_types());
+			scripting::operators::SetupChemistryAnnotating().init(CMDIN().set("more-atom-types-file", tmp_more_atom_types.filename())).run(0);
 		}
 
 		Result result;

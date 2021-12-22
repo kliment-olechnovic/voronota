@@ -1263,6 +1263,9 @@
             "name":"set-tag-of-contacts",
             "short_description":""},
           {
+            "name":"setup-chemistry-annotating",
+            "short_description":""},
+          {
             "name":"setup-loading",
             "short_description":""},
           {

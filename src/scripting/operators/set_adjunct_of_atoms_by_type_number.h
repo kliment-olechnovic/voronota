@@ -46,7 +46,7 @@ public:
 	{
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "adjunct name"));
-		doc.set_option_decription(CDOD("typing-mode", CDOD::DATATYPE_STRING, "typing mode, possible values: CNOSP, bonds, protein_atom, protein_residue"));
+		doc.set_option_decription(CDOD("typing-mode", CDOD::DATATYPE_STRING, "typing mode, possible values: CNOSP, knodle, bonds, protein_atom, protein_residue"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -55,9 +55,9 @@ public:
 
 		assert_adjunct_name_input(name, false);
 
-		if(typing_mode!="CNOSP" && typing_mode!="bonds" && typing_mode!="protein_atom" && typing_mode!="protein_residue")
+		if(typing_mode!="CNOSP" && typing_mode!="knodle" && typing_mode!="bonds" && typing_mode!="protein_atom" && typing_mode!="protein_residue")
 		{
-			throw std::runtime_error(std::string("Invalid typing mode, valid options are: 'CNOSP', 'protein_atom', 'protein_residue'."));
+			throw std::runtime_error(std::string("Invalid typing mode, valid options are: 'CNOSP', 'knodle', 'protein_atom', 'protein_residue'."));
 		}
 
 		std::set<std::size_t> ids=data_manager.selection_manager().select_atoms(parameters_for_selecting);
@@ -81,6 +81,10 @@ public:
 			if(typing_mode=="CNOSP")
 			{
 				value=PrimitiveChemistryAnnotation::get_CNOSP_atom_type_number(atom);
+			}
+			else if(typing_mode=="knodle")
+			{
+				value=PrimitiveChemistryAnnotation::get_knodle_atom_type_number(atom.crad);
 			}
 			else if(typing_mode=="bonds")
 			{

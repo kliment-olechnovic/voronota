@@ -48,6 +48,8 @@ write_resource_file data_voromqa_dark_nnport_input_fdeep_model_json ../resources
 echo
 write_resource_file data_script_examples ./resources/script_examples
 echo
+write_resource_file data_more_atom_types ./resources/more_atom_types
+echo
 
 cat << 'EOF'
 }

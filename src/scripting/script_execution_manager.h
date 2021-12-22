@@ -115,6 +115,7 @@
 #include "operators/set_tag_of_atoms_by_secondary_structure.h"
 #include "operators/set_tag_of_atoms.h"
 #include "operators/set_tag_of_contacts.h"
+#include "operators/setup_chemistry_annotating.h"
 #include "operators/setup_loading.h"
 #include "operators/setup_voromqa.h"
 #include "operators/show_atoms.h"
@@ -322,6 +323,7 @@ public:
 		set_command_for_extra_actions("download-virtual-file", operators::DownloadVirtualFile());
 		set_command_for_extra_actions("print-virtual-file", operators::PrintVirtualFile());
 		set_command_for_extra_actions("delete-virtual-files", operators::DeleteVirtualFiles());
+		set_command_for_extra_actions("setup-chemistry-annotating", operators::SetupChemistryAnnotating());
 		set_command_for_extra_actions("setup-loading", operators::SetupLoading());
 		set_command_for_extra_actions("setup-voromqa", operators::SetupVoroMQA());
 		set_command_for_extra_actions("explain-command", operators::ExplainCommand(collection_of_command_documentations_));
