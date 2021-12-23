@@ -94,7 +94,7 @@ public:
 
 		const std::set<std::size_t> representation_ids=data_manager.atoms_representation_descriptor().ids_by_names(representation_names);
 
-		if(by!="residue-number" && by!="adjunct" && by!="chain" && by!="residue-id" && by!="secondary-structure" && by!="hydropathy" && by!="atom-type")
+		if(by!="residue-number" && by!="adjunct" && by!="chain" && by!="residue-id" && by!="secondary-structure" && by!="hydropathy" && by!="atom-type" && by!="atom-type-extended")
 		{
 			throw std::runtime_error(std::string("Invalid 'by' value '")+by+"'.");
 		}
@@ -286,6 +286,28 @@ public:
 			if(!scheme_present)
 			{
 				usable_scheme="glbryo";
+			}
+		}
+		else if(by=="atom-type-extended")
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const std::size_t atom_id=(*it);
+				map_of_ids_values[atom_id]=PrimitiveChemistryAnnotation::get_knodle_atom_type_number(data_manager.atoms()[atom_id].crad);
+			}
+			if(!min_val_present)
+			{
+				usable_min_val_present=true;
+				usable_min_val=-1.0;
+			}
+			if(!max_val_present)
+			{
+				usable_max_val_present=true;
+				usable_max_val=13.0;
+			}
+			if(!scheme_present)
+			{
+				usable_scheme="gsdwbacpreoy";
 			}
 		}
 
