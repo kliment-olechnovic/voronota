@@ -137,6 +137,7 @@
 #include "operators/voromqa_interface_frustration.h"
 #include "operators/voromqa_local.h"
 #include "operators/voromqa_membrane_place.h"
+#include "operators/voromqa_mock_by_atom_types.h"
 #include "operators/zoom_by_atoms.h"
 #include "operators/zoom_by_contacts.h"
 #include "operators/zoom_by_objects.h"
@@ -311,6 +312,7 @@ public:
 		set_command_for_data_manager("voromqa-interface-frustration", operators::VoroMQAInterfaceFrustration(), true);
 		set_command_for_data_manager("voromqa-local", operators::VoroMQALocal(), true);
 		set_command_for_data_manager("voromqa-membrane-place", operators::VoroMQAMembranePlace(), true);
+		set_command_for_data_manager("voromqa-mock-by-atom-types", operators::VoroMQAMockByAtomTypes(), true);
 		set_command_for_data_manager("zoom-by-atoms", operators::ZoomByAtoms(), false);
 		set_command_for_data_manager("zoom-by-contacts", operators::ZoomByContacts(), false);
 
