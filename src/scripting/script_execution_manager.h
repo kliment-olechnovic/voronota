@@ -74,6 +74,7 @@
 #include "operators/mark_atoms.h"
 #include "operators/mark_contacts.h"
 #include "operators/mock.h"
+#include "operators/mock_voromqa_local_contacts.h"
 #include "operators/move_atoms.h"
 #include "operators/order_atoms_by_residue_id.h"
 #include "operators/pick_objects.h"
@@ -117,6 +118,7 @@
 #include "operators/set_tag_of_contacts.h"
 #include "operators/setup_chemistry_annotating.h"
 #include "operators/setup_loading.h"
+#include "operators/setup_mock_voromqa.h"
 #include "operators/setup_voromqa.h"
 #include "operators/show_atoms.h"
 #include "operators/show_contacts.h"
@@ -137,7 +139,6 @@
 #include "operators/voromqa_interface_frustration.h"
 #include "operators/voromqa_local.h"
 #include "operators/voromqa_membrane_place.h"
-#include "operators/voromqa_mock_by_atom_types.h"
 #include "operators/zoom_by_atoms.h"
 #include "operators/zoom_by_contacts.h"
 #include "operators/zoom_by_objects.h"
@@ -263,6 +264,7 @@ public:
 		set_command_for_data_manager("make-undrawable-contacts", operators::MakeUndrawableContacts(), true);
 		set_command_for_data_manager("mark-atoms", operators::MarkAtoms(), true);
 		set_command_for_data_manager("mark-contacts", operators::MarkContacts(), true);
+		set_command_for_data_manager("mock-voromqa-local-contacts", operators::MockVoroMQALocalContacts(), true);
 		set_command_for_data_manager("move-atoms", operators::MoveAtoms(), true);
 		set_command_for_data_manager("order-atoms-by-residue-id", operators::OrderAtomsByResidueID(), true);
 		set_command_for_data_manager("print-atoms", operators::PrintAtoms(), true);
@@ -312,7 +314,6 @@ public:
 		set_command_for_data_manager("voromqa-interface-frustration", operators::VoroMQAInterfaceFrustration(), true);
 		set_command_for_data_manager("voromqa-local", operators::VoroMQALocal(), true);
 		set_command_for_data_manager("voromqa-membrane-place", operators::VoroMQAMembranePlace(), true);
-		set_command_for_data_manager("voromqa-mock-by-atom-types", operators::VoroMQAMockByAtomTypes(), true);
 		set_command_for_data_manager("zoom-by-atoms", operators::ZoomByAtoms(), false);
 		set_command_for_data_manager("zoom-by-contacts", operators::ZoomByContacts(), false);
 
@@ -327,6 +328,7 @@ public:
 		set_command_for_extra_actions("delete-virtual-files", operators::DeleteVirtualFiles());
 		set_command_for_extra_actions("setup-chemistry-annotating", operators::SetupChemistryAnnotating());
 		set_command_for_extra_actions("setup-loading", operators::SetupLoading());
+		set_command_for_extra_actions("setup-mock-voromqa", operators::SetupMockVoroMQA());
 		set_command_for_extra_actions("setup-voromqa", operators::SetupVoroMQA());
 		set_command_for_extra_actions("explain-command", operators::ExplainCommand(collection_of_command_documentations_));
 		set_command_for_extra_actions("list-commands", operators::ListCommands(collection_of_command_documentations_));

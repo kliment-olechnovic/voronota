@@ -1137,6 +1137,9 @@
             "name":"mark-contacts",
             "short_description":""},
           {
+            "name":"mock-voromqa-local-contacts",
+            "short_description":""},
+          {
             "name":"move-atoms",
             "short_description":""},
           {
@@ -1267,6 +1270,9 @@
             "short_description":""},
           {
             "name":"setup-loading",
+            "short_description":""},
+          {
+            "name":"setup-mock-voromqa",
             "short_description":""},
           {
             "name":"setup-voromqa",

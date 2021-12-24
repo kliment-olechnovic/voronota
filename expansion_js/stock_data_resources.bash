@@ -50,6 +50,8 @@ write_resource_file data_script_examples ./resources/script_examples
 echo
 write_resource_file data_more_atom_types ./resources/more_atom_types
 echo
+write_resource_file data_mock_voromqa_energy_potential ./resources/mock_voromqa_energy_potential
+echo
 
 cat << 'EOF'
 }
