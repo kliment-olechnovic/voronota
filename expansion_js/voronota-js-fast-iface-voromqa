@@ -17,6 +17,7 @@ Options:
     --as-assembly                        flag to treat input file as biological assembly
     --detailed-times                     flag to output detailed times
     --score-symmetry                     flag score interface symmetry (for dimers only)
+    --blanket                            flag to keep nucleic acids and use blanket potential
     --help | -h                          flag to display help message and exit
 
 Standard output:
@@ -89,6 +90,7 @@ RUN_FASPR=""
 AS_ASSEMBLY="false"
 DETAILED_TIMES="false"
 SCORE_SYMMETRY="false"
+BLANKET="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -133,6 +135,9 @@ do
 		;;
 	--score-symmetry)
 		SCORE_SYMMETRY="true"
+		;;
+	--blanket)
+		BLANKET="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -231,6 +236,7 @@ common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
 common_params.run_faspr='$RUN_FASPR';
 common_params.score_symmetry='$SCORE_SYMMETRY';
+common_params.blanket='$BLANKET';
 common_params.output_detailed_times='$DETAILED_TIMES';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 var input_info_array=[];
@@ -285,6 +291,11 @@ if(params.score_symmetry===undefined || params.score_symmetry==="")
 	params.score_symmetry="false";
 }
 
+if(params.blanket===undefined || params.blanket==="")
+{
+	params.blanket="false";
+}
+
 if(params.output_detailed_times===undefined || params.output_detailed_times==="")
 {
 	params.output_detailed_times="false";
@@ -305,9 +316,17 @@ voronota_assert_partial_success("Failed to import file");
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
 voronota_assert_full_success("Failed to restrict input atoms by the input query");
 
-voronota_restrict_atoms("-use", "[-protein]");
-voronota_assert_full_success("Failed to restrict input atoms to protein only");
-var result_initial_number_of_protein_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
+if(params.blanket=="true")
+{
+	voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
+	voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
+}
+else
+{
+	voronota_restrict_atoms("-use", "[-protein]");
+	voronota_assert_full_success("Failed to restrict input atoms to protein only");
+}
+var result_initial_number_of_accepted_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
 
 if(params.run_faspr!="")
 {
@@ -342,12 +361,28 @@ var time_constructing_contacts=voronota_last_output().results[0].output.elapsed_
 
 voronota_reset_time();
 
-voronota_voromqa_global();
-voronota_assert_full_success("Failed to compute VoroMQA-light scores");
+var computed_iface_area=0;
+var computed_iface_pseudo_energy=0;
 
-voronota_voromqa_local("-contacts", "[inter_chain_contacts]");
-voronota_assert_full_success("Failed to compute VoroMQA-light scores for inter-chain contacts");
-var result_voromqa_light_local_inter_chain=voronota_last_output().results[0].output;
+if(params.blanket=="true")
+{
+	voronota_mock_voromqa_local_contacts("-use", "[inter_chain_contacts]", "-adj-contact-energy", "mock_voromqa_energy");
+	voronota_assert_full_success("Failed to compute mock VoroMQA scores");
+	var result_mock_voromqa_local_inter_chain=voronota_last_output().results[0].output;
+	computed_iface_area=result_mock_voromqa_local_inter_chain.area;
+	computed_iface_pseudo_energy=result_mock_voromqa_local_inter_chain.pseudo_energy;
+}
+else
+{
+	voronota_voromqa_global();
+	voronota_assert_full_success("Failed to compute VoroMQA-light scores");
+	
+	voronota_voromqa_local("-contacts", "[inter_chain_contacts]");
+	voronota_assert_full_success("Failed to compute VoroMQA-light scores for inter-chain contacts");
+	var result_voromqa_light_local_inter_chain=voronota_last_output().results[0].output;
+	computed_iface_area=result_voromqa_light_local_inter_chain.contacts_result.area;
+	computed_iface_pseudo_energy=result_voromqa_light_local_inter_chain.contacts_result.pseudo_energy;
+}
 
 voronota_print_time();
 var time_calculating_energy=voronota_last_output().results[0].output.elapsed_miliseconds;
@@ -366,10 +401,10 @@ var time_total=(time_loading+time_restricting+time_constructing_contacts+time_ca
 var summary={}
 
 summary.input_name=input.input_file_name;
-summary.input_atoms=result_initial_number_of_protein_atoms;
+summary.input_atoms=result_initial_number_of_accepted_atoms;
 
-summary.iface_area=result_voromqa_light_local_inter_chain.contacts_result.area;
-summary.iface_energy=result_voromqa_light_local_inter_chain.contacts_result.pseudo_energy;
+summary.iface_area=computed_iface_area;
+summary.iface_energy=computed_iface_pseudo_energy;
 summary.iface_energy_norm=(summary.iface_energy/summary.iface_area);
 summary.iface_clash_score=result_clash_score;
 
