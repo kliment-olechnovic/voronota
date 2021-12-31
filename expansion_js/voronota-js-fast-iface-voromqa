@@ -361,16 +361,15 @@ var time_constructing_contacts=voronota_last_output().results[0].output.elapsed_
 
 voronota_reset_time();
 
-var computed_iface_area=0;
-var computed_iface_pseudo_energy=0;
+var computed_iface_energy_scores={}
 
 if(params.blanket=="true")
 {
 	voronota_mock_voromqa_local_contacts("-use", "[inter_chain_contacts]", "-adj-contact-energy", "mock_voromqa_energy");
 	voronota_assert_full_success("Failed to compute mock VoroMQA scores");
 	var result_mock_voromqa_local_inter_chain=voronota_last_output().results[0].output;
-	computed_iface_area=result_mock_voromqa_local_inter_chain.area;
-	computed_iface_pseudo_energy=result_mock_voromqa_local_inter_chain.pseudo_energy;
+	computed_iface_energy_scores.area=result_mock_voromqa_local_inter_chain.area;
+	computed_iface_energy_scores.pseudo_energy=result_mock_voromqa_local_inter_chain.pseudo_energy;
 }
 else
 {
@@ -380,8 +379,8 @@ else
 	voronota_voromqa_local("-contacts", "[inter_chain_contacts]");
 	voronota_assert_full_success("Failed to compute VoroMQA-light scores for inter-chain contacts");
 	var result_voromqa_light_local_inter_chain=voronota_last_output().results[0].output;
-	computed_iface_area=result_voromqa_light_local_inter_chain.contacts_result.area;
-	computed_iface_pseudo_energy=result_voromqa_light_local_inter_chain.contacts_result.pseudo_energy;
+	computed_iface_energy_scores.area=result_voromqa_light_local_inter_chain.contacts_result.area;
+	computed_iface_energy_scores.pseudo_energy=result_voromqa_light_local_inter_chain.contacts_result.pseudo_energy;
 }
 
 voronota_print_time();
@@ -403,8 +402,8 @@ var summary={}
 summary.input_name=input.input_file_name;
 summary.input_atoms=result_initial_number_of_accepted_atoms;
 
-summary.iface_area=computed_iface_area;
-summary.iface_energy=computed_iface_pseudo_energy;
+summary.iface_area=computed_iface_energy_scores.area;
+summary.iface_energy=computed_iface_energy_scores.pseudo_energy;
 summary.iface_energy_norm=(summary.iface_energy/summary.iface_area);
 summary.iface_clash_score=result_clash_score;
 
