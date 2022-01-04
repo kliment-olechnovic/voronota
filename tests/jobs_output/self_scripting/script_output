@@ -1275,6 +1275,9 @@
             "name":"setup-mock-voromqa",
             "short_description":""},
           {
+            "name":"setup-random-seed",
+            "short_description":""},
+          {
             "name":"setup-voromqa",
             "short_description":""},
           {

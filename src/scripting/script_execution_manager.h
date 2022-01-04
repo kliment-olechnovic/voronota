@@ -119,6 +119,7 @@
 #include "operators/setup_chemistry_annotating.h"
 #include "operators/setup_loading.h"
 #include "operators/setup_mock_voromqa.h"
+#include "operators/setup_random_seed.h"
 #include "operators/setup_voromqa.h"
 #include "operators/show_atoms.h"
 #include "operators/show_contacts.h"
@@ -329,6 +330,7 @@ public:
 		set_command_for_extra_actions("setup-chemistry-annotating", operators::SetupChemistryAnnotating());
 		set_command_for_extra_actions("setup-loading", operators::SetupLoading());
 		set_command_for_extra_actions("setup-mock-voromqa", operators::SetupMockVoroMQA());
+		set_command_for_extra_actions("setup-random-seed", operators::SetupRandomSeed());
 		set_command_for_extra_actions("setup-voromqa", operators::SetupVoroMQA());
 		set_command_for_extra_actions("explain-command", operators::ExplainCommand(collection_of_command_documentations_));
 		set_command_for_extra_actions("list-commands", operators::ListCommands(collection_of_command_documentations_));
