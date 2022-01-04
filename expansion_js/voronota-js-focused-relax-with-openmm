@@ -12,8 +12,9 @@ Options:
     --focus                   string     focus mode, default is 'whole_structure', others are: 'interface_side_chains', 'whole_interface', 'not_interface'
     --conda-path              string     conda installation path, default is ''
     --conda-env               string     conda environment name, default is ''
-    --forcefield              string     forcefield name, default is 'amber99sb', some others are: 'amber14-all', 'charmm36'
-    --water-forcefield        string     water forcefiled name, default is 'amber99_obc', some others are: '', 'amber14/tip3pfb', 'charmm36/water'
+    --forcefield              string     forcefield combo name default is 'amber99sb', others are: 'amber14-all', 'charmm36'
+    --main-forcefield         string     main forcefield name, default is defined by the combo name, some others are: 'amber99sb', 'amber14-all', 'charmm36'
+    --water-forcefield        string     water forcefiled name, default is defined by the combo name, some others are: '', 'amber99_obc', 'amber14/tip3pfb', 'charmm36/water'
     --max-iterations          number     max number of iterations, default is 100
     --score-at-end            string     mode for scoring interface at the end, default is '', others are: 'fast_iface', 'full_iface', 'full'
     --scoring-params          string     additional parameters for scoring, default is ''
@@ -34,8 +35,7 @@ Examples:
     voronota-js-focused-relax-with-openmm --input model.pdb --output relaxed_model.pdb
     
     voronota-js-focused-relax-with-openmm --conda-path ~/anaconda3 --conda-env alphafold2 \
-      --forcefield amber14-all --water-forcefield amber14/tip3pfb \
-      -i model.pdb -o relaxed_model.pdb --score-at-end fast_iface --trim-output
+      --forcefield amber14-all -i model.pdb -o relaxed_model.pdb --score-at-end fast_iface --trim-output
 
 EOF
 exit 1
@@ -67,7 +67,8 @@ FOCUS_MODE="whole_structure"
 CONDA_PATH=""
 CONDA_ENV=""
 FORCEFIELD="amber99sb"
-WATER_FORCEFIELD="amber99_obc"
+MAIN_FORCEFIELD="default"
+WATER_FORCEFIELD="default"
 MAX_ITERATIONS="100"
 SCORE_AT_END=""
 SCORING_PARAMS=""
@@ -108,6 +109,10 @@ do
 		;;
 	--forcefield)
 		FORCEFIELD="$OPTARG"
+		shift
+		;;
+	--main-forcefield)
+		MAIN_FORCEFIELD="$OPTARG"
 		shift
 		;;
 	--water-forcefield)
@@ -161,6 +166,38 @@ done
 if [ "$HELP_MODE" == "true" ]
 then
 	print_help_and_exit
+fi
+
+if [ "$MAIN_FORCEFIELD" == "default" ] || [ "$WATER_FORCEFIELD" == "default" ]
+then
+	if [ "$FORCEFIELD" != "amber99sb" ] && [ "$FORCEFIELD" != "amber14-all" ] && [ "$FORCEFIELD" != "charmm36" ]
+	then
+		echo >&2 "Error: invalid forcefield combo mode '$FORCEFIELD'"
+		exit 1
+	fi
+	
+	if [ "$MAIN_FORCEFIELD" == "default" ]
+	then
+		MAIN_FORCEFIELD="$FORCEFIELD"
+	fi
+	
+	if [ "$WATER_FORCEFIELD" == "default" ]
+	then
+		if [ "$FORCEFIELD" == "amber99sb" ]
+		then
+			WATER_FORCEFIELD="amber99_obc"
+		fi
+		
+		if [ "$FORCEFIELD" == "amber14-all" ]
+		then
+			WATER_FORCEFIELD="amber14/tip3pfb"
+		fi
+		
+		if [ "$FORCEFIELD" == "charmm36" ]
+		then
+			WATER_FORCEFIELD="charmm36/water"
+		fi
+	fi
 fi
 
 if [ -z "$INFILE" ]
@@ -320,7 +357,7 @@ cat << 'EOF'
 PDBFile.writeFile(modeller.topology, modeller.positions, open('prepared.pdb', 'w'), keepIds=True)
 EOF
 	} \
-	| sed "s|MAIN_FORCEFIELD|${FORCEFIELD}|" \
+	| sed "s|MAIN_FORCEFIELD|${MAIN_FORCEFIELD}|" \
 	| sed "s|WATER_FORCEFIELD|${WATER_FORCEFIELD}|" \
 	> prepare.py
 	
@@ -429,7 +466,7 @@ positions = simulation.context.getState(getPositions=True).getPositions()
 PDBFile.writeFile(simulation.topology, positions, open('relaxed.pdb', 'w'), keepIds=True)
 EOF
 	} \
-	| sed "s|MAIN_FORCEFIELD|${FORCEFIELD}|" \
+	| sed "s|MAIN_FORCEFIELD|${MAIN_FORCEFIELD}|" \
 	| sed "s|WATER_FORCEFIELD|${WATER_FORCEFIELD}|" \
 	| sed "s|MAX_ITERATIONS|${MAX_ITERATIONS}|" \
 	> relax.py
