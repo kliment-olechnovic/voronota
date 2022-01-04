@@ -19,8 +19,9 @@ Options:
     --scoring-params          string     additional parameters for scoring, default is ''
     --multiple-tries          number     number of tries to generate and score interfaces, default is ''
     --force-cuda                         flag to force the platform to be CUDA
-    --trim-output                        flag to restrict output to only heavy atoms of proteins and nucleic acids
-    --no-preparation                     flag to not run PDBFixer and to not add hydrogens
+    --trim-output                        flag to restrict output to atoms of proteins and nucleic acids
+    --no-preparation                     flag to not run any preparation of input structure before simulations
+    --limit-preparation                  flag to only add solvent if needed in the preparation stage
     --no-simulation                      flag to not run any simulations
     --print-time                         flag to print time in seconds
     --help | -h                          flag to display help message and exit
@@ -74,6 +75,7 @@ MULTIPLE_TRIES=""
 FORCE_CUDA="false"
 TRIM_OUTPUT="false"
 NO_PREPARATION="false"
+LIMIT_PREPARATION="false"
 NO_SIMULATION="false"
 PRINT_TIME="false"
 HELP_MODE="false"
@@ -136,6 +138,9 @@ do
 		;;
 	--no-preparation)
 		NO_PREPARATION="true"
+		;;
+	--limit-preparation)
+		LIMIT_PREPARATION="true"
 		;;
 	--no-simulation)
 		NO_SIMULATION="true"
@@ -263,6 +268,11 @@ from simtk.unit import *
 from pdbfixer import PDBFixer
 import random
 fixer = PDBFixer(filename='input.pdb')
+EOF
+
+	if [ "$LIMIT_PREPARATION" != "true" ]
+	then
+cat << 'EOF'
 fixer.findMissingResidues()
 fixer.findNonstandardResidues()
 fixer.replaceNonstandardResidues()
@@ -270,30 +280,41 @@ fixer.removeHeterogens(keepWater=False)
 fixer.findMissingAtoms()
 fixer.addMissingAtoms(seed=999)
 EOF
+	fi
 
-if [ -n "$WATER_FORCEFIELD" ]
-then
+	if [ -n "$WATER_FORCEFIELD" ]
+	then
 cat << 'EOF'
 forcefield = ForceField('MAIN_FORCEFIELD.xml', 'WATER_FORCEFIELD.xml')
 EOF
-else
+	else
 cat << 'EOF'
 forcefield = ForceField('MAIN_FORCEFIELD.xml')
 EOF
-fi
+	fi
 
 cat << 'EOF'
 modeller = Modeller(fixer.topology, fixer.positions)
 random.seed(999);
-modeller.addHydrogens(forcefield)
 EOF
 
-if [ -n "$WATER_FORCEFIELD" ] && [[ $WATER_FORCEFIELD != *"_obc"* ]]
-then
+	if [ "$LIMIT_PREPARATION" != "true" ]
+	then
+cat << 'EOF'
+modeller.addHydrogens(forcefield)
+EOF
+	else
+cat << 'EOF'
+modeller.deleteWater()
+EOF
+	fi
+
+	if [ -n "$WATER_FORCEFIELD" ] && [[ $WATER_FORCEFIELD != *"_obc"* ]]
+	then
 cat << 'EOF'
 modeller.addSolvent(forcefield, padding=0.2*nanometers)
 EOF
-fi
+	fi
 
 cat << 'EOF'
 PDBFile.writeFile(modeller.topology, modeller.positions, open('prepared.pdb', 'w'), keepIds=True)
@@ -477,7 +498,7 @@ if [ "$TRIM_OUTPUT" == "true" ]
 then
 	{
 cat << 'EOF'
-voronota_import("-file", "relaxed.pdb");
+voronota_import("-file", "relaxed.pdb", "-include-hydrogens");
 voronota_assert_partial_success("Failed to import file");
 
 voronota_export_atoms("-file", "trimmed_relaxed.pdb", "-as-pdb");
