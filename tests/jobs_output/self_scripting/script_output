@@ -1137,6 +1137,9 @@
             "name":"mark-contacts",
             "short_description":""},
           {
+            "name":"merge-objects",
+            "short_description":""},
+          {
             "name":"mock-voromqa-local-contacts",
             "short_description":""},
           {

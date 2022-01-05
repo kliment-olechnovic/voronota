@@ -73,6 +73,7 @@
 #include "operators/make_undrawable_contacts.h"
 #include "operators/mark_atoms.h"
 #include "operators/mark_contacts.h"
+#include "operators/merge_objects.h"
 #include "operators/mock.h"
 #include "operators/mock_voromqa_local_contacts.h"
 #include "operators/move_atoms.h"
@@ -195,6 +196,7 @@ public:
 		set_command_for_congregation_of_data_managers("copy-object", operators::CopyObject());
 		set_command_for_congregation_of_data_managers("import-many", operators::ImportMany());
 		set_command_for_congregation_of_data_managers("import", operators::Import());
+		set_command_for_congregation_of_data_managers("merge-objects", operators::MergeObjects());
 		set_command_for_congregation_of_data_managers("pick-objects", operators::PickObjects());
 		set_command_for_congregation_of_data_managers("pick-more-objects", operators::PickMoreObjects());
 		set_command_for_congregation_of_data_managers("unpick-objects", operators::UnpickObjects());

@@ -1064,6 +1064,37 @@ public:
 		restrict_atoms(ids);
 	}
 
+	void append_atoms_from_other_data_managers(const std::vector<const DataManager*>& other_data_managers)
+	{
+		if(other_data_managers.empty())
+		{
+			throw std::runtime_error(std::string("No atom sources provided for appending."));
+		}
+
+		for(std::size_t i=0;i<other_data_managers.size();i++)
+		{
+			if(other_data_managers[i]==0)
+			{
+				throw std::runtime_error(std::string("Null source provided for appending."));
+			}
+			if(other_data_managers[i]==this)
+			{
+				throw std::runtime_error(std::string("Requested to append own atoms."));
+			}
+		}
+
+		change_indicator_.set_changed_atoms(true);
+
+		for(std::size_t i=0;i<other_data_managers.size();i++)
+		{
+			const DataManager& other_data_manager=*(other_data_managers[i]);
+			atoms_.insert(atoms_.end(), other_data_manager.atoms().begin(), other_data_manager.atoms().end());
+			atoms_display_states_.insert(atoms_display_states_.end(), other_data_manager.atoms_display_states().begin(), other_data_manager.atoms_display_states().end());
+		}
+
+		reset_data_dependent_on_atoms();
+	}
+
 	void transform_coordinates_of_atoms(const std::set<std::size_t>& ids, const TransformationOfCoordinates& transformation)
 	{
 		if(ids.empty())
