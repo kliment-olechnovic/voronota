@@ -123,32 +123,34 @@ public:
 
 		if(align_along_z)
 		{
-			std::vector<double> pre_translation_vector(3, 0.0);
-			pre_translation_vector[0]=(0.0-result.p1.x);
-			pre_translation_vector[1]=(0.0-result.p1.y);
-			pre_translation_vector[2]=(0.0-result.p1.z);
+			DataManager::TransformationOfCoordinates transformation;
 
-			std::vector<double> rotation_axis_and_angle(4, 0.0);
-			rotation_axis_and_angle[0]=result.z_rotation_axis.x;
-			rotation_axis_and_angle[1]=result.z_rotation_axis.y;
-			rotation_axis_and_angle[2]=result.z_rotation_axis.z;
-			rotation_axis_and_angle[3]=result.z_rotation_angle;
+			transformation.pre_translation_vector.resize(3, 0.0);
+			transformation.pre_translation_vector[0]=(0.0-result.p1.x);
+			transformation.pre_translation_vector[1]=(0.0-result.p1.y);
+			transformation.pre_translation_vector[2]=(0.0-result.p1.z);
+
+			transformation.rotation_axis_and_angle.resize(4, 0.0);
+			transformation.rotation_axis_and_angle[0]=result.z_rotation_axis.x;
+			transformation.rotation_axis_and_angle[1]=result.z_rotation_axis.y;
+			transformation.rotation_axis_and_angle[2]=result.z_rotation_axis.z;
+			transformation.rotation_axis_and_angle[3]=result.z_rotation_angle;
 
 			std::vector<double> post_translation_vector;
 			if(!move_to_origin)
 			{
-				post_translation_vector.resize(3, 0.0);
+				transformation.post_translation_vector.resize(3, 0.0);
 				if(move_on_z)
 				{
-					post_translation_vector[0]=0.0;
-					post_translation_vector[1]=0.0;
-					post_translation_vector[2]=result.p1.z;
+					transformation.post_translation_vector[0]=0.0;
+					transformation.post_translation_vector[1]=0.0;
+					transformation.post_translation_vector[2]=result.p1.z;
 				}
 				else
 				{
-					post_translation_vector[0]=result.p1.x;
-					post_translation_vector[1]=result.p1.y;
-					post_translation_vector[2]=result.p1.z;
+					transformation.post_translation_vector[0]=result.p1.x;
+					transformation.post_translation_vector[1]=result.p1.y;
+					transformation.post_translation_vector[2]=result.p1.z;
 				}
 			}
 
@@ -158,7 +160,7 @@ public:
 				ids.insert(ids.end(), i);
 			}
 
-			data_manager.transform_coordinates_of_atoms(ids, pre_translation_vector, std::vector<double>(), rotation_axis_and_angle, std::vector<double>(), post_translation_vector);
+			data_manager.transform_coordinates_of_atoms(ids, transformation);
 		}
 
 		return result;

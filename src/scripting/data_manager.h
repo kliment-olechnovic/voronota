@@ -373,6 +373,60 @@ public:
 		}
 	};
 
+	struct TransformationOfCoordinates
+	{
+		std::vector<double> pre_translation_vector;
+		std::vector<double> rotation_matrix;
+		std::vector<double> rotation_axis_and_angle;
+		std::vector<double> rotation_three_angles;
+		std::vector<double> rotation_ztwist_theta_phi;
+		std::vector<double> post_translation_vector;
+		double pre_translation_scale;
+		double post_translation_scale;
+
+		TransformationOfCoordinates() : pre_translation_scale(1.0), post_translation_scale(1.0)
+		{
+		}
+
+		void assert_validity() const
+		{
+			if(pre_translation_vector.empty() && post_translation_vector.empty() && rotation_matrix.empty() && rotation_axis_and_angle.empty() && rotation_three_angles.empty() && rotation_ztwist_theta_phi.empty())
+			{
+				throw std::runtime_error(std::string("No transformations provided to transform atoms."));
+			}
+
+			if(!pre_translation_vector.empty() && pre_translation_vector.size()!=3)
+			{
+				throw std::runtime_error(std::string("Invalid translation-before vector provided to transform atoms."));
+			}
+
+			if(!post_translation_vector.empty() && post_translation_vector.size()!=3)
+			{
+				throw std::runtime_error(std::string("Invalid translation-after vector provided to transform atoms."));
+			}
+
+			if(!rotation_matrix.empty() && rotation_matrix.size()!=9)
+			{
+				throw std::runtime_error(std::string("Invalid rotation matrix provided to transform atoms."));
+			}
+
+			if(!rotation_axis_and_angle.empty() && rotation_axis_and_angle.size()!=4)
+			{
+				throw std::runtime_error(std::string("Invalid rotation axis and angle vector provided to transform atoms."));
+			}
+
+			if(!rotation_three_angles.empty() && rotation_three_angles.size()!=3)
+			{
+				throw std::runtime_error(std::string("Invalid rotation three angles vector provided to transform atoms."));
+			}
+
+			if(!rotation_ztwist_theta_phi.empty() && rotation_ztwist_theta_phi.size()!=3)
+			{
+				throw std::runtime_error(std::string("Invalid rotation ztwist-theta-phi vector provided to transform atoms."));
+			}
+		}
+	};
+
 	DataManager()
 	{
 		add_atoms_representation("balls");
@@ -1010,22 +1064,11 @@ public:
 		restrict_atoms(ids);
 	}
 
-	void transform_coordinates_of_atoms(
-			const std::set<std::size_t>& ids,
-			const std::vector<double>& pre_translation_vector,
-			const std::vector<double>& rotation_matrix,
-			const std::vector<double>& rotation_axis_and_angle,
-			const std::vector<double>& rotation_three_angles,
-			const std::vector<double>& post_translation_vector)
+	void transform_coordinates_of_atoms(const std::set<std::size_t>& ids, const TransformationOfCoordinates& transformation)
 	{
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No ids provided to transform atoms."));
-		}
-
-		if(pre_translation_vector.empty() && post_translation_vector.empty() && rotation_matrix.empty() && rotation_axis_and_angle.empty() && rotation_three_angles.empty())
-		{
-			throw std::runtime_error(std::string("No transformations provided to transform atoms."));
 		}
 
 		if(*ids.rbegin()>=atoms_.size())
@@ -1033,47 +1076,24 @@ public:
 			throw std::runtime_error(std::string("Invalid ids provided to transform atoms."));
 		}
 
-		if(!pre_translation_vector.empty() && pre_translation_vector.size()!=3)
-		{
-			throw std::runtime_error(std::string("Invalid translation-before vector provided to transform atoms."));
-		}
-
-		if(!post_translation_vector.empty() && post_translation_vector.size()!=3)
-		{
-			throw std::runtime_error(std::string("Invalid translation-after vector provided to transform atoms."));
-		}
-
-		if(!rotation_matrix.empty() && rotation_matrix.size()!=9)
-		{
-			throw std::runtime_error(std::string("Invalid rotation matrix provided to transform atoms."));
-		}
-
-		if(!rotation_axis_and_angle.empty() && rotation_axis_and_angle.size()!=4)
-		{
-			throw std::runtime_error(std::string("Invalid rotation axis and angle vector provided to transform atoms."));
-		}
-
-		if(!rotation_three_angles.empty() && rotation_three_angles.size()!=3)
-		{
-			throw std::runtime_error(std::string("Invalid rotation three angles vector provided to transform atoms."));
-		}
+		transformation.assert_validity();
 
 		change_indicator_.set_changed_atoms(true);
 
-		if(!pre_translation_vector.empty())
+		if(!transformation.pre_translation_vector.empty())
 		{
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				common::BallValue& ball=atoms_[*it].value;
-				ball.x+=pre_translation_vector[0];
-				ball.y+=pre_translation_vector[1];
-				ball.z+=pre_translation_vector[2];
+				ball.x+=transformation.pre_translation_vector[0]*transformation.pre_translation_scale;
+				ball.y+=transformation.pre_translation_vector[1]*transformation.pre_translation_scale;
+				ball.z+=transformation.pre_translation_vector[2]*transformation.pre_translation_scale;
 			}
 		}
 
-		if(!rotation_matrix.empty())
+		if(!transformation.rotation_matrix.empty())
 		{
-			const std::vector<double>& m=rotation_matrix;
+			const std::vector<double>& m=transformation.rotation_matrix;
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				common::BallValue& ball=atoms_[*it].value;
@@ -1084,11 +1104,11 @@ public:
 			}
 		}
 
-		if(!rotation_axis_and_angle.empty())
+		if(!transformation.rotation_axis_and_angle.empty())
 		{
 			const apollota::Rotation rotation(
-					apollota::SimplePoint(rotation_axis_and_angle[0], rotation_axis_and_angle[1], rotation_axis_and_angle[2]),
-					rotation_axis_and_angle[3]);
+					apollota::SimplePoint(transformation.rotation_axis_and_angle[0], transformation.rotation_axis_and_angle[1], transformation.rotation_axis_and_angle[2]),
+					transformation.rotation_axis_and_angle[3]);
 
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
@@ -1100,14 +1120,14 @@ public:
 			}
 		}
 
-		if(!rotation_three_angles.empty())
+		if(!transformation.rotation_three_angles.empty())
 		{
 			const apollota::SimplePoint ox(1, 0, 0);
 			const apollota::SimplePoint oz(0, 0, 1);
-			const apollota::SimplePoint axis_step1=apollota::Rotation(oz, rotation_three_angles[0]).rotate<apollota::SimplePoint>(ox);
-			const apollota::SimplePoint axis_step2=apollota::Rotation(oz&axis_step1, rotation_three_angles[1]).rotate<apollota::SimplePoint>(axis_step1);
+			const apollota::SimplePoint axis_step1=apollota::Rotation(oz, transformation.rotation_three_angles[0]).rotate<apollota::SimplePoint>(ox);
+			const apollota::SimplePoint axis_step2=apollota::Rotation(oz&axis_step1, transformation.rotation_three_angles[1]).rotate<apollota::SimplePoint>(axis_step1);
 
-			const apollota::Rotation rotation(axis_step2, rotation_three_angles[2]);
+			const apollota::Rotation rotation(axis_step2, transformation.rotation_three_angles[2]);
 
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
@@ -1119,14 +1139,39 @@ public:
 			}
 		}
 
-		if(!post_translation_vector.empty())
+		if(!transformation.rotation_ztwist_theta_phi.empty())
+		{
+			const double degree_radians=apollota::pi_value()/180.0;
+			const double z_twist=transformation.rotation_ztwist_theta_phi[0]*degree_radians;
+			const double theta=transformation.rotation_ztwist_theta_phi[1]*degree_radians;
+			const double phi=transformation.rotation_ztwist_theta_phi[2]*degree_radians;
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				common::BallValue& ball=atoms_[*it].value;
+
+				const double post_z_twist_x=ball.x*std::cos(z_twist)-ball.y*std::sin(z_twist);
+				const double post_z_twist_y=ball.x*std::sin(z_twist)+ball.y*std::cos(z_twist);
+				const double post_z_twist_z=ball.z;
+
+				const double post_theta_x=post_z_twist_z*std::sin(theta)+post_z_twist_x*std::cos(theta);
+				const double post_theta_y=post_z_twist_y;
+				const double post_theta_z=post_z_twist_z*std::cos(theta)-post_z_twist_x*std::sin(theta);
+
+				ball.x=post_theta_x*std::cos(phi)-post_theta_y*std::sin(phi);
+				ball.y=post_theta_x*std::sin(phi)+post_theta_y*std::cos(phi);
+				ball.z=post_theta_z;
+			}
+		}
+
+		if(!transformation.post_translation_vector.empty())
 		{
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				common::BallValue& ball=atoms_[*it].value;
-				ball.x+=post_translation_vector[0];
-				ball.y+=post_translation_vector[1];
-				ball.z+=post_translation_vector[2];
+				ball.x+=transformation.post_translation_vector[0]*transformation.post_translation_scale;
+				ball.y+=transformation.post_translation_vector[1]*transformation.post_translation_scale;
+				ball.z+=transformation.post_translation_vector[2]*transformation.post_translation_scale;
 			}
 		}
 
