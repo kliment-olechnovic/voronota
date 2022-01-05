@@ -55,6 +55,7 @@ public:
 		std::string match_adjuncts_not;
 		std::map<std::string, std::string> special_match_crad_map;
 		std::map< std::string, std::vector<double> > geometric_constraints_map;
+		std::set<std::string> additional_conditions_set;
 
 		explicit TesterOfAtom(const std::vector<Atom>* atoms_ptr=0) :
 			atoms_ptr(atoms_ptr)
@@ -77,7 +78,8 @@ public:
 					match_adjuncts.empty() &&
 					match_adjuncts_not.empty() &&
 					special_match_crad_map.empty() &&
-					geometric_constraints_map.empty());
+					geometric_constraints_map.empty() &&
+					additional_conditions_set.empty());
 		}
 
 		bool operator()(const std::size_t id) const
@@ -108,6 +110,7 @@ public:
 					common::MatchingUtilities::match_crad(atom.crad, match_crad, match_crad_not) &&
 					check_crad_with_special_match_crad_map(atom.crad) &&
 					check_ball_with_geometric_constraints_map(atom.value) &&
+					check_crad_and_props_with_additional_conditions_set(atom.crad, atom.value.props) &&
 					common::MatchingUtilities::match_set_of_tags(atom.value.props.tags, match_tags, match_tags_not) &&
 					common::MatchingUtilities::match_map_of_adjuncts(atom.value.props.adjuncts, match_adjuncts, match_adjuncts_not)
 			)
@@ -123,6 +126,7 @@ public:
 			if(
 					common::MatchingUtilities::match_crad(crad, match_crad, match_crad_not) &&
 					check_crad_with_special_match_crad_map(crad) &&
+					check_crad_and_props_with_additional_conditions_set(crad, props) &&
 					common::MatchingUtilities::match_set_of_tags(props.tags, match_tags, match_tags_not) &&
 					common::MatchingUtilities::match_map_of_adjuncts(props.adjuncts, match_adjuncts, match_adjuncts_not)
 			)
@@ -186,6 +190,30 @@ public:
 						{
 							return false;
 						}
+					}
+				}
+			}
+			return true;
+		}
+
+		bool check_crad_and_props_with_additional_conditions_set(const common::ChainResidueAtomDescriptor& crad, const common::PropertiesValue& props) const
+		{
+			if(!additional_conditions_set.empty())
+			{
+				for(std::set<std::string>::const_iterator it=additional_conditions_set.begin();it!=additional_conditions_set.end();++it)
+				{
+					const std::string& condition=(*it);
+					if(condition=="hydrogen" || condition=="non-hydrogen")
+					{
+						const bool is_hydrogen=((!crad.name.empty() && crad.name[0]=='H') || props.tags.count("el=H")>0 || props.tags.count("el=D")>0);
+						if((!is_hydrogen && condition=="hydrogen") || (is_hydrogen && condition=="non-hydrogen"))
+						{
+							return false;
+						}
+					}
+					else
+					{
+						return false;
 					}
 				}
 			}
@@ -673,6 +701,14 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 				std::vector<double>& gc_values=tester.geometric_constraints_map[token.substr(2)];
 				gc_values.resize(4);
 				input >> gc_values[0] >> gc_values[1] >> gc_values[2] >> gc_values[3];
+			}
+			else if(token=="--hydrogen")
+			{
+				tester.additional_conditions_set.insert("hydrogen");
+			}
+			else if(token=="--non-hydrogen")
+			{
+				tester.additional_conditions_set.insert("non-hydrogen");
 			}
 			else if(token_index==0
 					&& token.rfind("-", 0)!=0
