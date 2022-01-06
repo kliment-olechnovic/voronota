@@ -13,6 +13,8 @@ Options:
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to use, default is 1
+    --target-input-is-script             flag to treat target input file as vs script
+    --model-input-is-script              flag to treat model input file as vs script
     --as-assembly                        flag to treat input file as biological assembly
     --test-common-ids                    flag to fail quickly if there are no common residues
     --detailed-times                     flag to output detailed times
@@ -34,6 +36,11 @@ exit 1
 readonly ZEROARG=$0
 ALLARGS=("$@")
 
+if [ -z "$1" ]
+then
+	print_help_and_exit
+fi
+
 if [[ $ZEROARG == *"/"* ]]
 then
 	cd $(dirname $ZEROARG)
@@ -49,6 +56,8 @@ RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
+TARGET_INPUT_IS_SCRIPT="false"
+MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 TEST_COMMON_IDS="false"
 DETAILED_TIMES="false"
@@ -84,6 +93,12 @@ do
 		MAX_PROCESSORS="$OPTARG"
 		shift
 		;;
+	--target-input-is-script)
+		TARGET_INPUT_IS_SCRIPT="true"
+		;;
+	--model-input-is-script)
+		MODEL_INPUT_IS_SCRIPT="true"
+		;;
 	--as-assembly)
 		AS_ASSEMBLY="true"
 		;;
@@ -103,7 +118,7 @@ do
 	esac
 done
 
-if [ -z "$TARGET_INFILE" ] || [ -z "$MODEL_INFILE" ] || [ "$HELP_MODE" == "true" ]
+if [ "$HELP_MODE" == "true" ]
 then
 	print_help_and_exit
 fi
@@ -176,8 +191,10 @@ params={}
 
 params.target_input_file='$TARGET_INFILE';
 params.target_input_file_name='$TARGET_INFILE_BASENAME';
+params.target_input_is_script='$TARGET_INPUT_IS_SCRIPT';
 params.model_input_file='$MODEL_INFILE';
 params.model_input_file_name='$MODEL_INFILE_BASENAME';
+params.model_input_is_script='$MODEL_INPUT_IS_SCRIPT';
 params.input_as_assembly='$AS_ASSEMBLY';
 params.restrict_input_atoms='$RESTRICT_INPUT';
 params.test_common_ids='$TEST_COMMON_IDS';
@@ -194,9 +211,19 @@ if(params.target_input_file===undefined || params.target_input_file==="")
 	throw ("No target input file");
 }
 
+if(params.target_input_is_script===undefined || params.target_input_is_script==="")
+{
+	params.target_input_is_script="false";
+}
+
 if(params.model_input_file===undefined || params.model_input_file==="")
 {
 	throw ("No model input file");
+}
+
+if(params.model_input_is_script===undefined || params.model_input_is_script==="")
+{
+	params.model_input_is_script="false";
 }
 
 if(params.input_as_assembly===undefined || params.input_as_assembly==="")
@@ -233,11 +260,27 @@ voronota_reset_time();
 
 voronota_setup_defaults("-no-load-voromqa-potentials");
 
-voronota_import("-file", params.target_input_file, "-as-assembly", params.input_as_assembly);
-voronota_assert_partial_success("Failed to import target file");
+if(params.target_input_is_script=="true")
+{
+	voronota_source("-file", params.target_input_file);
+	voronota_assert_partial_success("Failed when running provided target input script");
+}
+else
+{
+	voronota_import("-file", params.target_input_file, "-as-assembly", params.input_as_assembly);
+	voronota_assert_partial_success("Failed to import target file");
+}
 
-voronota_import("-file", params.model_input_file, "-as-assembly", params.input_as_assembly);
-voronota_assert_partial_success("Failed to import model file");
+if(params.model_input_is_script=="true")
+{
+	voronota_source("-file", params.model_input_file);
+	voronota_assert_partial_success("Failed when running provided model input script");
+}
+else
+{
+	voronota_import("-file", params.model_input_file, "-as-assembly", params.input_as_assembly);
+	voronota_assert_partial_success("Failed to import model file");
+}
 
 voronota_pick_objects();
 

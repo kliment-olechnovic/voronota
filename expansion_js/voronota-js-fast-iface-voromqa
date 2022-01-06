@@ -14,6 +14,7 @@ Options:
     --processors              number     maximum number of processors to use, default is 1
     --stdin-file              string     input file path to replace stdin
     --run-faspr               string     path to FASPR binary to rebuild side-chains
+    --input-is-script                    flag to treat input file as vs script
     --as-assembly                        flag to treat input file as biological assembly
     --detailed-times                     flag to output detailed times
     --score-symmetry                     flag score interface symmetry (for dimers only)
@@ -71,6 +72,11 @@ function substitute_id_in_filename
 readonly ZEROARG=$0
 ALLARGS=("$@")
 
+if [ -z "$1" ]
+then
+	print_help_and_exit
+fi
+
 if [[ $ZEROARG == *"/"* ]]
 then
 	cd $(dirname $ZEROARG)
@@ -87,6 +93,7 @@ OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
 STDIN_FILE="_stream"
 RUN_FASPR=""
+INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 DETAILED_TIMES="false"
 SCORE_SYMMETRY="false"
@@ -127,6 +134,9 @@ do
 		RUN_FASPR="$OPTARG"
 		shift
 		;;
+	--input-is-script)
+		INPUT_IS_SCRIPT="true"
+		;;
 	--as-assembly)
 		AS_ASSEMBLY="true"
 		;;
@@ -149,9 +159,34 @@ do
 	esac
 done
 
-if [ -z "$INFILE" ] || [ "$HELP_MODE" == "true" ]
+if [ "$HELP_MODE" == "true" ]
 then
 	print_help_and_exit
+fi
+
+if [ -z "$INFILE" ]
+then
+	echo >&2 "Error: input file not provided"
+	exit 1
+fi
+
+if [[ $INFILE == "_scriptline_"* ]]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	echo "$INFILE" | sed 's/^_scriptline_//' | sed 's/_-_/ /g' \
+	> "$TMPLDIR/_extracted_script_line"
+	
+	if [ ! -s "$TMPLDIR/_extracted_script_line" ]
+	then
+		echo >&2 "Error: no input string line extracted"
+		exit 1
+	fi
+	
+	"$ZEROARG" "${ALLARGS[@]}" --input-is-script --input "$TMPLDIR/_extracted_script_line"
+	
+	exit 0
 fi
 
 if [ "$INFILE" != "_list" ] && [ "$INFILE" != "_stream" ] && [ ! -s "$INFILE" ]
@@ -231,6 +266,7 @@ OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE_BASENAME" "$OUTPUT_TABLE
 {
 cat << EOF
 var common_params={}
+common_params.input_is_script='$INPUT_IS_SCRIPT';
 common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
@@ -264,6 +300,11 @@ analyze_interface=function(params, input)
 if(input.input_file===undefined || input.input_file==="")
 {
 	throw ("No input file");
+}
+
+if(params.input_is_script===undefined || params.input_is_script==="")
+{
+	params.input_is_script="false";
 }
 
 if(params.input_as_assembly===undefined || params.input_as_assembly==="")
@@ -310,8 +351,16 @@ voronota_reset_time();
 
 voronota_delete_objects();
 
-voronota_import("-file", input.input_file, "-as-assembly", params.input_as_assembly);
-voronota_assert_partial_success("Failed to import file");
+if(params.input_is_script=="true")
+{
+	voronota_source("-file", input.input_file);
+	voronota_assert_partial_success("Failed when running provided input script");
+}
+else
+{
+	voronota_import("-file", input.input_file, "-as-assembly", params.input_as_assembly);
+	voronota_assert_partial_success("Failed to import file");
+}
 
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
 voronota_assert_full_success("Failed to restrict input atoms by the input query");
