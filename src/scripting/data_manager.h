@@ -425,6 +425,126 @@ public:
 				throw std::runtime_error(std::string("Invalid rotation ztwist-theta-phi vector provided to transform atoms."));
 			}
 		}
+
+		void transform_coordinates_of_atoms(std::vector<Atom>& mutable_atoms, const std::set<std::size_t>& ids) const
+		{
+			if(mutable_atoms.empty() || ids.empty())
+			{
+				return;
+			}
+
+			if(*ids.rbegin()>=mutable_atoms.size())
+			{
+				throw std::runtime_error(std::string("Invalid ids provided to transform atoms."));
+			}
+
+			assert_validity();
+
+			if(!pre_translation_vector.empty())
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					common::BallValue& ball=mutable_atoms[*it].value;
+					ball.x+=pre_translation_vector[0]*pre_translation_scale;
+					ball.y+=pre_translation_vector[1]*pre_translation_scale;
+					ball.z+=pre_translation_vector[2]*pre_translation_scale;
+				}
+			}
+
+			if(!rotation_matrix.empty())
+			{
+				const std::vector<double>& m=rotation_matrix;
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					common::BallValue& ball=mutable_atoms[*it].value;
+					const apollota::SimplePoint p(ball);
+					ball.x=p.x*m[0]+p.y*m[1]+p.z*m[2];
+					ball.y=p.x*m[3]+p.y*m[4]+p.z*m[5];
+					ball.z=p.x*m[6]+p.y*m[7]+p.z*m[8];
+				}
+			}
+
+			if(!rotation_axis_and_angle.empty())
+			{
+				const apollota::Rotation rotation(
+						apollota::SimplePoint(rotation_axis_and_angle[0], rotation_axis_and_angle[1], rotation_axis_and_angle[2]),
+						rotation_axis_and_angle[3]);
+
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					common::BallValue& ball=mutable_atoms[*it].value;
+					const apollota::SimplePoint p=rotation.rotate<apollota::SimplePoint>(ball);
+					ball.x=p.x;
+					ball.y=p.y;
+					ball.z=p.z;
+				}
+			}
+
+			if(!rotation_three_angles.empty())
+			{
+				const apollota::SimplePoint ox(1, 0, 0);
+				const apollota::SimplePoint oz(0, 0, 1);
+				const apollota::SimplePoint axis_step1=apollota::Rotation(oz, rotation_three_angles[0]).rotate<apollota::SimplePoint>(ox);
+				const apollota::SimplePoint axis_step2=apollota::Rotation(oz&axis_step1, rotation_three_angles[1]).rotate<apollota::SimplePoint>(axis_step1);
+
+				const apollota::Rotation rotation(axis_step2, rotation_three_angles[2]);
+
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					common::BallValue& ball=mutable_atoms[*it].value;
+					const apollota::SimplePoint p=rotation.rotate<apollota::SimplePoint>(ball);
+					ball.x=p.x;
+					ball.y=p.y;
+					ball.z=p.z;
+				}
+			}
+
+			if(!rotation_ztwist_theta_phi.empty())
+			{
+				const double degree_radians=apollota::pi_value()/180.0;
+				const double z_twist=rotation_ztwist_theta_phi[0]*degree_radians;
+				const double theta=rotation_ztwist_theta_phi[1]*degree_radians;
+				const double phi=rotation_ztwist_theta_phi[2]*degree_radians;
+
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					common::BallValue& ball=mutable_atoms[*it].value;
+
+					const double post_z_twist_x=ball.x*std::cos(z_twist)-ball.y*std::sin(z_twist);
+					const double post_z_twist_y=ball.x*std::sin(z_twist)+ball.y*std::cos(z_twist);
+					const double post_z_twist_z=ball.z;
+
+					const double post_theta_x=post_z_twist_z*std::sin(theta)+post_z_twist_x*std::cos(theta);
+					const double post_theta_y=post_z_twist_y;
+					const double post_theta_z=post_z_twist_z*std::cos(theta)-post_z_twist_x*std::sin(theta);
+
+					ball.x=post_theta_x*std::cos(phi)-post_theta_y*std::sin(phi);
+					ball.y=post_theta_x*std::sin(phi)+post_theta_y*std::cos(phi);
+					ball.z=post_theta_z;
+				}
+			}
+
+			if(!post_translation_vector.empty())
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					common::BallValue& ball=mutable_atoms[*it].value;
+					ball.x+=post_translation_vector[0]*post_translation_scale;
+					ball.y+=post_translation_vector[1]*post_translation_scale;
+					ball.z+=post_translation_vector[2]*post_translation_scale;
+				}
+			}
+		}
+
+		void transform_coordinates_of_atoms(std::vector<Atom>& mutable_atoms) const
+		{
+			std::set<std::size_t> ids;
+			for(std::size_t i=0;i<mutable_atoms.size();i++)
+			{
+				ids.insert(ids.end(), i);
+			}
+			transform_coordinates_of_atoms(mutable_atoms, ids);
+		}
 	};
 
 	DataManager()
@@ -1111,100 +1231,18 @@ public:
 
 		change_indicator_.set_changed_atoms(true);
 
-		if(!transformation.pre_translation_vector.empty())
-		{
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				common::BallValue& ball=atoms_[*it].value;
-				ball.x+=transformation.pre_translation_vector[0]*transformation.pre_translation_scale;
-				ball.y+=transformation.pre_translation_vector[1]*transformation.pre_translation_scale;
-				ball.z+=transformation.pre_translation_vector[2]*transformation.pre_translation_scale;
-			}
-		}
+		transformation.transform_coordinates_of_atoms(atoms_, ids);
 
-		if(!transformation.rotation_matrix.empty())
-		{
-			const std::vector<double>& m=transformation.rotation_matrix;
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				common::BallValue& ball=atoms_[*it].value;
-				const apollota::SimplePoint p(ball);
-				ball.x=p.x*m[0]+p.y*m[1]+p.z*m[2];
-				ball.y=p.x*m[3]+p.y*m[4]+p.z*m[5];
-				ball.z=p.x*m[6]+p.y*m[7]+p.z*m[8];
-			}
-		}
+		reset_data_dependent_on_atoms();
+	}
 
-		if(!transformation.rotation_axis_and_angle.empty())
-		{
-			const apollota::Rotation rotation(
-					apollota::SimplePoint(transformation.rotation_axis_and_angle[0], transformation.rotation_axis_and_angle[1], transformation.rotation_axis_and_angle[2]),
-					transformation.rotation_axis_and_angle[3]);
+	void transform_coordinates_of_atoms(const TransformationOfCoordinates& transformation)
+	{
+		transformation.assert_validity();
 
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				common::BallValue& ball=atoms_[*it].value;
-				const apollota::SimplePoint p=rotation.rotate<apollota::SimplePoint>(ball);
-				ball.x=p.x;
-				ball.y=p.y;
-				ball.z=p.z;
-			}
-		}
+		change_indicator_.set_changed_atoms(true);
 
-		if(!transformation.rotation_three_angles.empty())
-		{
-			const apollota::SimplePoint ox(1, 0, 0);
-			const apollota::SimplePoint oz(0, 0, 1);
-			const apollota::SimplePoint axis_step1=apollota::Rotation(oz, transformation.rotation_three_angles[0]).rotate<apollota::SimplePoint>(ox);
-			const apollota::SimplePoint axis_step2=apollota::Rotation(oz&axis_step1, transformation.rotation_three_angles[1]).rotate<apollota::SimplePoint>(axis_step1);
-
-			const apollota::Rotation rotation(axis_step2, transformation.rotation_three_angles[2]);
-
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				common::BallValue& ball=atoms_[*it].value;
-				const apollota::SimplePoint p=rotation.rotate<apollota::SimplePoint>(ball);
-				ball.x=p.x;
-				ball.y=p.y;
-				ball.z=p.z;
-			}
-		}
-
-		if(!transformation.rotation_ztwist_theta_phi.empty())
-		{
-			const double degree_radians=apollota::pi_value()/180.0;
-			const double z_twist=transformation.rotation_ztwist_theta_phi[0]*degree_radians;
-			const double theta=transformation.rotation_ztwist_theta_phi[1]*degree_radians;
-			const double phi=transformation.rotation_ztwist_theta_phi[2]*degree_radians;
-
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				common::BallValue& ball=atoms_[*it].value;
-
-				const double post_z_twist_x=ball.x*std::cos(z_twist)-ball.y*std::sin(z_twist);
-				const double post_z_twist_y=ball.x*std::sin(z_twist)+ball.y*std::cos(z_twist);
-				const double post_z_twist_z=ball.z;
-
-				const double post_theta_x=post_z_twist_z*std::sin(theta)+post_z_twist_x*std::cos(theta);
-				const double post_theta_y=post_z_twist_y;
-				const double post_theta_z=post_z_twist_z*std::cos(theta)-post_z_twist_x*std::sin(theta);
-
-				ball.x=post_theta_x*std::cos(phi)-post_theta_y*std::sin(phi);
-				ball.y=post_theta_x*std::sin(phi)+post_theta_y*std::cos(phi);
-				ball.z=post_theta_z;
-			}
-		}
-
-		if(!transformation.post_translation_vector.empty())
-		{
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				common::BallValue& ball=atoms_[*it].value;
-				ball.x+=transformation.post_translation_vector[0]*transformation.post_translation_scale;
-				ball.y+=transformation.post_translation_vector[1]*transformation.post_translation_scale;
-				ball.z+=transformation.post_translation_vector[2]*transformation.post_translation_scale;
-			}
-		}
+		transformation.transform_coordinates_of_atoms(atoms_);
 
 		reset_data_dependent_on_atoms();
 	}

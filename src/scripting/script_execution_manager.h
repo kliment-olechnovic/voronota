@@ -59,6 +59,7 @@
 #include "operators/generate_residue_voromqa_energy_profile.h"
 #include "operators/import_adjuncts_of_atoms.h"
 #include "operators/import_contacts.h"
+#include "operators/import_docking_result.h"
 #include "operators/import_many.h"
 #include "operators/import.h"
 #include "operators/import_selection_of_atoms.h"
@@ -194,6 +195,7 @@ public:
 		set_command_for_congregation_of_data_managers("delete-objects", operators::DeleteObjects());
 		set_command_for_congregation_of_data_managers("rename-object", operators::RenameObject());
 		set_command_for_congregation_of_data_managers("copy-object", operators::CopyObject());
+		set_command_for_congregation_of_data_managers("import-docking-result", operators::ImportDockingResult());
 		set_command_for_congregation_of_data_managers("import-many", operators::ImportMany());
 		set_command_for_congregation_of_data_managers("import", operators::Import());
 		set_command_for_congregation_of_data_managers("merge-objects", operators::MergeObjects());

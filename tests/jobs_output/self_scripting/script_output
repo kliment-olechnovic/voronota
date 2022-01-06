@@ -1098,6 +1098,9 @@
             "name":"import-contacts",
             "short_description":""},
           {
+            "name":"import-docking-result",
+            "short_description":""},
+          {
             "name":"import-many",
             "short_description":""},
           {
