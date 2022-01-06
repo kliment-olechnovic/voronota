@@ -501,7 +501,10 @@ if(params.score_symmetry=="true")
 	}
 }
 
-summary.time_total=time_total;
+if(params.output_detailed_times=="true")
+{
+	summary.time_total=time_total;
+}
 
 var summary_table={}
 summary_table.header="";

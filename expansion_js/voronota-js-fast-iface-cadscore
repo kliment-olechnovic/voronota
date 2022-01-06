@@ -364,9 +364,8 @@ if(params.output_detailed_times=="true")
 	summary.time_restrict=time_restricting;
 	summary.time_contacts=time_constructing_contacts;
 	summary.time_cadscore=time_calculating_cadscore;
+	summary.time_total=time_total;
 }
-
-summary.time_total=time_total;
 
 var summary_table_header="";
 var summary_table_row="";
