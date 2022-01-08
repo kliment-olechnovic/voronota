@@ -13,9 +13,8 @@ Options:
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to use, default is 1
-    --target-input-is-script             flag to treat target input file as vs script
-    --model-input-is-script              flag to treat model input file as vs script
-    --as-assembly                        flag to treat input file as biological assembly
+    --stdin-file              string     input file path to replace stdin
+    --as-assembly                        flag to treat input files as biological assemblies
     --test-common-ids                    flag to fail quickly if there are no common residues
     --detailed-times                     flag to output detailed times
     --help | -h                          flag to display help message and exit
@@ -31,6 +30,17 @@ Examples:
 
 EOF
 exit 1
+}
+
+function cat_stdin
+{
+	STDIN_SOURCE="$1"
+	if [ "$STDIN_SOURCE" == "_stream" ]
+	then
+		cat
+	else
+		cat "$STDIN_SOURCE"
+	fi
 }
 
 readonly ZEROARG=$0
@@ -56,6 +66,7 @@ RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
+STDIN_FILE="_stream"
 TARGET_INPUT_IS_SCRIPT="false"
 MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
@@ -93,6 +104,10 @@ do
 		MAX_PROCESSORS="$OPTARG"
 		shift
 		;;
+	--stdin-file)
+		STDIN_FILE="$OPTARG"
+		shift
+		;;
 	--target-input-is-script)
 		TARGET_INPUT_IS_SCRIPT="true"
 		;;
@@ -123,9 +138,62 @@ then
 	print_help_and_exit
 fi
 
+if [ -z "$TARGET_INFILE" ]
+then
+	echo >&2 "Error: target input file not provided"
+	exit 1
+fi
+
+if [ "$TARGET_INFILE" == "_all_vs_all" ] && [ "$MODEL_INFILE" != "_list" ]
+then
+	echo >&2 "Error: target parameter '_all_vs_all' supported only if model parameter is '_list'"
+	exit 1
+fi
+
+if [ "$TARGET_INFILE" == "_all_vs_all" ] && [ "$MODEL_INFILE" == "_list" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat_stdin "$STDIN_FILE" | egrep . | sort | uniq > "$TMPLDIR/input_list"
+	
+	if [ ! -s "$TMPLDIR/input_list" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	mkdir -p "$TMPLDIR/per_target_tables"
+	
+	cat "$TMPLDIR/input_list" \
+	| awk -v stdin_file="$TMPLDIR/input_list" -v outdir="$TMPLDIR/per_target_tables" '{print "--target " $1 " --model _list --stdin-file " stdin_file " --output-table-file " outdir "/" NR ".txt"}' \
+	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}"
+	
+	{
+		find "$TMPLDIR/per_target_tables" -type f -not -empty | sort | head -1 | xargs -L 1 head -1
+		find "$TMPLDIR/per_target_tables" -type f -not -empty | sort | xargs -L 1 tail -n +2 | sort
+	} > "$TMPLDIR/all_targets_output_table"
+	
+	if [ -n "$OUTPUT_TABLE_FILE" ] && [ "$OUTPUT_TABLE_FILE" != "_stdout" ]
+	then
+		mkdir -p "$(dirname "$OUTPUT_TABLE_FILE")"
+		cat "$TMPLDIR/all_targets_output_table" > "$OUTPUT_TABLE_FILE"
+	else
+		cat "$TMPLDIR/all_targets_output_table"
+	fi
+	
+	exit 0
+fi
+
 if [ ! -s "$TARGET_INFILE" ]
 then
 	echo >&2 "Error: target input file '$MODEL_INFILE' does not exist"
+	exit 1
+fi
+
+if [ -z "$MODEL_INFILE" ]
+then
+	echo >&2 "Error: model input file not provided"
 	exit 1
 fi
 
@@ -140,7 +208,7 @@ then
 	readonly TMPLDIR=$(mktemp -d)
 	trap "rm -r $TMPLDIR" EXIT
 	
-	cat > "$TMPLDIR/input_stream"
+	cat_stdin "$STDIN_FILE" > "$TMPLDIR/input_stream"
 	
 	if [ ! -s "$TMPLDIR/input_stream" ]
 	then
@@ -158,7 +226,7 @@ then
 	readonly TMPLDIR=$(mktemp -d)
 	trap "rm -r $TMPLDIR" EXIT
 	
-	cat | egrep . | sort | uniq > "$TMPLDIR/input_list"
+	cat_stdin "$STDIN_FILE" | egrep . | sort | uniq > "$TMPLDIR/input_list"
 	
 	if [ ! -s "$TMPLDIR/input_list" ]
 	then
@@ -169,14 +237,23 @@ then
 	mkdir -p "$TMPLDIR/children_tables"
 	
 	cat "$TMPLDIR/input_list" \
-	| awk -v outdir="$TMPLDIR/children_tables" '{print "--model " $1 " --output-table-file " outdir "/" NR ".pdb"}' \
+	| awk -v outdir="$TMPLDIR/children_tables" '{print "--model " $1 " --output-table-file " outdir "/" NR ".txt"}' \
 	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}"
 	
 	find "$TMPLDIR/children_tables" -type f -not -empty \
 	| sort \
 	| xargs -L 1 cat \
 	| awk '{if(NR==1 || NR%2==0) print $0}' \
-	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas -multipliers 1 1 1 -tolerances 0.0 0.0 0.0');"
+	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas -multipliers 1 1 1 -tolerances 0.0 0.0 0.0');" \
+	> "$TMPLDIR/full_output_table"
+	
+	if [ -n "$OUTPUT_TABLE_FILE" ] && [ "$OUTPUT_TABLE_FILE" != "_stdout" ]
+	then
+		mkdir -p "$(dirname "$OUTPUT_TABLE_FILE")"
+		cat "$TMPLDIR/full_output_table" > "$OUTPUT_TABLE_FILE"
+	else
+		cat "$TMPLDIR/full_output_table"
+	fi
 	
 	exit 0
 fi
@@ -258,7 +335,7 @@ if(params.output_table_file===undefined || params.output_table_file==="")
 
 voronota_reset_time();
 
-voronota_setup_defaults("-no-load-voromqa-potentials");
+voronota_setup_defaults("-no-load-voromqa-potentials -no-load-alt-voromqa-potential -no-load-more-atom-types -no-load-mock-voromqa-potential");
 
 if(params.target_input_is_script=="true")
 {
@@ -286,8 +363,13 @@ voronota_pick_objects();
 
 voronota_list_objects();
 voronota_assert_full_success("Failed to list objects");
-target_object=voronota_last_output().results[0].output.objects[0].name;
-model_object=voronota_last_output().results[0].output.objects[1].name
+list_objects_output=voronota_last_output().results[0].output;
+if(list_objects_output.objects.length!=2)
+{
+	throw ("Not exactly two structures loaded");
+}
+target_object=list_objects_output.objects[0].name;
+model_object=list_objects_output.objects[1].name
 
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
 voronota_assert_full_success("Failed to restrict input atoms by the input query");
