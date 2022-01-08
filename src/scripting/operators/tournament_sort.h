@@ -24,16 +24,17 @@ public:
 		}
 	};
 
-	TournamentSort()
-	{
-	}
-
 	std::string input_file;
 	std::string output_file;
 	std::vector<std::string> columns;
 	std::vector<double> multipliers;
 	std::vector<double> tolerances;
 	std::string add_win_score_column;
+	std::string add_rank_column;
+
+	TournamentSort()
+	{
+	}
 
 	void initialize(CommandInput& input)
 	{
@@ -43,6 +44,7 @@ public:
 		multipliers=input.get_value_vector_or_default<double>("multipliers", std::vector<double>());
 		tolerances=input.get_value_vector_or_default<double>("tolerances", std::vector<double>());
 		add_win_score_column=input.get_value_or_default<std::string>("add-win-score-column", "");
+		add_rank_column=input.get_value_or_default<std::string>("add-rank-column", "");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -53,6 +55,7 @@ public:
 		doc.set_option_decription(CDOD("multipliers", CDOD::DATATYPE_FLOAT_ARRAY, "multipliers for column values", ""));
 		doc.set_option_decription(CDOD("tolerances", CDOD::DATATYPE_FLOAT_ARRAY, "tolerances for column values", ""));
 		doc.set_option_decription(CDOD("add-win-score-column", CDOD::DATATYPE_STRING, "new column name for win scores", ""));
+		doc.set_option_decription(CDOD("add-rank-column", CDOD::DATATYPE_STRING, "new column name for win score-based ranks", ""));
 	}
 
 	Result run(void*) const
@@ -236,21 +239,29 @@ public:
 		std::sort(sortable_ids.begin(), sortable_ids.end());
 		std::reverse(sortable_ids.begin(), sortable_ids.end());
 
-		if(add_win_score_column.empty())
 		{
-			foutput << table_header_line << "\n";
-			for(std::size_t a=0;a<N;a++)
+			foutput << table_header_line;
+			if(!add_win_score_column.empty())
 			{
-				foutput << table_row_lines[sortable_ids[a].second] << "\n";
+				foutput << " " << add_win_score_column;
 			}
-		}
-		else
-		{
-			foutput << table_header_line << " " << add_win_score_column << "\n";
+			if(!add_rank_column.empty())
+			{
+				foutput << " " << add_rank_column;
+			}
+			foutput << "\n";
 			for(std::size_t a=0;a<N;a++)
 			{
-				foutput << table_row_lines[sortable_ids[a].second] << " ";
-				foutput << sortable_ids[a].first.first << "." << sortable_ids[a].first.second << "\n";
+				foutput << table_row_lines[sortable_ids[a].second];
+				if(!add_win_score_column.empty())
+				{
+					foutput << " " << sortable_ids[a].first.first << "." << sortable_ids[a].first.second;
+				}
+				if(!add_rank_column.empty())
+				{
+					foutput << " " << (a+1);
+				}
+				foutput << "\n";
 			}
 		}
 
