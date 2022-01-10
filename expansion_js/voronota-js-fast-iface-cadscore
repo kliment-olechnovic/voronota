@@ -167,7 +167,7 @@ then
 	
 	cat "$TMPLDIR/input_list" \
 	| awk -v stdin_file="$TMPLDIR/input_list" -v outdir="$TMPLDIR/per_target_tables" '{print "--target " $1 " --model _list --stdin-file " stdin_file " --output-table-file " outdir "/" NR ".txt"}' \
-	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}"
+	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" --processors 1
 	
 	{
 		find "$TMPLDIR/per_target_tables" -type f -not -empty | sort | head -1 | xargs -L 1 head -1
@@ -221,7 +221,7 @@ then
 	exit 0
 fi
 
-if [ "$MODEL_INFILE" == "_list" ]
+if [ "$MODEL_INFILE" == "_list" ] && [ "$MAX_PROCESSORS" -gt "1" ]
 then
 	readonly TMPLDIR=$(mktemp -d)
 	trap "rm -r $TMPLDIR" EXIT
@@ -234,16 +234,23 @@ then
 		exit 1
 	fi
 	
+	NUM_OF_INPUTS="$(cat $TMPLDIR/input_list | wc -l)"
+	SIZE_OF_PORTION="$(echo "a=$NUM_OF_INPUTS; b=$MAX_PROCESSORS; if(a%b) a/b+1 else a/b" | bc)"
+	
+	mkdir -p "$TMPLDIR/portions"
+	
+	split -l "$SIZE_OF_PORTION" "$TMPLDIR/input_list" "$TMPLDIR/portions/portion_"
+	
 	mkdir -p "$TMPLDIR/children_tables"
 	
-	cat "$TMPLDIR/input_list" \
-	| awk -v outdir="$TMPLDIR/children_tables" '{print "--model " $1 " --output-table-file " outdir "/" NR ".txt"}' \
-	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}"
+	find $TMPLDIR/portions/ -type f -not -empty \
+	| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
+	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" --processors 1 --model _list
 	
 	find "$TMPLDIR/children_tables" -type f -not -empty \
 	| sort \
 	| xargs -L 1 cat \
-	| awk '{if(NR==1 || NR%2==0) print $0}' \
+	| awk '{if(NR==1 || $1!="target") print $0}' \
 	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas -multipliers 1 1 1 -tolerances 0.0 0.0 0.0');" \
 	> "$TMPLDIR/full_output_table"
 	
@@ -259,103 +266,57 @@ then
 fi
 
 TARGET_INFILE_BASENAME="$(basename $TARGET_INFILE)"
-MODEL_INFILE_BASENAME="$(basename $MODEL_INFILE)"
 
 {
 cat << EOF
-
-params={}
-
-params.target_input_file='$TARGET_INFILE';
-params.target_input_file_name='$TARGET_INFILE_BASENAME';
-params.target_input_is_script='$TARGET_INPUT_IS_SCRIPT';
-params.model_input_file='$MODEL_INFILE';
-params.model_input_file_name='$MODEL_INFILE_BASENAME';
-params.model_input_is_script='$MODEL_INPUT_IS_SCRIPT';
-params.input_as_assembly='$AS_ASSEMBLY';
-params.restrict_input_atoms='$RESTRICT_INPUT';
-params.test_common_ids='$TEST_COMMON_IDS';
-params.contacts_subselection='$SUBSELECT_CONTACTS';
-params.output_detailed_times='$DETAILED_TIMES';
-params.output_table_file='$OUTPUT_TABLE_FILE';
-
+var common_params={}
+common_params.target_input_file='$TARGET_INFILE';
+common_params.target_input_file_name='$TARGET_INFILE_BASENAME';
+common_params.target_input_is_script='$TARGET_INPUT_IS_SCRIPT';
+common_params.model_input_is_script='$MODEL_INPUT_IS_SCRIPT';
+common_params.input_as_assembly='$AS_ASSEMBLY';
+common_params.restrict_input_atoms='$RESTRICT_INPUT';
+common_params.test_common_ids='$TEST_COMMON_IDS';
+common_params.contacts_subselection='$SUBSELECT_CONTACTS';
+common_params.output_detailed_times='$DETAILED_TIMES';
+common_params.output_table_file='$OUTPUT_TABLE_FILE';
+var input_info_array=[];
 EOF
 
+{
+if [ "$MODEL_INFILE" == "_list" ]
+then
+	cat_stdin "$STDIN_FILE" | egrep . | sort | uniq
+else
+	echo "$MODEL_INFILE"
+fi
+} | while read -r SUBINFILE
+do
+SUBINFILE_BASENAME="$(basename "$SUBINFILE")"
+cat << EOF
+input_info_array.push({"model_input_file": "$SUBINFILE", "model_input_file_name": "$SUBINFILE_BASENAME"});
+EOF
+done
+
 cat << 'EOF'
-
-if(params.target_input_file===undefined || params.target_input_file==="")
+analyze_interface=function(params, input)
 {
-	throw ("No target input file");
-}
 
-if(params.target_input_is_script===undefined || params.target_input_is_script==="")
-{
-	params.target_input_is_script="false";
-}
-
-if(params.model_input_file===undefined || params.model_input_file==="")
+if(input.model_input_file===undefined || input.model_input_file==="")
 {
 	throw ("No model input file");
 }
 
-if(params.model_input_is_script===undefined || params.model_input_is_script==="")
-{
-	params.model_input_is_script="false";
-}
-
-if(params.input_as_assembly===undefined || params.input_as_assembly==="")
-{
-	params.input_as_assembly="false";
-}
-
-if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
-{
-	params.restrict_input_atoms='[]';
-}
-
-if(params.test_common_ids===undefined || params.test_common_ids==="")
-{
-	params.test_common_ids="false";
-}
-
-if(params.contacts_subselection===undefined || params.contacts_subselection==="")
-{
-	params.contacts_subselection='[]';
-}
-
-if(params.output_detailed_times===undefined || params.output_detailed_times==="")
-{
-	params.output_detailed_times="false";
-}
-
-if(params.output_table_file===undefined || params.output_table_file==="")
-{
-	params.output_table_file="_stdout";
-}
-
 voronota_reset_time();
-
-voronota_setup_defaults("-no-load-voromqa-potentials -no-load-alt-voromqa-potential -no-load-more-atom-types -no-load-mock-voromqa-potential");
-
-if(params.target_input_is_script=="true")
-{
-	voronota_source("-file", params.target_input_file);
-	voronota_assert_partial_success("Failed when running provided target input script");
-}
-else
-{
-	voronota_import("-file", params.target_input_file, "-as-assembly", params.input_as_assembly);
-	voronota_assert_partial_success("Failed to import target file");
-}
 
 if(params.model_input_is_script=="true")
 {
-	voronota_source("-file", params.model_input_file);
+	voronota_source("-file", input.model_input_file);
 	voronota_assert_partial_success("Failed when running provided model input script");
 }
 else
 {
-	voronota_import("-file", params.model_input_file, "-as-assembly", params.input_as_assembly);
+	voronota_import("-file", input.model_input_file, "-as-assembly", params.input_as_assembly);
 	voronota_assert_partial_success("Failed to import model file");
 }
 
@@ -429,7 +390,7 @@ time_total=(time_loading+time_restricting+time_constructing_contacts+time_calcul
 summary={}
 
 summary.target=params.target_input_file_name;
-summary.model=params.model_input_file_name;
+summary.model=input.model_input_file_name;
 
 summary.iface_cadscore=result_cadscore.score;
 summary.iface_site_based_cadscore=result_cadscore_site_based.score;
@@ -437,7 +398,7 @@ summary.iface_ratio_of_areas=result_cadscore.model_target_area_sum/result_cadsco
 summary.iface_target_area=result_cadscore.target_area_sum;
 summary.iface_model_area=result_cadscore.model_target_area_sum;
 
-summary.target_atoms=result_target_initial_number_of_accepted_atoms;
+summary.target_atoms=params.result_target_initial_number_of_accepted_atoms;
 summary.model_atoms=result_model_initial_number_of_accepted_atoms;
 
 if(params.output_detailed_times=="true")
@@ -449,12 +410,14 @@ if(params.output_detailed_times=="true")
 	summary.time_total=time_total;
 }
 
-var summary_table_header="";
-var summary_table_row="";
+var summary_table={}
+summary_table.model_object=model_object;
+summary_table.header="";
+summary_table.row="";
 
 Object.keys(summary).forEach(function(key)
 {
-		summary_table_header+=key+" ";
+		summary_table.header+=key+" ";
 });
 
 Object.keys(summary).forEach(function(key)
@@ -462,25 +425,118 @@ Object.keys(summary).forEach(function(key)
 	value=summary[key];
 	if(typeof value === 'number')
 	{
-		summary_table_row+=parseFloat(value.toFixed(5))+" ";
+		summary_table.row+=parseFloat(value.toFixed(5))+" ";
 	}
 	else
 	{
-		summary_table_row+=value+" ";
+		summary_table.row+=value+" ";
 	}
 });
 
-var summary_table=summary_table_header.trim()+"\n"+summary_table_row.trim()+"\n";
+summary_table.header=summary_table.header.trim();
+summary_table.row=summary_table.row.trim();
 
-if(params.output_table_file!=="_stdout")
+return summary_table;
+}
+
+voronota_setup_defaults("-no-load-voromqa-potentials -no-load-alt-voromqa-potential -no-load-more-atom-types -no-load-mock-voromqa-potential");
+
+if(common_params.target_input_file===undefined || common_params.target_input_file==="")
 {
-	shell('mkdir -p "$(dirname '+params.output_table_file+')"');
-	fwrite(params.output_table_file, summary_table);
+	throw ("No target input file");
+}
+
+if(common_params.target_input_is_script===undefined || common_params.target_input_is_script==="")
+{
+	common_params.target_input_is_script="false";
+}
+
+if(common_params.model_input_is_script===undefined || common_params.model_input_is_script==="")
+{
+	common_params.model_input_is_script="false";
+}
+
+if(common_params.input_as_assembly===undefined || common_params.input_as_assembly==="")
+{
+	params.input_as_assembly="false";
+}
+
+if(common_params.restrict_input_atoms===undefined || common_params.restrict_input_atoms==="")
+{
+	common_params.restrict_input_atoms='[]';
+}
+
+if(common_params.test_common_ids===undefined || common_params.test_common_ids==="")
+{
+	common_params.test_common_ids="false";
+}
+
+if(common_params.contacts_subselection===undefined || common_params.contacts_subselection==="")
+{
+	common_params.contacts_subselection='[]';
+}
+
+if(common_params.output_detailed_times===undefined || common_params.output_detailed_times==="")
+{
+	params.output_detailed_times="false";
+}
+
+if(common_params.output_table_file===undefined || common_params.output_table_file==="")
+{
+	common_params.output_table_file="_stdout";
+}
+
+if(common_params.target_input_is_script=="true")
+{
+	voronota_source("-file", common_params.target_input_file);
+	voronota_assert_partial_success("Failed when running provided target input script");
 }
 else
 {
-	write(summary_table);
+	voronota_import("-file", common_params.target_input_file, "-as-assembly", common_params.input_as_assembly);
+	voronota_assert_partial_success("Failed to import target file");
 }
+
+voronota_restrict_atoms("-use", common_params.restrict_input_atoms);
+voronota_assert_full_success("Failed to restrict input atoms by the input query");
+
+voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
+voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
+common_params.result_target_initial_number_of_accepted_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
+
+var full_summary_table="";
+
+for(var i=0;i<input_info_array.length;i++)
+{
+	var subinput=input_info_array[i];
+	var model_object="";
+	try
+	{
+		var summary_table=analyze_interface(common_params, subinput);
+		if(full_summary_table=="")
+		{
+			full_summary_table+=summary_table.header+"\n";
+		}
+		full_summary_table+=summary_table.row+"\n";
+		model_object=summary_table.model_object;
+	}
+	catch(error)
+	{
+		log("Failed with '"+subinput.input_file_name+"': "+error);
+	}
+	
+	voronota_delete_objects('-names', model_object);
+	voronota_assert_full_success("Failed to delete model object");
+}
+
+fwrite('_virtual/summary', full_summary_table);
+
+if(common_params.output_table_file!=="_stdout")
+{
+	shell('mkdir -p "$(dirname '+common_params.output_table_file+')"');
+}
+
+voronota_tournament_sort('-input-file', '_virtual/summary', '-output-file', common_params.output_table_file, '-columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas -multipliers 1 1 1 -tolerances 0.0 0.0 0.0');
 
 EOF
 
