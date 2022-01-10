@@ -374,10 +374,10 @@ model_object=list_objects_output.objects[1].name
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
 voronota_assert_full_success("Failed to restrict input atoms by the input query");
 
-voronota_restrict_atoms("-use", "[-protein]");
-voronota_assert_full_success("Failed to restrict input atoms to protein only");
-result_target_initial_number_of_protein_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
-result_model_initial_number_of_protein_atoms=voronota_last_output().results[1].output.atoms_summary_new.number_total;
+voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
+voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
+result_target_initial_number_of_accepted_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
+result_model_initial_number_of_accepted_atoms=voronota_last_output().results[1].output.atoms_summary_new.number_total;
 
 voronota_print_time();
 time_loading=voronota_last_output().results[0].output.elapsed_miliseconds;
@@ -437,8 +437,8 @@ summary.iface_ratio_of_areas=result_cadscore.model_target_area_sum/result_cadsco
 summary.iface_target_area=result_cadscore.target_area_sum;
 summary.iface_model_area=result_cadscore.model_target_area_sum;
 
-summary.target_atoms=result_target_initial_number_of_protein_atoms;
-summary.model_atoms=result_model_initial_number_of_protein_atoms;
+summary.target_atoms=result_target_initial_number_of_accepted_atoms;
+summary.model_atoms=result_model_initial_number_of_accepted_atoms;
 
 if(params.output_detailed_times=="true")
 {
