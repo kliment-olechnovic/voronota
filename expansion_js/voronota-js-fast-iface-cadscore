@@ -16,7 +16,6 @@ Options:
     --stdin-file              string     input file path to replace stdin
     --as-assembly                        flag to treat input files as biological assemblies
     --test-common-ids                    flag to fail quickly if there are no common residues
-    --detailed-times                     flag to output detailed times
     --help | -h                          flag to display help message and exit
 
 Standard output:
@@ -71,7 +70,6 @@ TARGET_INPUT_IS_SCRIPT="false"
 MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 TEST_COMMON_IDS="false"
-DETAILED_TIMES="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -119,9 +117,6 @@ do
 		;;
 	--test-common-ids)
 		TEST_COMMON_IDS="true"
-		;;
-	--detailed-times)
-		DETAILED_TIMES="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -278,7 +273,6 @@ common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.test_common_ids='$TEST_COMMON_IDS';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
-common_params.output_detailed_times='$DETAILED_TIMES';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 var input_info_array=[];
 EOF
@@ -299,144 +293,79 @@ EOF
 done
 
 cat << 'EOF'
-analyze_interface=function(params, input)
+prepare_atoms=function(params)
 {
-
-if(input.model_input_file===undefined || input.model_input_file==="")
-{
-	throw ("No model input file");
+	voronota_restrict_atoms("-use", params.restrict_input_atoms);
+	voronota_assert_full_success("Failed to restrict input atoms by the input query");
+	
+	voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
+	voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
+	var initial_number_of_accepted_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
+	
+	voronota_select_atoms_close_to_interchain_interface("-name", "actii");
+	voronota_assert_full_success("Failed to select interface atoms");
+	
+	voronota_restrict_atoms("-use", "[actii]");
+	voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
+	
+	return initial_number_of_accepted_atoms;
 }
 
-voronota_reset_time();
-
-if(params.model_input_is_script=="true")
+prepare_contacts=function(params)
 {
-	voronota_source("-file", input.model_input_file);
-	voronota_assert_partial_success("Failed when running provided model input script");
-}
-else
-{
-	voronota_import("-file", input.model_input_file, "-as-assembly", params.input_as_assembly);
-	voronota_assert_partial_success("Failed to import model file");
+	voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
+	voronota_assert_full_success("Failed to construct inter-chain contacts");
+	
+	voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts");
+	voronota_assert_full_success("Failed to select inter-chain contacts");
 }
 
-voronota_pick_objects();
-
-voronota_list_objects();
-voronota_assert_full_success("Failed to list objects");
-list_objects_output=voronota_last_output().results[0].output;
-if(list_objects_output.objects.length!=2)
+analyze_interface=function(params, target_object, model_object, initial_summary)
 {
-	throw ("Not exactly two structures loaded");
-}
-target_object=list_objects_output.objects[0].name;
-model_object=list_objects_output.objects[1].name
-
-voronota_restrict_atoms("-use", params.restrict_input_atoms);
-voronota_assert_full_success("Failed to restrict input atoms by the input query");
-
-voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
-voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
-result_target_initial_number_of_accepted_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
-result_model_initial_number_of_accepted_atoms=voronota_last_output().results[1].output.atoms_summary_new.number_total;
-
-voronota_print_time();
-time_loading=voronota_last_output().results[0].output.elapsed_miliseconds;
-
-voronota_reset_time();
-
-voronota_select_atoms_close_to_interchain_interface("-name", "actii");
-voronota_assert_full_success("Failed to select interface atoms");
-
-voronota_restrict_atoms("-use", "[actii]");
-voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
-
-if(params.test_common_ids=="true")
-{
-	voronota_export_selection_of_atoms("-on-objects", target_object, "-no-serial", "-no-name", "-file", "_virtual/target_residue_ids");
-	voronota_assert_full_success("Failed to export target residue ids");
-	voronota_import_selection_of_atoms("-on-objects", model_object, "-file", "_virtual/target_residue_ids", "-name", "common_residues");
-	voronota_assert_full_success("No common residue ids");
-}
-
-voronota_print_time();
-time_restricting=voronota_last_output().results[0].output.elapsed_miliseconds;
-
-voronota_reset_time();
-
-voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
-voronota_assert_full_success("Failed to construct inter-chain contacts");
-
-voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts");
-voronota_assert_full_success("Failed to select inter-chain contacts");
-
-voronota_print_time();
-time_constructing_contacts=voronota_last_output().results[0].output.elapsed_miliseconds;
-
-voronota_reset_time();
-
-voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based");
-voronota_assert_full_success("Failed to compute CAD-score");
-result_cadscore=voronota_last_output().results[0].output.residue_level_result;
-result_cadscore_site_based=voronota_last_output().results[0].output.site_residue_level_result;
-
-voronota_print_time();
-time_calculating_cadscore=voronota_last_output().results[0].output.elapsed_miliseconds;
-
-voronota_reset_time();
-
-time_total=(time_loading+time_restricting+time_constructing_contacts+time_calculating_cadscore);
-
-summary={}
-
-summary.target=params.target_input_file_name;
-summary.model=input.model_input_file_name;
-
-summary.iface_cadscore=result_cadscore.score;
-summary.iface_site_based_cadscore=result_cadscore_site_based.score;
-summary.iface_ratio_of_areas=result_cadscore.model_target_area_sum/result_cadscore.target_area_sum;
-summary.iface_target_area=result_cadscore.target_area_sum;
-summary.iface_model_area=result_cadscore.model_target_area_sum;
-
-summary.target_atoms=params.result_target_initial_number_of_accepted_atoms;
-summary.model_atoms=result_model_initial_number_of_accepted_atoms;
-
-if(params.output_detailed_times=="true")
-{
-	summary.time_load=time_loading;
-	summary.time_restrict=time_restricting;
-	summary.time_contacts=time_constructing_contacts;
-	summary.time_cadscore=time_calculating_cadscore;
-	summary.time_total=time_total;
-}
-
-var summary_table={}
-summary_table.model_object=model_object;
-summary_table.header="";
-summary_table.row="";
-
-Object.keys(summary).forEach(function(key)
-{
-		summary_table.header+=key+" ";
-});
-
-Object.keys(summary).forEach(function(key)
-{
-	value=summary[key];
-	if(typeof value === 'number')
+	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based");
+	voronota_assert_full_success("Failed to compute CAD-score");
+	result_cadscore=voronota_last_output().results[0].output.residue_level_result;
+	result_cadscore_site_based=voronota_last_output().results[0].output.site_residue_level_result;
+	
+	summary={};
+	summary.target=initial_summary.target;
+	summary.model=initial_summary.model;
+	
+	summary.iface_cadscore=result_cadscore.score;
+	summary.iface_site_based_cadscore=result_cadscore_site_based.score;
+	summary.iface_ratio_of_areas=result_cadscore.model_target_area_sum/result_cadscore.target_area_sum;
+	summary.iface_target_area=result_cadscore.target_area_sum;
+	summary.iface_model_area=result_cadscore.model_target_area_sum;
+	
+	summary.target_atoms=initial_summary.target_atoms;
+	summary.model_atoms=initial_summary.target_atoms;
+	
+	var summary_table={}
+	summary_table.header="";
+	summary_table.row="";
+	
+	Object.keys(summary).forEach(function(key)
 	{
-		summary_table.row+=parseFloat(value.toFixed(5))+" ";
-	}
-	else
+			summary_table.header+=key+" ";
+	});
+	
+	Object.keys(summary).forEach(function(key)
 	{
-		summary_table.row+=value+" ";
-	}
-});
-
-summary_table.header=summary_table.header.trim();
-summary_table.row=summary_table.row.trim();
-
-return summary_table;
+		value=summary[key];
+		if(typeof value === 'number')
+		{
+			summary_table.row+=parseFloat(value.toFixed(5))+" ";
+		}
+		else
+		{
+			summary_table.row+=value+" ";
+		}
+	});
+	
+	summary_table.header=summary_table.header.trim();
+	summary_table.row=summary_table.row.trim();
+	
+	return summary_table;
 }
 
 voronota_setup_defaults("-no-load-voromqa-potentials -no-load-alt-voromqa-potential -no-load-more-atom-types -no-load-mock-voromqa-potential");
@@ -476,11 +405,6 @@ if(common_params.contacts_subselection===undefined || common_params.contacts_sub
 	common_params.contacts_subselection='[]';
 }
 
-if(common_params.output_detailed_times===undefined || common_params.output_detailed_times==="")
-{
-	params.output_detailed_times="false";
-}
-
 if(common_params.output_table_file===undefined || common_params.output_table_file==="")
 {
 	common_params.output_table_file="_stdout";
@@ -497,12 +421,25 @@ else
 	voronota_assert_partial_success("Failed to import target file");
 }
 
-voronota_restrict_atoms("-use", common_params.restrict_input_atoms);
-voronota_assert_full_success("Failed to restrict input atoms by the input query");
+voronota_list_objects();
+voronota_assert_full_success("Failed to list objects");
+if(voronota_last_output().results[0].output.objects.length!=1)
+{
+	throw ("Not exactly one structure loaded as target");
+}
+target_object=voronota_last_output().results[0].output.objects[0].name;
 
-voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
-voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
-common_params.result_target_initial_number_of_accepted_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
+voronota_pick_objects("-names", target_object);
+
+var target_initial_number_of_accepted_atoms=prepare_atoms(common_params);
+
+if(common_params.test_common_ids=="true")
+{
+	voronota_export_selection_of_atoms("-on-objects", target_object, "-no-serial", "-no-name", "-file", "_virtual/target_residue_ids");
+	voronota_assert_full_success("Failed to export target residue ids");
+}
+
+prepare_contacts(common_params);
 
 var full_summary_table="";
 
@@ -510,23 +447,73 @@ for(var i=0;i<input_info_array.length;i++)
 {
 	var subinput=input_info_array[i];
 	var model_object="";
+	
 	try
 	{
-		var summary_table=analyze_interface(common_params, subinput);
+		voronota_unpick_objects();
+		
+		var prev_number_of_objects=0;
+		if(i>0)
+		{
+			voronota_list_objects();
+			voronota_assert_full_success("Failed to list objects");
+			prev_number_of_objects=voronota_last_output().results[0].output.objects.length;
+		}
+		
+		if(common_params.model_input_is_script=="true")
+		{
+			voronota_source("-file", subinput.model_input_file);
+			voronota_assert_full_success("Failed when running provided model input script");
+		}
+		else
+		{
+			voronota_import("-file", subinput.model_input_file, "-as-assembly", common_params.input_as_assembly);
+			voronota_assert_full_success("Failed to import model file");
+		}
+		
+		voronota_list_objects();
+		voronota_assert_full_success("Failed to list objects");
+		if(voronota_last_output().results[0].output.objects.length!=2)
+		{
+			throw ("Not exactly one structure loaded as model from "+subinput.model_input_file);
+		}
+		model_object=voronota_last_output().results[0].output.objects[1].name;
+		
+		voronota_pick_objects("-names", model_object);
+		
+		var model_initial_number_of_accepted_atoms=prepare_atoms(common_params);
+		
+		if(common_params.test_common_ids=="true")
+		{
+			voronota_import_selection_of_atoms("-on-objects", model_object, "-file", "_virtual/target_residue_ids", "-name", "common_residues");
+			voronota_assert_full_success("No common residue ids");
+		}
+		
+		prepare_contacts(common_params);
+		
+		var initial_summary={};
+		initial_summary.target=common_params.target_input_file_name;
+		initial_summary.model=subinput.model_input_file_name;
+		initial_summary.target_atoms=target_initial_number_of_accepted_atoms;
+		initial_summary.model_atoms=model_initial_number_of_accepted_atoms;
+		
+		var summary_table=analyze_interface(common_params, target_object, model_object, initial_summary);
 		if(full_summary_table=="")
 		{
 			full_summary_table+=summary_table.header+"\n";
 		}
 		full_summary_table+=summary_table.row+"\n";
-		model_object=summary_table.model_object;
 	}
 	catch(error)
 	{
-		log("Failed with '"+subinput.input_file_name+"': "+error);
+		log("Failed with '"+subinput.model_input_file_name+"': "+error);
 	}
 	
-	voronota_delete_objects('-names', model_object);
-	voronota_assert_full_success("Failed to delete model object");
+	if(model_object!="")
+	{
+		voronota_delete_objects('-names', model_object);
+		model_object="";
+	}
 }
 
 fwrite('_virtual/summary', full_summary_table);
