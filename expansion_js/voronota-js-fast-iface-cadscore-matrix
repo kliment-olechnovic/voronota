@@ -10,6 +10,7 @@ Options:
     --restrict-input          string     query to restrict input atoms, default is '[]'
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
+    --processors              number     maximum number of processors to use, default is 1
     --stdin-file              string     input file path to replace stdin
     --as-assembly                        flag to treat input files as biological assemblies
     --help | -h                          flag to display help message and exit
@@ -51,6 +52,7 @@ command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executab
 RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
 OUTPUT_TABLE_FILE="_stdout"
+MAX_PROCESSORS="1"
 STDIN_FILE="_stream"
 MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
@@ -72,6 +74,10 @@ do
 		;;
 	--output-table-file)
 		OUTPUT_TABLE_FILE="$OPTARG"
+		shift
+		;;
+	--processors)
+		MAX_PROCESSORS="$OPTARG"
 		shift
 		;;
 	--stdin-file)
@@ -99,6 +105,68 @@ then
 	print_help_and_exit
 fi
 
+if [ "$MAX_PROCESSORS" -gt "1" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat_stdin "$STDIN_FILE" | egrep . | sort | uniq > "$TMPLDIR/input_list"
+	
+	if [ ! -s "$TMPLDIR/input_list" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	NUM_OF_SPLITS="$(echo $MAX_PROCESSORS | awk '{v=(1+(sqrt(1+8*$1)/2)); print int(v);}')"
+	NUM_OF_INPUTS="$(cat $TMPLDIR/input_list | wc -l)"
+	SIZE_OF_PORTION="$(echo "a=$NUM_OF_INPUTS; b=$NUM_OF_SPLITS; if(a%b) a/b+1 else a/b" | bc)"
+	
+	mkdir -p "$TMPLDIR/portions"
+	
+	split -l "$SIZE_OF_PORTION" "$TMPLDIR/input_list" "$TMPLDIR/portions/portion_"
+	
+	mkdir -p "$TMPLDIR/portions_pairs"
+	
+	find $TMPLDIR/portions/ -type f -not -empty | sort | while read -r PORTIONFILE1
+	do
+		find $TMPLDIR/portions/ -type f -not -empty | sort | while read -r PORTIONFILE2
+		do
+			cat "$PORTIONFILE1" | awk '{print $1 " self"}' > "$TMPLDIR/portions_pairs/$(basename $PORTIONFILE1)_$(basename $PORTIONFILE1)"
+			if [[ "$PORTIONFILE1" < "$PORTIONFILE2" ]]
+			then
+				{
+					cat "$PORTIONFILE1" | awk '{print $1 " a"}'
+					cat "$PORTIONFILE2" | awk '{print $1 " b"}'
+				} > "$TMPLDIR/portions_pairs/$(basename $PORTIONFILE1)_$(basename $PORTIONFILE2)"
+			fi
+		done
+	done
+	
+	mkdir -p "$TMPLDIR/children_tables"
+	
+	find $TMPLDIR/portions_pairs/ -type f -not -empty \
+	| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
+	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" --processors 1
+	
+	find "$TMPLDIR/children_tables" -type f -not -empty \
+	| sort \
+	| xargs -L 1 cat \
+	| awk '{if(NR==1 || $1!="target") print $0}' \
+	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas -multipliers 1 1 1 -tolerances 0.0 0.0 0.0');" \
+	> "$TMPLDIR/full_output_table"
+	
+	if [ -n "$OUTPUT_TABLE_FILE" ] && [ "$OUTPUT_TABLE_FILE" != "_stdout" ]
+	then
+		mkdir -p "$(dirname "$OUTPUT_TABLE_FILE")"
+		cat "$TMPLDIR/full_output_table" > "$OUTPUT_TABLE_FILE"
+	else
+		cat "$TMPLDIR/full_output_table"
+	fi
+	
+	exit 0
+fi
+
 {
 cat << EOF
 var common_params={}
@@ -110,12 +178,12 @@ common_params.output_table_file='$OUTPUT_TABLE_FILE';
 var input_info_array=[];
 EOF
 
-cat_stdin "$STDIN_FILE" | egrep . | sort | uniq \
-| while read -r SUBINFILE
+cat_stdin "$STDIN_FILE" | egrep . | sort | uniq | awk '{print $0 " self"}' | awk '{print $1 " " $2}' \
+| while read -r SUBINFILE SETID
 do
 SUBINFILE_BASENAME="$(basename "$SUBINFILE")"
 cat << EOF
-input_info_array.push({"model_input_file": "$SUBINFILE", "model_input_file_name": "$SUBINFILE_BASENAME"});
+input_info_array.push({"model_input_file": "$SUBINFILE", "model_input_file_name": "$SUBINFILE_BASENAME", "set_id": "$SETID"});
 EOF
 done
 
@@ -249,7 +317,7 @@ for(var i=0;i<input_info_array.length;i++)
 		voronota_select_contacts("-use", "([-inter-chain] and "+common_params.contacts_subselection+")", "-name", "inter_chain_contacts");
 		voronota_assert_full_success("Failed to select inter-chain contacts");
 		
-		model_objects_array.push({"model_object": model_object, "model_input_file_name": subinput.model_input_file_name});
+		model_objects_array.push({"model_object": model_object, "model_input_file_name": subinput.model_input_file_name, "set_id": subinput.set_id});
 	}
 	catch(error)
 	{
@@ -270,7 +338,7 @@ for(var i=0;i<model_objects_array.length;i++)
 {
 	for(var j=0;j<model_objects_array.length;j++)
 	{
-		if(i!=j)
+		if(i!=j && (model_objects_array[i].set_id!=model_objects_array[j].set_id || model_objects_array[i].set_id=="self"))
 		{
 			var initial_summary={};
 			initial_summary.target=model_objects_array[i].model_input_file_name;
