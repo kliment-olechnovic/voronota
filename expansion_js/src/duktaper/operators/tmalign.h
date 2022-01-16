@@ -121,8 +121,8 @@ public:
 		scripting::DataManager* target_object=congregation_of_data_managers.get_object(target_name);
 		scripting::DataManager* model_object=congregation_of_data_managers.get_object(model_name);
 
-		const std::string target_use=target_selection.empty() ? std::string("[--aname CA]") : (std::string("((")+target_selection+") and ([--aname CA]))");
-		const std::string model_use=model_selection.empty() ? std::string("[--aname CA]") : (std::string("((")+model_selection+") and ([--aname CA]))");
+		const std::string target_use=target_selection.empty() ? std::string("([--aname CA] or [--aname C3'])") : (std::string("((")+target_selection+") and ([--aname CA] or [--aname C3']))");
+		const std::string model_use=model_selection.empty() ? std::string("([--aname CA] or [--aname C3'])") : (std::string("((")+model_selection+") and ([--aname CA] or [--aname C3']))");
 
 		scripting::VirtualFileStorage::TemporaryFile tmp_target_pdb;
 		scripting::VirtualFileStorage::TemporaryFile tmp_model_pdb;
@@ -131,11 +131,13 @@ public:
 		scripting::operators::ExportAtoms().init(CMDIN()
 				.set("use", target_use)
 				.set("as-pdb", true)
+				.set("for-tmalign", true)
 				.set("file", tmp_target_pdb.filename())).run(*target_object);
 
 		scripting::operators::ExportAtoms().init(CMDIN()
 				.set("use", model_use)
 				.set("as-pdb", true)
+				.set("for-tmalign", true)
 				.set("file", tmp_model_pdb.filename())).run(*model_object);
 
 		const TMAlignWrapper::ResultBundle tmalign_result=TMAlignWrapper().run_tmalign(tmp_target_pdb.filename(), tmp_model_pdb.filename(), tmp_matrix.filename());

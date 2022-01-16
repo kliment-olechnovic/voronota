@@ -38,8 +38,9 @@ public:
     bool as_pdb;
 	std::string pdb_b_factor_name;
 	bool pdb_ter;
+	bool for_tmalign;
 
-	ExportAtoms() : file(""), as_pdb(false), pdb_b_factor_name("tf"), pdb_ter(false)
+	ExportAtoms() : file(""), as_pdb(false), pdb_b_factor_name("tf"), pdb_ter(false), for_tmalign(false)
 	{
 	}
 
@@ -51,6 +52,7 @@ public:
 		as_pdb=input.get_flag("as-pdb");
 		pdb_b_factor_name=input.get_value_or_default<std::string>("pdb-b-factor", "tf");
 		pdb_ter=input.get_flag("pdb-ter");
+		for_tmalign=input.get_flag("for-tmalign");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -60,6 +62,7 @@ public:
 		doc.set_option_decription(CDOD("as-pdb", CDOD::DATATYPE_BOOL, "flag to output in PDB format"));
 		doc.set_option_decription(CDOD("pdb-b-factor", CDOD::DATATYPE_STRING, "name of adjunct values to write as b-factors in PDB output", "tf"));
 		doc.set_option_decription(CDOD("pdb-ter", CDOD::DATATYPE_BOOL, "flag to include TER lines in PDB output"));
+		doc.set_option_decription(CDOD("for-tmalign", CDOD::DATATYPE_BOOL, "flag to rename C3' atoms in nucleotides to CA"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -78,7 +81,23 @@ public:
 		std::ostream& output=output_selector.stream();
 		assert_io_stream(file, output);
 
-		const std::vector<Atom> atoms=slice_vector_by_ids(data_manager.atoms(), ids);
+		std::vector<Atom> atoms=slice_vector_by_ids(data_manager.atoms(), ids);
+
+		if(for_tmalign)
+		{
+			for(std::size_t i=0;i<atoms.size();i++)
+			{
+				Atom& atom=atoms[i];
+				if(atom.crad.name=="C3'")
+				{
+					const std::string& r=atom.crad.resName;
+					if(r=="DA" || r=="DC" || r=="DG" || r=="DT" || r=="DI" || r=="A" || r=="C" || r=="G" || r=="T" || r=="U" || r=="I")
+					{
+						atom.crad.name="CA";
+					}
+				}
+			}
+		}
 
 		if(as_pdb)
 		{
