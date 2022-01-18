@@ -579,6 +579,7 @@ public:
 		figures_representations_descriptor_=dm.figures_representations_descriptor_;
 		atoms_=dm.atoms_;
 		contacts_=dm.contacts_;
+		contacts_adjacencies_=dm.contacts_adjacencies_;
 		figures_=dm.figures_;
 		global_numeric_adjuncts_=dm.global_numeric_adjuncts_;
 		atoms_display_states_=dm.atoms_display_states_;
