@@ -11,7 +11,8 @@ Options:
     --restrict-input          string     query to restrict input atoms, default is '[]'
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
-    --processors              number     maximum number of processors to use, default is 1
+    --processors              number     maximum number of processors to run in parallel, default is 1
+    --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
     --stdin-file              string     input file path to replace stdin
     --run-faspr               string     path to FASPR binary to rebuild side-chains
     --input-is-script                    flag to treat input file as vs script
@@ -91,6 +92,7 @@ RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
+SBATCH_PARAMETERS=""
 STDIN_FILE="_stream"
 RUN_FASPR=""
 INPUT_IS_SCRIPT="false"
@@ -124,6 +126,10 @@ do
 		;;
 	--processors)
 		MAX_PROCESSORS="$OPTARG"
+		shift
+		;;
+	--sbatch-parameters)
+		SBATCH_PARAMETERS="$OPTARG"
 		shift
 		;;
 	--stdin-file)
@@ -225,6 +231,30 @@ then
 	exit 0
 fi
 
+if [ -z "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -ne "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -lt "1" ]
+then
+	echo >&2 "Error: invalid number of processors '$MAX_PROCESSORS', must be a positive number"
+	exit 1
+fi
+
+if [ -n "$SBATCH_PARAMETERS" ]
+then
+	command -v sbatch &> /dev/null || { echo >&2 "Error: 'sbatch' executable not in binaries path"; exit 1; }
+	command -v squeue &> /dev/null || { echo >&2 "Error: 'squeue' executable not in binaries path"; exit 1; }
+	
+	if [ "$INFILE" != "_list" ]
+	then
+		echo >&2 "Error: sbatch usage requested, but input is not '_list'"
+		exit 1
+	fi
+	
+	if [ "$MAX_PROCESSORS" -lt "2" ]
+	then
+		echo >&2 "Error: sbatch usage requested, but requested number of processors is less than 2"
+		exit 1
+	fi
+fi
+
 if [ "$INFILE" == "_list" ] && [ "$MAX_PROCESSORS" -gt "1" ]
 then
 	readonly TMPLDIR=$(mktemp -d)
@@ -247,9 +277,31 @@ then
 	
 	mkdir -p "$TMPLDIR/children_tables"
 	
-	find $TMPLDIR/portions/ -type f -not -empty \
-	| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
-	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" --processors 1 --input _list
+	if [ -n "$SBATCH_PARAMETERS" ]
+	then
+		mkdir -p "$TMPLDIR/slurm_logs"
+		
+		find $TMPLDIR/portions/ -type f -not -empty \
+		| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
+		| xargs -L 1 sbatch -o "$TMPLDIR/slurm_logs/slurmjob-%j.out" -e "$TMPLDIR/slurm_logs/slurmjob-%j.err" $SBATCH_PARAMETERS "$ZEROARG" "${ALLARGS[@]}" --sbatch-parameters '' --processors 1 --input _list \
+		| egrep '^Submitted batch job ' \
+		| awk '{print $4}' \
+		> "$TMPLDIR/slurm_job_ids"
+		
+		sleep 1
+		REMAINING_SLURM_JOBS="$(squeue | grep -f "$TMPLDIR/slurm_job_ids" | wc -l)"
+		while [ "$REMAINING_SLURM_JOBS" -gt "0" ]
+		do
+			sleep 5
+			REMAINING_SLURM_JOBS="$(squeue | grep -f "$TMPLDIR/slurm_job_ids" | wc -l)"
+		done
+		
+		find "$TMPLDIR/slurm_logs/" -type f -not -empty | xargs -L 1 cat >&2
+	else
+		find $TMPLDIR/portions/ -type f -not -empty \
+		| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
+		| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" --processors 1 --input _list
+	fi
 		
 	find "$TMPLDIR/children_tables" -type f -not -empty \
 	| sort \
