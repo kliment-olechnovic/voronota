@@ -18,7 +18,7 @@ inline std::vector<SimpleSphere> construct_artificial_boundary(const std::vector
 	if(!spheres.empty())
 	{
 		SimpleSphere a(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
-		SimpleSphere b(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+		SimpleSphere b((-std::numeric_limits<double>::max()), (-std::numeric_limits<double>::max()), (-std::numeric_limits<double>::max()), (-std::numeric_limits<double>::max()));
 		for(std::vector<SimpleSphere>::const_iterator it=spheres.begin();it!=spheres.end();++it)
 		{
 			a.x=std::min(a.x, it->x);

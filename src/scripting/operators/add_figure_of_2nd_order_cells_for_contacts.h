@@ -128,7 +128,7 @@ public:
 						for(p.z=bounding_box.p_min.z;p.z<=bounding_box.p_max.z;p.z+=voxel_diameter)
 						{
 							double min_dist=std::numeric_limits<double>::max();
-							double max_dist=std::numeric_limits<double>::lowest();
+							double max_dist=(-std::numeric_limits<double>::max());
 							for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
 							{
 								const double dist=apollota::minimal_distance_from_point_to_sphere(p, spheres[*it]);

@@ -25,7 +25,7 @@ public:
 
 		Result() :
 			distance_min(std::numeric_limits<double>::max()),
-			distance_max(std::numeric_limits<double>::lowest()),
+			distance_max((-std::numeric_limits<double>::max())),
 			total_count(0)
 		{
 		}
