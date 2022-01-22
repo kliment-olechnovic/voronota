@@ -29,8 +29,9 @@ public:
 	std::string output_file;
 	std::vector<std::size_t> top_slices;
 	double similarity_threshold;
+	bool use_max_value;
 
-	RanksJuryScore() : similarity_threshold(1.0)
+	RanksJuryScore() : similarity_threshold(1.0), use_max_value(false)
 	{
 	}
 
@@ -41,6 +42,7 @@ public:
 		output_file=input.get_value<std::string>("output-file");
 		top_slices=input.get_value_vector<std::size_t>("top-slices");
 		similarity_threshold=input.get_value_or_default<double>("similarity-threshold", 1.0);
+		use_max_value=input.get_flag("use-max-value");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -50,6 +52,7 @@ public:
 		doc.set_option_decription(CDOD("output-file", CDOD::DATATYPE_STRING, "path to output file"));
 		doc.set_option_decription(CDOD("top-slices", CDOD::DATATYPE_INT_ARRAY, "list of slice sizes"));
 		doc.set_option_decription(CDOD("similarity-threshold", CDOD::DATATYPE_FLOAT, "similarity threshold for clustering", 1.0));
+		doc.set_option_decription(CDOD("use-max-value", CDOD::DATATYPE_BOOL, "flag to use the best value from all the slices"));
 	}
 
 	Result run(void*) const
@@ -339,6 +342,16 @@ public:
 			}
 		}
 
+		if(use_max_value)
+		{
+			for(std::size_t i=0;i<N;i++)
+			{
+				std::vector<double>& values=jury_scores[i].first;
+				const double negative_max_value=*std::min_element(values.begin(), values.end());
+				values.insert(values.begin(), negative_max_value);
+			}
+		}
+
 		std::sort(jury_scores.begin(), jury_scores.end());
 
 		{
@@ -349,7 +362,7 @@ public:
 			for(std::size_t i=0;i<N;i++)
 			{
 				foutput << indices_to_ids[jury_scores[i].second];
-				for(std::size_t l=0;l<L;l++)
+				for(std::size_t l=0;l<jury_scores[i].first.size();l++)
 				{
 					foutput << " " << (0.0-jury_scores[i].first[l]);
 				}
