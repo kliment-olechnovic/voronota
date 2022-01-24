@@ -29,9 +29,11 @@ public:
 	std::string output_file;
 	std::vector<std::size_t> top_slices;
 	double similarity_threshold;
+	bool generate_slices;
 	bool use_max_value;
+	bool use_dominations;
 
-	RanksJuryScore() : similarity_threshold(1.0), use_max_value(false)
+	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), use_dominations(false)
 	{
 	}
 
@@ -42,7 +44,9 @@ public:
 		output_file=input.get_value<std::string>("output-file");
 		top_slices=input.get_value_vector<std::size_t>("top-slices");
 		similarity_threshold=input.get_value_or_default<double>("similarity-threshold", 1.0);
+		generate_slices=input.get_flag("generate-slices");
 		use_max_value=input.get_flag("use-max-value");
+		use_dominations=input.get_flag("use-dominations");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -52,7 +56,9 @@ public:
 		doc.set_option_decription(CDOD("output-file", CDOD::DATATYPE_STRING, "path to output file"));
 		doc.set_option_decription(CDOD("top-slices", CDOD::DATATYPE_INT_ARRAY, "list of slice sizes"));
 		doc.set_option_decription(CDOD("similarity-threshold", CDOD::DATATYPE_FLOAT, "similarity threshold for clustering", 1.0));
+		doc.set_option_decription(CDOD("generate-slices", CDOD::DATATYPE_BOOL, "flag to generate top slices from interval"));
 		doc.set_option_decription(CDOD("use-max-value", CDOD::DATATYPE_BOOL, "flag to use the best value from all the slices"));
+		doc.set_option_decription(CDOD("use-dominations", CDOD::DATATYPE_BOOL, "flag to use domination counts from all the slices"));
 	}
 
 	Result run(void*) const
@@ -72,6 +78,34 @@ public:
 			{
 				throw std::runtime_error(std::string("Invalid top slices specified."));
 			}
+		}
+
+		std::vector<std::size_t> top_slices_to_use;
+
+		if(generate_slices)
+		{
+			if(top_slices.size()<2 || top_slices[0]>=top_slices[1])
+			{
+				throw std::runtime_error(std::string("Specified first two top slices do not define an interval usable for generating numbers."));
+			}
+			const std::size_t n_slices=(top_slices[1]-top_slices[0])+1;
+			if(n_slices>500)
+			{
+				throw std::runtime_error(std::string("Specified first two top slices define an interval longer than 500."));
+			}
+			top_slices_to_use.reserve(n_slices);
+			for(std::size_t i=top_slices[0];i<=top_slices[1];i++)
+			{
+				top_slices_to_use.push_back(i);
+			}
+			for(std::size_t i=2;i<top_slices.size();i++)
+			{
+				top_slices_to_use.push_back(top_slices[i]);
+			}
+		}
+		else
+		{
+			top_slices_to_use=top_slices;
 		}
 
 		typedef std::map<std::string, std::map<std::string, double> > MapOfSimilarities;
@@ -258,7 +292,7 @@ public:
 
 		const std::size_t N=map_of_similarities.size();
 		const std::size_t M=map_of_ranks.begin()->second.size();
-		const std::size_t L=top_slices.size();
+		const std::size_t L=top_slices_to_use.size();
 
 		std::vector<std::string> indices_to_ids(N);
 		std::vector< std::vector<double> > matrix_of_similarities(N, std::vector<double>(N, 0.0));
@@ -306,7 +340,7 @@ public:
 
 		for(std::size_t l=0;l<L;l++)
 		{
-			const std::size_t top_slice=std::min(top_slices[l], N);
+			const std::size_t top_slice=std::min(top_slices_to_use[l], N);
 			std::vector<std::size_t> indices;
 			indices.reserve(M*top_slice);
 			for(std::size_t m=0;m<M;m++)
@@ -342,6 +376,22 @@ public:
 			}
 		}
 
+		std::vector<int> dominations(N, 0);
+		if(use_dominations)
+		{
+			for(std::size_t l=0;l<L;l++)
+			{
+				std::vector< std::pair<double, std::size_t> > slice_ordering(N);
+				for(std::size_t i=0;i<N;i++)
+				{
+					slice_ordering[i].first=jury_scores[i].first[l];
+					slice_ordering[i].second=i;
+				}
+				std::sort(slice_ordering.begin(), slice_ordering.end());
+				dominations[slice_ordering.front().second]++;
+			}
+		}
+
 		if(use_max_value)
 		{
 			for(std::size_t i=0;i<N;i++)
@@ -349,6 +399,15 @@ public:
 				std::vector<double>& values=jury_scores[i].first;
 				const double negative_max_value=*std::min_element(values.begin(), values.end());
 				values.insert(values.begin(), negative_max_value);
+			}
+		}
+
+		if(use_dominations)
+		{
+			for(std::size_t i=0;i<N;i++)
+			{
+				std::vector<double>& values=jury_scores[i].first;
+				values.insert(values.begin(), (0.0-static_cast<double>(dominations[jury_scores[i].second])));
 			}
 		}
 
