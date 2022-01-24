@@ -31,9 +31,10 @@ public:
 	double similarity_threshold;
 	bool generate_slices;
 	bool use_max_value;
+	std::size_t several_max_values;
 	bool use_dominations;
 
-	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), use_dominations(false)
+	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), several_max_values(1), use_dominations(false)
 	{
 	}
 
@@ -46,6 +47,7 @@ public:
 		similarity_threshold=input.get_value_or_default<double>("similarity-threshold", 1.0);
 		generate_slices=input.get_flag("generate-slices");
 		use_max_value=input.get_flag("use-max-value");
+		several_max_values=input.get_value_or_default<std::size_t>("several-max-values", 1);
 		use_dominations=input.get_flag("use-dominations");
 	}
 
@@ -58,6 +60,7 @@ public:
 		doc.set_option_decription(CDOD("similarity-threshold", CDOD::DATATYPE_FLOAT, "similarity threshold for clustering", 1.0));
 		doc.set_option_decription(CDOD("generate-slices", CDOD::DATATYPE_BOOL, "flag to generate top slices from interval"));
 		doc.set_option_decription(CDOD("use-max-value", CDOD::DATATYPE_BOOL, "flag to use the best value from all the slices"));
+		doc.set_option_decription(CDOD("several-max-values", CDOD::DATATYPE_INT, "number of top max values to average", 1));
 		doc.set_option_decription(CDOD("use-dominations", CDOD::DATATYPE_BOOL, "flag to use domination counts from all the slices"));
 	}
 
@@ -397,8 +400,27 @@ public:
 			for(std::size_t i=0;i<N;i++)
 			{
 				std::vector<double>& values=jury_scores[i].first;
-				const double negative_max_value=*std::min_element(values.begin(), values.end());
-				values.insert(values.begin(), negative_max_value);
+				if(several_max_values<2)
+				{
+					const double negative_max_value=*std::min_element(values.begin(), values.end());
+					values.insert(values.begin(), negative_max_value);
+				}
+				else
+				{
+					std::vector<double> sorted_values=values;
+					std::sort(sorted_values.begin(), sorted_values.end());
+					double sum=0.0;
+					double sum_size=0.0;
+					for(std::size_t j=0;j<std::min(several_max_values, sorted_values.size());j++)
+					{
+						if(sorted_values[j]<0.0)
+						{
+							sum+=sorted_values[j];
+							sum_size+=1.0;
+						}
+					}
+					values.insert(values.begin(), sum/sum_size);
+				}
 			}
 		}
 
