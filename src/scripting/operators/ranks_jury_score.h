@@ -33,9 +33,9 @@ public:
 	bool use_max_value;
 	std::size_t several_max_values;
 	bool use_dominations;
-	bool output_uniqueness;
+	bool output_redundancy;
 
-	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), several_max_values(1), use_dominations(false), output_uniqueness(false)
+	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), several_max_values(1), use_dominations(false), output_redundancy(false)
 	{
 	}
 
@@ -50,7 +50,7 @@ public:
 		use_max_value=input.get_flag("use-max-value");
 		several_max_values=input.get_value_or_default<std::size_t>("several-max-values", 1);
 		use_dominations=input.get_flag("use-dominations");
-		output_uniqueness=input.get_flag("output-uniqueness");
+		output_redundancy=input.get_flag("output-redundancy");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -64,7 +64,7 @@ public:
 		doc.set_option_decription(CDOD("use-max-value", CDOD::DATATYPE_BOOL, "flag to use the best value from all the slices"));
 		doc.set_option_decription(CDOD("several-max-values", CDOD::DATATYPE_INT, "number of top max values to average", 1));
 		doc.set_option_decription(CDOD("use-dominations", CDOD::DATATYPE_BOOL, "flag to use domination counts from all the slices"));
-		doc.set_option_decription(CDOD("output-uniqueness", CDOD::DATATYPE_BOOL, "flag to output similarities to higher-ranked IDs"));
+		doc.set_option_decription(CDOD("output-redundancy", CDOD::DATATYPE_BOOL, "flag to output similarities to higher-ranked IDs"));
 	}
 
 	Result run(void*) const
@@ -438,8 +438,8 @@ public:
 
 		std::sort(jury_scores.begin(), jury_scores.end());
 
-		std::vector< std::pair<double, std::size_t> > uniqueness(N, std::pair<double, std::size_t>(0.0, 0));
-		if(output_uniqueness)
+		std::vector< std::pair<double, std::size_t> > redundancy(N, std::pair<double, std::size_t>(0.0, 0));
+		if(output_redundancy)
 		{
 			for(std::size_t i=0;i<N;i++)
 			{
@@ -456,8 +456,8 @@ public:
 						max_similarity_index=index_b;
 					}
 				}
-				uniqueness[index_a].first=max_similarity;
-				uniqueness[index_a].second=max_similarity_index;
+				redundancy[index_a].first=max_similarity;
+				redundancy[index_a].second=max_similarity_index;
 			}
 		}
 
@@ -474,10 +474,10 @@ public:
 				{
 					foutput << " " << (0.0-jury_scores[i].first[l]);
 				}
-				if(output_uniqueness)
+				if(output_redundancy)
 				{
-					foutput << " " << uniqueness[index].first;
-					foutput << " " << indices_to_ids[uniqueness[index].second];
+					foutput << " " << redundancy[index].first;
+					foutput << " " << indices_to_ids[redundancy[index].second];
 				}
 				foutput << "\n";
 			}
