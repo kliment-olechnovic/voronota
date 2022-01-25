@@ -1,4 +1,4 @@
-#include "voronota_1.19.2352/src/common/construction_of_contacts.h"
+#include "voronota_1.22.3149/src/common/construction_of_contacts.h"
 
 namespace voronota
 {
@@ -49,6 +49,14 @@ inline std::vector<Contact> calculate_contacts(
 	if(ball_centers.size()<4)
 	{
 		throw std::runtime_error(std::string("Number of balls is smaller than 4."));
+	}
+
+	for(std::size_t i=0;i<ball_radii.size();i++)
+	{
+		if(ball_radii[i]<=0.0)
+		{
+			throw std::runtime_error(std::string("Some ball radii are not greater than 0."));
+		}
 	}
 
 	std::vector<apollota::SimpleSphere> balls;
