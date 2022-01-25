@@ -89,6 +89,7 @@
 #include "operators/print_triangulation.h"
 #include "operators/print_virtual_file.h"
 #include "operators/ranks_jury_score.h"
+#include "operators/redundancy_score.h"
 #include "operators/rename_global_adjunct.h"
 #include "operators/rename_object.h"
 #include "operators/rename_selection_of_atoms.h"
@@ -343,6 +344,7 @@ public:
 		set_command_for_extra_actions("split-pdb-file", operators::SplitPDBFile());
 		set_command_for_extra_actions("cat-files", operators::CatFiles());
 		set_command_for_extra_actions("ranks-jury-score", operators::RanksJuryScore());
+		set_command_for_extra_actions("redundancy-score", operators::RedundancyScore());
 	}
 
 	virtual ~ScriptExecutionManager()

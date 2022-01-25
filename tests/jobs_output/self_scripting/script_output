@@ -1185,6 +1185,9 @@
             "name":"ranks-jury-score",
             "short_description":""},
           {
+            "name":"redundancy-score",
+            "short_description":""},
+          {
             "name":"rename-global-adjunct",
             "short_description":""},
           {
