@@ -33,8 +33,9 @@ public:
 	bool use_max_value;
 	std::size_t several_max_values;
 	bool use_dominations;
+	bool output_uniqueness;
 
-	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), several_max_values(1), use_dominations(false)
+	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), several_max_values(1), use_dominations(false), output_uniqueness(false)
 	{
 	}
 
@@ -49,6 +50,7 @@ public:
 		use_max_value=input.get_flag("use-max-value");
 		several_max_values=input.get_value_or_default<std::size_t>("several-max-values", 1);
 		use_dominations=input.get_flag("use-dominations");
+		output_uniqueness=input.get_flag("output-uniqueness");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -62,6 +64,7 @@ public:
 		doc.set_option_decription(CDOD("use-max-value", CDOD::DATATYPE_BOOL, "flag to use the best value from all the slices"));
 		doc.set_option_decription(CDOD("several-max-values", CDOD::DATATYPE_INT, "number of top max values to average", 1));
 		doc.set_option_decription(CDOD("use-dominations", CDOD::DATATYPE_BOOL, "flag to use domination counts from all the slices"));
+		doc.set_option_decription(CDOD("output-uniqueness", CDOD::DATATYPE_BOOL, "flag to output similarities to higher-ranked IDs"));
 	}
 
 	Result run(void*) const
@@ -419,7 +422,7 @@ public:
 							sum_size+=1.0;
 						}
 					}
-					values.insert(values.begin(), sum/sum_size);
+					values.insert(values.begin(), (sum_size>0 ? (sum/sum_size) : 0.0));
 				}
 			}
 		}
@@ -435,6 +438,29 @@ public:
 
 		std::sort(jury_scores.begin(), jury_scores.end());
 
+		std::vector< std::pair<double, std::size_t> > uniqueness(N, std::pair<double, std::size_t>(0.0, 0));
+		if(output_uniqueness)
+		{
+			for(std::size_t i=0;i<N;i++)
+			{
+				const std::size_t index_a=jury_scores[i].second;
+				double max_similarity=0.0;
+				std::size_t max_similarity_index=index_a;
+				for(std::size_t j=0;j<i;j++)
+				{
+					const std::size_t index_b=jury_scores[j].second;
+					const double similarity_value=matrix_of_similarities[index_a][index_b];
+					if(similarity_value>max_similarity)
+					{
+						max_similarity=similarity_value;
+						max_similarity_index=index_b;
+					}
+				}
+				uniqueness[index_a].first=max_similarity;
+				uniqueness[index_a].second=max_similarity_index;
+			}
+		}
+
 		{
 			OutputSelector foutput_selector(output_file);
 			std::ostream& foutput=foutput_selector.stream();
@@ -442,10 +468,16 @@ public:
 
 			for(std::size_t i=0;i<N;i++)
 			{
-				foutput << indices_to_ids[jury_scores[i].second];
+				const std::size_t index=jury_scores[i].second;
+				foutput << indices_to_ids[index];
 				for(std::size_t l=0;l<jury_scores[i].first.size();l++)
 				{
 					foutput << " " << (0.0-jury_scores[i].first[l]);
+				}
+				if(output_uniqueness)
+				{
+					foutput << " " << uniqueness[index].first;
+					foutput << " " << indices_to_ids[uniqueness[index].second];
 				}
 				foutput << "\n";
 			}
