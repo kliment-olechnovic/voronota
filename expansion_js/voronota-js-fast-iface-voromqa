@@ -18,7 +18,7 @@ Options:
     --input-is-script                    flag to treat input file as vs script
     --as-assembly                        flag to treat input file as biological assembly
     --detailed-times                     flag to output detailed times
-    --score-symmetry                     flag score interface symmetry (for dimers only)
+    --score-symmetry                     flag to score interface symmetry
     --blanket                            flag to keep nucleic acids and use blanket potential
     --help | -h                          flag to display help message and exit
 
