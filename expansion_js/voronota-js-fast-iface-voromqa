@@ -536,13 +536,22 @@ if(params.score_symmetry=="true")
 	voronota_assert_full_success("Failed to summarize linear structure");
 	var chains_names=voronota_last_output().results[0].output.chain_names_all;
 	
-	if(chains_names.length==2)
+	if(chains_names.length%2==0)
 	{
 		voronota_list_objects();
 		voronota_assert_full_success("Failed to list objects");
 		var main_name=voronota_last_output().results[0].output.objects[0].name;
 		
-		voronota_cad_score("-target", main_name, "-model", main_name, "-t-sel", "[inter_chain_contacts]", "-m-sel", "[inter_chain_contacts]", "-m-chain-renaming-pairs", chains_names[0], chains_names[1], chains_names[1], chains_names[0]);
+		var renaming_map_array=[];
+		for(var i=0;i<(chains_names.length/2);i++)
+		{
+			renaming_map_array.push(chains_names[i]);
+			renaming_map_array.push(chains_names[chains_names.length/2+i]);
+			renaming_map_array.push(chains_names[chains_names.length/2+i]);
+			renaming_map_array.push(chains_names[i]);
+		}
+		
+		voronota_cad_score("-target", main_name, "-model", main_name, "-t-sel", "[inter_chain_contacts]", "-m-sel", "[inter_chain_contacts]", "-m-chain-renaming-pairs", renaming_map_array);
 		voronota_assert_full_success("Failed to calculate CAD-score with swapped chains");
 		var result_cadscore=voronota_last_output().results[0].output.residue_level_result;
 		
