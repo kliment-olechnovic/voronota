@@ -43,7 +43,7 @@ public:
 	void document(CommandDocumentation& doc) const
 	{
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
-		doc.set_option_decription(CDOD("chain-name", CDOD::DATATYPE_STRING, "chain name to set"));
+		doc.set_option_decription(CDOD("chain-name", CDOD::DATATYPE_STRING, "chain name (e.g B) or chain renaming rule (e.g. A=B,B=A)"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -52,8 +52,10 @@ public:
 
 		if(chain_name.empty())
 		{
-			throw std::runtime_error(std::string("No chain name provided."));
+			throw std::runtime_error(std::string("No chain name or chain renaming rule provided."));
 		}
+
+		const std::map<std::string, std::string> renaming_map=read_renaming_map(chain_name);
 
 		std::set<std::size_t> ids=data_manager.selection_manager().select_atoms(parameters_for_selecting);
 		if(ids.empty())
@@ -65,7 +67,19 @@ public:
 
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
-			atoms[*it].crad.chainID=chain_name;
+			if(renaming_map.empty())
+			{
+				atoms[*it].crad.chainID=chain_name;
+			}
+			else
+			{
+				std::string& chainID=atoms[*it].crad.chainID;
+				std::map<std::string, std::string>::const_iterator renaming_map_it=renaming_map.find(chainID);
+				if(renaming_map_it!=renaming_map.end())
+				{
+					chainID=renaming_map_it->second;
+				}
+			}
 		}
 
 		data_manager.reset_atoms_by_swapping(atoms);
@@ -75,6 +89,56 @@ public:
 		result.chain_name=chain_name;
 
 		return result;
+	}
+
+private:
+	static std::map<std::string, std::string> read_renaming_map(const std::string& rule_str)
+	{
+		std::map<std::string, std::string> renaming_map;
+
+		if(rule_str.find('=')==std::string::npos)
+		{
+			return renaming_map;
+		}
+
+		{
+			std::string rule_str_mod=rule_str;
+			for(std::size_t i=0;i<rule_str.size();i++)
+			{
+				if(rule_str[i]==',')
+				{
+					rule_str_mod[i]=' ';
+				}
+			}
+			std::istringstream list_input(rule_str_mod);
+			while(list_input.good())
+			{
+				std::string pair_token;
+				list_input >> pair_token >> std::ws;
+				if(pair_token.find('=')==std::string::npos)
+				{
+					throw std::runtime_error(std::string("Invalid pair '")+pair_token+"' in chain renaming rule.");
+				}
+				else
+				{
+					pair_token[pair_token.find('=')]=' ';
+					std::istringstream pair_input(pair_token);
+					std::string name1;
+					std::string name2;
+					pair_input >> name1 >> name2;
+					if(name1.empty() || name2.empty())
+					{
+						throw std::runtime_error(std::string("Incomplete pair '")+pair_token+"' in chain renaming rule.");
+					}
+					else
+					{
+						renaming_map[name1]=name2;
+					}
+				}
+			}
+		}
+
+		return renaming_map;
 	}
 };
 
