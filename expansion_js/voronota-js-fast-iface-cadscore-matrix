@@ -14,6 +14,7 @@ Options:
     --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
     --stdin-file              string     input file path to replace stdin
     --as-assembly                        flag to treat input files as biological assemblies
+    --remap-chains                       flag to calculate and use optimal chains remapping
     --help | -h                          flag to display help message and exit
 
 Standard output:
@@ -58,6 +59,7 @@ SBATCH_PARAMETERS=""
 STDIN_FILE="_stream"
 MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
+REMAP_CHAINS="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -95,6 +97,9 @@ do
 		;;
 	--as-assembly)
 		AS_ASSEMBLY="true"
+		;;
+	--remap-chains)
+		REMAP_CHAINS="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -219,6 +224,7 @@ common_params.model_input_is_script='$MODEL_INPUT_IS_SCRIPT';
 common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
+common_params.remap_chains='$REMAP_CHAINS';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 var input_info_array=[];
 EOF
@@ -235,7 +241,7 @@ done
 cat << 'EOF'
 analyze_interface=function(params, target_object, model_object, initial_summary)
 {
-	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based");
+	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based", "-remap-chains", params.remap_chains);
 	voronota_assert_full_success("Failed to compute CAD-score");
 	result_cadscore=voronota_last_output().results[0].output.residue_level_result;
 	result_cadscore_site_based=voronota_last_output().results[0].output.site_residue_level_result;
@@ -285,7 +291,7 @@ if(common_params.model_input_is_script===undefined || common_params.model_input_
 
 if(common_params.input_as_assembly===undefined || common_params.input_as_assembly==="")
 {
-	params.input_as_assembly="false";
+	common_params.input_as_assembly="false";
 }
 
 if(common_params.restrict_input_atoms===undefined || common_params.restrict_input_atoms==="")
@@ -296,6 +302,11 @@ if(common_params.restrict_input_atoms===undefined || common_params.restrict_inpu
 if(common_params.contacts_subselection===undefined || common_params.contacts_subselection==="")
 {
 	common_params.contacts_subselection='[]';
+}
+
+if(common_params.remap_chains===undefined || common_params.remap_chains==="")
+{
+	common_params.remap_chains="false";
 }
 
 if(common_params.output_table_file===undefined || common_params.output_table_file==="")

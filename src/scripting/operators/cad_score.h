@@ -97,6 +97,7 @@ public:
 		params.binarize=input.get_flag("binarize");
 		params.also_site_based=input.get_flag("also-site-based");
 		params.chain_renaming_pairs=input.get_value_vector_or_default<std::string>("m-chain-renaming-pairs", std::vector<std::string>());
+		params.remap_chains=input.get_flag("remap-chains");
 		if(!managed)
 		{
 			target_global_adj_prefix=input.get_value_or_default<std::string>("t-global-adj-prefix", "");
@@ -137,6 +138,7 @@ public:
 		doc.set_option_decription(CDOD("binarize", CDOD::DATATYPE_BOOL, "flag to use binary contact description"));
 		doc.set_option_decription(CDOD("also-site-based", CDOD::DATATYPE_BOOL, "flag to also compute site-based score"));
 		doc.set_option_decription(CDOD("m-chain-renaming-pairs", CDOD::DATATYPE_STRING_ARRAY, "source and destination pairs for model chain renaming", ""));
+		doc.set_option_decription(CDOD("remap-chains", CDOD::DATATYPE_BOOL, "flag to calculate and use optimal chains remapping"));
 		if(!managed)
 		{
 			doc.set_option_decription(CDOD("t-global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts of target", ""));

@@ -22,6 +22,7 @@ public:
 		int depth;
 		unsigned int smoothing_window;
 		bool also_site_based;
+		bool remap_chains;
 		std::string target_selection_expression;
 		std::string model_selection_expression;
 		std::vector<std::string> chain_renaming_pairs;
@@ -41,7 +42,8 @@ public:
 			binarize(false),
 			depth(0),
 			smoothing_window(0),
-			also_site_based(false)
+			also_site_based(false),
+			remap_chains(false)
 		{
 		}
 	};
@@ -94,6 +96,8 @@ public:
 				parameters_for_cad_score.map_of_renamings[params.chain_renaming_pairs[i]]=params.chain_renaming_pairs[i+1];
 			}
 		}
+
+		parameters_for_cad_score.remap_chains=params.remap_chains;
 
 		if(!common::ConstructionOfCADScore::construct_bundle_of_cadscore_information(
 				parameters_for_cad_score,
