@@ -461,24 +461,34 @@ generate_model_data_graph_files=function(input_name, output_prefix, with_referen
 	voronota_pick_objects("-names", "model");
 	voronota_assert_full_success("Failed to pick model object");
 	
-	voronota_voromqa_global("-adj-contact-energy-split-to-sas", "VESS", "-adj-contact-energy", "VE");
+	voronota_voromqa_global("-adj-contact-energy", "VE", "-adj-contact-energy-split-to-sas", "VESSn");
 	voronota_assert_full_success("Failed to compute VoroMQA-light scores");
 	
 	voronota_mock_voromqa_local_contacts("-use", "[inter_chain_contacts]", "-adj-contact-energy", "MVE");
 	voronota_assert_full_success("Failed to compute mock VoroMQA-light scores");
 	
-	var adjuncts_to_output=["contact_index", "area", "distance", "adjacency", "boundary", "VE", "MVE", "VESS_a", "VESS_b"];
+	voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_multiply", "-input-adjuncts", ["VESSn_a", "area"], "-output-adjunct", "VESSa");
+	voronota_assert_full_success("Failed multiply split sas energy adjuncts");
+	
+	voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_multiply", "-input-adjuncts", ["VESSn_b", "area"], "-output-adjunct", "VESSb");
+	voronota_assert_full_success("Failed multiply split sas energy adjuncts");
+	
+	var adjuncts_to_output=["contact_index", "area", "distance", "adjacency", "boundary", "VE", "MVE", "VESSa", "VESSb"];
 	
 	if(with_reference)
 	{
-		voronota_cad_score("-target", "model", "-model", "target", "-t-sel", "[inter_chain_contacts]", "-t-adj-inter-residue", "IRCAD");
+		voronota_cad_score("-target", "model", "-model", "target", "-t-sel", "[inter_chain_contacts]", "-t-adj-inter-residue", "IRCADs0");
 		voronota_assert_full_success("Failed to compute CAD-score");
 		
-		voronota_smooth_adjacent_contact_adjunct_values("-use", "[inter_chain_contacts]", "-adj-in", "IRCAD", "-adj-out", "IRCAD_s3", "-iterations 3", "-default-value", 0);
+		voronota_smooth_adjacent_contact_adjunct_values("-use", "[inter_chain_contacts]", "-adj-in", "IRCADs0", "-adj-out", "IRCADs1", "-iterations 1", "-default-value", 0);
 		voronota_assert_full_success("Failed to smooth contact CAD-score values");
 		
-		adjuncts_to_output.push("IRCAD");
-		adjuncts_to_output.push("IRCAD_s3");
+		voronota_smooth_adjacent_contact_adjunct_values("-use", "[inter_chain_contacts]", "-adj-in", "IRCADs0", "-adj-out", "IRCADs2", "-iterations 2", "-default-value", 0);
+		voronota_assert_full_success("Failed to smooth contact CAD-score values");
+		
+		adjuncts_to_output.push("IRCADs0");
+		adjuncts_to_output.push("IRCADs1");
+		adjuncts_to_output.push("IRCADs2");
 	}
 	
 	var summary={}
