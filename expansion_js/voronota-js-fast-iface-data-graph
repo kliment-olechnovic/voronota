@@ -10,7 +10,7 @@ Options:
     --input                   string  *  input file path or '_list' to read file paths from stdin
     --restrict-input          string     query to restrict input atoms, default is '[]'
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
-    --with-reference          string     input reference file path, default is ''
+    --with-reference          string     input reference complex structure file path, default is ''
     --output-data-prefix      string  *  output data files prefix
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to run in parallel, default is 1
