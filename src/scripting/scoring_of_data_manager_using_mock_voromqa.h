@@ -159,6 +159,23 @@ public:
 		return get_potential_value(Configuration::get_default_configuration(), data_manager, contact);
 	}
 
+	static std::pair<double, double> get_split_to_sas_potential_values(const Configuration& configuration, const DataManager& data_manager, const Contact& contact)
+	{
+		if(!configuration.valid())
+		{
+			throw std::runtime_error(std::string("Invalid configuration."));
+		}
+		const common::ChainResidueAtomDescriptorsPair crads_ab=common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact);
+		std::map<common::InteractionName, double>::const_iterator it_a=configuration.potential_values.find(generate_mock_interaction_name(common::ChainResidueAtomDescriptorsPair(crads_ab.a, common::ChainResidueAtomDescriptor::solvent()), "."));
+		std::map<common::InteractionName, double>::const_iterator it_b=(contact.solvent() ? it_a : configuration.potential_values.find(generate_mock_interaction_name(common::ChainResidueAtomDescriptorsPair(crads_ab.b, common::ChainResidueAtomDescriptor::solvent()), ".")));
+		return std::pair<double, double>(((it_a!=configuration.potential_values.end()) ? it_a->second : 0.0), ((it_b!=configuration.potential_values.end()) ? it_b->second : 0.0));
+	}
+
+	static std::pair<double, double> get_split_to_sas_potential_values(const DataManager& data_manager, const Contact& contact)
+	{
+		return get_split_to_sas_potential_values(Configuration::get_default_configuration(), data_manager, contact);
+	}
+
 private:
 	static common::InteractionName generate_mock_interaction_name(const common::ChainResidueAtomDescriptorsPair& crads, const std::string category)
 	{

@@ -40,6 +40,7 @@ public:
 
 	SelectionManager::Query parameters_for_selecting;
 	std::string adjunct_contact_energy;
+	std::string adjunct_inter_atom_split_alt_sas_energy_scores;
 
 	MockVoroMQALocalContacts()
 	{
@@ -49,12 +50,14 @@ public:
 	{
 		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		adjunct_contact_energy=input.get_value<std::string>("adj-contact-energy");
+		adjunct_inter_atom_split_alt_sas_energy_scores=input.get_value_or_default<std::string>("adj-contact-energy-split-to-sas", "");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("adj-contact-energy", CDOD::DATATYPE_STRING, "name of output adjunct for raw energy values"));
+		doc.set_option_decription(CDOD("adj-contact-energy-split-to-sas", CDOD::DATATYPE_STRING, "name prefix of output adjuncts for split-to-sas energy coefficients", ""));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -87,6 +90,12 @@ public:
 			contact_adjuncts[adjunct_contact_energy]=pseudo_energy_value;
 			result.area+=contact.value.area;
 			result.pseudo_energy+=pseudo_energy_value;
+			if(!adjunct_inter_atom_split_alt_sas_energy_scores.empty())
+			{
+				const std::pair<double, double>& split_to_sas_potential_values=ScoringOfDataManagerUsingMockVoroMQA::get_split_to_sas_potential_values(data_manager, contact);
+				contact_adjuncts[adjunct_inter_atom_split_alt_sas_energy_scores+"_a"]=std::min(split_to_sas_potential_values.first, split_to_sas_potential_values.second);
+				contact_adjuncts[adjunct_inter_atom_split_alt_sas_energy_scores+"_b"]=std::max(split_to_sas_potential_values.first, split_to_sas_potential_values.second);
+			}
 		}
 
 		return result;
