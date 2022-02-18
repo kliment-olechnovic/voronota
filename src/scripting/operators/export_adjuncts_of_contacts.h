@@ -173,28 +173,6 @@ public:
 			}
 		}
 
-		std::map< std::size_t, std::map<std::string, double> > map_of_inter_residue_contact_indices_to_pooled_values;
-		if(inter_residue)
-		{
-			for(std::map<std::size_t, std::size_t>::const_iterator it=map_of_inter_residue_contact_indices.begin();it!=map_of_inter_residue_contact_indices.end();++it)
-			{
-				const Contact& contact=data_manager.contacts()[it->first];
-				std::map<std::string, double>& pooled_values=map_of_inter_residue_contact_indices_to_pooled_values[it->second];
-				pooled_values["area"]+=contact.value.area;
-				{
-					std::map<std::string, double>::iterator jt=pooled_values.find("distance");
-					if(jt!=pooled_values.end())
-					{
-						jt->second=std::min(jt->second, contact.value.dist);
-					}
-					else
-					{
-						pooled_values["distance"]=contact.value.dist;
-					}
-				}
-			}
-		}
-
 		std::map< std::size_t, std::vector<double> > map_of_output;
 		for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 		{
@@ -211,25 +189,11 @@ public:
 				}
 				else if(adjuncts_filled[i]=="area")
 				{
-					if(!inter_residue)
-					{
-						output_value=contact.value.area;
-					}
-					else
-					{
-						output_value=map_of_inter_residue_contact_indices_to_pooled_values[map_of_inter_residue_contact_indices[*it]]["area"];
-					}
+					output_value=contact.value.area;
 				}
 				else if(adjuncts_filled[i]=="distance")
 				{
-					if(!inter_residue)
-					{
-						output_value=contact.value.dist;
-					}
-					else
-					{
-						output_value=map_of_inter_residue_contact_indices_to_pooled_values[map_of_inter_residue_contact_indices[*it]]["distance"];
-					}
+					output_value=contact.value.dist;
 				}
 				else if(adjuncts_filled[i]=="contact_index")
 				{
@@ -242,7 +206,7 @@ public:
 				else if(adjuncts_filled[i]=="ir_contact_index")
 				{
 					std::map<std::size_t, std::size_t>::const_iterator index_it=map_of_inter_residue_contact_indices.find(*it);
-					if(index_it!=map_of_contact_indices.end())
+					if(index_it!=map_of_inter_residue_contact_indices.end())
 					{
 						output_value=index_it->second;
 					}
@@ -282,34 +246,85 @@ public:
 			}
 			output << "\n";
 
-			std::set<std::size_t> outputed_inter_residue_ids;
-
-			for(std::map< std::size_t, std::vector<double> >::const_iterator it=map_of_output.begin();it!=map_of_output.end();++it)
+			if(!inter_residue)
 			{
-				bool allowed=true;
-				if(inter_residue)
+				for(std::map< std::size_t, std::vector<double> >::const_iterator it=map_of_output.begin();it!=map_of_output.end();++it)
 				{
-					const std::size_t inter_residue_id=map_of_inter_residue_contact_indices[it->first];
-					if(outputed_inter_residue_ids.count(inter_residue_id)>0)
 					{
-						allowed=false;
+						const Contact& contact=data_manager.contacts()[it->first];
+						output << data_manager.atoms()[contact.ids[0]].crad.without_some_info(no_serial, no_name, no_resSeq, no_resName) << sep;
+						if(contact.solvent())
+						{
+							output << common::ChainResidueAtomDescriptor::solvent();
+						}
+						else
+						{
+							output << data_manager.atoms()[contact.ids[1]].crad.without_some_info(no_serial, no_name, no_resSeq, no_resName);
+						}
 					}
-					else
+					const std::vector<double>& output_values=it->second;
+					for(std::size_t i=0;i<output_values.size();i++)
 					{
-						outputed_inter_residue_ids.insert(inter_residue_id);
+						output << sep;
+						if(output_values[i]!=std::numeric_limits<double>::max())
+						{
+							output << output_values[i];
+						}
+						else
+						{
+							output << "NA";
+						}
+					}
+					output << "\n";
+				}
+			}
+			else
+			{
+				std::map< std::size_t, std::vector<double> > inter_residue_map_of_output;
+				for(std::map< std::size_t, std::vector<double> >::const_iterator it=map_of_output.begin();it!=map_of_output.end();++it)
+				{
+					const std::vector<double>& input_values=it->second;
+					std::vector<double>& output_values=inter_residue_map_of_output[map_of_inter_residue_contact_indices[it->first]];
+					output_values.resize(adjuncts_filled.size(), std::numeric_limits<double>::max());
+					for(std::size_t i=0;i<adjuncts_filled.size();i++)
+					{
+						const std::string& name=adjuncts_filled[i];
+						const double input_value=input_values[i];
+						double& output_value=output_values[i];
+						const bool output_value_filled=(output_value!=std::numeric_limits<double>::max());
+						if(name=="contact_index" || name=="ir_contact_index" || name=="atom_index1" || name=="atom_index2" || name=="distance")
+						{
+							output_value=(output_value_filled ? std::min(output_value, input_value) : input_value);
+						}
+						else
+						{
+							output_value=(output_value_filled ? (output_value+input_value) : input_value);
+						}
 					}
 				}
-				if(allowed)
+
+				std::map<std::size_t, std::size_t> reverse_map_of_inter_residue_contact_indices;
+				for(std::map<std::size_t, std::size_t>::const_iterator it=map_of_inter_residue_contact_indices.begin();it!=map_of_inter_residue_contact_indices.end();++it)
 				{
-					const Contact& contact=data_manager.contacts()[it->first];
-					output << data_manager.atoms()[contact.ids[0]].crad.without_some_info(no_serial || inter_residue, no_name || inter_residue, no_resSeq, no_resName) << sep;
-					if(contact.solvent())
+					if(reverse_map_of_inter_residue_contact_indices.count(it->second)==0)
 					{
-						output << common::ChainResidueAtomDescriptor::solvent();
+						reverse_map_of_inter_residue_contact_indices[it->second]=it->first;
 					}
-					else
+				}
+
+				for(std::map< std::size_t, std::vector<double> >::const_iterator it=inter_residue_map_of_output.begin();it!=inter_residue_map_of_output.end();++it)
+				{
 					{
-						output << data_manager.atoms()[contact.ids[1]].crad.without_some_info(no_serial || inter_residue, no_name || inter_residue, no_resSeq, no_resName);
+						const Contact& contact=data_manager.contacts()[reverse_map_of_inter_residue_contact_indices[it->first]];
+						output << data_manager.atoms()[contact.ids[0]].crad.without_some_info(true, true, no_resSeq, no_resName) << sep;
+						if(contact.solvent())
+						{
+							output << common::ChainResidueAtomDescriptor::solvent();
+						}
+						else
+						{
+							output << data_manager.atoms()[contact.ids[1]].crad.without_some_info(true, true, no_resSeq, no_resName);
+						}
 					}
 					const std::vector<double>& output_values=it->second;
 					for(std::size_t i=0;i<output_values.size();i++)

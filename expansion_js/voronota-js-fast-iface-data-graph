@@ -17,6 +17,7 @@ Options:
     --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
     --stdin-file              string     input file path to replace stdin
     --run-faspr               string     path to FASPR binary to rebuild side-chains
+    --coarse-grained                     flag to output a coarse-grained graph
     --input-is-script                    flag to treat input file as vs script
     --as-assembly                        flag to treat input file as biological assembly
     --help | -h                          flag to display help message and exit
@@ -96,6 +97,7 @@ MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
 STDIN_FILE="_stream"
 RUN_FASPR=""
+COARSE_GRAINED="false"
 INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 HELP_MODE="false"
@@ -145,6 +147,9 @@ do
 	--run-faspr)
 		RUN_FASPR="$OPTARG"
 		shift
+		;;
+	--coarse-grained)
+		COARSE_GRAINED="true"
 		;;
 	--input-is-script)
 		INPUT_IS_SCRIPT="true"
@@ -342,6 +347,7 @@ common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
 common_params.run_faspr='$RUN_FASPR';
 common_params.with_reference='$WITH_REFERENCE';
+common_params.coarse_grained='$COARSE_GRAINED';
 common_params.output_prefix='$OUTPUT_DATA_PREFIX';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 var input_info_array=[];
@@ -363,50 +369,30 @@ EOF
 done
 
 cat << 'EOF'
-prepare_object=function(params, input_file, title)
+prepare_object=function(input_file, title)
 {
 	if(input_file===undefined || input_file==="")
 	{
 		throw ("No input file");
 	}
 	
-	if(params.input_is_script===undefined || params.input_is_script==="")
+	if(title===undefined || title==="")
 	{
-		params.input_is_script="false";
-	}
-	
-	if(params.input_as_assembly===undefined || params.input_as_assembly==="")
-	{
-		params.input_as_assembly="false";
-	}
-	
-	if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
-	{
-		params.restrict_input_atoms='[]';
-	}
-	
-	if(params.contacts_subselection===undefined || params.contacts_subselection==="")
-	{
-		params.contacts_subselection='[]';
-	}
-	
-	if(params.run_faspr===undefined)
-	{
-		params.run_faspr="";
+		throw ("No object title");
 	}
 	
 	voronota_delete_objects("-names", title);
 	
 	voronota_unpick_objects();
 	
-	if(params.input_is_script=="true")
+	if(common_params.input_is_script=="true")
 	{
 		voronota_source("-file", input_file);
 		voronota_assert_partial_success("Failed when running provided input script");
 	}
 	else
 	{
-		voronota_import("-file", input_file, "-as-assembly", params.input_as_assembly);
+		voronota_import("-file", input_file, "-as-assembly", common_params.input_as_assembly);
 		voronota_assert_partial_success("Failed to import file");
 	}
 	
@@ -421,15 +407,15 @@ prepare_object=function(params, input_file, title)
 	voronota_pick_objects("-names", title);
 	voronota_assert_full_success("Failed to pick new object");
 	
-	voronota_restrict_atoms("-use", params.restrict_input_atoms);
+	voronota_restrict_atoms("-use", common_params.restrict_input_atoms);
 	voronota_assert_full_success("Failed to restrict input atoms by the input query");
 	
 	voronota_restrict_atoms("-use", "[-protein]");
 	voronota_assert_full_success("Failed to restrict input atoms to protein only");
 	
-	if(params.run_faspr!="")
+	if(common_params.run_faspr!="")
 	{
-		voronota_run_faspr("-faspr-binary", params.run_faspr);
+		voronota_run_faspr("-faspr-binary", common_params.run_faspr);
 		voronota_assert_full_success("Failed to run FASPR");
 	}
 	
@@ -442,20 +428,15 @@ prepare_object=function(params, input_file, title)
 	voronota_construct_contacts("-calculate-bounding-arcs -calculate-adjacencies -probe 1.4 -skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
 	voronota_assert_full_success("Failed to construct inter-chain contacts");
 	
-	voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts")
+	voronota_select_contacts("-use", "([-inter-chain] and "+common_params.contacts_subselection+")", "-name", "inter_chain_contacts")
 	voronota_assert_full_success("Failed to select inter-chain contacts");
 }
 
-generate_model_data_graph_files=function(input_name, output_prefix, with_reference)
+generate_model_data_graph_files=function(input_name)
 {
 	if(input_name===undefined || input_name==="")
 	{
 		throw ("No input name");
-	}
-	
-	if(output_prefix===undefined || output_prefix==="")
-	{
-		throw ("No output prefix");
 	}
 	
 	voronota_pick_objects("-names", "model");
@@ -468,29 +449,38 @@ generate_model_data_graph_files=function(input_name, output_prefix, with_referen
 	voronota_assert_full_success("Failed to compute mock VoroMQA-light scores");
 	
 	voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_multiply", "-input-adjuncts", ["VESSn_a", "area"], "-output-adjunct", "VESSa");
-	voronota_assert_full_success("Failed multiply split sas energy adjuncts");
+	voronota_assert_full_success("Failed multiply split sas energy adjuncts and areas");
 	
 	voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_multiply", "-input-adjuncts", ["VESSn_b", "area"], "-output-adjunct", "VESSb");
-	voronota_assert_full_success("Failed multiply split sas energy adjuncts");
+	voronota_assert_full_success("Failed multiply split sas energy adjuncts and areas");
 	
 	voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_multiply", "-input-adjuncts", ["MVESSn_a", "area"], "-output-adjunct", "MVESSa");
-	voronota_assert_full_success("Failed multiply split sas energy adjuncts");
+	voronota_assert_full_success("Failed multiply split sas energy adjuncts and areas");
 	
 	voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_multiply", "-input-adjuncts", ["MVESSn_b", "area"], "-output-adjunct", "MVESSb");
-	voronota_assert_full_success("Failed multiply split sas energy adjuncts");
+	voronota_assert_full_success("Failed multiply split sas energy adjuncts and areas");
 	
-	var adjuncts_to_output=["contact_index", "area", "distance", "adjacency", "boundary", "VE", "VESSa", "VESSb", "MVE", "MVESSa", "MVESSb"];
+	var adjuncts_to_output=["contact_index", "ir_contact_index", "area", "distance", "adjacency", "boundary", "VE", "VESSa", "VESSb", "MVE", "MVESSa", "MVESSb"];
 	
-	if(with_reference)
+	if(common_params.with_reference)
 	{
-		voronota_cad_score("-target", "model", "-model", "target", "-t-sel", "[inter_chain_contacts]", "-t-adj-inter-residue", "IRCADs0");
+		voronota_cad_score("-target", "model", "-model", "target", "-t-sel", "[inter_chain_contacts]", "-t-adj-inter-residue", "IRCADn_s0");
 		voronota_assert_full_success("Failed to compute CAD-score");
 		
-		voronota_smooth_adjacent_contact_adjunct_values("-use", "[inter_chain_contacts]", "-adj-in", "IRCADs0", "-adj-out", "IRCADs1", "-iterations 1", "-default-value", 0);
+		voronota_smooth_adjacent_contact_adjunct_values("-use", "[inter_chain_contacts]", "-adj-in", "IRCADn_s0", "-adj-out", "IRCADn_s1", "-iterations 1", "-default-value", 0);
 		voronota_assert_full_success("Failed to smooth contact CAD-score values");
 		
-		voronota_smooth_adjacent_contact_adjunct_values("-use", "[inter_chain_contacts]", "-adj-in", "IRCADs0", "-adj-out", "IRCADs2", "-iterations 2", "-default-value", 0);
+		voronota_smooth_adjacent_contact_adjunct_values("-use", "[inter_chain_contacts]", "-adj-in", "IRCADn_s0", "-adj-out", "IRCADn_s2", "-iterations 2", "-default-value", 0);
 		voronota_assert_full_success("Failed to smooth contact CAD-score values");
+		
+		voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_multiply", "-input-adjuncts", ["IRCADn_s0", "area"], "-output-adjunct", "IRCADs0");
+		voronota_assert_full_success("Failed multiply CAD-score values and areas");
+		
+		voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_multiply", "-input-adjuncts", ["IRCADn_s1", "area"], "-output-adjunct", "IRCADs1");
+		voronota_assert_full_success("Failed multiply CAD-score values and areas");
+		
+		voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_multiply", "-input-adjuncts", ["IRCADn_s2", "area"], "-output-adjunct", "IRCADs2");
+		voronota_assert_full_success("Failed multiply CAD-score values and areas");
 		
 		adjuncts_to_output.push("IRCADs0");
 		adjuncts_to_output.push("IRCADs1");
@@ -500,10 +490,10 @@ generate_model_data_graph_files=function(input_name, output_prefix, with_referen
 	var summary={}
 	
 	summary.input_name=input_name;
-	summary.output_vertices_file=output_prefix+""+input_name+"_vertices.txt";
-	summary.output_edges_file=output_prefix+""+input_name+"_edges.txt";
+	summary.output_vertices_file=common_params.output_prefix+""+input_name+"_vertices.txt";
+	summary.output_edges_file=common_params.output_prefix+""+input_name+"_edges.txt";
 	
-	voronota_export_adjuncts_of_contacts("-file", summary.output_vertices_file, "-contacts-use", "[inter_chain_contacts]", "-no-serial", "-adjuncts", adjuncts_to_output, "-adjacency-file", summary.output_edges_file);
+	voronota_export_adjuncts_of_contacts("-inter-residue", common_params.coarse_grained, "-file", summary.output_vertices_file, "-contacts-use", "[inter_chain_contacts]", "-no-serial", "-adjuncts", adjuncts_to_output, "-adjacency-file", summary.output_edges_file);
 	voronota_assert_full_success("Failed to export contacts data");
 	
 	var summary_table={}
@@ -539,6 +529,31 @@ if(input_info_array.length<1)
 	throw ("No input file paths");
 }
 
+if(common_params.input_is_script===undefined || common_params.input_is_script==="")
+{
+	common_params.input_is_script="false";
+}
+
+if(common_params.input_as_assembly===undefined || common_params.input_as_assembly==="")
+{
+	common_params.input_as_assembly="false";
+}
+
+if(common_params.restrict_input_atoms===undefined || common_params.restrict_input_atoms==="")
+{
+	common_params.restrict_input_atoms='[]';
+}
+
+if(common_params.contacts_subselection===undefined || common_params.contacts_subselection==="")
+{
+	common_params.contacts_subselection='[]';
+}
+
+if(common_params.run_faspr===undefined)
+{
+	common_params.run_faspr="";
+}
+
 if(common_params.output_prefix===undefined || common_params.output_prefix==="")
 {
 	throw ("No output prefix");
@@ -553,7 +568,7 @@ voronota_setup_defaults("-no-load-alt-voromqa-potential -faster-load-voromqa-pot
 
 if(common_params.with_reference)
 {
-	prepare_object(common_params, common_params.with_reference, "target");
+	prepare_object(common_params.with_reference, "target");
 }
 
 if(common_params.output_prefix!=="./")
@@ -569,9 +584,9 @@ for(var i=0;i<input_info_array.length;i++)
 	
 	try
 	{
-		prepare_object(common_params, subinput.input_file, "model");
+		prepare_object(subinput.input_file, "model");
 		
-		var summary_table=generate_model_data_graph_files(subinput.input_file_name, common_params.output_prefix, common_params.with_reference);
+		var summary_table=generate_model_data_graph_files(subinput.input_file_name);
 		
 		if(full_summary_table=="")
 		{
