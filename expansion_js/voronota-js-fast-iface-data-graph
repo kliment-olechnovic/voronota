@@ -321,7 +321,6 @@ then
 	| sort \
 	| xargs -L 1 cat \
 	| awk '{if(NR==1 || $1!="input_name") print $0}' \
-	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_energy -multipliers -1 -tolerances 0.0');" \
 	> "$TMPLDIR/full_output_table"
 	
 	if [ -n "$OUTPUT_TABLE_FILE" ] && [ "$OUTPUT_TABLE_FILE" != "_stdout" ]
@@ -369,7 +368,7 @@ EOF
 done
 
 cat << 'EOF'
-prepare_object=function(input_file, title)
+prepare_object=function(input_file, title, run_faspr)
 {
 	if(input_file===undefined || input_file==="")
 	{
@@ -413,9 +412,9 @@ prepare_object=function(input_file, title)
 	voronota_restrict_atoms("-use", "[-protein]");
 	voronota_assert_full_success("Failed to restrict input atoms to protein only");
 	
-	if(common_params.run_faspr!="")
+	if(run_faspr!="")
 	{
-		voronota_run_faspr("-faspr-binary", common_params.run_faspr);
+		voronota_run_faspr("-faspr-binary", run_faspr);
 		voronota_assert_full_success("Failed to run FASPR");
 	}
 	
@@ -568,7 +567,7 @@ voronota_setup_defaults("-no-load-alt-voromqa-potential -faster-load-voromqa-pot
 
 if(common_params.with_reference)
 {
-	prepare_object(common_params.with_reference, "target");
+	prepare_object(common_params.with_reference, "target", "");
 }
 
 if(common_params.output_prefix!=="./")
@@ -584,7 +583,7 @@ for(var i=0;i<input_info_array.length;i++)
 	
 	try
 	{
-		prepare_object(subinput.input_file, "model");
+		prepare_object(subinput.input_file, "model", common_params.run_faspr);
 		
 		var summary_table=generate_model_data_graph_files(subinput.input_file_name);
 		
