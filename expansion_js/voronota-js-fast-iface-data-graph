@@ -463,7 +463,7 @@ generate_model_data_graph_files=function(input_name)
 	
 	if(common_params.with_reference)
 	{
-		voronota_cad_score("-target", "model", "-model", "target", "-t-sel", "[inter_chain_contacts]", "-t-adj-inter-residue", "IRCADn_s0");
+		voronota_cad_score("-target", "model", "-model", "target", "-t-sel", "[inter_chain_contacts]", "-t-adj-inter-residue", "IRCADn_s0", "-t-adj-inter-residue-relevant-areas", "IRAS");
 		voronota_assert_full_success("Failed to compute CAD-score");
 		
 		voronota_smooth_adjacent_contact_adjunct_values("-use", "[inter_chain_contacts]", "-adj-in", "IRCADn_s0", "-adj-out", "IRCADn_s1", "-iterations 1", "-default-value", 0);
@@ -481,9 +481,19 @@ generate_model_data_graph_files=function(input_name)
 		voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_multiply", "-input-adjuncts", ["IRCADn_s2", "area"], "-output-adjunct", "IRCADs2");
 		voronota_assert_full_success("Failed multiply CAD-score values and areas");
 		
+		voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_divide", "-input-adjuncts", ["IRAS_m", "IRAS_t"], "-output-adjunct", "IRASn");
+		voronota_assert_full_success("Failed divide model and target areas areas");
+		
+		voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_bound", "-input-adjuncts", ["IRASn"], "-parameters", [0, 1], "-output-adjunct", "IRASnb");
+		voronota_assert_full_success("Failed divide model and target areas areas");
+		
+		voronota_set_adjunct_of_contacts_by_expression("-use", "[inter_chain_contacts]", "-expression", "_multiply", "-input-adjuncts", ["IRASnb", "area"], "-output-adjunct", "IRAS");
+		voronota_assert_full_success("Failed divide model and target areas areas");
+		
 		adjuncts_to_output.push("IRCADs0");
 		adjuncts_to_output.push("IRCADs1");
 		adjuncts_to_output.push("IRCADs2");
+		adjuncts_to_output.push("IRAS");
 	}
 	
 	var summary={}

@@ -82,8 +82,10 @@ public:
 		{
 			params.target_adjunct_atom_scores=input.get_value_or_default<std::string>("t-adj-atom", "");
 			params.target_adjunct_inter_atom_scores=input.get_value_or_default<std::string>("t-adj-inter-atom", "");
+			params.target_adjunct_inter_atom_relevant_areas=input.get_value_or_default<std::string>("t-adj-inter-atom-relevant-areas", "");
 			params.target_adjunct_residue_scores=input.get_value_or_default<std::string>("t-adj-residue", "");
 			params.target_adjunct_inter_residue_scores=input.get_value_or_default<std::string>("t-adj-inter-residue", "");
+			params.target_adjunct_inter_residue_relevant_areas=input.get_value_or_default<std::string>("t-adj-inter-residue-relevant-areas", "");
 		}
 		params.model_adjunct_atom_scores=input.get_value_or_default<std::string>("m-adj-atom", "");
 		params.model_adjunct_inter_atom_scores=input.get_value_or_default<std::string>("m-adj-inter-atom", "");

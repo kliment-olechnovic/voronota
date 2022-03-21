@@ -28,8 +28,10 @@ public:
 		std::vector<std::string> chain_renaming_pairs;
 		std::string target_adjunct_atom_scores;
 		std::string target_adjunct_inter_atom_scores;
+		std::string target_adjunct_inter_atom_relevant_areas;
 		std::string target_adjunct_residue_scores;
 		std::string target_adjunct_inter_residue_scores;
+		std::string target_adjunct_inter_residue_relevant_areas;
 		std::string model_adjunct_atom_scores;
 		std::string model_adjunct_inter_atom_scores;
 		std::string model_adjunct_inter_atom_relevant_areas;
@@ -123,7 +125,7 @@ public:
 		write_adjuncts(result.bundle, params.smoothing_window, target_contacts_ids,
 				params.target_adjunct_atom_scores, params.target_adjunct_residue_scores,
 				params.target_adjunct_inter_atom_scores, params.target_adjunct_inter_residue_scores,
-				std::string(), std::string(),
+				params.target_adjunct_inter_atom_relevant_areas, params.target_adjunct_inter_residue_relevant_areas,
 				target_dm);
 		write_adjuncts(result.bundle, params.smoothing_window, model_contact_ids,
 				params.model_adjunct_atom_scores, params.model_adjunct_residue_scores,

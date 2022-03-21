@@ -106,6 +106,17 @@ public:
 				throw std::runtime_error(std::string("Not 0 parameters for the defined expression."));
 			}
 		}
+		else if(expression=="_bound")
+		{
+			if(input_adjuncts.size()!=1)
+			{
+				throw std::runtime_error(std::string("Not 1 input adjunct name for the defined expression."));
+			}
+			if(parameters.size()!=2)
+			{
+				throw std::runtime_error(std::string("Not 2 parameters for the defined expression."));
+			}
+		}
 		else
 		{
 			throw std::runtime_error(std::string("Unsupported expression."));
@@ -184,6 +195,10 @@ public:
 				else if(expression=="_divide")
 				{
 					contact_adjuncts[output_adjunct]=input_adjunct_values[0]/input_adjunct_values[1];
+				}
+				else if(expression=="_bound")
+				{
+					contact_adjuncts[output_adjunct]=std::max(parameters[0], std::min(input_adjunct_values[0], parameters[1]));
 				}
 			}
 		}
