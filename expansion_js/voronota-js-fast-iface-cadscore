@@ -217,7 +217,7 @@ fi
 
 if [ ! -s "$TARGET_INFILE" ]
 then
-	echo >&2 "Error: target input file '$MODEL_INFILE' does not exist"
+	echo >&2 "Error: target input file '$TARGET_INFILE' does not exist"
 	exit 1
 fi
 
