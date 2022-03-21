@@ -15,6 +15,7 @@ Options:
     --processors              number     maximum number of processors to run in parallel, default is 1
     --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
     --stdin-file              string     input file path to replace stdin
+    --run-faspr               string     path to FASPR binary to rebuild side-chains
     --as-assembly                        flag to treat input files as biological assemblies
     --remap-chains                       flag to calculate and use optimal chains remapping
     --test-common-ids                    flag to fail quickly if there are no common residues
@@ -69,6 +70,7 @@ OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
 STDIN_FILE="_stream"
+RUN_FASPR=""
 TARGET_INPUT_IS_SCRIPT="false"
 MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
@@ -114,6 +116,10 @@ do
 		STDIN_FILE="$OPTARG"
 		shift
 		;;
+	--run-faspr)
+		RUN_FASPR="$OPTARG"
+		shift
+		;;
 	--target-input-is-script)
 		TARGET_INPUT_IS_SCRIPT="true"
 		;;
@@ -153,6 +159,12 @@ fi
 if [ "$TARGET_INFILE" == "_all_vs_all" ] && [ "$MODEL_INFILE" != "_list" ]
 then
 	echo >&2 "Error: target parameter '_all_vs_all' supported only if model parameter is '_list'"
+	exit 1
+fi
+
+if [ -n "$RUN_FASPR" ] && [ ! -s "$RUN_FASPR" ]
+then
+	echo >&2 "Error: FASPR binary executable file '$RUN_FASPR' does not exist"
 	exit 1
 fi
 
@@ -342,6 +354,7 @@ common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.test_common_ids='$TEST_COMMON_IDS';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
+common_params.run_faspr='$RUN_FASPR';
 common_params.remap_chains='$REMAP_CHAINS';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 var input_info_array=[];
@@ -367,6 +380,12 @@ prepare_atoms=function(params)
 {
 	voronota_restrict_atoms("-use", params.restrict_input_atoms);
 	voronota_assert_full_success("Failed to restrict input atoms by the input query");
+	
+	if(params.run_faspr!="")
+	{
+		voronota_run_faspr("-faspr-binary", params.run_faspr);
+		voronota_assert_full_success("Failed to run FASPR");
+	}
 	
 	voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
 	voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
