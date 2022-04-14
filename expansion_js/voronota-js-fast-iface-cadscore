@@ -429,6 +429,16 @@ analyze_interface=function(params, target_object, model_object, initial_summary)
 	summary.target_atoms=initial_summary.target_atoms;
 	summary.model_atoms=initial_summary.target_atoms;
 	
+	summary.iface_F1=result_cadscore.score_F1;
+	summary.iface_TP=result_cadscore.confusion_TP;
+	summary.iface_FP=result_cadscore.confusion_FP;
+	summary.iface_FN=result_cadscore.confusion_FN;
+	
+	summary.iface_site_based_F1=result_cadscore_site_based.score_F1;
+	summary.iface_site_based_TP=result_cadscore_site_based.confusion_TP;
+	summary.iface_site_based_FP=result_cadscore_site_based.confusion_FP;
+	summary.iface_site_based_FN=result_cadscore_site_based.confusion_FN;
+	
 	var summary_table={}
 	summary_table.header="";
 	summary_table.row="";

@@ -22,8 +22,13 @@ public:
 		double raw_differences_sum;
 		double constrained_differences_sum;
 		double model_target_area_sum;
+		double confusion_TP;
+		double confusion_FP;
+		double confusion_FN;
 
-		CADDescriptor() : target_area_sum(0), model_area_sum(0), raw_differences_sum(), constrained_differences_sum(0), model_target_area_sum(0)
+		CADDescriptor() :
+			target_area_sum(0), model_area_sum(0), raw_differences_sum(0), constrained_differences_sum(0), model_target_area_sum(0),
+			confusion_TP(0), confusion_FP(0), confusion_FN(0)
 		{
 		}
 
@@ -40,6 +45,9 @@ public:
 			raw_differences_sum+=fabs(target_area-model_area);
 			constrained_differences_sum+=std::min(fabs(target_area-model_area), target_area);
 			model_target_area_sum+=(target_area>0.0 ? model_area : 0.0);
+			confusion_TP+=std::min(target_area, model_area);
+			confusion_FP+=(model_area>target_area ? (model_area-target_area) : 0.0);
+			confusion_FN+=(target_area>model_area ? (target_area-model_area) : 0.0);
 		}
 
 		void add(const CADDescriptor& cadd)
@@ -49,11 +57,19 @@ public:
 			raw_differences_sum+=cadd.raw_differences_sum;
 			constrained_differences_sum+=cadd.constrained_differences_sum;
 			model_target_area_sum+=cadd.model_target_area_sum;
+			confusion_TP+=cadd.confusion_TP;
+			confusion_FP+=cadd.confusion_FP;
+			confusion_FN+=cadd.confusion_FN;
 		}
 
 		double score() const
 		{
 			return ((target_area_sum>0.0) ? (1.0-(constrained_differences_sum/target_area_sum)) : -1.0);
+		}
+
+		double score_F1() const
+		{
+			return ((confusion_TP>0.0) ? (confusion_TP/(0.5*(confusion_FP+confusion_FN)+confusion_TP)) : 0.0);
 		}
 	};
 

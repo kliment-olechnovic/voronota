@@ -55,6 +55,10 @@ public:
 			output.value("raw_differences_sum")=cadd.raw_differences_sum;
 			output.value("constrained_differences_sum")=cadd.constrained_differences_sum;
 			output.value("model_target_area_sum")=cadd.model_target_area_sum;
+			output.value("score_F1")=cadd.score_F1();
+			output.value("confusion_TP")=cadd.confusion_TP;
+			output.value("confusion_FP")=cadd.confusion_FP;
+			output.value("confusion_FN")=cadd.confusion_FN;
 		}
 	};
 
