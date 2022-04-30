@@ -27,6 +27,7 @@ Options:
     --use-scwrl                          flag to use Scwrl4 to rebuild side-chains
     --guess-chain-names                  flag to guess chain names based on sequence nubmering
     --order-by-residue-id                flag to order atoms by residue ids
+    --input-is-script                    flag to treat input file as vs script
     --as-assembly                        flag to treat input file as biological assembly
     --help | -h                          flag to display help message and exit
 
@@ -97,6 +98,7 @@ CASP_B_FACTORS="false"
 USE_SCWRL="false"
 GUESS_CHAIN_NAMES="false"
 ORDER_BY_RESIDUE_ID="false"
+INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 HELP_MODE="false"
 
@@ -180,6 +182,9 @@ do
 		;;
 	--order-by-residue-id)
 		ORDER_BY_RESIDUE_ID="true"
+		;;
+	--input-is-script)
+		INPUT_IS_SCRIPT="true"
 		;;
 	--as-assembly)
 		AS_ASSEMBLY="true"
@@ -320,15 +325,19 @@ OUTPUT_LIGHT_SCORES="$(substitute_id_in_filename "$INFILE" "$OUTPUT_LIGHT_SCORES
 SEQUENCE_FILE="$(substitute_id_in_filename "$INFILE" "$SEQUENCE_FILE")"
 OUTPUT_ALIGNMENT="$(substitute_id_in_filename "$INFILE" "$OUTPUT_ALIGNMENT")"
 
+INFILE_BASENAME="$(basename $INFILE)"
+
 {
 cat << EOF
 
 params={}
 
 params.input_file='$INFILE';
+params.input_file_name='$INFILE_BASENAME';
 params.cache_dir='$CACHE_DIR';
 params.restrict_input_atoms='$RESTRICT_INPUT';
 params.contacts_selection='$SELECT_CONTACTS';
+params.input_is_script='$INPUT_IS_SCRIPT';
 params.input_as_assembly='$AS_ASSEMBLY';
 params.output_table_file='$OUTPUT_TABLE_FILE';
 params.output_dark_scores='$OUTPUT_DARK_SCORES';
@@ -365,6 +374,11 @@ if(params.contacts_selection===undefined || params.contacts_selection==="")
 	params.contacts_selection='[-min-seq-sep 2]';
 }
 
+if(params.input_is_script===undefined || params.input_is_script==="")
+{
+	params.input_is_script="false";
+}
+
 if(params.input_as_assembly===undefined || params.input_as_assembly==="")
 {
 	params.input_as_assembly="false";
@@ -390,8 +404,23 @@ if(params.output_light_scores===undefined)
 	params.output_light_scores="";
 }
 
-voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
-voronota_assert_partial_success("Failed to import file");
+if(params.input_is_script=="true")
+{
+	voronota_source("-file", params.input_file);
+	voronota_assert_partial_success("Failed when running provided input script");
+	
+	voronota_list_objects();
+	voronota_assert_full_success("Failed to list objects");
+	var input_name_after_script=voronota_last_output().results[0].output.objects[0].name;
+	
+	voronota_rename_object("-original", input_name_after_script, "-new", params.input_file_name);
+	voronota_assert_full_success("Failed to rename object");
+}
+else
+{
+	voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
+	voronota_assert_partial_success("Failed to import file");
+}
 
 voronota_restrict_atoms("-use", "[-protein]");
 voronota_assert_full_success("Failed to restrict input atoms to protein only");

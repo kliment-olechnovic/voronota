@@ -82,6 +82,7 @@ the sources in "src" directory using GNU C++ compiler:
         --use-scwrl                          flag to use Scwrl4 to rebuild side-chains
         --guess-chain-names                  flag to guess chain names based on sequence nubmering
         --order-by-residue-id                flag to order atoms by residue ids
+        --input-is-script                    flag to treat input file as vs script
         --as-assembly                        flag to treat input file as biological assembly
         --help | -h                          flag to display help message and exit
     
