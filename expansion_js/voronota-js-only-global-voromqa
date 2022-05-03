@@ -1,0 +1,441 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-only-global-voromqa' script computes global VoroMQA scores and can use fast caching.
+
+Options:
+    --input | -i              string  *  input file path or '_list' to read file paths from stdin
+    --restrict-input          string     query to restrict input atoms, default is '[]'
+    --output-table-file       string     output table file path, default is '_stdout' to print to stdout
+    --processors              number     maximum number of processors to run in parallel, default is 1
+    --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
+    --cache-dir               string     cache directory path to store results of past calls
+    --run-faspr               string     path to FASPR binary to rebuild side-chains
+    --input-is-script                    flag to treat input file as vs script
+    --as-assembly                        flag to treat input file as biological assembly
+    --help | -h                          flag to display help message and exit
+
+Standard output:
+    space-separated table of scores
+    
+Examples:
+
+    voronota-js-only-global-voromqa --input model.pdb
+    
+    ls *.pdb | voronota-js-only-global-voromqa --input _list --processors 8 | column -t
+
+EOF
+exit 1
+}
+
+function substitute_id_in_filename
+{
+	SUBSTITUTE_BASENAME="$(basename "$1")"
+	SUBSTITUTE_TEMPLATE="$2"
+	
+	echo "$SUBSTITUTE_TEMPLATE" \
+	| sed "s|-BASENAME-|${SUBSTITUTE_BASENAME}|"
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [ -z "$1" ]
+then
+	print_help_and_exit
+fi
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+INFILE=""
+RESTRICT_INPUT="[]"
+OUTPUT_TABLE_FILE="_stdout"
+MAX_PROCESSORS="1"
+SBATCH_PARAMETERS=""
+CACHE_DIR=""
+RUN_FASPR=""
+INPUT_IS_SCRIPT="false"
+AS_ASSEMBLY="false"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	--restrict-input)
+		RESTRICT_INPUT="$OPTARG"
+		shift
+		;;
+	--output-table-file)
+		OUTPUT_TABLE_FILE="$OPTARG"
+		shift
+		;;
+	--processors)
+		MAX_PROCESSORS="$OPTARG"
+		shift
+		;;
+	--sbatch-parameters)
+		SBATCH_PARAMETERS="$OPTARG"
+		shift
+		;;
+	--cache-dir)
+		CACHE_DIR="$OPTARG"
+		shift
+		;;
+	--run-faspr)
+		RUN_FASPR="$OPTARG"
+		shift
+		;;
+	--input-is-script)
+		INPUT_IS_SCRIPT="true"
+		;;
+	--as-assembly)
+		AS_ASSEMBLY="true"
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ -z "$INFILE" ]
+then
+	echo >&2 "Error: input file not provided"
+	exit 1
+fi
+
+if [ -z "$OUTPUT_TABLE_FILE" ]
+then
+	echo >&2 "Error: output table file path not provided"
+	exit 1
+fi
+
+if [ -n "$RUN_FASPR" ] && [ ! -s "$RUN_FASPR" ]
+then
+	echo >&2 "Error: FASPR binary executable file '$RUN_FASPR' does not exist"
+	exit 1
+fi
+
+if [ -z "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -ne "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -lt "1" ]
+then
+	echo >&2 "Error: invalid number of processors '$MAX_PROCESSORS', must be a positive number"
+	exit 1
+fi
+
+if [ "$INFILE" == "_list" ] && [ -n "$SBATCH_PARAMETERS" ]
+then
+	command -v sbatch &> /dev/null || { echo >&2 "Error: 'sbatch' executable not in binaries path"; exit 1; }
+	command -v squeue &> /dev/null || { echo >&2 "Error: 'squeue' executable not in binaries path"; exit 1; }
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+if [[ $INFILE == "_scriptline_"* ]]
+then
+	echo "$INFILE" | sed 's/^_scriptline_//' | sed 's/_-_/ /g' \
+	> "$TMPLDIR/_extracted_script_line"
+	
+	if [ ! -s "$TMPLDIR/_extracted_script_line" ]
+	then
+		echo >&2 "Error: no input string line extracted"
+		exit 1
+	fi
+	
+	"$ZEROARG" "${ALLARGS[@]}" --input-is-script --input "$TMPLDIR/_extracted_script_line"
+	
+	exit 0
+fi
+
+if [ "$INFILE" != "_list" ] && [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input file '$INFILE' does not exist"
+	exit 1
+fi
+
+if [ "$INFILE" == "_list" ]
+then	
+	cat | egrep . | sort | uniq > "$TMPLDIR/input_list"
+	
+	if [ ! -s "$TMPLDIR/input_list" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	mkdir -p "$TMPLDIR/children_tables"
+	
+	if [ -n "$SBATCH_PARAMETERS" ]
+	then
+		mkdir -p "$TMPLDIR/slurm_logs"
+		
+		cat "$TMPLDIR/input_list" \
+		| awk -v outdir="$TMPLDIR/children_tables" '{print "--input " $1 " --output-table-file " outdir "/" NR ".pdb"}' \
+		| xargs -L 1 sbatch -o "$TMPLDIR/slurm_logs/slurmjob-%j.out" -e "$TMPLDIR/slurm_logs/slurmjob-%j.err" $SBATCH_PARAMETERS "$ZEROARG" "${ALLARGS[@]}" \
+		| egrep '^Submitted batch job ' \
+		| awk '{print $4}' \
+		> "$TMPLDIR/slurm_job_ids"
+		
+		sleep 1
+		REMAINING_SLURM_JOBS="$(squeue | grep -f "$TMPLDIR/slurm_job_ids" | wc -l)"
+		while [ "$REMAINING_SLURM_JOBS" -gt "0" ]
+		do
+			sleep 5
+			REMAINING_SLURM_JOBS="$(squeue | grep -f "$TMPLDIR/slurm_job_ids" | wc -l)"
+		done
+		
+		find "$TMPLDIR/slurm_logs/" -type f -not -empty | xargs -L 1 cat >&2
+	else
+		cat "$TMPLDIR/input_list" \
+		| awk -v outdir="$TMPLDIR/children_tables" '{print "--input " $1 " --output-table-file " outdir "/" NR ".pdb"}' \
+		| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}"
+	fi
+	
+	find "$TMPLDIR/children_tables" -type f -not -empty \
+	| sort \
+	| xargs -L 1 cat \
+	| awk '{if(NR==1 || NR%2==0) print $0}' \
+	> "$TMPLDIR/table"
+	
+	cat "$TMPLDIR/table" \
+	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns full_dark_score full_light_score -multipliers 1 1 -tolerances 0 0');"
+	
+	exit 0
+fi
+
+INFILE_BASENAME="$(basename $INFILE)"
+OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE_BASENAME" "$OUTPUT_TABLE_FILE")"
+
+HASHSUM=""
+
+if [ -n "$CACHE_DIR" ] && [ "$INFILE" != "_list" ]
+then
+	{
+		echo "$RESTRICT_INPUT $AS_ASSEMBLY $INPUT_IS_SCRIPT"
+		[ -z "$RUN_FASPR" ] || { echo "with_faspr"; }
+		cat "$INFILE"
+	} \
+	| md5sum | awk '{print $1}' \
+	> "${TMPLDIR}/hashsum.txt"
+	
+	HASHSUM="voronota-js-only-global-voromqa-$(cat ${TMPLDIR}/hashsum.txt)"
+	
+	if [ -s "${CACHE_DIR}/${HASHSUM}.txt" ]
+	then
+		cat "${CACHE_DIR}/${HASHSUM}.txt" \
+		| sed '1 s|^|input_name |' \
+		| sed "2 s|^|${INFILE_BASENAME} |" \
+		> "$TMPLDIR/output_table_file"
+		
+		if [ "$OUTPUT_TABLE_FILE" == "_stdout" ]
+		then
+			cat "$TMPLDIR/output_table_file"
+		else
+			mkdir -p "$(dirname $OUTPUT_TABLE_FILE)"
+			mv "$TMPLDIR/output_table_file" "$OUTPUT_TABLE_FILE"
+		fi
+		
+		exit 0
+	fi
+fi
+
+{
+cat << EOF
+var common_params={}
+common_params.input_is_script='$INPUT_IS_SCRIPT';
+common_params.input_as_assembly='$AS_ASSEMBLY';
+common_params.restrict_input_atoms='$RESTRICT_INPUT';
+common_params.run_faspr='$RUN_FASPR';
+common_params.output_table_file='$TMPLDIR/output_table_file';
+var input_info_array=[];
+input_info_array.push({"input_file": "$INFILE", "input_file_name": "$INFILE_BASENAME"});
+EOF
+
+cat << 'EOF'
+analyze_structure=function(params, input)
+{
+
+if(input.input_file===undefined || input.input_file==="")
+{
+	throw ("No input file");
+}
+
+if(params.input_is_script===undefined || params.input_is_script==="")
+{
+	params.input_is_script="false";
+}
+
+if(params.input_as_assembly===undefined || params.input_as_assembly==="")
+{
+	params.input_as_assembly="false";
+}
+
+if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
+{
+	params.restrict_input_atoms='[]';
+}
+
+if(params.run_faspr===undefined)
+{
+	params.run_faspr="";
+}
+
+if(params.output_table_file===undefined || params.output_table_file==="")
+{
+	params.output_table_file="_stdout";
+}
+
+voronota_reset_time();
+
+voronota_delete_objects();
+
+if(params.input_is_script=="true")
+{
+	voronota_source("-file", input.input_file);
+	voronota_assert_partial_success("Failed when running provided input script");
+}
+else
+{
+	voronota_import("-file", input.input_file, "-as-assembly", params.input_as_assembly);
+	voronota_assert_partial_success("Failed to import file");
+}
+
+voronota_restrict_atoms("-use", params.restrict_input_atoms);
+voronota_assert_full_success("Failed to restrict input atoms by the input query");
+
+voronota_restrict_atoms("-use", "[-protein]");
+voronota_assert_full_success("Failed to restrict input atoms to protein only");
+
+if(params.run_faspr!="")
+{
+	voronota_run_faspr("-faspr-binary", params.run_faspr);
+	voronota_assert_full_success("Failed to run FASPR");
+}
+
+voronota_reset_time();
+
+voronota_construct_contacts();
+voronota_assert_full_success("Failed to construct inter-chain contacts");
+
+voronota_voromqa_global();
+voronota_assert_full_success("Failed to compute VoroMQA-light scores");
+var voromqa_light_result=voronota_last_output().results[0].output;
+
+voronota_voromqa_dark_global();
+voronota_assert_full_success("Failed to compute VoroMQA-dark scores");
+var voromqa_dark_result=voronota_last_output().results[0].output;
+
+var summary={}
+
+summary.input_name=input.input_file_name;
+summary.full_dark_score=voromqa_dark_result.global_score;
+summary.full_light_score=voromqa_light_result.quality_score;
+summary.full_atoms=voromqa_light_result.atoms_count;
+summary.full_residues=voromqa_light_result.residues_count;
+
+var summary_table={}
+summary_table.header="";
+summary_table.row="";
+
+Object.keys(summary).forEach(function(key)
+{
+		summary_table.header+=key+" ";
+});
+
+Object.keys(summary).forEach(function(key)
+{
+	value=summary[key];
+	if(typeof value === 'number')
+	{
+		summary_table.row+=parseFloat(value.toFixed(5))+" ";
+	}
+	else
+	{
+		summary_table.row+=value+" ";
+	}
+});
+
+summary_table.header=summary_table.header.trim();
+summary_table.row=summary_table.row.trim();
+
+return summary_table;
+}
+
+voronota_setup_defaults("-no-load-alt-voromqa-potential -faster-load-voromqa-potentials");
+
+var full_summary_table="";
+
+for(var i=0;i<input_info_array.length;i++)
+{
+	var subinput=input_info_array[i];
+	try
+	{
+		var summary_table=analyze_structure(common_params, subinput);
+		if(full_summary_table=="")
+		{
+			full_summary_table+=summary_table.header+"\n";
+		}
+		full_summary_table+=summary_table.row+"\n";
+	}
+	catch(error)
+	{
+		log("Failed with '"+subinput.input_file_name+"': "+error);
+	}
+}
+
+fwrite('_virtual/summary', full_summary_table);
+
+voronota_tournament_sort('-input-file', '_virtual/summary', '-output-file', common_params.output_table_file, '-columns', ['full_dark_score', 'full_light_score'], '-multipliers', [1, 1], '-tolerances', [0, 0]);
+
+EOF
+
+} \
+| voronota-js --no-setup-defaults
+
+if [ ! -s "$TMPLDIR/output_table_file" ]
+then
+	echo >&2 "Error: nothing produced for input '$INFILE'"
+	exit 1
+fi
+
+if [ -n "$CACHE_DIR" ] && [ -n "$HASHSUM" ]
+then
+	mkdir -p "$CACHE_DIR"
+	cat "$TMPLDIR/output_table_file" \
+	| sed 's/^\S\+\s\+//' \
+	> "$CACHE_DIR/${HASHSUM}.txt"
+fi
+
+if [ "$OUTPUT_TABLE_FILE" == "_stdout" ]
+then
+	cat "$TMPLDIR/output_table_file"
+else
+	mkdir -p "$(dirname $OUTPUT_TABLE_FILE)"
+	mv "$TMPLDIR/output_table_file" "$OUTPUT_TABLE_FILE"
+fi
+
