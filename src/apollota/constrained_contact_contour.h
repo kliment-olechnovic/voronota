@@ -151,6 +151,39 @@ public:
 				result.swap(simplified_result);
 			}
 		}
+
+		if(!result.empty() && a_id<spheres.size() && b_id<spheres.size())
+		{
+			const double tolerated_deviation=(probe*1.5);
+			bool strangely_extended=false;
+			for(std::list<Contour>::const_iterator it=result.begin();it!=result.end() && !strangely_extended;++it)
+			{
+				const Contour& contour=(*it);
+				for(Contour::const_iterator jt=contour.begin();jt!=contour.end() && !strangely_extended;++jt)
+				{
+					strangely_extended=strangely_extended || (minimal_distance_from_point_to_sphere(jt->p, spheres[a_id])>tolerated_deviation);
+					strangely_extended=strangely_extended || (minimal_distance_from_point_to_sphere(jt->p, spheres[b_id])>tolerated_deviation);
+				}
+			}
+			if(strangely_extended)
+			{
+				SimplePoint safe_center=(SimplePoint(spheres[a_id])+SimplePoint(spheres[b_id]))*0.5;
+				std::list<Contour> forcibly_shrunk_result=result;
+				for(std::list<Contour>::iterator it=forcibly_shrunk_result.begin();it!=forcibly_shrunk_result.end();++it)
+				{
+					Contour& contour=(*it);
+					for(Contour::iterator jt=contour.begin();jt!=contour.end();++jt)
+					{
+						if((minimal_distance_from_point_to_sphere(jt->p, spheres[a_id])>tolerated_deviation) || (minimal_distance_from_point_to_sphere(jt->p, spheres[b_id])>tolerated_deviation))
+						{
+							jt->p=safe_center+(((jt->p)-safe_center).unit()*std::min(spheres[a_id].r, spheres[b_id].r));
+						}
+					}
+				}
+				result.swap(forcibly_shrunk_result);
+			}
+		}
+
 		return result;
 	}
 
