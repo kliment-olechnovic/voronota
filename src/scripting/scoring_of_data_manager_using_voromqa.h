@@ -332,7 +332,7 @@ public:
 					if(it!=result.bundle_of_energy.inter_atom_energy_descriptors.end())
 					{
 						const common::EnergyDescriptor& ed=it->second;
-						if(ed.total_area>0.0 && ed.strange_area==0.0)
+						if(ed.total_area>0.0)
 						{
 							contact_adjuncts[params.adjunct_inter_atom_energy_scores_raw]=ed.energy;
 						}
@@ -344,7 +344,7 @@ public:
 					if(it!=result.bundle_of_energy.inter_atom_energy_descriptors.end())
 					{
 						const common::EnergyDescriptor& ed=it->second;
-						if(ed.total_area>0.0 && ed.strange_area==0.0)
+						if(ed.total_area>0.0)
 						{
 							contact_adjuncts[params.adjunct_inter_atom_energy_scores_normalized]=ed.energy/ed.total_area;
 						}
