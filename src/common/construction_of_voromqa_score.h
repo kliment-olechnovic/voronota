@@ -80,15 +80,33 @@ public:
 					const double contact_area=(it->second);
 					ed.total_area+=contact_area;
 					ed.contacts_count=1;
-					std::map<InteractionName, double>::const_iterator potential_value_it=
-							input_maps_of_potential_values[i].find(InteractionName(generalize_crads_pair(crads), it->first.tag));
+					InteractionName potential_interaction_name(generalize_crads_pair(crads), it->first.tag);
+					std::map<InteractionName, double>::const_iterator potential_value_it=input_maps_of_potential_values[i].find(potential_interaction_name);
 					if(potential_value_it!=input_maps_of_potential_values[i].end())
 					{
 						ed.energy+=contact_area*(potential_value_it->second);
 					}
 					else
 					{
-						ed.strange_area+=contact_area;
+						const std::string& initial_tag=it->first.tag;
+						if(initial_tag=="central_sep1")
+						{
+							potential_interaction_name.tag="central_sep2";
+							potential_value_it=input_maps_of_potential_values[i].find(potential_interaction_name);
+						}
+						else if(initial_tag=="central_sep2")
+						{
+							potential_interaction_name.tag="central_sep1";
+							potential_value_it=input_maps_of_potential_values[i].find(potential_interaction_name);
+						}
+						if(potential_value_it!=input_maps_of_potential_values[i].end())
+						{
+							ed.energy+=contact_area*(potential_value_it->second);
+						}
+						else
+						{
+							ed.strange_area+=contact_area;
+						}
 					}
 				}
 			}
