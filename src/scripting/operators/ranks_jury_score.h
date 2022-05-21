@@ -120,6 +120,9 @@ public:
 		typedef std::map<std::string, std::vector<int> > MapOfRanks;
 		MapOfRanks map_of_ranks;
 
+		typedef std::map<std::string, std::set<std::string> > MapOfMembersOfClusters;
+		MapOfMembersOfClusters secondary_members_of_clusters;
+
 		{
 			std::set<std::string> set_of_all_ids;
 
@@ -275,6 +278,7 @@ public:
 						{
 							const std::set<std::string>& neighbors=candidate_centers_it->second;
 							set_of_ids_to_exclude.insert(neighbors.begin(), neighbors.end());
+							secondary_members_of_clusters[id].insert(neighbors.begin(), neighbors.end());
 						}
 					}
 					if(!set_of_ids_to_exclude.empty())
@@ -469,7 +473,9 @@ public:
 			for(std::size_t i=0;i<N;i++)
 			{
 				const std::size_t index=jury_scores[i].second;
-				foutput << indices_to_ids[index];
+				const std::string& main_id=indices_to_ids[index];
+
+				foutput << main_id;
 				for(std::size_t l=0;l<jury_scores[i].first.size();l++)
 				{
 					foutput << " " << (0.0-jury_scores[i].first[l]);
@@ -480,6 +486,28 @@ public:
 					foutput << " " << indices_to_ids[redundancy[index].second];
 				}
 				foutput << "\n";
+
+				if(!secondary_members_of_clusters.empty())
+				{
+					MapOfMembersOfClusters::const_iterator secondary_members_it=secondary_members_of_clusters.find(main_id);
+					if(secondary_members_it!=secondary_members_of_clusters.end())
+					{
+						for(std::set<std::string>::const_iterator set_it=secondary_members_it->second.begin();set_it!=secondary_members_it->second.end();++set_it)
+						{
+							foutput << (*set_it);
+							for(std::size_t l=0;l<jury_scores[i].first.size();l++)
+							{
+								foutput << " " << (0.0-jury_scores[i].first[l]);
+							}
+							if(output_redundancy)
+							{
+								foutput << " " << redundancy[index].first;
+								foutput << " " << indices_to_ids[redundancy[index].second];
+							}
+							foutput << "\n";
+						}
+					}
+				}
 			}
 		}
 
