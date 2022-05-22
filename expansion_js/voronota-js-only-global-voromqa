@@ -66,6 +66,7 @@ CACHE_DIR=""
 RUN_FASPR=""
 INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
+JUST_OUTPUT_FROM_DIR=""
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -108,6 +109,10 @@ do
 	--as-assembly)
 		AS_ASSEMBLY="true"
 		;;
+	--jofd)
+		JUST_OUTPUT_FROM_DIR="$OPTARG"
+		shift
+		;;
 	-h|--help)
 		HELP_MODE="true"
 		;;
@@ -133,6 +138,22 @@ if [ -z "$OUTPUT_TABLE_FILE" ]
 then
 	echo >&2 "Error: output table file path not provided"
 	exit 1
+fi
+
+INFILE_BASENAME="$(basename $INFILE)"
+OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE_BASENAME" "$OUTPUT_TABLE_FILE")"
+
+if [ -n "$JUST_OUTPUT_FROM_DIR" ]
+then
+	if [ "$OUTPUT_TABLE_FILE" == "_stdout" ]
+	then
+		cat "$JUST_OUTPUT_FROM_DIR/output_table_file"
+	else
+		mkdir -p "$(dirname $OUTPUT_TABLE_FILE)"
+		mv "$JUST_OUTPUT_FROM_DIR/output_table_file" "$OUTPUT_TABLE_FILE"
+	fi
+	
+	exit 0
 fi
 
 if [ -n "$RUN_FASPR" ] && [ ! -s "$RUN_FASPR" ]
@@ -228,9 +249,6 @@ then
 	exit 0
 fi
 
-INFILE_BASENAME="$(basename $INFILE)"
-OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE_BASENAME" "$OUTPUT_TABLE_FILE")"
-
 HASHSUM=""
 
 if [ -n "$CACHE_DIR" ]
@@ -266,13 +284,7 @@ then
 		| sed "2 s|^|${INFILE_BASENAME} |" \
 		> "$TMPLDIR/output_table_file"
 		
-		if [ "$OUTPUT_TABLE_FILE" == "_stdout" ]
-		then
-			cat "$TMPLDIR/output_table_file"
-		else
-			mkdir -p "$(dirname $OUTPUT_TABLE_FILE)"
-			mv "$TMPLDIR/output_table_file" "$OUTPUT_TABLE_FILE"
-		fi
+		"$ZEROARG" "${ALLARGS[@]}" --jofd "$TMPLDIR"
 		
 		exit 0
 	fi
@@ -455,21 +467,12 @@ then
 	tar -czf "${HASHSUM}.tar.gz" "./results_summary_table.txt" "./results_residue_scores.txt"
 	
 	cd - &> /dev/null
-fi
 
-if [ "$OUTPUT_TABLE_FILE" == "_stdout" ]
-then
-	cat "$TMPLDIR/output_table_file"
-else
-	mkdir -p "$(dirname $OUTPUT_TABLE_FILE)"
-	mv "$TMPLDIR/output_table_file" "$OUTPUT_TABLE_FILE"
-fi
-
-if [ -n "$CACHE_DIR" ] && [ -n "$HASHSUM" ]
-then
 	mkdir -p "$CACHE_DIR"
 	mv "${TMPLDIR}/${HASHSUM}.tar.gz" "$CACHE_DIR/${HASHSUM}.tar.gz"
 fi
+
+"$ZEROARG" "${ALLARGS[@]}" --jofd "$TMPLDIR"
 
 exit 0
 
