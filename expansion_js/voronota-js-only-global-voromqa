@@ -233,7 +233,7 @@ OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE_BASENAME" "$OUTPUT_TABLE
 
 HASHSUM=""
 
-if [ -n "$CACHE_DIR" ] && [ "$INFILE" != "_list" ]
+if [ -n "$CACHE_DIR" ]
 then
 	{
 		echo "$RESTRICT_INPUT $AS_ASSEMBLY $INPUT_IS_SCRIPT"
@@ -245,9 +245,23 @@ then
 	
 	HASHSUM="voronota-js-only-global-voromqa-$(cat ${TMPLDIR}/hashsum.txt)"
 	
-	if [ -s "${CACHE_DIR}/${HASHSUM}.txt" ]
+	if [ -s "${CACHE_DIR}/${HASHSUM}.tar.gz" ]
 	then
-		cat "${CACHE_DIR}/${HASHSUM}.txt" \
+		mkdir -p "${TMPLDIR}/saved_results"
+		
+		cp "${CACHE_DIR}/${HASHSUM}.tar.gz" "${TMPLDIR}/saved_results/archive.tar.gz"
+		
+		cd "${TMPLDIR}/saved_results"
+		tar -xf "./archive.tar.gz"
+		cd - &> /dev/null
+		
+		if [ ! -s "${TMPLDIR}/saved_results/results_summary_table.txt" ]
+		then
+			echo >&2 "Error: invalid cached archive '${CACHE_DIR}/${HASHSUM}.tar.gz'"
+			exit 1
+		fi
+		
+		cat "${TMPLDIR}/saved_results/results_summary_table.txt" \
 		| sed '1 s|^|input_name |' \
 		| sed "2 s|^|${INFILE_BASENAME} |" \
 		> "$TMPLDIR/output_table_file"
@@ -425,10 +439,15 @@ fi
 
 if [ -n "$CACHE_DIR" ] && [ -n "$HASHSUM" ]
 then
-	mkdir -p "$CACHE_DIR"
-	cat "$TMPLDIR/output_table_file" \
+	cd "$TMPLDIR"
+	
+	cat "./output_table_file" \
 	| sed 's/^\S\+\s\+//' \
-	> "$CACHE_DIR/${HASHSUM}.txt"
+	> "./results_summary_table.txt"
+	
+	tar -czf "${HASHSUM}.tar.gz" "./results_summary_table.txt"
+	
+	cd - &> /dev/null
 fi
 
 if [ "$OUTPUT_TABLE_FILE" == "_stdout" ]
@@ -438,4 +457,12 @@ else
 	mkdir -p "$(dirname $OUTPUT_TABLE_FILE)"
 	mv "$TMPLDIR/output_table_file" "$OUTPUT_TABLE_FILE"
 fi
+
+if [ -n "$CACHE_DIR" ] && [ -n "$HASHSUM" ]
+then
+	mkdir -p "$CACHE_DIR"
+	mv "${TMPLDIR}/${HASHSUM}.tar.gz" "$CACHE_DIR/${HASHSUM}.tar.gz"
+fi
+
+exit 0
 
