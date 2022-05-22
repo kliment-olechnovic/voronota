@@ -152,6 +152,12 @@ then
 	exit 1
 fi
 
+if [ -n "$RUN_FASPR" ] && [ ! -s "$RUN_FASPR" ]
+then
+	echo >&2 "Error: FASPR binary executable file '$RUN_FASPR' does not exist"
+	exit 1
+fi
+
 INFILE_BASENAME="$(basename $INFILE)"
 OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE_BASENAME" "$OUTPUT_TABLE_FILE")"
 OUTPUT_DARK_PDB="$(substitute_id_in_filename "$INFILE_BASENAME" "$OUTPUT_DARK_PDB")"
@@ -279,12 +285,6 @@ EOF
 	fi
 	
 	exit 0
-fi
-
-if [ -n "$RUN_FASPR" ] && [ ! -s "$RUN_FASPR" ]
-then
-	echo >&2 "Error: FASPR binary executable file '$RUN_FASPR' does not exist"
-	exit 1
 fi
 
 if [ -z "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -ne "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -lt "1" ]
