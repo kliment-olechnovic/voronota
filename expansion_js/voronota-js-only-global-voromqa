@@ -165,13 +165,18 @@ OUTPUT_LIGHT_PDB="$(substitute_id_in_filename "$INFILE_BASENAME" "$OUTPUT_LIGHT_
 
 if [ -n "$JUST_OUTPUT_FROM_DIR" ]
 then
-	if [ "$OUTPUT_TABLE_FILE" == "_stdout" ]
-	then
-		cat "$JUST_OUTPUT_FROM_DIR/output_table_file"
-	else
-		mkdir -p "$(dirname $OUTPUT_TABLE_FILE)"
-		mv "$JUST_OUTPUT_FROM_DIR/output_table_file" "$OUTPUT_TABLE_FILE"
-	fi
+	cat "$JUST_OUTPUT_FROM_DIR/results_summary_table.txt" \
+	| sed '1 s|^|input_name |' \
+	| sed "2 s|^|${INFILE_BASENAME} |" \
+	| {
+		if [ "$OUTPUT_TABLE_FILE" == "_stdout" ]
+		then
+			cat
+		else
+			mkdir -p "$(dirname $OUTPUT_TABLE_FILE)"
+			cat > "$OUTPUT_TABLE_FILE"
+		fi
+	}
 	
 	if [ -n "$OUTPUT_DARK_PDB" ] || [ -n "$OUTPUT_LIGHT_PDB" ]
 	then
@@ -403,11 +408,6 @@ then
 			echo >&2 "Error: invalid cached archive '${CACHE_DIR}/${HASHSUM}.tar.gz'"
 			exit 1
 		fi
-		
-		cat "${TMPLDIR}/saved_results/results_summary_table.txt" \
-		| sed '1 s|^|input_name |' \
-		| sed "2 s|^|${INFILE_BASENAME} |" \
-		> "$TMPLDIR/saved_results/output_table_file"
 		
 		"$ZEROARG" "${ALLARGS[@]}" --jofd "$TMPLDIR/saved_results"
 		
