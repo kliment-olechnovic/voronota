@@ -286,8 +286,8 @@ common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.run_faspr='$RUN_FASPR';
 common_params.output_table_file='$TMPLDIR/output_table_file';
-var input_info_array=[];
-input_info_array.push({"input_file": "$INFILE", "input_file_name": "$INFILE_BASENAME"});
+common_params.output_adjuncts_file='$TMPLDIR/output_adjuncts_file';
+var input_info={"input_file": "$INFILE", "input_file_name": "$INFILE_BASENAME"}
 EOF
 
 cat << 'EOF'
@@ -364,6 +364,14 @@ voronota_voromqa_dark_global();
 voronota_assert_full_success("Failed to compute VoroMQA-dark scores");
 var voromqa_dark_result=voronota_last_output().results[0].output;
 
+voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name", "voromqa_score_r", "-destination-name", "voromqa_score_rs0", "-pooling-mode min", "-smoothing-window", 0);
+voronota_assert_full_success("Failed to pool and smooth residue adjuncts");
+
+voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name", "vd1", "-destination-name", "vd1_rs0", "-pooling-mode", "min", "-smoothing-window", 0);
+voronota_assert_full_success("Failed to pool and smooth residue dark adjuncts");
+
+voronota_export_adjuncts_of_atoms("-file", params.output_adjuncts_file, "-use", "[-aname CA]", "-adjuncts", ["voromqa_score_rs0", "vd1_rs0"], "-no-serial", "-no-name");
+
 var summary={}
 
 summary.input_name=input.input_file_name;
@@ -404,22 +412,18 @@ voronota_setup_defaults("-no-load-alt-voromqa-potential -faster-load-voromqa-pot
 
 var full_summary_table="";
 
-for(var i=0;i<input_info_array.length;i++)
+try
 {
-	var subinput=input_info_array[i];
-	try
+	var summary_table=analyze_structure(common_params, input_info);
+	if(full_summary_table=="")
 	{
-		var summary_table=analyze_structure(common_params, subinput);
-		if(full_summary_table=="")
-		{
-			full_summary_table+=summary_table.header+"\n";
-		}
-		full_summary_table+=summary_table.row+"\n";
+		full_summary_table+=summary_table.header+"\n";
 	}
-	catch(error)
-	{
-		log("Failed with '"+subinput.input_file_name+"': "+error);
-	}
+	full_summary_table+=summary_table.row+"\n";
+}
+catch(error)
+{
+	log("Failed with '"+input_info.input_file_name+"': "+error);
 }
 
 fwrite('_virtual/summary', full_summary_table);
@@ -445,7 +449,10 @@ then
 	| sed 's/^\S\+\s\+//' \
 	> "./results_summary_table.txt"
 	
-	tar -czf "${HASHSUM}.tar.gz" "./results_summary_table.txt"
+	cat "./output_adjuncts_file" \
+	> "./results_residue_scores.txt"
+	
+	tar -czf "${HASHSUM}.tar.gz" "./results_summary_table.txt" "./results_residue_scores.txt"
 	
 	cd - &> /dev/null
 fi
