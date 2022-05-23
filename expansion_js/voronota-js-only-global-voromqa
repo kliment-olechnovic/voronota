@@ -180,6 +180,16 @@ then
 	
 	if [ -n "$OUTPUT_DARK_PDB" ] || [ -n "$OUTPUT_LIGHT_PDB" ]
 	then
+		if [ -n "$OUTPUT_DARK_PDB" ]
+		then
+			mkdir -p "$(dirname $OUTPUT_DARK_PDB)"
+		fi
+		
+		if [ -n "$OUTPUT_LIGHT_PDB" ]
+		then
+			mkdir -p "$(dirname $OUTPUT_LIGHT_PDB)"
+		fi
+		
 {
 cat << EOF
 var common_params={}
@@ -263,13 +273,19 @@ voronota_assert_full_success("Failed to import adjuncts");
 
 if(params.output_dark_pdb!="")
 {
-	voronota_export_atoms("-file", params.output_dark_pdb, "-as-pdb", "-pdb-b-factor", "vd1_rs0", "-pdb-ter");
+	voronota_set_adjunct_of_atoms_by_expression("-use", "[-adjuncts vd1_rs0]", "-expression", "_linear_combo", "-input-adjuncts", "vd1_rs0", "-parameters", [100, 0], "-output-adjunct", "vd1_rs0_100");
+	voronota_assert_full_success("Failed to set output dark adjuncts");
+	
+	voronota_export_atoms("-file", params.output_dark_pdb, "-as-pdb", "-pdb-b-factor", "vd1_rs0_100", "-pdb-ter");
 	voronota_assert_full_success("Failed to export atoms with dark adjuncts");
 }
 
 if(params.output_light_pdb!="")
 {
-	voronota_export_atoms("-file", params.output_light_pdb, "-as-pdb", "-pdb-b-factor", "voromqa_score_rs0", "-pdb-ter");
+	voronota_set_adjunct_of_atoms_by_expression("-use", "[-adjuncts voromqa_score_rs0]", "-expression", "_linear_combo", "-input-adjuncts", "voromqa_score_rs0", "-parameters", [100, 0], "-output-adjunct", "voromqa_score_rs0_100");
+	voronota_assert_full_success("Failed to set output light adjuncts");
+	
+	voronota_export_atoms("-file", params.output_light_pdb, "-as-pdb", "-pdb-b-factor", "voromqa_score_rs0_100", "-pdb-ter");
 	voronota_assert_full_success("Failed to export atoms with light adjuncts");
 }
 
