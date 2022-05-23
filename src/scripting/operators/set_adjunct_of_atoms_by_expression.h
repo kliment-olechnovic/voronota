@@ -128,6 +128,17 @@ public:
 				throw std::runtime_error(std::string("Not 1 parameter for the defined expression."));
 			}
 		}
+		else if(expression=="_sqrt")
+		{
+			if(input_adjuncts.size()!=1)
+			{
+				throw std::runtime_error(std::string("Not 1 input adjunct names for the defined expression."));
+			}
+			if(parameters.size()!=0)
+			{
+				throw std::runtime_error(std::string("Not 0 parameters for the defined expression."));
+			}
+		}
 		else
 		{
 			throw std::runtime_error(std::string("Unsupported expression."));
@@ -212,6 +223,11 @@ public:
 					const double v=input_adjunct_values.back();
 					const double d=parameters.back();
 					atom_adjuncts[output_adjunct]=(v-(std::floor(v/d)*d));
+				}
+				else if(expression=="_sqrt")
+				{
+					const double v=input_adjunct_values.back();
+					atom_adjuncts[output_adjunct]=std::sqrt(v);
 				}
 			}
 		}
