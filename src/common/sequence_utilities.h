@@ -19,34 +19,65 @@ namespace common
 class SequenceUtilities
 {
 public:
-	static std::string read_sequence_from_stream(std::istream& input)
+	static std::vector<std::string> read_sequences_from_stream(std::istream& input)
 	{
-		std::string result;
+		std::vector<std::string> result;
 		while(input.good())
 		{
 			std::string line;
 			std::getline(input, line);
-			if(!line.empty() && line[0]!='>')
+			if(!line.empty())
 			{
-				std::istringstream sinput(line);
-				while(sinput.good())
+				if(result.empty() || line[0]=='>')
 				{
-					std::string token;
-					sinput >> token;
-					for(std::size_t i=0;i<token.size();i++)
+					result.push_back(std::string());
+				}
+				if(line[0]!='>')
+				{
+					std::istringstream sinput(line);
+					while(sinput.good())
 					{
-						const char c=token[i];
-						if(c>='A' && c<='Z')
+						std::string token;
+						sinput >> token;
+						for(std::size_t i=0;i<token.size();i++)
 						{
-							result.append(1, c);
-						}
-						else if(c>='a' && c<='z')
-						{
-							result.append(1, c-('a'-'A'));
+							const char c=token[i];
+							if(c>='A' && c<='Z')
+							{
+								result.back().append(1, c);
+							}
+							else if(c>='a' && c<='z')
+							{
+								result.back().append(1, c-('a'-'A'));
+							}
 						}
 					}
 				}
 			}
+		}
+		return result;
+	}
+
+	static std::vector<std::string> read_sequences_from_file(const std::string& filename)
+	{
+		if(!filename.empty())
+		{
+			std::ifstream finput(filename.c_str(), std::ios::in);
+			return read_sequences_from_stream(finput);
+		}
+		else
+		{
+			return std::vector<std::string>();
+		}
+	}
+
+	static std::string read_sequence_from_stream(std::istream& input)
+	{
+		const std::vector<std::string> sequences=read_sequences_from_stream(input);
+		std::string result;
+		for(std::size_t i=0;i<sequences.size();i++)
+		{
+			result+=sequences[i];
 		}
 		return result;
 	}
