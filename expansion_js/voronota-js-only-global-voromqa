@@ -401,8 +401,15 @@ if [ -n "$CACHE_DIR" ]
 then
 	{
 		echo "$RESTRICT_INPUT $AS_ASSEMBLY $INPUT_IS_SCRIPT"
+		
 		[ -z "$RUN_FASPR" ] || { echo "with_faspr"; }
-		cat "$INFILE"
+		
+		if [ "$INPUT_IS_SCRIPT" == "true" ]
+		then
+			cat "$INFILE"
+		else
+			cat "$INFILE" | egrep '^ATOM ' | cut -c 1-60 | sed 's/\s\+/ /g' | sed 's/\s\+$//'
+		fi
 	} \
 	| md5sum | awk '{print $1}' \
 	> "${TMPLDIR}/hashsum.txt"
