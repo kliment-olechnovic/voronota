@@ -1263,6 +1263,9 @@
             "name":"set-chain-name",
             "short_description":""},
           {
+            "name":"set-chain-names-and-residue-numbers-by-sequences",
+            "short_description":""},
+          {
             "name":"set-chain-names-by-guessing",
             "short_description":""},
           {
