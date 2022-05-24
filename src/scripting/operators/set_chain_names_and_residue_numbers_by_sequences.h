@@ -34,7 +34,8 @@ public:
 	};
 
 	std::string sequences_file;
-	std::vector<int> chain_counts;
+	std::vector<int> stoichiometry_vector;
+	std::string stoichiometry_string;
 
 	SetChainNamesAndResidueNumbersBySequences()
 	{
@@ -43,18 +44,59 @@ public:
 	void initialize(CommandInput& input)
 	{
 		sequences_file=input.get_value<std::string>("sequences-file");
-		chain_counts=input.get_value_vector<int>("chain-counts");
+		stoichiometry_vector=input.get_value_vector_or_default<int>("stoichiometry-vector", std::vector<int>());
+		stoichiometry_string=input.get_value_or_default<std::string>("stoichiometry-string", std::string());
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("sequences-file", CDOD::DATATYPE_STRING, "sequences input file"));
-		doc.set_option_decription(CDOD("chain-counts", CDOD::DATATYPE_INT_ARRAY, "chain counts for every sequence"));
+		doc.set_option_decription(CDOD("stoichiometry-vector", CDOD::DATATYPE_INT_ARRAY, "chain counts for every sequence", ""));
+		doc.set_option_decription(CDOD("stoichiometry-string", CDOD::DATATYPE_STRING, "stoichiometry descriptor to derive chain counts for every sequence", ""));
 	}
 
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_availability();
+
+		if(stoichiometry_vector.empty() && stoichiometry_string.empty())
+		{
+			throw std::runtime_error(std::string("Not stoichiometry info provided"));
+		}
+
+		if(!stoichiometry_vector.empty() && !stoichiometry_string.empty())
+		{
+			throw std::runtime_error(std::string("Conflicting stoichiometry info provided"));
+		}
+
+		std::vector<int> chain_counts;
+		if(!stoichiometry_vector.empty())
+		{
+			chain_counts=stoichiometry_vector;
+		}
+		else
+		{
+			std::string input_str=stoichiometry_string;
+			for(std::size_t i=0;i<input_str.size();i++)
+			{
+				if(input_str[i]<'0' || input_str[i]>'9')
+				{
+					input_str[i]=' ';
+				}
+			}
+			std::istringstream input_stream(input_str);
+			while(input_stream.good())
+			{
+				int chain_count=0;
+				input_stream >> chain_count;
+				chain_counts.push_back(chain_count);
+			}
+		}
+
+		if(chain_counts.empty())
+		{
+			throw std::runtime_error(std::string("Empty list of chain counts derived from stoichiometry info"));
+		}
 
 		int sum_of_chain_counts=0;
 		for(std::size_t i=0;i<chain_counts.size();i++)
