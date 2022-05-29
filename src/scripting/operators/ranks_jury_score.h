@@ -278,11 +278,36 @@ public:
 						{
 							const std::set<std::string>& neighbors=candidate_centers_it->second;
 							set_of_ids_to_exclude.insert(neighbors.begin(), neighbors.end());
-							secondary_members_of_clusters[id].insert(neighbors.begin(), neighbors.end());
 						}
 					}
 					if(!set_of_ids_to_exclude.empty())
 					{
+						for(std::set<std::string>::const_iterator jt=set_of_ids_to_exclude.begin();jt!=set_of_ids_to_exclude.end();++jt)
+						{
+							MapOfSimilarities::const_iterator similarities_it=map_of_similarities.find(*jt);
+							if(similarities_it!=map_of_similarities.end())
+							{
+								const std::map<std::string, double>& similarities=similarities_it->second;
+								if(!similarities.empty())
+								{
+									std::map<std::string, double>::const_iterator closest_it=similarities.end();
+									for(std::map<std::string, double>::const_iterator candidate_it=similarities.begin();candidate_it!=similarities.end();++candidate_it)
+									{
+										if(set_of_ids_to_exclude.count(candidate_it->first)==0)
+										{
+											if(closest_it==similarities.end() || (candidate_it->second)>(closest_it->second))
+											{
+												closest_it=candidate_it;
+											}
+										}
+									}
+									if(closest_it!=similarities.end())
+									{
+										secondary_members_of_clusters[closest_it->first].insert(*jt);
+									}
+								}
+							}
+						}
 						for(std::set<std::string>::const_iterator jt=set_of_ids_to_exclude.begin();jt!=set_of_ids_to_exclude.end();++jt)
 						{
 							map_of_similarities.erase(*jt);
