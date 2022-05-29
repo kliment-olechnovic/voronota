@@ -421,20 +421,21 @@ private:
 			}
 			std::set<std::string> set_of_free_chains_left(chain_names.begin(), chain_names.end());
 			std::set<std::string> set_of_free_chains_right(chain_names.begin(), chain_names.end());
-			while(!set_of_free_chains_left.empty())
+			while(!set_of_free_chains_left.empty() && !set_of_free_chains_right.empty())
 			{
 				std::pair<std::string, std::string> best_pair(*set_of_free_chains_left.begin(), *set_of_free_chains_right.begin());
 				double best_score=0.0;
-				for(std::set<std::string>::const_iterator it_left=set_of_free_chains_left.begin();it_left!=set_of_free_chains_left.end();++it_left)
+				for(std::set<std::string>::const_iterator it_right=set_of_free_chains_right.begin();it_right!=set_of_free_chains_right.end();++it_right)
 				{
-					for(std::set<std::string>::const_iterator it_right=set_of_free_chains_right.begin();it_right!=set_of_free_chains_right.end();++it_right)
+					std::map<std::string, std::string> new_map_of_renamings_in_target=map_of_renamings_in_target;
+					new_map_of_renamings_in_target[*it_right]=(*it_right);
+					const std::map<CRADsPair, double> new_submap_of_target_contacts=select_contacts_with_defined_chain_names(rename_chains_in_map_of_contacts(map_of_target_contacts, new_map_of_renamings_in_target));
+					for(std::set<std::string>::const_iterator it_left=set_of_free_chains_left.begin();it_left!=set_of_free_chains_left.end();++it_left)
 					{
 						std::map<std::string, std::string> new_map_of_renamings=map_of_renamings;
-						std::map<std::string, std::string> new_map_of_renamings_in_target=map_of_renamings_in_target;
 						new_map_of_renamings[*it_left]=(*it_right);
-						new_map_of_renamings_in_target[*it_right]=(*it_right);
 						const CADDescriptor cad_descriptor=construct_global_cad_descriptor(
-								select_contacts_with_defined_chain_names(rename_chains_in_map_of_contacts(map_of_target_contacts, new_map_of_renamings_in_target)),
+								new_submap_of_target_contacts,
 								select_contacts_with_defined_chain_names(rename_chains_in_map_of_contacts(map_of_contacts, new_map_of_renamings)),
 								ignore_residue_names,
 								binarize);
