@@ -354,9 +354,21 @@ private:
 		std::map<CRADsPair, double> result;
 		for(std::map<CRADsPair, double>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
-			if(!it->first.a.chainID.empty() || !it->first.b.chainID.empty())
+			if(!it->first.a.chainID.empty() && !it->first.b.chainID.empty())
 			{
 				result[it->first]=it->second;
+			}
+			else if(!it->first.a.chainID.empty() && it->first.b.chainID.empty())
+			{
+				CRAD mock=it->first.b;
+				mock.chainID="mock";
+				result[CRADsPair(it->first.a, mock)]+=it->second;
+			}
+			else if(!it->first.b.chainID.empty() && it->first.a.chainID.empty())
+			{
+				CRAD mock=it->first.a;
+				mock.chainID="mock";
+				result[CRADsPair(it->first.b, mock)]+=it->second;
 			}
 		}
 		return result;
