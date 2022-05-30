@@ -34,8 +34,9 @@ public:
 	std::size_t several_max_values;
 	bool use_dominations;
 	bool output_redundancy;
+	bool symmetrize_similarities;
 
-	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), several_max_values(1), use_dominations(false), output_redundancy(false)
+	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), several_max_values(1), use_dominations(false), output_redundancy(false), symmetrize_similarities(false)
 	{
 	}
 
@@ -51,6 +52,7 @@ public:
 		several_max_values=input.get_value_or_default<std::size_t>("several-max-values", 1);
 		use_dominations=input.get_flag("use-dominations");
 		output_redundancy=input.get_flag("output-redundancy");
+		symmetrize_similarities=input.get_flag("symmetrize-similarities");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -65,6 +67,7 @@ public:
 		doc.set_option_decription(CDOD("several-max-values", CDOD::DATATYPE_INT, "number of top max values to average", 1));
 		doc.set_option_decription(CDOD("use-dominations", CDOD::DATATYPE_BOOL, "flag to use domination counts from all the slices"));
 		doc.set_option_decription(CDOD("output-redundancy", CDOD::DATATYPE_BOOL, "flag to output similarities to higher-ranked IDs"));
+		doc.set_option_decription(CDOD("symmetrize-similarities", CDOD::DATATYPE_BOOL, "flag to symmetrize similarities"));
 	}
 
 	Result run(void*) const
@@ -173,6 +176,22 @@ public:
 				{
 					throw std::runtime_error(std::string("Incomplete table of similarities."));
 				}
+			}
+
+			if(symmetrize_similarities)
+			{
+				MapOfSimilarities symmetrized_map_of_similarities=map_of_similarities;
+				for(MapOfSimilarities::const_iterator it=map_of_similarities.begin();it!=map_of_similarities.end();++it)
+				{
+					const std::map<std::string, double>& map_of_values=it->second;
+					for(std::map<std::string, double>::const_iterator jt=map_of_values.begin();jt!=map_of_values.end();++jt)
+					{
+						double& value=symmetrized_map_of_similarities[jt->first][it->first];
+						value+=jt->second;
+						value*=0.5;
+					}
+				}
+				map_of_similarities.swap(symmetrized_map_of_similarities);
 			}
 
 			{
