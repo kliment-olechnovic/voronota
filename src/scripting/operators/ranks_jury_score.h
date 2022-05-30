@@ -187,8 +187,7 @@ public:
 					for(std::map<std::string, double>::const_iterator jt=map_of_values.begin();jt!=map_of_values.end();++jt)
 					{
 						double& value=symmetrized_map_of_similarities[jt->first][it->first];
-						value+=jt->second;
-						value*=0.5;
+						value=std::min(value, jt->second);
 					}
 				}
 				map_of_similarities.swap(symmetrized_map_of_similarities);
@@ -284,7 +283,19 @@ public:
 					}
 					if(!neighbors.empty())
 					{
-						map_of_candidate_centers[std::pair<int, std::string>(0-static_cast<int>(neighbors.size()), it->first)]=neighbors;
+						int ranks_score_for_center=std::numeric_limits<int>::max();
+						MapOfRanks::const_iterator map_of_ranks_it=map_of_ranks.find(it->first);
+						if(map_of_ranks_it!=map_of_ranks.end())
+						{
+							const int max_possible_rank=static_cast<int>(map_of_similarities.size());
+							ranks_score_for_center=0;
+							const std::vector<int>& ranks=map_of_ranks_it->second;
+							for(std::size_t i=0;i<ranks.size();i++)
+							{
+								ranks_score_for_center+=(ranks[i]<max_possible_rank ? ranks[i] : max_possible_rank);
+							}
+						}
+						map_of_candidate_centers[std::pair<int, std::string>(ranks_score_for_center, it->first)]=neighbors;
 					}
 				}
 				if(!map_of_candidate_centers.empty())
