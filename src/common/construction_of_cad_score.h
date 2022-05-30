@@ -255,6 +255,16 @@ private:
 								binarize)));
 	}
 
+	static CADDescriptor construct_global_cad_descriptor(const std::map<CRADsPair, double>& map_of_target_contacts, const std::map<CRADsPair, double>& map_of_contacts, const bool binarize)
+	{
+		return construct_global_cad_descriptor(
+				construct_map_of_cad_descriptors(
+						combine_two_pair_mappings_of_values(
+								map_of_target_contacts,
+								map_of_contacts,
+								binarize)));
+	}
+
 	static std::map<CRAD, CADDescriptor> filter_map_of_cad_descriptors_by_target_presence(const std::map<CRAD, CADDescriptor>& input_map)
 	{
 		std::map<CRAD, CADDescriptor> result;
@@ -406,7 +416,6 @@ private:
 				const double score=construct_global_cad_descriptor(
 						assessment_map_of_target_contacts,
 						rename_chains_in_map_of_contacts(assessment_map_of_contacts, map_of_renamings),
-						ignore_residue_names,
 						binarize).score();
 				if(score>best_renaming.second)
 				{
@@ -466,7 +475,6 @@ private:
 							const CADDescriptor cad_descriptor=construct_global_cad_descriptor(
 									new_submap_of_target_contacts,
 									select_contacts_with_defined_chain_names(rename_chains_in_map_of_contacts(assessment_map_of_contacts, new_map_of_renamings)),
-									ignore_residue_names,
 									binarize);
 							const double score=cad_descriptor.score()*cad_descriptor.target_area_sum;
 							if(score>best_score)
