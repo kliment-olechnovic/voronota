@@ -15,6 +15,7 @@ Options:
     --stdin-file              string     input file path to replace stdin
     --as-assembly                        flag to treat input files as biological assemblies
     --remap-chains                       flag to calculate and use optimal chains remapping
+    --crude                              flag to enable very crude faster mode
     --help | -h                          flag to display help message and exit
 
 Standard output:
@@ -60,6 +61,7 @@ STDIN_FILE="_stream"
 MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 REMAP_CHAINS="false"
+CRUDE_MODE="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -100,6 +102,9 @@ do
 		;;
 	--remap-chains)
 		REMAP_CHAINS="true"
+		;;
+	--crude)
+		CRUDE_MODE="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -225,6 +230,7 @@ common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
 common_params.remap_chains='$REMAP_CHAINS';
+common_params.crude_mode='$CRUDE_MODE';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 var input_info_array=[];
 EOF
@@ -358,16 +364,37 @@ for(var i=0;i<input_info_array.length;i++)
 		voronota_restrict_atoms("-use", common_params.restrict_input_atoms);
 		voronota_assert_full_success("Failed to restrict input atoms by the input query");
 		
-		voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
+		if(common_params.crude_mode=="true")
+		{
+			voronota_restrict_atoms("-use", "([-protein -aname CA] or [-nucleic])");
+		}
+		else
+		{
+			voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
+		}
 		voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
 		
-		voronota_select_atoms_close_to_interchain_interface("-name", "actii");
+		if(common_params.crude_mode=="true")
+		{
+			voronota_select_atoms_close_to_interchain_interface("-name", "actii", "-probe", 4.5);
+		}
+		else
+		{
+			voronota_select_atoms_close_to_interchain_interface("-name", "actii");
+		}
 		voronota_assert_full_success("Failed to select interface atoms");
 		
 		voronota_restrict_atoms("-use", "[actii]");
 		voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
 		
-		voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
+		if(common_params.crude_mode=="true")
+		{
+			voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial -probe 4.5");
+		}
+		else
+		{
+			voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
+		}
 		voronota_assert_full_success("Failed to construct inter-chain contacts");
 		
 		voronota_select_contacts("-use", "([-inter-chain] and "+common_params.contacts_subselection+")", "-name", "inter_chain_contacts");
