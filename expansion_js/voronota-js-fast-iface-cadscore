@@ -19,6 +19,7 @@ Options:
     --as-assembly                        flag to treat input files as biological assemblies
     --remap-chains                       flag to calculate and use optimal chains remapping
     --test-common-ids                    flag to fail quickly if there are no common residues
+    --crude                              flag to enable very crude faster mode
     --help | -h                          flag to display help message and exit
 
 Standard output:
@@ -76,6 +77,7 @@ MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 REMAP_CHAINS="false"
 TEST_COMMON_IDS="false"
+CRUDE_MODE="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -134,6 +136,9 @@ do
 		;;
 	--test-common-ids)
 		TEST_COMMON_IDS="true"
+		;;
+	--crude)
+		CRUDE_MODE="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -356,6 +361,7 @@ common_params.test_common_ids='$TEST_COMMON_IDS';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
 common_params.run_faspr='$RUN_FASPR';
 common_params.remap_chains='$REMAP_CHAINS';
+common_params.crude_mode='$CRUDE_MODE'
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 var input_info_array=[];
 EOF
@@ -387,11 +393,25 @@ prepare_atoms=function(params, run_faspr)
 		voronota_assert_full_success("Failed to run FASPR");
 	}
 	
-	voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
+	if(params.crude_mode=="true")
+	{
+		voronota_restrict_atoms("-use", "([-protein -aname CA] or [-nucleic])");
+	}
+	else
+	{
+		voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
+	}
 	voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
 	var initial_number_of_accepted_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
 	
-	voronota_select_atoms_close_to_interchain_interface("-name", "actii");
+	if(params.crude_mode=="true")
+	{
+		voronota_select_atoms_close_to_interchain_interface("-name", "actii", "-probe", 4.5);
+	}
+	else
+	{
+		voronota_select_atoms_close_to_interchain_interface("-name", "actii");
+	}
 	voronota_assert_full_success("Failed to select interface atoms");
 	
 	voronota_restrict_atoms("-use", "[actii]");
@@ -402,7 +422,14 @@ prepare_atoms=function(params, run_faspr)
 
 prepare_contacts=function(params)
 {
-	voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
+	if(params.crude_mode=="true")
+	{
+		voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial -probe 4.5");
+	}
+	else
+	{
+		voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
+	}
 	voronota_assert_full_success("Failed to construct inter-chain contacts");
 	
 	voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts");
