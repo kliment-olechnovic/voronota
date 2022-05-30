@@ -372,25 +372,6 @@ private:
 		return result;
 	}
 
-	static std::map<CRADsPair, double> primitively_approximate_contacts(const std::map<CRADsPair, double>& map_of_contacts, const bool ignore_residue_names)
-	{
-		std::map<CRADsPair, double> result;
-		for(std::map<CRADsPair, double>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
-		{
-			CRAD mock_a=it->first.a;
-			CRAD mock_b=it->first.b;
-			mock_a.resSeq=1;
-			mock_b.resSeq=1;
-			if(ignore_residue_names)
-			{
-				mock_a.resName="ALA";
-				mock_b.resName="ALA";
-			}
-			result[CRADsPair(mock_a, mock_b)]+=it->second;
-		}
-		return result;
-	}
-
 	static void remap_chains_optimally(
 			const std::map<CRADsPair, double>& map_of_target_contacts,
 			const bool ignore_residue_names,
@@ -442,11 +423,6 @@ private:
 		}
 		else
 		{
-			if(chain_names.size()>100)
-			{
-				assessment_map_of_target_contacts=primitively_approximate_contacts(assessment_map_of_target_contacts, ignore_residue_names);
-				assessment_map_of_contacts=primitively_approximate_contacts(assessment_map_of_contacts, ignore_residue_names);
-			}
 			std::map<std::string, std::string> map_of_renamings;
 			std::map<std::string, std::string> map_of_renamings_in_target;
 			for(std::size_t i=0;i<chain_names.size();i++)
