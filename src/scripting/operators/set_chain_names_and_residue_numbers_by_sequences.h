@@ -36,8 +36,10 @@ public:
 	std::string sequences_file;
 	std::vector<int> stoichiometry_vector;
 	std::string stoichiometry_string;
+	double min_sequence_identity;
+	bool require_all_chains;
 
-	SetChainNamesAndResidueNumbersBySequences()
+	SetChainNamesAndResidueNumbersBySequences() : min_sequence_identity(0.0), require_all_chains(false)
 	{
 	}
 
@@ -46,6 +48,8 @@ public:
 		sequences_file=input.get_value<std::string>("sequences-file");
 		stoichiometry_vector=input.get_value_vector_or_default<int>("stoichiometry-vector", std::vector<int>());
 		stoichiometry_string=input.get_value_or_default<std::string>("stoichiometry-string", std::string());
+		min_sequence_identity=input.get_value_or_default<double>("min-sequence-identity", 0.0);
+		require_all_chains=input.get_flag("require-all-chains");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -53,6 +57,8 @@ public:
 		doc.set_option_decription(CDOD("sequences-file", CDOD::DATATYPE_STRING, "sequences input file"));
 		doc.set_option_decription(CDOD("stoichiometry-vector", CDOD::DATATYPE_INT_ARRAY, "chain counts for every sequence", ""));
 		doc.set_option_decription(CDOD("stoichiometry-string", CDOD::DATATYPE_STRING, "stoichiometry descriptor to derive chain counts for every sequence", ""));
+		doc.set_option_decription(CDOD("min-sequence-identity", CDOD::DATATYPE_FLOAT, "min allowed sequence identity", "0.0"));
+		doc.set_option_decription(CDOD("require-all-chains", CDOD::DATATYPE_BOOL, "flag to require all chains to be present"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -238,6 +244,11 @@ public:
 			}
 		}
 
+		if(require_all_chains && static_cast<int>(order_of_chains.size())!=sum_of_chain_counts)
+		{
+			throw std::runtime_error("Final chains count does not match the requested chains count.");
+		}
+
 		std::vector<Atom> fixed_atoms;
 		fixed_atoms.reserve(data_manager.atoms().size());
 
@@ -252,6 +263,13 @@ public:
 				std::map<common::ChainResidueAtomDescriptor, int>::const_iterator sequence_mapping_it=chain_info.sequence_mapping.find(residue.chain_residue_descriptor);
 				if(sequence_mapping_it!=chain_info.sequence_mapping.end())
 				{
+					if(min_sequence_identity>0.0)
+					{
+						if(chain_info.best_sequence_identity<min_sequence_identity)
+						{
+							throw std::runtime_error("Not all chains satisfy minimum sequence identity constraint");
+						}
+					}
 					for(std::size_t e=0;e<residue.atom_ids.size();e++)
 					{
 						Atom atom=data_manager.atoms()[residue.atom_ids[e]];
