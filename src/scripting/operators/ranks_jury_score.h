@@ -35,8 +35,9 @@ public:
 	bool use_dominations;
 	bool output_redundancy;
 	bool symmetrize_similarities;
+	double scale_last_slice_value;
 
-	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), several_max_values(1), use_dominations(false), output_redundancy(false), symmetrize_similarities(false)
+	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), several_max_values(1), use_dominations(false), output_redundancy(false), symmetrize_similarities(false), scale_last_slice_value(1.0)
 	{
 	}
 
@@ -53,6 +54,7 @@ public:
 		use_dominations=input.get_flag("use-dominations");
 		output_redundancy=input.get_flag("output-redundancy");
 		symmetrize_similarities=input.get_flag("symmetrize-similarities");
+		scale_last_slice_value=input.get_value_or_default<double>("scale-last-slice-value", 1.0);
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -68,6 +70,7 @@ public:
 		doc.set_option_decription(CDOD("use-dominations", CDOD::DATATYPE_BOOL, "flag to use domination counts from all the slices"));
 		doc.set_option_decription(CDOD("output-redundancy", CDOD::DATATYPE_BOOL, "flag to output similarities to higher-ranked IDs"));
 		doc.set_option_decription(CDOD("symmetrize-similarities", CDOD::DATATYPE_BOOL, "flag to symmetrize similarities"));
+		doc.set_option_decription(CDOD("scale-last-slice-value", CDOD::DATATYPE_FLOAT, "multiplier for the last slice value", 1.0));
 	}
 
 	Result run(void*) const
@@ -438,6 +441,17 @@ public:
 			for(std::map<std::size_t, double>::const_iterator it=indices_jury_scores.begin();it!=indices_jury_scores.end();++it)
 			{
 				jury_scores[it->first].first[l]=(0.0-(it->second));
+			}
+		}
+
+		if(scale_last_slice_value<1.0)
+		{
+			for(std::size_t i=0;i<N;i++)
+			{
+				if(!jury_scores[i].first.empty())
+				{
+					jury_scores[i].first.back()*=scale_last_slice_value;
+				}
 			}
 		}
 
