@@ -10,6 +10,8 @@ Options:
     --input | -i              string  *  input file path or '_list' to read file paths from stdin
     --restrict-input          string     query to restrict input atoms, default is '[]'
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
+    --constraints-required    string     query to check required contacts, default is ''
+    --constraints-banned      string     query to check banned contacts, default is ''
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to run in parallel, default is 1
     --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
@@ -90,6 +92,8 @@ command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executab
 INFILE=""
 RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
+CONSTRAINTS_REQUIRED=""
+CONSTRAINTS_BANNED=""
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
@@ -118,6 +122,14 @@ do
 		;;
 	--subselect-contacts)
 		SUBSELECT_CONTACTS="$OPTARG"
+		shift
+		;;
+	--constraints-required)
+		CONSTRAINTS_REQUIRED="$OPTARG"
+		shift
+		;;
+	--constraints-banned)
+		CONSTRAINTS_BANNED="$OPTARG"
 		shift
 		;;
 	--output-table-file)
@@ -331,6 +343,8 @@ common_params.input_is_script='$INPUT_IS_SCRIPT';
 common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
+common_params.constraints_required='$CONSTRAINTS_REQUIRED';
+common_params.constraints_banned='$CONSTRAINTS_BANNED';
 common_params.run_faspr='$RUN_FASPR';
 common_params.score_symmetry='$SCORE_SYMMETRY';
 common_params.blanket='$BLANKET';
@@ -381,6 +395,16 @@ if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
 if(params.contacts_subselection===undefined || params.contacts_subselection==="")
 {
 	params.contacts_subselection='[]';
+}
+
+if(params.constraints_required===undefined)
+{
+	params.constraints_required="";
+}
+
+if(params.constraints_banned===undefined)
+{
+	params.constraints_banned="";
 }
 
 if(params.run_faspr===undefined)
@@ -463,8 +487,23 @@ voronota_reset_time();
 voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
 voronota_assert_full_success("Failed to construct inter-chain contacts");
 
-voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts")
+voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts");
 voronota_assert_full_success("Failed to select inter-chain contacts");
+
+if(params.constraints_required!="")
+{
+	voronota_select_contacts("-use", "([inter_chain_contacts] and "+params.constraints_required+")", "-name", "constraints_required_contacts");
+	voronota_assert_full_success("No required contacts present");
+}
+
+if(params.constraints_banned!="")
+{
+	voronota_select_contacts("-use", "([inter_chain_contacts] and "+params.constraints_banned+")", "-name", "constraints_banned_contacts");
+	if(voronota_last_output().results_summary.partial_success)
+	{
+		throw ("Banned contacts present");
+	}
+}
 
 voronota_print_time();
 var time_constructing_contacts=voronota_last_output().results[0].output.elapsed_miliseconds;
