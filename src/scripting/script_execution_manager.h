@@ -132,6 +132,7 @@
 #include "operators/show_next_picked_object.h"
 #include "operators/show_objects.h"
 #include "operators/smooth_adjacent_contact_adjunct_values.h"
+#include "operators/sort_atoms_by_residue_id.h"
 #include "operators/source.h"
 #include "operators/spectrum_atoms.h"
 #include "operators/spectrum_contacts.h"
@@ -313,6 +314,7 @@ public:
 		set_command_for_data_manager("show-contacts", operators::ShowContacts(), true);
 		set_command_for_data_manager("show-figures", operators::ShowFigures(), true);
 		set_command_for_data_manager("smooth-adjacent-contact-adjunct-values", operators::SmoothAdjacentContactAdjunctValues(), true);
+		set_command_for_data_manager("sort-atoms-by-residue-id", operators::SortAtomsByResidueID(), true);
 		set_command_for_data_manager("spectrum-atoms", operators::SpectrumAtoms(), true);
 		set_command_for_data_manager("spectrum-contacts", operators::SpectrumContacts(), true);
 		set_command_for_data_manager("summarize-linear-structure", operators::SummarizeLinearStructure(), true);

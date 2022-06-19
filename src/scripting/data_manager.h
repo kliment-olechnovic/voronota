@@ -1185,6 +1185,45 @@ public:
 		restrict_atoms(ids);
 	}
 
+	void sort_atoms_by_residue_id()
+	{
+		std::map< common::ChainResidueAtomDescriptor, std::vector<std::size_t> > map_of_residue_ids;
+		for(std::size_t i=0;i<atoms_.size();i++)
+		{
+			map_of_residue_ids[atoms_[i].crad.without_atom()].push_back(i);
+		}
+
+		std::vector<std::size_t> sorting_order;
+		sorting_order.reserve(atoms_.size());
+		for(std::map< common::ChainResidueAtomDescriptor, std::vector<std::size_t> >::const_iterator it=map_of_residue_ids.begin();it!=map_of_residue_ids.end();++it)
+		{
+			const std::vector<std::size_t>& ids=it->second;
+			sorting_order.insert(sorting_order.end(), ids.begin(), ids.end());
+		}
+
+		bool reset_needed=(sorting_order.size()!=atoms_.size());
+		for(std::size_t i=0;i<sorting_order.size() && !reset_needed;i++)
+		{
+			if(sorting_order[i]!=i)
+			{
+				reset_needed=true;
+			}
+		}
+
+		if(reset_needed)
+		{
+			std::vector<Atom> sorted_atoms;
+			sorted_atoms.reserve(atoms_.size());
+
+			for(std::size_t i=0;i<sorting_order.size();i++)
+			{
+				sorted_atoms.push_back(atoms_[sorting_order[i]]);
+			}
+
+			reset_atoms_by_swapping(sorted_atoms);
+		}
+	}
+
 	void append_atoms_from_other_data_managers(const std::vector<const DataManager*>& other_data_managers)
 	{
 		if(other_data_managers.empty())

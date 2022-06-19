@@ -1314,6 +1314,9 @@
             "name":"smooth-adjacent-contact-adjunct-values",
             "short_description":""},
           {
+            "name":"sort-atoms-by-residue-id",
+            "short_description":""},
+          {
             "name":"source",
             "short_description":""},
           {
