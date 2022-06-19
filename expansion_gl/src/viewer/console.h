@@ -597,7 +597,7 @@ private:
 		std::map<std::string, std::string> documentation;
 
 		DocumentationViewerState() :
-			visible(false)
+			visible(true)
 		{
 		}
 
@@ -702,9 +702,22 @@ private:
 							result="zoom-by-objects";
 						}
 						ImGui::Separator();
-						if(ImGui::Selectable("Delete"))
+						if(ImGui::Selectable("Enable grid view"))
+						{
+							result="grid-by-object";
+						}
+						if(ImGui::Selectable("Disable grid view"))
+						{
+							result="mono";
+						}
+						ImGui::Separator();
+						if(ImGui::Selectable("Delete all"))
 						{
 							result="delete-objects";
+						}
+						if(ImGui::Selectable("Delete picked"))
+						{
+							result="delete-objects -picked";
 						}
 						ImGui::EndPopup();
 					}
@@ -717,7 +730,6 @@ private:
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Show:");
-
 						if(ImGui::Selectable("  cartoon"))
 						{
 							result="show-atoms -rep cartoon";
@@ -745,11 +757,15 @@ private:
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Hide:");
-
-						if(ImGui::Selectable("  all"))
+						if(ImGui::Selectable("  all atoms"))
 						{
 							result="hide-atoms";
 						}
+						if(ImGui::Selectable("  all contacts"))
+						{
+							result="hide-contacts";
+						}
+						ImGui::Separator();
 						if(ImGui::Selectable("  cartoon"))
 						{
 							result="hide-atoms -rep cartoon";
@@ -821,6 +837,16 @@ private:
 						if(ImGui::Selectable("  by B-factor, red-white-blue"))
 						{
 							result="spectrum-atoms -adjunct tf -scheme rwb";
+						}
+
+						if(ImGui::Selectable("  by B-factor, blue-white-red, 0-100"))
+						{
+							result="spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100";
+						}
+
+						if(ImGui::Selectable("  by B-factor, red-white-blue, 0-100"))
+						{
+							result="spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100";
 						}
 
 						ImGui::Separator();
@@ -998,7 +1024,6 @@ private:
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Show:");
-
 						if(ImGui::Selectable("  cartoon"))
 						{
 							result=std::string("show-atoms -rep cartoon -on-objects '")+os.name+"'";
@@ -1026,11 +1051,15 @@ private:
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Hide:");
-
-						if(ImGui::Selectable("  all"))
+						if(ImGui::Selectable("  all atoms"))
 						{
 							result=std::string("hide-atoms -on-objects '")+os.name+"'";
 						}
+						if(ImGui::Selectable("  all contacts"))
+						{
+							result=std::string("hide-contacts -on-objects '")+os.name+"'";
+						}
+						ImGui::Separator();
 						if(ImGui::Selectable("  cartoon"))
 						{
 							result=std::string("hide-atoms -rep cartoon -on-objects '")+os.name+"'";
@@ -1102,6 +1131,16 @@ private:
 						if(ImGui::Selectable("  by B-factor, red-white-blue"))
 						{
 							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -on-objects '")+os.name+"'";
+						}
+
+						if(ImGui::Selectable("  by B-factor, blue-white-red, 0-100"))
+						{
+							result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100 -on-objects '")+os.name+"'";
+						}
+
+						if(ImGui::Selectable("  by B-factor, red-white-blue, 0-100"))
+						{
+							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100 -on-objects '")+os.name+"'";
 						}
 
 						ImGui::Separator();
