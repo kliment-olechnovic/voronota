@@ -1,0 +1,38 @@
+#!/bin/bash
+
+command -v timidity &> /dev/null || { exit 1; }
+
+MELODY="$1"
+
+if [ -z "$MELODY" ]
+then
+	exit 1
+fi
+
+if [ "$MELODY" == "stop" ]
+then
+	killall -9 timidity &> /dev/null
+	exit 0
+fi
+
+if [ "$MELODY" != "stop" ]
+then
+	MIDIFILE="$MELODY"
+	
+	if [ ! -s "$MIDIFILE" ]
+	then
+		MIDIFILE="${HOME}/Music/background/${MELODY}.mid"
+	fi
+		
+	if [ -s "$MIDIFILE" ]
+	then
+		killall -9 timidity &> /dev/null
+		timidity "$MIDIFILE" &> /dev/null & disown
+		echo
+		exit 0
+	else
+		exit 1
+	fi
+fi
+
+exit 1

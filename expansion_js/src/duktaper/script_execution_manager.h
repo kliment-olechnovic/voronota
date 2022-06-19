@@ -11,6 +11,7 @@
 #include "operators/fetch.h"
 #include "operators/import_cod_cif.h"
 #include "operators/import_url.h"
+#include "operators/music_background.h"
 #include "operators/nnport_predict.h"
 #include "operators/run_bff.h"
 #include "operators/run_faspr.h"
@@ -39,6 +40,7 @@ public:
 		set_command_for_extra_actions("convert-bff-obj-to-svg", operators::ConvertBFFObjToSVG());
 		set_command_for_extra_actions("nnport-predict", operators::NNPortPredict());
 		set_command_for_extra_actions("setup-defaults", operators::SetupDefaults());
+		set_command_for_extra_actions("music-background", operators::MusicBackground());
 
 		set_command_for_data_manager("construct-or-load-contacts", operators::ConstructOrLoadContacts(), true);
 		set_command_for_data_manager("construct-or-load-quality-scores", operators::ConstructOrLoadQualityScores(), true);

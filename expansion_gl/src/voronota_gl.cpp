@@ -5,6 +5,8 @@
 
 int main(const int argc, const char** argv)
 {
+	int return_status=1;
+
 	try
 	{
 		voronota::scripting::CommandInput command_args_input(argc, argv);
@@ -26,8 +28,15 @@ int main(const int argc, const char** argv)
 			throw std::runtime_error(std::string("Failed to init application."));
 		}
 
+		const bool with_music_background=(files.size()>10);
+
 		voronota::viewer::Application::instance().enqueue_script("clear");
 		voronota::viewer::Application::instance().enqueue_script("setup-defaults ; clear");
+
+		if(with_music_background)
+		{
+			voronota::viewer::Application::instance().enqueue_script("music-background -melody waiting1");
+		}
 
 		for(std::size_t i=0;i<files.size();i++)
 		{
@@ -45,12 +54,18 @@ int main(const int argc, const char** argv)
 			voronota::viewer::Application::instance().enqueue_script(scripts[i]);
 		}
 
+		if(with_music_background)
+		{
+			voronota::viewer::Application::instance().enqueue_script("music-background -melody stop");
+		}
+
 #ifdef FOR_WEB
 		emscripten_set_main_loop(voronota::viewer::Application::instance_render_frame, 0, 1);
 #else
 		voronota::viewer::Application::instance().run_loop();
 #endif
-		return 0;
+
+		return_status=0;
 	}
 	catch(const std::exception& e)
 	{
@@ -61,7 +76,20 @@ int main(const int argc, const char** argv)
 		std::cerr << "Unknown exception caught." << std::endl;
 	}
 
-	return 1;
+	try
+	{
+		voronota::duktaper::operators::MusicBackground::stop();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << "Exception caught when finalizing: " << e.what() << std::endl;
+	}
+	catch(...)
+	{
+		std::cerr << "Unknown exception caught when finalizing." << std::endl;
+	}
+
+	return return_status;
 }
 
 #ifdef FOR_WEB

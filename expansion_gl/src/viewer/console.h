@@ -711,6 +711,17 @@ private:
 							result="mono";
 						}
 						ImGui::Separator();
+						if(ImGui::Selectable("Enable animation loop"))
+						{
+							result="animate-loop-picked-objects";
+							result+="\nmusic-background -melody streaming1";
+						}
+						if(ImGui::Selectable("Disable animation loop"))
+						{
+							result="animate-none";
+							result+="\nmusic-background -melody stop";
+						}
+						ImGui::Separator();
 						if(ImGui::Selectable("Delete all"))
 						{
 							result="delete-objects";
@@ -999,9 +1010,48 @@ private:
 						{
 							result=std::string("zoom-by-objects -names '")+os.name+"'";
 						}
-						if(object_states.size()>1 && ImGui::Selectable("Align all"))
+						if(object_states.size()>1)
 						{
-							result=std::string("tmalign-many -target '")+os.name+"'";
+							ImGui::Separator();
+
+							if(ImGui::Selectable("Align all"))
+							{
+								const bool with_music_background=(object_states.size()>10);
+								result="";
+								if(with_music_background)
+								{
+									result+="music-background -melody waiting2\n";
+								}
+								result+=std::string("tmalign-many -target '")+os.name+"'";
+								if(with_music_background)
+								{
+									result+="\nmusic-background -melody stop\n";
+								}
+							}
+
+							int num_of_other_picked_objects=0;
+							for(std::size_t j=0;j<object_states.size();j++)
+							{
+								if(j!=i && object_states[j].picked)
+								{
+									num_of_other_picked_objects++;
+								}
+							}
+
+							if(num_of_other_picked_objects>0 && ImGui::Selectable("Align picked"))
+							{
+								const bool with_music_background=(num_of_other_picked_objects>10);
+								result="";
+								if(with_music_background)
+								{
+									result+="music-background -melody waiting2\n";
+								}
+								result+=std::string("tmalign-many -picked -target '")+os.name+"'";
+								if(with_music_background)
+								{
+									result+="\nmusic-background -melody stop\n";
+								}
+							}
 						}
 						ImGui::Separator();
 						if(ImGui::Selectable("Copy name to clipboard"))
