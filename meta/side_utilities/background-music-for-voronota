@@ -21,10 +21,10 @@ then
 	
 	if [ ! -s "$MIDIFILE" ]
 	then
-		MIDIFILE="${HOME}/Music/background/${MELODY}.mid"
+		MIDIFILE="$(find ${HOME}/Music/background/ -type f -name "${MELODY}*.mid" | shuf | head -1)"
 	fi
 		
-	if [ -s "$MIDIFILE" ]
+	if [ -n "$MIDIFILE" ] && [ -s "$MIDIFILE" ]
 	then
 		killall -9 timidity &> /dev/null
 		timidity "$MIDIFILE" &> /dev/null & disown

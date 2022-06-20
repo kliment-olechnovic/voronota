@@ -714,12 +714,12 @@ private:
 						if(ImGui::Selectable("Enable animation loop"))
 						{
 							result="animate-loop-picked-objects";
-							result+="\nmusic-background -melody streaming1";
+							result+="\nmusic-background streaming";
 						}
 						if(ImGui::Selectable("Disable animation loop"))
 						{
 							result="animate-none";
-							result+="\nmusic-background -melody stop";
+							result+="\nmusic-background stop";
 						}
 						ImGui::Separator();
 						if(ImGui::Selectable("Delete all"))
@@ -1020,12 +1020,12 @@ private:
 								result="";
 								if(with_music_background)
 								{
-									result+="music-background -melody waiting2\n";
+									result+="music-background waiting\n";
 								}
 								result+=std::string("tmalign-many -target '")+os.name+"'";
 								if(with_music_background)
 								{
-									result+="\nmusic-background -melody stop\n";
+									result+="\nmusic-background stop\n";
 								}
 							}
 
@@ -1044,12 +1044,12 @@ private:
 								result="";
 								if(with_music_background)
 								{
-									result+="music-background -melody waiting2\n";
+									result+="music-background waiting\n";
 								}
 								result+=std::string("tmalign-many -picked -target '")+os.name+"'";
 								if(with_music_background)
 								{
-									result+="\nmusic-background -melody stop\n";
+									result+="\nmusic-background stop\n";
 								}
 							}
 						}

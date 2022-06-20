@@ -20,6 +20,7 @@ int main(const int argc, const char** argv)
 		app_init_parameters.shader_fragment=command_args_input.get_value_or_default<std::string>("shader-fragment", "_shader_fragment_simple");
 		const std::vector<std::string> files=command_args_input.get_value_vector_or_all_unused_unnamed_values("files");
 		const std::vector<std::string> scripts=command_args_input.get_value_vector_or_default<std::string>("scripts", std::vector<std::string>());
+		const bool musical=command_args_input.get_flag("musical");
 
 		command_args_input.assert_nothing_unusable();
 
@@ -28,14 +29,19 @@ int main(const int argc, const char** argv)
 			throw std::runtime_error(std::string("Failed to init application."));
 		}
 
-		const bool with_music_background=(files.size()>10);
-
 		voronota::viewer::Application::instance().enqueue_script("clear");
-		voronota::viewer::Application::instance().enqueue_script("setup-defaults ; clear");
+		voronota::viewer::Application::instance().enqueue_script("setup-defaults");
 
-		if(with_music_background)
+		if(musical)
 		{
-			voronota::viewer::Application::instance().enqueue_script("music-background -melody waiting1");
+			voronota::viewer::Application::instance().enqueue_script("music-background enable");
+		}
+
+		const bool with_music_background_for_loading=(musical && files.size()>10);
+
+		if(with_music_background_for_loading)
+		{
+			voronota::viewer::Application::instance().enqueue_script("music-background waiting");
 		}
 
 		for(std::size_t i=0;i<files.size();i++)
@@ -54,9 +60,9 @@ int main(const int argc, const char** argv)
 			voronota::viewer::Application::instance().enqueue_script(scripts[i]);
 		}
 
-		if(with_music_background)
+		if(with_music_background_for_loading)
 		{
-			voronota::viewer::Application::instance().enqueue_script("music-background -melody stop");
+			voronota::viewer::Application::instance().enqueue_script("music-background stop");
 		}
 
 #ifdef FOR_WEB
@@ -78,7 +84,7 @@ int main(const int argc, const char** argv)
 
 	try
 	{
-		voronota::duktaper::operators::MusicBackground::stop();
+		voronota::duktaper::operators::MusicBackground::stop_if_was_used();
 	}
 	catch(const std::exception& e)
 	{

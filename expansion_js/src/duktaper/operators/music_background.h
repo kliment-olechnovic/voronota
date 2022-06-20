@@ -22,23 +22,80 @@ public:
 		}
 	};
 
-	std::string melody;
+	std::string action;
 
 	MusicBackground()
 	{
 	}
 
+	MusicBackground(const std::string& action) : action(action)
+	{
+	}
+
 	void initialize(scripting::CommandInput& input)
 	{
-		melody=input.get_value<std::string>("melody");
+		action=input.get_value_or_first_unused_unnamed_value("action");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(CDOD("melody", CDOD::DATATYPE_STRING, "melody name to play, 'stop' to stop playing"));
+		doc.set_option_decription(CDOD("action", CDOD::DATATYPE_STRING, "melody name to play, 'stop', 'disable', or 'enable'"));
 	}
 
 	Result run(void*) const
+	{
+		if(action=="disable")
+		{
+			stop();
+			set_enabled(false);
+		}
+		else if(action=="enable")
+		{
+			set_enabled(true);
+		}
+		else if(action=="stop")
+		{
+			stop();
+		}
+		else
+		{
+			if(is_enabled())
+			{
+				play(action);
+			}
+		}
+
+		Result result;
+		return result;
+	}
+
+	static void set_enabled(const bool enabled)
+	{
+		is_enabled()=enabled;
+	}
+
+	static void stop_if_was_used()
+	{
+		if(was_used())
+		{
+			stop();
+		}
+	}
+
+private:
+	static bool& was_used()
+	{
+		static bool usage_status=false;
+		return usage_status;
+	}
+
+	static bool& is_enabled()
+	{
+		static bool enabling_status=false;
+		return enabling_status;
+	}
+
+	static void play(const std::string& melody)
 	{
 		if(CallShellUtilities::test_if_shell_command_available("background-music-for-voronota"))
 		{
@@ -50,24 +107,11 @@ public:
 				was_used()=true;
 			}
 		}
-
-		Result result;
-		return result;
 	}
 
 	static void stop()
 	{
-		if(was_used())
-		{
-			MusicBackground().init(CMDIN().set("melody", "stop")).run(0);
-		}
-	}
-
-private:
-	static bool& was_used()
-	{
-		static bool status=false;
-		return status;
+		play("stop");
 	}
 };
 
