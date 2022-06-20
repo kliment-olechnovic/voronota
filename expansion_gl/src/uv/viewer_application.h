@@ -613,7 +613,7 @@ protected:
 	{
 	}
 
-	virtual void on_selection(const unsigned int color, const int button_code, const bool mod_ctrl, const bool mod_shift)
+	virtual void on_selection(const unsigned int color, const int button_code, const bool mod_ctrl_left, const bool mod_shift_left, const bool mod_ctrl_right, const bool mod_shift_right)
 	{
 	}
 
@@ -998,7 +998,7 @@ private:
 
 		if(call_for_selection_happenned>0)
 		{
-			on_selection(call_for_selection_color, call_for_selection_happenned, modkeys_status_.ctrl_any(), modkeys_status_.shift_any());
+			on_selection(call_for_selection_color, call_for_selection_happenned, modkeys_status_.ctrl_left, modkeys_status_.shift_left, modkeys_status_.ctrl_right, modkeys_status_.shift_right);
 		}
 	}
 

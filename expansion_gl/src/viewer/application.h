@@ -269,7 +269,7 @@ protected:
 		}
 	}
 
-	void on_selection(const unsigned int drawing_id, const int button_code, const bool mod_ctrl, const bool mod_shift)
+	void on_selection(const unsigned int drawing_id, const int button_code, const bool mod_ctrl_left, const bool mod_shift_left, const bool mod_ctrl_right, const bool mod_shift_right)
 	{
 		if(button_code==2)
 		{
@@ -281,7 +281,7 @@ protected:
 		}
 		{
 			std::ostringstream output_script;
-			if(script_execution_manager_.generate_click_script(drawing_id, button_code, mod_ctrl, mod_shift, output_script))
+			if(script_execution_manager_.generate_click_script(drawing_id, button_code, mod_ctrl_left, mod_shift_left, mod_ctrl_right, mod_shift_right, output_script))
 			{
 				enqueue_script(output_script.str());
 			}
