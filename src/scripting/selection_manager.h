@@ -19,29 +19,49 @@ public:
 		std::set<std::size_t> from_ids;
 		std::string expression_string;
 		bool full_residues;
+		bool full_chains;
 
 		Query() :
 			expression_string("[]"),
-			full_residues(false)
+			full_residues(false),
+			full_chains(false)
 		{
 		}
 
 		explicit Query(const std::string& expression_string) :
 			expression_string(expression_string),
-			full_residues(false)
+			full_residues(false),
+			full_chains(false)
 		{
 		}
 
 		Query(const std::string& expression_string, const bool full_residues) :
 			expression_string(expression_string),
-			full_residues(full_residues)
+			full_residues(full_residues),
+			full_chains(false)
 		{
 		}
 
 		Query(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool full_residues) :
 			from_ids(from_ids),
 			expression_string(expression_string),
-			full_residues(full_residues)
+			full_residues(full_residues),
+			full_chains(false)
+		{
+		}
+
+		Query(const std::string& expression_string, const bool full_residues, const bool full_chains) :
+			expression_string(expression_string),
+			full_residues(full_residues || full_chains),
+			full_chains(full_chains)
+		{
+		}
+
+		Query(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool full_residues, const bool full_chains) :
+			from_ids(from_ids),
+			expression_string(expression_string),
+			full_residues(full_residues || full_chains),
+			full_chains(full_chains)
 		{
 		}
 	};
@@ -103,6 +123,7 @@ public:
 		atoms_ptr_=atoms_ptr;
 		map_of_atoms_selections_.clear();
 		construct_atoms_residues_definition_and_reference();
+		construct_atoms_chains_definition_and_reference();
 		set_contacts(0);
 	}
 
@@ -113,6 +134,7 @@ public:
 			contacts_ptr_=contacts_ptr;
 			map_of_contacts_selections_.clear();
 			construct_contacts_residues_definition_and_reference();
+			construct_contacts_chains_definition_and_reference();
 		}
 		else
 		{
@@ -192,14 +214,35 @@ public:
 			{
 				throw std::runtime_error(std::string("Failed to select atoms with expression '")+query.expression_string+"': "+e.what());
 			}
-			return (query.full_residues ? get_ids_for_full_residues(result, atoms_residues_definition_, atoms_residues_reference_) : result);
+			if(query.full_chains)
+			{
+				return get_ids_for_full_groupings(result, atoms_chains_definition_, atoms_chains_reference_);
+			}
+			else if(query.full_residues)
+			{
+				return get_ids_for_full_groupings(result, atoms_residues_definition_, atoms_residues_reference_);
+			}
+			return result;
 		}
+	}
+
+	std::set<std::size_t> select_atoms_by_contacts(const std::set<std::size_t>& from_ids, const std::set<std::size_t>& contact_ids, const bool full_residues, const bool full_chains) const
+	{
+		const std::set<std::size_t> result=select_atoms_by_contacts(from_ids.empty(), from_ids, contact_ids);
+		if(full_chains)
+		{
+			return get_ids_for_full_groupings(result, atoms_chains_definition_, atoms_chains_reference_);
+		}
+		else if(full_residues)
+		{
+			return get_ids_for_full_groupings(result, atoms_residues_definition_, atoms_residues_reference_);
+		}
+		return result;
 	}
 
 	std::set<std::size_t> select_atoms_by_contacts(const std::set<std::size_t>& from_ids, const std::set<std::size_t>& contact_ids, const bool full_residues) const
 	{
-		const std::set<std::size_t> result=select_atoms_by_contacts(from_ids.empty(), from_ids, contact_ids);
-		return (full_residues ? get_ids_for_full_residues(result, atoms_residues_definition_, atoms_residues_reference_) : result);
+		return select_atoms_by_contacts(from_ids, contact_ids, full_residues, false);
 	}
 
 	std::set<std::size_t> select_atoms_by_contacts(const std::set<std::size_t>& contact_ids, const bool full_residues) const
@@ -277,32 +320,78 @@ public:
 			{
 				throw std::runtime_error(std::string("Failed to select contacts with expression '")+query.expression_string+"': "+e.what());
 			}
-			return (query.full_residues ? get_ids_for_full_residues(result, contacts_residues_definition_, contacts_residues_reference_) : result);
+			if(query.full_chains)
+			{
+				return get_ids_for_full_groupings(result, contacts_chains_definition_, contacts_chains_reference_);
+			}
+			else if(query.full_residues)
+			{
+				return get_ids_for_full_groupings(result, contacts_residues_definition_, contacts_residues_reference_);
+			}
+			return result;
 		}
+	}
+
+	std::set<std::size_t> select_contacts_by_atoms(const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids, const bool full_residues, const bool full_chains) const
+	{
+		const std::set<std::size_t> result=select_contacts_by_atoms(from_ids.empty(), from_ids, atom_ids);
+		if(full_chains)
+		{
+			return get_ids_for_full_groupings(result, contacts_chains_definition_, contacts_chains_reference_);
+		}
+		else if(full_residues)
+		{
+			return get_ids_for_full_groupings(result, contacts_residues_definition_, contacts_residues_reference_);
+		}
+		return result;
 	}
 
 	std::set<std::size_t> select_contacts_by_atoms(const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids, const bool full_residues) const
 	{
-		const std::set<std::size_t> result=select_contacts_by_atoms(from_ids.empty(), from_ids, atom_ids);
-		return (full_residues ? get_ids_for_full_residues(result, contacts_residues_definition_, contacts_residues_reference_) : result);
+		return select_contacts_by_atoms(from_ids, atom_ids, full_residues, false);
+	}
+
+	std::set<std::size_t> select_contacts_by_atoms(const std::set<std::size_t>& atom_ids, const bool full_residues, const bool full_chains) const
+	{
+		return select_contacts_by_atoms(std::set<std::size_t>(), atom_ids, full_residues, full_chains);
 	}
 
 	std::set<std::size_t> select_contacts_by_atoms(const std::set<std::size_t>& atom_ids, const bool full_residues) const
 	{
-		return select_contacts_by_atoms(std::set<std::size_t>(), atom_ids, full_residues);
+		return select_contacts_by_atoms(atom_ids, full_residues, false);
+	}
+
+	std::set<std::size_t> select_contacts_by_atoms_and_atoms(
+			const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2, const bool full_residues, const bool full_chains) const
+	{
+		const std::set<std::size_t> result=select_contacts_by_atoms_and_atoms(from_ids.empty(), from_ids, atom_ids1, atom_ids2);
+		if(full_chains)
+		{
+			return get_ids_for_full_groupings(result, contacts_chains_definition_, contacts_chains_reference_);
+		}
+		else if(full_residues)
+		{
+			return get_ids_for_full_groupings(result, contacts_residues_definition_, contacts_residues_reference_);
+		}
+		return result;
 	}
 
 	std::set<std::size_t> select_contacts_by_atoms_and_atoms(
 			const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2, const bool full_residues) const
 	{
-		const std::set<std::size_t> result=select_contacts_by_atoms_and_atoms(from_ids.empty(), from_ids, atom_ids1, atom_ids2);
-		return (full_residues ? get_ids_for_full_residues(result, contacts_residues_definition_, contacts_residues_reference_) : result);
+		return select_contacts_by_atoms_and_atoms(from_ids, atom_ids1, atom_ids2, full_residues, false);
+	}
+
+	std::set<std::size_t> select_contacts_by_atoms_and_atoms(
+			const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2, const bool full_residues, const bool full_chains) const
+	{
+		return select_contacts_by_atoms_and_atoms(std::set<std::size_t>(), atom_ids1, atom_ids2, full_residues, full_chains);
 	}
 
 	std::set<std::size_t> select_contacts_by_atoms_and_atoms(
 			const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2, const bool full_residues) const
 	{
-		return select_contacts_by_atoms_and_atoms(std::set<std::size_t>(), atom_ids1, atom_ids2, full_residues);
+		return select_contacts_by_atoms_and_atoms(atom_ids1, atom_ids2, full_residues, false);
 	}
 
 	std::set<std::size_t> select_contacts_by_set_of_crads_pairs(const std::set<common::ChainResidueAtomDescriptorsPair>& set_of_crads_pairs) const
@@ -479,23 +568,23 @@ private:
 		return result;
 	}
 
-	static std::set<std::size_t> get_ids_for_full_residues(
+	static std::set<std::size_t> get_ids_for_full_groupings(
 			const std::set<std::size_t>& initial_ids,
-			const std::vector< std::vector<std::size_t> >& residues_definition,
-			const std::vector<std::size_t>& residues_reference)
+			const std::vector< std::vector<std::size_t> >& groupings_definition,
+			const std::vector<std::size_t>& groupings_reference)
 	{
 		std::set<std::size_t> result;
 		for(std::set<std::size_t>::const_iterator it=initial_ids.begin();it!=initial_ids.end();++it)
 		{
 			const std::size_t id=(*it);
-			if(id<residues_reference.size() && residues_reference[id]<residues_definition.size())
+			if(id<groupings_reference.size() && groupings_reference[id]<groupings_definition.size())
 			{
-				const std::vector<std::size_t>& residue_ids=residues_definition[residues_reference[id]];
+				const std::vector<std::size_t>& residue_ids=groupings_definition[groupings_reference[id]];
 				result.insert(residue_ids.begin(), residue_ids.end());
 			}
 			else
 			{
-				throw std::runtime_error(std::string("Invalid mapping of residue."));
+				throw std::runtime_error(std::string("Invalid mapping of grouping."));
 			}
 		}
 		return result;
@@ -788,12 +877,77 @@ private:
 		}
 	}
 
+	void construct_atoms_chains_definition_and_reference()
+	{
+		atoms_chains_definition_.clear();
+		atoms_chains_reference_.clear();
+		if(!atoms().empty())
+		{
+			std::map<common::ChainResidueAtomDescriptor, std::vector<std::size_t> > map_of_chains;
+			for(std::size_t i=0;i<atoms().size();i++)
+			{
+				map_of_chains[atoms()[i].crad.without_some_info(true, true, true, true)].push_back(i);
+			}
+
+			atoms_chains_definition_.resize(map_of_chains.size());
+			atoms_chains_reference_.resize(atoms().size(), 0);
+
+			std::size_t chain_id=0;
+			for(std::map<common::ChainResidueAtomDescriptor, std::vector<std::size_t> >::const_iterator it=map_of_chains.begin();it!=map_of_chains.end();++it)
+			{
+				const std::vector<std::size_t>& atoms_ids=it->second;
+				atoms_chains_definition_[chain_id]=atoms_ids;
+				for(std::size_t i=0;i<atoms_ids.size();i++)
+				{
+					atoms_chains_reference_[atoms_ids[i]]=chain_id;
+				}
+				chain_id++;
+			}
+		}
+	}
+
+	void construct_contacts_chains_definition_and_reference()
+	{
+		contacts_chains_definition_.clear();
+		contacts_chains_reference_.clear();
+		if(!contacts().empty())
+		{
+			std::map<common::ChainResidueAtomDescriptorsPair, std::vector<std::size_t> > map_of_chains;
+			for(std::size_t i=0;i<contacts().size();i++)
+			{
+				map_of_chains[common::ChainResidueAtomDescriptorsPair(
+										atoms()[contacts()[i].ids[0]].crad.without_some_info(true, true, true, true),
+										atoms()[contacts()[i].ids[1]].crad.without_some_info(true, true, true, true))
+								].push_back(i);
+			}
+
+			contacts_chains_definition_.resize(map_of_chains.size());
+			contacts_chains_reference_.resize(contacts().size(), 0);
+
+			std::size_t chain_id=0;
+			for(std::map<common::ChainResidueAtomDescriptorsPair, std::vector<std::size_t> >::const_iterator it=map_of_chains.begin();it!=map_of_chains.end();++it)
+			{
+				const std::vector<std::size_t>& contacts_ids=it->second;
+				contacts_chains_definition_[chain_id]=contacts_ids;
+				for(std::size_t i=0;i<contacts_ids.size();i++)
+				{
+					contacts_chains_reference_[contacts_ids[i]]=chain_id;
+				}
+				chain_id++;
+			}
+		}
+	}
+
 	const std::vector<Atom>* atoms_ptr_;
 	const std::vector<Contact>* contacts_ptr_;
 	std::vector< std::vector<std::size_t> > atoms_residues_definition_;
 	std::vector<std::size_t> atoms_residues_reference_;
 	std::vector< std::vector<std::size_t> > contacts_residues_definition_;
 	std::vector<std::size_t> contacts_residues_reference_;
+	std::vector< std::vector<std::size_t> > atoms_chains_definition_;
+	std::vector<std::size_t> atoms_chains_reference_;
+	std::vector< std::vector<std::size_t> > contacts_chains_definition_;
+	std::vector<std::size_t> contacts_chains_reference_;
 	std::map< std::string, std::set<std::size_t> > map_of_atoms_selections_;
 	std::map< std::string, std::set<std::size_t> > map_of_contacts_selections_;
 };

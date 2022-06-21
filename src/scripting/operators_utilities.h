@@ -27,6 +27,7 @@ public:
 	{
 		const std::string type_for_expression=prefix+"use";
 		const std::string type_for_full_residues=prefix+"full-residues";
+		const std::string type_for_full_chains=prefix+"full-chains";
 		const std::string type_for_forced_id=prefix+"id";
 
 		SelectionManager::Query query(default_expression);
@@ -41,6 +42,7 @@ public:
 		}
 
 		query.full_residues=input.get_flag(type_for_full_residues);
+		query.full_chains=input.get_flag(type_for_full_chains);
 
 		{
 			const std::vector<std::size_t> forced_ids_vector=input.get_value_vector_or_default<std::size_t>(type_for_forced_id, std::vector<std::size_t>());
@@ -57,6 +59,7 @@ public:
 	{
 		doc.set_option_decription(CDOD(prefix+"use", CDOD::DATATYPE_STRING, "selection expression", default_expression));
 		doc.set_option_decription(CDOD(prefix+"full-residues", CDOD::DATATYPE_BOOL, "flag to consider full residues"));
+		doc.set_option_decription(CDOD(prefix+"full-chains", CDOD::DATATYPE_BOOL, "flag to consider full chains"));
 		doc.set_option_decription(CDOD(prefix+"id", CDOD::DATATYPE_INT_ARRAY, "selection identifiers", ""));
 	}
 

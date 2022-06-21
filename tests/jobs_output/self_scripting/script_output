@@ -882,6 +882,12 @@
             "description":"flag to consider full residues",
             "default":"false"},
           {
+            "name":"full-chains",
+            "required":false,
+            "type":"bool",
+            "description":"flag to consider full chains",
+            "default":"false"},
+          {
             "name":"id",
             "required":false,
             "type":"ints",
