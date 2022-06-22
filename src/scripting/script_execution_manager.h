@@ -631,10 +631,11 @@ private:
 		}
 
 	protected:
-		void prepare(CongregationOfDataManagers& congregation_of_data_managers, CommandInput&) const
+		void prepare(CongregationOfDataManagers& congregation_of_data_managers, CommandInput& input) const
 		{
 			congregation_of_data_managers.reset_change_indicator();
 			congregation_of_data_managers.reset_change_indicators_of_all_objects();
+			congregation_of_data_managers.sync_selections_with_display_states_of_all_objects_if_requested_in_string(input.get_canonical_input_command_string());
 		}
 	};
 

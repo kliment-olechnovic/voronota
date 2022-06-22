@@ -189,6 +189,14 @@ public:
 		}
 	}
 
+	void sync_selections_with_display_states_of_all_objects_if_requested_in_string(const std::string& request)
+	{
+		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
+		{
+			it->data_manager.sync_selections_with_display_states_if_requested_in_string(request);
+		}
+	}
+
 	std::vector<DataManager*> get_objects(const ObjectQuery& query)
 	{
 		std::vector<DataManager*> result;
