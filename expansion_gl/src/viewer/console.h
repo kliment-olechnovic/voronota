@@ -699,7 +699,9 @@ private:
 						{
 							result="zoom-by-objects";
 						}
+
 						ImGui::Separator();
+
 						if(ImGui::Selectable("Enable grid"))
 						{
 							result="grid-by-object";
@@ -708,7 +710,9 @@ private:
 						{
 							result="mono";
 						}
+
 						ImGui::Separator();
+
 						if(ImGui::Selectable("Start animation"))
 						{
 							result="animate-loop-picked-objects";
@@ -719,6 +723,7 @@ private:
 							result="animate-none";
 							result+="\nmusic-background stop";
 						}
+
 						ImGui::Separator();
 
 						{
@@ -1404,6 +1409,44 @@ private:
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					ImGui::TextUnformatted(os.name.c_str());
 					ImGui::PopStyleColor();
+
+					{
+						const std::string submenu_id=std::string("Rename##submenu_rename_")+os.name;
+						if(ImGui::BeginPopupContextItem(submenu_id.c_str(), 1))
+						{
+							static std::map< std::string, std::vector<char> > renaming_buffers;
+							std::vector<char>& renaming_buffer=renaming_buffers[os.name];
+							if(renaming_buffer.empty())
+							{
+								renaming_buffer=std::vector<char>(os.name.begin(), os.name.end());
+								renaming_buffer.resize(os.name.size()+128, 0);
+							}
+							const std::string textbox_id=std::string("##rename_")+os.name;
+							ImGui::InputText(textbox_id.c_str(), renaming_buffer.data(), 128);
+							{
+								const std::string button_id=std::string("OK##button_rename_ok_")+os.name;
+								if(ImGui::Button(button_id.c_str()))
+								{
+									const std::string newname(renaming_buffer.data());
+									if(!newname.empty() && newname!=os.name)
+									{
+										result=std::string("rename-object '")+os.name+"' '"+newname+"'";
+										renaming_buffers.erase(os.name);
+									}
+									ImGui::CloseCurrentPopup();
+								}
+							}
+							ImGui::SameLine();
+							{
+								const std::string button_id=std::string("Cancel##button_rename_cancel_")+os.name;
+								if(ImGui::Button(button_id.c_str()))
+								{
+									ImGui::CloseCurrentPopup();
+								}
+							}
+							ImGui::EndPopup();
+						}
+					}
 				}
 			}
 		}
