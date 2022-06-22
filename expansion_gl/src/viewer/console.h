@@ -660,11 +660,10 @@ private:
 					summary.visible=(summary.visible || os.visible);
 				}
 				{
-					const std::string checkbox_id=std::string("##checkbox_pick");
-					bool picked=summary.picked;
-					if(ImGui::Checkbox(checkbox_id.c_str(), &picked))
+					const std::string button_id=std::string("P##button_picking_all");
+					if(ImGui::Button(button_id.c_str(), ImVec2(19,0)))
 					{
-						if(picked)
+						if(!summary.picked)
 						{
 							result="pick-objects";
 						}
@@ -676,11 +675,10 @@ private:
 				}
 				ImGui::SameLine();
 				{
-					const std::string checkbox_id=std::string("##checkbox_show");
-					bool visible=summary.visible;
-					if(ImGui::Checkbox(checkbox_id.c_str(), &visible))
+					const std::string button_id=std::string("V##button_visibility_all");
+					if(ImGui::Button(button_id.c_str(), ImVec2(19,0)))
 					{
-						if(visible)
+						if(!summary.visible)
 						{
 							result="show-objects";
 						}
@@ -694,7 +692,7 @@ private:
 				{
 					const std::string button_id=std::string("A##button_actions");
 					const std::string menu_id=std::string("Actions##menu_actions");
-					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(ImGui::Selectable("Zoom"))
@@ -737,7 +735,7 @@ private:
 				{
 					const std::string button_id=std::string("S##button_show");
 					const std::string menu_id=std::string("Show##menu_show");
-					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Show:");
@@ -764,7 +762,7 @@ private:
 				{
 					const std::string button_id=std::string("H##button_hide");
 					const std::string menu_id=std::string("Hide##menu_hide");
-					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Hide:");
@@ -800,7 +798,7 @@ private:
 				{
 					const std::string button_id=std::string("C##button_color");
 					const std::string menu_id=std::string("Color##menu_color");
-					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Spectrum:");
@@ -1003,7 +1001,7 @@ private:
 				{
 					const std::string button_id=std::string("A##button_actions_")+os.name;
 					const std::string menu_id=std::string("Actions##menu_actions_")+os.name;
-					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(ImGui::Selectable("Zoom"))
@@ -1070,7 +1068,7 @@ private:
 				{
 					const std::string button_id=std::string("S##button_show_")+os.name;
 					const std::string menu_id=std::string("Show##menu_show_")+os.name;
-					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Show:");
@@ -1097,7 +1095,7 @@ private:
 				{
 					const std::string button_id=std::string("H##button_hide_")+os.name;
 					const std::string menu_id=std::string("Hide##menu_hide_")+os.name;
-					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Hide:");
@@ -1133,7 +1131,7 @@ private:
 				{
 					const std::string button_id=std::string("C##button_color_")+os.name;
 					const std::string menu_id=std::string("Color##menu_color_")+os.name;
-					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Spectrum:");
