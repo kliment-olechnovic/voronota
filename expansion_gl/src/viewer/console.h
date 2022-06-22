@@ -1071,6 +1071,24 @@ private:
 								ImGui::CloseCurrentPopup();
 							}
 						}
+
+						ImGui::Separator();
+
+						if(ImGui::Selectable("[_marked]"))
+						{
+							atoms_selection_string()="[_marked]";
+						}
+
+						if(ImGui::Selectable("[-protein]"))
+						{
+							atoms_selection_string()="[-protein]";
+						}
+
+						if(ImGui::Selectable("[-nucleic]"))
+						{
+							atoms_selection_string()="[-nucleic]";
+						}
+
 						ImGui::EndPopup();
 					}
 				}
