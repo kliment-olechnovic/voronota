@@ -157,7 +157,7 @@ protected:
 	{
 		if(action==GLFW_PRESS)
 		{
-			if(key==GLFW_KEY_ENTER || key==GLFW_KEY_SPACE || key==GLFW_KEY_UP || key==GLFW_KEY_DOWN)
+			if(key==GLFW_KEY_ENTER || key==GLFW_KEY_ESCAPE || key==GLFW_KEY_UP || key==GLFW_KEY_DOWN)
 			{
 				if(hovered())
 				{

@@ -753,11 +753,11 @@ private:
 					{
 						if(ImGui::Selectable("Mark atoms"))
 						{
-							result="mark-atoms";
+							result=std::string("mark-atoms -use (")+atoms_selection_string()+")";
 						}
 						if(ImGui::Selectable("Unmark atoms"))
 						{
-							result="unmark-atoms";
+							result=std::string("unmark-atoms -use (")+atoms_selection_string()+")";
 						}
 
 						ImGui::Separator();
@@ -768,23 +768,23 @@ private:
 
 							if(ImGui::Selectable("Restrict to marked"))
 							{
-								result="restrict-atoms [_marked]";
+								result=std::string("restrict-atoms -use (([_marked]) and (")+atoms_selection_string()+"))";
 							}
 							if(ImGui::Selectable("Restrict to unmarked"))
 							{
-								result="restrict-atoms (not [_marked])";
+								result=std::string("restrict-atoms -use ((not [_marked]) and (")+atoms_selection_string()+"))";
 							}
 							if(ImGui::Selectable("Restrict to protein or nucleic atoms"))
 							{
-								result="restrict-atoms ([-protein] or [-nucleic])";
+								result=std::string("restrict-atoms -use (([-protein] or [-nucleic]) and (")+atoms_selection_string()+"))";
 							}
 							if(ImGui::Selectable("Restrict to protein atoms"))
 							{
-								result="restrict-atoms [-protein]";
+								result=std::string("restrict-atoms -use (([-protein]) and (")+atoms_selection_string()+"))";
 							}
 							if(ImGui::Selectable("Restrict to nucleic atoms"))
 							{
-								result="restrict-atoms [-nucleic]";
+								result=std::string("restrict-atoms -use (([-nucleic]) and (")+atoms_selection_string()+"))";
 							}
 
 							ImGui::PopStyleColor();
@@ -794,51 +794,51 @@ private:
 				}
 				ImGui::SameLine();
 				{
-					const std::string button_id=std::string("S##button_show");
-					const std::string menu_id=std::string("Show##menu_show");
+					const std::string button_id=std::string("D##button_display");
+					const std::string menu_id=std::string("Display##menu_show");
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Show atoms:");
-						if(ImGui::Selectable("  cartoon"))
+						if(ImGui::Selectable("  cartoon##show"))
 						{
-							result="show-atoms -rep cartoon";
+							result=std::string("show-atoms -rep cartoon -use (")+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  trace"))
+						if(ImGui::Selectable("  trace##show"))
 						{
-							result="show-atoms -rep trace";
+							result=std::string("show-atoms -rep trace -use (")+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  sticks"))
+						if(ImGui::Selectable("  sticks##show"))
 						{
-							result="show-atoms -rep sticks";
+							result=std::string("show-atoms -rep sticks -use (")+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  balls"))
+						if(ImGui::Selectable("  balls##show"))
 						{
-							result="show-atoms -rep balls";
+							result=std::string("show-atoms -rep balls -use (")+atoms_selection_string()+")";
 						}
 
 						ImGui::Separator();
 
 						ImGui::Selectable("Hide atoms:");
-						if(ImGui::Selectable("  all"))
+						if(ImGui::Selectable("  all##hide"))
 						{
-							result="hide-atoms";
+							result=std::string("hide-atoms -use (")+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  cartoon"))
+						if(ImGui::Selectable("  cartoon##hide"))
 						{
-							result="hide-atoms -rep cartoon";
+							result=std::string("hide-atoms -rep cartoon -use (")+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  trace"))
+						if(ImGui::Selectable("  trace##hide"))
 						{
-							result="hide-atoms -rep trace";
+							result=std::string("hide-atoms -rep trace -use (")+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  sticks"))
+						if(ImGui::Selectable("  sticks##hide"))
 						{
-							result="hide-atoms -rep sticks";
+							result=std::string("hide-atoms -rep sticks -use (")+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  balls"))
+						if(ImGui::Selectable("  balls##hide"))
 						{
-							result="hide-atoms -rep balls";
+							result=std::string("hide-atoms -rep balls -use (")+atoms_selection_string()+")";
 						}
 
 						ImGui::EndPopup();
@@ -855,57 +855,57 @@ private:
 
 						if(ImGui::Selectable("  by residue number"))
 						{
-							result="spectrum-atoms";
+							result=std::string("spectrum-atoms -use (")+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by residue ID"))
 						{
-							result="spectrum-atoms -by residue-id";
+							result=std::string("spectrum-atoms -by residue-id -use (")+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by chain"))
 						{
-							result="spectrum-atoms -by chain";
+							result=std::string("spectrum-atoms -by chain -use (")+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by chain randomly"))
 						{
-							result="spectrum-atoms -by chain -scheme random";
+							result=std::string("spectrum-atoms -by chain -scheme random -use (")+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by secondary structure"))
 						{
-							result="spectrum-atoms -by secondary-structure";
+							result=std::string("spectrum-atoms -by secondary-structure -use (")+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by atom type"))
 						{
-							result="spectrum-atoms -by atom-type";
+							result=std::string("spectrum-atoms -by atom-type -use (")+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by hydropathy"))
 						{
-							result="spectrum-atoms -by hydropathy";
+							result=std::string("spectrum-atoms -by hydropathy -use (")+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by B-factor, blue-white-red"))
 						{
-							result="spectrum-atoms -adjunct tf -scheme bwr";
+							result=std::string("spectrum-atoms -adjunct tf -scheme bwr -use (")+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by B-factor, red-white-blue"))
 						{
-							result="spectrum-atoms -adjunct tf -scheme rwb";
+							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -use (")+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by B-factor, blue-white-red, 0-100"))
 						{
-							result="spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100";
+							result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100 -use (")+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by B-factor, red-white-blue, 0-100"))
 						{
-							result="spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100";
+							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100 -use (")+atoms_selection_string()+")";
 						}
 
 						ImGui::Separator();
@@ -914,7 +914,7 @@ private:
 
 						if(ImGui::Selectable("  random"))
 						{
-							result="color-atoms -next-random-color";
+							result=std::string("color-atoms -next-random-color -use (")+atoms_selection_string()+")";
 						}
 
 						{
@@ -922,7 +922,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  red"))
 							{
-								result="color-atoms -col 0xFF0000";
+								result=std::string("color-atoms -col 0xFF0000 -use (")+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -932,7 +932,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  yellow"))
 							{
-								result="color-atoms -col 0xFFFF00";
+								result=std::string("color-atoms -col 0xFFFF00 -use (")+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -941,7 +941,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  green"))
 							{
-								result="color-atoms -col 0x00FF00";
+								result=std::string("color-atoms -col 0x00FF00 -use (")+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -951,7 +951,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  cyan"))
 							{
-								result="color-atoms -col 0x00FFFF";
+								result=std::string("color-atoms -col 0x00FFFF -use (")+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -961,7 +961,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  blue"))
 							{
-								result="color-atoms -col 0x0000FF";
+								result=std::string("color-atoms -col 0x0000FF -use (")+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -971,7 +971,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  magenta"))
 							{
-								result="color-atoms -col 0xFF00FF";
+								result=std::string("color-atoms -col 0xFF00FF -use (")+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -981,7 +981,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  white"))
 							{
-								result="color-atoms -col white";
+								result=std::string("color-atoms -col white -use (")+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -991,7 +991,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  light gray"))
 							{
-								result="color-atoms -col 0xAAAAAA";
+								result=std::string("color-atoms -col 0xAAAAAA -use (")+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -1001,11 +1001,76 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  dark gray"))
 							{
-								result="color-atoms -col 0x555555";
+								result=std::string("color-atoms -col 0x555555 -use (")+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
 
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::SameLine();
+				{
+					ImGui::TextUnformatted("atoms=");
+					ImGui::SameLine();
+					{
+						const std::string button_id=atoms_selection_string()+"##button_atoms_selection_change";
+						ImGui::Button(button_id.c_str());
+					}
+					const std::string submenu_id=std::string("Rename##submenu_atoms_selection");
+					if(ImGui::BeginPopupContextItem(submenu_id.c_str(), 0))
+					{
+						static std::vector<char> atoms_selection_buffer;
+						if(atoms_selection_buffer.empty())
+						{
+							atoms_selection_buffer=std::vector<char>(atoms_selection_string().begin(), atoms_selection_string().end());
+							atoms_selection_buffer.resize(atoms_selection_string().size()+128, 0);
+						}
+						const std::string textbox_id=std::string("##atoms_selection");
+						if(ImGui::InputText(textbox_id.c_str(), atoms_selection_buffer.data(), 128, ImGuiInputTextFlags_EnterReturnsTrue))
+						{
+							const std::string newvalue(atoms_selection_buffer.data());
+							if(!newvalue.empty())
+							{
+								atoms_selection_string()=newvalue;
+								atoms_selection_buffer.clear();
+								ImGui::CloseCurrentPopup();
+							}
+						}
+						{
+							const std::string button_id=std::string("OK##button_atoms_selection_ok");
+							if(ImGui::Button(button_id.c_str()))
+							{
+								const std::string newvalue(atoms_selection_buffer.data());
+								if(!newvalue.empty())
+								{
+									atoms_selection_string()=newvalue;
+								}
+								else
+								{
+									atoms_selection_string()="[]";
+								}
+								atoms_selection_buffer.clear();
+								ImGui::CloseCurrentPopup();
+							}
+						}
+						ImGui::SameLine();
+						{
+							const std::string button_id=std::string("Cancel##button_atoms_selection_cancel");
+							if(ImGui::Button(button_id.c_str()))
+							{
+								ImGui::CloseCurrentPopup();
+							}
+						}
+						ImGui::SameLine();
+						{
+							const std::string button_id=std::string("Reset##button_atoms_selection_reset");
+							if(ImGui::Button(button_id.c_str()))
+							{
+								atoms_selection_string()="[]";
+								ImGui::CloseCurrentPopup();
+							}
+						}
 						ImGui::EndPopup();
 					}
 				}
@@ -1092,11 +1157,11 @@ private:
 					{
 						if(ImGui::Selectable("Mark atoms"))
 						{
-							result=std::string("mark-atoms -on-objects '")+os.name+"'";
+							result=std::string("mark-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 						if(ImGui::Selectable("Unmark atoms"))
 						{
-							result=std::string("unmark-atoms -on-objects '")+os.name+"'";
+							result=std::string("unmark-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						if(object_states.size()>1)
@@ -1114,7 +1179,7 @@ private:
 								{
 									result+="music-background waiting\n";
 								}
-								result+=std::string("tmalign-many -target '")+os.name+"'";
+								result+=std::string("tmalign-many -target '")+os.name+"' -target-sel ("+atoms_selection_string()+")";
 								if(with_music_background)
 								{
 									result+="\nmusic-background stop\n";
@@ -1138,7 +1203,7 @@ private:
 								{
 									result+="music-background waiting\n";
 								}
-								result+=std::string("tmalign-many -picked -target '")+os.name+"'";
+								result+=std::string("tmalign-many -picked -target '")+os.name+"' -use ("+atoms_selection_string()+")";
 								if(with_music_background)
 								{
 									result+="\nmusic-background stop\n";
@@ -1156,23 +1221,23 @@ private:
 
 							if(ImGui::Selectable("Restrict to marked"))
 							{
-								result=std::string("restrict-atoms [_marked] -on-objects '")+os.name+"'";
+								result=std::string("restrict-atoms [_marked] -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							if(ImGui::Selectable("Restrict to unmarked"))
 							{
-								result=std::string("restrict-atoms (not [_marked]) -on-objects '")+os.name+"'";
+								result=std::string("restrict-atoms (not [_marked]) -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							if(ImGui::Selectable("Restrict to protein or nucleic atoms"))
 							{
-								result=std::string("restrict-atoms ([-protein] or [-nucleic]) -on-objects '")+os.name+"'";
+								result=std::string("restrict-atoms ([-protein] or [-nucleic]) -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							if(ImGui::Selectable("Restrict to protein atoms"))
 							{
-								result=std::string("restrict-atoms [-protein] -on-objects '")+os.name+"'";
+								result=std::string("restrict-atoms [-protein] -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							if(ImGui::Selectable("Restrict to nucleic atoms"))
 							{
-								result=std::string("restrict-atoms [-nucleic] -on-objects '")+os.name+"'";
+								result=std::string("restrict-atoms [-nucleic] -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 
 							ImGui::PopStyleColor();
@@ -1183,51 +1248,51 @@ private:
 				}
 				ImGui::SameLine();
 				{
-					const std::string button_id=std::string("S##button_show_")+os.name;
-					const std::string menu_id=std::string("Show##menu_show_")+os.name;
+					const std::string button_id=std::string("D##button_display_")+os.name;
+					const std::string menu_id=std::string("Display##menu_display_")+os.name;
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Show atoms:");
-						if(ImGui::Selectable("  cartoon"))
+						if(ImGui::Selectable("  cartoon##show"))
 						{
-							result=std::string("show-atoms -rep cartoon -on-objects '")+os.name+"'";
+							result=std::string("show-atoms -rep cartoon -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  trace"))
+						if(ImGui::Selectable("  trace##show"))
 						{
-							result=std::string("show-atoms -rep trace -on-objects '")+os.name+"'";
+							result=std::string("show-atoms -rep trace -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  sticks"))
+						if(ImGui::Selectable("  sticks##show"))
 						{
-							result=std::string("show-atoms -rep sticks -on-objects '")+os.name+"'";
+							result=std::string("show-atoms -rep sticks -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  balls"))
+						if(ImGui::Selectable("  balls##show"))
 						{
-							result=std::string("show-atoms -rep balls -on-objects '")+os.name+"'";
+							result=std::string("show-atoms -rep balls -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						ImGui::Separator();
 
 						ImGui::Selectable("Hide atoms:");
-						if(ImGui::Selectable("  all"))
+						if(ImGui::Selectable("  all##hide"))
 						{
-							result=std::string("hide-atoms -on-objects '")+os.name+"'";
+							result=std::string("hide-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  cartoon"))
+						if(ImGui::Selectable("  cartoon##hide"))
 						{
-							result=std::string("hide-atoms -rep cartoon -on-objects '")+os.name+"'";
+							result=std::string("hide-atoms -rep cartoon -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  trace"))
+						if(ImGui::Selectable("  trace##hide"))
 						{
-							result=std::string("hide-atoms -rep trace -on-objects '")+os.name+"'";
+							result=std::string("hide-atoms -rep trace -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  sticks"))
+						if(ImGui::Selectable("  sticks##hide"))
 						{
-							result=std::string("hide-atoms -rep sticks -on-objects '")+os.name+"'";
+							result=std::string("hide-atoms -rep sticks -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
-						if(ImGui::Selectable("  balls"))
+						if(ImGui::Selectable("  balls##hide"))
 						{
-							result=std::string("hide-atoms -rep balls -on-objects '")+os.name+"'";
+							result=std::string("hide-atoms -rep balls -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						ImGui::EndPopup();
@@ -1244,57 +1309,57 @@ private:
 
 						if(ImGui::Selectable("  by residue number"))
 						{
-							result=std::string("spectrum-atoms -on-objects '")+os.name+"'";
+							result=std::string("spectrum-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by residue ID"))
 						{
-							result=std::string("spectrum-atoms -by residue-id -on-objects '")+os.name+"'";
+							result=std::string("spectrum-atoms -by residue-id -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by chain"))
 						{
-							result=std::string("spectrum-atoms -by chain -on-objects '")+os.name+"'";
+							result=std::string("spectrum-atoms -by chain -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by chain randomly"))
 						{
-							result=std::string("spectrum-atoms -by chain -scheme random -on-objects '")+os.name+"'";
+							result=std::string("spectrum-atoms -by chain -scheme random -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by secondary structure"))
 						{
-							result=std::string("spectrum-atoms -by secondary-structure -on-objects '")+os.name+"'";
+							result=std::string("spectrum-atoms -by secondary-structure -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by atom type"))
 						{
-							result=std::string("spectrum-atoms -by atom-type -on-objects '")+os.name+"'";
+							result=std::string("spectrum-atoms -by atom-type -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by hydropathy"))
 						{
-							result=std::string("spectrum-atoms -by hydropathy -on-objects '")+os.name+"'";
+							result=std::string("spectrum-atoms -by hydropathy -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by B-factor, blue-white-red"))
 						{
-							result=std::string("spectrum-atoms -adjunct tf -scheme bwr -on-objects '")+os.name+"'";
+							result=std::string("spectrum-atoms -adjunct tf -scheme bwr -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by B-factor, red-white-blue"))
 						{
-							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -on-objects '")+os.name+"'";
+							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by B-factor, blue-white-red, 0-100"))
 						{
-							result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100 -on-objects '")+os.name+"'";
+							result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						if(ImGui::Selectable("  by B-factor, red-white-blue, 0-100"))
 						{
-							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100 -on-objects '")+os.name+"'";
+							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						ImGui::Separator();
@@ -1303,7 +1368,7 @@ private:
 
 						if(ImGui::Selectable("  random"))
 						{
-							result=std::string("color-atoms -next-random-color -on-objects '")+os.name+"'";
+							result=std::string("color-atoms -next-random-color -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 						}
 
 						{
@@ -1311,7 +1376,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  red"))
 							{
-								result=std::string("color-atoms -col 0xFF0000 -on-objects '")+os.name+"'";
+								result=std::string("color-atoms -col 0xFF0000 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -1321,7 +1386,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  yellow"))
 							{
-								result=std::string("color-atoms -col 0xFFFF00 -on-objects '")+os.name+"'";
+								result=std::string("color-atoms -col 0xFFFF00 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -1330,7 +1395,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  green"))
 							{
-								result=std::string("color-atoms -col 0x00FF00 -on-objects '")+os.name+"'";
+								result=std::string("color-atoms -col 0x00FF00 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -1340,7 +1405,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  cyan"))
 							{
-								result=std::string("color-atoms -col 0x00FFFF -on-objects '")+os.name+"'";
+								result=std::string("color-atoms -col 0x00FFFF -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -1350,7 +1415,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  blue"))
 							{
-								result=std::string("color-atoms -col 0x0000FF -on-objects '")+os.name+"'";
+								result=std::string("color-atoms -col 0x0000FF -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -1360,7 +1425,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  magenta"))
 							{
-								result=std::string("color-atoms -col 0xFF00FF -on-objects '")+os.name+"'";
+								result=std::string("color-atoms -col 0xFF00FF -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -1370,7 +1435,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  white"))
 							{
-								result=std::string("color-atoms -col white -on-objects '")+os.name+"'";
+								result=std::string("color-atoms -col white -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -1380,7 +1445,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  light gray"))
 							{
-								result=std::string("color-atoms -col 0xAAAAAA -on-objects '")+os.name+"'";
+								result=std::string("color-atoms -col 0xAAAAAA -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -1390,7 +1455,7 @@ private:
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 							if(ImGui::Selectable("  dark gray"))
 							{
-								result=std::string("color-atoms -col 0x555555 -on-objects '")+os.name+"'";
+								result=std::string("color-atoms -col 0x555555 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 							ImGui::PopStyleColor();
 						}
@@ -1422,7 +1487,16 @@ private:
 								renaming_buffer.resize(os.name.size()+128, 0);
 							}
 							const std::string textbox_id=std::string("##rename_")+os.name;
-							ImGui::InputText(textbox_id.c_str(), renaming_buffer.data(), 128);
+							if(ImGui::InputText(textbox_id.c_str(), renaming_buffer.data(), 128, ImGuiInputTextFlags_EnterReturnsTrue))
+							{
+								const std::string newname(renaming_buffer.data());
+								if(!newname.empty() && newname!=os.name)
+								{
+									result=std::string("rename-object '")+os.name+"' '"+newname+"'";
+									renaming_buffers.erase(os.name);
+								}
+								ImGui::CloseCurrentPopup();
+							}
 							{
 								const std::string button_id=std::string("OK##button_rename_ok_")+os.name;
 								if(ImGui::Button(button_id.c_str()))
@@ -1464,6 +1538,12 @@ private:
 	{
 		static std::string str="---";
 		return str;
+	}
+
+	static std::string& atoms_selection_string()
+	{
+		static std::string atoms_selection_string_value="[]";
+		return atoms_selection_string_value;
 	}
 
 	float current_width_;
