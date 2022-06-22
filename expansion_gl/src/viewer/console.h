@@ -690,8 +690,8 @@ private:
 				}
 				ImGui::SameLine();
 				{
-					const std::string button_id=std::string("A##button_actions");
-					const std::string menu_id=std::string("Actions##menu_actions");
+					const std::string button_id=std::string("O##button_objects");
+					const std::string menu_id=std::string("Objects##menu_objects");
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
@@ -700,33 +700,89 @@ private:
 							result="zoom-by-objects";
 						}
 						ImGui::Separator();
-						if(ImGui::Selectable("Enable grid view"))
+						if(ImGui::Selectable("Enable grid"))
 						{
 							result="grid-by-object";
 						}
-						if(ImGui::Selectable("Disable grid view"))
+						if(ImGui::Selectable("Disable grid"))
 						{
 							result="mono";
 						}
 						ImGui::Separator();
-						if(ImGui::Selectable("Enable animation loop"))
+						if(ImGui::Selectable("Start animation"))
 						{
 							result="animate-loop-picked-objects";
 							result+="\nmusic-background streaming";
 						}
-						if(ImGui::Selectable("Disable animation loop"))
+						if(ImGui::Selectable("Stop animation"))
 						{
 							result="animate-none";
 							result+="\nmusic-background stop";
 						}
 						ImGui::Separator();
-						if(ImGui::Selectable("Delete all"))
+
 						{
-							result="delete-objects";
+							ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+
+							if(ImGui::Selectable("Delete all"))
+							{
+								result="delete-objects";
+							}
+							if(ImGui::Selectable("Delete picked"))
+							{
+								result="delete-objects -picked";
+							}
+
+							ImGui::PopStyleColor();
 						}
-						if(ImGui::Selectable("Delete picked"))
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::SameLine();
+				{
+					const std::string button_id=std::string("A##button_actions");
+					const std::string menu_id=std::string("Actions##menu_actions");
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
+					{
+						if(ImGui::Selectable("Mark atoms"))
 						{
-							result="delete-objects -picked";
+							result="mark-atoms";
+						}
+						if(ImGui::Selectable("Unmark atoms"))
+						{
+							result="unmark-atoms";
+						}
+
+						ImGui::Separator();
+
+						{
+							ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+
+							if(ImGui::Selectable("Restrict to marked"))
+							{
+								result="restrict-atoms [_marked]";
+							}
+							if(ImGui::Selectable("Restrict to unmarked"))
+							{
+								result="restrict-atoms (not [_marked])";
+							}
+							if(ImGui::Selectable("Restrict to protein or nucleic atoms"))
+							{
+								result="restrict-atoms ([-protein] or [-nucleic])";
+							}
+							if(ImGui::Selectable("Restrict to protein atoms"))
+							{
+								result="restrict-atoms [-protein]";
+							}
+							if(ImGui::Selectable("Restrict to nucleic atoms"))
+							{
+								result="restrict-atoms [-nucleic]";
+							}
+
+							ImGui::PopStyleColor();
 						}
 						ImGui::EndPopup();
 					}
@@ -766,15 +822,10 @@ private:
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Hide:");
-						if(ImGui::Selectable("  all atoms"))
+						if(ImGui::Selectable("  all"))
 						{
 							result="hide-atoms";
 						}
-						if(ImGui::Selectable("  all contacts"))
-						{
-							result="hide-contacts";
-						}
-						ImGui::Separator();
 						if(ImGui::Selectable("  cartoon"))
 						{
 							result="hide-atoms -rep cartoon";
@@ -999,8 +1050,8 @@ private:
 				}
 				ImGui::SameLine();
 				{
-					const std::string button_id=std::string("A##button_actions_")+os.name;
-					const std::string menu_id=std::string("Actions##menu_actions_")+os.name;
+					const std::string button_id=std::string("O##button_object_")+os.name;
+					const std::string menu_id=std::string("Object##menu_object_")+os.name;
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
@@ -1008,6 +1059,47 @@ private:
 						{
 							result=std::string("zoom-by-objects -names '")+os.name+"'";
 						}
+
+						ImGui::Separator();
+
+						if(ImGui::Selectable("Copy name to clipboard"))
+						{
+							ImGui::SetClipboardText(os.name.c_str());
+						}
+
+						ImGui::Separator();
+
+						{
+							ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+
+							if(ImGui::Selectable("Delete"))
+							{
+								result=std::string("delete-objects -names '")+os.name+"'";
+							}
+
+							ImGui::PopStyleColor();
+						}
+
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::SameLine();
+				{
+					const std::string button_id=std::string("A##button_actions_")+os.name;
+					const std::string menu_id=std::string("Actions##menu_actions_")+os.name;
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
+					{
+						if(ImGui::Selectable("Mark atoms"))
+						{
+							result=std::string("mark-atoms -on-objects '")+os.name+"'";
+						}
+						if(ImGui::Selectable("Unmark atoms"))
+						{
+							result=std::string("unmark-atoms -on-objects '")+os.name+"'";
+						}
+
 						if(object_states.size()>1)
 						{
 							ImGui::Separator();
@@ -1051,16 +1143,37 @@ private:
 								}
 							}
 						}
-						ImGui::Separator();
-						if(ImGui::Selectable("Copy name to clipboard"))
+
 						{
-							ImGui::SetClipboardText(os.name.c_str());
+							ImGui::Separator();
+
+							ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+
+							if(ImGui::Selectable("Restrict to marked"))
+							{
+								result=std::string("restrict-atoms [_marked] -on-objects '")+os.name+"'";
+							}
+							if(ImGui::Selectable("Restrict to unmarked"))
+							{
+								result=std::string("restrict-atoms (not [_marked]) -on-objects '")+os.name+"'";
+							}
+							if(ImGui::Selectable("Restrict to protein or nucleic atoms"))
+							{
+								result=std::string("restrict-atoms ([-protein] or [-nucleic]) -on-objects '")+os.name+"'";
+							}
+							if(ImGui::Selectable("Restrict to protein atoms"))
+							{
+								result=std::string("restrict-atoms [-protein] -on-objects '")+os.name+"'";
+							}
+							if(ImGui::Selectable("Restrict to nucleic atoms"))
+							{
+								result=std::string("restrict-atoms [-nucleic] -on-objects '")+os.name+"'";
+							}
+
+							ImGui::PopStyleColor();
 						}
-						ImGui::Separator();
-						if(ImGui::Selectable("Delete"))
-						{
-							result=std::string("delete-objects -names '")+os.name+"'";
-						}
+
 						ImGui::EndPopup();
 					}
 				}
@@ -1099,15 +1212,10 @@ private:
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						ImGui::Selectable("Hide:");
-						if(ImGui::Selectable("  all atoms"))
+						if(ImGui::Selectable("  all"))
 						{
 							result=std::string("hide-atoms -on-objects '")+os.name+"'";
 						}
-						if(ImGui::Selectable("  all contacts"))
-						{
-							result=std::string("hide-contacts -on-objects '")+os.name+"'";
-						}
-						ImGui::Separator();
 						if(ImGui::Selectable("  cartoon"))
 						{
 							result=std::string("hide-atoms -rep cartoon -on-objects '")+os.name+"'";
