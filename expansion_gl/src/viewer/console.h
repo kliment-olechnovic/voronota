@@ -726,7 +726,7 @@ private:
 								const std::string button_id=std::string("Reset##button_atoms_selection_reset");
 								if(ImGui::Button(button_id.c_str()))
 								{
-									set_atoms_selection_string_and_save_suggestion(std::string("[]"));
+									set_atoms_selection_string_and_save_suggestion("");
 									atoms_selection_buffer.clear();
 									ImGui::CloseCurrentPopup();
 								}
@@ -801,7 +801,7 @@ private:
 								const std::string button_id=std::string("Reset##button_contacts_selection_reset");
 								if(ImGui::Button(button_id.c_str()))
 								{
-									set_contacts_selection_string_and_save_suggestion(std::string("[]"));
+									set_contacts_selection_string_and_save_suggestion("");
 									contacts_selection_buffer.clear();
 									ImGui::CloseCurrentPopup();
 								}
@@ -949,25 +949,9 @@ private:
 								ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
 								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 
-								if(ImGui::Selectable("Restrict to marked"))
+								if(ImGui::Selectable("Restrict atoms to selection"))
 								{
-									result=std::string("restrict-atoms -use (([_marked]) and (")+atoms_selection_string()+"))";
-								}
-								if(ImGui::Selectable("Restrict to unmarked"))
-								{
-									result=std::string("restrict-atoms -use ((not [_marked]) and (")+atoms_selection_string()+"))";
-								}
-								if(ImGui::Selectable("Restrict to protein or nucleic atoms"))
-								{
-									result=std::string("restrict-atoms -use (([-protein] or [-nucleic]) and (")+atoms_selection_string()+"))";
-								}
-								if(ImGui::Selectable("Restrict to protein atoms"))
-								{
-									result=std::string("restrict-atoms -use (([-protein]) and (")+atoms_selection_string()+"))";
-								}
-								if(ImGui::Selectable("Restrict to nucleic atoms"))
-								{
-									result=std::string("restrict-atoms -use (([-nucleic]) and (")+atoms_selection_string()+"))";
+									result=std::string("restrict-atoms -use (")+atoms_selection_string()+")";
 								}
 
 								ImGui::PopStyleColor();
@@ -995,14 +979,14 @@ private:
 				}
 				ImGui::SameLine();
 				{
-					const std::string button_id=std::string("D##button_display");
-					const std::string menu_id=std::string("Display##menu_show");
+					const std::string button_id=std::string("S##button_show");
+					const std::string menu_id=std::string("Show##menu_show");
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(concept_mode()=="atoms")
 						{
-							ImGui::Selectable("Show atoms:");
+							ImGui::TextUnformatted("Show atoms:");
 							if(ImGui::Selectable("  cartoon##show"))
 							{
 								result=std::string("show-atoms -rep cartoon -use (")+atoms_selection_string()+")";
@@ -1019,10 +1003,40 @@ private:
 							{
 								result=std::string("show-atoms -rep balls -use (")+atoms_selection_string()+")";
 							}
+						}
+						else if(concept_mode()=="contacts")
+						{
+							ImGui::TextUnformatted("Show contacts:");
+							if(ImGui::Selectable("  faces##show"))
+							{
+								result="construct-contacts\n";
+								result+=std::string("show-contacts -rep faces -use (")+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  edges##show"))
+							{
+								result="construct-contacts\n";
+								result+=std::string("show-contacts -rep edges -use (")+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  sas-mesh##show"))
+							{
+								result="construct-contacts\n";
+								result+=std::string("show-contacts -rep sas-mesh -use (")+contacts_selection_string()+")";
+							}
+						}
 
-							ImGui::Separator();
-
-							ImGui::Selectable("Hide atoms:");
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::SameLine();
+				{
+					const std::string button_id=std::string("H##button_hide");
+					const std::string menu_id=std::string("Hide##menu_hide");
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
+					{
+						if(concept_mode()=="atoms")
+						{
+							ImGui::TextUnformatted("Hide atoms:");
 							if(ImGui::Selectable("  all##hide"))
 							{
 								result=std::string("hide-atoms -use (")+atoms_selection_string()+")";
@@ -1046,26 +1060,7 @@ private:
 						}
 						else if(concept_mode()=="contacts")
 						{
-							ImGui::Selectable("Show contacts:");
-							if(ImGui::Selectable("  faces##show"))
-							{
-								result="construct-contacts\n";
-								result+=std::string("show-contacts -rep faces -use (")+contacts_selection_string()+")";
-							}
-							if(ImGui::Selectable("  edges##show"))
-							{
-								result="construct-contacts\n";
-								result+=std::string("show-contacts -rep edges -use (")+contacts_selection_string()+")";
-							}
-							if(ImGui::Selectable("  sas-mesh##show"))
-							{
-								result="construct-contacts\n";
-								result+=std::string("show-contacts -rep sas-mesh -use (")+contacts_selection_string()+")";
-							}
-
-							ImGui::Separator();
-
-							ImGui::Selectable("Hide contacts:");
+							ImGui::TextUnformatted("Hide contacts:");
 							if(ImGui::Selectable("  all##hide"))
 							{
 								result=std::string("hide-contacts -use (")+contacts_selection_string()+")";
@@ -1126,7 +1121,7 @@ private:
 
 							ImGui::Separator();
 
-							ImGui::Selectable("Spectrum:");
+							ImGui::TextUnformatted("Spectrum atoms:");
 
 							if(ImGui::Selectable("  by residue number"))
 							{
@@ -1185,7 +1180,7 @@ private:
 
 							ImGui::Separator();
 
-							ImGui::Selectable("Color:");
+							ImGui::TextUnformatted("Color atoms:");
 
 							if(ImGui::Selectable("  random"))
 							{
@@ -1307,7 +1302,7 @@ private:
 
 							ImGui::Separator();
 
-							ImGui::Selectable("Color:");
+							ImGui::TextUnformatted("Color contacts:");
 
 							if(ImGui::Selectable("  random"))
 							{
@@ -1553,25 +1548,9 @@ private:
 								ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
 								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 
-								if(ImGui::Selectable("Restrict to marked"))
+								if(ImGui::Selectable("Restrict atoms to selection"))
 								{
-									result=std::string("restrict-atoms [_marked] -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-								}
-								if(ImGui::Selectable("Restrict to unmarked"))
-								{
-									result=std::string("restrict-atoms (not [_marked]) -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-								}
-								if(ImGui::Selectable("Restrict to protein or nucleic atoms"))
-								{
-									result=std::string("restrict-atoms ([-protein] or [-nucleic]) -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-								}
-								if(ImGui::Selectable("Restrict to protein atoms"))
-								{
-									result=std::string("restrict-atoms [-protein] -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-								}
-								if(ImGui::Selectable("Restrict to nucleic atoms"))
-								{
-									result=std::string("restrict-atoms [-nucleic] -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+									result=std::string("restrict-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 								}
 
 								ImGui::PopStyleColor();
@@ -1598,14 +1577,14 @@ private:
 				}
 				ImGui::SameLine();
 				{
-					const std::string button_id=std::string("D##button_display_")+os.name;
-					const std::string menu_id=std::string("Display##menu_display_")+os.name;
+					const std::string button_id=std::string("S##button_show_")+os.name;
+					const std::string menu_id=std::string("Show##menu_show_")+os.name;
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(concept_mode()=="atoms")
 						{
-							ImGui::Selectable("Show atoms:");
+							ImGui::TextUnformatted("Show atoms:");
 							if(ImGui::Selectable("  cartoon##show"))
 							{
 								result=std::string("show-atoms -rep cartoon -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
@@ -1622,10 +1601,40 @@ private:
 							{
 								result=std::string("show-atoms -rep balls -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
+						}
+						else if(concept_mode()=="contacts")
+						{
+							ImGui::TextUnformatted("Show contacts:");
+							if(ImGui::Selectable("  faces##show"))
+							{
+								result=std::string("construct-contacts -on-objects '")+os.name+"'\n";
+								result+=std::string("show-contacts -rep faces -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  edges##show"))
+							{
+								result=std::string("construct-contacts -on-objects '")+os.name+"'\n";
+								result+=std::string("show-contacts -rep edges -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  sas-mesh##show"))
+							{
+								result=std::string("construct-contacts -on-objects '")+os.name+"'\n";
+								result+=std::string("show-contacts -rep sas-mesh -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+							}
+						}
 
-							ImGui::Separator();
-
-							ImGui::Selectable("Hide atoms:");
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::SameLine();
+				{
+					const std::string button_id=std::string("H##button_hide_")+os.name;
+					const std::string menu_id=std::string("Hide##menu_hide_")+os.name;
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
+					{
+						if(concept_mode()=="atoms")
+						{
+							ImGui::TextUnformatted("Hide atoms:");
 							if(ImGui::Selectable("  all##hide"))
 							{
 								result=std::string("hide-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
@@ -1649,26 +1658,7 @@ private:
 						}
 						else if(concept_mode()=="contacts")
 						{
-							ImGui::Selectable("Show contacts:");
-							if(ImGui::Selectable("  faces##show"))
-							{
-								result=std::string("construct-contacts -on-objects '")+os.name+"'\n";
-								result+=std::string("show-contacts -rep faces -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
-							}
-							if(ImGui::Selectable("  edges##show"))
-							{
-								result=std::string("construct-contacts -on-objects '")+os.name+"'\n";
-								result+=std::string("show-contacts -rep edges -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
-							}
-							if(ImGui::Selectable("  sas-mesh##show"))
-							{
-								result=std::string("construct-contacts -on-objects '")+os.name+"'\n";
-								result+=std::string("show-contacts -rep sas-mesh -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
-							}
-
-							ImGui::Separator();
-
-							ImGui::Selectable("Hide contacts:");
+							ImGui::TextUnformatted("Hide contacts:");
 							if(ImGui::Selectable("  all##hide"))
 							{
 								result=std::string("hide-contacts -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
@@ -1729,7 +1719,7 @@ private:
 
 							ImGui::Separator();
 
-							ImGui::Selectable("Spectrum:");
+							ImGui::TextUnformatted("Spectrum atoms:");
 
 							if(ImGui::Selectable("  by residue number"))
 							{
@@ -1788,7 +1778,7 @@ private:
 
 							ImGui::Separator();
 
-							ImGui::Selectable("Color:");
+							ImGui::TextUnformatted("Color atoms:");
 
 							if(ImGui::Selectable("  random"))
 							{
@@ -1910,7 +1900,7 @@ private:
 
 							ImGui::Separator();
 
-							ImGui::Selectable("Color:");
+							ImGui::TextUnformatted("Color contacts:");
 
 							if(ImGui::Selectable("  random"))
 							{
@@ -2112,6 +2102,9 @@ private:
 				suggestions.first.push_back("[-nucleic]");
 				suggestions.first.push_back("[-chain A]");
 				suggestions.first.push_back("[-chain B]");
+				suggestions.first.push_back("[-chain A -rnum 1:200 -rname TRP,PHE]");
+				suggestions.first.push_back("(not [-aname C,N,O,CA])");
+				suggestions.first.push_back("[-sel-of-contacts _visible]");
 			}
 			return suggestions;
 		}
