@@ -1962,6 +1962,125 @@ private:
 				}
 			}
 		}
+
+	private:
+		static std::string& concept_mode()
+		{
+			static std::string mode;
+			if(mode.empty())
+			{
+				mode="atoms";
+			}
+			return mode;
+		}
+
+		static void set_concept_mode(const std::string& mode)
+		{
+			concept_mode().clear();
+			if(mode=="atoms" || mode=="contacts")
+			{
+				concept_mode()=mode;
+			}
+		}
+
+		static std::string& atoms_selection_string()
+		{
+			static std::string value;
+			if(value.empty() || value=="[" || value=="]")
+			{
+				value="[]";
+			}
+			return value;
+		}
+
+		static std::pair< std::deque<std::string>, std::deque<std::string> >& atoms_selection_string_suggestions()
+		{
+			static std::pair< std::deque<std::string>, std::deque<std::string> > suggestions;
+			if(suggestions.first.empty())
+			{
+				suggestions.first.push_back("[]");
+				suggestions.first.push_back("[_marked]");
+				suggestions.first.push_back("[-protein]");
+				suggestions.first.push_back("[-nucleic]");
+				suggestions.first.push_back("[-chain A]");
+				suggestions.first.push_back("[-chain B]");
+			}
+			return suggestions;
+		}
+
+		static void set_atoms_selection_string_and_save_suggestion(const std::string& value)
+		{
+			atoms_selection_string()=value;
+			bool already_suggested=false;
+			for(std::size_t i=0;i<atoms_selection_string_suggestions().first.size() && !already_suggested;i++)
+			{
+				already_suggested=already_suggested || (atoms_selection_string_suggestions().first[i]==atoms_selection_string());
+			}
+			for(std::size_t i=0;i<atoms_selection_string_suggestions().second.size() && !already_suggested;i++)
+			{
+				already_suggested=already_suggested || (atoms_selection_string_suggestions().second[i]==atoms_selection_string());
+			}
+			if(!already_suggested)
+			{
+				atoms_selection_string_suggestions().second.push_back(atoms_selection_string());
+				if(atoms_selection_string_suggestions().second.size()>5)
+				{
+					atoms_selection_string_suggestions().second.pop_front();
+				}
+			}
+		}
+
+		static std::string& contacts_selection_string()
+		{
+			static std::string value;
+			if(value.empty() || value=="[" || value=="]")
+			{
+				value="[-no-solvent]";
+			}
+			return value;
+		}
+
+		static std::pair< std::deque<std::string>, std::deque<std::string> >& contacts_selection_string_suggestions()
+		{
+			static std::pair< std::deque<std::string>, std::deque<std::string> > suggestions;
+			if(suggestions.first.empty())
+			{
+				suggestions.first.push_back("[]");
+				suggestions.first.push_back("[-no-solvent]");
+				suggestions.first.push_back("[-min-seq-sep 1]");
+				suggestions.first.push_back("[-no-solvent -min-seq-sep 1]");
+				suggestions.first.push_back("[-inter-chain]");
+				suggestions.first.push_back("[-solvent]");
+				suggestions.first.push_back("[_marked]");
+				suggestions.first.push_back("[_visible]");
+				suggestions.first.push_back("[-a1 [_marked] -a2! [_marked]]");
+				suggestions.first.push_back("[-a1 [-protein] -a2 [-nucleic]]");
+				suggestions.first.push_back("[-a1 [-chain A] -a2 [-chain B]]");
+			}
+			return suggestions;
+		}
+
+		static void set_contacts_selection_string_and_save_suggestion(const std::string& value)
+		{
+			contacts_selection_string()=value;
+			bool already_suggested=false;
+			for(std::size_t i=0;i<contacts_selection_string_suggestions().first.size() && !already_suggested;i++)
+			{
+				already_suggested=already_suggested || (contacts_selection_string_suggestions().first[i]==contacts_selection_string());
+			}
+			for(std::size_t i=0;i<contacts_selection_string_suggestions().second.size() && !already_suggested;i++)
+			{
+				already_suggested=already_suggested || (contacts_selection_string_suggestions().second[i]==contacts_selection_string());
+			}
+			if(!already_suggested)
+			{
+				contacts_selection_string_suggestions().second.push_back(contacts_selection_string());
+				if(contacts_selection_string_suggestions().second.size()>5)
+				{
+					contacts_selection_string_suggestions().second.pop_front();
+				}
+			}
+		}
 	};
 
 	Console() :
@@ -1976,124 +2095,6 @@ private:
 	{
 		static std::string str="---";
 		return str;
-	}
-
-	static std::string& concept_mode()
-	{
-		static std::string mode;
-		if(mode.empty())
-		{
-			mode="atoms";
-		}
-		return mode;
-	}
-
-	static void set_concept_mode(const std::string& mode)
-	{
-		concept_mode().clear();
-		if(mode=="atoms" || mode=="contacts")
-		{
-			concept_mode()=mode;
-		}
-	}
-
-	static std::string& atoms_selection_string()
-	{
-		static std::string value;
-		if(value.empty() || value=="[" || value=="]")
-		{
-			value="[]";
-		}
-		return value;
-	}
-
-	static std::pair< std::deque<std::string>, std::deque<std::string> >& atoms_selection_string_suggestions()
-	{
-		static std::pair< std::deque<std::string>, std::deque<std::string> > suggestions;
-		if(suggestions.first.empty())
-		{
-			suggestions.first.push_back("[]");
-			suggestions.first.push_back("[_marked]");
-			suggestions.first.push_back("[-protein]");
-			suggestions.first.push_back("[-nucleic]");
-			suggestions.first.push_back("[-chain A]");
-			suggestions.first.push_back("[-chain B]");
-		}
-		return suggestions;
-	}
-
-	static void set_atoms_selection_string_and_save_suggestion(const std::string& value)
-	{
-		atoms_selection_string()=value;
-		bool already_suggested=false;
-		for(std::size_t i=0;i<atoms_selection_string_suggestions().first.size() && !already_suggested;i++)
-		{
-			already_suggested=already_suggested || (atoms_selection_string_suggestions().first[i]==atoms_selection_string());
-		}
-		for(std::size_t i=0;i<atoms_selection_string_suggestions().second.size() && !already_suggested;i++)
-		{
-			already_suggested=already_suggested || (atoms_selection_string_suggestions().second[i]==atoms_selection_string());
-		}
-		if(!already_suggested)
-		{
-			atoms_selection_string_suggestions().second.push_back(atoms_selection_string());
-			if(atoms_selection_string_suggestions().second.size()>5)
-			{
-				atoms_selection_string_suggestions().second.pop_front();
-			}
-		}
-	}
-
-	static std::string& contacts_selection_string()
-	{
-		static std::string value;
-		if(value.empty() || value=="[" || value=="]")
-		{
-			value="[-no-solvent]";
-		}
-		return value;
-	}
-
-	static std::pair< std::deque<std::string>, std::deque<std::string> >& contacts_selection_string_suggestions()
-	{
-		static std::pair< std::deque<std::string>, std::deque<std::string> > suggestions;
-		if(suggestions.first.empty())
-		{
-			suggestions.first.push_back("[]");
-			suggestions.first.push_back("[-no-solvent]");
-			suggestions.first.push_back("[-min-seq-sep 1]");
-			suggestions.first.push_back("[-no-solvent -min-seq-sep 1]");
-			suggestions.first.push_back("[-inter-chain]");
-			suggestions.first.push_back("[-solvent]");
-			suggestions.first.push_back("[_marked]");
-			suggestions.first.push_back("[_visible]");
-			suggestions.first.push_back("[-a1 [_marked] -a2! [_marked]]");
-			suggestions.first.push_back("[-a1 [-protein] -a2 [-nucleic]]");
-			suggestions.first.push_back("[-a1 [-chain A] -a2 [-chain B]]");
-		}
-		return suggestions;
-	}
-
-	static void set_contacts_selection_string_and_save_suggestion(const std::string& value)
-	{
-		contacts_selection_string()=value;
-		bool already_suggested=false;
-		for(std::size_t i=0;i<contacts_selection_string_suggestions().first.size() && !already_suggested;i++)
-		{
-			already_suggested=already_suggested || (contacts_selection_string_suggestions().first[i]==contacts_selection_string());
-		}
-		for(std::size_t i=0;i<contacts_selection_string_suggestions().second.size() && !already_suggested;i++)
-		{
-			already_suggested=already_suggested || (contacts_selection_string_suggestions().second[i]==contacts_selection_string());
-		}
-		if(!already_suggested)
-		{
-			contacts_selection_string_suggestions().second.push_back(contacts_selection_string());
-			if(contacts_selection_string_suggestions().second.size()>5)
-			{
-				contacts_selection_string_suggestions().second.pop_front();
-			}
-		}
 	}
 
 	float current_width_;
