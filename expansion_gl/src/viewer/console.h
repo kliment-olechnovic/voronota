@@ -1032,7 +1032,7 @@ private:
 							const std::string newvalue(atoms_selection_buffer.data());
 							if(!newvalue.empty())
 							{
-								atoms_selection_string()=newvalue;
+								set_atoms_selection_string_and_save_suggestion(newvalue);
 								atoms_selection_buffer.clear();
 								ImGui::CloseCurrentPopup();
 							}
@@ -1041,15 +1041,7 @@ private:
 							const std::string button_id=std::string("OK##button_atoms_selection_ok");
 							if(ImGui::Button(button_id.c_str()))
 							{
-								const std::string newvalue(atoms_selection_buffer.data());
-								if(!newvalue.empty())
-								{
-									atoms_selection_string()=newvalue;
-								}
-								else
-								{
-									atoms_selection_string()="[]";
-								}
+								set_atoms_selection_string_and_save_suggestion(std::string(atoms_selection_buffer.data()));
 								atoms_selection_buffer.clear();
 								ImGui::CloseCurrentPopup();
 							}
@@ -1067,26 +1059,38 @@ private:
 							const std::string button_id=std::string("Reset##button_atoms_selection_reset");
 							if(ImGui::Button(button_id.c_str()))
 							{
-								atoms_selection_string()="[]";
+								set_atoms_selection_string_and_save_suggestion(std::string("[]"));
+								atoms_selection_buffer.clear();
 								ImGui::CloseCurrentPopup();
 							}
 						}
 
-						ImGui::Separator();
-
-						if(ImGui::Selectable("[_marked]"))
+						if(!atoms_selection_string_suggestions().first.empty())
 						{
-							atoms_selection_string()="[_marked]";
+							ImGui::Separator();
+
+							for(std::size_t i=0;i<atoms_selection_string_suggestions().first.size();i++)
+							{
+								if(ImGui::Selectable(atoms_selection_string_suggestions().first[i].c_str()))
+								{
+									set_atoms_selection_string_and_save_suggestion(atoms_selection_string_suggestions().first[i]);
+									atoms_selection_buffer.clear();
+								}
+							}
 						}
 
-						if(ImGui::Selectable("[-protein]"))
+						if(!atoms_selection_string_suggestions().second.empty())
 						{
-							atoms_selection_string()="[-protein]";
-						}
+							ImGui::Separator();
 
-						if(ImGui::Selectable("[-nucleic]"))
-						{
-							atoms_selection_string()="[-nucleic]";
+							for(std::size_t i=0;i<atoms_selection_string_suggestions().second.size();i++)
+							{
+								if(ImGui::Selectable(atoms_selection_string_suggestions().second[i].c_str()))
+								{
+									set_atoms_selection_string_and_save_suggestion(atoms_selection_string_suggestions().second[i]);
+									atoms_selection_buffer.clear();
+								}
+							}
 						}
 
 						ImGui::EndPopup();
@@ -1560,8 +1564,49 @@ private:
 
 	static std::string& atoms_selection_string()
 	{
-		static std::string atoms_selection_string_value="[]";
-		return atoms_selection_string_value;
+		static std::string value;
+		if(value.empty() || value=="[" || value=="]")
+		{
+			value="[]";
+		}
+		return value;
+	}
+
+	static std::pair< std::deque<std::string>, std::deque<std::string> >& atoms_selection_string_suggestions()
+	{
+		static std::pair< std::deque<std::string>, std::deque<std::string> > suggestions;
+		if(suggestions.first.empty())
+		{
+			suggestions.first.push_back("[]");
+			suggestions.first.push_back("[_marked]");
+			suggestions.first.push_back("[-protein]");
+			suggestions.first.push_back("[-nucleic]");
+			suggestions.first.push_back("[-chain A]");
+			suggestions.first.push_back("[-chain B]");
+		}
+		return suggestions;
+	}
+
+	static void set_atoms_selection_string_and_save_suggestion(const std::string& value)
+	{
+		atoms_selection_string()=value;
+		bool already_suggested=false;
+		for(std::size_t i=0;i<atoms_selection_string_suggestions().first.size() && !already_suggested;i++)
+		{
+			already_suggested=already_suggested || (atoms_selection_string_suggestions().first[i]==atoms_selection_string());
+		}
+		for(std::size_t i=0;i<atoms_selection_string_suggestions().second.size() && !already_suggested;i++)
+		{
+			already_suggested=already_suggested || (atoms_selection_string_suggestions().second[i]==atoms_selection_string());
+		}
+		if(!already_suggested)
+		{
+			atoms_selection_string_suggestions().second.push_back(atoms_selection_string());
+			if(atoms_selection_string_suggestions().second.size()>5)
+			{
+				atoms_selection_string_suggestions().second.pop_front();
+			}
+		}
 	}
 
 	float current_width_;
