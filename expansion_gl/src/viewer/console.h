@@ -751,44 +751,64 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						if(ImGui::Selectable("Mark atoms"))
+						if(concept_mode()=="atoms")
 						{
-							result=std::string("mark-atoms -use (")+atoms_selection_string()+")";
+							if(ImGui::Selectable("Mark atoms"))
+							{
+								result=std::string("mark-atoms -use (")+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("Unmark atoms"))
+							{
+								result=std::string("unmark-atoms -use (")+atoms_selection_string()+")";
+							}
+
+							ImGui::Separator();
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+
+								if(ImGui::Selectable("Restrict to marked"))
+								{
+									result=std::string("restrict-atoms -use (([_marked]) and (")+atoms_selection_string()+"))";
+								}
+								if(ImGui::Selectable("Restrict to unmarked"))
+								{
+									result=std::string("restrict-atoms -use ((not [_marked]) and (")+atoms_selection_string()+"))";
+								}
+								if(ImGui::Selectable("Restrict to protein or nucleic atoms"))
+								{
+									result=std::string("restrict-atoms -use (([-protein] or [-nucleic]) and (")+atoms_selection_string()+"))";
+								}
+								if(ImGui::Selectable("Restrict to protein atoms"))
+								{
+									result=std::string("restrict-atoms -use (([-protein]) and (")+atoms_selection_string()+"))";
+								}
+								if(ImGui::Selectable("Restrict to nucleic atoms"))
+								{
+									result=std::string("restrict-atoms -use (([-nucleic]) and (")+atoms_selection_string()+"))";
+								}
+
+								ImGui::PopStyleColor();
+							}
 						}
-						if(ImGui::Selectable("Unmark atoms"))
+						else if(concept_mode()=="contacts")
 						{
-							result=std::string("unmark-atoms -use (")+atoms_selection_string()+")";
+							if(ImGui::Selectable("Construct contacts"))
+							{
+								result=std::string("construct-contacts");
+							}
+							ImGui::Separator();
+							if(ImGui::Selectable("Mark contacts"))
+							{
+								result=std::string("mark-contacts -use (")+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("Unmark contacts"))
+							{
+								result=std::string("unmark-contacts -use (")+contacts_selection_string()+")";
+							}
 						}
 
-						ImGui::Separator();
-
-						{
-							ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-
-							if(ImGui::Selectable("Restrict to marked"))
-							{
-								result=std::string("restrict-atoms -use (([_marked]) and (")+atoms_selection_string()+"))";
-							}
-							if(ImGui::Selectable("Restrict to unmarked"))
-							{
-								result=std::string("restrict-atoms -use ((not [_marked]) and (")+atoms_selection_string()+"))";
-							}
-							if(ImGui::Selectable("Restrict to protein or nucleic atoms"))
-							{
-								result=std::string("restrict-atoms -use (([-protein] or [-nucleic]) and (")+atoms_selection_string()+"))";
-							}
-							if(ImGui::Selectable("Restrict to protein atoms"))
-							{
-								result=std::string("restrict-atoms -use (([-protein]) and (")+atoms_selection_string()+"))";
-							}
-							if(ImGui::Selectable("Restrict to nucleic atoms"))
-							{
-								result=std::string("restrict-atoms -use (([-nucleic]) and (")+atoms_selection_string()+"))";
-							}
-
-							ImGui::PopStyleColor();
-						}
 						ImGui::EndPopup();
 					}
 				}
@@ -799,46 +819,88 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						ImGui::Selectable("Show atoms:");
-						if(ImGui::Selectable("  cartoon##show"))
+						if(concept_mode()=="atoms")
 						{
-							result=std::string("show-atoms -rep cartoon -use (")+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("  trace##show"))
-						{
-							result=std::string("show-atoms -rep trace -use (")+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("  sticks##show"))
-						{
-							result=std::string("show-atoms -rep sticks -use (")+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("  balls##show"))
-						{
-							result=std::string("show-atoms -rep balls -use (")+atoms_selection_string()+")";
-						}
+							ImGui::Selectable("Show atoms:");
+							if(ImGui::Selectable("  cartoon##show"))
+							{
+								result=std::string("show-atoms -rep cartoon -use (")+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  trace##show"))
+							{
+								result=std::string("show-atoms -rep trace -use (")+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  sticks##show"))
+							{
+								result=std::string("show-atoms -rep sticks -use (")+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  balls##show"))
+							{
+								result=std::string("show-atoms -rep balls -use (")+atoms_selection_string()+")";
+							}
 
-						ImGui::Separator();
+							ImGui::Separator();
 
-						ImGui::Selectable("Hide atoms:");
-						if(ImGui::Selectable("  all##hide"))
-						{
-							result=std::string("hide-atoms -use (")+atoms_selection_string()+")";
+							ImGui::Selectable("Hide atoms:");
+							if(ImGui::Selectable("  all##hide"))
+							{
+								result=std::string("hide-atoms -use (")+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  cartoon##hide"))
+							{
+								result=std::string("hide-atoms -rep cartoon -use (")+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  trace##hide"))
+							{
+								result=std::string("hide-atoms -rep trace -use (")+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  sticks##hide"))
+							{
+								result=std::string("hide-atoms -rep sticks -use (")+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  balls##hide"))
+							{
+								result=std::string("hide-atoms -rep balls -use (")+atoms_selection_string()+")";
+							}
 						}
-						if(ImGui::Selectable("  cartoon##hide"))
+						else if(concept_mode()=="contacts")
 						{
-							result=std::string("hide-atoms -rep cartoon -use (")+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("  trace##hide"))
-						{
-							result=std::string("hide-atoms -rep trace -use (")+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("  sticks##hide"))
-						{
-							result=std::string("hide-atoms -rep sticks -use (")+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("  balls##hide"))
-						{
-							result=std::string("hide-atoms -rep balls -use (")+atoms_selection_string()+")";
+							ImGui::Selectable("Show contacts:");
+							if(ImGui::Selectable("  faces##show"))
+							{
+								result="construct-contacts\n";
+								result+=std::string("show-contacts -rep faces -use (")+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  edges##show"))
+							{
+								result="construct-contacts\n";
+								result+=std::string("show-contacts -rep edges -use (")+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  sas-mesh##show"))
+							{
+								result="construct-contacts\n";
+								result+=std::string("show-contacts -rep sas-mesh -use (")+contacts_selection_string()+")";
+							}
+
+							ImGui::Separator();
+
+							ImGui::Selectable("Hide contacts:");
+							if(ImGui::Selectable("  all##hide"))
+							{
+								result=std::string("hide-contacts -use (")+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  faces##hide"))
+							{
+								result=std::string("hide-contacts -rep faces -use (")+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  edges##hide"))
+							{
+								result=std::string("hide-contacts -rep edges -use (")+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  sas-mesh##hide"))
+							{
+								result=std::string("hide-contacts -rep sas-mesh -use (")+contacts_selection_string()+")";
+							}
 						}
 
 						ImGui::EndPopup();
@@ -851,244 +913,440 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						ImGui::Selectable("Spectrum:");
-
-						if(ImGui::Selectable("  by residue number"))
+						if(concept_mode()=="atoms")
 						{
-							result=std::string("spectrum-atoms -use (")+atoms_selection_string()+")";
-						}
+							ImGui::Selectable("Spectrum:");
 
-						if(ImGui::Selectable("  by residue ID"))
-						{
-							result=std::string("spectrum-atoms -by residue-id -use (")+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by chain"))
-						{
-							result=std::string("spectrum-atoms -by chain -use (")+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by chain randomly"))
-						{
-							result=std::string("spectrum-atoms -by chain -scheme random -use (")+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by secondary structure"))
-						{
-							result=std::string("spectrum-atoms -by secondary-structure -use (")+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by atom type"))
-						{
-							result=std::string("spectrum-atoms -by atom-type -use (")+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by hydropathy"))
-						{
-							result=std::string("spectrum-atoms -by hydropathy -use (")+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by B-factor, blue-white-red"))
-						{
-							result=std::string("spectrum-atoms -adjunct tf -scheme bwr -use (")+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by B-factor, red-white-blue"))
-						{
-							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -use (")+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by B-factor, blue-white-red, 0-100"))
-						{
-							result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100 -use (")+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by B-factor, red-white-blue, 0-100"))
-						{
-							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100 -use (")+atoms_selection_string()+")";
-						}
-
-						ImGui::Separator();
-
-						ImGui::Selectable("Color:");
-
-						if(ImGui::Selectable("  random"))
-						{
-							result=std::string("color-atoms -next-random-color -use (")+atoms_selection_string()+")";
-						}
-
-						{
-							ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  red"))
+							if(ImGui::Selectable("  by residue number"))
 							{
-								result=std::string("color-atoms -col 0xFF0000 -use (")+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -use (")+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  yellow"))
+							if(ImGui::Selectable("  by residue ID"))
 							{
-								result=std::string("color-atoms -col 0xFFFF00 -use (")+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -by residue-id -use (")+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
-						{
-							ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  green"))
-							{
-								result=std::string("color-atoms -col 0x00FF00 -use (")+atoms_selection_string()+")";
-							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  cyan"))
+							if(ImGui::Selectable("  by chain"))
 							{
-								result=std::string("color-atoms -col 0x00FFFF -use (")+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -by chain -use (")+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  blue"))
+							if(ImGui::Selectable("  by chain randomly"))
 							{
-								result=std::string("color-atoms -col 0x0000FF -use (")+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -by chain -scheme random -use (")+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  magenta"))
+							if(ImGui::Selectable("  by secondary structure"))
 							{
-								result=std::string("color-atoms -col 0xFF00FF -use (")+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -by secondary-structure -use (")+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  white"))
+							if(ImGui::Selectable("  by atom type"))
 							{
-								result=std::string("color-atoms -col white -use (")+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -by atom-type -use (")+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  light gray"))
+							if(ImGui::Selectable("  by hydropathy"))
 							{
-								result=std::string("color-atoms -col 0xAAAAAA -use (")+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -by hydropathy -use (")+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  dark gray"))
+							if(ImGui::Selectable("  by B-factor, blue-white-red"))
 							{
-								result=std::string("color-atoms -col 0x555555 -use (")+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -adjunct tf -scheme bwr -use (")+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
+							if(ImGui::Selectable("  by B-factor, red-white-blue"))
+							{
+								result=std::string("spectrum-atoms -adjunct tf -scheme rwb -use (")+atoms_selection_string()+")";
+							}
+
+							if(ImGui::Selectable("  by B-factor, blue-white-red, 0-100"))
+							{
+								result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100 -use (")+atoms_selection_string()+")";
+							}
+
+							if(ImGui::Selectable("  by B-factor, red-white-blue, 0-100"))
+							{
+								result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100 -use (")+atoms_selection_string()+")";
+							}
+
+							ImGui::Separator();
+
+							ImGui::Selectable("Color:");
+
+							if(ImGui::Selectable("  random"))
+							{
+								result=std::string("color-atoms -next-random-color -use (")+atoms_selection_string()+")";
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  red"))
+								{
+									result=std::string("color-atoms -col 0xFF0000 -use (")+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  yellow"))
+								{
+									result=std::string("color-atoms -col 0xFFFF00 -use (")+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+							{
+								ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  green"))
+								{
+									result=std::string("color-atoms -col 0x00FF00 -use (")+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  cyan"))
+								{
+									result=std::string("color-atoms -col 0x00FFFF -use (")+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  blue"))
+								{
+									result=std::string("color-atoms -col 0x0000FF -use (")+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  magenta"))
+								{
+									result=std::string("color-atoms -col 0xFF00FF -use (")+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  white"))
+								{
+									result=std::string("color-atoms -col white -use (")+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  light gray"))
+								{
+									result=std::string("color-atoms -col 0xAAAAAA -use (")+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  dark gray"))
+								{
+									result=std::string("color-atoms -col 0x555555 -use (")+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+						}
+						else if(concept_mode()=="contacts")
+						{
+							ImGui::Selectable("Color:");
+
+							if(ImGui::Selectable("  random"))
+							{
+								result=std::string("color-contacts -next-random-color -use (")+contacts_selection_string()+")";
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  red"))
+								{
+									result=std::string("color-contacts -col 0xFF0000 -use (")+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  yellow"))
+								{
+									result=std::string("color-contacts -col 0xFFFF00 -use (")+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+							{
+								ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  green"))
+								{
+									result=std::string("color-contacts -col 0x00FF00 -use (")+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  cyan"))
+								{
+									result=std::string("color-contacts -col 0x00FFFF -use (")+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  blue"))
+								{
+									result=std::string("color-contacts -col 0x0000FF -use (")+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  magenta"))
+								{
+									result=std::string("color-contacts -col 0xFF00FF -use (")+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  white"))
+								{
+									result=std::string("color-contacts -col white -use (")+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  light gray"))
+								{
+									result=std::string("color-contacts -col 0xAAAAAA -use (")+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  dark gray"))
+								{
+									result=std::string("color-contacts -col 0x555555 -use (")+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+						}
 						ImGui::EndPopup();
 					}
 				}
 				ImGui::SameLine();
 				{
-					ImGui::TextUnformatted("atoms=");
 					ImGui::SameLine();
 					{
-						const std::string button_id=atoms_selection_string()+"##button_atoms_selection_change";
+						const std::string button_id=concept_mode()+"##concept_mode_switch";
+						if(ImGui::Button(button_id.c_str()))
+						{
+							set_concept_mode(concept_mode()=="atoms" ? "contacts" : "atoms");
+						}
+					}
+					ImGui::SameLine();
+					ImGui::TextUnformatted("=");
+					ImGui::SameLine();
+					{
+						std::string button_id;
+						if(concept_mode()=="contacts")
+						{
+							button_id=contacts_selection_string();
+						}
+						else
+						{
+							button_id=atoms_selection_string();
+						}
+						button_id+="##button_selection_change";
 						ImGui::Button(button_id.c_str());
 					}
-					const std::string submenu_id=std::string("Rename##submenu_atoms_selection");
+					const std::string submenu_id=std::string("Change##submenu_selection");
 					if(ImGui::BeginPopupContextItem(submenu_id.c_str(), 0))
 					{
-						static std::vector<char> atoms_selection_buffer;
-						if(atoms_selection_buffer.empty())
+						if(concept_mode()=="atoms")
 						{
-							atoms_selection_buffer=std::vector<char>(atoms_selection_string().begin(), atoms_selection_string().end());
-							atoms_selection_buffer.resize(atoms_selection_string().size()+128, 0);
-						}
-						const std::string textbox_id=std::string("##atoms_selection");
-						if(ImGui::InputText(textbox_id.c_str(), atoms_selection_buffer.data(), 128, ImGuiInputTextFlags_EnterReturnsTrue))
-						{
-							const std::string newvalue(atoms_selection_buffer.data());
-							if(!newvalue.empty())
+							static std::vector<char> atoms_selection_buffer;
+							if(atoms_selection_buffer.empty())
 							{
-								set_atoms_selection_string_and_save_suggestion(newvalue);
-								atoms_selection_buffer.clear();
-								ImGui::CloseCurrentPopup();
+								atoms_selection_buffer=std::vector<char>(atoms_selection_string().begin(), atoms_selection_string().end());
+								atoms_selection_buffer.resize(atoms_selection_string().size()+128, 0);
 							}
-						}
-						{
-							const std::string button_id=std::string("OK##button_atoms_selection_ok");
-							if(ImGui::Button(button_id.c_str()))
+							const std::string textbox_id=std::string("##atoms_selection");
+							if(ImGui::InputText(textbox_id.c_str(), atoms_selection_buffer.data(), 128, ImGuiInputTextFlags_EnterReturnsTrue))
 							{
-								set_atoms_selection_string_and_save_suggestion(std::string(atoms_selection_buffer.data()));
-								atoms_selection_buffer.clear();
-								ImGui::CloseCurrentPopup();
-							}
-						}
-						ImGui::SameLine();
-						{
-							const std::string button_id=std::string("Cancel##button_atoms_selection_cancel");
-							if(ImGui::Button(button_id.c_str()))
-							{
-								ImGui::CloseCurrentPopup();
-							}
-						}
-						ImGui::SameLine();
-						{
-							const std::string button_id=std::string("Reset##button_atoms_selection_reset");
-							if(ImGui::Button(button_id.c_str()))
-							{
-								set_atoms_selection_string_and_save_suggestion(std::string("[]"));
-								atoms_selection_buffer.clear();
-								ImGui::CloseCurrentPopup();
-							}
-						}
-
-						if(!atoms_selection_string_suggestions().first.empty())
-						{
-							ImGui::Separator();
-
-							for(std::size_t i=0;i<atoms_selection_string_suggestions().first.size();i++)
-							{
-								if(ImGui::Selectable(atoms_selection_string_suggestions().first[i].c_str()))
+								const std::string newvalue(atoms_selection_buffer.data());
+								if(!newvalue.empty())
 								{
-									set_atoms_selection_string_and_save_suggestion(atoms_selection_string_suggestions().first[i]);
+									set_atoms_selection_string_and_save_suggestion(newvalue);
 									atoms_selection_buffer.clear();
+									ImGui::CloseCurrentPopup();
+								}
+							}
+							{
+								const std::string button_id=std::string("OK##button_atoms_selection_ok");
+								if(ImGui::Button(button_id.c_str()))
+								{
+									set_atoms_selection_string_and_save_suggestion(std::string(atoms_selection_buffer.data()));
+									atoms_selection_buffer.clear();
+									ImGui::CloseCurrentPopup();
+								}
+							}
+							ImGui::SameLine();
+							{
+								const std::string button_id=std::string("Cancel##button_atoms_selection_cancel");
+								if(ImGui::Button(button_id.c_str()))
+								{
+									ImGui::CloseCurrentPopup();
+								}
+							}
+							ImGui::SameLine();
+							{
+								const std::string button_id=std::string("Reset##button_atoms_selection_reset");
+								if(ImGui::Button(button_id.c_str()))
+								{
+									set_atoms_selection_string_and_save_suggestion(std::string("[]"));
+									atoms_selection_buffer.clear();
+									ImGui::CloseCurrentPopup();
+								}
+							}
+
+							if(!atoms_selection_string_suggestions().first.empty())
+							{
+								ImGui::Separator();
+
+								for(std::size_t i=0;i<atoms_selection_string_suggestions().first.size();i++)
+								{
+									if(ImGui::Selectable(atoms_selection_string_suggestions().first[i].c_str()))
+									{
+										set_atoms_selection_string_and_save_suggestion(atoms_selection_string_suggestions().first[i]);
+										atoms_selection_buffer.clear();
+									}
+								}
+							}
+
+							if(!atoms_selection_string_suggestions().second.empty())
+							{
+								ImGui::Separator();
+
+								for(std::size_t i=0;i<atoms_selection_string_suggestions().second.size();i++)
+								{
+									if(ImGui::Selectable(atoms_selection_string_suggestions().second[i].c_str()))
+									{
+										set_atoms_selection_string_and_save_suggestion(atoms_selection_string_suggestions().second[i]);
+										atoms_selection_buffer.clear();
+									}
 								}
 							}
 						}
-
-						if(!atoms_selection_string_suggestions().second.empty())
+						else if(concept_mode()=="contacts")
 						{
-							ImGui::Separator();
-
-							for(std::size_t i=0;i<atoms_selection_string_suggestions().second.size();i++)
+							static std::vector<char> contacts_selection_buffer;
+							if(contacts_selection_buffer.empty())
 							{
-								if(ImGui::Selectable(atoms_selection_string_suggestions().second[i].c_str()))
+								contacts_selection_buffer=std::vector<char>(contacts_selection_string().begin(), contacts_selection_string().end());
+								contacts_selection_buffer.resize(contacts_selection_string().size()+128, 0);
+							}
+							const std::string textbox_id=std::string("##contacts_selection");
+							if(ImGui::InputText(textbox_id.c_str(), contacts_selection_buffer.data(), 128, ImGuiInputTextFlags_EnterReturnsTrue))
+							{
+								const std::string newvalue(contacts_selection_buffer.data());
+								if(!newvalue.empty())
 								{
-									set_atoms_selection_string_and_save_suggestion(atoms_selection_string_suggestions().second[i]);
-									atoms_selection_buffer.clear();
+									set_contacts_selection_string_and_save_suggestion(newvalue);
+									contacts_selection_buffer.clear();
+									ImGui::CloseCurrentPopup();
+								}
+							}
+							{
+								const std::string button_id=std::string("OK##button_contacts_selection_ok");
+								if(ImGui::Button(button_id.c_str()))
+								{
+									set_contacts_selection_string_and_save_suggestion(std::string(contacts_selection_buffer.data()));
+									contacts_selection_buffer.clear();
+									ImGui::CloseCurrentPopup();
+								}
+							}
+							ImGui::SameLine();
+							{
+								const std::string button_id=std::string("Cancel##button_contacts_selection_cancel");
+								if(ImGui::Button(button_id.c_str()))
+								{
+									ImGui::CloseCurrentPopup();
+								}
+							}
+							ImGui::SameLine();
+							{
+								const std::string button_id=std::string("Reset##button_contacts_selection_reset");
+								if(ImGui::Button(button_id.c_str()))
+								{
+									set_contacts_selection_string_and_save_suggestion(std::string("[]"));
+									contacts_selection_buffer.clear();
+									ImGui::CloseCurrentPopup();
+								}
+							}
+
+							if(!contacts_selection_string_suggestions().first.empty())
+							{
+								ImGui::Separator();
+
+								for(std::size_t i=0;i<contacts_selection_string_suggestions().first.size();i++)
+								{
+									if(ImGui::Selectable(contacts_selection_string_suggestions().first[i].c_str()))
+									{
+										set_contacts_selection_string_and_save_suggestion(contacts_selection_string_suggestions().first[i]);
+										contacts_selection_buffer.clear();
+									}
+								}
+							}
+
+							if(!contacts_selection_string_suggestions().second.empty())
+							{
+								ImGui::Separator();
+
+								for(std::size_t i=0;i<contacts_selection_string_suggestions().second.size();i++)
+								{
+									if(ImGui::Selectable(contacts_selection_string_suggestions().second[i].c_str()))
+									{
+										set_contacts_selection_string_and_save_suggestion(contacts_selection_string_suggestions().second[i]);
+										contacts_selection_buffer.clear();
+									}
 								}
 							}
 						}
@@ -1177,94 +1435,112 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						if(ImGui::Selectable("Mark atoms"))
+						if(concept_mode()=="atoms")
 						{
-							result=std::string("mark-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("Unmark atoms"))
-						{
-							result=std::string("unmark-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
+							if(ImGui::Selectable("Mark atoms"))
+							{
+								result=std::string("mark-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("Unmark atoms"))
+							{
+								result=std::string("unmark-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
 
-						if(object_states.size()>1)
+							if(object_states.size()>1)
+							{
+								ImGui::Separator();
+
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+
+								if(ImGui::Selectable("Align all"))
+								{
+									const bool with_music_background=(object_states.size()>10);
+									result="";
+									if(with_music_background)
+									{
+										result+="music-background waiting\n";
+									}
+									result+=std::string("tmalign-many -target '")+os.name+"' -target-sel ("+atoms_selection_string()+")";
+									if(with_music_background)
+									{
+										result+="\nmusic-background stop\n";
+									}
+								}
+
+								int num_of_other_picked_objects=0;
+								for(std::size_t j=0;j<object_states.size();j++)
+								{
+									if(j!=i && object_states[j].picked)
+									{
+										num_of_other_picked_objects++;
+									}
+								}
+
+								if(num_of_other_picked_objects>0 && ImGui::Selectable("Align picked"))
+								{
+									const bool with_music_background=(num_of_other_picked_objects>10);
+									result="";
+									if(with_music_background)
+									{
+										result+="music-background waiting\n";
+									}
+									result+=std::string("tmalign-many -picked -target '")+os.name+"' -use ("+atoms_selection_string()+")";
+									if(with_music_background)
+									{
+										result+="\nmusic-background stop\n";
+									}
+								}
+
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImGui::Separator();
+
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+
+								if(ImGui::Selectable("Restrict to marked"))
+								{
+									result=std::string("restrict-atoms [_marked] -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								if(ImGui::Selectable("Restrict to unmarked"))
+								{
+									result=std::string("restrict-atoms (not [_marked]) -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								if(ImGui::Selectable("Restrict to protein or nucleic atoms"))
+								{
+									result=std::string("restrict-atoms ([-protein] or [-nucleic]) -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								if(ImGui::Selectable("Restrict to protein atoms"))
+								{
+									result=std::string("restrict-atoms [-protein] -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								if(ImGui::Selectable("Restrict to nucleic atoms"))
+								{
+									result=std::string("restrict-atoms [-nucleic] -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+
+								ImGui::PopStyleColor();
+							}
+						}
+						else if(concept_mode()=="contacts")
 						{
+							if(ImGui::Selectable("Construct contacts"))
+							{
+								result=std::string("construct-contacts -on-objects '")+os.name+"'";
+							}
 							ImGui::Separator();
-
-							ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-
-							if(ImGui::Selectable("Align all"))
+							if(ImGui::Selectable("Mark contacts"))
 							{
-								const bool with_music_background=(object_states.size()>10);
-								result="";
-								if(with_music_background)
-								{
-									result+="music-background waiting\n";
-								}
-								result+=std::string("tmalign-many -target '")+os.name+"' -target-sel ("+atoms_selection_string()+")";
-								if(with_music_background)
-								{
-									result+="\nmusic-background stop\n";
-								}
+								result=std::string("mark-contacts -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
 							}
-
-							int num_of_other_picked_objects=0;
-							for(std::size_t j=0;j<object_states.size();j++)
+							if(ImGui::Selectable("Unmark contacts"))
 							{
-								if(j!=i && object_states[j].picked)
-								{
-									num_of_other_picked_objects++;
-								}
+								result=std::string("unmark-contacts -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
 							}
-
-							if(num_of_other_picked_objects>0 && ImGui::Selectable("Align picked"))
-							{
-								const bool with_music_background=(num_of_other_picked_objects>10);
-								result="";
-								if(with_music_background)
-								{
-									result+="music-background waiting\n";
-								}
-								result+=std::string("tmalign-many -picked -target '")+os.name+"' -use ("+atoms_selection_string()+")";
-								if(with_music_background)
-								{
-									result+="\nmusic-background stop\n";
-								}
-							}
-
-							ImGui::PopStyleColor();
 						}
-
-						{
-							ImGui::Separator();
-
-							ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-
-							if(ImGui::Selectable("Restrict to marked"))
-							{
-								result=std::string("restrict-atoms [_marked] -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-							}
-							if(ImGui::Selectable("Restrict to unmarked"))
-							{
-								result=std::string("restrict-atoms (not [_marked]) -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-							}
-							if(ImGui::Selectable("Restrict to protein or nucleic atoms"))
-							{
-								result=std::string("restrict-atoms ([-protein] or [-nucleic]) -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-							}
-							if(ImGui::Selectable("Restrict to protein atoms"))
-							{
-								result=std::string("restrict-atoms [-protein] -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-							}
-							if(ImGui::Selectable("Restrict to nucleic atoms"))
-							{
-								result=std::string("restrict-atoms [-nucleic] -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-							}
-
-							ImGui::PopStyleColor();
-						}
-
 						ImGui::EndPopup();
 					}
 				}
@@ -1275,46 +1551,88 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						ImGui::Selectable("Show atoms:");
-						if(ImGui::Selectable("  cartoon##show"))
+						if(concept_mode()=="atoms")
 						{
-							result=std::string("show-atoms -rep cartoon -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("  trace##show"))
-						{
-							result=std::string("show-atoms -rep trace -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("  sticks##show"))
-						{
-							result=std::string("show-atoms -rep sticks -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("  balls##show"))
-						{
-							result=std::string("show-atoms -rep balls -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
+							ImGui::Selectable("Show atoms:");
+							if(ImGui::Selectable("  cartoon##show"))
+							{
+								result=std::string("show-atoms -rep cartoon -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  trace##show"))
+							{
+								result=std::string("show-atoms -rep trace -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  sticks##show"))
+							{
+								result=std::string("show-atoms -rep sticks -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  balls##show"))
+							{
+								result=std::string("show-atoms -rep balls -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
 
-						ImGui::Separator();
+							ImGui::Separator();
 
-						ImGui::Selectable("Hide atoms:");
-						if(ImGui::Selectable("  all##hide"))
-						{
-							result=std::string("hide-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							ImGui::Selectable("Hide atoms:");
+							if(ImGui::Selectable("  all##hide"))
+							{
+								result=std::string("hide-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  cartoon##hide"))
+							{
+								result=std::string("hide-atoms -rep cartoon -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  trace##hide"))
+							{
+								result=std::string("hide-atoms -rep trace -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  sticks##hide"))
+							{
+								result=std::string("hide-atoms -rep sticks -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
+							if(ImGui::Selectable("  balls##hide"))
+							{
+								result=std::string("hide-atoms -rep balls -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
 						}
-						if(ImGui::Selectable("  cartoon##hide"))
+						else if(concept_mode()=="contacts")
 						{
-							result=std::string("hide-atoms -rep cartoon -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("  trace##hide"))
-						{
-							result=std::string("hide-atoms -rep trace -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("  sticks##hide"))
-						{
-							result=std::string("hide-atoms -rep sticks -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-						if(ImGui::Selectable("  balls##hide"))
-						{
-							result=std::string("hide-atoms -rep balls -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							ImGui::Selectable("Show contacts:");
+							if(ImGui::Selectable("  faces##show"))
+							{
+								result="construct-contacts\n";
+								result+=std::string("show-contacts -rep faces -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  edges##show"))
+							{
+								result="construct-contacts\n";
+								result+=std::string("show-contacts -rep edges -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  sas-mesh##show"))
+							{
+								result="construct-contacts\n";
+								result+=std::string("show-contacts -rep sas-mesh -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+							}
+
+							ImGui::Separator();
+
+							ImGui::Selectable("Hide contacts:");
+							if(ImGui::Selectable("  all##hide"))
+							{
+								result=std::string("hide-contacts -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  faces##hide"))
+							{
+								result=std::string("hide-contacts -rep faces -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  edges##hide"))
+							{
+								result=std::string("hide-contacts -rep edges -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+							}
+							if(ImGui::Selectable("  sas-mesh##hide"))
+							{
+								result=std::string("hide-contacts -rep sas-mesh -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+							}
 						}
 
 						ImGui::EndPopup();
@@ -1327,161 +1645,261 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						ImGui::Selectable("Spectrum:");
-
-						if(ImGui::Selectable("  by residue number"))
+						if(concept_mode()=="atoms")
 						{
-							result=std::string("spectrum-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
+							ImGui::Selectable("Spectrum:");
 
-						if(ImGui::Selectable("  by residue ID"))
-						{
-							result=std::string("spectrum-atoms -by residue-id -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by chain"))
-						{
-							result=std::string("spectrum-atoms -by chain -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by chain randomly"))
-						{
-							result=std::string("spectrum-atoms -by chain -scheme random -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by secondary structure"))
-						{
-							result=std::string("spectrum-atoms -by secondary-structure -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by atom type"))
-						{
-							result=std::string("spectrum-atoms -by atom-type -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by hydropathy"))
-						{
-							result=std::string("spectrum-atoms -by hydropathy -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by B-factor, blue-white-red"))
-						{
-							result=std::string("spectrum-atoms -adjunct tf -scheme bwr -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by B-factor, red-white-blue"))
-						{
-							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by B-factor, blue-white-red, 0-100"))
-						{
-							result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-
-						if(ImGui::Selectable("  by B-factor, red-white-blue, 0-100"))
-						{
-							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-
-						ImGui::Separator();
-
-						ImGui::Selectable("Color:");
-
-						if(ImGui::Selectable("  random"))
-						{
-							result=std::string("color-atoms -next-random-color -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-						}
-
-						{
-							ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  red"))
+							if(ImGui::Selectable("  by residue number"))
 							{
-								result=std::string("color-atoms -col 0xFF0000 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  yellow"))
+							if(ImGui::Selectable("  by residue ID"))
 							{
-								result=std::string("color-atoms -col 0xFFFF00 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -by residue-id -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
-						{
-							ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  green"))
-							{
-								result=std::string("color-atoms -col 0x00FF00 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
-							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  cyan"))
+							if(ImGui::Selectable("  by chain"))
 							{
-								result=std::string("color-atoms -col 0x00FFFF -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -by chain -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  blue"))
+							if(ImGui::Selectable("  by chain randomly"))
 							{
-								result=std::string("color-atoms -col 0x0000FF -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -by chain -scheme random -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  magenta"))
+							if(ImGui::Selectable("  by secondary structure"))
 							{
-								result=std::string("color-atoms -col 0xFF00FF -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -by secondary-structure -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  white"))
+							if(ImGui::Selectable("  by atom type"))
 							{
-								result=std::string("color-atoms -col white -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -by atom-type -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  light gray"))
+							if(ImGui::Selectable("  by hydropathy"))
 							{
-								result=std::string("color-atoms -col 0xAAAAAA -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -by hydropathy -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
-						{
-							ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
-							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("  dark gray"))
+							if(ImGui::Selectable("  by B-factor, blue-white-red"))
 							{
-								result=std::string("color-atoms -col 0x555555 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								result=std::string("spectrum-atoms -adjunct tf -scheme bwr -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
-							ImGui::PopStyleColor();
-						}
 
+							if(ImGui::Selectable("  by B-factor, red-white-blue"))
+							{
+								result=std::string("spectrum-atoms -adjunct tf -scheme rwb -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
+
+							if(ImGui::Selectable("  by B-factor, blue-white-red, 0-100"))
+							{
+								result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
+
+							if(ImGui::Selectable("  by B-factor, red-white-blue, 0-100"))
+							{
+								result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
+
+							ImGui::Separator();
+
+							ImGui::Selectable("Color:");
+
+							if(ImGui::Selectable("  random"))
+							{
+								result=std::string("color-atoms -next-random-color -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  red"))
+								{
+									result=std::string("color-atoms -col 0xFF0000 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  yellow"))
+								{
+									result=std::string("color-atoms -col 0xFFFF00 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+							{
+								ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  green"))
+								{
+									result=std::string("color-atoms -col 0x00FF00 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  cyan"))
+								{
+									result=std::string("color-atoms -col 0x00FFFF -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  blue"))
+								{
+									result=std::string("color-atoms -col 0x0000FF -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  magenta"))
+								{
+									result=std::string("color-atoms -col 0xFF00FF -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  white"))
+								{
+									result=std::string("color-atoms -col white -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  light gray"))
+								{
+									result=std::string("color-atoms -col 0xAAAAAA -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  dark gray"))
+								{
+									result=std::string("color-atoms -col 0x555555 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+						}
+						else if(concept_mode()=="contacts")
+						{
+							ImGui::Selectable("Color:");
+
+							if(ImGui::Selectable("  random"))
+							{
+								result=std::string("color-contacts -next-random-color -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  red"))
+								{
+									result=std::string("color-contacts -col 0xFF0000 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  yellow"))
+								{
+									result=std::string("color-contacts -col 0xFFFF00 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+							{
+								ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  green"))
+								{
+									result=std::string("color-contacts -col 0x00FF00 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  cyan"))
+								{
+									result=std::string("color-contacts -col 0x00FFFF -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  blue"))
+								{
+									result=std::string("color-contacts -col 0x0000FF -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  magenta"))
+								{
+									result=std::string("color-contacts -col 0xFF00FF -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  white"))
+								{
+									result=std::string("color-contacts -col white -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  light gray"))
+								{
+									result=std::string("color-contacts -col 0xAAAAAA -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  dark gray"))
+								{
+									result=std::string("color-contacts -col 0x555555 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+								}
+								ImGui::PopStyleColor();
+							}
+						}
 						ImGui::EndPopup();
 					}
 				}
@@ -1562,6 +1980,25 @@ private:
 		return str;
 	}
 
+	static std::string& concept_mode()
+	{
+		static std::string mode;
+		if(mode.empty())
+		{
+			mode="atoms";
+		}
+		return mode;
+	}
+
+	static void set_concept_mode(const std::string& mode)
+	{
+		concept_mode().clear();
+		if(mode=="atoms" || mode=="contacts")
+		{
+			concept_mode()=mode;
+		}
+	}
+
 	static std::string& atoms_selection_string()
 	{
 		static std::string value;
@@ -1605,6 +2042,58 @@ private:
 			if(atoms_selection_string_suggestions().second.size()>5)
 			{
 				atoms_selection_string_suggestions().second.pop_front();
+			}
+		}
+	}
+
+	static std::string& contacts_selection_string()
+	{
+		static std::string value;
+		if(value.empty() || value=="[" || value=="]")
+		{
+			value="[-no-solvent]";
+		}
+		return value;
+	}
+
+	static std::pair< std::deque<std::string>, std::deque<std::string> >& contacts_selection_string_suggestions()
+	{
+		static std::pair< std::deque<std::string>, std::deque<std::string> > suggestions;
+		if(suggestions.first.empty())
+		{
+			suggestions.first.push_back("[]");
+			suggestions.first.push_back("[-no-solvent]");
+			suggestions.first.push_back("[-min-seq-sep 1]");
+			suggestions.first.push_back("[-no-solvent -min-seq-sep 1]");
+			suggestions.first.push_back("[-inter-chain]");
+			suggestions.first.push_back("[-solvent]");
+			suggestions.first.push_back("[_marked]");
+			suggestions.first.push_back("[_visible]");
+			suggestions.first.push_back("[-a1 [_marked] -a2! [_marked]]");
+			suggestions.first.push_back("[-a1 [-protein] -a2 [-nucleic]]");
+			suggestions.first.push_back("[-a1 [-chain A] -a2 [-chain B]]");
+		}
+		return suggestions;
+	}
+
+	static void set_contacts_selection_string_and_save_suggestion(const std::string& value)
+	{
+		contacts_selection_string()=value;
+		bool already_suggested=false;
+		for(std::size_t i=0;i<contacts_selection_string_suggestions().first.size() && !already_suggested;i++)
+		{
+			already_suggested=already_suggested || (contacts_selection_string_suggestions().first[i]==contacts_selection_string());
+		}
+		for(std::size_t i=0;i<contacts_selection_string_suggestions().second.size() && !already_suggested;i++)
+		{
+			already_suggested=already_suggested || (contacts_selection_string_suggestions().second[i]==contacts_selection_string());
+		}
+		if(!already_suggested)
+		{
+			contacts_selection_string_suggestions().second.push_back(contacts_selection_string());
+			if(contacts_selection_string_suggestions().second.size()>5)
+			{
+				contacts_selection_string_suggestions().second.pop_front();
 			}
 		}
 	}
