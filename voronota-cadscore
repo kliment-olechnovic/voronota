@@ -25,7 +25,7 @@ Basic options:
 
 Advanced options:
     --ignore-residue-names                      flag to consider just residue numbers and ignore residue names
-    --enable-site-based-scoring                 falg to enable site-based scoring
+    --enable-site-based-scoring                 flag to enable site-based scoring
     --multiple-models                           flag to handle multiple models in PDB file as an assembly
     --input-model-chains-renaming               input text file with renaming rules for chains
     --remap-chains                              flag to automatically rearrange chain names for higher scores
