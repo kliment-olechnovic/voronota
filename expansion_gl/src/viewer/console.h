@@ -1508,7 +1508,7 @@ private:
 									{
 										result+="music-background waiting\n";
 									}
-									result+=std::string("tmalign-many -target '")+os.name+"' -target-sel ("+atoms_selection_string()+")";
+									result+=std::string("tmalign-many -target '")+os.name+"' -target-sel '("+atoms_selection_string()+")' -model-sel '("+atoms_selection_string()+")'";
 									if(with_music_background)
 									{
 										result+="\nmusic-background stop\n";
@@ -1532,7 +1532,7 @@ private:
 									{
 										result+="music-background waiting\n";
 									}
-									result+=std::string("tmalign-many -picked -target '")+os.name+"' -use ("+atoms_selection_string()+")";
+									result+=std::string("tmalign-many -picked -target '")+os.name+"' -target-sel '("+atoms_selection_string()+")' -model-sel '("+atoms_selection_string()+")'";
 									if(with_music_background)
 									{
 										result+="\nmusic-background stop\n";
