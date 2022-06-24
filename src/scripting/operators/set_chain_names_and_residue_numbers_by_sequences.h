@@ -203,9 +203,19 @@ public:
 		}
 
 		std::vector< std::deque<std::size_t> > mapping_of_sequences_to_chains(sequences.size());
-		for(std::size_t i=0;i<chain_infos.size();i++)
 		{
-			mapping_of_sequences_to_chains[chain_infos[i].closest_sequence_id].push_back(i);
+			std::vector< std::set< std::pair<double, std::size_t> > > mapping_of_sequences_to_chains_ordered(sequences.size());
+			for(std::size_t i=0;i<chain_infos.size();i++)
+			{
+				mapping_of_sequences_to_chains_ordered[chain_infos[i].closest_sequence_id].insert(std::make_pair(0.0-chain_infos[i].best_sequence_identity, i));
+			}
+			for(std::size_t i=0;i<mapping_of_sequences_to_chains_ordered.size();i++)
+			{
+				for(std::set< std::pair<double, std::size_t> >::const_iterator it=mapping_of_sequences_to_chains_ordered[i].begin();it!=mapping_of_sequences_to_chains_ordered[i].end();++it)
+				{
+					mapping_of_sequences_to_chains[i].push_back(it->second);
+				}
+			}
 		}
 
 		std::vector<std::size_t> order_of_chains;
@@ -217,16 +227,19 @@ public:
 			{
 				if(!mapping_of_sequences_to_chains[j].empty())
 				{
-					if(mapping_of_sequences_to_chain_names[j].empty())
+					if(!mapping_of_sequences_to_chain_names[j].empty())
 					{
-						throw std::runtime_error("Invalid chain-to-sequence correspondence.");
+						const std::size_t chain_id=mapping_of_sequences_to_chains[j].front();
+						mapping_of_sequences_to_chains[j].pop_front();
+						const std::string chain_name=mapping_of_sequences_to_chain_names[j].front();
+						mapping_of_sequences_to_chain_names[j].pop_front();
+						order_of_chains.push_back(chain_id);
+						chain_infos[chain_id].new_chain_name=chain_name;
 					}
-					const std::size_t chain_id=mapping_of_sequences_to_chains[j].front();
-					mapping_of_sequences_to_chains[j].pop_front();
-					const std::string chain_name=mapping_of_sequences_to_chain_names[j].front();
-					mapping_of_sequences_to_chain_names[j].pop_front();
-					order_of_chains.push_back(chain_id);
-					chain_infos[chain_id].new_chain_name=chain_name;
+					else
+					{
+						mapping_of_sequences_to_chains[j].pop_front();
+					}
 				}
 				j++;
 				if(j>=mapping_of_sequences_to_chains.size())
