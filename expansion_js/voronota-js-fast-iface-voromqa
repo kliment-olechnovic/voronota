@@ -12,6 +12,7 @@ Options:
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
     --constraints-required    string     query to check required contacts, default is ''
     --constraints-banned      string     query to check banned contacts, default is ''
+    --constraint-clashes      number     max allowed clash score, default is 0.9
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to run in parallel, default is 1
     --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
@@ -94,6 +95,7 @@ RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
 CONSTRAINTS_REQUIRED=""
 CONSTRAINTS_BANNED=""
+CONSTRAINT_CLASHES="0.9"
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
@@ -130,6 +132,10 @@ do
 		;;
 	--constraints-banned)
 		CONSTRAINTS_BANNED="$OPTARG"
+		shift
+		;;
+	--constraint-clashes)
+		CONSTRAINT_CLASHES="$OPTARG"
 		shift
 		;;
 	--output-table-file)
@@ -336,6 +342,11 @@ fi
 INFILE_BASENAME="$(get_input_basename $INFILE $STDIN_FILE)"
 OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE_BASENAME" "$OUTPUT_TABLE_FILE")"
 
+if [ -z "$CONSTRAINT_CLASHES" ]
+then
+	CONSTRAINT_CLASHES="0.9"
+fi
+
 {
 cat << EOF
 var common_params={}
@@ -345,6 +356,7 @@ common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
 common_params.constraints_required='$CONSTRAINTS_REQUIRED';
 common_params.constraints_banned='$CONSTRAINTS_BANNED';
+common_params.constraint_clashes=$CONSTRAINT_CLASHES;
 common_params.run_faspr='$RUN_FASPR';
 common_params.score_symmetry='$SCORE_SYMMETRY';
 common_params.blanket='$BLANKET';
@@ -540,6 +552,11 @@ voronota_reset_time();
 voronota_clash_score("-use", "[inter_chain_contacts]");
 voronota_assert_full_success("Failed to compute clash score");
 var result_clash_score=voronota_last_output().results[0].output.clash_score;
+
+if(result_clash_score>params.constraint_clashes)
+{
+	throw ("Clash score is too high");
+}
 
 voronota_print_time();
 var time_calculating_clashes=voronota_last_output().results[0].output.elapsed_miliseconds;
