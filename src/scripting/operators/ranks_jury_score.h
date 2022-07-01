@@ -36,8 +36,9 @@ public:
 	bool output_redundancy;
 	bool symmetrize_similarities;
 	double scale_last_slice_value;
+	bool average_ranks_in_clusters;
 
-	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), several_max_values(1), use_dominations(false), output_redundancy(false), symmetrize_similarities(false), scale_last_slice_value(1.0)
+	RanksJuryScore() : similarity_threshold(1.0), generate_slices(false), use_max_value(false), several_max_values(1), use_dominations(false), output_redundancy(false), symmetrize_similarities(false), scale_last_slice_value(1.0), average_ranks_in_clusters(false)
 	{
 	}
 
@@ -55,6 +56,7 @@ public:
 		output_redundancy=input.get_flag("output-redundancy");
 		symmetrize_similarities=input.get_flag("symmetrize-similarities");
 		scale_last_slice_value=input.get_value_or_default<double>("scale-last-slice-value", 1.0);
+		average_ranks_in_clusters=input.get_flag("average-ranks-in-clusters");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -71,6 +73,7 @@ public:
 		doc.set_option_decription(CDOD("output-redundancy", CDOD::DATATYPE_BOOL, "flag to output similarities to higher-ranked IDs"));
 		doc.set_option_decription(CDOD("symmetrize-similarities", CDOD::DATATYPE_BOOL, "flag to symmetrize similarities"));
 		doc.set_option_decription(CDOD("scale-last-slice-value", CDOD::DATATYPE_FLOAT, "multiplier for the last slice value", 1.0));
+		doc.set_option_decription(CDOD("average-ranks-in-clusters", CDOD::DATATYPE_BOOL, "flag to average ranks in clusters"));
 	}
 
 	Result run(void*) const
@@ -340,6 +343,35 @@ public:
 									}
 								}
 							}
+						}
+						if(average_ranks_in_clusters && !secondary_members_of_clusters.empty())
+						{
+							const std::size_t N=map_of_similarities.size();
+							const std::size_t M=map_of_ranks.begin()->second.size();
+							MapOfRanks map_of_ranks_modified=map_of_ranks;
+							for(MapOfMembersOfClusters::const_iterator secondary_members_it=secondary_members_of_clusters.begin();secondary_members_it!=secondary_members_of_clusters.end();++secondary_members_it)
+							{
+								if(!secondary_members_it->second.empty())
+								{
+									const std::string& main_id=secondary_members_it->first;
+									std::vector<int> main_ranks_modified(M, 0);
+									for(std::set<std::string>::const_iterator set_it=secondary_members_it->second.begin();set_it!=secondary_members_it->second.end();++set_it)
+									{
+										const std::string& secondary_id=(*set_it);
+										const std::vector<int>& secondary_ranks=map_of_ranks.find(secondary_id)->second;
+										for(std::size_t ri=0;ri<M;ri++)
+										{
+											main_ranks_modified[ri]+=std::min(secondary_ranks[ri], static_cast<int>(N));
+										}
+									}
+									for(std::size_t ri=0;ri<M;ri++)
+									{
+										main_ranks_modified[ri]=main_ranks_modified[ri]/static_cast<int>(secondary_members_it->second.size());
+									}
+									map_of_ranks_modified[main_id]=main_ranks_modified;
+								}
+							}
+							map_of_ranks.swap(map_of_ranks_modified);
 						}
 						for(std::set<std::string>::const_iterator jt=set_of_ids_to_exclude.begin();jt!=set_of_ids_to_exclude.end();++jt)
 						{
