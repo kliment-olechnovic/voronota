@@ -354,7 +354,11 @@ public:
 								if(!secondary_members_it->second.empty())
 								{
 									const std::string& main_id=secondary_members_it->first;
-									std::vector<int> main_ranks_modified(M, 0);
+									std::vector<int> main_ranks_modified=map_of_ranks.find(main_id)->second;
+									for(std::size_t ri=0;ri<M;ri++)
+									{
+										main_ranks_modified[ri]=std::min(main_ranks_modified[ri], static_cast<int>(N));
+									}
 									for(std::set<std::string>::const_iterator set_it=secondary_members_it->second.begin();set_it!=secondary_members_it->second.end();++set_it)
 									{
 										const std::string& secondary_id=(*set_it);
@@ -366,7 +370,7 @@ public:
 									}
 									for(std::size_t ri=0;ri<M;ri++)
 									{
-										main_ranks_modified[ri]=main_ranks_modified[ri]/static_cast<int>(secondary_members_it->second.size());
+										main_ranks_modified[ri]=main_ranks_modified[ri]/static_cast<int>(secondary_members_it->second.size()+1);
 									}
 									map_of_ranks_modified[main_id]=main_ranks_modified;
 								}
