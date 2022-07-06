@@ -250,3 +250,48 @@ hide-atoms
 show-atoms -rep balls
 color-atoms 0x7777FF
 
+### Demo multiple representations
+grid-by-object
+configure-gui-json-write-level-6
+
+import 4ung.pdb
+spectrum-atoms -by chain -scheme cm
+hide-atoms
+show-atoms -rep balls
+
+import 4ung.pdb
+spectrum-atoms -by chain -scheme cm
+hide-atoms
+show-atoms -rep sticks
+construct-contacts
+select-contacts [-inter-chain] -name iface
+color-contacts [iface] -col yellow
+show-contacts [iface]
+select-contacts [-solvent -a1 [-chain B]] -name sas_b
+color-contacts [sas_b] -col magenta
+show-contacts [sas_b]
+
+
+import 4ung.pdb
+spectrum-atoms -by chain -scheme cm
+construct-contacts
+select-contacts [-inter-chain] -name iface
+color-contacts [iface] -rep edges -col black
+spectrum-contacts [iface] -by residue-ids -scheme random
+show-contacts [iface] -rep faces
+
+import 4ung.pdb
+spectrum-atoms -by chain -scheme cm
+color-atoms -col 0xBBBBBB
+color-atoms [-chain A -rnum 16] -col cyan
+color-atoms [-chain B -rnum 15] -col magenta
+show-atoms ([-chain A -rnum 16] or [-chain B -rnum 15]) -rep sticks
+construct-contacts
+select-contacts [-a1 [-chain A -rnum 16]] -name contacts_r1
+select-contacts [-a1 [-chain B -rnum 15]] -name contacts_r2
+color-contacts ([contacts_r1] or [contacts_r2])  -rep edges -col black
+show-contacts ([contacts_r1] or [contacts_r2]) -rep edges
+select-contacts [-inter-chain -a1 [-chain A -rnum 16] -a2 [-chain B -rnum 15]] -name iface
+color-contacts [iface] -col yellow
+show-contacts [iface] -rep faces
+
