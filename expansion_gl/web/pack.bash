@@ -2,6 +2,11 @@
 
 cd "$(dirname "$0")"
 
+if [ -z "$EMSDK" ]
+then
+	source ~/software/emsdk/emsdk_env.sh
+fi
+
 if [ -z "$EMSDK" ] || [ ! -d "$EMSDK" ]
 then
 	echo "Error: Emscripten building environment not initialized."
