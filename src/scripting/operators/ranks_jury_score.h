@@ -27,6 +27,7 @@ public:
 	std::string input_similarities_file;
 	std::string input_ranks_file;
 	std::string output_file;
+	std::string diagnostic_prefix;
 	std::vector<std::size_t> top_slices;
 	std::vector<double> similarity_thresholds;
 	bool generate_slices;
@@ -46,6 +47,7 @@ public:
 		input_similarities_file=input.get_value<std::string>("input-similarities-file");
 		input_ranks_file=input.get_value<std::string>("input-ranks-file");
 		output_file=input.get_value<std::string>("output-file");
+		diagnostic_prefix=input.get_value_or_default<std::string>("diagnostic-prefix", std::string());
 		top_slices=input.get_value_vector<std::size_t>("top-slices");
 		similarity_thresholds=input.get_value_vector_or_default<double>("similarity-threshold", std::vector<double>(1, 1.0));
 		generate_slices=input.get_flag("generate-slices");
@@ -62,6 +64,7 @@ public:
 		doc.set_option_decription(CDOD("input-similarities-file", CDOD::DATATYPE_STRING, "path to input similarities file"));
 		doc.set_option_decription(CDOD("input-ranks-file", CDOD::DATATYPE_STRING, "path to ranks similarities file"));
 		doc.set_option_decription(CDOD("output-file", CDOD::DATATYPE_STRING, "path to output file"));
+		doc.set_option_decription(CDOD("diagnostic-prefix", CDOD::DATATYPE_STRING, "path prefix to output diagnostic info files", ""));
 		doc.set_option_decription(CDOD("top-slices", CDOD::DATATYPE_INT_ARRAY, "list of slice sizes"));
 		doc.set_option_decription(CDOD("similarity-thresholds", CDOD::DATATYPE_FLOAT_ARRAY, "similarity thresholds for clustering", 1.0));
 		doc.set_option_decription(CDOD("generate-slices", CDOD::DATATYPE_BOOL, "flag to generate top slices from interval"));
@@ -269,7 +272,9 @@ public:
 			}
 		}
 
-		const std::vector<RanksJuryScoringResult> ranks_jury_scoring_results=calc_ranks_jury_scoring_results(top_slices_to_use, map_of_similarities, map_of_ranks, similarity_thresholds);
+		std::vector<RanksJuryScoringResult> ranks_jury_scoring_results;
+		std::vector<int> cluster_counts;
+		calc_ranks_jury_scoring_results(top_slices_to_use, map_of_similarities, map_of_ranks, similarity_thresholds, ranks_jury_scoring_results, cluster_counts);
 
 		{
 			OutputSelector foutput_selector(output_file);
@@ -285,6 +290,23 @@ public:
 					foutput << " " << single_result.scores[l];
 				}
 				foutput << "\n";
+			}
+		}
+
+		if(!diagnostic_prefix.empty())
+		{
+			if(cluster_counts.size()==similarity_thresholds.size())
+			{
+				const std::string info_file=diagnostic_prefix+"cluster_counts_by_threshold.txt";
+
+				OutputSelector foutput_selector(info_file);
+				std::ostream& foutput=foutput_selector.stream();
+				assert_io_stream(info_file, foutput);
+
+				for(std::size_t i=0;i<similarity_thresholds.size();i++)
+				{
+					foutput << similarity_thresholds[i] << " " << cluster_counts[i] << "\n";
+				}
 			}
 		}
 
@@ -629,16 +651,22 @@ private:
 		return ranks_jury_scoring_results;
 	}
 
-	std::vector<RanksJuryScoringResult> calc_ranks_jury_scoring_results(
+	void calc_ranks_jury_scoring_results(
 			const std::vector<std::size_t> top_slices_to_use,
 			const MapOfSimilarities& input_map_of_similarities,
 			const MapOfRanks& input_map_of_ranks,
-			const std::vector<double>& similarity_thresholds) const
+			const std::vector<double>& similarity_thresholds,
+			std::vector<RanksJuryScoringResult>& summary_results,
+			std::vector<int>& cluster_counts) const
 	{
+		summary_results.clear();
+		cluster_counts.clear();
+		cluster_counts.reserve(similarity_thresholds.size());
 		std::map<std::string, RanksJuryScoringResult> map_of_results;
 		for(std::size_t i=0;i<similarity_thresholds.size();i++)
 		{
 			const std::vector<RanksJuryScoringResult> subresults=calc_ranks_jury_scoring_results(top_slices_to_use, input_map_of_similarities, input_map_of_ranks, similarity_thresholds[i]);
+			int cluster_count=0;
 			for(std::size_t j=0;j<subresults.size();j++)
 			{
 				const RanksJuryScoringResult& subresult=subresults[j];
@@ -650,7 +678,12 @@ private:
 				{
 					result.scores[l]+=subresult.scores[l];
 				}
+				if(subresult.first_in_cluster>0.0)
+				{
+					cluster_count++;
+				}
 			}
+			cluster_counts.push_back(cluster_count);
 		}
 		typedef std::pair< std::pair<double, double>, std::string > OrderingID;
 		std::map<OrderingID, RanksJuryScoringResult> ordering_map_of_results;
@@ -668,13 +701,11 @@ private:
 			oid.second=result.id;
 			ordering_map_of_results[oid]=result;
 		}
-		std::vector<RanksJuryScoringResult> summary_results;
 		summary_results.reserve(ordering_map_of_results.size());
 		for(std::map<OrderingID, RanksJuryScoringResult>::const_iterator it=ordering_map_of_results.begin();it!=ordering_map_of_results.end();++it)
 		{
 			summary_results.push_back(it->second);
 		}
-		return summary_results;
 	}
 };
 
