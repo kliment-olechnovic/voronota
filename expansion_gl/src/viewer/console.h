@@ -507,14 +507,14 @@ private:
 
 		void execute(std::string& result)
 		{
-			if(ImGui::Button("Run", ImVec2(100,0)))
+			if(ImGui::Button("Run##script_editor", ImVec2(70,0)))
 			{
 				result=(std::string(multiline_command_buffer_.data()));
 			}
 
 			ImGui::SameLine();
 
-			if(ImGui::Button("Clear", ImVec2(100,0)))
+			if(ImGui::Button("Clear##script_editor", ImVec2(70,0)))
 			{
 				multiline_command_buffer_[0]=0;
 			}
@@ -522,7 +522,7 @@ private:
 			ImGui::SameLine();
 
 			{
-				ImGui::Button("Load example", ImVec2(100,0));
+				ImGui::Button("Load example##script_editor", ImVec2(100,0));
 				if(ImGui::BeginPopupContextItem("load example script context menu", 0))
 				{
 					for(std::size_t i=0;i<example_scripts().size();i++)
@@ -538,9 +538,35 @@ private:
 				}
 			}
 
-			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0, 300));
-			ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-			ImVec4 color_background=ImVec4(0.10f, 0.10f, 0.10f, 1.0f);
+			ImGui::SameLine();
+
+			const int script_editor_size_min=100;
+			const int script_editor_size_max=1000;
+
+			static int script_editor_size=300;
+			static bool script_editor_colors_black_on_white=false;
+
+			{
+				ImGui::Button("Options##script_editor", ImVec2(70,0));
+				if(ImGui::BeginPopupContextItem("script editor options context menu", 0))
+				{
+					ImGui::PushItemWidth(150);
+					ImGui::SliderInt("Resize##script_editor_slider_resize", &script_editor_size, script_editor_size_min, script_editor_size_max);
+					ImGui::PopItemWidth();
+
+					ImGui::Separator();
+
+					ImGui::Checkbox("Black on white", &script_editor_colors_black_on_white);
+
+					ImGui::EndPopup();
+				}
+			}
+
+			script_editor_size=std::max(script_editor_size_min, std::min(script_editor_size, script_editor_size_max));
+
+			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0, script_editor_size));
+			ImVec4 color_text=(script_editor_colors_black_on_white ? ImVec4(0.0f, 0.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+			ImVec4 color_background=(script_editor_colors_black_on_white ? ImVec4(1.0f, 1.0f, 1.0f, 1.0f) : ImVec4(0.10f, 0.10f, 0.10f, 1.0f));
 			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, color_background);
 			ImGui::PushItemWidth(-1);
@@ -603,7 +629,36 @@ private:
 
 		void execute()
 		{
-			ImGui::BeginChild("##area_for_list_of_documentation", ImVec2(0, 400));
+			const int doc_viewer_size_min=200;
+			const int doc_viewer_size_max=800;
+
+			static int doc_viewer_size=400;
+			static bool doc_viewer_colors_black_on_white=false;
+
+			{
+				ImGui::Button("Options##doc_viewer", ImVec2(70,0));
+				if(ImGui::BeginPopupContextItem("doc viewer options context menu", 0))
+				{
+					ImGui::PushItemWidth(150);
+					ImGui::SliderInt("Resize##doc_viewer_slider_resize", &doc_viewer_size, doc_viewer_size_min, doc_viewer_size_max);
+					ImGui::PopItemWidth();
+
+					ImGui::Separator();
+
+					ImGui::Checkbox("Black on white", &doc_viewer_colors_black_on_white);
+
+					ImGui::EndPopup();
+				}
+			}
+
+			doc_viewer_size=std::max(doc_viewer_size_min, std::min(doc_viewer_size, doc_viewer_size_max));
+
+			ImVec4 color_text=(doc_viewer_colors_black_on_white ? ImVec4(0.0f, 0.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+			ImVec4 color_background=(doc_viewer_colors_black_on_white ? ImVec4(1.0f, 1.0f, 1.0f, 1.0f) : ImVec4(0.10f, 0.10f, 0.10f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+			ImGui::PushStyleColor(ImGuiCol_ChildWindowBg, color_background);
+
+			ImGui::BeginChild("##area_for_list_of_documentation", ImVec2(0, doc_viewer_size));
 
 			for(std::map<std::string, std::string>::const_iterator it=documentation.begin();it!=documentation.end();++it)
 			{
@@ -624,6 +679,9 @@ private:
 			}
 
 			ImGui::EndChild();
+
+			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
 		}
 	};
 
