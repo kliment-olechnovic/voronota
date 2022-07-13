@@ -842,31 +842,62 @@ private:
 
 				{
 					const std::string button_id=std::string("P##button_picking_all");
-					if(ImGui::Button(button_id.c_str(), ImVec2(19,0)))
+					const std::string menu_id=std::string("Picking##menu_picking");
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						if(!summary.picked)
+						if(ImGui::Selectable("Pick all"))
 						{
 							result="pick-objects";
 						}
-						else
+						if(ImGui::Selectable("Unpick all"))
 						{
 							result="unpick-objects";
 						}
+
+						ImGui::Separator();
+
+						if(ImGui::Selectable("Pick visible only"))
+						{
+							result="pick-objects -visible";
+						}
+						if(ImGui::Selectable("Unpick not visible"))
+						{
+							result="unpick-objects -not-visible";
+						}
+
+						ImGui::EndPopup();
 					}
 				}
 				ImGui::SameLine();
 				{
 					const std::string button_id=std::string("V##button_visibility_all");
-					if(ImGui::Button(button_id.c_str(), ImVec2(19,0)))
+					const std::string menu_id=std::string("Visibility##menu_visibility");
+					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						if(!summary.visible)
+						if(ImGui::Selectable("Show all"))
 						{
 							result="show-objects";
 						}
-						else
+						if(ImGui::Selectable("Hide all"))
 						{
 							result="hide-objects";
 						}
+
+						ImGui::Separator();
+
+						if(ImGui::Selectable("Show picked only"))
+						{
+							result="hide-objects\n";
+							result+="show-objects -picked";
+						}
+						if(ImGui::Selectable("Hide not picked"))
+						{
+							result="hide-objects -not-picked";
+						}
+
+						ImGui::EndPopup();
 					}
 				}
 				ImGui::SameLine();
@@ -879,30 +910,6 @@ private:
 						if(ImGui::Selectable("Zoom"))
 						{
 							result="zoom-by-objects";
-						}
-
-						ImGui::Separator();
-
-						if(ImGui::Selectable("Enable grid"))
-						{
-							result="grid-by-object";
-						}
-						if(ImGui::Selectable("Disable grid"))
-						{
-							result="mono";
-						}
-
-						ImGui::Separator();
-
-						if(ImGui::Selectable("Start animation"))
-						{
-							result="animate-loop-picked-objects";
-							result+="\nmusic-background streaming";
-						}
-						if(ImGui::Selectable("Stop animation"))
-						{
-							result="animate-none";
-							result+="\nmusic-background stop";
 						}
 
 						ImGui::Separator();
@@ -2101,8 +2108,7 @@ private:
 				suggestions.first.push_back("[-protein]");
 				suggestions.first.push_back("[-nucleic]");
 				suggestions.first.push_back("[-chain A]");
-				suggestions.first.push_back("[-chain B]");
-				suggestions.first.push_back("[-chain A -rnum 1:200 -rname TRP,PHE]");
+				suggestions.first.push_back("[-chain A -rnum 1:200]");
 				suggestions.first.push_back("(not [-aname C,N,O,CA])");
 				suggestions.first.push_back("[-sel-of-contacts _visible]");
 			}
