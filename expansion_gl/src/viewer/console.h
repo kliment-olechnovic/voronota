@@ -538,13 +538,15 @@ private:
 				}
 			}
 
-			ImGui::SameLine();
-
 			const int script_editor_size_min=100;
 			const int script_editor_size_max=1000;
 
 			static int script_editor_size=300;
 			static bool script_editor_colors_black_on_white=false;
+
+			ImGui::SameLine();
+			ImGui::TextUnformatted(" ");
+			ImGui::SameLine();
 
 			{
 				ImGui::Button("Options##script_editor", ImVec2(70,0));
@@ -629,11 +631,35 @@ private:
 
 		void execute()
 		{
+			static std::vector<char> search_string_buffer;
+			if(search_string_buffer.empty())
+			{
+				search_string_buffer.resize(256, 0);
+			}
+
+			ImGui::PushItemWidth(200);
+			ImGui::InputText("##doc_viewer_search_string", search_string_buffer.data(), 128);
+			ImGui::PopItemWidth();
+
+			ImGui::SameLine();
+
+			if(ImGui::Button("Clear##doc_viewer", ImVec2(70,0)))
+			{
+				search_string_buffer.clear();
+				search_string_buffer.resize(256, 0);
+			}
+
+			const std::string search_string(search_string_buffer.data());
+
 			const int doc_viewer_size_min=200;
 			const int doc_viewer_size_max=800;
 
-			static int doc_viewer_size=400;
+			static int doc_viewer_size=300;
 			static bool doc_viewer_colors_black_on_white=false;
+
+			ImGui::SameLine();
+			ImGui::TextUnformatted(" ");
+			ImGui::SameLine();
 
 			{
 				ImGui::Button("Options##doc_viewer", ImVec2(70,0));
@@ -664,17 +690,20 @@ private:
 			{
 				const std::string& title=it->first;
 				const std::string& content=it->second;
-				if(ImGui::TreeNode(title.c_str()))
+				if(search_string.empty() || title.find(search_string)!=std::string::npos)
 				{
-					if(content.empty())
+					if(ImGui::TreeNode(title.c_str()))
 					{
-						ImGui::TextUnformatted("    no arguments");
+						if(content.empty())
+						{
+							ImGui::TextUnformatted("    no arguments");
+						}
+						else
+						{
+							ImGui::TextUnformatted(content.c_str());
+						}
+						ImGui::TreePop();
 					}
-					else
-					{
-						ImGui::TextUnformatted(content.c_str());
-					}
-					ImGui::TreePop();
 				}
 			}
 
