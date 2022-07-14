@@ -138,6 +138,11 @@ public:
 				return result;
 			}
 
+			if(sequence_viewer_state_.visible)
+			{
+				sequence_viewer_state_.execute(result);
+			}
+
 			command_line_interface_state_.execute(result);
 
 			current_width_=ImGui::GetWindowWidth();
@@ -166,8 +171,9 @@ public:
 				{
 					ImGui::Checkbox("Script editor", &script_editor_state_.visible);
 					ImGui::Checkbox("Commands reference", &documentation_viewer_state_.visible);
-					ImGui::Checkbox("Display controld", &display_control_toolbar_state_.visible);
+					ImGui::Checkbox("Display controls", &display_control_toolbar_state_.visible);
 					ImGui::Checkbox("Objects", &object_list_viewer_state_.visible);
+					ImGui::Checkbox("Sequence viewer", &sequence_viewer_state_.visible);
 					ImGui::EndMenu();
 				}
 
@@ -320,7 +326,7 @@ private:
 		{
 			if(ImGui::GetWindowHeight()>50.0f)
 			{
-				ImGui::BeginChild("##console_scrolling_region", ImVec2(0,-ImGui::GetItemsLineHeightWithSpacing()));
+				ImGui::BeginChild("##console_scrolling_region", ImVec2(0,-ImGui::GetItemsLineHeightWithSpacing()), false);
 				ImGui::PushItemWidth(-1);
 				ImGui::PushTextWrapPos();
 				for(std::size_t i=0;i<outputs.size();i++)
@@ -2337,6 +2343,86 @@ private:
 		}
 	};
 
+	class SequenceViewerState
+	{
+	public:
+		bool visible;
+
+		SequenceViewerState() :
+			visible(false)
+		{
+		}
+
+		void execute(std::string& /*result*/)
+		{
+			const float current_width=ImGui::GetWindowWidth();
+			const float current_heigth=ImGui::GetWindowHeight();
+
+			std::vector< std::pair<std::string, std::string> > mock_sequences;
+			mock_sequences.push_back(std::pair<std::string, std::string>("Sequence name 1", "FSGJHSJGSFJGSGJD  FAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSG   JHSJGSFJGSGJDFAGGRAGRGAERHAHREHAR   HHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJend"));
+			mock_sequences.push_back(std::pair<std::string, std::string>("Sequence name 2", "GRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFA   GGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGS   GJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJend"));
+
+			if(current_heigth>100.0f)
+			{
+				std::size_t max_name_size=1;
+				for(std::size_t i=0;i<mock_sequences.size();i++)
+				{
+					max_name_size=std::max(max_name_size, mock_sequences[i].first.size());
+				}
+
+				const float sequence_names_frame_width=std::min(static_cast<float>(max_name_size)*7.0f+5.0f, current_width*0.2f);
+				const float sequence_frame_height=60;
+
+				for(std::size_t i=0;i<mock_sequences.size();i++)
+				{
+					{
+						const std::string region_id=std::string("##name_of_sequence_scrolling_region_")+mock_sequences[i].first;
+						ImGui::BeginChild(region_id.c_str(), ImVec2(sequence_names_frame_width, sequence_frame_height), false, ImGuiWindowFlags_HorizontalScrollbar);
+						ImGui::TextUnformatted(mock_sequences[i].first.c_str());
+						ImGui::EndChild();
+					}
+
+					ImGui::SameLine();
+
+					{
+						const std::string region_id=std::string("##sequence_scrolling_region_")+mock_sequences[i].first;
+						ImGui::BeginChild(region_id.c_str(), ImVec2(0, sequence_frame_height), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+						ImGui::TextUnformatted(mock_sequences[i].second.c_str());
+
+						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+						ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+
+						for(std::size_t j=0;j<mock_sequences[i].second.size();j++)
+						{
+							if(j>0)
+							{
+								ImGui::SameLine();
+							}
+							if(mock_sequences[i].second[j]==' ')
+							{
+								ImGui::Dummy(ImVec2(7.0f, 0.0f));
+							}
+							else
+							{
+								char button_label[32];
+								sprintf(button_label, "%c##sequence_button_%d", mock_sequences[i].second[j], static_cast<int>(i*10000+j));
+								if(ImGui::Button(button_label, ImVec2(7.0f, 0.0f)))
+								{
+									//
+								}
+							}
+						}
+
+						ImGui::PopStyleVar(2);
+
+						ImGui::EndChild();
+					}
+				}
+			}
+		}
+	};
+
 	Console() :
 		current_width_(0.0f),
 		current_heigth_(0.0f),
@@ -2360,6 +2446,7 @@ private:
 	DocumentationViewerState documentation_viewer_state_;
 	DisplayControlToolbarState display_control_toolbar_state_;
 	ObjectListViewerState object_list_viewer_state_;
+	SequenceViewerState sequence_viewer_state_;
 };
 
 }
