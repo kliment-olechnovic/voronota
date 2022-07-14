@@ -6,6 +6,7 @@
 #include <vector>
 #include <deque>
 
+#include "../uv/viewer_application.h"
 #include "../dependencies/imgui/imgui_impl_glfw_gl3.h"
 #include "../../../expansion_js/src/duktaper/stocked_data_resources.h"
 
@@ -165,6 +166,7 @@ public:
 				{
 					ImGui::Checkbox("Script editor", &script_editor_state_.visible);
 					ImGui::Checkbox("Commands reference", &documentation_viewer_state_.visible);
+					ImGui::Checkbox("Display controld", &display_control_toolbar_state_.visible);
 					ImGui::Checkbox("Objects", &object_list_viewer_state_.visible);
 					ImGui::EndMenu();
 				}
@@ -268,6 +270,11 @@ public:
 			if(documentation_viewer_state_.visible && ImGui::CollapsingHeader("Commands reference##header_for_list_of_documentation"))
 			{
 				documentation_viewer_state_.execute();
+			}
+
+			if(display_control_toolbar_state_.visible && ImGui::CollapsingHeader("Display controls##header_for_display_controls", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				display_control_toolbar_state_.execute(result);
 			}
 
 			if(object_list_viewer_state_.visible && ImGui::CollapsingHeader("Objects##header_for_list_of_objects", ImGuiTreeNodeFlags_DefaultOpen))
@@ -711,6 +718,58 @@ private:
 
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
+		}
+	};
+
+	class DisplayControlToolbarState
+	{
+	public:
+		bool visible;
+
+		DisplayControlToolbarState() :
+			visible(true)
+		{
+		}
+
+		void execute(std::string& result)
+		{
+			{
+				static bool grid=false;
+
+				grid=uv::ViewerApplication::instance().rendering_mode_is_grid();
+
+				if(ImGui::Checkbox("Grid", &grid))
+				{
+					if(grid)
+					{
+						result="grid-by-object";
+					}
+					else
+					{
+						result="mono";
+					}
+				}
+			}
+
+			ImGui::SameLine();
+
+			{
+				static bool perspective=false;
+
+				perspective=uv::ViewerApplication::instance().projection_mode_is_perspective();
+
+				if(ImGui::Checkbox("Perspective", &perspective))
+				{
+					if(perspective)
+					{
+						result="perspective";
+					}
+					else
+					{
+						result="ortho";
+					}
+				}
+			}
 		}
 	};
 
@@ -2298,6 +2357,7 @@ private:
 	CommandLineInterfaceState command_line_interface_state_;
 	ScriptEditorState script_editor_state_;
 	DocumentationViewerState documentation_viewer_state_;
+	DisplayControlToolbarState display_control_toolbar_state_;
 	ObjectListViewerState object_list_viewer_state_;
 };
 
