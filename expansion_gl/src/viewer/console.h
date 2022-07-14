@@ -258,7 +258,7 @@ public:
 				ImGui::EndMenuBar();
 			}
 
-			if(script_editor_state_.visible && ImGui::CollapsingHeader("Script editor##header_for_script_editor", ImGuiTreeNodeFlags_DefaultOpen))
+			if(script_editor_state_.visible && ImGui::CollapsingHeader("Script editor##header_for_script_editor"))
 			{
 				script_editor_state_.execute(result);
 			}
@@ -318,6 +318,7 @@ private:
 
 		void execute(std::string& result)
 		{
+			if(ImGui::GetWindowHeight()>50.0f)
 			{
 				ImGui::BeginChild("##console_scrolling_region", ImVec2(0,-ImGui::GetItemsLineHeightWithSpacing()));
 				ImGui::PushItemWidth(-1);
