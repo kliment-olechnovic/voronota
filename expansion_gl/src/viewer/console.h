@@ -2514,8 +2514,12 @@ private:
 			}
 
 			const float sequence_names_frame_width=std::min(static_cast<float>(max_name_size)*7.0f+5.0f, current_width*0.2f);
-			const float sequence_frame_height=60;
+			const float sequence_frame_height=45;
 			const float button_width_unit=10.0f;
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 0.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.0f, 0.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1.0f, 0.0f));
 
 			int used_slots=0;
 			int used_buttons=0;
@@ -2536,15 +2540,15 @@ private:
 
 					{
 						const std::string region_id=std::string("##sequence_scrolling_region_")+object_states[i].name;
-						ImGui::BeginChild(region_id.c_str(), ImVec2(0, sequence_frame_height), true, ImGuiWindowFlags_HorizontalScrollbar);
+						ImGui::BeginChild(region_id.c_str(), ImVec2(0, sequence_frame_height), true, ImGuiWindowFlags_HorizontalScrollbar|ImGuiWindowFlags_AlwaysHorizontalScrollbar);
 
 						std::map<std::string, ObjectsInfo::ObjectDetails>::const_iterator details_it=object_details.find(object_states[i].name);
 						if(details_it!=object_details.end())
 						{
 							const ObjectsInfo::ObjectSequenceInfo& sequence=details_it->second.sequence;
 
-							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 0.0f));
-							ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.0f, 0.0f));
+//							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 0.0f));
+//							ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.0f, 0.0f));
 
 							for(std::size_t j=0;j<sequence.chains.size();j++)
 							{
@@ -2611,13 +2615,15 @@ private:
 								}
 							}
 
-							ImGui::PopStyleVar(2);
+//							ImGui::PopStyleVar(2);
 						}
 
 						ImGui::EndChild();
 					}
 				}
 			}
+
+			ImGui::PopStyleVar(3);
 		}
 	};
 
