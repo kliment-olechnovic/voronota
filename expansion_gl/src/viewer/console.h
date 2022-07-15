@@ -31,40 +31,149 @@ public:
 		}
 	};
 
-	struct ObjectState
+	class ObjectsInfo
 	{
-		std::string name;
-		bool picked;
-		bool visible;
-	};
-
-	struct ObjectSequenceInfo
-	{
-		struct ResidueInfo
+	public:
+		struct ObjectState
 		{
 			std::string name;
-			int num;
-			bool marked;
+			bool picked;
+			bool visible;
 		};
 
-		struct ChainInfo
+		struct ObjectSequenceInfo
 		{
-			std::string name;
-			std::vector<ResidueInfo> residues;
+			struct ResidueInfo
+			{
+				std::string name;
+				int num;
+				bool marked;
+			};
+
+			struct ChainInfo
+			{
+				std::string name;
+				std::vector<ResidueInfo> residues;
+			};
+
+			std::vector<ChainInfo> chains;
+
+			bool empty() const
+			{
+				return chains.empty();
+			}
 		};
 
-		std::vector<ChainInfo> chains;
-
-		bool empty() const
+		struct ObjectDetails
 		{
-			return chains.empty();
+			ObjectSequenceInfo sequence;
+		};
+
+		ObjectsInfo() : num_of_picked_objects_(0), num_of_visible_objects_(0)
+		{
 		}
+
+		const std::vector<ObjectState>& get_object_states() const
+		{
+			return object_states_;
+		}
+
+		const std::map<std::string, ObjectDetails>& get_object_details() const
+		{
+			return object_details_;
+		}
+
+		int num_of_picked_objects() const
+		{
+			return num_of_picked_objects_;
+		}
+
+		int num_of_visible_objects() const
+		{
+			return num_of_visible_objects_;
+		}
+
+		bool object_has_details(const std::string& name) const
+		{
+			return (object_details_.count(name)>0);
+		}
+
+		void set_object_states(const std::vector<ObjectState>& object_states, const bool preserve_details_if_all_names_match)
+		{
+			if(object_states.empty())
+			{
+				object_details_.clear();
+				object_states_.clear();
+			}
+			else
+			{
+				if(preserve_details_if_all_names_match)
+				{
+					bool same_names=(object_states.size()==object_states_.size());
+					for(std::size_t i=0;same_names && i<object_states.size();i++)
+					{
+						same_names=(same_names && object_states[i].name==object_states_[i].name);
+					}
+					if(!same_names)
+					{
+						object_details_.clear();
+					}
+				}
+				else
+				{
+					object_details_.clear();
+				}
+				object_states_=object_states;
+			}
+			count_objects();
+		}
+
+		void set_object_sequence_info(const std::string& name, const ObjectSequenceInfo& sequence)
+		{
+			bool found_name=false;
+			for(std::size_t i=0;!found_name && i<object_states_.size();i++)
+			{
+				found_name=(found_name || name==object_states_[i].name);
+			}
+			if(found_name)
+			{
+				object_details_[name].sequence=sequence;
+			}
+		}
+	private:
+		void count_objects()
+		{
+			num_of_picked_objects_=0;
+			num_of_visible_objects_=0;
+			for(std::size_t i=0;i<object_states_.size();i++)
+			{
+				const ObjectState& os=object_states_[i];
+				if(os.picked)
+				{
+					num_of_picked_objects_++;
+				}
+				if(os.visible)
+				{
+					num_of_visible_objects_++;
+				}
+			}
+		}
+
+		std::vector<ObjectState> object_states_;
+		std::map<std::string, ObjectDetails> object_details_;
+		int num_of_picked_objects_;
+		int num_of_visible_objects_;
 	};
 
 	static Console& instance()
 	{
 		static Console console;
 		return console;
+	}
+
+	ObjectsInfo& objects_info()
+	{
+		return objects_info_;
 	}
 
 	void set_need_keyboard_focus_in_command_input(const bool status)
@@ -75,53 +184,6 @@ public:
 	void set_next_prefix(const std::string& prefix)
 	{
 		command_line_interface_state_.next_prefix=prefix;
-	}
-
-	void set_object_states(const std::vector<ObjectState>& object_states, const bool preserve_details_if_all_names_match)
-	{
-		if(object_states.empty())
-		{
-			object_details_.clear();
-			object_states_.clear();
-		}
-		else
-		{
-			if(preserve_details_if_all_names_match)
-			{
-				bool same_names=(object_states.size()==object_states_.size());
-				for(std::size_t i=0;same_names && i<object_states.size();i++)
-				{
-					same_names=(same_names && object_states[i].name==object_states_[i].name);
-				}
-				if(!same_names)
-				{
-					object_details_.clear();
-				}
-			}
-			else
-			{
-				object_details_.clear();
-			}
-			object_states_=object_states;
-		}
-	}
-
-	bool object_has_details(const std::string& name) const
-	{
-		return (object_details_.count(name)>0);
-	}
-
-	void set_object_sequence_info(const std::string& name, const ObjectSequenceInfo& sequence)
-	{
-		bool found_name=false;
-		for(std::size_t i=0;!found_name && i<object_states_.size();i++)
-		{
-			found_name=(found_name || name==object_states_[i].name);
-		}
-		if(found_name)
-		{
-			object_details_[name].sequence=sequence;
-		}
 	}
 
 	void add_output(const std::string& content, const float r, const float g, const float b)
@@ -205,7 +267,7 @@ public:
 
 			if(sequence_viewer_state_.visible)
 			{
-				sequence_viewer_state_.execute(object_states_, object_details_, result);
+				sequence_viewer_state_.execute(objects_info(), result);
 			}
 
 			command_line_interface_state_.execute(result);
@@ -350,7 +412,7 @@ public:
 
 			if(object_list_viewer_state_.visible && ImGui::CollapsingHeader("Objects##header_for_list_of_objects", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				object_list_viewer_state_.execute(object_states_, result);
+				object_list_viewer_state_.execute(objects_info().get_object_states(), result);
 			}
 
 			ImGui::End();
@@ -370,11 +432,6 @@ public:
 	}
 
 private:
-	struct ObjectDetails
-	{
-		ObjectSequenceInfo sequence;
-	};
-
 	class CommandLineInterfaceState
 	{
 	public:
@@ -860,7 +917,7 @@ private:
 		{
 		}
 
-		void execute(const std::vector<ObjectState>& object_states, std::string& result) const
+		void execute(const std::vector<ObjectsInfo::ObjectState>& object_states, std::string& result) const
 		{
 			if(object_states.empty())
 			{
@@ -1626,7 +1683,7 @@ private:
 
 			for(std::size_t i=0;i<object_states.size();i++)
 			{
-				const ObjectState& os=object_states[i];
+				const ObjectsInfo::ObjectState& os=object_states[i];
 				{
 					const std::string checkbox_id=std::string("##checkbox_pick_")+os.name;
 					bool picked=os.picked;
@@ -2414,9 +2471,9 @@ private:
 		{
 		}
 
-		void execute(const std::vector<ObjectState>& object_states, const std::map<std::string, ObjectDetails>& object_details, std::string& result)
+		void execute(const ObjectsInfo& objects_info, std::string& result)
 		{
-			if(!summarize_object_states(object_states).visible)
+			if(objects_info.num_of_visible_objects()<1)
 			{
 				return;
 			}
@@ -2428,6 +2485,9 @@ private:
 			{
 				return;
 			}
+
+			const std::vector<ObjectsInfo::ObjectState>& object_states=objects_info.get_object_states();
+			const std::map<std::string, ObjectsInfo::ObjectDetails>& object_details=objects_info.get_object_details();
 
 			std::size_t max_name_size=1;
 
@@ -2467,10 +2527,10 @@ private:
 						const std::string region_id=std::string("##sequence_scrolling_region_")+object_states[i].name;
 						ImGui::BeginChild(region_id.c_str(), ImVec2(0, sequence_frame_height), true, ImGuiWindowFlags_HorizontalScrollbar);
 
-						std::map<std::string, ObjectDetails>::const_iterator details_it=object_details.find(object_states[i].name);
+						std::map<std::string, ObjectsInfo::ObjectDetails>::const_iterator details_it=object_details.find(object_states[i].name);
 						if(details_it!=object_details.end())
 						{
-							const ObjectSequenceInfo& sequence=details_it->second.sequence;
+							const ObjectsInfo::ObjectSequenceInfo& sequence=details_it->second.sequence;
 
 							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 0.0f));
 							ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2.0f, 0.0f));
@@ -2495,7 +2555,7 @@ private:
 								ImGui::Dummy(ImVec2(10.0f, 0.0f));
 								for(std::size_t e=0;e<sequence.chains[j].residues.size();e++)
 								{
-									const ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
+									const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
 									ImGui::SameLine();
 									char button_label[64];
 									sprintf(button_label, "%s##seq_num_button_%d", residue.name.c_str(), used_buttons++);
@@ -2519,7 +2579,7 @@ private:
 								ImGui::Dummy(ImVec2(10.0f, 0.0f));
 								for(std::size_t e=0;e<sequence.chains[j].residues.size();e++)
 								{
-									const ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
+									const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
 									ImGui::SameLine();
 									char button_label[64];
 									sprintf(button_label, "%s##seq_button_%d", residue.name.c_str(), used_buttons++);
@@ -2554,28 +2614,12 @@ private:
 		return str;
 	}
 
-	static ObjectState summarize_object_states(const std::vector<ObjectState>& object_states)
-	{
-		ObjectState summary;
-		summary.picked=false;
-		summary.visible=false;
-		for(std::size_t i=0;!(summary.picked && summary.visible) && i<object_states.size();i++)
-		{
-			const ObjectState& os=object_states[i];
-			summary.picked=(summary.picked || os.picked);
-			summary.visible=(summary.visible || os.visible);
-		}
-		return summary;
-	}
-
 	float current_width_;
 	float current_heigth_;
 	float current_max_width_;
 	float current_max_heigth_;
 
-	std::vector<ObjectState> object_states_;
-	std::map<std::string, ObjectDetails> object_details_;
-
+	ObjectsInfo objects_info_;
 	CommandLineInterfaceState command_line_interface_state_;
 	ScriptEditorState script_editor_state_;
 	DocumentationViewerState documentation_viewer_state_;

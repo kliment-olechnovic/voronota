@@ -644,7 +644,7 @@ private:
 
 	void update_console_object_states()
 	{
-		std::vector<Console::ObjectState> object_states;
+		std::vector<Console::ObjectsInfo::ObjectState> object_states;
 		const std::vector<scripting::DataManager*> data_managers=congregation_of_data_managers().get_objects();
 		object_states.reserve(data_managers.size());
 		for(std::size_t i=0;i<data_managers.size();i++)
@@ -652,21 +652,21 @@ private:
 			const scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(data_managers[i]);
 			if(object_attributes.valid)
 			{
-				Console::ObjectState object_state;
+				Console::ObjectsInfo::ObjectState object_state;
 				object_state.name=object_attributes.name;
 				object_state.picked=object_attributes.picked;
 				object_state.visible=object_attributes.visible;
 				object_states.push_back(object_state);
 			}
 		}
-		Console::instance().set_object_states(object_states, congregation_of_data_managers().change_indicator().only_changed_objects_picks_or_visibilities());
+		Console::instance().objects_info().set_object_states(object_states, congregation_of_data_managers().change_indicator().only_changed_objects_picks_or_visibilities());
 		for(std::size_t i=0;i<data_managers.size();i++)
 		{
 			const scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(data_managers[i]);
 			if(object_attributes.valid)
 			{
 				if(data_managers[i]->change_indicator().changed_atoms_display_states()
-						|| (!congregation_of_data_managers().change_indicator().only_changed_objects_picks_or_visibilities() || !Console::instance().object_has_details(object_attributes.name)))
+						|| (!congregation_of_data_managers().change_indicator().only_changed_objects_picks_or_visibilities() || !Console::instance().objects_info().object_has_details(object_attributes.name)))
 				{
 					update_console_object_sequence_info(*data_managers[i]);
 				}
@@ -680,17 +680,17 @@ private:
 		if(object_attributes.valid)
 		{
 			const common::ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& bops=data_manager.primary_structure_info();
-			Console::ObjectSequenceInfo sequence_info;
+			Console::ObjectsInfo::ObjectSequenceInfo sequence_info;
 			sequence_info.chains.reserve(bops.chains.size());
 			for(std::size_t i=0;i<bops.chains.size();i++)
 			{
-				Console::ObjectSequenceInfo::ChainInfo chain;
+				Console::ObjectsInfo::ObjectSequenceInfo::ChainInfo chain;
 				chain.name=bops.chains[i].name;
 				chain.residues.reserve(bops.chains[i].residue_ids.size());
 				for(std::size_t j=0;j<bops.chains[i].residue_ids.size();j++)
 				{
 					const std::size_t residue_id=bops.chains[i].residue_ids[j];
-					Console::ObjectSequenceInfo::ResidueInfo residue;
+					Console::ObjectsInfo::ObjectSequenceInfo::ResidueInfo residue;
 					residue.name=bops.residues[residue_id].short_name;
 					residue.num=bops.residues[residue_id].chain_residue_descriptor.resSeq;
 					residue.marked=false;
@@ -706,7 +706,7 @@ private:
 				}
 				sequence_info.chains.push_back(chain);
 			}
-			Console::instance().set_object_sequence_info(object_attributes.name, sequence_info);
+			Console::instance().objects_info().set_object_sequence_info(object_attributes.name, sequence_info);
 		}
 	}
 
