@@ -704,6 +704,34 @@ private:
 					}
 					chain.residues.push_back(residue);
 				}
+				{
+					std::size_t j=0;
+					while(j<chain.residues.size())
+					{
+						Console::ObjectsInfo::ObjectSequenceInfo::ResidueInfo& residue=chain.residues[j];
+						if(residue.name.size()>1)
+						{
+							residue.num_label=std::to_string(residue.num);
+							j++;
+						}
+						else if(residue.num<=9999 && residue.num%5==1 && (j+3)<chain.residues.size()
+								&& chain.residues[j+1].num==(residue.num+1) && chain.residues[j+2].num==(residue.num+2) && chain.residues[j+3].num==(residue.num+3))
+						{
+							const std::string num_str=std::to_string(residue.num);
+							residue.num_label=num_str.substr(0, 1);
+							for(std::size_t e=1;e<4;e++)
+							{
+								chain.residues[j+e].num_label=(e<num_str.size() ? num_str.substr(e, 1) : std::string("."));
+							}
+							j+=4;
+						}
+						else
+						{
+							residue.num_label=".";
+							j++;
+						}
+					}
+				}
 				sequence_info.chains.push_back(chain);
 			}
 			Console::instance().objects_info().set_object_sequence_info(object_attributes.name, sequence_info);

@@ -46,8 +46,18 @@ public:
 			struct ResidueInfo
 			{
 				std::string name;
+				std::string num_label;
 				int num;
 				bool marked;
+
+				ResidueInfo() : num(0), marked(false)
+				{
+				}
+
+				std::size_t display_size() const
+				{
+					return std::max(name.size(), num_label.size());
+				}
 			};
 
 			struct ChainInfo
@@ -2505,6 +2515,7 @@ private:
 
 			const float sequence_names_frame_width=std::min(static_cast<float>(max_name_size)*7.0f+5.0f, current_width*0.2f);
 			const float sequence_frame_height=60;
+			const float button_width_unit=10.0f;
 
 			int used_slots=0;
 			int used_buttons=0;
@@ -2532,34 +2543,39 @@ private:
 						{
 							const ObjectsInfo::ObjectSequenceInfo& sequence=details_it->second.sequence;
 
-							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 0.0f));
-							ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2.0f, 0.0f));
+							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 0.0f));
+							ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.0f, 0.0f));
 
 							for(std::size_t j=0;j<sequence.chains.size();j++)
 							{
 								if(j>0)
 								{
 									ImGui::SameLine();
-									ImGui::Dummy(ImVec2(10.0f, 0.0f));
+									ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
 									ImGui::SameLine();
 								}
 								{
 									char button_label[64];
 									sprintf(button_label, "%s##chain_button_%d", sequence.chains[j].name.c_str(), used_buttons++);
-									if(ImGui::Button(button_label, ImVec2(10.0f*static_cast<float>(sequence.chains[j].name.size()), 0.0f)))
+									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(sequence.chains[j].name.size()), 0.0f)))
 									{
 										//
 									}
 								}
 								ImGui::SameLine();
-								ImGui::Dummy(ImVec2(10.0f, 0.0f));
+								ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
 								for(std::size_t e=0;e<sequence.chains[j].residues.size();e++)
 								{
+									if(e>0 && (sequence.chains[j].residues[e].num!=sequence.chains[j].residues[e-1].num+1))
+									{
+										ImGui::SameLine();
+										ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+									}
 									const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
 									ImGui::SameLine();
 									char button_label[64];
-									sprintf(button_label, "%s##seq_num_button_%d", residue.name.c_str(), used_buttons++);
-									if(ImGui::Button(button_label, ImVec2(10.0f*static_cast<float>(residue.name.size()), 0.0f)))
+									sprintf(button_label, "%s##seq_num_button_%d", residue.num_label.c_str(), used_buttons++);
+									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(residue.display_size()), 0.0f)))
 									{
 										//
 									}
@@ -2571,19 +2587,24 @@ private:
 								if(j>0)
 								{
 									ImGui::SameLine();
-									ImGui::Dummy(ImVec2(10.0f, 0.0f));
+									ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
 									ImGui::SameLine();
 								}
-								ImGui::Dummy(ImVec2(10.0f*static_cast<float>(sequence.chains[j].name.size()), 0.0f));
+								ImGui::Dummy(ImVec2(button_width_unit*static_cast<float>(sequence.chains[j].name.size()), 0.0f));
 								ImGui::SameLine();
-								ImGui::Dummy(ImVec2(10.0f, 0.0f));
+								ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
 								for(std::size_t e=0;e<sequence.chains[j].residues.size();e++)
 								{
+									if(e>0 && (sequence.chains[j].residues[e].num!=sequence.chains[j].residues[e-1].num+1))
+									{
+										ImGui::SameLine();
+										ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+									}
 									const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
 									ImGui::SameLine();
 									char button_label[64];
 									sprintf(button_label, "%s##seq_button_%d", residue.name.c_str(), used_buttons++);
-									if(ImGui::Button(button_label, ImVec2(10.0f*static_cast<float>(residue.name.size()), 0.0f)))
+									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(residue.display_size()), 0.0f)))
 									{
 										//
 									}
