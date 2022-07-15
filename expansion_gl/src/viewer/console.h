@@ -38,6 +38,29 @@ public:
 		bool visible;
 	};
 
+	struct ObjectSequenceInfo
+	{
+		struct ResidueInfo
+		{
+			std::string name;
+			int num;
+			bool marked;
+		};
+
+		struct ChainInfo
+		{
+			std::string name;
+			std::vector<ResidueInfo> residues;
+		};
+
+		std::vector<ChainInfo> chains;
+
+		bool empty() const
+		{
+			return chains.empty();
+		}
+	};
+
 	static Console& instance()
 	{
 		static Console console;
@@ -54,9 +77,51 @@ public:
 		command_line_interface_state_.next_prefix=prefix;
 	}
 
-	void set_object_states(const std::vector<ObjectState>& object_states)
+	void set_object_states(const std::vector<ObjectState>& object_states, const bool preserve_details_if_all_names_match)
 	{
-		object_list_viewer_state_.object_states=object_states;
+		if(object_states.empty())
+		{
+			object_details_.clear();
+			object_states_.clear();
+		}
+		else
+		{
+			if(preserve_details_if_all_names_match)
+			{
+				bool same_names=(object_states.size()==object_states_.size());
+				for(std::size_t i=0;same_names && i<object_states.size();i++)
+				{
+					same_names=(same_names && object_states[i].name==object_states_[i].name);
+				}
+				if(!same_names)
+				{
+					object_details_.clear();
+				}
+			}
+			else
+			{
+				object_details_.clear();
+			}
+			object_states_=object_states;
+		}
+	}
+
+	bool object_has_details(const std::string& name) const
+	{
+		return (object_details_.count(name)>0);
+	}
+
+	void set_object_sequence_info(const std::string& name, const ObjectSequenceInfo& sequence)
+	{
+		bool found_name=false;
+		for(std::size_t i=0;!found_name && i<object_states_.size();i++)
+		{
+			found_name=(found_name || name==object_states_[i].name);
+		}
+		if(found_name)
+		{
+			object_details_[name].sequence=sequence;
+		}
 	}
 
 	void add_output(const std::string& content, const float r, const float g, const float b)
@@ -140,7 +205,7 @@ public:
 
 			if(sequence_viewer_state_.visible)
 			{
-				sequence_viewer_state_.execute(result);
+				sequence_viewer_state_.execute(object_states_, object_details_, result);
 			}
 
 			command_line_interface_state_.execute(result);
@@ -285,7 +350,7 @@ public:
 
 			if(object_list_viewer_state_.visible && ImGui::CollapsingHeader("Objects##header_for_list_of_objects", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				object_list_viewer_state_.execute(result);
+				object_list_viewer_state_.execute(object_states_, result);
 			}
 
 			ImGui::End();
@@ -305,6 +370,11 @@ public:
 	}
 
 private:
+	struct ObjectDetails
+	{
+		ObjectSequenceInfo sequence;
+	};
+
 	class CommandLineInterfaceState
 	{
 	public:
@@ -784,14 +854,13 @@ private:
 	{
 	public:
 		bool visible;
-		std::vector<ObjectState> object_states;
 
 		ObjectListViewerState() :
 			visible(true)
 		{
 		}
 
-		void execute(std::string& result) const
+		void execute(const std::vector<ObjectState>& object_states, std::string& result) const
 		{
 			if(object_states.empty())
 			{
@@ -803,16 +872,6 @@ private:
 			}
 
 			{
-				ObjectState summary;
-				summary.picked=false;
-				summary.visible=false;
-				for(std::size_t i=0;i<object_states.size();i++)
-				{
-					const ObjectState& os=object_states[i];
-					summary.picked=(summary.picked || os.picked);
-					summary.visible=(summary.visible || os.visible);
-				}
-
 				{
 					{
 						const std::string button_id=concept_mode()+"##concept_mode_switch";
@@ -2347,74 +2406,132 @@ private:
 	{
 	public:
 		bool visible;
+		int max_slots;
 
 		SequenceViewerState() :
-			visible(false)
+			visible(false),
+			max_slots(3)
 		{
 		}
 
-		void execute(std::string& /*result*/)
+		void execute(const std::vector<ObjectState>& object_states, const std::map<std::string, ObjectDetails>& object_details, std::string& result)
 		{
+			if(!summarize_object_states(object_states).visible)
+			{
+				return;
+			}
+
 			const float current_width=ImGui::GetWindowWidth();
 			const float current_heigth=ImGui::GetWindowHeight();
 
-			std::vector< std::pair<std::string, std::string> > mock_sequences;
-			mock_sequences.push_back(std::pair<std::string, std::string>("Sequence name 1", "FSGJHSJGSFJGSGJD  FAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSG   JHSJGSFJGSGJDFAGGRAGRGAERHAHREHAR   HHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJend"));
-			mock_sequences.push_back(std::pair<std::string, std::string>("Sequence name 2", "GRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFA   GGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGS   GJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJDFAGGRAGRGAERHAHREHARHHJGDFHJKTYUUIYTGDFSGJHSJGSFJGSGJend"));
-
-			if(current_heigth>100.0f)
+			if(current_heigth<100.0f)
 			{
-				std::size_t max_name_size=1;
-				for(std::size_t i=0;i<mock_sequences.size();i++)
-				{
-					max_name_size=std::max(max_name_size, mock_sequences[i].first.size());
-				}
+				return;
+			}
 
-				const float sequence_names_frame_width=std::min(static_cast<float>(max_name_size)*7.0f+5.0f, current_width*0.2f);
-				const float sequence_frame_height=60;
+			std::size_t max_name_size=1;
 
-				for(std::size_t i=0;i<mock_sequences.size();i++)
+			{
+				int used_slots=0;
+				for(std::size_t i=0;used_slots<max_slots && i<object_states.size();i++)
 				{
+					if(object_states[i].visible)
 					{
-						const std::string region_id=std::string("##name_of_sequence_scrolling_region_")+mock_sequences[i].first;
+						used_slots++;
+						max_name_size=std::max(max_name_size, object_states[i].name.size());
+					}
+				}
+			}
+
+			const float sequence_names_frame_width=std::min(static_cast<float>(max_name_size)*7.0f+5.0f, current_width*0.2f);
+			const float sequence_frame_height=60;
+
+			int used_slots=0;
+			int used_buttons=0;
+			for(std::size_t i=0;used_slots<max_slots && i<object_states.size();i++)
+			{
+				if(object_states[i].visible)
+				{
+					used_slots++;
+
+					{
+						const std::string region_id=std::string("##name_of_sequence_scrolling_region_")+object_states[i].name;
 						ImGui::BeginChild(region_id.c_str(), ImVec2(sequence_names_frame_width, sequence_frame_height), false, ImGuiWindowFlags_HorizontalScrollbar);
-						ImGui::TextUnformatted(mock_sequences[i].first.c_str());
+						ImGui::TextUnformatted(object_states[i].name.c_str());
 						ImGui::EndChild();
 					}
 
 					ImGui::SameLine();
 
 					{
-						const std::string region_id=std::string("##sequence_scrolling_region_")+mock_sequences[i].first;
+						const std::string region_id=std::string("##sequence_scrolling_region_")+object_states[i].name;
 						ImGui::BeginChild(region_id.c_str(), ImVec2(0, sequence_frame_height), true, ImGuiWindowFlags_HorizontalScrollbar);
 
-						ImGui::TextUnformatted(mock_sequences[i].second.c_str());
-
-						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
-						ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
-
-						for(std::size_t j=0;j<mock_sequences[i].second.size();j++)
+						std::map<std::string, ObjectDetails>::const_iterator details_it=object_details.find(object_states[i].name);
+						if(details_it!=object_details.end())
 						{
-							if(j>0)
+							const ObjectSequenceInfo& sequence=details_it->second.sequence;
+
+							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 0.0f));
+							ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2.0f, 0.0f));
+
+							for(std::size_t j=0;j<sequence.chains.size();j++)
 							{
-								ImGui::SameLine();
-							}
-							if(mock_sequences[i].second[j]==' ')
-							{
-								ImGui::Dummy(ImVec2(7.0f, 0.0f));
-							}
-							else
-							{
-								char button_label[32];
-								sprintf(button_label, "%c##sequence_button_%d", mock_sequences[i].second[j], static_cast<int>(i*10000+j));
-								if(ImGui::Button(button_label, ImVec2(7.0f, 0.0f)))
+								if(j>0)
 								{
-									//
+									ImGui::SameLine();
+									ImGui::Dummy(ImVec2(10.0f, 0.0f));
+									ImGui::SameLine();
+								}
+								{
+									char button_label[64];
+									sprintf(button_label, "%s##chain_button_%d", sequence.chains[j].name.c_str(), used_buttons++);
+									if(ImGui::Button(button_label, ImVec2(10.0f*static_cast<float>(sequence.chains[j].name.size()), 0.0f)))
+									{
+										//
+									}
+								}
+								ImGui::SameLine();
+								ImGui::Dummy(ImVec2(10.0f, 0.0f));
+								for(std::size_t e=0;e<sequence.chains[j].residues.size();e++)
+								{
+									const ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
+									ImGui::SameLine();
+									char button_label[64];
+									sprintf(button_label, "%s##seq_num_button_%d", residue.name.c_str(), used_buttons++);
+									if(ImGui::Button(button_label, ImVec2(10.0f*static_cast<float>(residue.name.size()), 0.0f)))
+									{
+										//
+									}
 								}
 							}
-						}
 
-						ImGui::PopStyleVar(2);
+							for(std::size_t j=0;j<sequence.chains.size();j++)
+							{
+								if(j>0)
+								{
+									ImGui::SameLine();
+									ImGui::Dummy(ImVec2(10.0f, 0.0f));
+									ImGui::SameLine();
+								}
+								ImGui::Dummy(ImVec2(10.0f*static_cast<float>(sequence.chains[j].name.size()), 0.0f));
+								ImGui::SameLine();
+								ImGui::Dummy(ImVec2(10.0f, 0.0f));
+								for(std::size_t e=0;e<sequence.chains[j].residues.size();e++)
+								{
+									const ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
+									ImGui::SameLine();
+									char button_label[64];
+									sprintf(button_label, "%s##seq_button_%d", residue.name.c_str(), used_buttons++);
+									if(ImGui::Button(button_label, ImVec2(10.0f*static_cast<float>(residue.name.size()), 0.0f)))
+									{
+										//
+									}
+								}
+							}
+
+							ImGui::PopStyleVar(2);
+						}
 
 						ImGui::EndChild();
 					}
@@ -2437,10 +2554,28 @@ private:
 		return str;
 	}
 
+	static ObjectState summarize_object_states(const std::vector<ObjectState>& object_states)
+	{
+		ObjectState summary;
+		summary.picked=false;
+		summary.visible=false;
+		for(std::size_t i=0;!(summary.picked && summary.visible) && i<object_states.size();i++)
+		{
+			const ObjectState& os=object_states[i];
+			summary.picked=(summary.picked || os.picked);
+			summary.visible=(summary.visible || os.visible);
+		}
+		return summary;
+	}
+
 	float current_width_;
 	float current_heigth_;
 	float current_max_width_;
 	float current_max_heigth_;
+
+	std::vector<ObjectState> object_states_;
+	std::map<std::string, ObjectDetails> object_details_;
+
 	CommandLineInterfaceState command_line_interface_state_;
 	ScriptEditorState script_editor_state_;
 	DocumentationViewerState documentation_viewer_state_;

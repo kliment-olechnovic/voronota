@@ -374,6 +374,11 @@ protected:
 				drawer->update(ci);
 				need_to_refresh_frame=true;
 			}
+
+			if(ci.changed_atoms_display_states())
+			{
+				update_console_object_sequence_info(data_manager);
+			}
 		}
 
 		if(zoom_if_requested(cr))
@@ -654,7 +659,55 @@ private:
 				object_states.push_back(object_state);
 			}
 		}
-		Console::instance().set_object_states(object_states);
+		Console::instance().set_object_states(object_states, congregation_of_data_managers().change_indicator().only_changed_objects_picks_or_visibilities());
+		for(std::size_t i=0;i<data_managers.size();i++)
+		{
+			const scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(data_managers[i]);
+			if(object_attributes.valid)
+			{
+				if(data_managers[i]->change_indicator().changed_atoms_display_states()
+						|| (!congregation_of_data_managers().change_indicator().only_changed_objects_picks_or_visibilities() || !Console::instance().object_has_details(object_attributes.name)))
+				{
+					update_console_object_sequence_info(*data_managers[i]);
+				}
+			}
+		}
+	}
+
+	void update_console_object_sequence_info(scripting::DataManager& data_manager)
+	{
+		const scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(&data_manager);
+		if(object_attributes.valid)
+		{
+			const common::ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& bops=data_manager.primary_structure_info();
+			Console::ObjectSequenceInfo sequence_info;
+			sequence_info.chains.reserve(bops.chains.size());
+			for(std::size_t i=0;i<bops.chains.size();i++)
+			{
+				Console::ObjectSequenceInfo::ChainInfo chain;
+				chain.name=bops.chains[i].name;
+				chain.residues.reserve(bops.chains[i].residue_ids.size());
+				for(std::size_t j=0;j<bops.chains[i].residue_ids.size();j++)
+				{
+					const std::size_t residue_id=bops.chains[i].residue_ids[j];
+					Console::ObjectSequenceInfo::ResidueInfo residue;
+					residue.name=bops.residues[residue_id].short_name;
+					residue.num=bops.residues[residue_id].chain_residue_descriptor.resSeq;
+					residue.marked=false;
+					for(std::size_t e=0;!residue.marked && e<bops.residues[residue_id].atom_ids.size();e++)
+					{
+						const std::size_t atom_id=bops.residues[residue_id].atom_ids[e];
+						if(data_manager.atoms_display_states()[atom_id].marked)
+						{
+							residue.marked=true;
+						}
+					}
+					chain.residues.push_back(residue);
+				}
+				sequence_info.chains.push_back(chain);
+			}
+			Console::instance().set_object_sequence_info(object_attributes.name, sequence_info);
+		}
 	}
 
 	CongregationOfDrawersForDataManagers congregation_of_drawers_;

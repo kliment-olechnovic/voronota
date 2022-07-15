@@ -5,6 +5,8 @@
 
 #include "../apollota/basic_operations_on_points.h"
 
+#include "../auxiliaries/residue_letters_coding.h"
+
 #include "construction_of_atomic_balls.h"
 
 namespace voronota
@@ -32,6 +34,7 @@ public:
 		int position_in_segment;
 		ChainResidueAtomDescriptor chain_residue_descriptor;
 		std::vector<std::size_t> atom_ids;
+		std::string short_name;
 
 		Residue() :
 			residue_type(RESIDUE_TYPE_OTHER),
@@ -114,6 +117,12 @@ public:
 				else if(names.count("C2")+names.count("C3'")+names.count("O3'")+names.count("P")==4)
 				{
 					residue.residue_type=RESIDUE_TYPE_NUCLEOTIDE;
+				}
+
+				residue.short_name=auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(residue.chain_residue_descriptor.resName);
+				if(residue.short_name=="X")
+				{
+					residue.short_name=residue.chain_residue_descriptor.resName;
 				}
 
 				bundle.residues.push_back(residue);

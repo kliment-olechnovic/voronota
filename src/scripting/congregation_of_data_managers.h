@@ -64,6 +64,31 @@ public:
 					|| !deleted_objects_.empty());
 		}
 
+		bool only_changed_objects_picks() const
+		{
+			return (!changed_objects_
+					&& !changed_objects_names_
+					&& changed_objects_picks_
+					&& !changed_objects_visibilities_
+					&& added_objects_.empty()
+					&& deleted_objects_.empty());
+		}
+
+		bool only_changed_objects_visibilities() const
+		{
+			return (!changed_objects_
+					&& !changed_objects_names_
+					&& !changed_objects_picks_
+					&& changed_objects_visibilities_
+					&& added_objects_.empty()
+					&& deleted_objects_.empty());
+		}
+
+		bool only_changed_objects_picks_or_visibilities() const
+		{
+			return (only_changed_objects_picks() || only_changed_objects_visibilities());
+		}
+
 	private:
 		void ensure_correctness()
 		{
