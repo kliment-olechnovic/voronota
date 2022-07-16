@@ -10,6 +10,8 @@
 #include "../dependencies/imgui/imgui_impl_glfw_gl3.h"
 #include "../../../expansion_js/src/duktaper/stocked_data_resources.h"
 
+#include "gui_configuration.h"
+
 namespace voronota
 {
 
@@ -2481,14 +2483,14 @@ private:
 	{
 	public:
 		const ObjectsInfo& objects_info;
-		bool visible;
+		bool& visible;
 		int max_slots;
 		float sequence_frame_height;
 		float button_width_unit;
 
 		SequenceViewerState(const ObjectsInfo& objects_info) :
 			objects_info(objects_info),
-			visible(false),
+			visible(GUIConfiguration::instance().enabled_sequence_view),
 			max_slots(3),
 			sequence_frame_height(45.0f),
 			button_width_unit(10.0f)

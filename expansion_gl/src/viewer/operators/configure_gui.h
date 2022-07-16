@@ -25,7 +25,9 @@ public:
 		ACTION_ENABLE_WIDGETS,
 		ACTION_DISABLE_WAITING_INDICATOR,
 		ACTION_ENABLE_WAITING_INDICATOR,
-		ACTION_SET_JSON_WRITING_LEVEL
+		ACTION_SET_JSON_WRITING_LEVEL,
+		ACTION_DISABLE_SEQUENCE_VIEW,
+		ACTION_ENABLE_SEQUENCE_VIEW
 	};
 
 	struct Result : public scripting::OperatorResultBase<Result>
@@ -85,6 +87,14 @@ public:
 		else if(action_==ACTION_SET_JSON_WRITING_LEVEL)
 		{
 			GUIConfiguration::instance().json_writing_level=value_of_json_writing_level_;
+		}
+		else if(action_==ACTION_DISABLE_SEQUENCE_VIEW)
+		{
+			GUIConfiguration::instance().enabled_sequence_view=false;
+		}
+		else if(action_==ACTION_ENABLE_SEQUENCE_VIEW)
+		{
+			GUIConfiguration::instance().enabled_sequence_view=true;
 		}
 
 		if(need_refresh)
