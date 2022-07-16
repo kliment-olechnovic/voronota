@@ -883,11 +883,11 @@ private:
 				{
 					if(sequence)
 					{
-						result="configure-gui-enable-sequence-view";
+						result="vsb: configure-gui-enable-sequence-view";
 					}
 					else
 					{
-						result="configure-gui-disable-sequence-view";
+						result="vsb: configure-gui-disable-sequence-view";
 					}
 				}
 			}
@@ -903,11 +903,11 @@ private:
 				{
 					if(grid)
 					{
-						result="grid-by-object";
+						result="vsb: grid-by-object";
 					}
 					else
 					{
-						result="mono";
+						result="vsb: mono";
 					}
 				}
 			}
@@ -923,11 +923,11 @@ private:
 				{
 					if(perspective)
 					{
-						result="perspective";
+						result="vsb: perspective";
 					}
 					else
 					{
-						result="ortho";
+						result="vsb: ortho";
 					}
 				}
 			}
@@ -2631,7 +2631,7 @@ private:
 									sprintf(button_label, "%s##seq_num_button_%d", residue.num_label.c_str(), used_buttons++);
 									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(residue.display_size()), 0.0f)))
 									{
-										result=std::string(residue.marked ? "unmark-atoms" : "mark-atoms")
+										result=std::string("vsb: ")+(residue.marked ? "unmark-atoms" : "mark-atoms")
 											+" -on-objects "+object_states[i].name
 											+" -use [ -chain "+sequence.chains[j].name
 											+" -rnum "+std::to_string(residue.num)
@@ -2676,7 +2676,7 @@ private:
 
 									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(residue.display_size()), 0.0f)))
 									{
-										result=std::string(residue.marked ? "unmark-atoms" : "mark-atoms")
+										result=std::string("vsb: ")+(residue.marked ? "unmark-atoms" : "mark-atoms")
 											+" -on-objects "+object_states[i].name
 											+" -use [ -chain "+sequence.chains[j].name
 											+" -rnum "+std::to_string(residue.num)

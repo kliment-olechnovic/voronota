@@ -199,7 +199,7 @@ protected:
 			{
 				const ScriptPrefixParsing::Bundle task=ScriptPrefixParsing::parse(console_result);
 				enqueue_script(task);
-				if(!task.prefix.empty())
+				if(!task.prefix.empty() && task.mode!=ScriptPrefixParsing::MODE_NATIVE_BRIEF)
 				{
 					Console::instance().set_next_prefix(task.prefix+" ");
 				}
