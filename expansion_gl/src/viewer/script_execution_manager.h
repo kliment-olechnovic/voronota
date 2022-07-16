@@ -704,6 +704,14 @@ private:
 							residue.marked=true;
 						}
 					}
+					if(!bops.residues[residue_id].atom_ids.empty())
+					{
+						const std::size_t atom_id=bops.residues[residue_id].atom_ids.front();
+						if(!data_manager.atoms_display_states()[atom_id].visuals.empty())
+						{
+							auxiliaries::ColorUtilities::color_to_components(data_manager.atoms_display_states()[atom_id].visuals.front().color, residue.rgb, true);
+						}
+					}
 					chain.residues.push_back(residue);
 				}
 				{

@@ -51,6 +51,7 @@ public:
 				std::string num_label;
 				int num;
 				bool marked;
+				float rgb[3];
 
 				ResidueInfo() : num(0), marked(false)
 				{
@@ -457,7 +458,7 @@ private:
 			const float height_for_command_line_and_end=(height_for_command_line+leave_more_space);
 			const float height_for_output_block=ImGui::GetWindowHeight()-height_for_command_line_and_end;
 
-			if(height_for_output_block>50.0f)
+			if(height_for_output_block>20.0f)
 			{
 				ImGui::BeginChild("##console_scrolling_region", ImVec2(0, 0-height_for_command_line_and_end), true);
 				ImGui::PushItemWidth(-1);
@@ -2584,13 +2585,14 @@ private:
 						const std::string region_id=std::string("##sequence_scrolling_region_")+object_states[i].name;
 						ImGui::BeginChild(region_id.c_str(), ImVec2(0, sequence_frame_height), true, ImGuiWindowFlags_HorizontalScrollbar|ImGuiWindowFlags_AlwaysHorizontalScrollbar);
 
+						ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+
 						std::map<std::string, ObjectsInfo::ObjectDetails>::const_iterator details_it=object_details.find(object_states[i].name);
 						if(details_it!=object_details.end())
 						{
 							const ObjectsInfo::ObjectSequenceInfo& sequence=details_it->second.sequence;
-
-//							ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 0.0f));
-//							ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.0f, 0.0f));
 
 							for(std::size_t j=0;j<sequence.chains.size();j++)
 							{
@@ -2605,7 +2607,13 @@ private:
 									sprintf(button_label, "%s##chain_button_%d", sequence.chains[j].name.c_str(), used_buttons++);
 									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(sequence.chains[j].name.size()), 0.0f)))
 									{
-										//
+										if(!sequence.chains[j].residues.empty())
+										{
+											result=std::string(sequence.chains[j].residues[0].marked ? "unmark-atoms" : "mark-atoms")
+												+" -on-objects "+object_states[i].name
+												+" -use [ -chain "+sequence.chains[j].name
+												+"]";
+										}
 									}
 								}
 								ImGui::SameLine();
@@ -2623,7 +2631,11 @@ private:
 									sprintf(button_label, "%s##seq_num_button_%d", residue.num_label.c_str(), used_buttons++);
 									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(residue.display_size()), 0.0f)))
 									{
-										//
+										result=std::string(residue.marked ? "unmark-atoms" : "mark-atoms")
+											+" -on-objects "+object_states[i].name
+											+" -use [ -chain "+sequence.chains[j].name
+											+" -rnum "+std::to_string(residue.num)
+											+"]";
 									}
 								}
 							}
@@ -2650,15 +2662,40 @@ private:
 									ImGui::SameLine();
 									char button_label[64];
 									sprintf(button_label, "%s##seq_button_%d", residue.name.c_str(), used_buttons++);
+
+									if(residue.marked)
+									{
+										ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(residue.rgb[0]*0.8f, residue.rgb[1]*0.8f, residue.rgb[2]*0.8f, 1.0f));
+										ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(residue.rgb[0],      residue.rgb[1],      residue.rgb[2],      1.0f));
+										ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(residue.rgb[0]*0.9f, residue.rgb[1]*0.9f, residue.rgb[2]*0.9f, 1.0f));
+									}
+									else
+									{
+										ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(residue.rgb[0], residue.rgb[1], residue.rgb[2], 1.0f));
+									}
+
 									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(residue.display_size()), 0.0f)))
 									{
-										//
+										result=std::string(residue.marked ? "unmark-atoms" : "mark-atoms")
+											+" -on-objects "+object_states[i].name
+											+" -use [ -chain "+sequence.chains[j].name
+											+" -rnum "+std::to_string(residue.num)
+											+"]";
+									}
+
+									if(residue.marked)
+									{
+										ImGui::PopStyleColor(3);
+									}
+									else
+									{
+										ImGui::PopStyleColor(1);
 									}
 								}
 							}
-
-//							ImGui::PopStyleVar(2);
 						}
+
+						ImGui::PopStyleColor(3);
 
 						ImGui::EndChild();
 					}
