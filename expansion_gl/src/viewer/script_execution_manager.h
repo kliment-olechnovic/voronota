@@ -394,6 +394,7 @@ protected:
 
 	void on_after_script_with_output(const scripting::VariantObject&)
 	{
+		Console::instance().add_output_separator();
 		scripting::JSONWriter::Configuration json_writing_configuration(GUIConfiguration::instance().json_writing_level);
 		if(last_output().objects_arrays().count("results")>0)
 		{
@@ -445,7 +446,6 @@ protected:
 		{
 			Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, last_output()), 1.0f, 1.0f, 1.0f);
 		}
-		Console::instance().add_output_separator();
 	}
 
 private:

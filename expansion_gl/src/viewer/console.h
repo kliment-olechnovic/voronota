@@ -262,8 +262,10 @@ public:
 		std::string result;
 
 		{
+			const float actual_min_height=std::max(static_cast<float>(min_height), command_line_interface_state_.height_for_command_line+sequence_viewer_state_.calc_total_container_height()+15.0f);
+
 			ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
-			ImGui::SetNextWindowSizeConstraints(ImVec2(min_width, min_height), ImVec2(max_width, max_height));
+			ImGui::SetNextWindowSizeConstraints(ImVec2(min_width, actual_min_height), ImVec2(max_width, max_height));
 			if(current_width_>0.0f && current_max_width_>0.0f && current_heigth_>0.0f)
 			{
 				ImGui::SetNextWindowSize(ImVec2(current_width_+(max_width-current_max_width_), ((current_heigth_!=current_max_heigth_) ? current_heigth_ : max_height)));
@@ -275,12 +277,9 @@ public:
 				return result;
 			}
 
-			if(sequence_viewer_state_.visible)
-			{
-				sequence_viewer_state_.execute(result);
-			}
+			command_line_interface_state_.execute(result, sequence_viewer_state_.calc_total_container_height());
 
-			command_line_interface_state_.execute(result);
+			sequence_viewer_state_.execute(result);
 
 			current_width_=ImGui::GetWindowWidth();
 			current_heigth_=ImGui::GetWindowHeight();
@@ -450,20 +449,25 @@ private:
 		std::string next_prefix;
 		bool need_keyboard_focus_in_command_input;
 		bool scroll_output;
+		float height_for_command_line;
 
 		CommandLineInterfaceState() :
 			need_keyboard_focus_in_command_input(false),
 			scroll_output(false),
+			height_for_command_line(20.0f),
 			command_buffer_(1024, 0),
 			index_of_history_of_commands_(0)
 		{
 		}
 
-		void execute(std::string& result)
+		void execute(std::string& result, const float leave_more_space)
 		{
-			if(ImGui::GetWindowHeight()>50.0f)
+			const float height_for_command_line_and_end=(height_for_command_line+leave_more_space);
+			const float height_for_output_block=ImGui::GetWindowHeight()-height_for_command_line_and_end;
+
+			if(height_for_output_block>50.0f)
 			{
-				ImGui::BeginChild("##console_scrolling_region", ImVec2(0,-ImGui::GetItemsLineHeightWithSpacing()), false);
+				ImGui::BeginChild("##console_scrolling_region", ImVec2(0, 0-height_for_command_line_and_end), true);
 				ImGui::PushItemWidth(-1);
 				ImGui::PushTextWrapPos();
 				for(std::size_t i=0;i<outputs.size();i++)
@@ -2493,6 +2497,10 @@ private:
 
 		float calc_total_container_height() const
 		{
+			if(!visible)
+			{
+				return 0.0f;
+			}
 			return static_cast<float>(std::min(objects_info.num_of_visible_objects(), std::min(5, max_slots))*sequence_frame_height);
 		}
 
@@ -2521,6 +2529,11 @@ private:
 
 		void execute(std::string& result) const
 		{
+			if(!visible)
+			{
+				return;
+			}
+
 			if(objects_info.num_of_visible_objects()<1)
 			{
 				return;
