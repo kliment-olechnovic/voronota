@@ -277,7 +277,7 @@ public:
 
 			if(sequence_viewer_state_.visible)
 			{
-				sequence_viewer_state_.execute(objects_info(), result);
+				sequence_viewer_state_.execute(result);
 			}
 
 			command_line_interface_state_.execute(result);
@@ -422,7 +422,7 @@ public:
 
 			if(object_list_viewer_state_.visible && ImGui::CollapsingHeader("Objects##header_for_list_of_objects", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				object_list_viewer_state_.execute(objects_info().get_object_states(), result);
+				object_list_viewer_state_.execute(result);
 			}
 
 			ImGui::End();
@@ -920,15 +920,19 @@ private:
 	class ObjectListViewerState
 	{
 	public:
+		const ObjectsInfo& objects_info;
 		bool visible;
 
-		ObjectListViewerState() :
+		ObjectListViewerState(const ObjectsInfo& objects_info) :
+			objects_info(objects_info),
 			visible(true)
 		{
 		}
 
-		void execute(const std::vector<ObjectsInfo::ObjectState>& object_states, std::string& result) const
+		void execute(std::string& result) const
 		{
+			const std::vector<ObjectsInfo::ObjectState>& object_states=objects_info.get_object_states();
+
 			if(object_states.empty())
 			{
 				ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -2472,32 +2476,29 @@ private:
 	class SequenceViewerState
 	{
 	public:
+		const ObjectsInfo& objects_info;
 		bool visible;
 		int max_slots;
+		float sequence_frame_height;
+		float button_width_unit;
 
-		SequenceViewerState() :
+		SequenceViewerState(const ObjectsInfo& objects_info) :
+			objects_info(objects_info),
 			visible(false),
-			max_slots(3)
+			max_slots(3),
+			sequence_frame_height(45.0f),
+			button_width_unit(10.0f)
 		{
 		}
 
-		void execute(const ObjectsInfo& objects_info, std::string& result)
+		float calc_total_container_height() const
 		{
-			if(objects_info.num_of_visible_objects()<1)
-			{
-				return;
-			}
+			return static_cast<float>(std::min(objects_info.num_of_visible_objects(), std::min(5, max_slots))*sequence_frame_height);
+		}
 
-			const float current_width=ImGui::GetWindowWidth();
-			const float current_heigth=ImGui::GetWindowHeight();
-
-			if(current_heigth<100.0f)
-			{
-				return;
-			}
-
+		float calc_name_column_width(const float total_width) const
+		{
 			const std::vector<ObjectsInfo::ObjectState>& object_states=objects_info.get_object_states();
-			const std::map<std::string, ObjectsInfo::ObjectDetails>& object_details=objects_info.get_object_details();
 
 			std::size_t max_name_size=1;
 
@@ -2513,9 +2514,25 @@ private:
 				}
 			}
 
-			const float sequence_names_frame_width=std::min(static_cast<float>(max_name_size)*7.0f+5.0f, current_width*0.2f);
-			const float sequence_frame_height=45;
-			const float button_width_unit=10.0f;
+			const float width=std::min(static_cast<float>(max_name_size)*7.0f+5.0f, total_width*0.2f);
+
+			return width;
+		}
+
+		void execute(std::string& result) const
+		{
+			if(objects_info.num_of_visible_objects()<1)
+			{
+				return;
+			}
+
+			const std::vector<ObjectsInfo::ObjectState>& object_states=objects_info.get_object_states();
+			const std::map<std::string, ObjectsInfo::ObjectDetails>& object_details=objects_info.get_object_details();
+
+			const float total_container_height=calc_total_container_height();
+			const float names_frame_width=calc_name_column_width(ImGui::GetWindowWidth());
+
+			ImGui::BeginChild("##sequence_view_container", ImVec2(0, total_container_height), false, ImGuiWindowFlags_HorizontalScrollbar);
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 0.0f));
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.0f, 0.0f));
@@ -2531,7 +2548,7 @@ private:
 
 					{
 						const std::string region_id=std::string("##name_of_sequence_scrolling_region_")+object_states[i].name;
-						ImGui::BeginChild(region_id.c_str(), ImVec2(sequence_names_frame_width, sequence_frame_height), false, ImGuiWindowFlags_HorizontalScrollbar);
+						ImGui::BeginChild(region_id.c_str(), ImVec2(names_frame_width, sequence_frame_height), false, ImGuiWindowFlags_HorizontalScrollbar);
 						ImGui::TextUnformatted(object_states[i].name.c_str());
 						ImGui::EndChild();
 					}
@@ -2624,6 +2641,8 @@ private:
 			}
 
 			ImGui::PopStyleVar(3);
+
+			ImGui::EndChild();
 		}
 	};
 
@@ -2631,7 +2650,9 @@ private:
 		current_width_(0.0f),
 		current_heigth_(0.0f),
 		current_max_width_(0.0f),
-		current_max_heigth_(0.0f)
+		current_max_heigth_(0.0f),
+		object_list_viewer_state_(objects_info_),
+		sequence_viewer_state_(objects_info_)
 	{
 	}
 
