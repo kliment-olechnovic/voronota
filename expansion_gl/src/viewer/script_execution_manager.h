@@ -715,7 +715,8 @@ private:
 							j++;
 						}
 						else if(residue.num<=9999 && residue.num%5==1 && (j+3)<chain.residues.size()
-								&& chain.residues[j+1].num==(residue.num+1) && chain.residues[j+2].num==(residue.num+2) && chain.residues[j+3].num==(residue.num+3))
+								&& chain.residues[j+1].num==(residue.num+1) && chain.residues[j+2].num==(residue.num+2) && chain.residues[j+3].num==(residue.num+3)
+								&& chain.residues[j+1].name.size()<2 && chain.residues[j+2].name.size()<2 && chain.residues[j+3].name.size()<2)
 						{
 							const std::string num_str=std::to_string(residue.num);
 							residue.num_label=num_str.substr(0, 1);
