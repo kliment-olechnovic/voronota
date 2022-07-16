@@ -305,17 +305,7 @@ public:
 
 			if(ImGui::BeginMenuBar())
 			{
-				if(ImGui::BeginMenu("Panels"))
-				{
-					ImGui::Checkbox("Script editor", &script_editor_state_.visible);
-					ImGui::Checkbox("Commands reference", &documentation_viewer_state_.visible);
-					ImGui::Checkbox("Display controls", &display_control_toolbar_state_.visible);
-					ImGui::Checkbox("Objects", &object_list_viewer_state_.visible);
-					ImGui::Checkbox("Sequence viewer", &sequence_viewer_state_.visible);
-					ImGui::EndMenu();
-				}
-
-				if(ImGui::BeginMenu("Display"))
+				if(ImGui::BeginMenu("Options"))
 				{
 					if(ImGui::BeginMenu("Set background"))
 					{
@@ -883,6 +873,26 @@ private:
 
 		void execute(std::string& result)
 		{
+			{
+				static bool sequence=false;
+
+				sequence=GUIConfiguration::instance().enabled_sequence_view;
+
+				if(ImGui::Checkbox("Sequence", &sequence))
+				{
+					if(sequence)
+					{
+						result="configure-gui-enable-sequence-view";
+					}
+					else
+					{
+						result="configure-gui-disable-sequence-view";
+					}
+				}
+			}
+
+			ImGui::SameLine();
+
 			{
 				static bool grid=false;
 
