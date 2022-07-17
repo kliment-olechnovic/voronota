@@ -2496,13 +2496,15 @@ private:
 		const ObjectsInfo& objects_info;
 		bool& visible;
 		int max_slots;
+		int max_visible_slots;
 		float sequence_frame_height;
 		float button_width_unit;
 
 		SequenceViewerState(const ObjectsInfo& objects_info) :
 			objects_info(objects_info),
 			visible(GUIConfiguration::instance().enabled_sequence_view),
-			max_slots(3),
+			max_slots(100),
+			max_visible_slots(15),
 			sequence_frame_height(43.0f),
 			button_width_unit(10.0f)
 		{
@@ -2514,7 +2516,7 @@ private:
 			{
 				return 0.0f;
 			}
-			return static_cast<float>(std::min(objects_info.num_of_visible_objects(), std::min(5, max_slots))*sequence_frame_height);
+			return static_cast<float>(std::min(objects_info.num_of_visible_objects(), std::min(max_visible_slots, max_slots))*sequence_frame_height);
 		}
 
 		float calc_name_column_width(const float total_width) const
