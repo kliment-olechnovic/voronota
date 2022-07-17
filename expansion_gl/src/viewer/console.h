@@ -2558,6 +2558,8 @@ private:
 			const float total_container_height=calc_total_container_height();
 			const float names_frame_width=calc_name_column_width(ImGui::GetWindowWidth());
 
+			static std::vector< std::pair< std::pair<std::string, int>, int> > dragged_buttons;
+
 			ImGui::BeginChild("##sequence_view_container", ImVec2(0, total_container_height), false, ImGuiWindowFlags_HorizontalScrollbar);
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 0.0f));
@@ -2566,6 +2568,7 @@ private:
 
 			int used_slots=0;
 			int used_buttons=0;
+			bool any_button_held=false;
 			for(std::size_t i=0;used_slots<max_slots && i<object_states.size();i++)
 			{
 				if(object_states[i].visible)
@@ -2675,7 +2678,35 @@ private:
 										ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(residue.rgb[0], residue.rgb[1], residue.rgb[2], 1.0f));
 									}
 
-									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(residue.display_size()), 0.0f)))
+									ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(residue.display_size()), 0.0f));
+
+									bool action_needed=false;
+
+									if(ImGui::IsItemActive())
+									{
+										any_button_held=true;
+										std::pair< std::pair<std::string, int>, int> active_button_id(std::pair<std::string, int>(object_states[i].name, j), e);
+										if(dragged_buttons.empty() || dragged_buttons.front()!=active_button_id)
+										{
+											dragged_buttons.clear();
+											dragged_buttons.push_back(active_button_id);
+											action_needed=true;
+										}
+									}
+									else if(ImGui::IsItemHoveredRect())
+									{
+										std::pair< std::pair<std::string, int>, int> hovered_button_id(std::pair<std::string, int>(object_states[i].name, j), e);
+										if(!dragged_buttons.empty() && hovered_button_id.first==dragged_buttons.back().first)
+										{
+											if(hovered_button_id.second!=dragged_buttons.back().second)
+											{
+												dragged_buttons.push_back(hovered_button_id);
+												action_needed=true;
+											}
+										}
+									}
+
+									if(action_needed)
 									{
 										result=std::string("vsb: ")+(residue.marked ? "unmark-atoms" : "mark-atoms")
 											+" -on-objects "+object_states[i].name
@@ -2706,6 +2737,11 @@ private:
 			ImGui::PopStyleVar(3);
 
 			ImGui::EndChild();
+
+			if(!any_button_held)
+			{
+				dragged_buttons.clear();
+			}
 		}
 	};
 
