@@ -439,43 +439,43 @@ protected:
 private:
 	void set_default_aliases()
 	{
-		script_partitioner().set_alias("click-button1-on-unmarked-atom", "pick-more-objects ${1} ; mark-atoms -on-objects ${1} -id ${2} -full-residues ; print-atoms -on-objects ${1} -id ${2}");
-		script_partitioner().set_alias("click-button1-on-marked-atom", "pick-more-objects ${1} ; unmark-atoms -on-objects ${1} -id ${2} -full-residues ; print-atoms -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("click-button1-on-unmarked-atom", "pick-more-objects ${1} ; clear-last ; mark-atoms -on-objects ${1} -id ${2} -full-residues ; clear-last ; print-atoms -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("click-button1-on-marked-atom", "pick-more-objects ${1} ; clear-last ; unmark-atoms -on-objects ${1} -id ${2} -full-residues ; clear-last ; print-atoms -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("click-button2-on-unmarked-atom", "print-atoms -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("click-button2-on-marked-atom", "print-atoms -on-objects ${1} -id ${2}");
 
-		script_partitioner().set_alias("click-button1-on-unmarked-contact", "pick-more-objects ${1} ; mark-contacts -on-objects ${1} -id ${2} -full-residues ; print-contacts -on-objects ${1} -id ${2}");
-		script_partitioner().set_alias("click-button1-on-marked-contact", "pick-more-objects ${1} ; unmark-contacts -on-objects ${1} -id ${2} -full-residues ; print-contacts -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("click-button1-on-unmarked-contact", "pick-more-objects ${1} ; clear-last ; mark-contacts -on-objects ${1} -id ${2} -full-residues ; clear-last ; print-contacts -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("click-button1-on-marked-contact", "pick-more-objects ${1} ; clear-last ; unmark-contacts -on-objects ${1} -id ${2} -full-residues ; clear-last ; print-contacts -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("click-button2-on-unmarked-contact", "print-contacts -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("click-button2-on-marked-contact", "print-contacts -on-objects ${1} -id ${2}");
 
-		script_partitioner().set_alias("ctrl-click-button1-on-unmarked-atom", "pick-more-objects ${1} ; mark-atoms -on-objects ${1} -id ${2} ; print-atoms -on-objects ${1} -id ${2}");
-		script_partitioner().set_alias("ctrl-click-button1-on-marked-atom", "pick-more-objects ${1} ; unmark-atoms -on-objects ${1} -id ${2} ; print-atoms -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("ctrl-click-button1-on-unmarked-atom", "pick-more-objects ${1} ; clear-last ; mark-atoms -on-objects ${1} -id ${2} ; clear-last ; print-atoms -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("ctrl-click-button1-on-marked-atom", "pick-more-objects ${1} ; clear-last ; unmark-atoms -on-objects ${1} -id ${2} ; clear-last ; print-atoms -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("ctrl-click-button2-on-unmarked-atom", "print-atoms -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("ctrl-click-button2-on-marked-atom", "print-atoms -on-objects ${1} -id ${2}");
 
-		script_partitioner().set_alias("ctrl-click-button1-on-unmarked-contact", "pick-more-objects ${1} ; mark-contacts -on-objects ${1} -id ${2} ; print-contacts -on-objects ${1} -id ${2}");
-		script_partitioner().set_alias("ctrl-click-button1-on-marked-contact", "pick-more-objects ${1} ; unmark-contacts -on-objects ${1} -id ${2} ; print-contacts -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("ctrl-click-button1-on-unmarked-contact", "pick-more-objects ${1} ; clear-last ; mark-contacts -on-objects ${1} -id ${2} ; clear-last ; print-contacts -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("ctrl-click-button1-on-marked-contact", "pick-more-objects ${1} ; clear-last ; unmark-contacts -on-objects ${1} -id ${2} ; clear-last ; print-contacts -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("ctrl-click-button2-on-unmarked-contact", "print-contacts -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("ctrl-click-button2-on-marked-contact", "print-contacts -on-objects ${1} -id ${2}");
 
-		script_partitioner().set_alias("shift-click-button1-on-unmarked-atom", "pick-more-objects ${1} ; mark-atoms -on-objects ${1} -id ${2} -full-chains ; print-atoms -on-objects ${1} -id ${2}");
-		script_partitioner().set_alias("shift-click-button1-on-marked-atom", "pick-more-objects ${1} ; unmark-atoms -on-objects ${1} -id ${2} -full-chains ; print-atoms -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("shift-click-button1-on-unmarked-atom", "pick-more-objects ${1} ; clear-last ; mark-atoms -on-objects ${1} -id ${2} -full-chains ; clear-last ; print-atoms -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("shift-click-button1-on-marked-atom", "pick-more-objects ${1} ; clear-last ; unmark-atoms -on-objects ${1} -id ${2} -full-chains ; clear-last ; print-atoms -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("shift-click-button2-on-unmarked-atom", "print-atoms -on-objects ${1} -id ${2} -full-residues");
 		script_partitioner().set_alias("shift-click-button2-on-marked-atom", "print-atoms -on-objects ${1} -id ${2} -full-residues");
 
-		script_partitioner().set_alias("shift-click-button1-on-unmarked-contact", "pick-more-objects ${1} ; mark-contacts -on-objects ${1} -id ${2} -full-chains ; print-contacts -on-objects ${1} -id ${2}");
-		script_partitioner().set_alias("shift-click-button1-on-marked-contact", "pick-more-objects ${1} ; unmark-contacts -on-objects ${1} -id ${2} -full-chains ; print-contacts -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("shift-click-button1-on-unmarked-contact", "pick-more-objects ${1} ; clear-last ; mark-contacts -on-objects ${1} -id ${2} -full-chains ; clear-last ; print-contacts -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("shift-click-button1-on-marked-contact", "pick-more-objects ${1} ; clear-last ; unmark-contacts -on-objects ${1} -id ${2} -full-chains ; clear-last ; print-contacts -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("shift-click-button2-on-unmarked-contact", "print-contacts -on-objects ${1} -id ${2} -full-residues");
 		script_partitioner().set_alias("shift-click-button2-on-marked-contact", "print-contacts -on-objects ${1} -id ${2} -full-residues");
 
-		script_partitioner().set_alias("ctrl-shift-click-button1-on-unmarked-atom", "unmark-atoms -on-objects ${1} ; print-atoms -on-objects ${1} -id ${2}");
-		script_partitioner().set_alias("ctrl-shift-click-button1-on-marked-atom", "unmark-atoms -on-objects ${1} ; print-atoms -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("ctrl-shift-click-button1-on-unmarked-atom", "unmark-atoms -on-objects ${1} ; clear-last ; print-atoms -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("ctrl-shift-click-button1-on-marked-atom", "unmark-atoms -on-objects ${1} ; clear-last ; print-atoms -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("ctrl-shift-click-button2-on-unmarked-atom", "unpick-objects -names ${1} ; hide-objects -names ${1}");
 		script_partitioner().set_alias("ctrl-shift-click-button2-on-marked-atom", "unpick-objects -names ${1} ; hide-objects -names ${1}");
 
-		script_partitioner().set_alias("ctrl-shift-click-button1-on-unmarked-contact", "unmark-contacts -on-objects ${1} ; print-contacts -on-objects ${1} -id ${2}");
-		script_partitioner().set_alias("ctrl-shift-click-button1-on-marked-contact", "unmark-contacts -on-objects ${1} ; print-contacts -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("ctrl-shift-click-button1-on-unmarked-contact", "unmark-contacts -on-objects ${1} ; clear-last ; print-contacts -on-objects ${1} -id ${2}");
+		script_partitioner().set_alias("ctrl-shift-click-button1-on-marked-contact", "unmark-contacts -on-objects ${1} ; clear-last ; print-contacts -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("ctrl-shift-click-button2-on-unmarked-contact", "unpick-objects -names ${1} ; hide-objects -names ${1}");
 		script_partitioner().set_alias("ctrl-shift-click-button2-on-marked-contact", "unpick-objects -names ${1} ; hide-objects -names ${1}");
 

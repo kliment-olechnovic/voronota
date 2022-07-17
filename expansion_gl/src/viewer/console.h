@@ -2760,7 +2760,8 @@ private:
 												+" -on-objects "+object_states[i].name
 												+" -use [ -chain "+sequence.chains[j].name
 												+" -rnum "+std::to_string(sresidue.num)
-												+"]\n";
+												+"]\n"
+												+"clear-last\n";
 										}
 									}
 
