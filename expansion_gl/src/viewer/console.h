@@ -2569,6 +2569,7 @@ private:
 			int used_slots=0;
 			int used_buttons=0;
 			bool any_button_held=false;
+			bool any_button_not_held_but_hovered=false;
 			for(std::size_t i=0;used_slots<max_slots && i<object_states.size();i++)
 			{
 				if(object_states[i].visible)
@@ -2682,7 +2683,7 @@ private:
 
 									bool action_needed=false;
 
-									if(ImGui::IsItemActive())
+									if(ImGui::IsItemActive() && !any_button_held)
 									{
 										any_button_held=true;
 										std::pair< std::pair<std::string, int>, int> active_button_id(std::pair<std::string, int>(object_states[i].name, j), e);
@@ -2693,8 +2694,9 @@ private:
 											action_needed=true;
 										}
 									}
-									else if(ImGui::IsItemHoveredRect())
+									else if(ImGui::IsItemHoveredRect() && !any_button_not_held_but_hovered)
 									{
+										any_button_not_held_but_hovered=true;
 										std::pair< std::pair<std::string, int>, int> hovered_button_id(std::pair<std::string, int>(object_states[i].name, j), e);
 										if(!dragged_buttons.empty() && hovered_button_id.first==dragged_buttons.back().first)
 										{
@@ -2708,7 +2710,38 @@ private:
 
 									if(action_needed)
 									{
-										result=std::string("vsb: ")+(residue.marked ? "unmark-atoms" : "mark-atoms")
+										result="vsb: \n";
+
+										if(dragged_buttons.size()>1)
+										{
+											const std::size_t p=(dragged_buttons.size()-1);
+											if((dragged_buttons[p].second-dragged_buttons[p-1].second)>1)
+											{
+												for(int l=(dragged_buttons[p-1].second+1);l<dragged_buttons[p].second;l++)
+												{
+													const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& sresidue=sequence.chains[j].residues[l];
+													result+=std::string(sresidue.marked ? "unmark-atoms" : "mark-atoms")
+														+" -on-objects "+object_states[i].name
+														+" -use [ -chain "+sequence.chains[j].name
+														+" -rnum "+std::to_string(sresidue.num)
+														+"]\n";
+												}
+											}
+											else if((dragged_buttons[p-1].second-dragged_buttons[p].second)>1)
+											{
+												for(int l=(dragged_buttons[p].second+1);l<dragged_buttons[p-1].second;l++)
+												{
+													const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& sresidue=sequence.chains[j].residues[l];
+													result+=std::string(sresidue.marked ? "unmark-atoms" : "mark-atoms")
+														+" -on-objects "+object_states[i].name
+														+" -use [ -chain "+sequence.chains[j].name
+														+" -rnum "+std::to_string(sresidue.num)
+														+"]\n";
+												}
+											}
+										}
+
+										result+=std::string(residue.marked ? "unmark-atoms" : "mark-atoms")
 											+" -on-objects "+object_states[i].name
 											+" -use [ -chain "+sequence.chains[j].name
 											+" -rnum "+std::to_string(residue.num)
