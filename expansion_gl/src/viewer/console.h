@@ -2503,7 +2503,7 @@ private:
 			objects_info(objects_info),
 			visible(GUIConfiguration::instance().enabled_sequence_view),
 			max_slots(3),
-			sequence_frame_height(45.0f),
+			sequence_frame_height(43.0f),
 			button_width_unit(10.0f)
 		{
 		}
@@ -2561,7 +2561,7 @@ private:
 			ImGui::BeginChild("##sequence_view_container", ImVec2(0, total_container_height), false, ImGuiWindowFlags_HorizontalScrollbar);
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 0.0f));
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1.0f, 0.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1.0f, 0.0f));
 
 			int used_slots=0;
@@ -2582,12 +2582,13 @@ private:
 					ImGui::SameLine();
 
 					{
-						const std::string region_id=std::string("##sequence_scrolling_region_")+object_states[i].name;
-						ImGui::BeginChild(region_id.c_str(), ImVec2(0, sequence_frame_height), true, ImGuiWindowFlags_HorizontalScrollbar|ImGuiWindowFlags_AlwaysHorizontalScrollbar);
-
+						ImGui::PushStyleColor(ImGuiCol_ChildWindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
 						ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
 						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
 						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+
+						const std::string region_id=std::string("##sequence_scrolling_region_")+object_states[i].name;
+						ImGui::BeginChild(region_id.c_str(), ImVec2(0, sequence_frame_height), true, ImGuiWindowFlags_HorizontalScrollbar|ImGuiWindowFlags_AlwaysHorizontalScrollbar);
 
 						std::map<std::string, ObjectsInfo::ObjectDetails>::const_iterator details_it=object_details.find(object_states[i].name);
 						if(details_it!=object_details.end())
@@ -2695,9 +2696,9 @@ private:
 							}
 						}
 
-						ImGui::PopStyleColor(3);
-
 						ImGui::EndChild();
+
+						ImGui::PopStyleColor(4);
 					}
 				}
 			}
