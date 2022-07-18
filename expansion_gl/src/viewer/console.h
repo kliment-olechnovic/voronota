@@ -2504,7 +2504,7 @@ private:
 			objects_info(objects_info),
 			visible(GUIConfiguration::instance().enabled_sequence_view),
 			max_slots(100),
-			max_visible_slots(15),
+			max_visible_slots(5),
 			sequence_frame_height(43.0f),
 			button_width_unit(10.0f)
 		{
