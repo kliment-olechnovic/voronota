@@ -1712,6 +1712,8 @@ private:
 
 			ImGui::Separator();
 
+			ImGui::BeginChild("##object_list_scrolling_region", ImVec2(0, 0), false);
+
 			for(std::size_t i=0;i<object_states.size();i++)
 			{
 				const ObjectsInfo::ObjectState& os=object_states[i];
@@ -2366,6 +2368,8 @@ private:
 					}
 				}
 			}
+
+			ImGui::EndChild();
 		}
 
 	private:
@@ -2562,7 +2566,7 @@ private:
 
 			static std::vector< std::pair< std::pair<std::string, int>, int> > dragged_buttons;
 
-			ImGui::BeginChild("##sequence_view_container", ImVec2(0, total_container_height), false, ImGuiWindowFlags_HorizontalScrollbar);
+			ImGui::BeginChild("##sequence_view_container", ImVec2(0, total_container_height), false);
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 0.0f));
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
