@@ -650,6 +650,10 @@ private:
 					const std::size_t residue_id=bops.chains[i].residue_ids[j];
 					Console::ObjectsInfo::ObjectSequenceInfo::ResidueInfo residue;
 					residue.name=bops.residues[residue_id].short_name;
+					if(residue.name.empty())
+					{
+						residue.name="x";
+					}
 					residue.num=bops.residues[residue_id].chain_residue_descriptor.resSeq;
 					residue.marked=false;
 					for(std::size_t e=0;!residue.marked && e<bops.residues[residue_id].atom_ids.size();e++)
@@ -680,17 +684,27 @@ private:
 							residue.num_label=std::to_string(residue.num);
 							j++;
 						}
-						else if(residue.num<=9999 && residue.num%5==1 && (j+3)<chain.residues.size()
+						else if(residue.num>=0 && residue.num<=9999 && residue.num%5==1 && (j+3)<chain.residues.size()
 								&& chain.residues[j+1].num==(residue.num+1) && chain.residues[j+2].num==(residue.num+2) && chain.residues[j+3].num==(residue.num+3)
 								&& chain.residues[j+1].name.size()<2 && chain.residues[j+2].name.size()<2 && chain.residues[j+3].name.size()<2)
 						{
 							const std::string num_str=std::to_string(residue.num);
-							residue.num_label=num_str.substr(0, 1);
-							for(std::size_t e=1;e<4;e++)
+							for(std::size_t e=0;e<4;e++)
 							{
 								chain.residues[j+e].num_label=(e<num_str.size() ? num_str.substr(e, 1) : std::string("."));
 							}
 							j+=4;
+						}
+						else if(residue.num>9999 && residue.num<=999999999 && residue.num%10==1 && (j+8)<chain.residues.size()
+								&& chain.residues[j+1].num==(residue.num+1) && chain.residues[j+2].num==(residue.num+2) && chain.residues[j+3].num==(residue.num+3) && chain.residues[j+4].num==(residue.num+4) && chain.residues[j+5].num==(residue.num+5) && chain.residues[j+6].num==(residue.num+6) && chain.residues[j+7].num==(residue.num+7) && chain.residues[j+8].num==(residue.num+8)
+								&& chain.residues[j+1].name.size()<2 && chain.residues[j+2].name.size()<2 && chain.residues[j+3].name.size()<2 && chain.residues[j+4].name.size()<2 && chain.residues[j+5].name.size()<2 && chain.residues[j+6].name.size()<2 && chain.residues[j+7].name.size()<2 && chain.residues[j+8].name.size()<2)
+						{
+							const std::string num_str=std::to_string(residue.num);
+							for(std::size_t e=0;e<9;e++)
+							{
+								chain.residues[j+e].num_label=(e<num_str.size() ? num_str.substr(e, 1) : std::string("."));
+							}
+							j+=5;
 						}
 						else
 						{

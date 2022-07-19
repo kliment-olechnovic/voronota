@@ -2626,16 +2626,20 @@ private:
 									}
 									ImGui::SameLine();
 									ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+									ImGui::SameLine();
 								}
 								for(std::size_t e=0;e<sequence.chains[j].residues.size();e++)
 								{
-									if(e>0 && (sequence.chains[j].residues[e].num!=sequence.chains[j].residues[e-1].num+1))
+									if(e>0)
 									{
 										ImGui::SameLine();
-										ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+										if(sequence.chains[j].residues[e].num!=sequence.chains[j].residues[e-1].num+1)
+										{
+											ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+											ImGui::SameLine();
+										}
 									}
 									const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
-									ImGui::SameLine();
 									char button_label[64];
 									sprintf(button_label, "%s##seq_num_button_%d", residue.num_label.c_str(), used_buttons++);
 									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(residue.display_size()), 0.0f)))
@@ -2663,16 +2667,20 @@ private:
 									ImGui::Dummy(ImVec2(button_width_unit*static_cast<float>(sequence.chains[j].name.size()), 0.0f));
 									ImGui::SameLine();
 									ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+									ImGui::SameLine();
 								}
 								for(std::size_t e=0;e<sequence.chains[j].residues.size();e++)
 								{
-									if(e>0 && (sequence.chains[j].residues[e].num!=sequence.chains[j].residues[e-1].num+1))
+									if(e>0)
 									{
 										ImGui::SameLine();
-										ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+										if(sequence.chains[j].residues[e].num!=sequence.chains[j].residues[e-1].num+1)
+										{
+											ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+											ImGui::SameLine();
+										}
 									}
 									const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
-									ImGui::SameLine();
 									char button_label[64];
 									sprintf(button_label, "%s##seq_button_%d", residue.name.c_str(), used_buttons++);
 
