@@ -2609,6 +2609,7 @@ private:
 									ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
 									ImGui::SameLine();
 								}
+								if(!sequence.chains[j].name.empty())
 								{
 									char button_label[64];
 									sprintf(button_label, "%s##chain_button_%d", sequence.chains[j].name.c_str(), used_buttons++);
@@ -2618,13 +2619,14 @@ private:
 										{
 											result=std::string(sequence.chains[j].residues[0].marked ? "unmark-atoms" : "mark-atoms")
 												+" -on-objects "+object_states[i].name
-												+" -use [ -chain "+sequence.chains[j].name
+												+" -use ["
+												+" -chain "+sequence.chains[j].name
 												+"]";
 										}
 									}
+									ImGui::SameLine();
+									ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
 								}
-								ImGui::SameLine();
-								ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
 								for(std::size_t e=0;e<sequence.chains[j].residues.size();e++)
 								{
 									if(e>0 && (sequence.chains[j].residues[e].num!=sequence.chains[j].residues[e-1].num+1))
@@ -2640,7 +2642,8 @@ private:
 									{
 										result=std::string("vsb: ")+(residue.marked ? "unmark-atoms" : "mark-atoms")
 											+" -on-objects "+object_states[i].name
-											+" -use [ -chain "+sequence.chains[j].name
+											+" -use ["
+											+(sequence.chains[j].name.empty() ? std::string() : std::string(" -chain ")+sequence.chains[j].name)
 											+" -rnum "+std::to_string(residue.num)
 											+"]";
 									}
@@ -2655,9 +2658,12 @@ private:
 									ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
 									ImGui::SameLine();
 								}
-								ImGui::Dummy(ImVec2(button_width_unit*static_cast<float>(sequence.chains[j].name.size()), 0.0f));
-								ImGui::SameLine();
-								ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+								if(!sequence.chains[j].name.empty())
+								{
+									ImGui::Dummy(ImVec2(button_width_unit*static_cast<float>(sequence.chains[j].name.size()), 0.0f));
+									ImGui::SameLine();
+									ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+								}
 								for(std::size_t e=0;e<sequence.chains[j].residues.size();e++)
 								{
 									if(e>0 && (sequence.chains[j].residues[e].num!=sequence.chains[j].residues[e-1].num+1))
@@ -2755,15 +2761,31 @@ private:
 											}
 										}
 
-										for(std::size_t l=0;l<ids_for_action.size();l++)
 										{
-											const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& sresidue=sequence.chains[j].residues[ids_for_action[l]];
-											result+=std::string(sresidue.marked ? "unmark-atoms" : "mark-atoms")
-												+" -on-objects "+object_states[i].name
-												+" -use [ -chain "+sequence.chains[j].name
-												+" -rnum "+std::to_string(sresidue.num)
-												+"]\n"
-												+"clear-last\n";
+											std::string rnum_strings[2];
+											for(std::size_t l=0;l<ids_for_action.size();l++)
+											{
+												const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& sresidue=sequence.chains[j].residues[ids_for_action[l]];
+												std::string& rnum_string=rnum_strings[sresidue.marked ? 0 : 1];
+												if(!rnum_string.empty())
+												{
+													rnum_string+=",";
+												}
+												rnum_string+=std::to_string(sresidue.num);
+											}
+											for(int m=0;m<2;m++)
+											{
+												if(!rnum_strings[m].empty())
+												{
+													result+=std::string(m==0 ? "unmark-atoms" : "mark-atoms")
+														+" -on-objects "+object_states[i].name
+														+" -use ["
+														+(sequence.chains[j].name.empty() ? std::string() : std::string(" -chain ")+sequence.chains[j].name)
+														+" -rnum "+rnum_strings[m]
+														+"]\n"
+														+"clear-last\n";
+												}
+											}
 										}
 									}
 
