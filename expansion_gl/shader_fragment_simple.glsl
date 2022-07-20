@@ -11,13 +11,17 @@ void main()
 {
     if(selection_mode_enabled==0)
     {
-        vec3 light_direction=vec3(0.0, 0.0, 1.0);
-        vec3 light_color=vec3(1.0, 1.0, 1.0);
-        float ambient_value=0.05;
-        vec3 ambient=ambient_value*light_color;
-        float diffuse_value=abs(dot(normalize(fragment_normal), normalize(light_direction)));
-        vec3 diffuse=diffuse_value*light_color;
-        vec3 final_color=(ambient+diffuse)*fragment_color_for_display;
+        vec3 final_color=fragment_color_for_display;
+        if(fragment_adjunct[1]<0.9)
+        {
+            vec3 light_direction=vec3(0.0, 0.0, 1.0);
+            vec3 light_color=vec3(1.0, 1.0, 1.0);
+            float ambient_value=0.05;
+            vec3 ambient=ambient_value*light_color;
+            float diffuse_value=abs(dot(normalize(fragment_normal), normalize(light_direction)));
+            vec3 diffuse=diffuse_value*light_color;
+            final_color=(ambient+diffuse)*fragment_color_for_display;
+        }
         if(fog_enabled==1)
         {
             float fog_density=1.0/(1.0+exp(0.1*(fragment_position.z+0.0)));
