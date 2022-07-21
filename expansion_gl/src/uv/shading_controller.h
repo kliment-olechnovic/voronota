@@ -238,9 +238,17 @@ private:
 		{
 			predefined_input=default_shader_vertex_with_instancing();
 		}
+		else if(filename=="_shader_vertex_with_impostoring")
+		{
+			predefined_input=default_shader_vertex_with_impostoring();
+		}
 		else if(filename=="_shader_fragment_simple")
 		{
 			predefined_input=default_shader_fragment_simple();
+		}
+		else if(filename=="_shader_fragment_with_impostoring")
+		{
+			predefined_input=default_shader_fragment_with_impostoring();
 		}
 
 		if(!predefined_input.empty())

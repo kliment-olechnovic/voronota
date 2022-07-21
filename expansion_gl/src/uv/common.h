@@ -32,6 +32,16 @@ namespace voronota
 namespace uv
 {
 
+struct ShadingMode
+{
+	enum Mode
+	{
+		simple,
+		with_instancing,
+		with_impostoring
+	};
+};
+
 class Utilities
 {
 public:

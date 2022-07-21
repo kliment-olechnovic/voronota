@@ -7,6 +7,7 @@
 #include "zoom_calculator.h"
 #include "drawing_controller.h"
 #include "drawing_with_instancing_controller.h"
+#include "drawing_with_impostoring_controller.h"
 
 #include <GLFW/glfw3.h>
 
@@ -26,7 +27,10 @@ public:
 		std::string title;
 		std::string shader_vertex;
 		std::string shader_vertex_with_instancing;
+		std::string shader_vertex_with_impostoring;
 		std::string shader_fragment;
+		std::string shader_fragment_with_instancing;
+		std::string shader_fragment_with_impostoring;
 
 		InitializationParameters() :
 			suggested_window_width(800),
@@ -122,9 +126,16 @@ public:
 			return false;
 		}
 
-		if(!shading_with_instancing_.init(parameters.shader_vertex_with_instancing, parameters.shader_fragment, DrawingWithInstancingController::ordered_used_shader_attribute_names()))
+		if(!shading_with_instancing_.init(parameters.shader_vertex_with_instancing, parameters.shader_fragment_with_instancing, DrawingWithInstancingController::ordered_used_shader_attribute_names()))
 		{
 			std::cerr << "Error: failed to init shading with instancing." << std::endl;
+			glfwTerminate();
+			return false;
+		}
+
+		if(!shading_with_impostoring_.init(parameters.shader_vertex_with_impostoring, parameters.shader_fragment_with_impostoring, DrawingWithImpostoringController::ordered_used_shader_attribute_names()))
+		{
+			std::cerr << "Error: failed to init shading with impostoring." << std::endl;
 			glfwTerminate();
 			return false;
 		}
@@ -398,6 +409,7 @@ public:
 
 		shading_simple_.set_fog_enabled(enabled);
 		shading_with_instancing_.set_fog_enabled(enabled);
+		shading_with_impostoring_.set_fog_enabled(enabled);
 	}
 
 	void set_stereo_angle(const float stereo_angle)
@@ -585,11 +597,7 @@ protected:
 	{
 	}
 
-	virtual void on_draw_simple(const int grid_id)
-	{
-	}
-
-	virtual void on_draw_with_instancing(const int grid_id)
+	virtual void on_draw(const ShadingMode::Mode shading_mode, const int grid_id)
 	{
 	}
 
@@ -669,15 +677,6 @@ private:
 		{
 			value=((action==GLFW_PRESS) || (value && action!=GLFW_RELEASE));
 		}
-	};
-
-	struct ShadingMode
-	{
-		enum Mode
-		{
-			simple,
-			with_instancing
-		};
 	};
 
 	struct RenderingMode
@@ -967,6 +966,10 @@ private:
 				render_scene(ShadingMode::with_instancing);
 				shading_with_instancing_.set_selection_mode_enabled(false);
 
+				shading_with_impostoring_.set_selection_mode_enabled(true);
+				render_scene(ShadingMode::with_impostoring);
+				shading_with_impostoring_.set_selection_mode_enabled(false);
+
 				glEnable(GL_MULTISAMPLE);
 			}
 
@@ -988,6 +991,9 @@ private:
 
 		shading_with_instancing_.enable();
 		render_scene(ShadingMode::with_instancing);
+
+		shading_with_impostoring_.enable();
+		render_scene(ShadingMode::with_impostoring);
 
 		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
 		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
@@ -1059,14 +1065,7 @@ private:
 
 	void draw_scene(const ShadingMode::Mode shading_mode, const int grid_id)
 	{
-		if(shading_mode==ShadingMode::simple)
-		{
-			on_draw_simple(grid_id);
-		}
-		else if(shading_mode==ShadingMode::with_instancing)
-		{
-			on_draw_with_instancing(grid_id);
-		}
+		on_draw(shading_mode, grid_id);
 	}
 
 	void render_overlay()
@@ -1117,6 +1116,10 @@ private:
 		{
 			shading_with_instancing_.set_projection_matrix(projection_matrix.matrix_data());
 		}
+		else if(shading_mode==ShadingMode::with_impostoring)
+		{
+			shading_with_impostoring_.set_projection_matrix(projection_matrix.matrix_data());
+		}
 	}
 
 	void refresh_shading_projection(const int new_width, const int new_height, const ShadingMode::Mode shading_mode)
@@ -1140,6 +1143,7 @@ private:
 	{
 		refresh_shading_projection(ShadingMode::simple);
 		refresh_shading_projection(ShadingMode::with_instancing);
+		refresh_shading_projection(ShadingMode::with_impostoring);
 	}
 
 	void refresh_shading_viewtransform(const TransformationMatrixController& viewtransform_matrix, const ShadingMode::Mode shading_mode)
@@ -1151,6 +1155,10 @@ private:
 		else if(shading_mode==ShadingMode::with_instancing)
 		{
 			shading_with_instancing_.set_viewtransform_matrix(viewtransform_matrix.matrix_data());
+		}
+		else if(shading_mode==ShadingMode::with_impostoring)
+		{
+			shading_with_impostoring_.set_viewtransform_matrix(viewtransform_matrix.matrix_data());
 		}
 	}
 
@@ -1170,6 +1178,7 @@ private:
 	{
 		refresh_shading_viewtransform(ShadingMode::simple);
 		refresh_shading_viewtransform(ShadingMode::with_instancing);
+		refresh_shading_viewtransform(ShadingMode::with_impostoring);
 	}
 
 	void refresh_shading_modeltransform(const TransformationMatrixController& modeltransform_matrix, const ShadingMode::Mode shading_mode)
@@ -1182,6 +1191,10 @@ private:
 		{
 			shading_with_instancing_.set_modeltransform_matrix(modeltransform_matrix.matrix_data());
 		}
+		else if(shading_mode==ShadingMode::with_impostoring)
+		{
+			shading_with_impostoring_.set_modeltransform_matrix(modeltransform_matrix.matrix_data());
+		}
 	}
 
 	void refresh_shading_modeltransform(const ShadingMode::Mode shading_mode)
@@ -1193,6 +1206,7 @@ private:
 	{
 		refresh_shading_modeltransform(ShadingMode::simple);
 		refresh_shading_modeltransform(ShadingMode::with_instancing);
+		refresh_shading_modeltransform(ShadingMode::with_impostoring);
 	}
 
 	bool perform_trackball_operation(const bool rotate, const bool translate, const bool scale, const bool cut)
@@ -1332,6 +1346,7 @@ private:
 	float margin_color_[3];
 	ShadingController shading_simple_;
 	ShadingController shading_with_instancing_;
+	ShadingController shading_with_impostoring_;
 	TransformationMatrixController modeltransform_matrix_;
 	ModKeysStatusController modkeys_status_;
 };

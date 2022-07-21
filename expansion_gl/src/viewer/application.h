@@ -174,14 +174,9 @@ protected:
 		ImGui_ImplGlfwGL3_CharCallback(window(), codepoint);
 	}
 
-	void on_draw_simple(const int grid_id)
+	void on_draw(const uv::ShadingMode::Mode shading_mode, const int grid_id)
 	{
-		script_execution_manager_.draw(false, grid_id);
-	}
-
-	void on_draw_with_instancing(const int grid_id)
-	{
-		script_execution_manager_.draw(true, grid_id);
+		script_execution_manager_.draw(shading_mode, grid_id);
 	}
 
 	void on_draw_overlay_start(const int box_x, const int box_y, const int box_w, const int box_h)

@@ -241,7 +241,7 @@ public:
 		}
 	}
 
-	void draw(const bool with_instancing, const int grid_id)
+	void draw(const uv::ShadingMode::Mode shading_mode, const int grid_id)
 	{
 		DrawerForDataManager::DrawingRequest drawing_request(true);
 
@@ -257,7 +257,7 @@ public:
 				DrawerForDataManager* drawer=congregation_of_drawers_.get_object(dms[grid_uid]);
 				if(drawer!=0)
 				{
-					drawer->draw(drawing_request, with_instancing);
+					drawer->draw(drawing_request, shading_mode);
 				}
 			}
 		}
@@ -277,7 +277,7 @@ public:
 				DrawerForDataManager* drawer=congregation_of_drawers_.get_object(dms[i]);
 				if(drawer!=0)
 				{
-					drawer->draw(drawing_request, with_instancing);
+					drawer->draw(drawing_request, shading_mode);
 				}
 			}
 		}
@@ -288,7 +288,7 @@ public:
 				DrawerForDataManager* drawer=congregation_of_drawers_.get_object(dms[i]);
 				if(drawer!=0)
 				{
-					drawer->draw(drawing_request, with_instancing);
+					drawer->draw(drawing_request, shading_mode);
 				}
 			}
 		}

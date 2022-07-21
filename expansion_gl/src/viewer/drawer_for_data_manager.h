@@ -154,26 +154,9 @@ public:
 		rendering_parameters_=rendering_parameters;
 	}
 
-	void draw(const DrawingRequest& drawing_request, const bool with_instancing)
+	void draw(const DrawingRequest& drawing_request, const uv::ShadingMode::Mode shading_mode)
 	{
-		if(with_instancing)
-		{
-			if(drawing_request.atoms_balls)
-			{
-				dc_atoms_balls_spheres_.draw();
-			}
-			if(drawing_request.atoms_sticks)
-			{
-				dc_atoms_sticks_spheres_.draw();
-				dc_atoms_sticks_cylinders_.draw();
-			}
-			if(drawing_request.atoms_trace)
-			{
-				dc_atoms_trace_cylinders_.draw();
-				dc_atoms_trace_spheres_.draw();
-			}
-		}
-		else
+		if(shading_mode==uv::ShadingMode::simple)
 		{
 			if(drawing_request.atoms_cartoon)
 			{
@@ -203,6 +186,27 @@ public:
 			{
 				dc_figures_mesh_.draw();
 			}
+		}
+		else if(shading_mode==uv::ShadingMode::with_instancing)
+		{
+			if(drawing_request.atoms_balls)
+			{
+				dc_atoms_balls_spheres_.draw();
+			}
+			if(drawing_request.atoms_sticks)
+			{
+				dc_atoms_sticks_spheres_.draw();
+				dc_atoms_sticks_cylinders_.draw();
+			}
+			if(drawing_request.atoms_trace)
+			{
+				dc_atoms_trace_cylinders_.draw();
+				dc_atoms_trace_spheres_.draw();
+			}
+		}
+		else if(shading_mode==uv::ShadingMode::with_impostoring)
+		{
+			//
 		}
 	}
 
