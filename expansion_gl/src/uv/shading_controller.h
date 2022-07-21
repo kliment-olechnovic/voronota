@@ -19,6 +19,7 @@ public:
 		projection_matrix_id_(0),
 		viewtransform_matrix_id_(0),
 		modeltransform_matrix_id_(0),
+		viewport_id_(0),
 		selection_mode_enabled_id_(0),
 		fog_enabled_id_(0)
 	{
@@ -95,6 +96,7 @@ public:
 		projection_matrix_id_=glGetUniformLocation(shader_program_, "projection_matrix");
 		viewtransform_matrix_id_=glGetUniformLocation(shader_program_, "viewtransform_matrix");
 		modeltransform_matrix_id_=glGetUniformLocation(shader_program_, "modeltransform_matrix");
+		viewport_id_=glGetUniformLocation(shader_program_, "viewport");
 		selection_mode_enabled_id_=glGetUniformLocation(shader_program_, "selection_mode_enabled");
 		fog_enabled_id_=glGetUniformLocation(shader_program_, "fog_enabled");
 
@@ -143,6 +145,16 @@ public:
 		if(enable())
 		{
 			glUniformMatrix4fv(modeltransform_matrix_id_, 1, GL_FALSE, data);
+			return true;
+		}
+		return false;
+	}
+
+	bool set_viewport(const GLfloat x, const GLfloat y, const GLfloat w, const GLfloat h)
+	{
+		if(enable())
+		{
+			glUniform4f(viewport_id_, x, y, w, h);
 			return true;
 		}
 		return false;
@@ -266,6 +278,7 @@ private:
 	GLuint projection_matrix_id_;
 	GLuint viewtransform_matrix_id_;
 	GLuint modeltransform_matrix_id_;
+	GLuint viewport_id_;
 	GLuint selection_mode_enabled_id_;
 	GLuint fog_enabled_id_;
 };

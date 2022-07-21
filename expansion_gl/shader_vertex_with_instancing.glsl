@@ -2,6 +2,7 @@
 uniform mat4 projection_matrix;
 uniform mat4 viewtransform_matrix;
 uniform mat4 modeltransform_matrix;
+uniform vec4 viewport;
 attribute vec3 vertex_position;
 attribute vec3 vertex_normal;
 attribute vec3 vertex_color_for_selection;

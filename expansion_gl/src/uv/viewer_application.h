@@ -939,11 +939,14 @@ private:
 
 		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
 		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
+
 		glClearColor(margin_color_[0], margin_color_[1], margin_color_[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glScissor(0, 0, rendering_framebuffer_width(), rendering_framebuffer_height());
 		glViewport(0, 0, rendering_framebuffer_width(), rendering_framebuffer_height());
+		refresh_shading_viewport(0, 0, rendering_framebuffer_width(), rendering_framebuffer_height());
+
 		glClearColor(background_color_[0], background_color_[1], background_color_[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1028,6 +1031,7 @@ private:
 				}
 				const int xpos=(width*i);
 				glViewport(xpos, 0, width, rendering_framebuffer_height());
+				refresh_shading_viewport(xpos, 0, width, rendering_framebuffer_height(), shading_mode);
 				draw_scene(shading_mode, 0);
 			}
 			refresh_shading_viewtransform(shading_mode);
@@ -1051,6 +1055,7 @@ private:
 				{
 					const int xpos=(width*j);
 					glViewport(xpos, ypos, width, height);
+					refresh_shading_viewport(xpos, ypos, width, height, shading_mode);
 					draw_scene(shading_mode, grid_id);
 					grid_id++;
 				}
@@ -1207,6 +1212,29 @@ private:
 		refresh_shading_modeltransform(ShadingMode::simple);
 		refresh_shading_modeltransform(ShadingMode::with_instancing);
 		refresh_shading_modeltransform(ShadingMode::with_impostoring);
+	}
+
+	void refresh_shading_viewport(const int x, const int y, const int w, const int h, const ShadingMode::Mode shading_mode)
+	{
+		if(shading_mode==ShadingMode::simple)
+		{
+			shading_simple_.set_viewport(x, y, w, h);
+		}
+		else if(shading_mode==ShadingMode::with_instancing)
+		{
+			shading_with_instancing_.set_viewport(x, y, w, h);
+		}
+		else if(shading_mode==ShadingMode::with_impostoring)
+		{
+			shading_with_impostoring_.set_viewport(x, y, w, h);
+		}
+	}
+
+	void refresh_shading_viewport(const int x, const int y, const int w, const int h)
+	{
+		refresh_shading_viewport(x, y, w, h, ShadingMode::simple);
+		refresh_shading_viewport(x, y, w, h, ShadingMode::with_instancing);
+		refresh_shading_viewport(x, y, w, h, ShadingMode::with_impostoring);
 	}
 
 	bool perform_trackball_operation(const bool rotate, const bool translate, const bool scale, const bool cut)
