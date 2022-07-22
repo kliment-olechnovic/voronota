@@ -119,6 +119,8 @@ public:
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
+		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+
 		if(!shading_simple_.init(parameters.shader_vertex, parameters.shader_fragment, DrawingController::ordered_used_shader_attribute_names()))
 		{
 			std::cerr << "Error: failed to init shading simple." << std::endl;

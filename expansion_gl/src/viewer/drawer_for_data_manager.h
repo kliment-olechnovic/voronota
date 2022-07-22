@@ -59,6 +59,7 @@ public:
 		bool atoms_sticks;
 		bool atoms_trace;
 		bool atoms_cartoon;
+		bool atoms_points;
 		bool contacts_faces;
 		bool contacts_sasmesh;
 		bool contacts_edges;
@@ -71,6 +72,7 @@ public:
 			atoms_sticks(status),
 			atoms_trace(status),
 			atoms_cartoon(status),
+			atoms_points(status),
 			contacts_faces(status),
 			contacts_sasmesh(status),
 			contacts_edges(status),
@@ -85,6 +87,7 @@ public:
 			atoms_sticks(atoms_status),
 			atoms_trace(atoms_status),
 			atoms_cartoon(atoms_status),
+			atoms_points(atoms_status),
 			contacts_faces(contacts_status),
 			contacts_sasmesh(contacts_status),
 			contacts_edges(contacts_status),
@@ -130,6 +133,7 @@ public:
 		dc_atoms_trace_spheres_(2),
 		dc_atoms_trace_cylinders_(2),
 		dc_atoms_cartoon_(3),
+		dc_atoms_points_(4),
 		dc_contacts_faces_(0),
 		dc_contacts_sasmesh_(1),
 		dc_contacts_edges_(2),
@@ -206,7 +210,10 @@ public:
 		}
 		else if(shading_mode==uv::ShadingMode::with_impostoring)
 		{
-			//
+			if(drawing_request.atoms_points)
+			{
+				dc_atoms_points_.draw();
+			}
 		}
 	}
 
@@ -351,8 +358,9 @@ private:
 		}
 	};
 
-	typedef WrapperForGenericDrawingController<uv::DrawingWithInstancingController> WrappedDrawingWithInstancingController;
 	typedef WrapperForGenericDrawingController<uv::DrawingController> WrappedDrawingController;
+	typedef WrapperForGenericDrawingController<uv::DrawingWithInstancingController> WrappedDrawingWithInstancingController;
+	typedef WrapperForGenericDrawingController<uv::DrawingWithImpostoringController> WrappedDrawingWithImpostoringController;
 
 	void reset_drawing_atoms()
 	{
@@ -365,6 +373,7 @@ private:
 		reset_drawing_atoms_sticks();
 		reset_drawing_atoms_trace();
 		reset_drawing_atoms_cartoon();
+		reset_drawing_atoms_points();
 	}
 
 	void reset_drawing_atoms_balls()
@@ -536,6 +545,37 @@ private:
 					}
 					data_manager_.set_atoms_representation_implemented(dc_atoms_cartoon_.representation_id, drawing_statuses);
 				}
+			}
+		}
+	}
+
+	void reset_drawing_atoms_points()
+	{
+		dc_atoms_points_.unset();
+		if(!data_manager_.atoms().empty())
+		{
+			const std::size_t number_of_atoms=data_manager_.atoms().size();
+			dc_atoms_points_.reset(number_of_atoms);
+			std::vector<float> data(number_of_atoms*4, 0.0f);
+			for(std::size_t i=0;i<number_of_atoms;i++)
+			{
+				data[i*4+0]=static_cast<float>(data_manager_.atoms()[i].value.x);
+				data[i*4+1]=static_cast<float>(data_manager_.atoms()[i].value.y);
+				data[i*4+2]=static_cast<float>(data_manager_.atoms()[i].value.z);
+				data[i*4+3]=static_cast<float>(data_manager_.atoms()[i].value.r);
+			}
+			if(dc_atoms_points_.controller_ptr->init(data, data))
+			{
+				std::vector<bool> drawing_statuses(number_of_atoms, false);
+				for(std::size_t i=0;i<number_of_atoms;i++)
+				{
+					const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+					dc_atoms_points_.drawing_ids[i]=drawing_id;
+					dc_atoms_points_.map_of_drawing_ids[drawing_id]=i;
+					dc_atoms_points_.controller_ptr->object_register(drawing_id, i);
+					drawing_statuses[i]=true;
+				}
+				data_manager_.set_atoms_representation_implemented(dc_atoms_points_.representation_id, drawing_statuses);
 			}
 		}
 	}
@@ -799,6 +839,18 @@ private:
 						dc_atoms_cartoon_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
 					}
 				}
+
+				if(dc_atoms_points_.valid() && ds.visuals[dc_atoms_points_.representation_id].implemented)
+				{
+					const uv::DrawingID drawing_id=dc_atoms_points_.drawing_ids[i];
+					if(drawing_id>0)
+					{
+						const std::size_t rep_id=dc_atoms_points_.representation_id;
+						dc_atoms_points_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+						dc_atoms_points_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+						dc_atoms_points_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+					}
+				}
 			}
 		}
 	}
@@ -1001,6 +1053,15 @@ private:
 			}
 		}
 
+		{
+			const Map& map=dc_atoms_points_.map_of_drawing_ids;
+			Iterator it=map.find(drawing_id);
+			if(it!=map.end())
+			{
+				return it->second;
+			}
+		}
+
 		return data_manager_.atoms().size();
 	}
 
@@ -1082,6 +1143,7 @@ private:
 	WrappedDrawingWithInstancingController dc_atoms_trace_spheres_;
 	WrappedDrawingWithInstancingController dc_atoms_trace_cylinders_;
 	WrappedDrawingController dc_atoms_cartoon_;
+	WrappedDrawingWithImpostoringController dc_atoms_points_;
 	WrappedDrawingController dc_contacts_faces_;
 	WrappedDrawingController dc_contacts_sasmesh_;
 	WrappedDrawingController dc_contacts_edges_;

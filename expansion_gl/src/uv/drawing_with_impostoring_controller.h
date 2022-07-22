@@ -144,7 +144,7 @@ public:
 
 	bool good() const
 	{
-		return (number_of_vertices_>=3);
+		return (number_of_vertices_>=1);
 	}
 
 	bool draw()
@@ -171,24 +171,17 @@ public:
 		return true;
 	}
 
-	bool object_register(unsigned int id, const std::vector<GLuint>& indices)
+	bool object_register(unsigned int id, const GLuint index)
 	{
-		if(good() && !indices.empty())
+		if(good())
 		{
-			bool valid=true;
-			for(std::size_t i=0;i<indices.size() && valid;i++)
-			{
-				valid=valid && (indices[i]<number_of_vertices_);
-			}
-			if(valid)
+			if(index<number_of_vertices_)
 			{
 				cached_map_iterator_=map_of_records_.insert(cached_map_iterator_, std::make_pair(id, Record()));
 				Record& record=cached_map_iterator_->second;
-				record.indices=indices;
-				for(std::size_t i=0;i<record.indices.size();i++)
-				{
-					Utilities::calculate_color_from_integer(id, &buffer_for_colors_for_selection_[record.indices[i]*3]);
-				}
+				record.indices.resize(1);
+				record.indices[0]=index;
+				Utilities::calculate_color_from_integer(id, &buffer_for_colors_for_selection_[record.indices[0]*3]);
 				change_of_colors_for_selection_=true;
 				change_of_indices_=true;
 				return true;
