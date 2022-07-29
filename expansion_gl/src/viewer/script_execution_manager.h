@@ -316,13 +316,24 @@ protected:
 			for(std::size_t i=0;i<data_managers.size();i++)
 			{
 				scripting::DataManager* data_manager=data_managers[i];
-				if(data_manager!=0 && data_manager->change_indicator().changed())
+				if(data_manager!=0)
 				{
-					DrawerForDataManager* drawer=congregation_of_drawers_.get_object(data_manager);
-					if(drawer!=0)
+					const bool just_added=(ci.added_objects().count(data_manager)>0);
+					if(just_added || data_manager->change_indicator().changed())
 					{
-						drawer->update(data_manager->change_indicator());
-						need_to_refresh_frame=true;
+						DrawerForDataManager* drawer=congregation_of_drawers_.get_object(data_manager);
+						if(drawer!=0)
+						{
+							if(just_added)
+							{
+								drawer->update();
+							}
+							else
+							{
+								drawer->update(data_manager->change_indicator());
+							}
+							need_to_refresh_frame=true;
+						}
 					}
 				}
 			}

@@ -217,6 +217,18 @@ public:
 		}
 	}
 
+	bool update()
+	{
+		reset_drawing_atoms();
+		reset_drawing_contacts();
+		reset_drawing_figures();
+		update_drawing_atoms();
+		update_drawing_contacts();
+		update_drawing_figures();
+
+		return true;
+	}
+
 	bool update(const scripting::DataManager::ChangeIndicator& ci)
 	{
 		bool updated=false;
