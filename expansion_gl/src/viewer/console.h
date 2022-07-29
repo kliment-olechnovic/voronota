@@ -7,7 +7,7 @@
 #include <deque>
 
 #include "../uv/viewer_application.h"
-#include "../dependencies/imgui/imgui_impl_glfw_gl3.h"
+#include "../dependencies/imgui/imgui_impl_glfw.h"
 #include "../../../expansion_js/src/duktaper/stocked_data_resources.h"
 
 #include "gui_configuration.h"
@@ -269,12 +269,13 @@ public:
 
 			ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
 			ImGui::SetNextWindowSizeConstraints(ImVec2(min_width, actual_min_height), ImVec2(max_width, max_height));
+			ImGui::SetNextWindowSize(ImVec2(recommended_width, recommended_height), ImGuiCond_FirstUseEver);
 			if(current_width_>0.0f && current_max_width_>0.0f && current_heigth_>0.0f)
 			{
-				ImGui::SetNextWindowSize(ImVec2(current_width_+(max_width-current_max_width_), ((current_heigth_!=current_max_heigth_) ? current_heigth_ : max_height)));
+				ImGui::SetNextWindowSize(ImVec2(current_width_+(max_width-current_max_width_), ((current_heigth_!=current_max_heigth_) ? current_heigth_ : max_height)), ImGuiCond_Always);
 			}
-
-			if(!ImGui::Begin("Console", 0, ImVec2(recommended_width, recommended_height), 0.5f, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoCollapse))
+			ImGui::SetNextWindowBgAlpha(0.5f);
+			if(!ImGui::Begin("Console", 0, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoScrollbar))
 			{
 				ImGui::End();
 				return result;
@@ -298,7 +299,9 @@ public:
 			ImVec2 panel_size(max_width-current_width_, max_height);
 			ImGui::SetNextWindowSizeConstraints(panel_size, panel_size);
 
-			if(!ImGui::Begin("Panel", 0, panel_size, 0.5f, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_MenuBar))
+			ImGui::SetNextWindowSize(panel_size, ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowBgAlpha(0.5f);
+			if(!ImGui::Begin("Panel", 0, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_MenuBar))
 			{
 				ImGui::End();
 				return result;
@@ -494,7 +497,7 @@ private:
 				ImGui::PopItemWidth();
 				if(scroll_output)
 				{
-					ImGui::SetScrollHere();
+					ImGui::SetScrollHereY();
 				}
 				scroll_output=false;
 				ImGui::EndChild();
@@ -540,13 +543,13 @@ private:
 			}
 		}
 
-		static int on_command_input_data_request(ImGuiTextEditCallbackData* data)
+		static int on_command_input_data_request(ImGuiInputTextCallbackData* data)
 		{
 			CommandLineInterfaceState* obj=static_cast<CommandLineInterfaceState*>(data->UserData);
 			return obj->handle_command_input_data_request(data);
 		}
 
-		int handle_command_input_data_request(ImGuiTextEditCallbackData* data)
+		int handle_command_input_data_request(ImGuiInputTextCallbackData* data)
 		{
 			if(
 					!history_of_commands.empty() &&
@@ -830,7 +833,7 @@ private:
 			ImVec4 color_text=(doc_viewer_colors_black_on_white ? ImVec4(0.0f, 0.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			ImVec4 color_background=(doc_viewer_colors_black_on_white ? ImVec4(1.0f, 1.0f, 1.0f, 1.0f) : ImVec4(0.10f, 0.10f, 0.10f, 1.0f));
 			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-			ImGui::PushStyleColor(ImGuiCol_ChildWindowBg, color_background);
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, color_background);
 
 			ImGui::BeginChild("##area_for_list_of_documentation", ImVec2(0, doc_viewer_size));
 
@@ -2509,7 +2512,7 @@ private:
 			visible(GUIConfiguration::instance().enabled_sequence_view),
 			max_slots(100),
 			max_visible_slots(5),
-			sequence_frame_height(43.0f),
+			sequence_frame_height(40.0f),
 			button_width_unit(10.0f)
 		{
 		}
@@ -2592,7 +2595,7 @@ private:
 					ImGui::SameLine();
 
 					{
-						ImGui::PushStyleColor(ImGuiCol_ChildWindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+						ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
 						ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
 						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
 						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -2714,7 +2717,7 @@ private:
 											action_needed=true;
 										}
 									}
-									else if(ImGui::IsItemHoveredRect() && !any_button_not_held_but_hovered)
+									else if(ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly) && !any_button_not_held_but_hovered)
 									{
 										any_button_not_held_but_hovered=true;
 										std::pair< std::pair<std::string, int>, int> hovered_button_id(std::pair<std::string, int>(object_states[i].name, j), e);

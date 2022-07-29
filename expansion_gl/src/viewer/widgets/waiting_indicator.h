@@ -1,7 +1,7 @@
 #ifndef VIEWER_WIDGETS_WAITING_INDICATOR_H_
 #define VIEWER_WIDGETS_WAITING_INDICATOR_H_
 
-#include "../../dependencies/imgui/imgui_impl_glfw_gl3.h"
+#include "../../dependencies/imgui/imgui_impl_glfw.h"
 
 namespace voronota
 {
@@ -62,8 +62,9 @@ public:
 		const int label_y_pos=box_y+(box_h/2)-(label_height/2);
 
 		ImGui::SetNextWindowPos(ImVec2(label_x_pos, label_y_pos));
-		ImGui::SetNextWindowSize(ImVec2(label_width, label_height));
-		ImGui::Begin("Waiting", 0, ImVec2(0, 0), 0.75f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+		ImGui::SetNextWindowSize(ImVec2(label_width, label_height), ImGuiCond_Always);
+		ImGui::SetNextWindowBgAlpha(0.75f);
+		ImGui::Begin("Waiting", 0, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
 		ImGui::Text("Please wait ...");
 		ImGui::End();
 

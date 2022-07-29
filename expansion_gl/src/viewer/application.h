@@ -3,7 +3,8 @@
 
 #include "../uv/viewer_application.h"
 
-#include "../dependencies/imgui/imgui_impl_glfw_gl3.h"
+#include "../dependencies/imgui/imgui_impl_glfw.h"
+#include "../dependencies/imgui/imgui_impl_opengl3.h"
 
 #include "../../../expansion_js/src/duktaper/binding_javascript.h"
 #include "../../../expansion_js/src/duktaper/duktape_manager.h"
@@ -73,7 +74,10 @@ protected:
 			set_margin_color(0x7F7F7F);
 			set_margin_top_fixed(200);
 
-			ImGui_ImplGlfwGL3_Init(window(), false);
+			ImGui::CreateContext();
+
+			ImGui_ImplGlfw_InitForOpenGL(window(), false);
+			ImGui_ImplOpenGL3_Init();
 
 			{
 				ImGuiStyle& style=ImGui::GetStyle();
@@ -117,7 +121,7 @@ protected:
 				style.Colors[ImGuiCol_PlotHistogram]          = ImVec4(0.73f, 0.60f, 0.15f, 1.00f);
 				style.Colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
 				style.Colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.87f, 0.87f, 0.87f, 0.35f);
-				style.Colors[ImGuiCol_ModalWindowDarkening]   = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+				style.Colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
 				ImGui::GetIO().IniFilename=0;
 			}
@@ -132,20 +136,20 @@ protected:
 
 	bool check_window_scroll_intercepted(double xoffset, double yoffset)
 	{
-		ImGui_ImplGlfwGL3_ScrollCallback(window(), xoffset, yoffset);
-		return (ImGui::IsMouseHoveringAnyWindow());
+		ImGui_ImplGlfw_ScrollCallback(window(), xoffset, yoffset);
+		return (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow));
 	}
 
 	bool check_mouse_button_use_intercepted(int button, int action, int mods)
 	{
-		ImGui_ImplGlfwGL3_MouseButtonCallback(window(), button, action, mods);
-		return (ImGui::IsMouseHoveringAnyWindow());
+		ImGui_ImplGlfw_MouseButtonCallback(window(), button, action, mods);
+		return (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow));
 	}
 
 	bool check_mouse_cursor_move_intercepted(double xpos, double ypos)
 	{
-		ImGui_ImplGlfwGL3_CursorPosCallback(window(), xpos, ypos);
-		return (ImGui::IsMouseHoveringAnyWindow());
+		ImGui_ImplGlfw_CursorPosCallback(window(), xpos, ypos);
+		return (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow));
 	}
 
 	void on_mouse_cursor_moved(double xpos, double ypos)
@@ -166,12 +170,12 @@ protected:
 			}
 		}
 
-		ImGui_ImplGlfwGL3_KeyCallback(window(), key, scancode, action, mods);
+		ImGui_ImplGlfw_KeyCallback(window(), key, scancode, action, mods);
 	}
 
 	void on_character_used(unsigned int codepoint)
 	{
-		ImGui_ImplGlfwGL3_CharCallback(window(), codepoint);
+		ImGui_ImplGlfw_CharCallback(window(), codepoint);
 	}
 
 	void on_draw(const uv::ShadingMode::Mode shading_mode, const int grid_id)
@@ -181,7 +185,9 @@ protected:
 
 	void on_draw_overlay_start(const int box_x, const int box_y, const int box_w, const int box_h)
 	{
-		ImGui_ImplGlfwGL3_NewFrame();
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 
 		if(GUIConfiguration::instance().enabled_cursor_label)
 		{
@@ -218,6 +224,7 @@ protected:
 		}
 
 		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
 	void on_before_rendered_frame()
@@ -443,7 +450,9 @@ private:
 	{
 		if(good())
 		{
-			ImGui_ImplGlfwGL3_Shutdown();
+			ImGui_ImplOpenGL3_Shutdown();
+			ImGui_ImplGlfw_Shutdown();
+			ImGui::DestroyContext();
 		}
 	}
 
