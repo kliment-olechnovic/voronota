@@ -69,7 +69,6 @@ public:
 		{
 			DrawerForDataManager* drawer=new DrawerForDataManager(data_manager);
 			map_of_drawers_[&data_manager]=drawer;
-			drawer->update();
 			return true;
 		}
 		return false;
