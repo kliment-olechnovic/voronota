@@ -51,8 +51,8 @@ public:
 		Parameters() :
 			width(0.3),
 			height(0.3),
-			amino_spline(0.8, 10),
-			nucleic_spline(0.5, 10),
+			amino_spline(0.8, 6),
+			nucleic_spline(0.5, 6),
 			amino_ss_factor(4.0),
 			amino_ss_arrow_factor(6.0),
 			nucleic_factor(3.0),
