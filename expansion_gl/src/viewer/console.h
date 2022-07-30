@@ -1313,6 +1313,10 @@ private:
 							{
 								result=std::string("show-atoms -rep balls -use (")+atoms_selection_string()+")";
 							}
+							if(ImGui::Selectable("  points##show"))
+							{
+								result=std::string("show-atoms -rep points -use (")+atoms_selection_string()+")";
+							}
 						}
 						else if(concept_mode()=="contacts")
 						{
@@ -1367,6 +1371,10 @@ private:
 							{
 								result=std::string("hide-atoms -rep balls -use (")+atoms_selection_string()+")";
 							}
+							if(ImGui::Selectable("  points##hide"))
+							{
+								result=std::string("hide-atoms -rep points -use (")+atoms_selection_string()+")";
+							}
 						}
 						else if(concept_mode()=="contacts")
 						{
@@ -1405,6 +1413,7 @@ private:
 							static bool rep_trace=true;
 							static bool rep_sticks=true;
 							static bool rep_balls=true;
+							static bool rep_points=true;
 
 							{
 								const std::string checkbox_id=std::string("cartoon##cartoon_checkbox_rep");
@@ -1422,12 +1431,17 @@ private:
 								const std::string checkbox_id=std::string("balls##balls_checkbox_rep");
 								ImGui::Checkbox(checkbox_id.c_str(), &rep_balls);
 							}
+							{
+								const std::string checkbox_id=std::string("points##points_checkbox_rep");
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_points);
+							}
 
 							const std::string rep_string=std::string(" -rep")
 								+(rep_cartoon ? " cartoon" : "")
 								+(rep_trace ? " trace" : "")
 								+(rep_sticks ? " sticks" : "")
-								+(rep_balls ? " balls" : "");
+								+(rep_balls ? " balls" : "")
+								+(rep_points ? " points" : "");
 
 							ImGui::Separator();
 
@@ -1913,6 +1927,10 @@ private:
 							{
 								result=std::string("show-atoms -rep balls -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
+							if(ImGui::Selectable("  points##show"))
+							{
+								result=std::string("show-atoms -rep points -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
 						}
 						else if(concept_mode()=="contacts")
 						{
@@ -1967,6 +1985,10 @@ private:
 							{
 								result=std::string("hide-atoms -rep balls -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
+							if(ImGui::Selectable("  points##hide"))
+							{
+								result=std::string("hide-atoms -rep points -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
 						}
 						else if(concept_mode()=="contacts")
 						{
@@ -2005,6 +2027,7 @@ private:
 							static bool rep_trace=true;
 							static bool rep_sticks=true;
 							static bool rep_balls=true;
+							static bool rep_points=true;
 
 							{
 								const std::string checkbox_id=std::string("cartoon##cartoon_checkbox_rep_")+os.name;
@@ -2022,12 +2045,17 @@ private:
 								const std::string checkbox_id=std::string("balls##balls_checkbox_rep_")+os.name;
 								ImGui::Checkbox(checkbox_id.c_str(), &rep_balls);
 							}
+							{
+								const std::string checkbox_id=std::string("points##points_checkbox_rep_")+os.name;
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_points);
+							}
 
 							const std::string rep_string=std::string(" -rep")
 								+(rep_cartoon ? " cartoon" : "")
 								+(rep_trace ? " trace" : "")
 								+(rep_sticks ? " sticks" : "")
-								+(rep_balls ? " balls" : "");
+								+(rep_balls ? " balls" : "")
+								+(rep_points ? " points" : "");
 
 							ImGui::Separator();
 
