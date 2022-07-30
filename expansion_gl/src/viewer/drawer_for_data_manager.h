@@ -108,11 +108,11 @@ public:
 		int cartoon_style;
 
 		RenderingParameters() :
-			ball_sphere_quality(2),
-			stick_sphere_quality(2),
-			stick_cylinder_quality(12),
-			trace_sphere_quality(2),
-			trace_cylinder_quality(12),
+			ball_sphere_quality(3),
+			stick_sphere_quality(3),
+			stick_cylinder_quality(36),
+			trace_sphere_quality(3),
+			trace_cylinder_quality(36),
 			cartoon_style(0)
 		{
 		}
