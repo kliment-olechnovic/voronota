@@ -377,8 +377,9 @@ private:
 		reset_drawing_atoms_balls();
 		reset_drawing_atoms_sticks();
 		reset_drawing_atoms_trace();
-		//reset_drawing_atoms_cartoon();
 		reset_drawing_atoms_points();
+
+		dc_atoms_cartoon_.unset();
 	}
 
 	void reset_drawing_atoms_balls()
