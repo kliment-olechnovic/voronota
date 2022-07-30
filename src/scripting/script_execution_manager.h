@@ -856,13 +856,42 @@ private:
 				}
 				else if(picked_data_managers.size()==1 || commands_for_data_manager_[command_name]->multiplicable())
 				{
-					for(std::size_t i=0;i<picked_data_managers.size();i++)
+#ifdef _OPENMP
+					const bool in_parallel=true;
+#else
+					const bool in_parallel=false;
+#endif
+					if(!in_parallel || picked_data_managers.size()==1)
 					{
-						on_before_any_command(script_command_record.command_input);
-						GenericCommandRecord cr(script_command_record.command_input);
-						script_command_record.successful=commands_for_data_manager_[command_name]->execute(cr, *picked_data_managers[i]);
-						on_after_command_for_data_manager(cr, *picked_data_managers[i]);
-						on_after_any_command(cr);
+						for(std::size_t i=0;i<picked_data_managers.size();i++)
+						{
+							on_before_any_command(script_command_record.command_input);
+							GenericCommandRecord cr(script_command_record.command_input);
+							script_command_record.successful=commands_for_data_manager_[command_name]->execute(cr, *picked_data_managers[i]);
+							on_after_command_for_data_manager(cr, *picked_data_managers[i]);
+							on_after_any_command(cr);
+						}
+					}
+					else
+					{
+						int n=static_cast<int>(picked_data_managers.size());
+						GenericCommandForDataManager* common_command_pointer=commands_for_data_manager_[command_name];
+						std::vector<GenericCommandRecord> array_of_command_records(n, GenericCommandRecord(script_command_record.command_input));
+
+						{
+							#pragma omp parallel for
+							for(int i=0;i<n;i++)
+							{
+								common_command_pointer->execute(array_of_command_records[i], *picked_data_managers[i]);
+							}
+						}
+
+						for(int i=0;i<n;i++)
+						{
+							on_before_any_command(script_command_record.command_input);
+							on_after_command_for_data_manager(array_of_command_records[i], *picked_data_managers[i]);
+							on_after_any_command(array_of_command_records[i]);
+						}
 					}
 				}
 				else
