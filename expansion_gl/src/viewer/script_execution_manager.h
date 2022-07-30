@@ -5,6 +5,7 @@
 
 #include "congregations_of_drawers_for_data_managers.h"
 #include "console.h"
+#include "behavior_configuration.h"
 
 #include "operators/animate.h"
 #include "operators/background.h"
@@ -526,11 +527,11 @@ private:
 				{
 					script_output << "hide-contacts\n";
 				}
-				script_output << "show-atoms [-t! het] -rep cartoon\n";
+				script_output << "show-atoms [-t! het] -rep "+BehaviorConfiguration::instance().initial_atom_representation_to_show_after_loading+"\n";
 				script_output << "color-atoms [-t! het] -next-random-color\n";
 				if(available_tags_het)
 				{
-					script_output << "show-atoms [-t het] -rep sticks\n";
+					script_output << "show-atoms [-t het] -rep "+BehaviorConfiguration::instance().initial_heteroatom_representation_to_show_after_loading+"\n";
 					script_output << "color-atoms [-t het] -next-random-color\n";
 				}
 				if(available_adjuncts_cif_cell)

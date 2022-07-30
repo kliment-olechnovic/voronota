@@ -164,6 +164,11 @@ public:
 		{
 			if(drawing_request.atoms_cartoon)
 			{
+				if(!dc_atoms_cartoon_.valid() && data_manager_.is_any_atom_visible(dc_atoms_cartoon_.representation_id))
+				{
+					reset_drawing_atoms_cartoon();
+					update_drawing_atoms();
+				}
 				dc_atoms_cartoon_.draw();
 			}
 			if(drawing_request.contacts_faces)
@@ -372,7 +377,7 @@ private:
 		reset_drawing_atoms_balls();
 		reset_drawing_atoms_sticks();
 		reset_drawing_atoms_trace();
-		reset_drawing_atoms_cartoon();
+		//reset_drawing_atoms_cartoon();
 		reset_drawing_atoms_points();
 	}
 

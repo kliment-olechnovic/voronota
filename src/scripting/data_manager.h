@@ -821,6 +821,18 @@ public:
 		return false;
 	}
 
+	bool is_any_atom_visible(const std::size_t representation_id) const
+	{
+		for(std::size_t i=0;i<atoms_display_states_.size();i++)
+		{
+			if(atoms_display_states_[i].visible(representation_id))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool is_any_atom_marked() const
 	{
 		for(std::size_t i=0;i<atoms_display_states_.size();i++)

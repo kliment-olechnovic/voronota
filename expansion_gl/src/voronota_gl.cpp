@@ -47,6 +47,11 @@ int main(const int argc, const char** argv)
 			voronota::viewer::Application::instance().enqueue_script("music-background waiting");
 		}
 
+		if(files.size()>10)
+		{
+			voronota::viewer::BehaviorConfiguration::instance().initial_atom_representation_to_show_after_loading="trace";
+		}
+
 		for(std::size_t i=0;i<files.size();i++)
 		{
 			voronota::viewer::Application::instance().enqueue_file(files[i]);
