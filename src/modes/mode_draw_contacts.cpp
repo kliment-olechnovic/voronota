@@ -37,7 +37,7 @@ void draw_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	voronota::common::enabled_output_of_ContactValue_graphics()=true;
+	voronota::common::ContactValue::set_enabled_output_of_ContactValue_graphics(true);
 
 	std::map<CRADsPair, voronota::common::ContactValue> map_of_contacts;
 	voronota::auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);

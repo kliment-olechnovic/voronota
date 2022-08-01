@@ -122,15 +122,20 @@ private:
 		{
 			if(map_of_residue_type_numbers.empty() && !voromqa_means_and_sds.empty())
 			{
-				for(std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters>::const_iterator it=voromqa_means_and_sds.begin();it!=voromqa_means_and_sds.end();++it)
+#ifdef _OPENMP
+				#pragma omp critical(GetProteinAtomTypeNumberByResidueName)
+#endif
 				{
-					map_of_residue_type_numbers[generalize_crad(it->first).without_atom()]=0;
-				}
-				int i=0;
-				for(std::map<common::ChainResidueAtomDescriptor, int>::iterator it=map_of_residue_type_numbers.begin();it!=map_of_residue_type_numbers.end();++it)
-				{
-					it->second=i;
-					i++;
+					for(std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters>::const_iterator it=voromqa_means_and_sds.begin();it!=voromqa_means_and_sds.end();++it)
+					{
+						map_of_residue_type_numbers[generalize_crad(it->first).without_atom()]=0;
+					}
+					int i=0;
+					for(std::map<common::ChainResidueAtomDescriptor, int>::iterator it=map_of_residue_type_numbers.begin();it!=map_of_residue_type_numbers.end();++it)
+					{
+						it->second=i;
+						i++;
+					}
 				}
 			}
 
@@ -144,11 +149,16 @@ private:
 		{
 			if(map_of_atom_type_numbers.empty() && !voromqa_means_and_sds.empty())
 			{
-				int i=0;
-				for(std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters>::const_iterator it=voromqa_means_and_sds.begin();it!=voromqa_means_and_sds.end();++it)
+#ifdef _OPENMP
+				#pragma omp critical(GetProteinAtomTypeNumberByAtomName)
+#endif
 				{
-					map_of_atom_type_numbers[generalize_crad(it->first)]=i;
-					i++;
+					int i=0;
+					for(std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters>::const_iterator it=voromqa_means_and_sds.begin();it!=voromqa_means_and_sds.end();++it)
+					{
+						map_of_atom_type_numbers[generalize_crad(it->first)]=i;
+						i++;
+					}
 				}
 			}
 

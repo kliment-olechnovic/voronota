@@ -992,7 +992,13 @@ private:
 				output << " TRANSLUCENT " << alpha;
 			}
 			write_color_to_stream(color, false, " [", ",", "]\n", output);
-			use_num++;
+
+#ifdef _OPENMP
+			#pragma omp critical(PrintJmolPolygonUseNum)
+#endif
+			{
+				use_num++;
+			}
 		}
 		vertices.clear();
 		triples.clear();

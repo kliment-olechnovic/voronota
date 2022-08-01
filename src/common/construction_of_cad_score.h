@@ -15,8 +15,9 @@ public:
 	typedef ChainResidueAtomDescriptor CRAD;
 	typedef ChainResidueAtomDescriptorsPair CRADsPair;
 
-	struct CADDescriptor
+	class CADDescriptor
 	{
+	public:
 		double target_area_sum;
 		double model_area_sum;
 		double raw_differences_sum;
@@ -32,10 +33,19 @@ public:
 		{
 		}
 
-		static bool& detailed_output_switch()
+		static bool detailed_output_switch()
 		{
-			static bool detailed_output=false;
-			return detailed_output;
+			return detailed_output_switch_mutable();
+		}
+
+		static void set_detailed_output_switch(const bool status)
+		{
+#ifdef _OPENMP
+			#pragma omp critical(CADDescriptorSetDetailedOutputSwitch)
+#endif
+			{
+				detailed_output_switch_mutable()=status;
+			}
 		}
 
 		void add(const double target_area, const double model_area)
@@ -70,6 +80,13 @@ public:
 		double score_F1() const
 		{
 			return ((confusion_TP>0.0) ? (confusion_TP/(0.5*(confusion_FP+confusion_FN)+confusion_TP)) : 0.0);
+		}
+
+	private:
+		static bool& detailed_output_switch_mutable()
+		{
+			static bool detailed_output=false;
+			return detailed_output;
 		}
 	};
 

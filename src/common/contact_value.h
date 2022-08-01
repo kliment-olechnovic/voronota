@@ -9,8 +9,9 @@ namespace voronota
 namespace common
 {
 
-struct ContactValue
+class ContactValue
 {
+public:
 	double area;
 	double dist;
 	bool accumulated;
@@ -48,18 +49,35 @@ struct ContactValue
 		}
 		accumulated=true;
 	}
-};
 
-inline bool& enabled_output_of_ContactValue_graphics()
-{
-	static bool enabled_output=true;
-	return enabled_output;
-}
+	static bool enabled_output_of_ContactValue_graphics()
+	{
+		return enabled_output_of_ContactValue_graphics_mutable();
+	}
+
+	static void set_enabled_output_of_ContactValue_graphics(const bool status)
+	{
+#ifdef _OPENMP
+		#pragma omp critical(ContactValueSetGraphicsOutputSwitch)
+#endif
+		{
+			enabled_output_of_ContactValue_graphics_mutable()=status;
+		}
+	}
+
+private:
+	static bool& enabled_output_of_ContactValue_graphics_mutable()
+	{
+		static bool enabled_output=true;
+		return enabled_output;
+	}
+
+};
 
 inline std::ostream& operator<<(std::ostream& output, const ContactValue& value)
 {
 	output << value.area << " " << value.dist << " " << value.props;
-	if(enabled_output_of_ContactValue_graphics() && !value.graphics.empty())
+	if(ContactValue::enabled_output_of_ContactValue_graphics() && !value.graphics.empty())
 	{
 		output << " \"";
 		output << value.graphics;

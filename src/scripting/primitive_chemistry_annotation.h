@@ -93,7 +93,7 @@ public:
 
 	static const std::string& get_knodle_atom_type_string(const Configuration& configuration, const int atom_type_number)
 	{
-		static std::string default_atom_type_string="";
+		static const std::string default_atom_type_string="";
 		return ((atom_type_number>=0 && atom_type_number<static_cast<int>(configuration.list_of_knodle_atom_types.size())) ? configuration.list_of_knodle_atom_types[atom_type_number] : default_atom_type_string);
 	}
 

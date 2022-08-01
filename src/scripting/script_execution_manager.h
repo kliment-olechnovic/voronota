@@ -879,7 +879,9 @@ private:
 						std::vector<GenericCommandRecord> array_of_command_records(n, GenericCommandRecord(script_command_record.command_input));
 
 						{
+#ifdef _OPENMP
 							#pragma omp parallel for
+#endif
 							for(int i=0;i<n;i++)
 							{
 								common_command_pointer->execute(array_of_command_records[i], *picked_data_managers[i]);

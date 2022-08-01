@@ -151,7 +151,7 @@ void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 	const std::string summing_exceptions=poh.argument<std::string>(pohw.describe_option("--summing-exceptions", "string", "file path to input inter-residue summing exceptions annotations"), "");
 	const bool summarize=poh.contains_option(pohw.describe_option("--summarize", "", "flag to output only summary of matched contacts"));
 	const bool summarize_by_first=poh.contains_option(pohw.describe_option("--summarize-by-first", "", "flag to output only summary of matched contacts by first identifier"));
-	voronota::common::enabled_output_of_ContactValue_graphics()=poh.contains_option(pohw.describe_option("--preserve-graphics", "", "flag to preserve graphics in output"));
+	voronota::common::ContactValue::set_enabled_output_of_ContactValue_graphics(poh.contains_option(pohw.describe_option("--preserve-graphics", "", "flag to preserve graphics in output")));
 
 	if(!pohw.assert_or_print_help(false))
 	{

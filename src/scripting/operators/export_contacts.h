@@ -63,7 +63,7 @@ public:
 		{
 			std::ostream& output=output_selector.stream();
 			assert_io_stream(file, output);
-			common::enabled_output_of_ContactValue_graphics()=!no_graphics;
+			common::ContactValue::set_enabled_output_of_ContactValue_graphics(!no_graphics);
 			auxiliaries::IOUtilities().write_set(data_manager.contacts(), output);
 		}
 

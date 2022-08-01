@@ -68,7 +68,7 @@ public:
 			assert_io_stream(file, output);
 			auxiliaries::IOUtilities().write_set(data_manager.atoms(), output);
 			output << "_end_atoms\n";
-			common::enabled_output_of_ContactValue_graphics()=!no_graphics;
+			common::ContactValue::set_enabled_output_of_ContactValue_graphics(!no_graphics);
 			auxiliaries::IOUtilities().write_set(data_manager.contacts(), output);
 			output << "_end_contacts\n";
 		}

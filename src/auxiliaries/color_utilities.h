@@ -301,7 +301,7 @@ public:
 
 	static ColorInteger color_from_gradient(const std::string& name, const double value)
 	{
-		static std::vector<ColorInteger> anchors;
+		std::vector<ColorInteger> anchors;
 
 		if(!set_gradient_anchors_from_name(name, anchors))
 		{

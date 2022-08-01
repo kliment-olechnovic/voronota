@@ -50,7 +50,12 @@ public:
 
 	static void set_writable(const bool status)
 	{
-		writable_mutable()=status;
+#ifdef _OPENMP
+		#pragma omp critical(VirtualFileStorageSetWritable)
+#endif
+		{
+			writable_mutable()=status;
+		}
 	}
 
 	static void assert_writable()
@@ -128,23 +133,33 @@ public:
 	static void clear()
 	{
 		assert_writable();
-		files_mutable().clear();
-		locks_mutable().clear();
+#ifdef _OPENMP
+		#pragma omp critical(VirtualFileStorageClear)
+#endif
+		{
+			files_mutable().clear();
+			locks_mutable().clear();
+		}
 	}
 
 	static void clear_not_locked()
 	{
 		assert_writable();
-		std::map<std::string, std::string>::iterator it=files_mutable().begin();
-		while(it!=files_mutable().end())
+#ifdef _OPENMP
+		#pragma omp critical(VirtualFileStorageClearNotLocked)
+#endif
 		{
-			if(file_locked(it->first))
+			std::map<std::string, std::string>::iterator it=files_mutable().begin();
+			while(it!=files_mutable().end())
 			{
-				++it;
-			}
-			else
-			{
-				files_mutable().erase(it++);
+				if(file_locked(it->first))
+				{
+					++it;
+				}
+				else
+				{
+					files_mutable().erase(it++);
+				}
 			}
 		}
 	}
@@ -153,7 +168,12 @@ public:
 	{
 		assert_writable();
 		assert_file_not_locked(filename);
-		files_mutable().erase(filename);
+#ifdef _OPENMP
+		#pragma omp critical(VirtualFileStorageDeleteFile)
+#endif
+		{
+			files_mutable().erase(filename);
+		}
 	}
 
 	static void set_file(const std::string& filename, const std::string& data)
@@ -161,7 +181,12 @@ public:
 		assert_writable();
 		assert_file_not_locked(filename);
 		assert_filename_is_valid(filename);
-		files_mutable()[filename]=data;
+#ifdef _OPENMP
+		#pragma omp critical(VirtualFileStorageSetFile)
+#endif
+		{
+			files_mutable()[filename]=data;
+		}
 	}
 
 	static void set_file(const std::string& filename, const std::string& data, const bool locked)
@@ -176,11 +201,19 @@ public:
 		if(locked)
 		{
 			assert_file_exists(filename);
-			locks_mutable().insert(filename);
 		}
-		else
+#ifdef _OPENMP
+		#pragma omp critical(VirtualFileStorageSetLock)
+#endif
 		{
-			locks_mutable().erase(filename);
+			if(locked)
+			{
+				locks_mutable().insert(filename);
+			}
+			else
+			{
+				locks_mutable().erase(filename);
+			}
 		}
 	}
 
@@ -204,15 +237,20 @@ public:
 	{
 		static long id=1000000;
 		std::string result;
-		while(result.empty())
+#ifdef _OPENMP
+		#pragma omp critical(VirtualFileStorageGetUnusedFilename)
+#endif
 		{
-			++id;
-			std::ostringstream output;
-			output << prefix() << "_file_" << id;
-			std::string candidate=output.str();
-			if(!file_exists(candidate))
+			while(result.empty())
 			{
-				result=candidate;
+				++id;
+				std::ostringstream output;
+				output << prefix() << "_file_" << id;
+				std::string candidate=output.str();
+				if(!file_exists(candidate))
+				{
+					result=candidate;
+				}
 			}
 		}
 		return result;

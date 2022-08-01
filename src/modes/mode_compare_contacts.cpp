@@ -28,7 +28,7 @@ void compare_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 	const std::string smoothed_scores_file=poh.argument<std::string>(pohw.describe_option("--smoothed-scores-file", "string", "file path to output smoothed residue scores"), "");
 	const bool ignore_residue_names=poh.contains_option(pohw.describe_option("--ignore-residue-names", "", "flag to consider just residue numbers and ignore residue names"));
 	const bool residue_level_only=poh.contains_option(pohw.describe_option("--residue-level-only", "", "flag to output only residue-level results"));
-	CADDescriptor::detailed_output_switch()=poh.contains_option(pohw.describe_option("--detailed-output", "", "flag to enable detailed output"));
+	CADDescriptor::set_detailed_output_switch(poh.contains_option(pohw.describe_option("--detailed-output", "", "flag to enable detailed output")));
 	const std::string chains_renaming_file=poh.argument<std::string>(pohw.describe_option("--chains-renaming-file", "string", "file path to input chains renaming"), "");
 	const bool remap_chains=poh.contains_option(pohw.describe_option("--remap-chains", "", "flag to calculate optimal chains remapping"));
 	const bool remap_chains_log=poh.contains_option(pohw.describe_option("--remap-chains-log", "", "flag output remapping progress to stderr"));

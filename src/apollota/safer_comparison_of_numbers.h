@@ -9,7 +9,7 @@ namespace apollota
 
 inline double default_comparison_epsilon()
 {
-	static double e=0.0000000001;
+	static const double e=0.0000000001;
 	return e;
 }
 

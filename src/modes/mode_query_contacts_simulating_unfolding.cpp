@@ -24,7 +24,7 @@ void query_contacts_simulating_unfolding(const voronota::auxiliaries::ProgramOpt
 		return;
 	}
 
-	voronota::common::enabled_output_of_ContactValue_graphics()=false;
+	voronota::common::ContactValue::set_enabled_output_of_ContactValue_graphics(false);
 
 	const std::map<CRADsPair, voronota::common::ContactValue> map_of_contacts=voronota::auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, voronota::common::ContactValue> >(std::cin);
 	if(map_of_contacts.empty())
