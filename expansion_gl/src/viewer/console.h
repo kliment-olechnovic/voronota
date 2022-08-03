@@ -1772,9 +1772,65 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(19,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						if(ImGui::Selectable("Zoom"))
 						{
-							result=std::string("zoom-by-objects -names '")+os.name+"'";
+							static std::map< std::string, std::vector<char> > renaming_buffers;
+							std::vector<char>& renaming_buffer=renaming_buffers[os.name];
+							if(renaming_buffer.empty())
+							{
+								renaming_buffer=std::vector<char>(os.name.begin(), os.name.end());
+								renaming_buffer.resize(os.name.size()+128, 0);
+							}
+
+							{
+								const std::string textbox_id=std::string("##rename_")+os.name;
+								ImGui::InputText(textbox_id.c_str(), renaming_buffer.data(), 128);
+							}
+
+							if(std::strcmp(renaming_buffer.data(), os.name.c_str())!=0)
+							{
+								if(renaming_buffer.data()[0]!=0)
+								{
+									const std::string newname(renaming_buffer.data());
+
+									{
+										const std::string button_id=std::string("rename##button_rename_ok_")+os.name;
+										if(ImGui::Button(button_id.c_str()))
+										{
+											if(!newname.empty() && newname!=os.name)
+											{
+												result=std::string("rename-object '")+os.name+"' '"+newname+"'";
+												renaming_buffers.erase(os.name);
+												ImGui::CloseCurrentPopup();
+											}
+										}
+									}
+
+									ImGui::SameLine();
+
+									{
+										const std::string button_id=std::string("duplicate##button_duplicate_ok_")+os.name;
+										if(ImGui::Button(button_id.c_str()))
+										{
+											if(!newname.empty() && newname!=os.name)
+											{
+												result=std::string("copy-object '")+os.name+"' '"+newname+"'";
+												renaming_buffers.erase(os.name);
+											}
+											ImGui::CloseCurrentPopup();
+										}
+									}
+
+									ImGui::SameLine();
+								}
+
+								{
+									const std::string button_id=std::string("restore##button_duplicate_ok_")+os.name;
+									if(ImGui::Button(button_id.c_str()))
+									{
+										renaming_buffers.erase(os.name);
+									}
+								}
+							}
 						}
 
 						ImGui::Separator();
@@ -1782,6 +1838,13 @@ private:
 						if(ImGui::Selectable("Copy name to clipboard"))
 						{
 							ImGui::SetClipboardText(os.name.c_str());
+						}
+
+						ImGui::Separator();
+
+						if(ImGui::Selectable("Zoom"))
+						{
+							result=std::string("zoom-by-objects -names '")+os.name+"'";
 						}
 
 						ImGui::Separator();
@@ -2350,53 +2413,6 @@ private:
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					ImGui::TextUnformatted(os.name.c_str());
 					ImGui::PopStyleColor();
-
-					{
-						const std::string submenu_id=std::string("Rename##submenu_rename_")+os.name;
-						if(ImGui::BeginPopupContextItem(submenu_id.c_str(), 1))
-						{
-							static std::map< std::string, std::vector<char> > renaming_buffers;
-							std::vector<char>& renaming_buffer=renaming_buffers[os.name];
-							if(renaming_buffer.empty())
-							{
-								renaming_buffer=std::vector<char>(os.name.begin(), os.name.end());
-								renaming_buffer.resize(os.name.size()+128, 0);
-							}
-							const std::string textbox_id=std::string("##rename_")+os.name;
-							if(ImGui::InputText(textbox_id.c_str(), renaming_buffer.data(), 128, ImGuiInputTextFlags_EnterReturnsTrue))
-							{
-								const std::string newname(renaming_buffer.data());
-								if(!newname.empty() && newname!=os.name)
-								{
-									result=std::string("rename-object '")+os.name+"' '"+newname+"'";
-									renaming_buffers.erase(os.name);
-								}
-								ImGui::CloseCurrentPopup();
-							}
-							{
-								const std::string button_id=std::string("OK##button_rename_ok_")+os.name;
-								if(ImGui::Button(button_id.c_str()))
-								{
-									const std::string newname(renaming_buffer.data());
-									if(!newname.empty() && newname!=os.name)
-									{
-										result=std::string("rename-object '")+os.name+"' '"+newname+"'";
-										renaming_buffers.erase(os.name);
-									}
-									ImGui::CloseCurrentPopup();
-								}
-							}
-							ImGui::SameLine();
-							{
-								const std::string button_id=std::string("Cancel##button_rename_cancel_")+os.name;
-								if(ImGui::Button(button_id.c_str()))
-								{
-									ImGui::CloseCurrentPopup();
-								}
-							}
-							ImGui::EndPopup();
-						}
-					}
 				}
 			}
 
