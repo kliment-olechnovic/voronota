@@ -114,7 +114,7 @@ voromqa-frustration -adj-atom-frustration-energy-mean afem \
 hide-atoms
 show-atoms -rep balls
 color-atoms 0x555555
-spectrum-atoms -adjunct afem -scheme bwr
+spectrum-atoms -adjunct afem -scheme bwr -min-val -0.5 -max-val 0.5
 
 ### Calculate VoroMQA hydrophobic belt
 restrict-atoms [-t! het]
