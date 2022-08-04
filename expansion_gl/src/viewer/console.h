@@ -1200,6 +1200,55 @@ private:
 							result="hide-objects -not-picked";
 						}
 
+						{
+							bool separated=false;
+
+							if(GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_NONE)
+							{
+								if(!separated)
+								{
+									ImGui::Separator();
+									separated=true;
+								}
+
+								if(ImGui::Selectable("Stop animation"))
+								{
+									result="animate-none\n";
+								}
+							}
+
+							if(objects_info.num_of_picked_objects()>1)
+							{
+								if(GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_NONE || (GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS && GUIConfiguration::instance().animation_step_miliseconds>12.0))
+								{
+									if(!separated)
+									{
+										ImGui::Separator();
+										separated=true;
+									}
+
+									if(ImGui::Selectable("Loop picked objects, faster"))
+									{
+										result="animate-loop-picked-objects -time-step 5.0\n";
+									}
+								}
+
+								if(GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_NONE || (GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS && GUIConfiguration::instance().animation_step_miliseconds<12.0))
+								{
+									if(!separated)
+									{
+										ImGui::Separator();
+										separated=true;
+									}
+
+									if(ImGui::Selectable("Loop picked objects, slower"))
+									{
+										result="animate-loop-picked-objects -time-step 25.0\n";
+									}
+								}
+							}
+						}
+
 						ImGui::EndPopup();
 					}
 				}
@@ -1228,6 +1277,10 @@ private:
 							if(ImGui::Selectable("Delete picked"))
 							{
 								result="delete-objects -picked";
+							}
+							if(ImGui::Selectable("Delete not picked"))
+							{
+								result="delete-objects -not-picked";
 							}
 
 							ImGui::PopStyleColor();
@@ -1262,6 +1315,11 @@ private:
 								if(ImGui::Selectable("Restrict atoms to selection"))
 								{
 									result=std::string("restrict-atoms -use (")+atoms_selection_string()+")";
+								}
+
+								if(ImGui::Selectable("Restrict atoms to not selection"))
+								{
+									result=std::string("restrict-atoms -use (not (")+atoms_selection_string()+"))";
 								}
 
 								ImGui::PopStyleColor();
@@ -1940,6 +1998,11 @@ private:
 								if(ImGui::Selectable("Restrict atoms to selection"))
 								{
 									result=std::string("restrict-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+
+								if(ImGui::Selectable("Restrict atoms to not selection"))
+								{
+									result=std::string("restrict-atoms -on-objects '")+os.name+"' -use (not ("+atoms_selection_string()+"))";
 								}
 
 								ImGui::PopStyleColor();
