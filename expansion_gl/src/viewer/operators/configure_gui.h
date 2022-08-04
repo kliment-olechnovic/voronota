@@ -27,7 +27,8 @@ public:
 		ACTION_ENABLE_WAITING_INDICATOR,
 		ACTION_SET_JSON_WRITING_LEVEL,
 		ACTION_DISABLE_SEQUENCE_VIEW,
-		ACTION_ENABLE_SEQUENCE_VIEW
+		ACTION_ENABLE_SEQUENCE_VIEW,
+		ACTION_SET_INITIAL_MAIN_REPRESENTATION
 	};
 
 	struct Result : public scripting::OperatorResultBase<Result>
@@ -37,13 +38,22 @@ public:
 		}
 	};
 
-	explicit ConfigureGUI(const Action action) : action_(action), value_of_json_writing_level_(2)
+	explicit ConfigureGUI(const Action action) :
+			action_(action),
+			value_of_json_writing_level_(2),
+			value_of_initial_main_represenation_(GUIConfiguration::INITIAL_REPRESENTATION_VARIANT_CARTOON)
 	{
 	}
 
 	ConfigureGUI& set_value_of_json_writing_level(const int value_of_json_writing_level)
 	{
 		value_of_json_writing_level_=value_of_json_writing_level;
+		return (*this);
+	}
+
+	ConfigureGUI& set_value_of_initial_main_represenation(const GUIConfiguration::InitialRepresentationVariant value_of_initial_main_represenation)
+	{
+		value_of_initial_main_represenation_=value_of_initial_main_represenation;
 		return (*this);
 	}
 
@@ -96,6 +106,10 @@ public:
 		{
 			GUIConfiguration::instance().enabled_sequence_view=true;
 		}
+		else if(action_==ACTION_SET_INITIAL_MAIN_REPRESENTATION)
+		{
+			GUIConfiguration::instance().initial_main_representation_variant=value_of_initial_main_represenation_;
+		}
 
 		if(need_refresh)
 		{
@@ -109,6 +123,7 @@ public:
 private:
 	Action action_;
 	int value_of_json_writing_level_;
+	GUIConfiguration::InitialRepresentationVariant value_of_initial_main_represenation_;
 };
 
 }

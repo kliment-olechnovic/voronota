@@ -35,21 +35,23 @@ int main(const int argc, const char** argv)
 		voronota::viewer::Application::instance().enqueue_script("clear");
 		voronota::viewer::Application::instance().enqueue_script("setup-defaults");
 
+		const bool faster_loading=(files.size()>5);
+		const bool show_cartoons_after_faster_loading=(faster_loading && files.size()<=30);
+		const bool with_music_background_for_loading=(musical && files.size()>10);
+
 		if(musical)
 		{
 			voronota::viewer::Application::instance().enqueue_script("music-background enable");
 		}
-
-		const bool with_music_background_for_loading=(musical && files.size()>10);
 
 		if(with_music_background_for_loading)
 		{
 			voronota::viewer::Application::instance().enqueue_script("music-background waiting");
 		}
 
-		if(files.size()>10)
+		if(faster_loading)
 		{
-			voronota::viewer::BehaviorConfiguration::instance().initial_atom_representation_to_show_after_loading="trace";
+			voronota::viewer::Application::instance().enqueue_script("set-initial-atom-representation-to-trace");
 		}
 
 		for(std::size_t i=0;i<files.size();i++)
@@ -60,7 +62,17 @@ int main(const int argc, const char** argv)
 		if(!files.empty())
 		{
 			voronota::viewer::Application::instance().enqueue_script("pick-objects");
-			voronota::viewer::Application::instance().enqueue_script("clear-last");
+		}
+
+		if(show_cartoons_after_faster_loading)
+		{
+			voronota::viewer::Application::instance().enqueue_script("show-atoms -rep cartoon");
+			voronota::viewer::Application::instance().enqueue_script("hide-atoms -rep trace");
+		}
+
+		if(faster_loading)
+		{
+			voronota::viewer::Application::instance().enqueue_script("set-initial-atom-representation-to-cartoon");
 		}
 
 		for(std::size_t i=0;i<scripts.size();i++)

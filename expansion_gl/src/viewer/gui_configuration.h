@@ -26,9 +26,15 @@ public:
 		ANIMATION_VARIANT_SPIN_RIGHT
 	};
 
+	enum InitialRepresentationVariant
+	{
+		INITIAL_REPRESENTATION_VARIANT_CARTOON,
+		INITIAL_REPRESENTATION_VARIANT_TRACE
+	};
 
 	GridVariant grid_variant;
 	AnimationVariant animation_variant;
+	InitialRepresentationVariant initial_main_representation_variant;
 	bool enabled_cursor_label;
 	bool enabled_waiting_indicator;
 	int json_writing_level;
@@ -71,6 +77,7 @@ private:
 	GUIConfiguration() :
 		grid_variant(GRID_VARIANT_BY_OBJECT),
 		animation_variant(ANIMATION_VARIANT_NONE),
+		initial_main_representation_variant(INITIAL_REPRESENTATION_VARIANT_CARTOON),
 		enabled_cursor_label(true),
 		enabled_waiting_indicator(true),
 		json_writing_level(1),

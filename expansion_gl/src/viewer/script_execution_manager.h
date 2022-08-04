@@ -5,7 +5,6 @@
 
 #include "congregations_of_drawers_for_data_managers.h"
 #include "console.h"
-#include "behavior_configuration.h"
 
 #include "operators/animate.h"
 #include "operators/background.h"
@@ -61,6 +60,8 @@ public:
 		set_command_for_extra_actions("configure-gui-json-write-level-6", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(6));
 		set_command_for_extra_actions("configure-gui-disable-sequence-view", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_DISABLE_SEQUENCE_VIEW));
 		set_command_for_extra_actions("configure-gui-enable-sequence-view", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_ENABLE_SEQUENCE_VIEW));
+		set_command_for_extra_actions("set-initial-atom-representation-to-cartoon", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_INITIAL_MAIN_REPRESENTATION).set_value_of_initial_main_represenation(GUIConfiguration::INITIAL_REPRESENTATION_VARIANT_CARTOON));
+		set_command_for_extra_actions("set-initial-atom-representation-to-trace", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_INITIAL_MAIN_REPRESENTATION).set_value_of_initial_main_represenation(GUIConfiguration::INITIAL_REPRESENTATION_VARIANT_TRACE));
 		set_command_for_extra_actions("clear", scripting::operators::Mock());
 		set_command_for_extra_actions("clear-last", scripting::operators::Mock());
 		set_command_for_extra_actions("history", scripting::operators::Mock());
@@ -527,11 +528,20 @@ private:
 				{
 					script_output << "hide-contacts\n";
 				}
-				script_output << "show-atoms [-t! het] -rep "+BehaviorConfiguration::instance().initial_atom_representation_to_show_after_loading+"\n";
+				script_output << "show-atoms [-t! het] -rep ";
+				if(GUIConfiguration::instance().initial_main_representation_variant==GUIConfiguration::INITIAL_REPRESENTATION_VARIANT_TRACE)
+				{
+					script_output << "trace";
+				}
+				else
+				{
+					script_output << "cartoon";
+				}
+				script_output << "\n";
 				script_output << "color-atoms [-t! het] -next-random-color\n";
 				if(available_tags_het)
 				{
-					script_output << "show-atoms [-t het] -rep "+BehaviorConfiguration::instance().initial_heteroatom_representation_to_show_after_loading+"\n";
+					script_output << "show-atoms [-t het] -rep sticks\n";
 					script_output << "color-atoms [-t het] -next-random-color\n";
 				}
 				if(available_adjuncts_cif_cell)
