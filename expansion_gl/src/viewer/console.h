@@ -1905,6 +1905,85 @@ private:
 							result=std::string("zoom-by-objects -names '")+os.name+"'";
 						}
 
+						if(object_states.size()>1)
+						{
+							ImGui::Separator();
+
+							if(ImGui::Selectable("Hide all others"))
+							{
+								result="";
+								for(std::size_t j=0;j<object_states.size();j++)
+								{
+									if(j!=i)
+									{
+										result+=std::string("hide-objects -names '")+object_states[j].name+"'\n";
+									}
+								}
+							}
+
+							if(i>0)
+							{
+								if(ImGui::Selectable("Hide others above"))
+								{
+									result="";
+									for(std::size_t j=0;j<i;j++)
+									{
+										result+=std::string("hide-objects -names '")+object_states[j].name+"'\n";
+									}
+								}
+							}
+
+							if((i+1)<object_states.size())
+							{
+								if(ImGui::Selectable("Hide others below"))
+								{
+									result="";
+									for(std::size_t j=(i+1);j<object_states.size();j++)
+									{
+										result+=std::string("hide-objects -names '")+object_states[j].name+"'\n";
+									}
+								}
+							}
+
+							ImGui::Separator();
+
+							if(ImGui::Selectable("Unpick all others"))
+							{
+								result="";
+								for(std::size_t j=0;j<object_states.size();j++)
+								{
+									if(j!=i)
+									{
+										result+=std::string("unpick-objects -names '")+object_states[j].name+"'\n";
+									}
+								}
+							}
+
+							if(i>0)
+							{
+								if(ImGui::Selectable("Unpick others above"))
+								{
+									result="";
+									for(std::size_t j=0;j<i;j++)
+									{
+										result+=std::string("unpick-objects -names '")+object_states[j].name+"'\n";
+									}
+								}
+							}
+
+							if((i+1)<object_states.size())
+							{
+								if(ImGui::Selectable("Unpick others below"))
+								{
+									result="";
+									for(std::size_t j=(i+1);j<object_states.size();j++)
+									{
+										result+=std::string("unpick-objects -names '")+object_states[j].name+"'\n";
+									}
+								}
+							}
+						}
+
 						ImGui::Separator();
 
 						{
