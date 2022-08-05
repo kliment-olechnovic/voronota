@@ -261,6 +261,83 @@ public:
 		return (static_cast<double>(bundle.chains.size()-number_of_repeats)/static_cast<double>(bundle.chains.size()));
 	}
 
+	static std::vector< std::vector<std::size_t> > find_residue_ids_of_motif(const BundleOfPrimaryStructure& bundle, const std::string& motif)
+	{
+		std::vector< std::vector<std::size_t> > result;
+
+		if(motif.empty())
+		{
+			return result;
+		}
+
+		std::vector<std::string> motif_sequence(motif.size());
+		for(std::size_t i=0;i<motif.size();i++)
+		{
+			motif_sequence[i]=motif.substr(i, 1);
+		}
+
+		for(std::size_t i=0;i<bundle.chains.size();i++)
+		{
+			const std::vector<std::size_t>& residue_ids=bundle.chains[i].residue_ids;
+			std::size_t j=0;
+			while((j+motif_sequence.size())<=residue_ids.size())
+			{
+				bool match=true;
+				for(std::size_t l=0;match && l<motif_sequence.size();l++)
+				{
+					match=match && (bundle.residues[residue_ids[j+l]].short_name==motif_sequence[l] || motif_sequence[l]=="." || motif_sequence[l]=="?");
+				}
+				if(match)
+				{
+					result.push_back(std::vector<std::size_t>(motif_sequence.size(), 0));
+					for(std::size_t l=0;l<motif_sequence.size();l++)
+					{
+						result.back()[l]=residue_ids[j+l];
+					}
+					j+=motif_sequence.size();
+				}
+				else
+				{
+					j++;
+				}
+			}
+		}
+
+		return result;
+	}
+
+	static bool collect_atom_ids_from_residue_ids(const BundleOfPrimaryStructure& bundle, const std::vector<std::size_t>& residue_ids, std::set<std::size_t>& atom_ids)
+	{
+		bool inserted=false;
+		for(std::size_t j=0;j<residue_ids.size();j++)
+		{
+			if(residue_ids[j]<bundle.residues.size())
+			{
+				const std::vector<std::size_t>& residue_atom_ids=bundle.residues[residue_ids[j]].atom_ids;
+				atom_ids.insert(residue_atom_ids.begin(), residue_atom_ids.end());
+				inserted=true;
+			}
+		}
+		return inserted;
+	}
+
+	static std::set<std::size_t> collect_atom_ids_from_residue_ids(const BundleOfPrimaryStructure& bundle, const std::vector<std::size_t>& residue_ids)
+	{
+		std::set<std::size_t> atom_ids;
+		collect_atom_ids_from_residue_ids(bundle, residue_ids, atom_ids);
+		return atom_ids;
+	}
+
+	static std::set<std::size_t> collect_atom_ids_from_residue_ids(const BundleOfPrimaryStructure& bundle, const std::vector< std::vector<std::size_t> >& residue_ids)
+	{
+		std::set<std::size_t> atom_ids;
+		for(std::size_t i=0;i<residue_ids.size();i++)
+		{
+			collect_atom_ids_from_residue_ids(bundle, residue_ids[i], atom_ids);
+		}
+		return atom_ids;
+	}
+
 private:
 	static bool check_for_polymeric_bond_between_residues(const std::vector<Atom>& atoms, const Residue& a, const Residue& b)
 	{

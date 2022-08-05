@@ -830,6 +830,7 @@ private:
 		{
 			CongregationOfDataManagers::ObjectQuery query;
 			query.picked=true;
+			if(script_command_record.command_input.is_option_with_values("on-objects"))
 			{
 				const std::vector<std::string> on_objects=script_command_record.command_input.get_value_vector_or_default<std::string>("on-objects", std::vector<std::string>());
 				if(!on_objects.empty())

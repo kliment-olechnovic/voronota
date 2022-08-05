@@ -64,6 +64,40 @@ public:
 			full_chains(full_chains)
 		{
 		}
+
+		bool restrict_from_ids(const std::set<std::size_t>& other_ids)
+		{
+			if(other_ids.empty())
+			{
+				return false;
+			}
+
+			if(from_ids.empty())
+			{
+				from_ids=other_ids;
+				return true;
+			}
+
+			std::set<std::size_t> new_ids;
+
+			const std::set<std::size_t>& smaller_set=(other_ids.size()>from_ids.size() ? from_ids : other_ids);
+			const std::set<std::size_t>& larger_set=(other_ids.size()>from_ids.size() ? other_ids : from_ids);
+			for(std::set<std::size_t>::const_iterator it=smaller_set.begin();it!=smaller_set.end();++it)
+			{
+				if(larger_set.count(*it)>0)
+				{
+					new_ids.insert(*it);
+				}
+			}
+
+			if(!new_ids.empty())
+			{
+				from_ids.swap(new_ids);
+				return true;
+			}
+
+			return false;
+		}
 	};
 
 	SelectionManager() :

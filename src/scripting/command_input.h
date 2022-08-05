@@ -144,6 +144,12 @@ public:
 		return (map_of_values_.count(name)>0);
 	}
 
+	bool is_option_with_values(const std::string& name) const
+	{
+		MapOfValues::const_iterator it=map_of_values_.find(name);
+		return (it!=map_of_values_.end() && !it->second.empty());
+	}
+
 	bool is_unnamed_value_used(const std::size_t id) const
 	{
 		return (set_of_requested_ids_of_unnamed_values_.count(id)>0);
