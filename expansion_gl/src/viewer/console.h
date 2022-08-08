@@ -1909,78 +1909,86 @@ private:
 						{
 							ImGui::Separator();
 
-							if(ImGui::Selectable("Hide all others"))
+							if(ImGui::BeginMenu("Hide others"))
 							{
-								result="";
-								for(std::size_t j=0;j<object_states.size();j++)
-								{
-									if(j!=i)
-									{
-										result+=std::string("hide-objects -names '")+object_states[j].name+"'\n";
-									}
-								}
-							}
-
-							if(i>0)
-							{
-								if(ImGui::Selectable("Hide others above"))
+								if(ImGui::MenuItem("all"))
 								{
 									result="";
-									for(std::size_t j=0;j<i;j++)
+									for(std::size_t j=0;j<object_states.size();j++)
 									{
-										result+=std::string("hide-objects -names '")+object_states[j].name+"'\n";
+										if(j!=i)
+										{
+											result+=std::string("hide-objects -names '")+object_states[j].name+"'\n";
+										}
 									}
 								}
+								
+								if(i>0)
+								{
+									if(ImGui::MenuItem("above"))
+									{
+										result="";
+										for(std::size_t j=0;j<i;j++)
+										{
+											result+=std::string("hide-objects -names '")+object_states[j].name+"'\n";
+										}
+									}
+								}
+								
+								if((i+1)<object_states.size())
+								{
+									if(ImGui::MenuItem("below"))
+									{
+										result="";
+										for(std::size_t j=(i+1);j<object_states.size();j++)
+										{
+											result+=std::string("hide-objects -names '")+object_states[j].name+"'\n";
+										}
+									}
+								}
+								
+								ImGui::EndMenu();
 							}
 
-							if((i+1)<object_states.size())
+							if(ImGui::BeginMenu("Unpick others"))
 							{
-								if(ImGui::Selectable("Hide others below"))
+								if(ImGui::MenuItem("all"))
 								{
 									result="";
-									for(std::size_t j=(i+1);j<object_states.size();j++)
+									for(std::size_t j=0;j<object_states.size();j++)
 									{
-										result+=std::string("hide-objects -names '")+object_states[j].name+"'\n";
+										if(j!=i)
+										{
+											result+=std::string("unpick-objects -names '")+object_states[j].name+"'\n";
+										}
 									}
 								}
-							}
 
-							ImGui::Separator();
-
-							if(ImGui::Selectable("Unpick all others"))
-							{
-								result="";
-								for(std::size_t j=0;j<object_states.size();j++)
+								if(i>0)
 								{
-									if(j!=i)
+									if(ImGui::MenuItem("above"))
 									{
-										result+=std::string("unpick-objects -names '")+object_states[j].name+"'\n";
+										result="";
+										for(std::size_t j=0;j<i;j++)
+										{
+											result+=std::string("unpick-objects -names '")+object_states[j].name+"'\n";
+										}
 									}
 								}
-							}
 
-							if(i>0)
-							{
-								if(ImGui::Selectable("Unpick others above"))
+								if((i+1)<object_states.size())
 								{
-									result="";
-									for(std::size_t j=0;j<i;j++)
+									if(ImGui::MenuItem("below"))
 									{
-										result+=std::string("unpick-objects -names '")+object_states[j].name+"'\n";
+										result="";
+										for(std::size_t j=(i+1);j<object_states.size();j++)
+										{
+											result+=std::string("unpick-objects -names '")+object_states[j].name+"'\n";
+										}
 									}
 								}
-							}
 
-							if((i+1)<object_states.size())
-							{
-								if(ImGui::Selectable("Unpick others below"))
-								{
-									result="";
-									for(std::size_t j=(i+1);j<object_states.size();j++)
-									{
-										result+=std::string("unpick-objects -names '")+object_states[j].name+"'\n";
-									}
-								}
+								ImGui::EndMenu();
 							}
 						}
 
