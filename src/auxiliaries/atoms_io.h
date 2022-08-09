@@ -170,7 +170,7 @@ public:
 			}
 			insert_string_to_columned_line(atom_record.name, (atom_record.name.size()>3 ? 13 : 14), 16, false, line);
 			insert_string_to_columned_line(atom_record.altLoc, 17, 17, false, line);
-			insert_string_to_columned_line(atom_record.resName, 18, 20, false, line);
+			insert_string_to_columned_line(atom_record.resName, 18, 20, true, line);
 			insert_string_to_columned_line(atom_record.chainID.substr(0, 1), 22, 22, false, line);
 			if(atom_record.resSeq_valid)
 			{
