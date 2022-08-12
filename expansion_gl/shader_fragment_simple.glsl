@@ -1,5 +1,5 @@
 #version 100
-precision mediump float;
+precision highp float;
 uniform int selection_mode_enabled;
 uniform int fog_enabled;
 varying vec3 fragment_position;

@@ -568,7 +568,7 @@ private:
 				data[i*4+0]=static_cast<float>(data_manager_.atoms()[i].value.x);
 				data[i*4+1]=static_cast<float>(data_manager_.atoms()[i].value.y);
 				data[i*4+2]=static_cast<float>(data_manager_.atoms()[i].value.z);
-				data[i*4+3]=static_cast<float>(data_manager_.atoms()[i].value.r);
+				data[i*4+3]=static_cast<float>(data_manager_.atoms()[i].value.r*0.15);
 			}
 			if(dc_atoms_points_.controller_ptr->init(data, data))
 			{

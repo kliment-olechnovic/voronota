@@ -1,4 +1,5 @@
 #version 100
+precision highp float;
 uniform mat4 projection_matrix;
 uniform mat4 viewtransform_matrix;
 uniform mat4 modeltransform_matrix;

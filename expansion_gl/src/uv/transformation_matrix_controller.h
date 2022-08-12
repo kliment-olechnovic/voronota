@@ -53,18 +53,19 @@ public:
 	static TransformationMatrixController create_viewtransform_look_at(const double zoom_value)
 	{
 		TransformationMatrixController tmc;
-		float dist=static_cast<float>(2.0/zoom_value);
-		tmc.matrix_=glm::lookAt(glm::vec3(0.0f, 0.0f, dist), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		tmc.add_scaling(zoom_value);
+		tmc.matrix_=glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f))*tmc.matrix_;
 		return tmc;
 	}
 
 	static TransformationMatrixController create_viewtransform_look_at_stereo(const double zoom_value, const float stereo_angle, const float stereo_offset, const int index)
 	{
 		TransformationMatrixController tmc;
-		float dist=static_cast<float>(2.0/zoom_value);
-		float camera_x=dist*std::tan((index==0 ? -stereo_angle : stereo_angle)*0.5);
-		float origin_x=dist*stereo_offset;
-		tmc.matrix_=glm::lookAt(glm::vec3(camera_x, 0.0f, dist), glm::vec3(origin_x, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		tmc.add_scaling(zoom_value);
+		const float dist=3.0f;
+		const float camera_x=dist*std::tan((index==0 ? -stereo_angle : stereo_angle)*0.5);
+		const float origin_x=dist*stereo_offset;
+		tmc.matrix_=glm::lookAt(glm::vec3(camera_x, 0.0f, dist), glm::vec3(origin_x, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f))*tmc.matrix_;
 		return tmc;
 	}
 

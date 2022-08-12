@@ -1,24 +1,44 @@
 #version 100
-precision mediump float;
+#extension GL_EXT_frag_depth : enable
+
+precision highp float;
+
 uniform int selection_mode_enabled;
 uniform int fog_enabled;
-varying vec3 fragment_position;
-varying vec2 fragment_center_in_screen;
-varying float fragment_radius_in_screen;
+uniform vec4 viewport;
+
+varying mat4 VPMT_inverse;
+varying mat4 VP_inverse;
+varying vec3 centernormclip;
+
 varying vec3 fragment_color_for_selection;
 varying vec3 fragment_color_for_display;
 varying vec3 fragment_adjunct;
+
 void main()
 {
-    float dist_in_screen=distance(fragment_center_in_screen, gl_FragCoord.xy);
-    if(dist_in_screen>fragment_radius_in_screen)
+    vec4 c3 = VPMT_inverse[2];
+    vec4 xpPrime = VPMT_inverse*vec4(gl_FragCoord.x, gl_FragCoord.y, 0.0, 1.0);
+
+    float c3TDc3 = dot(c3.xyz, c3.xyz)-c3.w*c3.w;
+    float xpPrimeTDc3 = dot(xpPrime.xyz, c3.xyz)-xpPrime.w*c3.w;
+    float xpPrimeTDxpPrime = dot(xpPrime.xyz, xpPrime.xyz)-xpPrime.w*xpPrime.w;
+
+    float square = xpPrimeTDc3*xpPrimeTDc3 - c3TDc3*xpPrimeTDxpPrime;
+    if (square<0.0)
     {
         discard;
     }
+    
+    float z = ((-xpPrimeTDc3-sqrt(square))/c3TDc3);
+    gl_FragDepthEXT=z;
+
+    vec4 pointclip = VP_inverse*vec4(gl_FragCoord.x, gl_FragCoord.y, z, 1);
+    vec3 pointnormclip = vec3(pointclip)/pointclip.w;
+    
     if(selection_mode_enabled==0)
     {
-        float offset=dist_in_screen/fragment_radius_in_screen;
-        vec3 fragment_normal=normalize(vec3((gl_FragCoord.xy-fragment_center_in_screen)/fragment_radius_in_screen, sqrt(1.0-offset*offset)));
+    	vec3 fragment_normal=normalize(pointnormclip-centernormclip);
         vec3 final_color=fragment_color_for_display;
         if(fragment_adjunct[1]<0.9)
         {
@@ -29,11 +49,6 @@ void main()
             float diffuse_value=abs(dot(normalize(fragment_normal), normalize(light_direction)));
             vec3 diffuse=diffuse_value*light_color;
             final_color=(ambient+diffuse)*fragment_color_for_display;
-        }
-        if(fog_enabled==1)
-        {
-            float fog_density=1.0/(1.0+exp(0.1*(fragment_position.z+0.0)));
-            final_color=mix(final_color, vec3(1.0, 1.0, 1.0), fog_density);
         }
         if((fragment_adjunct[0]>0.5) && (mod(floor(gl_FragCoord.x), 2.0)<0.5 || mod(floor(gl_FragCoord.y), 2.0)<0.5))
         {
@@ -50,3 +65,4 @@ void main()
         gl_FragColor=vec4(fragment_color_for_selection, 1.0);
     }
 }
+
