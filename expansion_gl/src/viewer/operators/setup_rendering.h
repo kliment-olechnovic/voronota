@@ -44,6 +44,7 @@ public:
 		rendering_parameters.trace_sphere_quality=input.get_value_or_default<unsigned int>("trace-sphere-quality", rendering_parameters.trace_sphere_quality);
 		rendering_parameters.trace_cylinder_quality=input.get_value_or_default<unsigned int>("trace-cylinder-quality", rendering_parameters.trace_cylinder_quality);
 		rendering_parameters.cartoon_style=input.get_value_or_default<int>("cartoon-style", rendering_parameters.cartoon_style);
+		rendering_parameters.use_impostoring=input.get_value_or_default<int>("use-impostoring", rendering_parameters.use_impostoring);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -55,6 +56,7 @@ public:
 		doc.set_option_decription(CDOD("trace-sphere-quality", CDOD::DATATYPE_INT, "trace sphere quality", ""));
 		doc.set_option_decription(CDOD("trace-cylinder-quality", CDOD::DATATYPE_INT, "trace cylinder quality", ""));
 		doc.set_option_decription(CDOD("cartoon-style", CDOD::DATATYPE_INT, "cartoon style identifier", ""));
+		doc.set_option_decription(CDOD("use-impostoring", CDOD::DATATYPE_INT, "impostoring mode", ""));
 	}
 
 	Result run(void*) const
@@ -87,6 +89,11 @@ public:
 		if(rendering_parameters.cartoon_style<0 || rendering_parameters.cartoon_style>2)
 		{
 			throw std::runtime_error(std::string("Invalid cartoon style, must be in {0, 1, 2}."));
+		}
+
+		if(rendering_parameters.use_impostoring<0 || rendering_parameters.use_impostoring>1)
+		{
+			throw std::runtime_error(std::string("Invalid impostoring mode, must be in {0, 1}."));
 		}
 
 		DrawerForDataManager::RenderingParameters::default_rendering_parameters()=rendering_parameters;

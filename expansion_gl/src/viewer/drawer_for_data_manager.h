@@ -106,14 +106,16 @@ public:
 		unsigned int trace_sphere_quality;
 		unsigned int trace_cylinder_quality;
 		int cartoon_style;
+		int use_impostoring;
 
 		RenderingParameters() :
-			ball_sphere_quality(3),
-			stick_sphere_quality(3),
-			stick_cylinder_quality(36),
-			trace_sphere_quality(3),
-			trace_cylinder_quality(36),
-			cartoon_style(0)
+			ball_sphere_quality(2),
+			stick_sphere_quality(2),
+			stick_cylinder_quality(18),
+			trace_sphere_quality(2),
+			trace_cylinder_quality(18),
+			cartoon_style(0),
+			use_impostoring(1)
 		{
 		}
 
@@ -127,13 +129,17 @@ public:
 	explicit DrawerForDataManager(scripting::DataManager& data_manager) :
 		data_manager_(data_manager),
 		rendering_parameters_(RenderingParameters::default_rendering_parameters()),
-		dc_atoms_balls_spheres_(0),
-		dc_atoms_sticks_spheres_(1),
+		dc_atoms_balls_spheres_inst_(0),
+		dc_atoms_balls_spheres_impo_(0),
+		dc_atoms_sticks_spheres_inst_(1),
+		dc_atoms_sticks_spheres_impo_(1),
 		dc_atoms_sticks_cylinders_(1),
-		dc_atoms_trace_spheres_(2),
+		dc_atoms_trace_spheres_inst_(2),
+		dc_atoms_trace_spheres_impo_(2),
 		dc_atoms_trace_cylinders_(2),
+		dc_atoms_points_inst_(4),
+		dc_atoms_points_impo_(4),
 		dc_atoms_cartoon_(3),
-		dc_atoms_points_(4),
 		dc_contacts_faces_(0),
 		dc_contacts_sasmesh_(1),
 		dc_contacts_edges_(2),
@@ -200,24 +206,40 @@ public:
 		{
 			if(drawing_request.atoms_balls)
 			{
-				dc_atoms_balls_spheres_.draw();
+				dc_atoms_balls_spheres_inst_.draw();
 			}
 			if(drawing_request.atoms_sticks)
 			{
-				dc_atoms_sticks_spheres_.draw();
+				dc_atoms_sticks_spheres_inst_.draw();
 				dc_atoms_sticks_cylinders_.draw();
 			}
 			if(drawing_request.atoms_trace)
 			{
 				dc_atoms_trace_cylinders_.draw();
-				dc_atoms_trace_spheres_.draw();
+				dc_atoms_trace_spheres_inst_.draw();
+			}
+			if(drawing_request.atoms_points)
+			{
+				dc_atoms_points_inst_.draw();
 			}
 		}
 		else if(shading_mode==uv::ShadingMode::with_impostoring)
 		{
+			if(drawing_request.atoms_balls)
+			{
+				dc_atoms_balls_spheres_impo_.draw();
+			}
+			if(drawing_request.atoms_sticks)
+			{
+				dc_atoms_sticks_spheres_impo_.draw();
+			}
+			if(drawing_request.atoms_trace)
+			{
+				dc_atoms_trace_spheres_impo_.draw();
+			}
 			if(drawing_request.atoms_points)
 			{
-				dc_atoms_points_.draw();
+				dc_atoms_points_impo_.draw();
 			}
 		}
 	}
@@ -384,58 +406,119 @@ private:
 
 	void reset_drawing_atoms_balls()
 	{
-		dc_atoms_balls_spheres_.unset();
+		dc_atoms_balls_spheres_inst_.unset();
+		dc_atoms_balls_spheres_impo_.unset();
 		if(!data_manager_.atoms().empty())
 		{
 			const std::size_t number_of_atoms=data_manager_.atoms().size();
-			dc_atoms_balls_spheres_.reset(number_of_atoms);
-			if(dc_atoms_balls_spheres_.controller_ptr->init_as_sphere(rendering_parameters_.ball_sphere_quality))
+			if(rendering_parameters_.use_impostoring==0)
 			{
-				std::vector<bool> drawing_statuses(number_of_atoms, false);
+				dc_atoms_balls_spheres_inst_.reset(number_of_atoms);
+				if(dc_atoms_balls_spheres_inst_.controller_ptr->init_as_sphere(rendering_parameters_.ball_sphere_quality))
+				{
+					std::vector<bool> drawing_statuses(number_of_atoms, false);
+					for(std::size_t i=0;i<number_of_atoms;i++)
+					{
+						const float x=static_cast<float>(data_manager_.atoms()[i].value.x);
+						const float y=static_cast<float>(data_manager_.atoms()[i].value.y);
+						const float z=static_cast<float>(data_manager_.atoms()[i].value.z);
+						const float r=static_cast<float>(data_manager_.atoms()[i].value.r);
+						const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+						dc_atoms_balls_spheres_inst_.drawing_ids[i]=drawing_id;
+						dc_atoms_balls_spheres_inst_.map_of_drawing_ids[drawing_id]=i;
+						dc_atoms_balls_spheres_inst_.controller_ptr->object_register(drawing_id);
+						dc_atoms_balls_spheres_inst_.controller_ptr->object_set_transformation_as_for_sphere(drawing_id, r, glm::vec3(x, y, z));
+						drawing_statuses[i]=true;
+					}
+					data_manager_.set_atoms_representation_implemented(dc_atoms_balls_spheres_inst_.representation_id, drawing_statuses);
+				}
+			}
+			else
+			{
+				dc_atoms_balls_spheres_impo_.reset(number_of_atoms);
+				std::vector<float> data(number_of_atoms*4, 0.0f);
 				for(std::size_t i=0;i<number_of_atoms;i++)
 				{
-					const float x=static_cast<float>(data_manager_.atoms()[i].value.x);
-					const float y=static_cast<float>(data_manager_.atoms()[i].value.y);
-					const float z=static_cast<float>(data_manager_.atoms()[i].value.z);
-					const float r=static_cast<float>(data_manager_.atoms()[i].value.r);
-					const uv::DrawingID drawing_id=uv::get_free_drawing_id();
-					dc_atoms_balls_spheres_.drawing_ids[i]=drawing_id;
-					dc_atoms_balls_spheres_.map_of_drawing_ids[drawing_id]=i;
-					dc_atoms_balls_spheres_.controller_ptr->object_register(drawing_id);
-					dc_atoms_balls_spheres_.controller_ptr->object_set_transformation_as_for_sphere(drawing_id, r, glm::vec3(x, y, z));
-					drawing_statuses[i]=true;
+					data[i*4+0]=static_cast<float>(data_manager_.atoms()[i].value.x);
+					data[i*4+1]=static_cast<float>(data_manager_.atoms()[i].value.y);
+					data[i*4+2]=static_cast<float>(data_manager_.atoms()[i].value.z);
+					data[i*4+3]=static_cast<float>(data_manager_.atoms()[i].value.r);
 				}
-				data_manager_.set_atoms_representation_implemented(dc_atoms_balls_spheres_.representation_id, drawing_statuses);
+				if(dc_atoms_balls_spheres_impo_.controller_ptr->init(data, data))
+				{
+					std::vector<bool> drawing_statuses(number_of_atoms, false);
+					for(std::size_t i=0;i<number_of_atoms;i++)
+					{
+						const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+						dc_atoms_balls_spheres_impo_.drawing_ids[i]=drawing_id;
+						dc_atoms_balls_spheres_impo_.map_of_drawing_ids[drawing_id]=i;
+						dc_atoms_balls_spheres_impo_.controller_ptr->object_register(drawing_id, i);
+						drawing_statuses[i]=true;
+					}
+					data_manager_.set_atoms_representation_implemented(dc_atoms_balls_spheres_impo_.representation_id, drawing_statuses);
+				}
 			}
 		}
 	}
 
 	void reset_drawing_atoms_sticks()
 	{
-		dc_atoms_sticks_spheres_.unset();
+		dc_atoms_sticks_spheres_inst_.unset();
+		dc_atoms_sticks_spheres_impo_.unset();
 		dc_atoms_sticks_cylinders_.unset();
 		if(!data_manager_.atoms().empty() && !data_manager_.bonding_links_info().bonds_links.empty())
 		{
 			const std::size_t number_of_atoms=data_manager_.atoms().size();
-			const std::size_t number_of_links=data_manager_.bonding_links_info().bonds_links.size();
-			dc_atoms_sticks_spheres_.reset(number_of_atoms);
-			dc_atoms_sticks_cylinders_.reset(number_of_links);
-			if(dc_atoms_sticks_spheres_.controller_ptr->init_as_sphere(rendering_parameters_.stick_sphere_quality)
-					&& dc_atoms_sticks_cylinders_.controller_ptr->init_as_cylinder(rendering_parameters_.stick_cylinder_quality))
+			if(rendering_parameters_.use_impostoring==0)
 			{
-				std::vector<bool> drawing_statuses(number_of_atoms, false);
+				dc_atoms_sticks_spheres_inst_.reset(number_of_atoms);
+				if(dc_atoms_sticks_spheres_inst_.controller_ptr->init_as_sphere(rendering_parameters_.stick_sphere_quality))
+				{
+					std::vector<bool> drawing_statuses(number_of_atoms, false);
+					for(std::size_t i=0;i<number_of_atoms;i++)
+					{
+						const float x=static_cast<float>(data_manager_.atoms()[i].value.x);
+						const float y=static_cast<float>(data_manager_.atoms()[i].value.y);
+						const float z=static_cast<float>(data_manager_.atoms()[i].value.z);
+						const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+						dc_atoms_sticks_spheres_inst_.drawing_ids[i]=drawing_id;
+						dc_atoms_sticks_spheres_inst_.map_of_drawing_ids[drawing_id]=i;
+						dc_atoms_sticks_spheres_inst_.controller_ptr->object_register(drawing_id);
+						dc_atoms_sticks_spheres_inst_.controller_ptr->object_set_transformation_as_for_sphere(drawing_id, 0.3, glm::vec3(x, y, z));
+						drawing_statuses[i]=true;
+					}
+					data_manager_.set_atoms_representation_implemented(dc_atoms_sticks_spheres_inst_.representation_id, drawing_statuses);
+				}
+			}
+			else
+			{
+				dc_atoms_sticks_spheres_impo_.reset(number_of_atoms);
+				std::vector<float> data(number_of_atoms*4, 0.0f);
 				for(std::size_t i=0;i<number_of_atoms;i++)
 				{
-					const float x=static_cast<float>(data_manager_.atoms()[i].value.x);
-					const float y=static_cast<float>(data_manager_.atoms()[i].value.y);
-					const float z=static_cast<float>(data_manager_.atoms()[i].value.z);
-					const uv::DrawingID drawing_id=uv::get_free_drawing_id();
-					dc_atoms_sticks_spheres_.drawing_ids[i]=drawing_id;
-					dc_atoms_sticks_spheres_.map_of_drawing_ids[drawing_id]=i;
-					dc_atoms_sticks_spheres_.controller_ptr->object_register(drawing_id);
-					dc_atoms_sticks_spheres_.controller_ptr->object_set_transformation_as_for_sphere(drawing_id, 0.3, glm::vec3(x, y, z));
-					drawing_statuses[i]=true;
+					data[i*4+0]=static_cast<float>(data_manager_.atoms()[i].value.x);
+					data[i*4+1]=static_cast<float>(data_manager_.atoms()[i].value.y);
+					data[i*4+2]=static_cast<float>(data_manager_.atoms()[i].value.z);
+					data[i*4+3]=static_cast<float>(0.3f);
 				}
+				if(dc_atoms_sticks_spheres_impo_.controller_ptr->init(data, data))
+				{
+					std::vector<bool> drawing_statuses(number_of_atoms, false);
+					for(std::size_t i=0;i<number_of_atoms;i++)
+					{
+						const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+						dc_atoms_sticks_spheres_impo_.drawing_ids[i]=drawing_id;
+						dc_atoms_sticks_spheres_impo_.map_of_drawing_ids[drawing_id]=i;
+						dc_atoms_sticks_spheres_impo_.controller_ptr->object_register(drawing_id, i);
+						drawing_statuses[i]=true;
+					}
+					data_manager_.set_atoms_representation_implemented(dc_atoms_sticks_spheres_impo_.representation_id, drawing_statuses);
+				}
+			}
+			const std::size_t number_of_links=data_manager_.bonding_links_info().bonds_links.size();
+			dc_atoms_sticks_cylinders_.reset(number_of_links);
+			if(dc_atoms_sticks_cylinders_.controller_ptr->init_as_cylinder(rendering_parameters_.stick_cylinder_quality))
+			{
 				for(std::size_t i=0;i<number_of_links;i++)
 				{
 					const common::ConstructionOfBondingLinks::DirectedLink& dl=data_manager_.bonding_links_info().bonds_links[i];
@@ -451,47 +534,81 @@ private:
 					dc_atoms_sticks_cylinders_.controller_ptr->object_register(drawing_id);
 					if(dl.a<dl.b)
 					{
-						dc_atoms_sticks_cylinders_.controller_ptr->object_set_transformation_as_for_cylinder(drawing_id, 0.3, glm::vec3(x1, y1, z1), glm::vec3((x1+x2)*0.5f, (y1+y2)*0.5f, (z1+z2)*0.5f));
+						dc_atoms_sticks_cylinders_.controller_ptr->object_set_transformation_as_for_cylinder(drawing_id, 0.2, glm::vec3(x1, y1, z1), glm::vec3((x1+x2)*0.5f, (y1+y2)*0.5f, (z1+z2)*0.5f));
 					}
 					else
 					{
-						dc_atoms_sticks_cylinders_.controller_ptr->object_set_transformation_as_for_cylinder(drawing_id, 0.3, glm::vec3((x1+x2)*0.5f, (y1+y2)*0.5f, (z1+z2)*0.5f), glm::vec3(x1, y1, z1));
+						dc_atoms_sticks_cylinders_.controller_ptr->object_set_transformation_as_for_cylinder(drawing_id, 0.2, glm::vec3((x1+x2)*0.5f, (y1+y2)*0.5f, (z1+z2)*0.5f), glm::vec3(x1, y1, z1));
 					}
 				}
-				data_manager_.set_atoms_representation_implemented(dc_atoms_sticks_spheres_.representation_id, drawing_statuses);
 			}
 		}
 	}
 
 	void reset_drawing_atoms_trace()
 	{
-		dc_atoms_trace_spheres_.unset();
+		dc_atoms_trace_spheres_inst_.unset();
+		dc_atoms_trace_spheres_impo_.unset();
 		dc_atoms_trace_cylinders_.unset();
 		if(!data_manager_.atoms().empty() && !data_manager_.bonding_links_info().residue_trace_links.empty())
 		{
 			const std::size_t number_of_atoms=data_manager_.atoms().size();
-			const std::size_t number_of_links=data_manager_.bonding_links_info().residue_trace_links.size();
-			dc_atoms_trace_spheres_.reset(number_of_atoms);
-			dc_atoms_trace_cylinders_.reset(number_of_links);
-			if(dc_atoms_trace_spheres_.controller_ptr->init_as_sphere(rendering_parameters_.trace_sphere_quality)
-					&& dc_atoms_trace_cylinders_.controller_ptr->init_as_cylinder(rendering_parameters_.trace_cylinder_quality))
+			if(rendering_parameters_.use_impostoring==0)
 			{
-				std::vector<bool> drawing_statuses(number_of_atoms, false);
+				dc_atoms_trace_spheres_inst_.reset(number_of_atoms);
+				if(dc_atoms_trace_spheres_inst_.controller_ptr->init_as_sphere(rendering_parameters_.trace_sphere_quality))
+				{
+					std::vector<bool> drawing_statuses(number_of_atoms, false);
+					for(std::size_t i=0;i<number_of_atoms;i++)
+					{
+						if(!data_manager_.bonding_links_info().map_of_atoms_to_residue_trace_links[i].empty())
+						{
+							const float x=static_cast<float>(data_manager_.atoms()[i].value.x);
+							const float y=static_cast<float>(data_manager_.atoms()[i].value.y);
+							const float z=static_cast<float>(data_manager_.atoms()[i].value.z);
+							const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+							dc_atoms_trace_spheres_inst_.drawing_ids[i]=drawing_id;
+							dc_atoms_trace_spheres_inst_.map_of_drawing_ids[drawing_id]=i;
+							dc_atoms_trace_spheres_inst_.controller_ptr->object_register(drawing_id);
+							dc_atoms_trace_spheres_inst_.controller_ptr->object_set_transformation_as_for_sphere(drawing_id, 0.5, glm::vec3(x, y, z));
+							drawing_statuses[i]=true;
+						}
+					}
+					data_manager_.set_atoms_representation_implemented(dc_atoms_trace_spheres_inst_.representation_id, drawing_statuses);
+				}
+			}
+			else
+			{
+				dc_atoms_trace_spheres_impo_.reset(number_of_atoms);
+				std::vector<float> data(number_of_atoms*4, 0.0f);
 				for(std::size_t i=0;i<number_of_atoms;i++)
 				{
-					if(!data_manager_.bonding_links_info().map_of_atoms_to_residue_trace_links[i].empty())
-					{
-						const float x=static_cast<float>(data_manager_.atoms()[i].value.x);
-						const float y=static_cast<float>(data_manager_.atoms()[i].value.y);
-						const float z=static_cast<float>(data_manager_.atoms()[i].value.z);
-						const uv::DrawingID drawing_id=uv::get_free_drawing_id();
-						dc_atoms_trace_spheres_.drawing_ids[i]=drawing_id;
-						dc_atoms_trace_spheres_.map_of_drawing_ids[drawing_id]=i;
-						dc_atoms_trace_spheres_.controller_ptr->object_register(drawing_id);
-						dc_atoms_trace_spheres_.controller_ptr->object_set_transformation_as_for_sphere(drawing_id, 0.5, glm::vec3(x, y, z));
-						drawing_statuses[i]=true;
-					}
+					data[i*4+0]=static_cast<float>(data_manager_.atoms()[i].value.x);
+					data[i*4+1]=static_cast<float>(data_manager_.atoms()[i].value.y);
+					data[i*4+2]=static_cast<float>(data_manager_.atoms()[i].value.z);
+					data[i*4+3]=static_cast<float>(0.5f);
 				}
+				if(dc_atoms_trace_spheres_impo_.controller_ptr->init(data, data))
+				{
+					std::vector<bool> drawing_statuses(number_of_atoms, false);
+					for(std::size_t i=0;i<number_of_atoms;i++)
+					{
+						if(!data_manager_.bonding_links_info().map_of_atoms_to_residue_trace_links[i].empty())
+						{
+							const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+							dc_atoms_trace_spheres_impo_.drawing_ids[i]=drawing_id;
+							dc_atoms_trace_spheres_impo_.map_of_drawing_ids[drawing_id]=i;
+							dc_atoms_trace_spheres_impo_.controller_ptr->object_register(drawing_id, i);
+							drawing_statuses[i]=true;
+						}
+					}
+					data_manager_.set_atoms_representation_implemented(dc_atoms_trace_spheres_impo_.representation_id, drawing_statuses);
+				}
+			}
+			const std::size_t number_of_links=data_manager_.bonding_links_info().residue_trace_links.size();
+			dc_atoms_trace_cylinders_.reset(number_of_links);
+			if(dc_atoms_trace_cylinders_.controller_ptr->init_as_cylinder(rendering_parameters_.trace_cylinder_quality))
+			{
 				for(std::size_t i=0;i<number_of_links;i++)
 				{
 					const common::ConstructionOfBondingLinks::DirectedLink& dl=data_manager_.bonding_links_info().residue_trace_links[i];
@@ -507,14 +624,13 @@ private:
 					dc_atoms_trace_cylinders_.controller_ptr->object_register(drawing_id);
 					if(dl.a<dl.b)
 					{
-						dc_atoms_trace_cylinders_.controller_ptr->object_set_transformation_as_for_cylinder(drawing_id, 0.5, glm::vec3(x1, y1, z1), glm::vec3((x1+x2)*0.5f, (y1+y2)*0.5f, (z1+z2)*0.5f));
+						dc_atoms_trace_cylinders_.controller_ptr->object_set_transformation_as_for_cylinder(drawing_id, 0.4, glm::vec3(x1, y1, z1), glm::vec3((x1+x2)*0.5f, (y1+y2)*0.5f, (z1+z2)*0.5f));
 					}
 					else
 					{
-						dc_atoms_trace_cylinders_.controller_ptr->object_set_transformation_as_for_cylinder(drawing_id, 0.5, glm::vec3((x1+x2)*0.5f, (y1+y2)*0.5f, (z1+z2)*0.5f), glm::vec3(x1, y1, z1));
+						dc_atoms_trace_cylinders_.controller_ptr->object_set_transformation_as_for_cylinder(drawing_id, 0.4, glm::vec3((x1+x2)*0.5f, (y1+y2)*0.5f, (z1+z2)*0.5f), glm::vec3(x1, y1, z1));
 					}
 				}
-				data_manager_.set_atoms_representation_implemented(dc_atoms_trace_spheres_.representation_id, drawing_statuses);
 			}
 		}
 	}
@@ -557,31 +673,57 @@ private:
 
 	void reset_drawing_atoms_points()
 	{
-		dc_atoms_points_.unset();
+		dc_atoms_points_inst_.unset();
+		dc_atoms_points_impo_.unset();
 		if(!data_manager_.atoms().empty())
 		{
 			const std::size_t number_of_atoms=data_manager_.atoms().size();
-			dc_atoms_points_.reset(number_of_atoms);
-			std::vector<float> data(number_of_atoms*4, 0.0f);
-			for(std::size_t i=0;i<number_of_atoms;i++)
+			if(rendering_parameters_.use_impostoring==0)
 			{
-				data[i*4+0]=static_cast<float>(data_manager_.atoms()[i].value.x);
-				data[i*4+1]=static_cast<float>(data_manager_.atoms()[i].value.y);
-				data[i*4+2]=static_cast<float>(data_manager_.atoms()[i].value.z);
-				data[i*4+3]=static_cast<float>(data_manager_.atoms()[i].value.r*0.15);
+				dc_atoms_points_inst_.reset(number_of_atoms);
+				if(dc_atoms_points_inst_.controller_ptr->init_as_sphere(rendering_parameters_.stick_sphere_quality))
+				{
+					std::vector<bool> drawing_statuses(number_of_atoms, false);
+					for(std::size_t i=0;i<number_of_atoms;i++)
+					{
+						const float x=static_cast<float>(data_manager_.atoms()[i].value.x);
+						const float y=static_cast<float>(data_manager_.atoms()[i].value.y);
+						const float z=static_cast<float>(data_manager_.atoms()[i].value.z);
+						const float r=static_cast<float>(data_manager_.atoms()[i].value.r*0.15);
+						const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+						dc_atoms_points_inst_.drawing_ids[i]=drawing_id;
+						dc_atoms_points_inst_.map_of_drawing_ids[drawing_id]=i;
+						dc_atoms_points_inst_.controller_ptr->object_register(drawing_id);
+						dc_atoms_points_inst_.controller_ptr->object_set_transformation_as_for_sphere(drawing_id, r, glm::vec3(x, y, z));
+						drawing_statuses[i]=true;
+					}
+					data_manager_.set_atoms_representation_implemented(dc_atoms_points_inst_.representation_id, drawing_statuses);
+				}
 			}
-			if(dc_atoms_points_.controller_ptr->init(data, data))
+			else
 			{
-				std::vector<bool> drawing_statuses(number_of_atoms, false);
+				dc_atoms_points_impo_.reset(number_of_atoms);
+				std::vector<float> data(number_of_atoms*4, 0.0f);
 				for(std::size_t i=0;i<number_of_atoms;i++)
 				{
-					const uv::DrawingID drawing_id=uv::get_free_drawing_id();
-					dc_atoms_points_.drawing_ids[i]=drawing_id;
-					dc_atoms_points_.map_of_drawing_ids[drawing_id]=i;
-					dc_atoms_points_.controller_ptr->object_register(drawing_id, i);
-					drawing_statuses[i]=true;
+					data[i*4+0]=static_cast<float>(data_manager_.atoms()[i].value.x);
+					data[i*4+1]=static_cast<float>(data_manager_.atoms()[i].value.y);
+					data[i*4+2]=static_cast<float>(data_manager_.atoms()[i].value.z);
+					data[i*4+3]=static_cast<float>(data_manager_.atoms()[i].value.r*0.15);
 				}
-				data_manager_.set_atoms_representation_implemented(dc_atoms_points_.representation_id, drawing_statuses);
+				if(dc_atoms_points_impo_.controller_ptr->init(data, data))
+				{
+					std::vector<bool> drawing_statuses(number_of_atoms, false);
+					for(std::size_t i=0;i<number_of_atoms;i++)
+					{
+						const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+						dc_atoms_points_impo_.drawing_ids[i]=drawing_id;
+						dc_atoms_points_impo_.map_of_drawing_ids[drawing_id]=i;
+						dc_atoms_points_impo_.controller_ptr->object_register(drawing_id, i);
+						drawing_statuses[i]=true;
+					}
+					data_manager_.set_atoms_representation_implemented(dc_atoms_points_impo_.representation_id, drawing_statuses);
+				}
 			}
 		}
 	}
@@ -774,28 +916,53 @@ private:
 			const scripting::DataManager::DisplayState& ds=data_manager_.atoms_display_states()[i];
 			if(ds.implemented())
 			{
-				if(dc_atoms_balls_spheres_.valid() && ds.visuals[dc_atoms_balls_spheres_.representation_id].implemented)
 				{
-					const uv::DrawingID drawing_id=dc_atoms_balls_spheres_.drawing_ids[i];
-					if(drawing_id>0)
+					if(dc_atoms_balls_spheres_inst_.valid() && ds.visuals[dc_atoms_balls_spheres_inst_.representation_id].implemented)
 					{
-						const std::size_t rep_id=dc_atoms_balls_spheres_.representation_id;
-						dc_atoms_balls_spheres_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
-						dc_atoms_balls_spheres_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
-						dc_atoms_balls_spheres_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						const uv::DrawingID drawing_id=dc_atoms_balls_spheres_inst_.drawing_ids[i];
+						if(drawing_id>0)
+						{
+							const std::size_t rep_id=dc_atoms_balls_spheres_inst_.representation_id;
+							dc_atoms_balls_spheres_inst_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+							dc_atoms_balls_spheres_inst_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+							dc_atoms_balls_spheres_inst_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						}
+					}
+
+					if(dc_atoms_balls_spheres_impo_.valid() && ds.visuals[dc_atoms_balls_spheres_impo_.representation_id].implemented)
+					{
+						const uv::DrawingID drawing_id=dc_atoms_balls_spheres_impo_.drawing_ids[i];
+						if(drawing_id>0)
+						{
+							const std::size_t rep_id=dc_atoms_balls_spheres_impo_.representation_id;
+							dc_atoms_balls_spheres_impo_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+							dc_atoms_balls_spheres_impo_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+							dc_atoms_balls_spheres_impo_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						}
 					}
 				}
 
-				if(dc_atoms_sticks_spheres_.valid() && dc_atoms_sticks_cylinders_.valid() && ds.visuals[dc_atoms_sticks_spheres_.representation_id].implemented)
+				if((dc_atoms_sticks_spheres_inst_.valid() || dc_atoms_sticks_spheres_impo_.valid()) && dc_atoms_sticks_cylinders_.valid() && ds.visuals[dc_atoms_sticks_spheres_inst_.representation_id].implemented)
 				{
-					const std::size_t rep_id=dc_atoms_sticks_spheres_.representation_id;
+					const std::size_t rep_id=dc_atoms_sticks_spheres_inst_.representation_id;
+					if(dc_atoms_sticks_spheres_inst_.valid())
 					{
-						const uv::DrawingID drawing_id=dc_atoms_sticks_spheres_.drawing_ids[i];
+						const uv::DrawingID drawing_id=dc_atoms_sticks_spheres_inst_.drawing_ids[i];
 						if(drawing_id>0)
 						{
-							dc_atoms_sticks_spheres_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
-							dc_atoms_sticks_spheres_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
-							dc_atoms_sticks_spheres_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+							dc_atoms_sticks_spheres_inst_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+							dc_atoms_sticks_spheres_inst_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+							dc_atoms_sticks_spheres_inst_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						}
+					}
+					if(dc_atoms_sticks_spheres_impo_.valid())
+					{
+						const uv::DrawingID drawing_id=dc_atoms_sticks_spheres_impo_.drawing_ids[i];
+						if(drawing_id>0)
+						{
+							dc_atoms_sticks_spheres_impo_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+							dc_atoms_sticks_spheres_impo_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+							dc_atoms_sticks_spheres_impo_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
 						}
 					}
 					for(std::size_t j=0;j<data_manager_.bonding_links_info().map_of_atoms_to_bonds_links[i].size();j++)
@@ -810,16 +977,27 @@ private:
 					}
 				}
 
-				if(dc_atoms_trace_spheres_.valid() && dc_atoms_trace_cylinders_.valid() && ds.visuals[dc_atoms_trace_spheres_.representation_id].implemented)
+				if((dc_atoms_trace_spheres_inst_.valid() || dc_atoms_trace_spheres_impo_.valid()) && dc_atoms_trace_cylinders_.valid() && ds.visuals[dc_atoms_trace_spheres_inst_.representation_id].implemented)
 				{
-					const std::size_t rep_id=dc_atoms_trace_spheres_.representation_id;
+					const std::size_t rep_id=dc_atoms_trace_spheres_inst_.representation_id;
+					if(dc_atoms_trace_spheres_inst_.valid())
 					{
-						const uv::DrawingID drawing_id=dc_atoms_trace_spheres_.drawing_ids[i];
+						const uv::DrawingID drawing_id=dc_atoms_trace_spheres_inst_.drawing_ids[i];
 						if(drawing_id>0)
 						{
-							dc_atoms_trace_spheres_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
-							dc_atoms_trace_spheres_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
-							dc_atoms_trace_spheres_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+							dc_atoms_trace_spheres_inst_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+							dc_atoms_trace_spheres_inst_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+							dc_atoms_trace_spheres_inst_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						}
+					}
+					if(dc_atoms_trace_spheres_impo_.valid())
+					{
+						const uv::DrawingID drawing_id=dc_atoms_trace_spheres_impo_.drawing_ids[i];
+						if(drawing_id>0)
+						{
+							dc_atoms_trace_spheres_impo_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+							dc_atoms_trace_spheres_impo_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+							dc_atoms_trace_spheres_impo_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
 						}
 					}
 					for(std::size_t j=0;j<data_manager_.bonding_links_info().map_of_atoms_to_residue_trace_links[i].size();j++)
@@ -846,15 +1024,29 @@ private:
 					}
 				}
 
-				if(dc_atoms_points_.valid() && ds.visuals[dc_atoms_points_.representation_id].implemented)
 				{
-					const uv::DrawingID drawing_id=dc_atoms_points_.drawing_ids[i];
-					if(drawing_id>0)
+					if(dc_atoms_points_inst_.valid() && ds.visuals[dc_atoms_points_inst_.representation_id].implemented)
 					{
-						const std::size_t rep_id=dc_atoms_points_.representation_id;
-						dc_atoms_points_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
-						dc_atoms_points_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
-						dc_atoms_points_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						const uv::DrawingID drawing_id=dc_atoms_points_inst_.drawing_ids[i];
+						if(drawing_id>0)
+						{
+							const std::size_t rep_id=dc_atoms_points_inst_.representation_id;
+							dc_atoms_points_inst_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+							dc_atoms_points_inst_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+							dc_atoms_points_inst_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						}
+					}
+
+					if(dc_atoms_points_impo_.valid() && ds.visuals[dc_atoms_points_impo_.representation_id].implemented)
+					{
+						const uv::DrawingID drawing_id=dc_atoms_points_impo_.drawing_ids[i];
+						if(drawing_id>0)
+						{
+							const std::size_t rep_id=dc_atoms_points_impo_.representation_id;
+							dc_atoms_points_impo_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+							dc_atoms_points_impo_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+							dc_atoms_points_impo_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						}
 					}
 				}
 			}
@@ -1000,52 +1192,91 @@ private:
 		typedef std::map<uv::DrawingID, std::size_t>::const_iterator Iterator;
 
 		{
-			const Map& map=dc_atoms_balls_spheres_.map_of_drawing_ids;
-			Iterator it=map.find(drawing_id);
-			if(it!=map.end())
+			if(dc_atoms_balls_spheres_inst_.valid())
 			{
-				return it->second;
-			}
-		}
-
-		{
-			const Map& map=dc_atoms_sticks_spheres_.map_of_drawing_ids;
-			Iterator it=map.find(drawing_id);
-			if(it!=map.end())
-			{
-				return it->second;
-			}
-		}
-
-		{
-			const Map& map=dc_atoms_sticks_cylinders_.map_of_drawing_ids;
-			Iterator it=map.find(drawing_id);
-			if(it!=map.end())
-			{
-				if((it->second)<data_manager_.bonding_links_info().bonds_links.size())
+				const Map& map=dc_atoms_balls_spheres_inst_.map_of_drawing_ids;
+				Iterator it=map.find(drawing_id);
+				if(it!=map.end())
 				{
-					return data_manager_.bonding_links_info().bonds_links[it->second].a;
+					return it->second;
+				}
+			}
+
+			if(dc_atoms_balls_spheres_impo_.valid())
+			{
+				const Map& map=dc_atoms_balls_spheres_impo_.map_of_drawing_ids;
+				Iterator it=map.find(drawing_id);
+				if(it!=map.end())
+				{
+					return it->second;
 				}
 			}
 		}
 
 		{
-			const Map& map=dc_atoms_trace_spheres_.map_of_drawing_ids;
-			Iterator it=map.find(drawing_id);
-			if(it!=map.end())
+			if(dc_atoms_sticks_spheres_inst_.valid())
 			{
-				return it->second;
+				const Map& map=dc_atoms_sticks_spheres_inst_.map_of_drawing_ids;
+				Iterator it=map.find(drawing_id);
+				if(it!=map.end())
+				{
+					return it->second;
+				}
+			}
+
+			if(dc_atoms_sticks_spheres_impo_.valid())
+			{
+				const Map& map=dc_atoms_sticks_spheres_impo_.map_of_drawing_ids;
+				Iterator it=map.find(drawing_id);
+				if(it!=map.end())
+				{
+					return it->second;
+				}
+			}
+
+			{
+				const Map& map=dc_atoms_sticks_cylinders_.map_of_drawing_ids;
+				Iterator it=map.find(drawing_id);
+				if(it!=map.end())
+				{
+					if((it->second)<data_manager_.bonding_links_info().bonds_links.size())
+					{
+						return data_manager_.bonding_links_info().bonds_links[it->second].a;
+					}
+				}
 			}
 		}
 
 		{
-			const Map& map=dc_atoms_trace_cylinders_.map_of_drawing_ids;
-			Iterator it=map.find(drawing_id);
-			if(it!=map.end())
+			if(dc_atoms_trace_spheres_inst_.valid())
 			{
-				if((it->second)<data_manager_.bonding_links_info().residue_trace_links.size())
+				const Map& map=dc_atoms_trace_spheres_inst_.map_of_drawing_ids;
+				Iterator it=map.find(drawing_id);
+				if(it!=map.end())
 				{
-					return data_manager_.bonding_links_info().residue_trace_links[it->second].a;
+					return it->second;
+				}
+			}
+
+			if(dc_atoms_trace_spheres_impo_.valid())
+			{
+				const Map& map=dc_atoms_trace_spheres_impo_.map_of_drawing_ids;
+				Iterator it=map.find(drawing_id);
+				if(it!=map.end())
+				{
+					return it->second;
+				}
+			}
+
+			{
+				const Map& map=dc_atoms_trace_cylinders_.map_of_drawing_ids;
+				Iterator it=map.find(drawing_id);
+				if(it!=map.end())
+				{
+					if((it->second)<data_manager_.bonding_links_info().residue_trace_links.size())
+					{
+						return data_manager_.bonding_links_info().residue_trace_links[it->second].a;
+					}
 				}
 			}
 		}
@@ -1060,11 +1291,24 @@ private:
 		}
 
 		{
-			const Map& map=dc_atoms_points_.map_of_drawing_ids;
-			Iterator it=map.find(drawing_id);
-			if(it!=map.end())
+			if(dc_atoms_points_inst_.valid())
 			{
-				return it->second;
+				const Map& map=dc_atoms_points_inst_.map_of_drawing_ids;
+				Iterator it=map.find(drawing_id);
+				if(it!=map.end())
+				{
+					return it->second;
+				}
+			}
+
+			if(dc_atoms_points_impo_.valid())
+			{
+				const Map& map=dc_atoms_points_impo_.map_of_drawing_ids;
+				Iterator it=map.find(drawing_id);
+				if(it!=map.end())
+				{
+					return it->second;
+				}
 			}
 		}
 
@@ -1143,13 +1387,17 @@ private:
 
 	scripting::DataManager& data_manager_;
 	RenderingParameters rendering_parameters_;
-	WrappedDrawingWithInstancingController dc_atoms_balls_spheres_;
-	WrappedDrawingWithInstancingController dc_atoms_sticks_spheres_;
+	WrappedDrawingWithInstancingController dc_atoms_balls_spheres_inst_;
+	WrappedDrawingWithImpostoringController dc_atoms_balls_spheres_impo_;
+	WrappedDrawingWithInstancingController dc_atoms_sticks_spheres_inst_;
+	WrappedDrawingWithImpostoringController dc_atoms_sticks_spheres_impo_;
 	WrappedDrawingWithInstancingController dc_atoms_sticks_cylinders_;
-	WrappedDrawingWithInstancingController dc_atoms_trace_spheres_;
+	WrappedDrawingWithInstancingController dc_atoms_trace_spheres_inst_;
+	WrappedDrawingWithImpostoringController dc_atoms_trace_spheres_impo_;
 	WrappedDrawingWithInstancingController dc_atoms_trace_cylinders_;
+	WrappedDrawingWithInstancingController dc_atoms_points_inst_;
+	WrappedDrawingWithImpostoringController dc_atoms_points_impo_;
 	WrappedDrawingController dc_atoms_cartoon_;
-	WrappedDrawingWithImpostoringController dc_atoms_points_;
 	WrappedDrawingController dc_contacts_faces_;
 	WrappedDrawingController dc_contacts_sasmesh_;
 	WrappedDrawingController dc_contacts_edges_;
