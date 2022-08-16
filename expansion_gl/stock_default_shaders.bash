@@ -29,11 +29,15 @@ namespace uv
 EOF
 
 echo
+write_resource_file default_shader_vertex_screen shader_vertex_screen.glsl
+echo
 write_resource_file default_shader_vertex_simple shader_vertex_simple.glsl
 echo
 write_resource_file default_shader_vertex_with_instancing shader_vertex_with_instancing.glsl
 echo
 write_resource_file default_shader_vertex_with_impostoring shader_vertex_with_impostoring.glsl
+echo
+write_resource_file default_shader_fragment_screen shader_fragment_screen.glsl
 echo
 write_resource_file default_shader_fragment_simple shader_fragment_simple.glsl
 echo

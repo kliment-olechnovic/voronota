@@ -5,6 +5,8 @@
 #include "shading_controller.h"
 #include "transformation_matrix_controller.h"
 #include "zoom_calculator.h"
+#include "framebuffer_controller.h"
+#include "drawing_for_screen_controller.h"
 #include "drawing_controller.h"
 #include "drawing_with_instancing_controller.h"
 #include "drawing_with_impostoring_controller.h"
@@ -25,9 +27,11 @@ public:
 		int suggested_window_width;
 		int suggested_window_height;
 		std::string title;
+		std::string shader_vertex_screen;
 		std::string shader_vertex;
 		std::string shader_vertex_with_instancing;
 		std::string shader_vertex_with_impostoring;
+		std::string shader_fragment_screen;
 		std::string shader_fragment;
 		std::string shader_fragment_with_instancing;
 		std::string shader_fragment_with_impostoring;
@@ -74,7 +78,7 @@ public:
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		glfwWindowHint(GLFW_SAMPLES, 4);
+		glfwWindowHint(GLFW_SAMPLES, 0);
 
 		window_=glfwCreateWindow(parameters.suggested_window_width, parameters.suggested_window_height, parameters.title.c_str(), 0, 0);
 		if(!window_)
@@ -121,6 +125,15 @@ public:
 
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
+		glDisable(GL_MULTISAMPLE);
+
+		if(!shading_screen_.init(parameters.shader_vertex_screen, parameters.shader_fragment_screen, DrawingForScreenController::ordered_used_shader_attribute_names()))
+		{
+			std::cerr << "Error: failed to init shading for screen." << std::endl;
+			glfwTerminate();
+			return false;
+		}
+
 		if(!shading_simple_.init(parameters.shader_vertex, parameters.shader_fragment, DrawingController::ordered_used_shader_attribute_names()))
 		{
 			std::cerr << "Error: failed to init shading simple." << std::endl;
@@ -138,6 +151,20 @@ public:
 		if(!shading_with_impostoring_.init(parameters.shader_vertex_with_impostoring, parameters.shader_fragment_with_impostoring, DrawingWithImpostoringController::ordered_used_shader_attribute_names()))
 		{
 			std::cerr << "Error: failed to init shading with impostoring." << std::endl;
+			glfwTerminate();
+			return false;
+		}
+
+		if(!framebuffer_controller_.init(framebuffer_width_, framebuffer_height_))
+		{
+			std::cerr << "Error: failed to init framebuffer controller." << std::endl;
+			glfwTerminate();
+			return false;
+		}
+
+		if(!drawing_for_screen_controller_.init())
+		{
+			std::cerr << "Error: failed to init screen drawing controller." << std::endl;
 			glfwTerminate();
 			return false;
 		}
@@ -792,6 +819,7 @@ private:
 	{
 		framebuffer_width_=width;
 		framebuffer_height_=height;
+		framebuffer_controller_.init(framebuffer_width_, framebuffer_height_);
 		refresh_shading_projection();
 		on_framebuffer_resized(width, height);
 	}
@@ -937,6 +965,9 @@ private:
 
 		glfwPollEvents();
 
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_controller_.framebuffer());
+        glEnable(GL_DEPTH_TEST);
+
 		on_before_rendered_frame();
 
 		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
@@ -974,8 +1005,6 @@ private:
 				shading_with_impostoring_.set_selection_mode_enabled(true);
 				render_scene(ShadingMode::with_impostoring);
 				shading_with_impostoring_.set_selection_mode_enabled(false);
-
-				glEnable(GL_MULTISAMPLE);
 			}
 
 			unsigned char pixel[4]={0, 0, 0, 0};
@@ -1000,8 +1029,17 @@ private:
 		shading_with_impostoring_.enable();
 		render_scene(ShadingMode::with_impostoring);
 
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDisable(GL_DEPTH_TEST);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
 		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
+
+		shading_screen_.enable();
+		drawing_for_screen_controller_.draw(framebuffer_controller_.texture());
+
 		glUseProgram(0);
 		render_overlay();
 
@@ -1374,9 +1412,12 @@ private:
 	ProjectionMode::Mode projection_mode_;
 	float background_color_[3];
 	float margin_color_[3];
+	ShadingController shading_screen_;
 	ShadingController shading_simple_;
 	ShadingController shading_with_instancing_;
 	ShadingController shading_with_impostoring_;
+	FramebufferController framebuffer_controller_;
+	DrawingForScreenController drawing_for_screen_controller_;
 	TransformationMatrixController modeltransform_matrix_;
 	ModKeysStatusController modkeys_status_;
 };

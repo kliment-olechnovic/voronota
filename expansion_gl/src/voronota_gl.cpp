@@ -15,9 +15,11 @@ int main(const int argc, const char** argv)
 		app_init_parameters.suggested_window_width=command_args_input.get_value_or_default<int>("window-width", 1024);
 		app_init_parameters.suggested_window_height=command_args_input.get_value_or_default<int>("window-height", 768);
 		app_init_parameters.title=command_args_input.get_value_or_default<std::string>("title", "voronota-viewer");
+		app_init_parameters.shader_vertex_screen=command_args_input.get_value_or_default<std::string>("shader-vertex-screen", "_shader_vertex_screen");
 		app_init_parameters.shader_vertex=command_args_input.get_value_or_default<std::string>("shader-vertex", "_shader_vertex_simple");
 		app_init_parameters.shader_vertex_with_instancing=command_args_input.get_value_or_default<std::string>("shader-vertex-with-instancing", "_shader_vertex_with_instancing");
 		app_init_parameters.shader_vertex_with_impostoring=command_args_input.get_value_or_default<std::string>("shader-vertex-with-impostoring", "_shader_vertex_with_impostoring");
+		app_init_parameters.shader_fragment_screen=command_args_input.get_value_or_default<std::string>("shader-fragment-screen", "_shader_fragment_screen");
 		app_init_parameters.shader_fragment=command_args_input.get_value_or_default<std::string>("shader-fragment", "_shader_fragment_simple");
 		app_init_parameters.shader_fragment_with_instancing=command_args_input.get_value_or_default<std::string>("shader-fragment-with-instancing", "_shader_fragment_simple");
 		app_init_parameters.shader_fragment_with_impostoring=command_args_input.get_value_or_default<std::string>("shader-fragment-with-impostoring", "_shader_fragment_with_impostoring");

@@ -242,7 +242,11 @@ private:
 	{
 		std::string predefined_input;
 
-		if(filename=="_shader_vertex_simple")
+		if(filename=="_shader_vertex_screen")
+		{
+			predefined_input=default_shader_vertex_screen();
+		}
+		else if(filename=="_shader_vertex_simple")
 		{
 			predefined_input=default_shader_vertex_simple();
 		}
@@ -253,6 +257,10 @@ private:
 		else if(filename=="_shader_vertex_with_impostoring")
 		{
 			predefined_input=default_shader_vertex_with_impostoring();
+		}
+		else if(filename=="_shader_fragment_screen")
+		{
+			predefined_input=default_shader_fragment_screen();
 		}
 		else if(filename=="_shader_fragment_simple")
 		{
