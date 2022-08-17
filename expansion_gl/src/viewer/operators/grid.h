@@ -39,7 +39,7 @@ public:
 	{
 		uv::ViewerApplication::instance().set_rendering_mode_to_grid();
 		GUIConfiguration::instance().grid_variant=grid_variant_value_;
-		uv::ViewerApplication::instance_refresh_frame();
+		uv::ViewerApplication::instance_refresh_frame(false);
 		Result result;
 		return result;
 	}

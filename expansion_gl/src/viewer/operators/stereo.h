@@ -54,7 +54,7 @@ public:
 	{
 		uv::ViewerApplication::instance().set_rendering_mode_to_stereo(angle, offset);
 
-		uv::ViewerApplication::instance_refresh_frame();
+		uv::ViewerApplication::instance_refresh_frame(false);
 
 		Result result;
 		result.angle=angle;

@@ -68,21 +68,15 @@ public:
 		int H=0;
 		std::vector<char> image_data;
 
-		GUIConfiguration::push();
-
-		if(GUIConfiguration::instance().enabled_widgets())
+		if(uv::ViewerApplication::instance().num_of_refresh_calls_since_last_render()>0)
 		{
-			GUIConfiguration::instance().set_enabled_widgets(false);
-			uv::ViewerApplication::instance_refresh_frame();
-			uv::ViewerApplication::instance_refresh_frame();
+			uv::ViewerApplication::instance_refresh_frame(true);
 		}
 
 		if(!uv::ViewerApplication::instance().read_pixels(W, H, image_data))
 		{
 			throw std::runtime_error(std::string("Failed to read pixels."));
 		}
-
-		GUIConfiguration::pop();
 
 		if(format_to_use==".ppm")
 		{

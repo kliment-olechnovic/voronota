@@ -43,7 +43,7 @@ public:
 	{
 		if(milliseconds>0.0)
 		{
-			uv::ViewerApplication::instance_refresh_frame();
+			uv::ViewerApplication::instance_refresh_frame(false);
 
 			auxiliaries::ElapsedProcessorTime elapsed_processor_time;
 			double elapsed_miliseconds=0.0;
@@ -56,7 +56,7 @@ public:
 
 			if(milliseconds>17.0)
 			{
-				uv::ViewerApplication::instance_refresh_frame();
+				uv::ViewerApplication::instance_refresh_frame(true);
 			}
 		}
 		Result result;

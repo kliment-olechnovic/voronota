@@ -55,11 +55,18 @@ public:
 		instance().render_frame_wrapped();
 	}
 
-	static void instance_refresh_frame()
+	static void instance_refresh_frame(const bool force)
 	{
 		if(instance().allowed_to_refresh_frame_)
 		{
-			instance().render_frame_raw();
+			if(force)
+			{
+				instance().render_frame_raw();
+			}
+			else
+			{
+				instance().num_of_refresh_calls_since_last_render_++;
+			}
 		}
 	}
 
@@ -333,6 +340,11 @@ public:
 		return grid_size_;
 	}
 
+	int num_of_refresh_calls_since_last_render() const
+	{
+		return num_of_refresh_calls_since_last_render_;
+	}
+
 	void close()
 	{
 		if(good())
@@ -572,6 +584,7 @@ protected:
 		perspective_far_z_(1000.0f),
 		grid_size_(1),
 		rendering_framebuffer_multiply_(1),
+		num_of_refresh_calls_since_last_render_(0),
 		rendering_mode_(RenderingMode::simple),
 		projection_mode_(ProjectionMode::ortho)
 	{
@@ -967,6 +980,8 @@ private:
 
 	void render_frame_raw()
 	{
+		num_of_refresh_calls_since_last_render_=0;
+
 		if(!good())
 		{
 			return;
@@ -1418,6 +1433,7 @@ private:
 	float perspective_far_z_;
 	int grid_size_;
 	int rendering_framebuffer_multiply_;
+	int num_of_refresh_calls_since_last_render_;
 	RenderingMode::Mode rendering_mode_;
 	ProjectionMode::Mode projection_mode_;
 	float background_color_[3];

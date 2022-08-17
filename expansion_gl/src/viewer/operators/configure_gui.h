@@ -113,7 +113,7 @@ public:
 
 		if(need_refresh)
 		{
-			uv::ViewerApplication::instance_refresh_frame();
+			uv::ViewerApplication::instance_refresh_frame(false);
 		}
 
 		Result result;

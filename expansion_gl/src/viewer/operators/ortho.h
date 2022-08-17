@@ -37,7 +37,7 @@ public:
 	Result run(void*) const
 	{
 		uv::ViewerApplication::instance().set_projection_mode_to_ortho();
-		uv::ViewerApplication::instance_refresh_frame();
+		uv::ViewerApplication::instance_refresh_frame(false);
 		Result result;
 		return result;
 	}

@@ -47,7 +47,7 @@ public:
 
 		uv::ViewerApplication::instance().set_background_color(color);
 
-		uv::ViewerApplication::instance_refresh_frame();
+		uv::ViewerApplication::instance_refresh_frame(false);
 
 		Result result;
 

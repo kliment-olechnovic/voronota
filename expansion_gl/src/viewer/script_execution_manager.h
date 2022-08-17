@@ -348,7 +348,7 @@ protected:
 
 		if(need_to_refresh_frame)
 		{
-			uv::ViewerApplication::instance_refresh_frame();
+			uv::ViewerApplication::instance_refresh_frame(true);
 		}
 
 		insert_additional_script_if_requested(cr);
@@ -389,7 +389,7 @@ protected:
 
 		if(need_to_refresh_frame)
 		{
-			uv::ViewerApplication::instance_refresh_frame();
+			uv::ViewerApplication::instance_refresh_frame(false);
 		}
 	}
 
