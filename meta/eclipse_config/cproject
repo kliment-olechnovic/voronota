@@ -167,6 +167,8 @@
                                 								
                                 <option id="gnu.cpp.compiler.option.dialect.std.556414970" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
                                 								
+                                <option id="gnu.cpp.compiler.option.other.other.2039487147" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fopenmp" valueType="string"/>
+                                								
                                 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2001796391" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
                                 							
                             </tool>
@@ -197,6 +199,8 @@
                                     								
                                 </option>
                                 								
+                                <option id="gnu.cpp.link.option.flags.1213048423" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-fopenmp" valueType="string"/>
+                                								
                                 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.423496666" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
                                     									
                                     <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -211,7 +215,7 @@
                             							
                             <tool command="as" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.release.1722540952" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release">
                                 								
-                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.both.asm.option.include.paths.2044527266" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath"/>
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.both.asm.option.include.paths.2044527266" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath"/>
                                 								
                                 <inputType id="cdt.managedbuild.tool.gnu.assembler.input.405006991" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
                                 							
@@ -223,7 +227,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="expansion_gl/src"/>
+                        <entry excluding="dependencies/imgui/imgui_demo.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="expansion_gl/src"/>
                         						
                         <entry excluding="voronota_js.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="expansion_js/src"/>
                         						
@@ -375,11 +379,15 @@
     	
     <storageModule moduleId="refreshScope" versionNumber="2">
         		
+        <configuration configurationName="ReleaseGL"/>
+        		
         <configuration configurationName="ReleaseDuktaper">
             			
             <resource resourceType="PROJECT" workspacePath="/voronota"/>
             		
         </configuration>
+        		
+        <configuration configurationName="ReleaseJS"/>
         		
         <configuration configurationName="Release">
             			
