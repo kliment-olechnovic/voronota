@@ -26,6 +26,7 @@ public:
 	{
 		int suggested_window_width;
 		int suggested_window_height;
+		int multisampling;
 		std::string title;
 		std::string shader_vertex_screen;
 		std::string shader_vertex;
@@ -38,7 +39,8 @@ public:
 
 		InitializationParameters() :
 			suggested_window_width(800),
-			suggested_window_height(600)
+			suggested_window_height(600),
+			multisampling(1)
 		{
 		}
 	};
@@ -155,7 +157,9 @@ public:
 			return false;
 		}
 
-		if(!framebuffer_controller_.init(framebuffer_width_, framebuffer_height_))
+		rendering_framebuffer_multiply_=(parameters.multisampling<=1 ? 1 : 2);
+
+		if(!rendering_framebuffer_controller_.init(framebuffer_width_, framebuffer_height_, rendering_framebuffer_multiply_))
 		{
 			std::cerr << "Error: failed to init framebuffer controller." << std::endl;
 			glfwTerminate();
@@ -239,14 +243,14 @@ public:
 		return adjust_length_with_margin(window_height_, margin_top_ratio_, margin_top_fixed_);
 	}
 
-	int rendering_framebuffer_width() const
+	int effective_rendering_framebuffer_width() const
 	{
-		return adjust_length_with_margin(framebuffer_width_, margin_right_ratio_, static_cast<int>(margin_right_fixed_*framebuffer_and_window_ratio()));
+		return adjust_length_with_margin(framebuffer_width_, margin_right_ratio_, static_cast<int>(margin_right_fixed_*framebuffer_and_window_ratio()))*rendering_framebuffer_multiply_;
 	}
 
-	int rendering_framebuffer_height() const
+	int effective_rendering_framebuffer_height() const
 	{
-		return adjust_length_with_margin(framebuffer_height_, margin_top_ratio_, static_cast<int>(margin_top_fixed_*framebuffer_and_window_ratio()));
+		return adjust_length_with_margin(framebuffer_height_, margin_top_ratio_, static_cast<int>(margin_top_fixed_*framebuffer_and_window_ratio()))*rendering_framebuffer_multiply_;
 	}
 
 	float mouse_x() const
@@ -515,16 +519,20 @@ public:
 
 	bool read_pixels(int& image_width, int& image_height, std::vector<char>& image_data)
 	{
-		image_width=rendering_framebuffer_width();
-		image_height=rendering_framebuffer_height();
+		image_width=effective_rendering_framebuffer_width();
+		image_height=effective_rendering_framebuffer_height();
 		image_data.clear();
 		image_data.resize(image_width*image_height*3);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, rendering_framebuffer_controller_.framebuffer());
 
 		glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 		glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
 		glPixelStorei(GL_PACK_SKIP_ROWS, 0);
 		glPixelStorei(GL_PACK_ALIGNMENT, 1);
 		glReadPixels(0, 0, image_width, image_height, GL_RGB, GL_UNSIGNED_BYTE, &image_data[0]);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		return true;
 	}
@@ -563,6 +571,7 @@ protected:
 		perspective_near_z_(1.0f),
 		perspective_far_z_(1000.0f),
 		grid_size_(1),
+		rendering_framebuffer_multiply_(1),
 		rendering_mode_(RenderingMode::simple),
 		projection_mode_(ProjectionMode::ortho)
 	{
@@ -819,7 +828,7 @@ private:
 	{
 		framebuffer_width_=width;
 		framebuffer_height_=height;
-		framebuffer_controller_.init(framebuffer_width_, framebuffer_height_);
+		rendering_framebuffer_controller_.init(framebuffer_width_, framebuffer_height_, rendering_framebuffer_multiply_);
 		refresh_shading_projection();
 		on_framebuffer_resized(width, height);
 	}
@@ -932,12 +941,12 @@ private:
 
 	int calc_pixel_x(const double screen_x) const
 	{
-		return static_cast<int>((screen_x/static_cast<double>(rendering_window_width()))*static_cast<double>(rendering_framebuffer_width()));
+		return static_cast<int>((screen_x/static_cast<double>(rendering_window_width()))*static_cast<double>(effective_rendering_framebuffer_width()));
 	}
 
 	int calc_pixel_y(const double screen_y) const
 	{
-		return static_cast<int>((screen_y/static_cast<double>(rendering_window_height()))*static_cast<double>(rendering_framebuffer_height()));
+		return static_cast<int>((screen_y/static_cast<double>(rendering_window_height()))*static_cast<double>(effective_rendering_framebuffer_height()));
 	}
 
 	void render_frame_wrapped()
@@ -965,20 +974,20 @@ private:
 
 		glfwPollEvents();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_controller_.framebuffer());
+        glBindFramebuffer(GL_FRAMEBUFFER, rendering_framebuffer_controller_.framebuffer());
         glEnable(GL_DEPTH_TEST);
 
 		on_before_rendered_frame();
 
-		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
-		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
+		glScissor(0, 0, rendering_framebuffer_controller_.width(), rendering_framebuffer_controller_.height());
+		glViewport(0, 0, rendering_framebuffer_controller_.width(), rendering_framebuffer_controller_.height());
 
 		glClearColor(margin_color_[0], margin_color_[1], margin_color_[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glScissor(0, 0, rendering_framebuffer_width(), rendering_framebuffer_height());
-		glViewport(0, 0, rendering_framebuffer_width(), rendering_framebuffer_height());
-		refresh_shading_viewport(0, 0, rendering_framebuffer_width(), rendering_framebuffer_height());
+		glScissor(0, 0, effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height());
+		glViewport(0, 0, effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height());
+		refresh_shading_viewport(0, 0, effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height());
 
 		glClearColor(background_color_[0], background_color_[1], background_color_[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1038,7 +1047,7 @@ private:
 		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
 
 		shading_screen_.enable();
-		drawing_for_screen_controller_.draw(framebuffer_controller_.texture());
+		drawing_for_screen_controller_.draw(rendering_framebuffer_controller_.texture());
 
 		glUseProgram(0);
 		render_overlay();
@@ -1055,9 +1064,9 @@ private:
 	{
 		if(rendering_mode_==RenderingMode::stereo)
 		{
-			const int width=rendering_framebuffer_width()/2;
+			const int width=effective_rendering_framebuffer_width()/2;
 			{
-				refresh_shading_projection(width, rendering_framebuffer_height(), shading_mode);
+				refresh_shading_projection(width, effective_rendering_framebuffer_height(), shading_mode);
 			}
 			for(int i=0;i<2;i++)
 			{
@@ -1070,8 +1079,8 @@ private:
 					refresh_shading_viewtransform(TransformationMatrixController::create_viewtransform_simple_stereo(zoom_value_, stereo_angle_, stereo_offset_, i), shading_mode);
 				}
 				const int xpos=(width*i);
-				glViewport(xpos, 0, width, rendering_framebuffer_height());
-				refresh_shading_viewport(xpos, 0, width, rendering_framebuffer_height(), shading_mode);
+				glViewport(xpos, 0, width, effective_rendering_framebuffer_height());
+				refresh_shading_viewport(xpos, 0, width, effective_rendering_framebuffer_height(), shading_mode);
 				draw_scene(shading_mode, 0);
 			}
 			refresh_shading_viewtransform(shading_mode);
@@ -1081,9 +1090,9 @@ private:
 		{
 			int n_rows=1;
 			int n_columns=1;
-			Utilities::calculate_grid_dimensions(grid_size_, rendering_framebuffer_width(), rendering_framebuffer_height(), n_rows, n_columns);
-			const int width=rendering_framebuffer_width()/n_columns;
-			const int height=rendering_framebuffer_height()/n_rows;
+			Utilities::calculate_grid_dimensions(grid_size_, effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height(), n_rows, n_columns);
+			const int width=effective_rendering_framebuffer_width()/n_columns;
+			const int height=effective_rendering_framebuffer_height()/n_rows;
 			{
 				refresh_shading_projection(width, height, shading_mode);
 			}
@@ -1181,7 +1190,7 @@ private:
 
 	void refresh_shading_projection(const ShadingMode::Mode shading_mode)
 	{
-		refresh_shading_projection(rendering_framebuffer_width(), rendering_framebuffer_height(), shading_mode);
+		refresh_shading_projection(effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height(), shading_mode);
 	}
 
 	void refresh_shading_projection()
@@ -1408,6 +1417,7 @@ private:
 	float perspective_near_z_;
 	float perspective_far_z_;
 	int grid_size_;
+	int rendering_framebuffer_multiply_;
 	RenderingMode::Mode rendering_mode_;
 	ProjectionMode::Mode projection_mode_;
 	float background_color_[3];
@@ -1416,7 +1426,7 @@ private:
 	ShadingController shading_simple_;
 	ShadingController shading_with_instancing_;
 	ShadingController shading_with_impostoring_;
-	FramebufferController framebuffer_controller_;
+	FramebufferController rendering_framebuffer_controller_;
 	DrawingForScreenController drawing_for_screen_controller_;
 	TransformationMatrixController modeltransform_matrix_;
 	ModKeysStatusController modkeys_status_;

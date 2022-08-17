@@ -27,7 +27,7 @@ void main()
             float fog_density=1.0/(1.0+exp(0.1*(fragment_position.z+0.0)));
             final_color=mix(final_color, vec3(1.0, 1.0, 1.0), fog_density);
         }
-        if((fragment_adjunct[0]>0.5) && (mod(floor(gl_FragCoord.x), 2.0)<0.5 || mod(floor(gl_FragCoord.y), 2.0)<0.5))
+        if((fragment_adjunct[0]>0.5) && (mod(floor(gl_FragCoord.x), 4.0)<1.5 || mod(floor(gl_FragCoord.y), 4.0)<1.5))
         {
             final_color=vec3(1.0, 0.0, 1.0);
             if(fragment_color_for_display[0]>0.5 && fragment_color_for_display[1]<0.25 && fragment_color_for_display[2]>0.5)
