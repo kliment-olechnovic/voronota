@@ -452,9 +452,7 @@ public:
 			return;
 		}
 
-		shading_simple_.set_fog_enabled(enabled);
-		shading_with_instancing_.set_fog_enabled(enabled);
-		shading_with_impostoring_.set_fog_enabled(enabled);
+		shading_screen_.set_fog_enabled(enabled);
 	}
 
 	void set_stereo_angle(const float stereo_angle)

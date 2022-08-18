@@ -1,7 +1,8 @@
 #version 100
+#extension GL_EXT_frag_depth : enable
+
 precision highp float;
 uniform int selection_mode_enabled;
-uniform int fog_enabled;
 varying vec3 fragment_position;
 varying vec3 fragment_normal;
 varying vec3 fragment_color_for_selection;
@@ -22,11 +23,6 @@ void main()
             vec3 diffuse=diffuse_value*light_color;
             final_color=(ambient+diffuse)*fragment_color_for_display;
         }
-        if(fog_enabled==1)
-        {
-            float fog_density=1.0/(1.0+exp(0.1*(fragment_position.z+0.0)));
-            final_color=mix(final_color, vec3(1.0, 1.0, 1.0), fog_density);
-        }
         if((fragment_adjunct[0]>0.5) && (mod(floor(gl_FragCoord.x), 4.0)<1.5 || mod(floor(gl_FragCoord.y), 4.0)<1.5))
         {
             final_color=vec3(1.0, 0.0, 1.0);
@@ -35,7 +31,7 @@ void main()
                 final_color=vec3(0.0, 1.0, 0.0);
             }
         }
-        gl_FragColor=vec4(final_color, 1.0);
+        gl_FragColor=vec4(final_color, gl_FragCoord.z);
     }
     else
     {

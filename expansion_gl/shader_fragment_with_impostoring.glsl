@@ -4,7 +4,6 @@
 precision highp float;
 
 uniform int selection_mode_enabled;
-uniform int fog_enabled;
 uniform vec4 viewport;
 
 varying mat4 VPMT_inverse;
@@ -58,11 +57,11 @@ void main()
                 final_color=vec3(0.0, 1.0, 0.0);
             }
         }
-        gl_FragColor=vec4(final_color, 1.0);
+        gl_FragColor=vec4(final_color, gl_FragDepthEXT);
     }
     else
     {
-        gl_FragColor=vec4(fragment_color_for_selection, 1.0);
+        gl_FragColor=vec4(fragment_color_for_selection, gl_FragDepthEXT);
     }
 }
 

@@ -48,7 +48,7 @@ public:
 
 		glGenTextures(1, &texture_color_buffer_);
 		glBindTexture(GL_TEXTURE_2D, texture_color_buffer_);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screen_width*multiply, screen_height*multiply, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screen_width*multiply, screen_height*multiply, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
