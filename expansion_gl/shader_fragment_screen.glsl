@@ -9,43 +9,56 @@ uniform sampler2D screen_texture;
 
 #define PI 3.1415926535897932384626433832795
 
+float rand(vec2 coords)
+{
+	return fract(sin(dot(coords.xy, vec2(12.9898,78.233))) * 43758.5453);
+}
+
 void main()
 {
     vec4 full_value=texture2D(screen_texture, v_texcoord);
     if(fog_enabled==1 && full_value.w<1.0)
     {
     	float central_d=full_value.w;
-    	float angle_step_counts=16.0;
-    	float angle_step=(2.0*PI)/angle_step_counts;
-    	float pit_sum=0.0;
-    	for(float i=0.0;i<angle_step_counts;i+=1.0)
+    	
+    	float area_fogval_sum=0.0;
+    	float area_fogval_count=0.1;
+    	float span=0.05;
+    	float span_step=span/5.0;
+    	
+    	float pattern_value=max(rand(v_texcoord.xy), 0.01);
+
+    	for(float x=-span;x<=span;x+=span_step)
     	{
-    		float x=cos(angle_step*i);
-    		float y=sin(angle_step*i);
-    		float min_d=1.0;
-    		for(float z=0.0;z<0.1;z+=0.01)
+    		float sx=v_texcoord.x+x;
+    		if(sx>=-1.0 && sx<=1.0)
     		{
-    			float sx=v_texcoord.x+(x*z);
-    			if(sx>=0.0 && sx<=1.0)
-    			{
-    				float sy=v_texcoord.y+(y*z);
-    				if(sy>=0.0 && sy<=1.0)
-    				{
-    					float d=texture2D(screen_texture, vec2(sx,sy)).w;
-    					min_d=min(min_d, d);
-    				}
-    			}
-    		}
-    		if(central_d>min_d)
-    		{
-    			pit_sum+=1.0;
+	    		for(float y=-span;y<=span;y+=span_step)
+	    		{
+	    			if((x*x+y*y)<=(span*span) && (x*x+y*y)>(span*span*0.25))
+	    			{
+		    		    float sy=v_texcoord.y+y;
+	    				if(sy>=-1.0 && sy<=1.0)
+		    			{
+		    				if(rand(vec2(sx*pattern_value, sy*(1.0-pattern_value)))>=0.0)
+		    				{
+			    				float d=texture2D(screen_texture, vec2(sx,sy)).w;
+			    				if(central_d>d)
+			    				{
+				    				area_fogval_sum+=1.0;
+			    				}
+			    				area_fogval_count+=1.0;
+		    				}
+		    			}
+	    			}
+	    		}
     		}
     	}
-	    float pit_val=pit_sum/angle_step_counts;
-	    //pit_val=max(0.0, pit_val-0.6);
-	    pit_val=1.0/(1.0+exp(10.0-pit_val*10.0));
-	    vec3 color=mix(full_value.xyz, vec3(0, 0, 0), pit_val);
+    	float fogval=min(area_fogval_sum/area_fogval_count+pattern_value*0.1, 1.0);
+
+	    vec3 color=mix(full_value.xyz, vec3(0.0, 0.0, 0.0), fogval);
 	    gl_FragColor=vec4(color, 1.0);
+	    //gl_FragColor=vec4(1.0-fogval, 1.0-fogval, 1.0-fogval, 1.0);
     }
     else
     {
