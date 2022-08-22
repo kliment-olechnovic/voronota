@@ -23,38 +23,30 @@ void main()
     	
     	float area_fogval_sum=0.0;
     	float area_fogval_count=0.1;
-    	float span=0.05;
-    	float span_step=span/5.0;
+    	float span=0.1;
     	
-    	float pattern_value=max(rand(v_texcoord.xy), 0.01);
-
-    	for(float x=-span;x<=span;x+=span_step)
+    	vec2 coord=v_texcoord;
+    	for(int i=0;i<100;i++)
     	{
+    		float xv=(rand(vec2(coord.x, coord.y))-0.5)*2.0;
+    		float yv=(rand(vec2(0.5*(coord.x+xv), coord.y))-0.5)*2.0;
+    		float x=span*xv;
+    		float y=span*yv;
     		float sx=v_texcoord.x+x;
-    		if(sx>=-1.0 && sx<=1.0)
+    		float sy=v_texcoord.y+y;
+    		if(sx>=-1.0 && sx<=1.0 && sy>=-1.0 && sy<=1.0)
     		{
-	    		for(float y=-span;y<=span;y+=span_step)
-	    		{
-	    			if((x*x+y*y)<=(span*span) && (x*x+y*y)>(span*span*0.0))
-	    			{
-		    		    float sy=v_texcoord.y+y;
-	    				if(sy>=-1.0 && sy<=1.0)
-		    			{
-		    				if(rand(vec2(sx*pattern_value, sy*(1.0-pattern_value)))>=0.0)
-		    				{
-			    				float d=texture2D(screen_texture, vec2(sx,sy)).w;
-			    				if(central_d>d+0.01)
-			    				{
-				    				area_fogval_sum+=1.0;
-			    				}
-			    				area_fogval_count+=1.0;
-		    				}
-		    			}
-	    			}
-	    		}
+    			coord=vec2(sx, sy);
+    			float d=texture2D(screen_texture, coord).w;
+			    if(central_d>d)
+				{
+    				area_fogval_sum+=1.0;
+				}
+				area_fogval_count+=1.0;
     		}
     	}
-    	float fogval=min(area_fogval_sum/area_fogval_count+pattern_value*0.0, 1.0)*0.5;
+    	
+    	float fogval=min(area_fogval_sum/area_fogval_count, 1.0)*0.7;
 
 	    vec3 color=mix(full_value.xyz, vec3(0.0, 0.0, 0.0), fogval);
 	    gl_FragColor=vec4(color, 1.0);
