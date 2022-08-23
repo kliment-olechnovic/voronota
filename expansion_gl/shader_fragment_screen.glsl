@@ -26,7 +26,7 @@ void main()
     	float span=0.1;
     	
     	vec2 coord=v_texcoord;
-    	for(int i=0;i<100;i++)
+    	for(int i=0;i<50;i++)
     	{
     		float xv=(rand(vec2(coord.x, coord.y))-0.5)*2.0;
     		float yv=(rand(vec2(0.5*(coord.x+xv), coord.y))-0.5)*2.0;
@@ -47,6 +47,7 @@ void main()
     	}
     	
     	float fogval=min(area_fogval_sum/area_fogval_count, 1.0)*0.7;
+    	fogval+=rand(v_texcoord.xy)*0.15;
 
 	    vec3 color=mix(full_value.xyz, vec3(0.0, 0.0, 0.0), fogval);
 	    gl_FragColor=vec4(color, 1.0);
