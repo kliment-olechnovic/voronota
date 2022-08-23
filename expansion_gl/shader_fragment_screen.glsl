@@ -1,7 +1,7 @@
 #version 100
 precision highp float;
 
-uniform int fog_enabled;
+uniform int mode_number;
 
 varying vec2 v_texcoord;
 
@@ -17,7 +17,7 @@ float rand(vec2 coords)
 void main()
 {
     vec4 full_value=texture2D(screen_texture, v_texcoord);
-    if(fog_enabled==1 && full_value.w<1.0)
+    if(mode_number==1 && full_value.w<1.0)
     {
     	float central_d=full_value.w;
     	

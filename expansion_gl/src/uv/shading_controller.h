@@ -21,7 +21,7 @@ public:
 		modeltransform_matrix_id_(0),
 		viewport_id_(0),
 		selection_mode_enabled_id_(0),
-		fog_enabled_id_(0)
+		mode_number_id_(0)
 	{
 	}
 
@@ -98,7 +98,7 @@ public:
 		modeltransform_matrix_id_=glGetUniformLocation(shader_program_, "modeltransform_matrix");
 		viewport_id_=glGetUniformLocation(shader_program_, "viewport");
 		selection_mode_enabled_id_=glGetUniformLocation(shader_program_, "selection_mode_enabled");
-		fog_enabled_id_=glGetUniformLocation(shader_program_, "fog_enabled");
+		mode_number_id_=glGetUniformLocation(shader_program_, "mode_number");
 
 		good_=true;
 
@@ -170,11 +170,11 @@ public:
 		return false;
 	}
 
-	bool set_fog_enabled(const bool status)
+	bool set_mode_number(const int mode_number)
 	{
 		if(enable())
 		{
-			glUniform1i(fog_enabled_id_, (status ? 1 : 0));
+			glUniform1i(mode_number_id_, mode_number);
 			return true;
 		}
 		return false;
@@ -288,7 +288,7 @@ private:
 	GLuint modeltransform_matrix_id_;
 	GLuint viewport_id_;
 	GLuint selection_mode_enabled_id_;
-	GLuint fog_enabled_id_;
+	GLuint mode_number_id_;
 };
 
 }
