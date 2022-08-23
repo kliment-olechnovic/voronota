@@ -934,6 +934,26 @@ private:
 					}
 				}
 			}
+
+			ImGui::SameLine();
+
+			{
+				static bool occlusion=false;
+
+				occlusion=uv::ViewerApplication::instance().fog_enabled();
+
+				if(ImGui::Checkbox("Occlusion", &occlusion))
+				{
+					if(occlusion)
+					{
+						result="vsb: fog";
+					}
+					else
+					{
+						result="vsb: fog -off";
+					}
+				}
+			}
 		}
 	};
 
