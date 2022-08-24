@@ -1072,14 +1072,23 @@ private:
 
 		if(fog_enabled_)
 		{
+			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+			glDisable(GL_DEPTH_TEST);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glScissor(0, 0, framebuffer_width_, framebuffer_height_);
+			glViewport(0, 0, framebuffer_width_, framebuffer_height_);
+			shading_screen_.set_mode_number(10);
+			drawing_for_screen_controller_.draw(rendering_framebuffer_controller_.texture());
+
 			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
 			glDisable(GL_DEPTH_TEST);
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glScissor(0, 0, framebuffer_width_, framebuffer_height_);
 			glViewport(0, 0, framebuffer_width_, framebuffer_height_);
-			shading_screen_.set_mode_number(1);
-			drawing_for_screen_controller_.draw(rendering_framebuffer_controller_.texture());
+			shading_screen_.set_mode_number(21);
+			drawing_for_screen_controller_.draw(virtual_screen_b_framebuffer_controller_.texture());
 
 			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
 			glDisable(GL_DEPTH_TEST);
@@ -1087,7 +1096,7 @@ private:
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glScissor(0, 0, framebuffer_width_, framebuffer_height_);
 			glViewport(0, 0, framebuffer_width_, framebuffer_height_);
-			shading_screen_.set_mode_number(2);
+			shading_screen_.set_mode_number(22);
 			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
 		}
 		else
