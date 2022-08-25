@@ -912,6 +912,24 @@ private:
 					}
 				}
 			}
+			ImGui::SameLine();
+			{
+				static bool impostoring=false;
+
+				impostoring=(GUIConfiguration::instance().impostoring_variant==GUIConfiguration::IMPOSTORING_VARIANT_SIMPLE);
+
+				if(ImGui::Checkbox("Impostoring", &impostoring))
+				{
+					if(impostoring)
+					{
+						result="vsb: impostoring-simple";
+					}
+					else
+					{
+						result="vsb: impostoring-none";
+					}
+				}
+			}
 
 			{
 				static bool perspective=false;

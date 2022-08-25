@@ -10,6 +10,7 @@
 #include "operators/antialiasing.h"
 #include "operators/background.h"
 #include "operators/grid.h"
+#include "operators/impostoring.h"
 #include "operators/mono.h"
 #include "operators/occlusion.h"
 #include "operators/ortho.h"
@@ -44,6 +45,8 @@ public:
 		set_command_for_extra_actions("occlusion-smooth", operators::Occlusion(GUIConfiguration::OCCLUSION_VARIANT_SMOOTH));
 		set_command_for_extra_actions("antialiasing-none", operators::Antialiasing(GUIConfiguration::ANTIALIASING_VARIANT_NONE));
 		set_command_for_extra_actions("antialiasing-fast", operators::Antialiasing(GUIConfiguration::ANTIALIASING_VARIANT_FAST));
+		set_command_for_extra_actions("impostoring-none", operators::Impostoring(GUIConfiguration::IMPOSTORING_VARIANT_NONE));
+		set_command_for_extra_actions("impostoring-simple", operators::Impostoring(GUIConfiguration::IMPOSTORING_VARIANT_SIMPLE));
 		set_command_for_extra_actions("ortho", operators::Ortho());
 		set_command_for_extra_actions("perspective", operators::Perspective());
 		set_command_for_extra_actions("rotate", operators::Rotate());
@@ -250,7 +253,9 @@ public:
 
 	void draw(const uv::ShadingMode::Mode shading_mode, const int grid_id)
 	{
-		DrawerForDataManager::DrawingRequest drawing_request(true);
+		const bool prefer_impostoring=(GUIConfiguration::instance().impostoring_variant==GUIConfiguration::IMPOSTORING_VARIANT_SIMPLE);
+
+		DrawerForDataManager::DrawingRequest drawing_request(true, true, true, prefer_impostoring);
 
 		scripting::CongregationOfDataManagers::ObjectQuery query;
 		query.visible=true;
@@ -272,11 +277,11 @@ public:
 		{
 			if(grid_id==0)
 			{
-				drawing_request=DrawerForDataManager::DrawingRequest(true, false, false);
+				drawing_request=DrawerForDataManager::DrawingRequest(true, false, false, prefer_impostoring);
 			}
 			else if(grid_id==1)
 			{
-				drawing_request=DrawerForDataManager::DrawingRequest(false, true, false);
+				drawing_request=DrawerForDataManager::DrawingRequest(false, true, false, prefer_impostoring);
 			}
 
 			for(std::size_t i=0;i<dms.size();i++)

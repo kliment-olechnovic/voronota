@@ -66,23 +66,9 @@ public:
 		bool contacts_skinshape;
 		bool figures_solid;
 		bool figures_mesh;
+		bool prefer_impostoring;
 
-		explicit DrawingRequest(const bool status) :
-			atoms_balls(status),
-			atoms_sticks(status),
-			atoms_trace(status),
-			atoms_cartoon(status),
-			atoms_points(status),
-			contacts_faces(status),
-			contacts_sasmesh(status),
-			contacts_edges(status),
-			contacts_skinshape(status),
-			figures_solid(status),
-			figures_mesh(status)
-		{
-		}
-
-		DrawingRequest(const bool atoms_status, const bool contacts_status, const bool figures_status) :
+		DrawingRequest(const bool atoms_status, const bool contacts_status, const bool figures_status, const bool impostoring_preference_status) :
 			atoms_balls(atoms_status),
 			atoms_sticks(atoms_status),
 			atoms_trace(atoms_status),
@@ -93,7 +79,8 @@ public:
 			contacts_edges(contacts_status),
 			contacts_skinshape(contacts_status),
 			figures_solid(figures_status),
-			figures_mesh(figures_status)
+			figures_mesh(figures_status),
+			prefer_impostoring(impostoring_preference_status)
 		{
 		}
 	};
@@ -106,7 +93,7 @@ public:
 		unsigned int trace_sphere_quality;
 		unsigned int trace_cylinder_quality;
 		int cartoon_style;
-		int use_impostoring;
+		int prepare_impostoring;
 
 		RenderingParameters() :
 			ball_sphere_quality(2),
@@ -115,7 +102,7 @@ public:
 			trace_sphere_quality(2),
 			trace_cylinder_quality(18),
 			cartoon_style(0),
-			use_impostoring(1)
+			prepare_impostoring(1)
 		{
 		}
 
@@ -204,42 +191,55 @@ public:
 		}
 		else if(shading_mode==uv::ShadingMode::with_instancing)
 		{
-			if(drawing_request.atoms_balls)
-			{
-				dc_atoms_balls_spheres_inst_.draw();
-			}
 			if(drawing_request.atoms_sticks)
 			{
-				dc_atoms_sticks_spheres_inst_.draw();
 				dc_atoms_sticks_cylinders_.draw();
 			}
 			if(drawing_request.atoms_trace)
 			{
 				dc_atoms_trace_cylinders_.draw();
-				dc_atoms_trace_spheres_inst_.draw();
 			}
-			if(drawing_request.atoms_points)
+
+			if(!drawing_request.prefer_impostoring || rendering_parameters_.prepare_impostoring==0)
 			{
-				dc_atoms_points_inst_.draw();
+				if(drawing_request.atoms_balls)
+				{
+					dc_atoms_balls_spheres_inst_.draw();
+				}
+				if(drawing_request.atoms_sticks)
+				{
+					dc_atoms_sticks_spheres_inst_.draw();
+				}
+				if(drawing_request.atoms_trace)
+				{
+					dc_atoms_trace_spheres_inst_.draw();
+				}
+				if(drawing_request.atoms_points)
+				{
+					dc_atoms_points_inst_.draw();
+				}
 			}
 		}
 		else if(shading_mode==uv::ShadingMode::with_impostoring)
 		{
-			if(drawing_request.atoms_balls)
+			if(drawing_request.prefer_impostoring)
 			{
-				dc_atoms_balls_spheres_impo_.draw();
-			}
-			if(drawing_request.atoms_sticks)
-			{
-				dc_atoms_sticks_spheres_impo_.draw();
-			}
-			if(drawing_request.atoms_trace)
-			{
-				dc_atoms_trace_spheres_impo_.draw();
-			}
-			if(drawing_request.atoms_points)
-			{
-				dc_atoms_points_impo_.draw();
+				if(drawing_request.atoms_balls)
+				{
+					dc_atoms_balls_spheres_impo_.draw();
+				}
+				if(drawing_request.atoms_sticks)
+				{
+					dc_atoms_sticks_spheres_impo_.draw();
+				}
+				if(drawing_request.atoms_trace)
+				{
+					dc_atoms_trace_spheres_impo_.draw();
+				}
+				if(drawing_request.atoms_points)
+				{
+					dc_atoms_points_impo_.draw();
+				}
 			}
 		}
 	}
@@ -411,7 +411,6 @@ private:
 		if(!data_manager_.atoms().empty())
 		{
 			const std::size_t number_of_atoms=data_manager_.atoms().size();
-			if(rendering_parameters_.use_impostoring==0)
 			{
 				dc_atoms_balls_spheres_inst_.reset(number_of_atoms);
 				if(dc_atoms_balls_spheres_inst_.controller_ptr->init_as_sphere(rendering_parameters_.ball_sphere_quality))
@@ -433,7 +432,7 @@ private:
 					data_manager_.set_atoms_representation_implemented(dc_atoms_balls_spheres_inst_.representation_id, drawing_statuses);
 				}
 			}
-			else
+			if(rendering_parameters_.prepare_impostoring==1)
 			{
 				dc_atoms_balls_spheres_impo_.reset(number_of_atoms);
 				std::vector<float> data(number_of_atoms*4, 0.0f);
@@ -469,7 +468,6 @@ private:
 		if(!data_manager_.atoms().empty() && !data_manager_.bonding_links_info().bonds_links.empty())
 		{
 			const std::size_t number_of_atoms=data_manager_.atoms().size();
-			if(rendering_parameters_.use_impostoring==0)
 			{
 				dc_atoms_sticks_spheres_inst_.reset(number_of_atoms);
 				if(dc_atoms_sticks_spheres_inst_.controller_ptr->init_as_sphere(rendering_parameters_.stick_sphere_quality))
@@ -490,7 +488,7 @@ private:
 					data_manager_.set_atoms_representation_implemented(dc_atoms_sticks_spheres_inst_.representation_id, drawing_statuses);
 				}
 			}
-			else
+			if(rendering_parameters_.prepare_impostoring==1)
 			{
 				dc_atoms_sticks_spheres_impo_.reset(number_of_atoms);
 				std::vector<float> data(number_of_atoms*4, 0.0f);
@@ -553,7 +551,6 @@ private:
 		if(!data_manager_.atoms().empty() && !data_manager_.bonding_links_info().residue_trace_links.empty())
 		{
 			const std::size_t number_of_atoms=data_manager_.atoms().size();
-			if(rendering_parameters_.use_impostoring==0)
 			{
 				dc_atoms_trace_spheres_inst_.reset(number_of_atoms);
 				if(dc_atoms_trace_spheres_inst_.controller_ptr->init_as_sphere(rendering_parameters_.trace_sphere_quality))
@@ -577,7 +574,7 @@ private:
 					data_manager_.set_atoms_representation_implemented(dc_atoms_trace_spheres_inst_.representation_id, drawing_statuses);
 				}
 			}
-			else
+			if(rendering_parameters_.prepare_impostoring==1)
 			{
 				dc_atoms_trace_spheres_impo_.reset(number_of_atoms);
 				std::vector<float> data(number_of_atoms*4, 0.0f);
@@ -678,7 +675,6 @@ private:
 		if(!data_manager_.atoms().empty())
 		{
 			const std::size_t number_of_atoms=data_manager_.atoms().size();
-			if(rendering_parameters_.use_impostoring==0)
 			{
 				dc_atoms_points_inst_.reset(number_of_atoms);
 				if(dc_atoms_points_inst_.controller_ptr->init_as_sphere(rendering_parameters_.stick_sphere_quality))
@@ -700,7 +696,7 @@ private:
 					data_manager_.set_atoms_representation_implemented(dc_atoms_points_inst_.representation_id, drawing_statuses);
 				}
 			}
-			else
+			if(rendering_parameters_.prepare_impostoring==1)
 			{
 				dc_atoms_points_impo_.reset(number_of_atoms);
 				std::vector<float> data(number_of_atoms*4, 0.0f);

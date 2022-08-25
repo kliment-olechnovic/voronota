@@ -36,6 +36,10 @@ int main(const int argc, const char** argv)
 
 		voronota::viewer::Application::instance().enqueue_script("clear");
 		voronota::viewer::Application::instance().enqueue_script("setup-defaults");
+		voronota::viewer::Application::instance().enqueue_script("perspective");
+		voronota::viewer::Application::instance().enqueue_script("impostoring-simple");
+		voronota::viewer::Application::instance().enqueue_script("antialiasing-fast");
+		voronota::viewer::Application::instance().enqueue_script("occlusion-smooth");
 
 		const bool faster_loading=(files.size()>5);
 		const bool show_cartoons_after_faster_loading=(faster_loading && files.size()<=30);
