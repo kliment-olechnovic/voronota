@@ -75,6 +75,11 @@ public:
 		return good();
 	}
 
+	bool init(const int screen_width, const int screen_height)
+	{
+		return init(screen_width, screen_height, 1);
+	}
+
 	bool good() const
 	{
 		return (screen_width_!=0 && screen_height_!=0 && multiply_!=0 && fbo_!=0 && rbo_!=0 && texture_color_buffer_!=0);

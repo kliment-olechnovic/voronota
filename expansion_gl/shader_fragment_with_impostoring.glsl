@@ -14,6 +14,11 @@ varying vec3 fragment_color_for_selection;
 varying vec3 fragment_color_for_display;
 varying vec3 fragment_adjunct;
 
+// Some info about the reused ideas and code:
+//   The sphere impostoring code is adapted from
+//     https://github.com/ssloy/glsltuto/blob/master/shaders/ (by Dmitry V. Sokolov, no license stated)
+//     who used the paper "GPU-Based Ray-Casting of Quadratic Surfaces" (http://dl.acm.org/citation.cfm?id=2386396) by Christian Sigg, Tim Weyrich, Mario Botsch, Markus Gross.
+
 void main()
 {
     vec4 c3 = VPMT_inverse[2];
@@ -49,7 +54,7 @@ void main()
             vec3 diffuse=diffuse_value*light_color;
             final_color=(ambient+diffuse)*fragment_color_for_display;
         }
-        if((fragment_adjunct[0]>0.5) && (mod(floor(gl_FragCoord.x), 4.0)<1.5 || mod(floor(gl_FragCoord.y), 4.0)<1.5))
+        if((fragment_adjunct[0]>0.5) && (mod(floor(gl_FragCoord.x), 2.0)<0.5 || mod(floor(gl_FragCoord.y), 2.0)<0.5))
         {
             final_color=vec3(1.0, 0.0, 1.0);
             if(fragment_color_for_display[0]>0.5 && fragment_color_for_display[1]<0.25 && fragment_color_for_display[2]>0.5)

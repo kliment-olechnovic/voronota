@@ -20,6 +20,11 @@ varying vec3 fragment_color_for_selection;
 varying vec3 fragment_color_for_display;
 varying vec3 fragment_adjunct;
 
+// Some info about the reused ideas and code:
+//   The sphere impostoring code is adapted from
+//     https://github.com/ssloy/glsltuto/blob/master/shaders/ (by Dmitry V. Sokolov, no license stated)
+//     who used the paper "GPU-Based Ray-Casting of Quadratic Surfaces" (http://dl.acm.org/citation.cfm?id=2386396) by Christian Sigg, Tim Weyrich, Mario Botsch, Markus Gross.
+
 mat4 invert_mat(mat4 m)
 {
     float
