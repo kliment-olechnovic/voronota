@@ -8,9 +8,9 @@
 
 #include "operators/animate.h"
 #include "operators/background.h"
-#include "operators/fog.h"
 #include "operators/grid.h"
 #include "operators/mono.h"
+#include "operators/occlusion.h"
 #include "operators/ortho.h"
 #include "operators/perspective.h"
 #include "operators/resize_window.h"
@@ -38,9 +38,11 @@ public:
 		set_command_for_extra_actions("stereo", operators::Stereo());
 		set_command_for_extra_actions("grid-by-object", operators::Grid(GUIConfiguration::GRID_VARIANT_BY_OBJECT));
 		set_command_for_extra_actions("grid-by-concept", operators::Grid(GUIConfiguration::GRID_VARIANT_BY_CONCEPT));
+		set_command_for_extra_actions("occlusion-none", operators::Occlusion(GUIConfiguration::OCCLUSION_VARIANT_NONE));
+		set_command_for_extra_actions("occlusion-noisy", operators::Occlusion(GUIConfiguration::OCCLUSION_VARIANT_NOISY));
+		set_command_for_extra_actions("occlusion-smooth", operators::Occlusion(GUIConfiguration::OCCLUSION_VARIANT_SMOOTH));
 		set_command_for_extra_actions("ortho", operators::Ortho());
 		set_command_for_extra_actions("perspective", operators::Perspective());
-		set_command_for_extra_actions("fog", operators::Fog());
 		set_command_for_extra_actions("rotate", operators::Rotate());
 		set_command_for_extra_actions("screenshot", operators::Screenshot());
 		set_command_for_extra_actions("setup-rendering", operators::SetupRendering());

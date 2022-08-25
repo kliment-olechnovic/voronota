@@ -18,6 +18,13 @@ public:
 		GRID_VARIANT_BY_CONCEPT
 	};
 
+	enum OcclusionVariant
+	{
+		OCCLUSION_VARIANT_NONE,
+		OCCLUSION_VARIANT_NOISY,
+		OCCLUSION_VARIANT_SMOOTH
+	};
+
 	enum AnimationVariant
 	{
 		ANIMATION_VARIANT_NONE,
@@ -33,6 +40,7 @@ public:
 	};
 
 	GridVariant grid_variant;
+	OcclusionVariant occlusion_variant;
 	AnimationVariant animation_variant;
 	InitialRepresentationVariant initial_main_representation_variant;
 	bool enabled_cursor_label;
@@ -76,6 +84,7 @@ public:
 private:
 	GUIConfiguration() :
 		grid_variant(GRID_VARIANT_BY_OBJECT),
+		occlusion_variant(OCCLUSION_VARIANT_NONE),
 		animation_variant(ANIMATION_VARIANT_NONE),
 		initial_main_representation_variant(INITIAL_REPRESENTATION_VARIANT_CARTOON),
 		enabled_cursor_label(true),

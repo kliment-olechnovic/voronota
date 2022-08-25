@@ -355,9 +355,19 @@ public:
 		return num_of_refresh_calls_since_last_render_;
 	}
 
-	bool fog_enabled() const
+	bool occlusion_mode_is_none() const
 	{
-		return fog_enabled_;
+		return (occlusion_mode_==OcclusionMode::none);
+	}
+
+	bool occlusion_mode_is_noisy() const
+	{
+		return (occlusion_mode_==OcclusionMode::noisy);
+	}
+
+	bool occlusion_mode_is_smooth() const
+	{
+		return (occlusion_mode_==OcclusionMode::smooth);
 	}
 
 	void close()
@@ -460,9 +470,19 @@ public:
 		set_projection_mode_to_perspective();
 	}
 
-	void set_fog_enabled(const bool enabled)
+	void set_occlusion_mode_to_none()
 	{
-		fog_enabled_=enabled;
+		occlusion_mode_=OcclusionMode::none;
+	}
+
+	void set_occlusion_mode_to_noisy()
+	{
+		occlusion_mode_=OcclusionMode::noisy;
+	}
+
+	void set_occlusion_mode_to_smooth()
+	{
+		occlusion_mode_=OcclusionMode::smooth;
 	}
 
 	void set_stereo_angle(const float stereo_angle)
@@ -592,9 +612,9 @@ protected:
 		perspective_far_z_(1000.0f),
 		grid_size_(1),
 		num_of_refresh_calls_since_last_render_(0),
-		fog_enabled_(false),
 		rendering_mode_(RenderingMode::simple),
-		projection_mode_(ProjectionMode::ortho)
+		projection_mode_(ProjectionMode::ortho),
+		occlusion_mode_(OcclusionMode::none)
 	{
 		instance_ptr()=this;
 		Utilities::calculate_color_from_integer(0, background_color_);
@@ -754,6 +774,16 @@ private:
 		{
 			ortho,
 			perspective
+		};
+	};
+
+	struct OcclusionMode
+	{
+		enum Mode
+		{
+			none,
+			noisy,
+			smooth
 		};
 	};
 
@@ -1069,22 +1099,32 @@ private:
 		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
 		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
 
-		if(fog_enabled_)
+		if(occlusion_mode_!=OcclusionMode::none)
 		{
-			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shading_screen_.set_mode_number(10);
-			drawing_for_screen_controller_.draw(rendering_framebuffer_controller_.texture());
+			if(occlusion_mode_==OcclusionMode::noisy)
+			{
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				shading_screen_.set_mode_number(12);
+				drawing_for_screen_controller_.draw(rendering_framebuffer_controller_.texture());
+			}
+			else
+			{
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				shading_screen_.set_mode_number(11);
+				drawing_for_screen_controller_.draw(rendering_framebuffer_controller_.texture());
 
-			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shading_screen_.set_mode_number(21);
-			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				shading_screen_.set_mode_number(21);
+				drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
 
-			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shading_screen_.set_mode_number(22);
-			drawing_for_screen_controller_.draw(virtual_screen_b_framebuffer_controller_.texture());
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				shading_screen_.set_mode_number(22);
+				drawing_for_screen_controller_.draw(virtual_screen_b_framebuffer_controller_.texture());
+			}
 
 			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1473,9 +1513,9 @@ private:
 	float perspective_far_z_;
 	int grid_size_;
 	int num_of_refresh_calls_since_last_render_;
-	bool fog_enabled_;
 	RenderingMode::Mode rendering_mode_;
 	ProjectionMode::Mode projection_mode_;
+	OcclusionMode::Mode occlusion_mode_;
 	float background_color_[3];
 	float margin_color_[3];
 	ShadingController shading_screen_;

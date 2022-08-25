@@ -940,17 +940,17 @@ private:
 			{
 				static bool occlusion=false;
 
-				occlusion=uv::ViewerApplication::instance().fog_enabled();
+				occlusion=!uv::ViewerApplication::instance().occlusion_mode_is_none();
 
 				if(ImGui::Checkbox("Occlusion", &occlusion))
 				{
 					if(occlusion)
 					{
-						result="vsb: fog";
+						result="vsb: occlusion-smooth";
 					}
 					else
 					{
-						result="vsb: fog -off";
+						result="vsb: occlusion-none";
 					}
 				}
 			}

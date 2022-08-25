@@ -23,7 +23,7 @@ float rand(vec2 coords)
 	return fract(sin(dot(coords.xy, vec2(12.9898,78.233)))*43758.5453);
 }
 
-vec4 ssao_noisy(vec4 full_value)
+float ssao_noisy(vec4 full_value)
 {
     float central_d=full_value.w;
 	
@@ -40,7 +40,7 @@ vec4 ssao_noisy(vec4 full_value)
 		float y=span*yv;
 		float sx=v_texcoord.x+x;
 		float sy=v_texcoord.y+y;
-		if(sx>=0.0 && sx<=1.0 && sy>=0.0 && sy<=1.0)
+		//if(sx>=0.0 && sx<=1.0 && sy>=0.0 && sy<=1.0)
 		{
 			coord=vec2(sx, sy);
 			float d=texture2D(screen_texture, coord).w;
@@ -55,10 +55,10 @@ vec4 ssao_noisy(vec4 full_value)
 	float fogval=min(area_fogval_sum/area_fogval_count, 1.0)*0.7;
 	fogval+=rand(v_texcoord.xy)*0.15;
 
-    return vec4(full_value.xyz, fogval);
+    return fogval;
 }
 
-vec4 ssao_blur_pass(vec4 full_value, int pass_num)
+float ssao_blur_pass(vec4 full_value, int pass_num)
 {
 	vec2 texel_size=vec2(1.0/viewport.z, 1.0/viewport.w)*2.0;
 	
@@ -113,7 +113,7 @@ vec4 ssao_blur_pass(vec4 full_value, int pass_num)
 	for(int i=0;i<33;i++)
 	{
 		vec2 coord=v_texcoord+(direction*float(i-16));
-		if(coord.x>=-1.0 && coord.x<=1.0 && coord.y>=-1.0 && coord.y<=1.0)
+		//if(coord.x>=0.0 && coord.x<=1.0 && coord.y>=0.0 && coord.y<=1.0)
 		{
 			float value=texture2D(screen_texture, coord).w;
 			if(value<1.0)
@@ -124,14 +124,8 @@ vec4 ssao_blur_pass(vec4 full_value, int pass_num)
 		}
 	}
 	float fogval=sum_values/sum_weights;
-	    	    	
-	if(pass_num==1)
-	{
-		return vec4(full_value.xyz, fogval);
-	}
-	
-	fogval=pow(fogval, 2.0);
-	return vec4(mix(full_value.xyz, vec3(0.0, 0.0, 0.0), fogval), 1.0);
+
+	return fogval;
 }
 
 float fxaa_quality(int q)
@@ -383,13 +377,30 @@ vec4 fxaa_compute_color(vec4 colorCenter)
 void main()
 {
     vec4 full_value=texture2D(screen_texture, v_texcoord);
-    if(mode_number==10 && full_value.w<1.0)
+    if((mode_number==11 || mode_number==12) && full_value.w<1.0)
     {
-	    gl_FragColor=ssao_noisy(full_value);
+    	float result=ssao_noisy(full_value);
+    	if(mode_number==11)
+    	{
+    		gl_FragColor=vec4(full_value.xyz, result);
+    	}
+    	else
+    	{
+    		gl_FragColor=vec4(mix(full_value.xyz, vec3(0.0, 0.0, 0.0), result), 1.0);
+    	}
     }
     else if((mode_number==21 || mode_number==22) && full_value.w<1.0)
     {
-    	gl_FragColor=ssao_blur_pass(full_value, mode_number-20);
+    	float result=ssao_blur_pass(full_value, mode_number-20);
+    	if(mode_number==21)
+    	{
+    		gl_FragColor=vec4(full_value.xyz, result);
+    	}
+    	else
+    	{
+    		result=pow(result, 2.0);
+    		gl_FragColor=vec4(mix(full_value.xyz, vec3(0.0, 0.0, 0.0), result), 1.0);
+    	}
     }
     else if(mode_number==30)
     {
