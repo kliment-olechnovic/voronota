@@ -105,6 +105,16 @@ public:
 		return (screen_height_*multiply_);
 	}
 
+	void swap(FramebufferController& other)
+	{
+		std::swap(screen_width_, other.screen_width_);
+		std::swap(screen_height_, other.screen_height_);
+		std::swap(multiply_, other.multiply_);
+		std::swap(fbo_, other.fbo_);
+		std::swap(rbo_, other.rbo_);
+		std::swap(texture_color_buffer_, other.texture_color_buffer_);
+	}
+
 private:
 	void reset()
 	{

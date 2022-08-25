@@ -162,12 +162,6 @@ public:
 			return false;
 		}
 
-		if(!rendering_framebuffer_controller_.init(framebuffer_width_, framebuffer_height_))
-		{
-			std::cerr << "Error: failed to init effectyive rendering framebuffer controller." << std::endl;
-			glfwTerminate();
-			return false;
-		}
 
 		if(!virtual_screen_a_framebuffer_controller_.init(framebuffer_width_, framebuffer_height_))
 		{
@@ -584,7 +578,7 @@ public:
 		image_data.clear();
 		image_data.resize(image_width*image_height*3);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+		glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
 
 		glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 		glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
@@ -909,7 +903,6 @@ private:
 	{
 		framebuffer_width_=width;
 		framebuffer_height_=height;
-		rendering_framebuffer_controller_.init(framebuffer_width_, framebuffer_height_);
 		virtual_screen_a_framebuffer_controller_.init(framebuffer_width_, framebuffer_height_);
 		virtual_screen_b_framebuffer_controller_.init(framebuffer_width_, framebuffer_height_);
 		refresh_shading_projection();
@@ -1061,12 +1054,12 @@ private:
 
 		glEnable(GL_DEPTH_TEST);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, rendering_framebuffer_controller_.framebuffer());
+        glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
 
 		on_before_rendered_frame();
 
-		glScissor(0, 0, rendering_framebuffer_controller_.width(), rendering_framebuffer_controller_.height());
-		glViewport(0, 0, rendering_framebuffer_controller_.width(), rendering_framebuffer_controller_.height());
+		glScissor(0, 0, virtual_screen_a_framebuffer_controller_.width(), virtual_screen_a_framebuffer_controller_.height());
+		glViewport(0, 0, virtual_screen_a_framebuffer_controller_.width(), virtual_screen_a_framebuffer_controller_.height());
 		glClearColor(margin_color_[0], margin_color_[1], margin_color_[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1129,50 +1122,49 @@ private:
 		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
 		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
 
-		if(occlusion_mode_!=OcclusionMode::none)
+		if(occlusion_mode_==OcclusionMode::noisy)
 		{
-			if(occlusion_mode_==OcclusionMode::noisy)
-			{
-				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-				shading_screen_.set_mode_number(12);
-				drawing_for_screen_controller_.draw(rendering_framebuffer_controller_.texture());
-			}
-			else
-			{
-				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-				shading_screen_.set_mode_number(11);
-				drawing_for_screen_controller_.draw(rendering_framebuffer_controller_.texture());
-
-				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-				shading_screen_.set_mode_number(21);
-				drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
-
-				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-				shading_screen_.set_mode_number(22);
-				drawing_for_screen_controller_.draw(virtual_screen_b_framebuffer_controller_.texture());
-			}
-
 			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shading_screen_.set_mode_number(antialiasing_mode_==AntialiasingMode::fast ? 30 : 0);
+			shading_screen_.set_mode_number(12);
 			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+			virtual_screen_a_framebuffer_controller_.swap(virtual_screen_b_framebuffer_controller_);
 		}
-		else
+		else if(occlusion_mode_==OcclusionMode::smooth)
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shading_screen_.set_mode_number(antialiasing_mode_==AntialiasingMode::fast ? 30 : 0);
-			drawing_for_screen_controller_.draw(rendering_framebuffer_controller_.texture());
+			shading_screen_.set_mode_number(11);
+			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			shading_screen_.set_mode_number(21);
+			drawing_for_screen_controller_.draw(virtual_screen_b_framebuffer_controller_.texture());
+
+			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			shading_screen_.set_mode_number(22);
+			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+			virtual_screen_a_framebuffer_controller_.swap(virtual_screen_b_framebuffer_controller_);
+		}
+
+		if(antialiasing_mode_==AntialiasingMode::fast)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			shading_screen_.set_mode_number(30);
+			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+			virtual_screen_a_framebuffer_controller_.swap(virtual_screen_b_framebuffer_controller_);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		shading_screen_.set_mode_number(0);
-		drawing_for_screen_controller_.draw(virtual_screen_b_framebuffer_controller_.texture());
+		drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
 
 		glUseProgram(0);
 		render_overlay();
@@ -1553,7 +1545,6 @@ private:
 	ShadingController shading_simple_;
 	ShadingController shading_with_instancing_;
 	ShadingController shading_with_impostoring_;
-	FramebufferController rendering_framebuffer_controller_;
 	FramebufferController virtual_screen_a_framebuffer_controller_;
 	FramebufferController virtual_screen_b_framebuffer_controller_;
 	DrawingForScreenController drawing_for_screen_controller_;
