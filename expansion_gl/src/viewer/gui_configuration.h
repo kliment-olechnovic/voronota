@@ -25,6 +25,12 @@ public:
 		OCCLUSION_VARIANT_SMOOTH
 	};
 
+	enum AntialiasingVariant
+	{
+		ANTIALIASING_VARIANT_NONE,
+		ANTIALIASING_VARIANT_FAST
+	};
+
 	enum AnimationVariant
 	{
 		ANIMATION_VARIANT_NONE,
@@ -41,6 +47,7 @@ public:
 
 	GridVariant grid_variant;
 	OcclusionVariant occlusion_variant;
+	AntialiasingVariant antialiasing_variant;
 	AnimationVariant animation_variant;
 	InitialRepresentationVariant initial_main_representation_variant;
 	bool enabled_cursor_label;
@@ -85,6 +92,7 @@ private:
 	GUIConfiguration() :
 		grid_variant(GRID_VARIANT_BY_OBJECT),
 		occlusion_variant(OCCLUSION_VARIANT_NONE),
+		antialiasing_variant(ANTIALIASING_VARIANT_NONE),
 		animation_variant(ANIMATION_VARIANT_NONE),
 		initial_main_representation_variant(INITIAL_REPRESENTATION_VARIANT_CARTOON),
 		enabled_cursor_label(true),

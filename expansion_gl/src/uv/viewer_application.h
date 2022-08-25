@@ -370,6 +370,16 @@ public:
 		return (occlusion_mode_==OcclusionMode::smooth);
 	}
 
+	bool antialiasing_mode_is_none() const
+	{
+		return (antialiasing_mode_==AntialiasingMode::none);
+	}
+
+	bool antialiasing_mode_is_fast() const
+	{
+		return (antialiasing_mode_==AntialiasingMode::fast);
+	}
+
 	void close()
 	{
 		if(good())
@@ -483,6 +493,16 @@ public:
 	void set_occlusion_mode_to_smooth()
 	{
 		occlusion_mode_=OcclusionMode::smooth;
+	}
+
+	void set_antialiasing_mode_to_none()
+	{
+		antialiasing_mode_=AntialiasingMode::none;
+	}
+
+	void set_antialiasing_mode_to_fast()
+	{
+		antialiasing_mode_=AntialiasingMode::fast;
 	}
 
 	void set_stereo_angle(const float stereo_angle)
@@ -614,7 +634,8 @@ protected:
 		num_of_refresh_calls_since_last_render_(0),
 		rendering_mode_(RenderingMode::simple),
 		projection_mode_(ProjectionMode::ortho),
-		occlusion_mode_(OcclusionMode::none)
+		occlusion_mode_(OcclusionMode::none),
+		antialiasing_mode_(AntialiasingMode::none)
 	{
 		instance_ptr()=this;
 		Utilities::calculate_color_from_integer(0, background_color_);
@@ -784,6 +805,15 @@ private:
 			none,
 			noisy,
 			smooth
+		};
+	};
+
+	struct AntialiasingMode
+	{
+		enum Mode
+		{
+			none,
+			fast
 		};
 	};
 
@@ -1128,14 +1158,14 @@ private:
 
 			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shading_screen_.set_mode_number(30);
+			shading_screen_.set_mode_number(antialiasing_mode_==AntialiasingMode::fast ? 30 : 0);
 			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
 		}
 		else
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shading_screen_.set_mode_number(30);
+			shading_screen_.set_mode_number(antialiasing_mode_==AntialiasingMode::fast ? 30 : 0);
 			drawing_for_screen_controller_.draw(rendering_framebuffer_controller_.texture());
 		}
 
@@ -1516,6 +1546,7 @@ private:
 	RenderingMode::Mode rendering_mode_;
 	ProjectionMode::Mode projection_mode_;
 	OcclusionMode::Mode occlusion_mode_;
+	AntialiasingMode::Mode antialiasing_mode_;
 	float background_color_[3];
 	float margin_color_[3];
 	ShadingController shading_screen_;

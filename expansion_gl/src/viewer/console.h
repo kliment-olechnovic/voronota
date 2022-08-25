@@ -894,9 +894,7 @@ private:
 					}
 				}
 			}
-
 			ImGui::SameLine();
-
 			{
 				static bool grid=false;
 
@@ -915,8 +913,6 @@ private:
 				}
 			}
 
-			ImGui::SameLine();
-
 			{
 				static bool perspective=false;
 
@@ -934,17 +930,33 @@ private:
 					}
 				}
 			}
-
 			ImGui::SameLine();
+			{
+				static bool antialiasing=false;
+
+				antialiasing=!uv::ViewerApplication::instance().antialiasing_mode_is_none();
+
+				if(ImGui::Checkbox("Antialiasing", &antialiasing))
+				{
+					if(antialiasing)
+					{
+						result="vsb: antialiasing-fast";
+					}
+					else
+					{
+						result="vsb: antialiasing-none";
+					}
+				}
+			}
 
 			{
-				static bool occlusion=false;
+				static bool occlusion_smooth=false;
 
-				occlusion=!uv::ViewerApplication::instance().occlusion_mode_is_none();
+				occlusion_smooth=uv::ViewerApplication::instance().occlusion_mode_is_smooth();
 
-				if(ImGui::Checkbox("Occlusion", &occlusion))
+				if(ImGui::Checkbox("Occlusion (smooth)", &occlusion_smooth))
 				{
-					if(occlusion)
+					if(occlusion_smooth)
 					{
 						result="vsb: occlusion-smooth";
 					}
@@ -954,9 +966,35 @@ private:
 					}
 				}
 			}
+			ImGui::SameLine();
+			{
+				static bool occlusion_noisy=false;
+
+				occlusion_noisy=uv::ViewerApplication::instance().occlusion_mode_is_noisy();
+
+				if(ImGui::Checkbox("Occlusion (noisy)", &occlusion_noisy))
+				{
+					if(occlusion_noisy)
+					{
+						result="vsb: occlusion-noisy";
+					}
+					else
+					{
+						result="vsb: occlusion-none";
+					}
+				}
+			}
 
 			{
-				ImGui::Text("Rendering speed: %.3f ms/frame (%.1f FPS)", 1000.0/static_cast<double>(ImGui::GetIO().Framerate), static_cast<double>(ImGui::GetIO().Framerate));
+				static bool show_fps=false;
+
+				ImGui::Checkbox(show_fps ? "Show stats:" : "Show stats", &show_fps);
+
+				if(show_fps)
+				{
+					ImGui::SameLine();
+					ImGui::Text("FPS = %.1f", static_cast<double>(ImGui::GetIO().Framerate));
+				}
 			}
 		}
 	};

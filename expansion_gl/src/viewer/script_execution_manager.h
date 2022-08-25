@@ -7,6 +7,7 @@
 #include "console.h"
 
 #include "operators/animate.h"
+#include "operators/antialiasing.h"
 #include "operators/background.h"
 #include "operators/grid.h"
 #include "operators/mono.h"
@@ -41,6 +42,8 @@ public:
 		set_command_for_extra_actions("occlusion-none", operators::Occlusion(GUIConfiguration::OCCLUSION_VARIANT_NONE));
 		set_command_for_extra_actions("occlusion-noisy", operators::Occlusion(GUIConfiguration::OCCLUSION_VARIANT_NOISY));
 		set_command_for_extra_actions("occlusion-smooth", operators::Occlusion(GUIConfiguration::OCCLUSION_VARIANT_SMOOTH));
+		set_command_for_extra_actions("antialiasing-none", operators::Antialiasing(GUIConfiguration::ANTIALIASING_VARIANT_NONE));
+		set_command_for_extra_actions("antialiasing-fast", operators::Antialiasing(GUIConfiguration::ANTIALIASING_VARIANT_FAST));
 		set_command_for_extra_actions("ortho", operators::Ortho());
 		set_command_for_extra_actions("perspective", operators::Perspective());
 		set_command_for_extra_actions("rotate", operators::Rotate());
