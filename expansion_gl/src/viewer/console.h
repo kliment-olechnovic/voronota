@@ -954,6 +954,10 @@ private:
 					}
 				}
 			}
+
+			{
+				ImGui::Text("Rendering speed: %.3f ms/frame (%.1f FPS)", 1000.0/static_cast<double>(ImGui::GetIO().Framerate), static_cast<double>(ImGui::GetIO().Framerate));
+			}
 		}
 	};
 
