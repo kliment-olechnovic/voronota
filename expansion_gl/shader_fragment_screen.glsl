@@ -386,7 +386,7 @@ void main()
     	}
     	else
     	{
-    		gl_FragColor=vec4(mix(full_value.xyz, vec3(0.0, 0.0, 0.0), result), 1.0);
+    		gl_FragColor=vec4(mix(full_value.xyz, vec3(0.0, 0.0, 0.0), result), result);
     	}
     }
     else if((mode_number==21 || mode_number==22) && full_value.w<1.0)
@@ -399,15 +399,15 @@ void main()
     	else
     	{
     		result=pow(result, 2.0);
-    		gl_FragColor=vec4(mix(full_value.xyz, vec3(0.0, 0.0, 0.0), result), 1.0);
+    		gl_FragColor=vec4(mix(full_value.xyz, vec3(0.0, 0.0, 0.0), result), result);
     	}
     }
     else if(mode_number==30)
     {
-    	gl_FragColor=fxaa_compute_color(full_value);
+    	gl_FragColor=vec4(fxaa_compute_color(full_value).xyz, full_value.w);
     }
     else
     {
-	    gl_FragColor=vec4(full_value.xyz, 1.0);
+	    gl_FragColor=full_value;
     }
 }
