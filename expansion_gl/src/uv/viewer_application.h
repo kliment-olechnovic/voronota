@@ -26,6 +26,7 @@ public:
 	{
 		int suggested_window_width;
 		int suggested_window_height;
+		bool no_fps_limit;
 		std::string title;
 		std::string shader_vertex_screen;
 		std::string shader_vertex;
@@ -38,7 +39,8 @@ public:
 
 		InitializationParameters() :
 			suggested_window_width(800),
-			suggested_window_height(600)
+			suggested_window_height(600),
+			no_fps_limit(false)
 		{
 		}
 	};
@@ -111,7 +113,10 @@ public:
 
 		glfwMakeContextCurrent(window_);
 
-		//glfwSwapInterval(0);
+		if(parameters.no_fps_limit)
+		{
+			glfwSwapInterval(0);
+		}
 
 		glewExperimental=GL_TRUE;
 		glewInit();
@@ -1055,6 +1060,8 @@ private:
 		glfwPollEvents();
 
 		glEnable(GL_DEPTH_TEST);
+
+		ShadingController::managed_glUseProgram(0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
 

@@ -33,6 +33,20 @@ public:
 		}
 	}
 
+	static void managed_glUseProgram(const GLuint program)
+	{
+		static GLuint last_used_program=0;
+		if(program==0)
+		{
+			last_used_program=0;
+		}
+		else if(program!=last_used_program)
+		{
+			glUseProgram(program);
+			last_used_program=program;
+		}
+	}
+
 	bool init(const std::string& vertex_shader_filename, const std::string& fragment_shader_filename, const std::vector<std::string>& attribute_names_to_bind_locations)
 	{
 		if(good())
@@ -114,7 +128,7 @@ public:
 	{
 		if(good())
 		{
-			glUseProgram(shader_program_);
+			managed_glUseProgram(shader_program_);
 			return true;
 		}
 		return false;

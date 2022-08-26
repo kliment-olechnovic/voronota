@@ -31,7 +31,7 @@ public:
 	{
 		if(good())
 		{
-			if(screen_width==screen_width_ && screen_height==screen_height_)
+			if(screen_width==screen_width_ && screen_height==screen_height_ && multiply==multiply_)
 			{
 				return true;
 			}
