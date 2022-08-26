@@ -21,6 +21,11 @@ varying vec3 fragment_adjunct;
 
 void main()
 {
+	if(gl_FragCoord.x<viewport.x || gl_FragCoord.x>(viewport.x+viewport.z) || gl_FragCoord.y<viewport.y || gl_FragCoord.y>(viewport.y+viewport.w))
+	{
+		discard;
+	}
+	
     vec4 c3 = VPMT_inverse[2];
     vec4 xpPrime = VPMT_inverse*vec4(gl_FragCoord.x, gl_FragCoord.y, 0.0, 1.0);
 

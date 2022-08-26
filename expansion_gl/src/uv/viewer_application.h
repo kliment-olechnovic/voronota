@@ -585,15 +585,20 @@ public:
 		image_data.clear();
 		image_data.resize(image_width*image_height*3);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
+		if(skipping_virtual_screen_framebuffers_)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
+		else
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
+		}
 
 		glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 		glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
 		glPixelStorei(GL_PACK_SKIP_ROWS, 0);
 		glPixelStorei(GL_PACK_ALIGNMENT, 1);
 		glReadPixels(0, 0, image_width, image_height, GL_RGB, GL_UNSIGNED_BYTE, &image_data[0]);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		return true;
 	}
@@ -633,6 +638,7 @@ protected:
 		perspective_far_z_(1000.0f),
 		grid_size_(1),
 		num_of_refresh_calls_since_last_render_(0),
+		skipping_virtual_screen_framebuffers_(false),
 		rendering_mode_(RenderingMode::simple),
 		projection_mode_(ProjectionMode::ortho),
 		occlusion_mode_(OcclusionMode::none),
@@ -1063,12 +1069,21 @@ private:
 
 		ShadingController::managed_glUseProgram(0);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
+		skipping_virtual_screen_framebuffers_=(occlusion_mode_==OcclusionMode::none && antialiasing_mode_==AntialiasingMode::none);
+
+		if(skipping_virtual_screen_framebuffers_)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
+		else
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
+		}
 
 		on_before_rendered_frame();
 
-		glScissor(0, 0, virtual_screen_a_framebuffer_controller_.width(), virtual_screen_a_framebuffer_controller_.height());
-		glViewport(0, 0, virtual_screen_a_framebuffer_controller_.width(), virtual_screen_a_framebuffer_controller_.height());
+		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
+		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
 		glClearColor(margin_color_[0], margin_color_[1], margin_color_[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1124,56 +1139,53 @@ private:
 		shading_with_impostoring_.enable();
 		render_scene(ShadingMode::with_impostoring);
 
-		shading_screen_.set_viewport(0, 0, framebuffer_width_, framebuffer_height_);
-
-		glDisable(GL_DEPTH_TEST);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
-		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
-
-		if(occlusion_mode_==OcclusionMode::noisy)
+		if(!skipping_virtual_screen_framebuffers_)
 		{
-			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shading_screen_.set_mode_number(12);
-			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+			shading_screen_.set_viewport(0, 0, framebuffer_width_, framebuffer_height_);
 
-			virtual_screen_a_framebuffer_controller_.swap(virtual_screen_b_framebuffer_controller_);
+			glDisable(GL_DEPTH_TEST);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glScissor(0, 0, framebuffer_width_, framebuffer_height_);
+			glViewport(0, 0, framebuffer_width_, framebuffer_height_);
+
+			if(occlusion_mode_==OcclusionMode::noisy)
+			{
+				shading_screen_.set_mode_number(12);
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+				drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+				virtual_screen_a_framebuffer_controller_.swap(virtual_screen_b_framebuffer_controller_);
+			}
+			else if(occlusion_mode_==OcclusionMode::smooth)
+			{
+				shading_screen_.set_mode_number(11);
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+				drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+				shading_screen_.set_mode_number(21);
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
+				drawing_for_screen_controller_.draw(virtual_screen_b_framebuffer_controller_.texture());
+
+				shading_screen_.set_mode_number(22);
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+				drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+				virtual_screen_a_framebuffer_controller_.swap(virtual_screen_b_framebuffer_controller_);
+			}
+
+			if(antialiasing_mode_==AntialiasingMode::fast)
+			{
+				shading_screen_.set_mode_number(30);
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+				drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+				virtual_screen_a_framebuffer_controller_.swap(virtual_screen_b_framebuffer_controller_);
+			}
+
+			shading_screen_.set_mode_number(0);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
 		}
-		else if(occlusion_mode_==OcclusionMode::smooth)
-		{
-			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shading_screen_.set_mode_number(11);
-			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
-
-			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shading_screen_.set_mode_number(21);
-			drawing_for_screen_controller_.draw(virtual_screen_b_framebuffer_controller_.texture());
-
-			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shading_screen_.set_mode_number(22);
-			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
-
-			virtual_screen_a_framebuffer_controller_.swap(virtual_screen_b_framebuffer_controller_);
-		}
-
-		if(antialiasing_mode_==AntialiasingMode::fast)
-		{
-			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shading_screen_.set_mode_number(30);
-			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
-
-			virtual_screen_a_framebuffer_controller_.swap(virtual_screen_b_framebuffer_controller_);
-		}
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		shading_screen_.set_mode_number(0);
-		drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
 
 		glUseProgram(0);
 		render_overlay();
@@ -1544,6 +1556,7 @@ private:
 	float perspective_far_z_;
 	int grid_size_;
 	int num_of_refresh_calls_since_last_render_;
+	bool skipping_virtual_screen_framebuffers_;
 	RenderingMode::Mode rendering_mode_;
 	ProjectionMode::Mode projection_mode_;
 	OcclusionMode::Mode occlusion_mode_;
