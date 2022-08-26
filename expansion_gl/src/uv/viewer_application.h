@@ -111,6 +111,8 @@ public:
 
 		glfwMakeContextCurrent(window_);
 
+		//glfwSwapInterval(0);
+
 		glewExperimental=GL_TRUE;
 		glewInit();
 

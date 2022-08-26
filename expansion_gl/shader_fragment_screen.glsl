@@ -32,7 +32,7 @@ float ssao_noisy(vec4 full_value)
 	float span=0.1;
 	
 	vec2 coord=v_texcoord;
-	for(int i=0;i<50;i++)
+	for(int i=0;i<10;i++)
 	{
 		float xv=(rand(vec2(coord.x, coord.y))-0.5)*2.0;
 		float yv=(rand(vec2(0.5*(coord.x+xv), coord.y))-0.5)*2.0;

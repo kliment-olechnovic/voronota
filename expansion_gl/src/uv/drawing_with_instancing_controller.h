@@ -364,14 +364,6 @@ public:
 			{
 				glBindVertexArray(vao_);
 				glDrawElementsInstanced(GL_TRIANGLES, number_of_indices_, GL_UNSIGNED_INT, 0, number_of_instances_);
-				{
-					GLenum err=glGetError();
-					while(err!=GL_NO_ERROR)
-					{
-						std::cerr << "OpenGL error " << err << " in file " __FILE__ << " line " << __LINE__ << "\n";
-						err=glGetError();
-					}
-				}
 				glBindVertexArray(0);
 			}
 			return true;

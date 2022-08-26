@@ -154,14 +154,6 @@ public:
 			{
 				glBindVertexArray(vao_);
 				glDrawElements((wire_mode_ ? GL_LINES : GL_TRIANGLES), buffer_for_indices_.size(), GL_UNSIGNED_INT, 0);
-				{
-					GLenum err=glGetError();
-					while(err!=GL_NO_ERROR)
-					{
-						std::cerr << "OpenGL error " << err << " in file " __FILE__ << " line " << __LINE__ << "\n";
-						err=glGetError();
-					}
-				}
 				glBindVertexArray(0);
 			}
 			return true;
