@@ -251,12 +251,12 @@ public:
 		return (static_cast<double>(framebuffer_width_)/static_cast<double>(window_width_));
 	}
 
-	int rendering_window_width() const
+	int effective_rendering_window_width() const
 	{
 		return adjust_length_with_margin(window_width_, margin_right_ratio_, margin_right_fixed_);
 	}
 
-	int rendering_window_height() const
+	int effective_rendering_window_height() const
 	{
 		return adjust_length_with_margin(window_height_, margin_top_ratio_, margin_top_fixed_);
 	}
@@ -580,8 +580,8 @@ public:
 
 	bool read_pixels(int& image_width, int& image_height, std::vector<char>& image_data)
 	{
-		image_width=rendering_window_width();
-		image_height=rendering_window_height();
+		image_width=effective_rendering_framebuffer_width();
+		image_height=effective_rendering_framebuffer_height();
 		image_data.clear();
 		image_data.resize(image_width*image_height*3);
 
@@ -916,8 +916,6 @@ private:
 	{
 		framebuffer_width_=width;
 		framebuffer_height_=height;
-		virtual_screen_a_framebuffer_controller_.init(framebuffer_width_, framebuffer_height_);
-		virtual_screen_b_framebuffer_controller_.init(framebuffer_width_, framebuffer_height_);
 		refresh_shading_projection();
 		on_framebuffer_resized(width, height);
 	}
@@ -1025,17 +1023,17 @@ private:
 	{
 		const int x=static_cast<int>(mouse_cursor_x_);
 		const int y=window_height_-static_cast<int>(mouse_cursor_y_);
-		return (x>0 && x<rendering_window_width() && y>0 && y<rendering_window_height());
+		return (x>0 && x<effective_rendering_window_width() && y>0 && y<effective_rendering_window_height());
 	}
 
 	int calc_pixel_x(const double screen_x) const
 	{
-		return static_cast<int>((screen_x/static_cast<double>(rendering_window_width()))*static_cast<double>(effective_rendering_framebuffer_width()));
+		return static_cast<int>((screen_x/static_cast<double>(effective_rendering_window_width()))*static_cast<double>(effective_rendering_framebuffer_width()));
 	}
 
 	int calc_pixel_y(const double screen_y) const
 	{
-		return static_cast<int>((screen_y/static_cast<double>(rendering_window_height()))*static_cast<double>(effective_rendering_framebuffer_height()));
+		return static_cast<int>((screen_y/static_cast<double>(effective_rendering_window_height()))*static_cast<double>(effective_rendering_framebuffer_height()));
 	}
 
 	void render_frame_wrapped()
@@ -1065,27 +1063,26 @@ private:
 
 		glfwPollEvents();
 
+		on_before_rendered_frame();
+
 		glEnable(GL_DEPTH_TEST);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
+		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
+		glClearColor(margin_color_[0], margin_color_[1], margin_color_[2], 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		ShadingController::managed_glUseProgram(0);
 
 		skipping_virtual_screen_framebuffers_=(occlusion_mode_==OcclusionMode::none && antialiasing_mode_==AntialiasingMode::none);
 
-		if(skipping_virtual_screen_framebuffers_)
+		if(!skipping_virtual_screen_framebuffers_)
 		{
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
-		else
-		{
+			virtual_screen_a_framebuffer_controller_.init(effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height());
+			virtual_screen_b_framebuffer_controller_.init(effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height());
 			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
 		}
-
-		on_before_rendered_frame();
-
-		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
-		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
-		glClearColor(margin_color_[0], margin_color_[1], margin_color_[2], 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glScissor(0, 0, effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height());
 		glViewport(0, 0, effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height());
@@ -1141,12 +1138,12 @@ private:
 
 		if(!skipping_virtual_screen_framebuffers_)
 		{
-			shading_screen_.set_viewport(0, 0, framebuffer_width_, framebuffer_height_);
+			shading_screen_.set_viewport(0, 0, effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height());
 
 			glDisable(GL_DEPTH_TEST);
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			glScissor(0, 0, framebuffer_width_, framebuffer_height_);
-			glViewport(0, 0, framebuffer_width_, framebuffer_height_);
+			glScissor(0, 0, effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height());
+			glViewport(0, 0, effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height());
 
 			if(occlusion_mode_==OcclusionMode::noisy)
 			{
@@ -1185,6 +1182,9 @@ private:
 			shading_screen_.set_mode_number(0);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+			glScissor(0, 0, framebuffer_width_, framebuffer_height_);
+			glViewport(0, 0, framebuffer_width_, framebuffer_height_);
 		}
 
 		glUseProgram(0);
@@ -1262,27 +1262,27 @@ private:
 
 	void render_overlay()
 	{
-		on_draw_overlay_start(0, (window_height_-rendering_window_height()), rendering_window_width(), rendering_window_height());
+		on_draw_overlay_start(0, (window_height_-effective_rendering_window_height()), effective_rendering_window_width(), effective_rendering_window_height());
 		if(rendering_mode_==RenderingMode::stereo)
 		{
-			const int width=rendering_window_width()/2;
+			const int width=effective_rendering_window_width()/2;
 			for(int i=0;i<2;i++)
 			{
 				const int xpos=(width*i);
-				on_draw_overlay_middle(xpos, 0, width, rendering_window_height(), true, false, i);
+				on_draw_overlay_middle(xpos, 0, width, effective_rendering_window_height(), true, false, i);
 			}
 		}
 		else if(rendering_mode_==RenderingMode::grid && grid_size_>1)
 		{
 			int n_rows=1;
 			int n_columns=1;
-			Utilities::calculate_grid_dimensions(grid_size_, rendering_window_width(), rendering_window_height(), n_rows, n_columns);
-			const int width=rendering_window_width()/n_columns;
-			const int height=rendering_window_height()/n_rows;
+			Utilities::calculate_grid_dimensions(grid_size_, effective_rendering_window_width(), effective_rendering_window_height(), n_rows, n_columns);
+			const int width=effective_rendering_window_width()/n_columns;
+			const int height=effective_rendering_window_height()/n_rows;
 			int grid_id=0;
 			for(int i=0;(i<n_rows) && (grid_id<grid_size_);i++)
 			{
-				const int ypos=(window_height_-rendering_window_height())+(height*i);
+				const int ypos=(window_height_-effective_rendering_window_height())+(height*i);
 				for(int j=0;(j<n_columns) && (grid_id<grid_size_);j++)
 				{
 					const int xpos=(width*j);
@@ -1293,9 +1293,9 @@ private:
 		}
 		else
 		{
-			on_draw_overlay_middle(0, (window_height_-rendering_window_height()), rendering_window_width(), rendering_window_height(), false, false, 0);
+			on_draw_overlay_middle(0, (window_height_-effective_rendering_window_height()), effective_rendering_window_width(), effective_rendering_window_height(), false, false, 0);
 		}
-		on_draw_overlay_end(0, (window_height_-rendering_window_height()), rendering_window_width(), rendering_window_height());
+		on_draw_overlay_end(0, (window_height_-effective_rendering_window_height()), effective_rendering_window_width(), effective_rendering_window_height());
 	}
 
 	void refresh_shading_projection(const TransformationMatrixController& projection_matrix, const ShadingMode::Mode shading_mode)
@@ -1450,8 +1450,8 @@ private:
 		const double cursor_prev_x=(mouse_cursor_prev_x_);
 		const double cursor_prev_y=(static_cast<double>(window_height_)-mouse_cursor_prev_y_);
 
-		const double area_width=static_cast<double>(rendering_window_width());
-		const double area_height=static_cast<double>(rendering_window_height());
+		const double area_width=static_cast<double>(effective_rendering_window_width());
+		const double area_height=static_cast<double>(effective_rendering_window_height());
 		const double trackball_size=std::min(area_width, area_height);
 		const double area_width_in_trackball_size=area_width/trackball_size;
 		const double area_height_in_trackball_size=area_height/trackball_size;
