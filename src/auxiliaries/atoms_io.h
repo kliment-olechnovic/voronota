@@ -712,7 +712,6 @@ public:
 
 			if(provided_count_available && provided_count!=data.xyzr_records.size())
 			{
-				throw std::runtime_error("Mismatched promised and actual numbers of atoms.");
 				std::ostringstream msg;
 				msg << "Mismatched promised and actual numbers of atoms: " << provided_count << " vs " << data.xyzr_records.size() << ".\n";
 				throw std::runtime_error(msg.str());
@@ -726,6 +725,116 @@ public:
 		{
 			const int next_char=file_stream.peek();
 			return (next_char>=static_cast<int>('0') && next_char<=static_cast<int>('9'));
+		}
+	};
+
+	class MDLReader
+	{
+	public:
+		struct AtomRecord
+		{
+			std::string atom_type;
+			double x;
+			double y;
+			double z;
+		};
+
+		struct Data
+		{
+			std::string title_line;
+			std::string program_line;
+			std::string comment_line;
+			std::vector<AtomRecord> atom_records;
+		};
+
+		static Data read_data_from_file_stream(std::istream& file_stream)
+		{
+			Data data;
+
+			int line_num=0;
+			int num_of_atoms=0;
+			bool end_reached=false;
+			while(!end_reached && file_stream.good())
+			{
+				std::string line;
+				std::getline(file_stream, line);
+				line_num++;
+				if(line.rfind("M  END", 0)==0)
+				{
+					end_reached=true;
+				}
+				else if(line_num==1)
+				{
+					data.title_line=line;
+				}
+				else if(line_num==2)
+				{
+					data.program_line=line;
+				}
+				else if(line_num==3)
+				{
+					data.comment_line=line;
+				}
+				else
+				{
+					if(line.empty())
+					{
+						std::ostringstream msg;
+						msg << "Empty line " << line_num << ".\n";
+						throw std::runtime_error(msg.str());
+					}
+					else
+					{
+						if(line_num==4)
+						{
+							std::istringstream line_input(line);
+							line_input >> num_of_atoms;
+							if(line_input.fail() || num_of_atoms<=0)
+							{
+								std::ostringstream msg;
+								msg << "Invalid number of atoms in counts line: '" << line << "'.\n";
+								throw std::runtime_error(msg.str());
+							}
+						}
+						else if(line_num>=5 && (line_num-5)<num_of_atoms)
+						{
+							std::istringstream line_input(line);
+							AtomRecord record;
+							line_input >> record.x >> record.y >> record.z >> record.atom_type;
+							if(line_input.fail())
+							{
+								std::ostringstream msg;
+								msg << "Invalid atom record in line: '" << line << "'.\n";
+								throw std::runtime_error(msg.str());
+							}
+							data.atom_records.push_back(record);
+						}
+					}
+				}
+			}
+
+			if(line_num<5)
+			{
+				std::ostringstream msg;
+				msg << "Missing blocks in MDL file.\n";
+				throw std::runtime_error(msg.str());
+			}
+
+			if(data.atom_records.empty())
+			{
+				std::ostringstream msg;
+				msg << "No atoms read.\n";
+				throw std::runtime_error(msg.str());
+			}
+
+			if(static_cast<int>(data.atom_records.size())!=num_of_atoms)
+			{
+				std::ostringstream msg;
+				msg << "Mismatched promised and actual numbers of atoms: " << num_of_atoms << " vs " << data.atom_records.size() << ".\n";
+				throw std::runtime_error(msg.str());
+			}
+
+			return data;
 		}
 	};
 

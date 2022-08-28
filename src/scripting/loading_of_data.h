@@ -145,7 +145,7 @@ public:
 			}
 		}
 
-		if(params.format!="pdb" && params.format!="mmcif" && params.format!="plain" && params.format!="xyzr" && params.format!="xyz")
+		if(params.format!="pdb" && params.format!="mmcif" && params.format!="plain" && params.format!="xyzr" && params.format!="xyz" && params.format!="mdl")
 		{
 			throw std::runtime_error(std::string("Unrecognized format '")+params.format+"', allowed formats are 'pdb', 'mmcif', 'plain', 'xyzr' or 'xyz'.");
 		}
@@ -200,6 +200,54 @@ public:
 					atom.crad.resSeq=i;
 					atom.crad.name=record.atom_type;
 					atom.value.props.tags.insert(std::string("el=")+record.atom_type);
+					result.atoms.push_back(atom);
+				}
+			}
+
+			if(result.atoms.empty())
+			{
+				handle_reading_failure(params.file, params.format);
+			}
+		}
+		else if(params.format=="mdl")
+		{
+			const auxiliaries::AtomsIO::MDLReader::Data mdl_data=auxiliaries::AtomsIO::MDLReader::read_data_from_file_stream(finput);
+
+			result.atoms.reserve(mdl_data.atom_records.size());
+			for(std::size_t i=0;i<mdl_data.atom_records.size();i++)
+			{
+				const auxiliaries::AtomsIO::MDLReader::AtomRecord& record=mdl_data.atom_records[i];
+				if(record.atom_type!="H" || (params.forced_include_hydrogens ? params.include_hydrogens : config.include_hydrogens))
+				{
+					Atom atom;
+					atom.value.x=record.x;
+					atom.value.y=record.y;
+					atom.value.z=record.z;
+					atom.value.r=config.atom_radius_assigner.get_atom_radius("", record.atom_type);
+					atom.crad.chainID="";
+					atom.crad.resSeq=1;
+					{
+						for(std::size_t j=0;j<mdl_data.title_line.size() && atom.crad.resName.size()<4;j++)
+						{
+							const char c=mdl_data.title_line[i];
+							if(c>='A' && c<='Z' && c>='a' && c<='z')
+							{
+								atom.crad.resName.push_back(c);
+							}
+						}
+						if(atom.crad.resName.empty())
+						{
+							atom.crad.resName="LIG";
+						}
+					}
+					atom.crad.serial=static_cast<int>(i);
+					{
+						std::ostringstream name;
+						name << record.atom_type << i;
+						atom.crad.name=name.str();
+					}
+					atom.value.props.tags.insert(std::string("el=")+record.atom_type);
+					atom.value.props.tags.insert("het");
 					result.atoms.push_back(atom);
 				}
 			}
@@ -267,6 +315,12 @@ private:
 		map_of_format_extensions.insert(std::pair<std::string, std::string>("xyzr", ".XYZR"));
 		map_of_format_extensions.insert(std::pair<std::string, std::string>("xyz", ".xyz"));
 		map_of_format_extensions.insert(std::pair<std::string, std::string>("xyz", ".XYZ"));
+		map_of_format_extensions.insert(std::pair<std::string, std::string>("mdl", ".mdl"));
+		map_of_format_extensions.insert(std::pair<std::string, std::string>("mdl", ".MDL"));
+		map_of_format_extensions.insert(std::pair<std::string, std::string>("mdl", ".mol"));
+		map_of_format_extensions.insert(std::pair<std::string, std::string>("mdl", ".MOL"));
+		map_of_format_extensions.insert(std::pair<std::string, std::string>("mdl", ".sdf"));
+		map_of_format_extensions.insert(std::pair<std::string, std::string>("mdl", ".SDF"));
 		return map_of_format_extensions;
 	}
 
