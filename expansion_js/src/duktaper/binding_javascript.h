@@ -127,6 +127,12 @@ public:
 				"}"
 				"\n"
 				"Voronota.assert_partial_success=voronota_assert_partial_success;"
+				"\n"
+				"voronota_auto_assert_full_success=false;"
+				"Voronota.auto_assert_full_success=voronota_auto_assert_full_success;"
+				"\n"
+				"voronota_auto_assert_partial_success=false;"
+				"Voronota.auto_assert_partial_success=voronota_auto_assert_partial_success;"
 				"\n";
 
 		const std::vector<std::string> command_names=cds.get_all_names();
@@ -142,7 +148,20 @@ public:
 					function_name[j]='_';
 				}
 			}
-			script << "voronota_" << function_name << "=function(){return raw_voronota_named('" << command_name << "', arguments);}\n";
+			script << "voronota_" << function_name << "=function(){var result=raw_voronota_named('";
+			script << command_name;
+			script << "', arguments);"
+					"\n"
+					"if(voronota_auto_assert_full_success){voronota_assert_full_success('Failed call to voronota_";
+			script << function_name;
+			script << "');}"
+					"\n"
+					"if(voronota_auto_assert_partial_success){voronota_assert_partial_success('Failed call to voronota_";
+			script << function_name;
+			script << "');}"
+					"\n"
+					"return result;}"
+					"\n";
 			script << "Voronota." << function_name << "=" << "voronota_" << function_name << ";\n";
 		}
 
