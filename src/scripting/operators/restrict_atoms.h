@@ -48,9 +48,9 @@ public:
 		data_manager.assert_atoms_availability();
 
 		const std::set<std::size_t> ids=data_manager.selection_manager().select_atoms(parameters_for_selecting);
-		if(ids.size()<4)
+		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("Less than 4 atoms selected."));
+			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
 		Result result;

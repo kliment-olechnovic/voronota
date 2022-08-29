@@ -1332,6 +1332,9 @@
             "name":"spectrum-contacts",
             "short_description":""},
           {
+            "name":"split-blocks-file",
+            "short_description":""},
+          {
             "name":"split-pdb-file",
             "short_description":""},
           {

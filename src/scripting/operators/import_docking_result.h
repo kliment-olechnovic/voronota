@@ -120,9 +120,9 @@ public:
 			}
 		}
 
-		if((loading_result_static.atoms.size()+loading_result_mobile.atoms.size())<4)
+		if((loading_result_static.atoms.size()+loading_result_mobile.atoms.size())<2)
 		{
-			throw std::runtime_error(std::string("Less than 4 atoms in total read."));
+			throw std::runtime_error(std::string("Less than 2 atoms in total read."));
 		}
 
 		std::vector<double> ftdock_transform_to_use;

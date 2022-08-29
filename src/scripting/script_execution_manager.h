@@ -136,6 +136,7 @@
 #include "operators/source.h"
 #include "operators/spectrum_atoms.h"
 #include "operators/spectrum_contacts.h"
+#include "operators/split_blocks_file.h"
 #include "operators/split_pdb_file.h"
 #include "operators/summarize_linear_structure.h"
 #include "operators/tournament_sort.h"
@@ -345,6 +346,7 @@ public:
 		set_command_for_extra_actions("explain-command", operators::ExplainCommand(collection_of_command_documentations_));
 		set_command_for_extra_actions("list-commands", operators::ListCommands(collection_of_command_documentations_));
 		set_command_for_extra_actions("tournament-sort", operators::TournamentSort());
+		set_command_for_extra_actions("split-blocks-file", operators::SplitBlocksFile());
 		set_command_for_extra_actions("split-pdb-file", operators::SplitPDBFile());
 		set_command_for_extra_actions("cat-files", operators::CatFiles());
 		set_command_for_extra_actions("ranks-jury-score", operators::RanksJuryScore());

@@ -92,9 +92,9 @@ public:
 		LoadingOfData::Result loading_result;
 		LoadingOfData::construct_result(loading_parameters, loading_result);
 
-		if(loading_result.atoms.size()<4)
+		if(loading_result.atoms.empty())
 		{
-			throw std::runtime_error(std::string("Less than 4 atoms read."));
+			throw std::runtime_error(std::string("No atoms read."));
 		}
 
 		DataManager* object_new=congregation_of_data_managers.add_object(DataManager(), title);
@@ -122,9 +122,9 @@ public:
 		LoadingOfData::Result loading_result;
 		LoadingOfData::construct_result(loading_parameters, loading_result);
 
-		if(loading_result.atoms.size()<4)
+		if(loading_result.atoms.empty())
 		{
-			throw std::runtime_error(std::string("Less than 4 atoms read."));
+			throw std::runtime_error(std::string("No atoms read."));
 		}
 
 		data_manager.reset_atoms_by_swapping(loading_result.atoms);
