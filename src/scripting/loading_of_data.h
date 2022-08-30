@@ -229,8 +229,8 @@ public:
 					{
 						for(std::size_t j=0;j<mdl_data.title_line.size() && atom.crad.resName.size()<4;j++)
 						{
-							const char c=mdl_data.title_line[i];
-							if(c>='A' && c<='Z' && c>='a' && c<='z')
+							const char c=mdl_data.title_line[j];
+							if((c>='A' && c<='Z') || (c>='a' && c<='z'))
 							{
 								atom.crad.resName.push_back(c);
 							}
