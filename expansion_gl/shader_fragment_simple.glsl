@@ -16,12 +16,9 @@ void main()
         if(fragment_adjunct[1]<0.9)
         {
             vec3 light_direction=vec3(0.0, 0.0, 1.0);
-            vec3 light_color=vec3(1.0, 1.0, 1.0);
             float ambient_value=0.05;
-            vec3 ambient=ambient_value*light_color;
             float diffuse_value=abs(dot(normalize(fragment_normal), normalize(light_direction)));
-            vec3 diffuse=diffuse_value*light_color;
-            final_color=(ambient+diffuse)*fragment_color_for_display;
+            final_color=max(0.2, min(ambient_value+diffuse_value, 1.0))*fragment_color_for_display;
         }
         if((fragment_adjunct[0]>0.5) && (mod(floor(gl_FragCoord.x), 2.0)<0.5 || mod(floor(gl_FragCoord.y), 2.0)<0.5))
         {
