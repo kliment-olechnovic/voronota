@@ -221,6 +221,37 @@ EOF
 	exit 0
 fi
 
+if [ "$(echo ${TARGET_LIGANDS} | tr ' ' '\n' | egrep . | wc -l)" -ne "$(echo ${TARGET_LIGAND_IDS} | tr ' ' '\n' | egrep . | wc -l)" ]
+then
+	echo >&2 "Error: the number of target ligand IDs is not equal to the number of target ligand files"
+	exit 1
+fi
+
+if [ "$(echo ${MODEL_LIGANDS} | tr ' ' '\n' | egrep . | wc -l)" -ne "$(echo ${MODEL_LIGAND_IDS} | tr ' ' '\n' | egrep . | wc -l)" ]
+then
+	echo >&2 "Error: the number of model ligand IDs is not equal to the number of model ligand files"
+	exit 1
+fi
+
+while read LIGFILE
+do
+	if [ ! -s "$LIGFILE" ]
+	then
+		echo >&2 "Error: mising or empty target ligand file '$LIGFILE'"
+		exit 1
+	fi
+done < <(echo "${TARGET_LIGANDS}" | tr ' ' '\n' | egrep .)
+
+
+while read LIGFILE
+do
+	if [ ! -s "$LIGFILE" ]
+	then
+		echo >&2 "Error: mising or empty model ligand file '$LIGFILE'"
+		exit 1
+	fi
+done < <(echo "${MODEL_LIGANDS}" | tr ' ' '\n' | egrep .)
+
 {
 cat << EOF
 var params={}
@@ -230,7 +261,7 @@ params.model_receptor='$MODEL_RECEPTOR';
 params.model_ligands=[];
 EOF
 
-paste <(echo ${TARGET_LIGANDS} | tr ' ' '\n') <(echo ${TARGET_LIGAND_IDS} | tr ' ' '\n') \
+paste <(echo ${TARGET_LIGANDS} | tr ' ' '\n' | egrep .) <(echo ${TARGET_LIGAND_IDS} | tr ' ' '\n' | egrep .) \
 | while read LIGFILE LIGID
 do
 cat << EOF
@@ -238,7 +269,7 @@ params.target_ligands.push({"ligand_file": "$LIGFILE", "ligand_id": "$LIGID"});
 EOF
 done
 
-paste <(echo ${MODEL_LIGANDS} | tr ' ' '\n') <(echo ${MODEL_LIGAND_IDS} | tr ' ' '\n') \
+paste <(echo ${MODEL_LIGANDS} | tr ' ' '\n' | egrep .) <(echo ${MODEL_LIGAND_IDS} | tr ' ' '\n' | egrep .) \
 | while read LIGFILE LIGID
 do
 cat << EOF
@@ -262,8 +293,6 @@ for(var i=0;i<params.target_ligands.length;i++)
 	voronota_import('-file', params.target_ligands[i].ligand_file, '-title', 'tlig'+i);
 	var object_name=voronota_last_output().results[0].output.object_name;
 	voronota_pick_objects(object_name);
-	//voronota_set_adjunct_of_atoms('-name', 'index', '-value', (i+1));
-	//voronota_restrict_atoms_and_renumber_residues_by_adjunct('-name', 'index');
 	voronota_set_chain_name('-chain-name', 'lig'+params.target_ligands[i].ligand_id);
 	voronota_set_tag_of_atoms('-tag', 'ligand');
 	voronota_unpick_objects();
@@ -276,9 +305,7 @@ for(var i=0;i<params.model_ligands.length;i++)
 	voronota_import('-file', params.model_ligands[i].ligand_file, '-title', 'mlig'+i);
 	var object_name=voronota_last_output().results[0].output.object_name;
 	voronota_pick_objects(object_name);
-	//voronota_set_adjunct_of_atoms('-name', 'index', '-value', (i+1));
-	//voronota_restrict_atoms_and_renumber_residues_by_adjunct('-name', 'index');
-	voronota_set_chain_name('-chain-name', 'lig'+params.target_ligands[i].ligand_id);
+	voronota_set_chain_name('-chain-name', 'lig'+params.model_ligands[i].ligand_id);
 	voronota_set_tag_of_atoms('-tag', 'ligand');
 	voronota_unpick_objects();
 	model_object_names.push(object_name);
@@ -293,7 +320,28 @@ voronota_pick_objects('-names', ['full_target', 'full_model']);
 voronota_delete_objects('-not-picked');
 voronota_set_atom_serials();
 
-voronota_export_atoms('-file', '/tmp/${objectname}.pa')
+voronota_select_atoms_close_to_interchain_interface('-atoms-first', '[-t receptor]', '-atoms-second', '[-t ligand]', '-name', 'iface_atoms');
+voronota_select_atoms('-use', '[iface_atoms]', '-full-residues', '-name', 'iface_atoms');
+voronota_select_atoms_close_to_interchain_interface('-atoms-first', '[iface_atoms]', '-atoms-second', '(not [iface_atoms])', '-name', 'iface_atoms_neigbors');
+voronota_select_atoms('-use', '[iface_atoms_neigbors]', '-full-residues', '-name', 'iface_atoms_neigbors');
+voronota_select_atoms('-use', '([iface_atoms] or [iface_atoms_neigbors])', '-name', 'iface_atoms_plus');
+voronota_restrict_atoms('-use', '[iface_atoms_plus]');
+
+voronota_construct_contacts("-skip-sas -no-calculate-volumes -no-tag-peripherial");
+voronota_select_contacts('-use', '[-a1 [-t receptor] -a2 [-t ligand]]', '-name', 'iface');
+voronota_select_atoms('-use', '[-sel-of-contacts iface]', '-full-residues', '-name', 'iface_atoms');
+voronota_select_contacts('-use', '[-a1 [iface_atoms] -a2 [iface_atoms] -min-seq-sep 1]', '-name', 'adjacent_to_iface');
+
+voronota_cad_score('-target', 'full_target', '-model', 'full_model', '-t-sel', '[iface]', '-also-site-based');
+iface_cadscore=voronota_last_output().results[0].output.residue_level_result;
+iface_cadscore_site_based=voronota_last_output().results[0].output.site_residue_level_result;
+
+voronota_cad_score('-target', 'full_target', '-model', 'full_model', '-t-sel', '[adjacent_to_iface]', '-also-site-based');
+adjacent_to_iface_cadscore=voronota_last_output().results[0].output.residue_level_result;
+
+writeln(iface_cadscore);
+writeln(iface_cadscore_site_based);
+writeln(adjacent_to_iface_cadscore);
 EOF
 } \
 | voronota-js --no-setup-defaults
