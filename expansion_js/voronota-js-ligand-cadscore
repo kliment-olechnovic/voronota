@@ -201,15 +201,17 @@ then
 	
 {
 cat << 'EOF'
-voronota_split_blocks_file('-input-file', '_INFILE', '-output-file', '_OUTFILE', '-block-start', 'LIGAND', '-block-substart', 'POSE _POSENUM', '-block-end', 'M  END', '-prefix', '_PREFIX', '-postfix', '.mol');
+voronota_auto_assert_full_success=true;
+voronota_split_blocks_file('-input-file', '_INFILE', '-output-file', '_OUTFILE', '-block-start', 'LIGAND', '-block-substart', 'POSE', '-block-end', 'M  END', '-prefix', '_PREFIX', '-postfix', '.mol');
 EOF
 } \
 | sed "s|_INFILE|${CASP15_TARGET}|" \
-| sed "s|_OUTFILE|${TMPLDIR}/target_list|" \
-| sed "s|_POSENUM|${CASP15_TARGET_POSE}|" \
+| sed "s|_OUTFILE|${TMPLDIR}/target_list_all|" \
 | sed "s|_PREFIX|${TMPLDIR}/target_ligands/|" \
-| voronota-js
+| voronota-js --no-setup-defaults
 
+	cat "${TMPLDIR}/target_list_all" | grep "_POSE_${CASP15_TARGET_POSE}.mol" > "${TMPLDIR}/target_list"
+	
 	if [ ! -s "${TMPLDIR}/target_list" ]
 	then
 		echo >&2 "Error: failed to read ligands from '${CASP15_TARGET}' with pose '${CASP15_TARGET_POSE}'"
@@ -220,14 +222,16 @@ EOF
 	
 {
 cat << 'EOF'
-voronota_split_blocks_file('-input-file', '_INFILE', '-output-file', '_OUTFILE', '-block-start', 'LIGAND', '-block-substart', 'POSE _POSENUM', '-block-end', 'M  END', '-prefix', '_PREFIX', '-postfix', '.mol');
+voronota_auto_assert_full_success=true;
+voronota_split_blocks_file('-input-file', '_INFILE', '-output-file', '_OUTFILE', '-block-start', 'LIGAND', '-block-substart', 'POSE', '-block-end', 'M  END', '-prefix', '_PREFIX', '-postfix', '.mol');
 EOF
 } \
 | sed "s|_INFILE|${CASP15_MODEL}|" \
-| sed "s|_OUTFILE|${TMPLDIR}/model_list|" \
-| sed "s|_POSENUM|${CASP15_MODEL_POSE}|" \
+| sed "s|_OUTFILE|${TMPLDIR}/model_list_all|" \
 | sed "s|_PREFIX|${TMPLDIR}/model_ligands/|" \
-| voronota-js
+| voronota-js --no-setup-defaults
+
+	cat "${TMPLDIR}/model_list_all" | grep "_POSE_${CASP15_MODEL_POSE}.mol" > "${TMPLDIR}/model_list"
 
 	if [ ! -s "${TMPLDIR}/model_list" ]
 	then
@@ -411,10 +415,32 @@ adjacent_to_iface_cadscore=voronota_last_output().results[0].output.residue_leve
 voronota_cad_score('-model', params.target_name, '-target', params.model_name, '-t-sel', '[adjacent_to_iface]', '-m-sel', '[adjacent_to_iface]');
 rev_adjacent_to_iface_cadscore=voronota_last_output().results[0].output.residue_level_result;
 
-writeln(iface_cadscore);
-writeln(rev_iface_cadscore);
-writeln(adjacent_to_iface_cadscore);
-writeln(rev_adjacent_to_iface_cadscore);
+iface_cadscore.target_name=params.target_name;
+iface_cadscore.model_name=params.model_name;
+iface_cadscore.contacts_set="interface";
+
+rev_iface_cadscore.target_name=params.model_name;
+rev_iface_cadscore.model_name=params.target_name;
+rev_iface_cadscore.contacts_set="interface";
+
+adjacent_to_iface_cadscore.target_name=params.target_name;
+adjacent_to_iface_cadscore.model_name=params.model_name;
+adjacent_to_iface_cadscore.contacts_set="interface_plus_adjacent";
+
+rev_adjacent_to_iface_cadscore.target_name=params.model_name;
+rev_adjacent_to_iface_cadscore.model_name=params.target_name;
+rev_adjacent_to_iface_cadscore.contacts_set="interface_plus_adjacent";
+
+var table="target model contacts_set CAD_score areas_F1_score TP_area FP_area FN_area target_total_area model_total_area\n";
+var summary_objects=[iface_cadscore, rev_iface_cadscore, adjacent_to_iface_cadscore, rev_adjacent_to_iface_cadscore];
+for(var i=0;i<summary_objects.length;i++)
+{
+	var so=summary_objects[i];
+	var table_row=so.target_name+" "+so.model_name+" "+so.contacts_set+" "+so.score+" "+so.score_F1+" "+so.confusion_TP+" "+so.confusion_FP+" "+so.confusion_FN+" "+so.target_area_sum+" "+so.model_area_sum+"\n";
+	table+=table_row;
+}
+
+write(table);
 
 if(params.details_dir.length>0)
 {
