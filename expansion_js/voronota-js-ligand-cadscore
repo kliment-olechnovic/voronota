@@ -22,6 +22,7 @@ Input options, alternative:
 
 Other options:
     --details-dir                 string     directory to output lists of contacts used for scoring
+    --drawing-dir                 string     directory to output files to visualize with pymol
     --help | -h                              flag to display help message and exit
     
 Standard output:
@@ -67,6 +68,7 @@ CASP15_TARGET_POSE=""
 CASP15_MODEL=""
 CASP15_MODEL_POSE=""
 DETAILS_DIR=""
+DRAWING_DIR=""
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -117,6 +119,10 @@ do
 		;;
 	--details-dir)
 		DETAILS_DIR="$OPTARG"
+		shift
+		;;
+	--drawing-dir)
+		DRAWING_DIR="$OPTARG"
 		shift
 		;;
 	-h|--help)
@@ -223,7 +229,7 @@ EOF
 	voronota-js-ligand-cadscore \
 	  --target-receptor "${TMPLDIR}/target_receptor.pdb" --target-ligands "$(cat ${TMPLDIR}/target_list)" --target-ligand-ids "$(cat ${TMPLDIR}/target_list_ids)" \
       --model-receptor "${TMPLDIR}/model_receptor.pdb" --model-ligands "$(cat ${TMPLDIR}/model_list)" --model-ligand-ids "$(cat ${TMPLDIR}/model_list_ids)" \
-      --details-dir "$DETAILS_DIR"
+      --details-dir "$DETAILS_DIR" --drawing-dir "$DRAWING_DIR"
 	
 	exit 0
 fi
@@ -268,6 +274,16 @@ then
 	fi
 fi
 
+if [ -n "$DRAWING_DIR" ]
+then
+	mkdir -p "$DRAWING_DIR"
+	if [ ! -d "$DRAWING_DIR" ]
+	then
+		echo >&2 "Error: failed to access or create details output directory '$DRAWING_DIR'"
+		exit 1
+	fi
+fi
+
 {
 cat << EOF
 var params={}
@@ -277,6 +293,8 @@ params.model_receptor='$MODEL_RECEPTOR';
 params.model_ligands=[];
 params.details_dir='$DETAILS_DIR';
 params.details_dir=params.details_dir.trim();
+params.drawing_dir='$DRAWING_DIR';
+params.drawing_dir=params.drawing_dir.trim();
 EOF
 
 paste <(echo ${TARGET_LIGANDS} | tr ' ' '\n' | egrep .) <(echo ${TARGET_LIGAND_IDS} | tr ' ' '\n' | egrep .) \
@@ -346,7 +364,7 @@ voronota_select_atoms('-use', '([iface_atoms] or [iface_atoms_neigbors])', '-nam
 voronota_restrict_atoms('-use', '[iface_atoms_plus]');
 
 voronota_construct_contacts("-skip-sas -no-calculate-volumes -no-tag-peripherial");
-voronota_select_contacts('-use', '[-a1 [-t receptor] -a2 [-t ligand]]', '-name', 'iface');
+voronota_select_contacts('-use', '[-a1 [-t receptor|ligand] -a2 [-t ligand] -min-seq-sep 1]', '-name', 'iface');
 voronota_select_atoms('-use', '[-sel-of-contacts iface]', '-full-residues', '-name', 'iface_atoms');
 voronota_select_contacts('-use', '[-a1 [iface_atoms] -a2 [iface_atoms] -min-seq-sep 1]', '-name', 'adjacent_to_iface');
 
@@ -356,14 +374,34 @@ iface_cadscore=voronota_last_output().results[0].output.residue_level_result;
 voronota_cad_score('-target', 'target_complex', '-model', 'model_complex', '-t-sel', '[adjacent_to_iface]', '-m-sel', '[adjacent_to_iface]');
 adjacent_to_iface_cadscore=voronota_last_output().results[0].output.residue_level_result;
 
+writeln(iface_cadscore);
+writeln(adjacent_to_iface_cadscore);
+
 if(params.details_dir.length>0)
 {
 	voronota_export_adjuncts_of_contacts('-inter-residue', '-adjuncts', 'area', '-contacts-use', '[iface]', '-file', params.details_dir+'/${objectname}_interface_contacts.txt');
 	voronota_export_adjuncts_of_contacts('-inter-residue', '-adjuncts', 'area', '-contacts-use', '[adjacent_to_iface]', '-file', params.details_dir+'/${objectname}_interface_and_adjacent_contacts.txt');
 }
 
-writeln(iface_cadscore);
-writeln(adjacent_to_iface_cadscore);
+if(params.drawing_dir.length>0)
+{
+	voronota_show_contacts('-use', '[adjacent_to_iface]');
+	voronota_spectrum_contacts('-use', '[adjacent_to_iface]', '-by', 'residue-ids', '-scheme', 'random');
+	//voronota_color_contacts('-use', '[adjacent_to_iface]', '-col', 'yellow');
+	//voronota_color_contacts('-use', '[iface]', '-col', 'green');
+	voronota_export_contacts_as_pymol_cgo('-use', '[iface]', '-file', params.drawing_dir+'/draw_${objectname}_interface_contacts_in_pymol.py', '-name', '${objectname}_interface_contacts');
+	voronota_export_contacts_as_pymol_cgo('-use', '[adjacent_to_iface]', '-file', params.drawing_dir+'/draw_${objectname}_interface_and_adjacent_contacts_in_pymol.py', '-name', '${objectname}_interface_and_adjacent_contacts');
+		
+	voronota_copy_object('target_complex', 'target_complex_cutout');
+	voronota_copy_object('model_complex', 'model_complex_cutout');
+	voronota_pick_objects('-names', ['target_complex_cutout', 'model_complex_cutout']);
+	voronota_restrict_atoms('-use', '[iface_atoms]');
+	voronota_set_chain_name('-use', '[-t ligand]', '-chain-name', 'l');
+	voronota_set_atom_serials();
+	voronota_export_atoms('-use', '[-t receptor]', '-full-residues', '-as-pdb', '-file', params.drawing_dir+'/${objectname}_interface_residues_receptor.pdb');
+	voronota_export_atoms('-use', '[-t ligand]', '-full-residues', '-as-pdb', '-file', params.drawing_dir+'/${objectname}_interface_residues_ligand.pdb');
+}
+
 EOF
 } \
 | voronota-js --no-setup-defaults
