@@ -25,7 +25,8 @@ Input options, alternative:
 Other options:
     --details-dir                 string     directory to output lists of contacts used for scoring
     --drawing-dir                 string     directory to output files to visualize with pymol
-    --help | -h                              flag to display help message and exit
+    --and-swap                    string     flag to compute everything after swapping target and model, default is 'false'
+    --help | -h                              display help message and exit
     
 Standard output:
     space-separated table of scores
@@ -73,6 +74,7 @@ CASP15_MODEL=""
 CASP15_MODEL_POSE=""
 DETAILS_DIR=""
 DRAWING_DIR=""
+AND_SWAP="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -135,6 +137,10 @@ do
 		;;
 	--drawing-dir)
 		DRAWING_DIR="$OPTARG"
+		shift
+		;;
+	--and-swap)
+		AND_SWAP="$OPTARG"
 		shift
 		;;
 	-h|--help)
@@ -246,7 +252,7 @@ EOF
 	  --target-receptor "${TMPLDIR}/target_receptor.pdb" --target-ligands "$(cat ${TMPLDIR}/target_list)" --target-ligand-ids "$(cat ${TMPLDIR}/target_list_ids)" \
       --model-receptor "${TMPLDIR}/model_receptor.pdb" --model-ligands "$(cat ${TMPLDIR}/model_list)" --model-ligand-ids "$(cat ${TMPLDIR}/model_list_ids)" \
       --target-name "$(basename ${CASP15_TARGET})_pose${CASP15_TARGET_POSE}" --model-name "$(basename ${CASP15_MODEL})_pose${CASP15_MODEL_POSE}" \
-      --details-dir "$DETAILS_DIR" --drawing-dir "$DRAWING_DIR"
+      --details-dir "$DETAILS_DIR" --drawing-dir "$DRAWING_DIR" --and-swap "$AND_SWAP"
 	
 	exit 0
 fi
@@ -330,6 +336,7 @@ params.details_dir='$DETAILS_DIR';
 params.details_dir=params.details_dir.trim();
 params.drawing_dir='$DRAWING_DIR';
 params.drawing_dir=params.drawing_dir.trim();
+params.and_swap='$AND_SWAP';
 EOF
 
 paste <(echo ${TARGET_LIGANDS} | tr ' ' '\n' | egrep .) <(echo ${TARGET_LIGAND_IDS} | tr ' ' '\n' | egrep .) \
@@ -431,8 +438,15 @@ rev_adjacent_to_iface_cadscore.target_name=params.model_name;
 rev_adjacent_to_iface_cadscore.model_name=params.target_name;
 rev_adjacent_to_iface_cadscore.contacts_set="interface_plus_adjacent";
 
+var summary_objects=[iface_cadscore, adjacent_to_iface_cadscore];
+if(params.and_swap=='true')
+{
+	summary_objects.push(rev_iface_cadscore);
+	summary_objects.push(rev_adjacent_to_iface_cadscore);
+}
+
 var table="target model contacts_set CAD_score target_area model_area\n";
-var summary_objects=[iface_cadscore, rev_iface_cadscore, adjacent_to_iface_cadscore, rev_adjacent_to_iface_cadscore];
+
 for(var i=0;i<summary_objects.length;i++)
 {
 	var so=summary_objects[i];
