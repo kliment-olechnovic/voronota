@@ -34,6 +34,7 @@ cp "./voronota-js-ifeatures-voromqa" "$PACKAGE_NAME/voronota-js-ifeatures-voromq
 cp "./voronota-js-fast-iface-voromqa" "$PACKAGE_NAME/voronota-js-fast-iface-voromqa"
 cp "./voronota-js-fast-iface-cadscore" "$PACKAGE_NAME/voronota-js-fast-iface-cadscore"
 cp "./voronota-js-fast-iface-cadscore-matrix" "$PACKAGE_NAME/voronota-js-fast-iface-cadscore-matrix"
+cp "./voronota-js-ligand-cadscore" "$PACKAGE_NAME/voronota-js-ligand-cadscore"
 cp "../LICENSE.txt" "$PACKAGE_NAME/LICENSE.txt"
 
 echo "Voronota-JS version ${VERSIONID}" > "$PACKAGE_NAME/VERSION.txt"

@@ -48,6 +48,18 @@ EOF
 ./voronota-js-ifeatures-voromqa -h 2>&1 | tail -n +3 | sed 's/^/    /'
 
 
+echo -e "\n## Protein-ligand interface variation of CAD-score\n"
+
+cat << EOF
+'voronota-js-ligand-cadscore' script computes protein-ligand variation of CAD-score.
+
+### Script interface
+
+EOF
+
+./voronota-js-ligand-cadscore -h 2>&1 | tail -n +3 | sed 's/^/    /'
+
+
 } > $TMPDIR/documentation.markdown
 
 cat > $TMPDIR/include_in_header.html << 'EOF'

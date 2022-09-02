@@ -32,13 +32,12 @@ Standard output:
     space-separated table of scores
     
 Examples:
+
+    voronota-js-ligand-cadscore --casp15-target ./T1118v1LG035_1 --casp15-target-pose 1 --casp15-model ./T1118v1LG046_1 --casp15-model-pose 1
+    
     voronota-js-ligand-cadscore \
       --target-receptor ./t_protein.pdb --target-ligands './t_ligand1.mol ./t_ligand2.mol ./t_ligand3.mol' --target-ligand-ids 'a a b' \
       --model-receptor ./m_protein.pdb --model-ligands './m_ligand1.mol ./m_ligand2.mol ./m_ligand3.mol' --model-ligand-ids 'a a b'
-    
-    voronota-js-ligand-cadscore \
-      --casp15-target ./T1118v1LG035_1 --casp15-target-pose 1 \
-      --casp15-model ./T1118v1LG046_1 --casp15-model-pose 1
 
 EOF
 exit 1
