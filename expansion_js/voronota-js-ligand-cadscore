@@ -431,12 +431,12 @@ rev_adjacent_to_iface_cadscore.target_name=params.model_name;
 rev_adjacent_to_iface_cadscore.model_name=params.target_name;
 rev_adjacent_to_iface_cadscore.contacts_set="interface_plus_adjacent";
 
-var table="target model contacts_set CAD_score areas_F1_score TP_area FP_area FN_area target_total_area model_total_area\n";
+var table="target model contacts_set CAD_score target_area model_area\n";
 var summary_objects=[iface_cadscore, rev_iface_cadscore, adjacent_to_iface_cadscore, rev_adjacent_to_iface_cadscore];
 for(var i=0;i<summary_objects.length;i++)
 {
 	var so=summary_objects[i];
-	var table_row=so.target_name+" "+so.model_name+" "+so.contacts_set+" "+so.score+" "+so.score_F1+" "+so.confusion_TP+" "+so.confusion_FP+" "+so.confusion_FN+" "+so.target_area_sum+" "+so.model_area_sum+"\n";
+	var table_row=so.target_name+" "+so.model_name+" "+so.contacts_set+" "+so.score+" "+so.target_area_sum+" "+so.model_area_sum+"\n";
 	table+=table_row;
 }
 
