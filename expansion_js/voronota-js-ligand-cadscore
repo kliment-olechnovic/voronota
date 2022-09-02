@@ -402,11 +402,19 @@ voronota_select_contacts('-use', '[-a1 [iface_atoms] -a2 [iface_atoms] -min-seq-
 voronota_cad_score('-target', params.target_name, '-model', params.model_name, '-t-sel', '[iface]', '-m-sel', '[iface]');
 iface_cadscore=voronota_last_output().results[0].output.residue_level_result;
 
+voronota_cad_score('-model', params.target_name, '-target', params.model_name, '-t-sel', '[iface]', '-m-sel', '[iface]');
+rev_iface_cadscore=voronota_last_output().results[0].output.residue_level_result;
+
 voronota_cad_score('-target', params.target_name, '-model', params.model_name, '-t-sel', '[adjacent_to_iface]', '-m-sel', '[adjacent_to_iface]');
 adjacent_to_iface_cadscore=voronota_last_output().results[0].output.residue_level_result;
 
+voronota_cad_score('-model', params.target_name, '-target', params.model_name, '-t-sel', '[adjacent_to_iface]', '-m-sel', '[adjacent_to_iface]');
+rev_adjacent_to_iface_cadscore=voronota_last_output().results[0].output.residue_level_result;
+
 writeln(iface_cadscore);
+writeln(rev_iface_cadscore);
 writeln(adjacent_to_iface_cadscore);
+writeln(rev_adjacent_to_iface_cadscore);
 
 if(params.details_dir.length>0)
 {
