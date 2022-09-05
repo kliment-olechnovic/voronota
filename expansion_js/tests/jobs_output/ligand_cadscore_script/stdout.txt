@@ -1,3 +1,3 @@
 target                model                 contacts_set             CAD_score  target_area  model_area
-T1118v1LG035_1_pose1  T1118v1LG046_1_pose2  interface                0.606392   714.927      876.674
-T1118v1LG035_1_pose1  T1118v1LG046_1_pose2  interface_plus_adjacent  0.641639   1848.79      2258.41
+T1118v1LG035_1_pose1  T1118v1LG046_1_pose2  interface                0.568301   648.036      808.139
+T1118v1LG035_1_pose1  T1118v1LG046_1_pose2  interface_plus_adjacent  0.629109   1781.9       2189.88

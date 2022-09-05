@@ -423,9 +423,9 @@ voronota_select_atoms('-use', '([iface_atoms] or [iface_atoms_neigbors])', '-nam
 voronota_restrict_atoms('-use', '[iface_atoms_plus]');
 
 voronota_construct_contacts("-skip-sas -no-calculate-volumes -no-tag-peripherial");
-voronota_select_contacts('-use', '[-a1 [-t receptor|ligand] -a2 [-t ligand] -min-seq-sep 1]', '-name', 'iface');
+voronota_select_contacts('-use', '[-a1 [-t receptor] -a2 [-t ligand] -min-seq-sep 1]', '-name', 'iface');
 voronota_select_atoms('-use', '[-sel-of-contacts iface]', '-full-residues', '-name', 'iface_atoms');
-voronota_select_contacts('-use', '[-a1 [iface_atoms] -a2 [iface_atoms] -min-seq-sep 1]', '-name', 'adjacent_to_iface');
+voronota_select_contacts('-use', '([-a1 [iface_atoms] -a2 [iface_atoms] -min-seq-sep 1] and (not [-a1 [-t ligand] -a2 [-t ligand]]))', '-name', 'adjacent_to_iface');
 
 voronota_cad_score('-target', params.target_name, '-model', params.model_name, '-t-sel', '[iface]', '-m-sel', '[iface]');
 iface_cadscore=voronota_last_output().results[0].output.residue_level_result;

@@ -13,8 +13,8 @@ Then let us execute the following command:
 which outputs:
 
     target                model                 contacts_set             CAD_score  target_area  model_area
-    T1118v1LG035_1_pose1  T1118v1LG046_1_pose2  interface                0.606392   714.927      876.674
-    T1118v1LG035_1_pose1  T1118v1LG046_1_pose2  interface_plus_adjacent  0.641639   1848.79      2258.41
+    T1118v1LG035_1_pose1  T1118v1LG046_1_pose2  interface                0.568301   648.036      808.139
+    T1118v1LG035_1_pose1  T1118v1LG046_1_pose2  interface_plus_adjacent  0.629109   1781.9       2189.88
 
 ### Output explanation
 
@@ -33,7 +33,7 @@ There are some important aspects:
 
  * All the contact areas are computed on the atom-atom level, but then bundled (summed) to the residue-residue/residue-ligand level.
  * When defining the contact uniqueness, residue names and numbers (and chain ) are used for the protein side, but only ligand names are used for the ligand side. Therefore, the script treats same-named ligands as a single ligand when summarizing contact areas. This was done to avoid doing permutations of ligand numbers for identical ligands.
- * The 'interface' set includes the following contacts: protein-ligand contacts and ligand-ligand contacts.
+ * The 'interface' set includes only the protein-ligand contacts.
  * The 'interface_plus_adjacent' set includes the following contacts: all the 'interface' set contacts; protein-protein contacts between residues that have contacts with ligands.
  * You can use the '--details-dir' option to look at the used contacts lists.
  * You can use the '--drawing-dir' option to generate PDB files (with interface participants) and contact drawing scripts for PyMol.
