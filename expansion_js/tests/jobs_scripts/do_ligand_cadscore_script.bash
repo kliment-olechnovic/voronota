@@ -11,6 +11,7 @@ $VORONOTAJSDIR/voronota-js-ligand-cadscore \
   --table-dir "$SUBDIR/table" \
   --details-dir "$SUBDIR/details" \
   --drawing-dir "$SUBDIR/details/drawings" \
+  --and-swap true \
 | column -t \
 > "$SUBDIR/stdout.txt"
 
