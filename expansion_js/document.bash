@@ -14,7 +14,7 @@ echo -e "\n# Usage"
 
 echo -e "\n## VoroMQA dark and light methods\n"
 
-cat << EOF
+cat << 'EOF'
 'voronota-js-voromqa' script provides an interface to VoroMQA dark (newer) and light (classic) methods.
 
 ### Script interface
@@ -26,7 +26,7 @@ EOF
 
 echo -e "\n## VoroMQA-based membrane protein structure assessment\n"
 
-cat << EOF
+cat << 'EOF'
 'voronota-js-membrane-voromqa' script provides an interface to the VoroMQA-based method for assessing membrane protein structures.
 
 ### Script interface
@@ -38,7 +38,7 @@ EOF
 
 echo -e "\n## VoroMQA-based collection of protein-protein complex features\n"
 
-cat << EOF
+cat << 'EOF'
 'voronota-js-ifeatures-voromqa' script computes multiple VoroMQA-based features of protein-protein complexes.
 
 ### Script interface
@@ -50,7 +50,7 @@ EOF
 
 echo -e "\n## Protein-ligand interface variation of CAD-score\n"
 
-cat << EOF
+cat << 'EOF'
 'voronota-js-ligand-cadscore' script computes protein-ligand variation of CAD-score.
 
 ### Script interface
@@ -76,5 +76,24 @@ pandoc $TMPDIR/documentation.markdown -f markdown -t html --toc -H $TMPDIR/inclu
 
 mv $TMPDIR/documentation.markdown ./README.markdown
 
-pandoc ./resources/texts/ligand_cadscore_info.markdown -f markdown -t html -s -o ./ligand_cadscore_info.html
+
+{
+cat << 'EOF'
+# Protein-ligand variation of CAD-score
+
+## Availability
+
+The script 'voronota-js-ligand-cadscore' for the protein-ligand variation of CAD-score is included to the Voronota-JS package available from [https://kliment-olechnovic.github.io/voronota/expansion_js/](https://kliment-olechnovic.github.io/voronota/expansion_js/).
+
+### Script interface
+
+EOF
+
+./voronota-js-ligand-cadscore -h 2>&1 | tail -n +3 | sed 's/^/    /'
+
+cat ./resources/texts/ligand_cadscore_info.markdown
+
+} > $TMPDIR/ligand_cadscore_info.markdown
+
+pandoc $TMPDIR/ligand_cadscore_info.markdown -f markdown -t html -s -o ./ligand_cadscore_info.html
 

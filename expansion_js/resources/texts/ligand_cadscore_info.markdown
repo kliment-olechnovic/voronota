@@ -1,13 +1,3 @@
-# Protein-ligand variation of CAD-score
-
-## Availability
-
-The script 'voronota-js-ligand-cadscore' for the protein-ligand variation of CAD-score is included to the Voronota-JS package available from [https://kliment-olechnovic.github.io/voronota/expansion_js/](https://kliment-olechnovic.github.io/voronota/expansion_js/).
-
-### Script interface
-    
-See [https://kliment-olechnovic.github.io/voronota/expansion_js/#protein-ligand-interface-variation-of-cad-score](https://kliment-olechnovic.github.io/voronota/expansion_js/#protein-ligand-interface-variation-of-cad-score).
-
 ## Example of how it works for CASP15 models
 
 Let us take two files with protein-ligand models from CASP15: 'H1135LG035_1' and 'H1135LG046_1'.

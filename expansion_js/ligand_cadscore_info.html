@@ -12,7 +12,39 @@
 <h2 id="availability">Availability</h2>
 <p>The script 'voronota-js-ligand-cadscore' for the protein-ligand variation of CAD-score is included to the Voronota-JS package available from <a href="https://kliment-olechnovic.github.io/voronota/expansion_js/" class="uri">https://kliment-olechnovic.github.io/voronota/expansion_js/</a>.</p>
 <h3 id="script-interface">Script interface</h3>
-<p>See <a href="https://kliment-olechnovic.github.io/voronota/expansion_js/#protein-ligand-interface-variation-of-cad-score" class="uri">https://kliment-olechnovic.github.io/voronota/expansion_js/#protein-ligand-interface-variation-of-cad-score</a>.</p>
+<pre><code>Input options, basic:
+    --target-receptor             string  *  target receptor file path
+    --target-ligands              string  *  list of target ligand file paths
+    --target-ligand-ids           string  *  list of target ligand IDs
+    --model-receptor              string  *  model receptor file path
+    --model-ligands               string  *  list of model ligand file paths
+    --model-ligand-ids            string  *  list of model ligand IDs
+    --target-name                 string     target name to use for output, default is &#39;target_complex&#39;
+    --model-name                  string     model name to use for output, default is &#39;model_complex&#39;
+
+Input options, alternative:
+    --casp15-target               string  *  target data file in CASP15 format, alternative to --target-* options
+    --casp15-target-pose          string  *  pose number to select from the target data file in CASP15 format
+    --casp15-model                string  *  model data file in CASP15 format, alternative to --model-* options
+    --casp15-model-pose           string  *  pose number to select from the model data file in CASP15 format
+
+Other options:
+    --table-dir                   string     directory to output scores table file named &#39;${TARGET_NAME}_vs_${MODEL_NAME}.txt&#39;
+    --details-dir                 string     directory to output lists of contacts used for scoring
+    --drawing-dir                 string     directory to output files to visualize with pymol
+    --and-swap                    string     flag to compute everything after swapping target and model, default is &#39;false&#39;
+    --help | -h                              display help message and exit
+    
+Standard output:
+    space-separated table of scores
+    
+Examples:
+
+    voronota-js-ligand-cadscore --casp15-target ./T1118v1LG035_1 --casp15-target-pose 1 --casp15-model ./T1118v1LG046_1 --casp15-model-pose 1
+    
+    voronota-js-ligand-cadscore \
+      --target-receptor ./t_protein.pdb --target-ligands &#39;./t_ligand1.mol ./t_ligand2.mol ./t_ligand3.mol&#39; --target-ligand-ids &#39;a a b&#39; \
+      --model-receptor ./m_protein.pdb --model-ligands &#39;./m_ligand1.mol ./m_ligand2.mol ./m_ligand3.mol&#39; --model-ligand-ids &#39;a a b&#39;</code></pre>
 <h2 id="example-of-how-it-works-for-casp15-models">Example of how it works for CASP15 models</h2>
 <p>Let us take two files with protein-ligand models from CASP15: 'H1135LG035_1' and 'H1135LG046_1'. Then let us execute the following command:</p>
 <pre><code>voronota-js-ligand-cadscore \
