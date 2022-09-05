@@ -76,3 +76,5 @@ pandoc $TMPDIR/documentation.markdown -f markdown -t html --toc -H $TMPDIR/inclu
 
 mv $TMPDIR/documentation.markdown ./README.markdown
 
+pandoc ./resources/texts/ligand_cadscore_info.markdown -f markdown -t html -s -o ./ligand_cadscore_info.html
+

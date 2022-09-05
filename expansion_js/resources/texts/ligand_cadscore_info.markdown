@@ -6,39 +6,7 @@ The script 'voronota-js-ligand-cadscore' for the protein-ligand variation of CAD
 
 ### Script interface
     
-    Input options, basic:
-        --target-receptor             string  *  target receptor file path
-        --target-ligands              string  *  list of target ligand file paths
-        --target-ligand-ids           string  *  list of target ligand IDs
-        --model-receptor              string  *  model receptor file path
-        --model-ligands               string  *  list of model ligand file paths
-        --model-ligand-ids            string  *  list of model ligand IDs
-        --target-name                 string     target to use for output, default is 'target_complex'
-        --model-name                  string     model name to use for output, default is 'model_complex'
-    
-    Input options, alternative:
-        --casp15-target               string  *  target data file in CASP15 format, alternative to --target-* options
-        --casp15-target-pose          string  *  pose number to select from the target data file in CASP15 format
-        --casp15-model                string  *  model data file in CASP15 format, alternative to --model-* options
-        --casp15-model-pose           string  *  pose number to select from the model data file in CASP15 format
-    
-    Other options:
-        --details-dir                 string     directory to output lists of contacts used for scoring
-        --drawing-dir                 string     directory to output files to visualize with pymol
-        --and-swap                    string     flag to compute everything after swapping target and model, default is 'false'
-        --help | -h                              display help message and exit
-        
-    Standard output:
-        space-separated table of scores
-        
-    Examples:
-    
-        voronota-js-ligand-cadscore --casp15-target ./T1118v1LG035_1 --casp15-target-pose 1 --casp15-model ./T1118v1LG046_1 --casp15-model-pose 1
-        
-        voronota-js-ligand-cadscore \
-          --target-receptor ./t_protein.pdb --target-ligands './t_ligand1.mol ./t_ligand2.mol ./t_ligand3.mol' --target-ligand-ids 'a a b' \
-          --model-receptor ./m_protein.pdb --model-ligands './m_ligand1.mol ./m_ligand2.mol ./m_ligand3.mol' --model-ligand-ids 'a a b'
-
+See [https://kliment-olechnovic.github.io/voronota/expansion_js/#protein-ligand-interface-variation-of-cad-score](https://kliment-olechnovic.github.io/voronota/expansion_js/#protein-ligand-interface-variation-of-cad-score).
 
 ## Example of how it works for CASP15 models
 

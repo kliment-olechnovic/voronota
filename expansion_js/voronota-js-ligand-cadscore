@@ -13,7 +13,7 @@ Input options, basic:
     --model-receptor              string  *  model receptor file path
     --model-ligands               string  *  list of model ligand file paths
     --model-ligand-ids            string  *  list of model ligand IDs
-    --target-name                 string     target to use for output, default is 'target_complex'
+    --target-name                 string     target name to use for output, default is 'target_complex'
     --model-name                  string     model name to use for output, default is 'model_complex'
 
 Input options, alternative:
@@ -23,6 +23,7 @@ Input options, alternative:
     --casp15-model-pose           string  *  pose number to select from the model data file in CASP15 format
 
 Other options:
+    --table-dir                   string     directory to output scores table file named '${TARGET_NAME}_vs_${MODEL_NAME}.txt'
     --details-dir                 string     directory to output lists of contacts used for scoring
     --drawing-dir                 string     directory to output files to visualize with pymol
     --and-swap                    string     flag to compute everything after swapping target and model, default is 'false'
@@ -71,6 +72,7 @@ CASP15_TARGET=""
 CASP15_TARGET_POSE=""
 CASP15_MODEL=""
 CASP15_MODEL_POSE=""
+TABLE_DIR=""
 DETAILS_DIR=""
 DRAWING_DIR=""
 AND_SWAP="false"
@@ -128,6 +130,10 @@ do
 		;;
 	--casp15-model-pose)
 		CASP15_MODEL_POSE="$OPTARG"
+		shift
+		;;
+    --table-dir)
+		TABLE_DIR="$OPTARG"
 		shift
 		;;
 	--details-dir)
@@ -251,7 +257,7 @@ EOF
 	  --target-receptor "${TMPLDIR}/target_receptor.pdb" --target-ligands "$(cat ${TMPLDIR}/target_list)" --target-ligand-ids "$(cat ${TMPLDIR}/target_list_ids)" \
       --model-receptor "${TMPLDIR}/model_receptor.pdb" --model-ligands "$(cat ${TMPLDIR}/model_list)" --model-ligand-ids "$(cat ${TMPLDIR}/model_list_ids)" \
       --target-name "$(basename ${CASP15_TARGET})_pose${CASP15_TARGET_POSE}" --model-name "$(basename ${CASP15_MODEL})_pose${CASP15_MODEL_POSE}" \
-      --details-dir "$DETAILS_DIR" --drawing-dir "$DRAWING_DIR" --and-swap "$AND_SWAP"
+      --table-dir "$TABLE_DIR" --details-dir "$DETAILS_DIR" --drawing-dir "$DRAWING_DIR" --and-swap "$AND_SWAP"
 	
 	exit 0
 fi
@@ -302,6 +308,16 @@ then
 	exit 1
 fi
 
+if [ -n "$TABLE_DIR" ]
+then
+	mkdir -p "$TABLE_DIR"
+	if [ ! -d "$TABLE_DIR" ]
+	then
+		echo >&2 "Error: failed to access or create table output directory '$TABLE_DIR'"
+		exit 1
+	fi
+fi
+
 if [ -n "$DETAILS_DIR" ]
 then
 	mkdir -p "$DETAILS_DIR"
@@ -331,6 +347,8 @@ params.model_receptor='$MODEL_RECEPTOR';
 params.model_ligands=[];
 params.target_name='$TARGET_NAME';
 params.model_name='$MODEL_NAME';
+params.table_dir='$TABLE_DIR';
+params.table_dir=params.table_dir.trim();
 params.details_dir='$DETAILS_DIR';
 params.details_dir=params.details_dir.trim();
 params.drawing_dir='$DRAWING_DIR';
@@ -454,6 +472,11 @@ for(var i=0;i<summary_objects.length;i++)
 }
 
 write(table);
+
+if(params.table_dir.length>0)
+{
+	fwrite(params.table_dir+'/'+params.target_name+'_vs_'+params.model_name+'.txt', table);
+}
 
 if(params.details_dir.length>0)
 {

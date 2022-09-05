@@ -179,7 +179,7 @@ the sources in "src" directory using GNU C++ compiler:
         --model-receptor              string  *  model receptor file path
         --model-ligands               string  *  list of model ligand file paths
         --model-ligand-ids            string  *  list of model ligand IDs
-        --target-name                 string     target to use for output, default is 'target_complex'
+        --target-name                 string     target name to use for output, default is 'target_complex'
         --model-name                  string     model name to use for output, default is 'model_complex'
     
     Input options, alternative:
@@ -189,6 +189,7 @@ the sources in "src" directory using GNU C++ compiler:
         --casp15-model-pose           string  *  pose number to select from the model data file in CASP15 format
     
     Other options:
+        --table-dir                   string     directory to output scores table file named '${TARGET_NAME}_vs_${MODEL_NAME}.txt'
         --details-dir                 string     directory to output lists of contacts used for scoring
         --drawing-dir                 string     directory to output files to visualize with pymol
         --and-swap                    string     flag to compute everything after swapping target and model, default is 'false'
