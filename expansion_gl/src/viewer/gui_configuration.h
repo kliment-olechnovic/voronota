@@ -31,6 +31,12 @@ public:
 		ANTIALIASING_VARIANT_FAST
 	};
 
+	enum MultisamplingVariant
+	{
+		MULTISAMPLING_VARIANT_NONE,
+		MULTISAMPLING_VARIANT_BASIC
+	};
+
 	enum ImpostoringVariant
 	{
 		IMPOSTORING_VARIANT_NONE,
@@ -54,6 +60,7 @@ public:
 	GridVariant grid_variant;
 	OcclusionVariant occlusion_variant;
 	AntialiasingVariant antialiasing_variant;
+	MultisamplingVariant multisampling_variant;
 	ImpostoringVariant impostoring_variant;
 	AnimationVariant animation_variant;
 	InitialRepresentationVariant initial_main_representation_variant;
@@ -100,6 +107,7 @@ private:
 		grid_variant(GRID_VARIANT_BY_OBJECT),
 		occlusion_variant(OCCLUSION_VARIANT_NONE),
 		antialiasing_variant(ANTIALIASING_VARIANT_NONE),
+		multisampling_variant(MULTISAMPLING_VARIANT_NONE),
 		impostoring_variant(IMPOSTORING_VARIANT_NONE),
 		animation_variant(ANIMATION_VARIANT_NONE),
 		initial_main_representation_variant(INITIAL_REPRESENTATION_VARIANT_CARTOON),

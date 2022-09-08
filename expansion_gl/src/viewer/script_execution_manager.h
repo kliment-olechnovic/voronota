@@ -12,6 +12,7 @@
 #include "operators/grid.h"
 #include "operators/impostoring.h"
 #include "operators/mono.h"
+#include "operators/multisampling.h"
 #include "operators/occlusion.h"
 #include "operators/ortho.h"
 #include "operators/perspective.h"
@@ -45,6 +46,8 @@ public:
 		set_command_for_extra_actions("occlusion-smooth", operators::Occlusion(GUIConfiguration::OCCLUSION_VARIANT_SMOOTH));
 		set_command_for_extra_actions("antialiasing-none", operators::Antialiasing(GUIConfiguration::ANTIALIASING_VARIANT_NONE));
 		set_command_for_extra_actions("antialiasing-fast", operators::Antialiasing(GUIConfiguration::ANTIALIASING_VARIANT_FAST));
+		set_command_for_extra_actions("multisampling-none", operators::Multisampling(GUIConfiguration::MULTISAMPLING_VARIANT_NONE));
+		set_command_for_extra_actions("multisampling-basic", operators::Multisampling(GUIConfiguration::MULTISAMPLING_VARIANT_BASIC));
 		set_command_for_extra_actions("impostoring-none", operators::Impostoring(GUIConfiguration::IMPOSTORING_VARIANT_NONE));
 		set_command_for_extra_actions("impostoring-simple", operators::Impostoring(GUIConfiguration::IMPOSTORING_VARIANT_SIMPLE));
 		set_command_for_extra_actions("ortho", operators::Ortho());

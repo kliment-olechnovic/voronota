@@ -952,7 +952,7 @@ private:
 			{
 				static bool antialiasing=false;
 
-				antialiasing=!uv::ViewerApplication::instance().antialiasing_mode_is_none();
+				antialiasing=uv::ViewerApplication::instance().antialiasing_mode_is_fast();
 
 				if(ImGui::Checkbox("Antialiasing", &antialiasing))
 				{
@@ -963,6 +963,24 @@ private:
 					else
 					{
 						result="vsb: antialiasing-none";
+					}
+				}
+			}
+			ImGui::SameLine();
+			{
+				static bool multisampling=false;
+
+				multisampling=uv::ViewerApplication::instance().multisampling_mode_is_basic();
+
+				if(ImGui::Checkbox("Multisampling", &multisampling))
+				{
+					if(multisampling)
+					{
+						result="vsb: multisampling-basic";
+					}
+					else
+					{
+						result="vsb: multisampling-none";
 					}
 				}
 			}

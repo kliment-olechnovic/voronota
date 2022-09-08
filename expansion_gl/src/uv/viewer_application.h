@@ -87,7 +87,7 @@ public:
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		glfwWindowHint(GLFW_SAMPLES, 0);
+		glfwWindowHint(GLFW_SAMPLES, 4);
 
 		window_=glfwCreateWindow(parameters.suggested_window_width, parameters.suggested_window_height, parameters.title.c_str(), 0, 0);
 		if(!window_)
@@ -139,7 +139,14 @@ public:
 
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
-		glDisable(GL_MULTISAMPLE);
+		if(multisampling_mode_!=MultisamplingMode::none)
+		{
+			glEnable(GL_MULTISAMPLE);
+		}
+		else
+		{
+			glDisable(GL_MULTISAMPLE);
+		}
 
 		if(!shading_screen_.init(parameters.shader_vertex_screen, parameters.shader_fragment_screen, DrawingForScreenController::ordered_used_shader_attribute_names()))
 		{
@@ -381,6 +388,16 @@ public:
 		return (antialiasing_mode_==AntialiasingMode::fast);
 	}
 
+	bool multisampling_mode_is_none() const
+	{
+		return (multisampling_mode_==MultisamplingMode::none);
+	}
+
+	bool multisampling_mode_is_basic() const
+	{
+		return (multisampling_mode_==MultisamplingMode::basic);
+	}
+
 	void close()
 	{
 		if(good())
@@ -504,6 +521,18 @@ public:
 	void set_antialiasing_mode_to_fast()
 	{
 		antialiasing_mode_=AntialiasingMode::fast;
+	}
+
+	void set_multisampling_mode_to_none()
+	{
+		changed_multisampling_mode_=(multisampling_mode_!=MultisamplingMode::none);
+		multisampling_mode_=MultisamplingMode::none;
+	}
+
+	void set_multisampling_mode_to_basic()
+	{
+		changed_multisampling_mode_=(multisampling_mode_!=MultisamplingMode::basic);
+		multisampling_mode_=MultisamplingMode::basic;
 	}
 
 	void set_stereo_angle(const float stereo_angle)
@@ -642,7 +671,9 @@ protected:
 		rendering_mode_(RenderingMode::simple),
 		projection_mode_(ProjectionMode::ortho),
 		occlusion_mode_(OcclusionMode::none),
-		antialiasing_mode_(AntialiasingMode::none)
+		antialiasing_mode_(AntialiasingMode::none),
+		multisampling_mode_(MultisamplingMode::none),
+		changed_multisampling_mode_(false)
 	{
 		instance_ptr()=this;
 		Utilities::calculate_color_from_integer(0, background_color_);
@@ -821,6 +852,15 @@ private:
 		{
 			none,
 			fast
+		};
+	};
+
+	struct MultisamplingMode
+	{
+		enum Mode
+		{
+			none,
+			basic
 		};
 	};
 
@@ -1067,6 +1107,18 @@ private:
 
 		glEnable(GL_DEPTH_TEST);
 
+		if(changed_multisampling_mode_)
+		{
+			if(multisampling_mode_!=MultisamplingMode::none)
+			{
+				glEnable(GL_MULTISAMPLE);
+			}
+			else
+			{
+				glDisable(GL_MULTISAMPLE);
+			}
+		}
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
 		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
@@ -1112,6 +1164,11 @@ private:
 				shading_with_impostoring_.set_selection_mode_enabled(true);
 				render_scene(ShadingMode::with_impostoring);
 				shading_with_impostoring_.set_selection_mode_enabled(false);
+
+				if(multisampling_mode_!=MultisamplingMode::none)
+				{
+					glEnable(GL_MULTISAMPLE);
+				}
 			}
 
 			unsigned char pixel[4]={0, 0, 0, 0};
@@ -1561,6 +1618,8 @@ private:
 	ProjectionMode::Mode projection_mode_;
 	OcclusionMode::Mode occlusion_mode_;
 	AntialiasingMode::Mode antialiasing_mode_;
+	MultisamplingMode::Mode multisampling_mode_;
+	bool changed_multisampling_mode_;
 	float background_color_[3];
 	float margin_color_[3];
 	ShadingController shading_screen_;
