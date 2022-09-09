@@ -60,6 +60,7 @@
 #include "operators/import_adjuncts_of_atoms.h"
 #include "operators/import_contacts.h"
 #include "operators/import_docking_result.h"
+#include "operators/import_figure_voxels.h"
 #include "operators/import_many.h"
 #include "operators/import.h"
 #include "operators/import_selection_of_atoms.h"
@@ -265,6 +266,7 @@ public:
 		set_command_for_data_manager("hide-figures", operators::HideFigures(), true);
 		set_command_for_data_manager("import-adjuncts-of-atoms", operators::ImportAdjunctsOfAtoms(), true);
 		set_command_for_data_manager("import-contacts", operators::ImportContacts(), false);
+		set_command_for_data_manager("import-figure-voxels", operators::ImportFigureVoxels(), false);
 		set_command_for_data_manager("import-selection-of-atoms", operators::ImportSelectionOfAtoms(), true);
 		set_command_for_data_manager("import-selection-of-contacts", operators::ImportSelectionOfContacts(), true);
 		set_command_for_data_manager("list-figures", operators::ListFigures(), true);
