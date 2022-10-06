@@ -20,9 +20,16 @@ public:
 	struct Parameters
 	{
 		auxiliaries::GridEDTTools::SurfaceConstruction::Parameters grid_surface_parameters;
+		double balls_radius_addition;
 
-		Parameters()
+		Parameters() : balls_radius_addition(0.05)
 		{
+		}
+
+		Parameters(const double vdw_radius_expansion, const double probe, const double grid_step) : balls_radius_addition(vdw_radius_expansion)
+		{
+			grid_surface_parameters.probe=probe;
+			grid_surface_parameters.grid_step=grid_step;
 		}
 	};
 
@@ -54,7 +61,13 @@ public:
 			return false;
 		}
 
-		const auxiliaries::GridEDTTools::Surface surface=auxiliaries::GridEDTTools::SurfaceConstruction::construct_surface(parameters.grid_surface_parameters, ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms));
+		std::vector<apollota::SimpleSphere> balls=ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms);
+		for(std::size_t i=0;i<balls.size();i++)
+		{
+			balls[i].r+=parameters.balls_radius_addition;
+		}
+
+		const auxiliaries::GridEDTTools::Surface surface=auxiliaries::GridEDTTools::SurfaceConstruction::construct_surface(parameters.grid_surface_parameters, balls);
 
 		if(surface.map_of_ball_nums_to_triple_nums.empty())
 		{

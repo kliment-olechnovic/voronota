@@ -97,6 +97,8 @@ public:
 		unsigned int trace_cylinder_quality;
 		int cartoon_style;
 		int prepare_impostoring;
+		double ses_probe;
+		double ses_grid_step_hint;
 
 		RenderingParameters() :
 			ball_sphere_quality(2),
@@ -105,7 +107,9 @@ public:
 			trace_sphere_quality(2),
 			trace_cylinder_quality(18),
 			cartoon_style(0),
-			prepare_impostoring(1)
+			prepare_impostoring(1),
+			ses_probe(1.4),
+			ses_grid_step_hint(0.4)
 		{
 		}
 
@@ -689,7 +693,7 @@ private:
 		{
 			common::ConstructionOfGridBasedMolecularSurface::BundleOfMeshInformation bundle;
 			if(common::ConstructionOfGridBasedMolecularSurface::construct_bundle_of_mesh_information(
-					common::ConstructionOfGridBasedMolecularSurface::Parameters(),
+					common::ConstructionOfGridBasedMolecularSurface::Parameters(0.05, rendering_parameters_.ses_probe, rendering_parameters_.ses_grid_step_hint),
 					data_manager_.atoms(),
 					bundle))
 			{
