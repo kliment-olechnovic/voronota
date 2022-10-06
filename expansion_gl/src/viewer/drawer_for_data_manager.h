@@ -62,6 +62,7 @@ public:
 		bool atoms_cartoon;
 		bool atoms_points;
 		bool atoms_ses_surface;
+		bool atoms_ses_surface_mesh;
 		bool contacts_faces;
 		bool contacts_sasmesh;
 		bool contacts_edges;
@@ -77,6 +78,7 @@ public:
 			atoms_cartoon(atoms_status),
 			atoms_points(atoms_status),
 			atoms_ses_surface(atoms_status),
+			atoms_ses_surface_mesh(atoms_status),
 			contacts_faces(contacts_status),
 			contacts_sasmesh(contacts_status),
 			contacts_edges(contacts_status),
@@ -135,6 +137,7 @@ public:
 		dc_atoms_points_impo_(4),
 		dc_atoms_cartoon_(3),
 		dc_atoms_ses_surface_(5),
+		dc_atoms_ses_surface_mesh_(6),
 		dc_contacts_faces_(0),
 		dc_contacts_sasmesh_(1),
 		dc_contacts_edges_(2),
@@ -180,6 +183,15 @@ public:
 					update_drawing_atoms();
 				}
 				dc_atoms_ses_surface_.draw();
+			}
+			if(drawing_request.atoms_ses_surface_mesh)
+			{
+				if(!dc_atoms_ses_surface_mesh_.valid() && data_manager_.is_any_atom_visible(dc_atoms_ses_surface_mesh_.representation_id))
+				{
+					reset_drawing_atoms_ses_surface();
+					update_drawing_atoms();
+				}
+				dc_atoms_ses_surface_mesh_.draw();
 			}
 			if(drawing_request.contacts_faces)
 			{
@@ -420,6 +432,7 @@ private:
 
 		dc_atoms_cartoon_.unset();
 		dc_atoms_ses_surface_.unset();
+		dc_atoms_ses_surface_mesh_.unset();
 	}
 
 	void reset_drawing_atoms_balls()
@@ -689,6 +702,7 @@ private:
 	void reset_drawing_atoms_ses_surface()
 	{
 		dc_atoms_ses_surface_.unset();
+		dc_atoms_ses_surface_mesh_.unset();
 		if(!data_manager_.atoms().empty())
 		{
 			common::ConstructionOfGridBasedMolecularSurface::BundleOfMeshInformation bundle;
@@ -698,22 +712,44 @@ private:
 					bundle))
 			{
 				const std::size_t number_of_atoms=data_manager_.atoms().size();
-				dc_atoms_ses_surface_.reset(number_of_atoms);
-				if(dc_atoms_ses_surface_.controller_ptr->init(bundle.global_buffer_of_vertices, bundle.global_buffer_of_normals, bundle.global_buffer_of_indices))
 				{
-					std::vector<bool> drawing_statuses(number_of_atoms, false);
-					for(std::size_t i=0;i<number_of_atoms;i++)
+					dc_atoms_ses_surface_.reset(number_of_atoms);
+					if(dc_atoms_ses_surface_.controller_ptr->init(bundle.global_buffer_of_vertices, bundle.global_buffer_of_normals, bundle.global_buffer_of_indices))
 					{
-						if(!bundle.mapped_indices[i].empty())
+						std::vector<bool> drawing_statuses(number_of_atoms, false);
+						for(std::size_t i=0;i<number_of_atoms;i++)
 						{
-							const uv::DrawingID drawing_id=uv::get_free_drawing_id();
-							dc_atoms_ses_surface_.drawing_ids[i]=drawing_id;
-							dc_atoms_ses_surface_.map_of_drawing_ids[drawing_id]=i;
-							dc_atoms_ses_surface_.controller_ptr->object_register(drawing_id, bundle.mapped_indices[i]);
-							drawing_statuses[i]=true;
+							if(!bundle.mapped_indices[i].empty())
+							{
+								const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+								dc_atoms_ses_surface_.drawing_ids[i]=drawing_id;
+								dc_atoms_ses_surface_.map_of_drawing_ids[drawing_id]=i;
+								dc_atoms_ses_surface_.controller_ptr->object_register(drawing_id, bundle.mapped_indices[i]);
+								drawing_statuses[i]=true;
+							}
 						}
+						data_manager_.set_atoms_representation_implemented(dc_atoms_ses_surface_.representation_id, drawing_statuses);
 					}
-					data_manager_.set_atoms_representation_implemented(dc_atoms_ses_surface_.representation_id, drawing_statuses);
+				}
+				{
+					dc_atoms_ses_surface_mesh_.reset(number_of_atoms);
+					if(dc_atoms_ses_surface_mesh_.controller_ptr->init(bundle.global_buffer_of_vertices, bundle.global_buffer_of_normals, bundle.global_buffer_of_indices))
+					{
+						std::vector<bool> drawing_statuses(number_of_atoms, false);
+						for(std::size_t i=0;i<number_of_atoms;i++)
+						{
+							if(!bundle.mapped_indices[i].empty())
+							{
+								const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+								dc_atoms_ses_surface_mesh_.drawing_ids[i]=drawing_id;
+								dc_atoms_ses_surface_mesh_.map_of_drawing_ids[drawing_id]=i;
+								dc_atoms_ses_surface_mesh_.controller_ptr->object_register(drawing_id, bundle.mapped_indices[i]);
+								drawing_statuses[i]=true;
+							}
+						}
+						data_manager_.set_atoms_representation_implemented(dc_atoms_ses_surface_mesh_.representation_id, drawing_statuses);
+						dc_atoms_ses_surface_mesh_.controller_ptr->set_wire_mode(true);
+					}
 				}
 			}
 		}
@@ -1108,6 +1144,18 @@ private:
 						dc_atoms_ses_surface_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
 					}
 				}
+
+				if(dc_atoms_ses_surface_mesh_.valid() && ds.visuals[dc_atoms_ses_surface_mesh_.representation_id].implemented)
+				{
+					const uv::DrawingID drawing_id=dc_atoms_ses_surface_mesh_.drawing_ids[i];
+					if(drawing_id>0)
+					{
+						const std::size_t rep_id=dc_atoms_ses_surface_mesh_.representation_id;
+						dc_atoms_ses_surface_mesh_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+						dc_atoms_ses_surface_mesh_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+						dc_atoms_ses_surface_mesh_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+					}
+				}
 			}
 		}
 	}
@@ -1380,6 +1428,15 @@ private:
 			}
 		}
 
+		{
+			const Map& map=dc_atoms_ses_surface_mesh_.map_of_drawing_ids;
+			Iterator it=map.find(drawing_id);
+			if(it!=map.end())
+			{
+				return it->second;
+			}
+		}
+
 		return data_manager_.atoms().size();
 	}
 
@@ -1467,6 +1524,7 @@ private:
 	WrappedDrawingWithImpostoringController dc_atoms_points_impo_;
 	WrappedDrawingController dc_atoms_cartoon_;
 	WrappedDrawingController dc_atoms_ses_surface_;
+	WrappedDrawingController dc_atoms_ses_surface_mesh_;
 	WrappedDrawingController dc_contacts_faces_;
 	WrappedDrawingController dc_contacts_sasmesh_;
 	WrappedDrawingController dc_contacts_edges_;

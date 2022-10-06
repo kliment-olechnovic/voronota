@@ -1477,6 +1477,10 @@ private:
 							{
 								result=std::string("show-atoms -rep ses -use (")+atoms_selection_string()+")";
 							}
+							if(ImGui::Selectable("  ses-mesh##show"))
+							{
+								result=std::string("show-atoms -rep ses-mesh -use (")+atoms_selection_string()+")";
+							}
 						}
 						else if(concept_mode()=="contacts")
 						{
@@ -1539,6 +1543,10 @@ private:
 							{
 								result=std::string("hide-atoms -rep ses -use (")+atoms_selection_string()+")";
 							}
+							if(ImGui::Selectable("  ses-mesh##hide"))
+							{
+								result=std::string("hide-atoms -rep ses-mesh -use (")+atoms_selection_string()+")";
+							}
 						}
 						else if(concept_mode()=="contacts")
 						{
@@ -1579,6 +1587,7 @@ private:
 							static bool rep_balls=true;
 							static bool rep_points=true;
 							static bool rep_ses=true;
+							static bool rep_ses_mesh=true;
 
 							{
 								const std::string checkbox_id=std::string("cartoon##cartoon_checkbox_rep");
@@ -1604,6 +1613,10 @@ private:
 								const std::string checkbox_id=std::string("ses##ses_checkbox_rep");
 								ImGui::Checkbox(checkbox_id.c_str(), &rep_ses);
 							}
+							{
+								const std::string checkbox_id=std::string("ses-mesh##ses_mesh_checkbox_rep");
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_ses_mesh);
+							}
 
 							const std::string rep_string=std::string(" -rep")
 								+(rep_cartoon ? " cartoon" : "")
@@ -1611,7 +1624,8 @@ private:
 								+(rep_sticks ? " sticks" : "")
 								+(rep_balls ? " balls" : "")
 								+(rep_points ? " points" : "")
-								+(rep_ses ? " ses" : "");
+								+(rep_ses ? " ses" : "")
+								+(rep_ses_mesh ? " ses-mesh" : "");
 
 							ImGui::Separator();
 
@@ -2260,6 +2274,10 @@ private:
 							{
 								result=std::string("show-atoms -rep ses -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
+							if(ImGui::Selectable("  ses-mesh##show"))
+							{
+								result=std::string("show-atoms -rep ses-mesh -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
 						}
 						else if(concept_mode()=="contacts")
 						{
@@ -2322,6 +2340,10 @@ private:
 							{
 								result=std::string("hide-atoms -rep ses -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
+							if(ImGui::Selectable("  ses-mesh##hide"))
+							{
+								result=std::string("hide-atoms -rep ses-mesh -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+							}
 						}
 						else if(concept_mode()=="contacts")
 						{
@@ -2362,6 +2384,7 @@ private:
 							static bool rep_balls=true;
 							static bool rep_points=true;
 							static bool rep_ses=true;
+							static bool rep_ses_mesh=true;
 
 							{
 								const std::string checkbox_id=std::string("cartoon##cartoon_checkbox_rep_")+os.name;
@@ -2387,6 +2410,10 @@ private:
 								const std::string checkbox_id=std::string("ses##ses_checkbox_rep_")+os.name;
 								ImGui::Checkbox(checkbox_id.c_str(), &rep_ses);
 							}
+							{
+								const std::string checkbox_id=std::string("ses-mesh##ses_mesh_checkbox_rep_")+os.name;
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_ses_mesh);
+							}
 
 
 							const std::string rep_string=std::string(" -rep")
@@ -2395,7 +2422,8 @@ private:
 								+(rep_sticks ? " sticks" : "")
 								+(rep_balls ? " balls" : "")
 								+(rep_points ? " points" : "")
-								+(rep_ses ? " ses" : "");
+								+(rep_ses ? " ses" : "")
+								+(rep_ses_mesh ? " ses-mesh" : "");
 
 							ImGui::Separator();
 
