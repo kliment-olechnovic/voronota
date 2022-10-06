@@ -227,7 +227,7 @@ public:
 				const int smoothing_iterations,
 				const double smoothing_self_proportion,
 				const bool correct_burried_vertices,
-				const bool split,
+				const int split_mode,
 				Surface& surface)
 		{
 			for(std::size_t i=0;i<grid_vector_.size();i++)
@@ -431,7 +431,7 @@ public:
 				}
 			}
 
-			if(split)
+			if(split_mode>0)
 			{
 				Surface split_surface;
 				split_surface.vertices=surface.vertices;
@@ -440,7 +440,7 @@ public:
 				{
 					const int ids[3]={surface.triples[i*3+0], surface.triples[i*3+1], surface.triples[i*3+2]};
 					int v_ball_nums[3]={split_surface.vertices[ids[0]].ball_num, split_surface.vertices[ids[1]].ball_num, split_surface.vertices[ids[2]].ball_num};
-					if(v_ball_nums[0]==v_ball_nums[1] && v_ball_nums[0]==v_ball_nums[2])
+					if((v_ball_nums[0]==v_ball_nums[1] && v_ball_nums[0]==v_ball_nums[2]) || (split_mode==1 && (v_ball_nums[0]==v_ball_nums[1] || v_ball_nums[0]==v_ball_nums[2] || v_ball_nums[1]==v_ball_nums[2])))
 					{
 						split_surface.triples.push_back(ids[0]);
 						split_surface.triples.push_back(ids[1]);
@@ -560,16 +560,31 @@ public:
 
 			for(int i=0;i<static_cast<int>(surface.triples.size())/3;i++)
 			{
-				bool recorded=false;
-				for(int j=0;j<3 && !recorded;j++)
+				const int ball_nums[3]={surface.vertices[surface.triples[i*3+0]].ball_num, surface.vertices[surface.triples[i*3+1]].ball_num, surface.vertices[surface.triples[i*3+2]].ball_num};
+				int recorded_ball_num=-1;
+				if(ball_nums[0]>=0 && ball_nums[1]>=0 && ball_nums[2]>=0)
 				{
-					const int ball_num=surface.vertices[surface.triples[i*3+j]].ball_num;
-					if(ball_num>=0)
+					if(ball_nums[0]==ball_nums[1] || ball_nums[0]==ball_nums[2])
 					{
-						surface.map_of_ball_nums_to_triple_nums[ball_num].push_back(i);
-						surface.map_of_triple_nums_to_ball_nums[i]=ball_num;
-						recorded=true;
+						recorded_ball_num=ball_nums[0];
 					}
+					else if(ball_nums[1]==ball_nums[2])
+					{
+						recorded_ball_num=ball_nums[1];
+					}
+					else
+					{
+						recorded_ball_num=std::min(ball_nums[0], std::min(ball_nums[1], ball_nums[2]));
+					}
+				}
+				for(int j=0;j<3 && recorded_ball_num<0;j++)
+				{
+					recorded_ball_num=ball_nums[j];
+				}
+				if(recorded_ball_num>=0)
+				{
+					surface.map_of_ball_nums_to_triple_nums[recorded_ball_num].push_back(i);
+					surface.map_of_triple_nums_to_ball_nums[i]=recorded_ball_num;
 				}
 			}
 		}
@@ -811,7 +826,7 @@ public:
 			int smoothing_iterations;
 			double smoothing_self_proportion;
 			bool correct_burried_vertices;
-			bool split;
+			int split_mode;
 
 			Parameters() :
 				solvent_excluded(true),
@@ -822,7 +837,7 @@ public:
 				smoothing_iterations(1),
 				smoothing_self_proportion(0.0),
 				correct_burried_vertices(true),
-				split(true)
+				split_mode(2)
 			{
 			}
 		};
@@ -831,7 +846,7 @@ public:
 		{
 			Grid grid;
 			grid.init(parameters.probe, parameters.grid_step, parameters.grid_max_allowed_voxels_count, parameters.grid_reduced_step_directions, balls);
-			grid.construct_surface(parameters.solvent_excluded, parameters.smoothing_iterations, parameters.smoothing_self_proportion, parameters.correct_burried_vertices, parameters.split, surface);
+			grid.construct_surface(parameters.solvent_excluded, parameters.smoothing_iterations, parameters.smoothing_self_proportion, parameters.correct_burried_vertices, parameters.split_mode, surface);
 		}
 
 		template<typename T>
