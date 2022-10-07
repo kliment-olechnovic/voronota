@@ -26,8 +26,9 @@ public:
 		{
 		}
 
-		Parameters(const double vdw_radius_expansion, const double probe, const double grid_step, const int smoothing) : balls_radius_addition(vdw_radius_expansion)
+		Parameters(const double vdw_radius_expansion, const int type_id, const double probe, const double grid_step, const int smoothing) : balls_radius_addition(vdw_radius_expansion)
 		{
+			grid_surface_parameters.solvent_excluded=(type_id==1);
 			grid_surface_parameters.probe=probe;
 			grid_surface_parameters.grid_step=grid_step;
 			grid_surface_parameters.smoothing_iterations=smoothing;

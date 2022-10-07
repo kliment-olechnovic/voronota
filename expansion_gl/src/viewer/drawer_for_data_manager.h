@@ -99,6 +99,7 @@ public:
 		unsigned int trace_cylinder_quality;
 		int cartoon_style;
 		int prepare_impostoring;
+		int molsurf_type;
 		double molsurf_probe;
 		double molsurf_grid_step_hint;
 		int molsurf_smoothing;
@@ -111,6 +112,7 @@ public:
 			trace_cylinder_quality(18),
 			cartoon_style(0),
 			prepare_impostoring(1),
+			molsurf_type(1),
 			molsurf_probe(1.4),
 			molsurf_grid_step_hint(0.4),
 			molsurf_smoothing(1)
@@ -709,7 +711,7 @@ private:
 		{
 			common::ConstructionOfGridBasedMolecularSurface::BundleOfMeshInformation bundle;
 			if(common::ConstructionOfGridBasedMolecularSurface::construct_bundle_of_mesh_information(
-					common::ConstructionOfGridBasedMolecularSurface::Parameters(0.05, rendering_parameters_.molsurf_probe, rendering_parameters_.molsurf_grid_step_hint, rendering_parameters_.molsurf_smoothing),
+					common::ConstructionOfGridBasedMolecularSurface::Parameters(0.05, rendering_parameters_.molsurf_type, rendering_parameters_.molsurf_probe, rendering_parameters_.molsurf_grid_step_hint, rendering_parameters_.molsurf_smoothing),
 					data_manager_.atoms(),
 					bundle))
 			{
