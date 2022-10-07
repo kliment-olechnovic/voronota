@@ -554,8 +554,8 @@ public:
 		add_atoms_representation("trace");
 		add_atoms_representation("cartoon");
 		add_atoms_representation("points");
-		add_atoms_representation("ses");
-		add_atoms_representation("ses-mesh");
+		add_atoms_representation("molsurf");
+		add_atoms_representation("molsurf-mesh");
 
 		add_contacts_representation("faces");
 		add_contacts_representation("sas-mesh");

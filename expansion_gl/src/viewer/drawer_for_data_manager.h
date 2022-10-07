@@ -61,8 +61,8 @@ public:
 		bool atoms_trace;
 		bool atoms_cartoon;
 		bool atoms_points;
-		bool atoms_ses_surface;
-		bool atoms_ses_surface_mesh;
+		bool atoms_molsurf;
+		bool atoms_molsurf_mesh;
 		bool contacts_faces;
 		bool contacts_sasmesh;
 		bool contacts_edges;
@@ -77,8 +77,8 @@ public:
 			atoms_trace(atoms_status),
 			atoms_cartoon(atoms_status),
 			atoms_points(atoms_status),
-			atoms_ses_surface(atoms_status),
-			atoms_ses_surface_mesh(atoms_status),
+			atoms_molsurf(atoms_status),
+			atoms_molsurf_mesh(atoms_status),
 			contacts_faces(contacts_status),
 			contacts_sasmesh(contacts_status),
 			contacts_edges(contacts_status),
@@ -99,9 +99,9 @@ public:
 		unsigned int trace_cylinder_quality;
 		int cartoon_style;
 		int prepare_impostoring;
-		double ses_probe;
-		double ses_grid_step_hint;
-		int ses_smoothing;
+		double molsurf_probe;
+		double molsurf_grid_step_hint;
+		int molsurf_smoothing;
 
 		RenderingParameters() :
 			ball_sphere_quality(2),
@@ -111,9 +111,9 @@ public:
 			trace_cylinder_quality(18),
 			cartoon_style(0),
 			prepare_impostoring(1),
-			ses_probe(1.4),
-			ses_grid_step_hint(0.4),
-			ses_smoothing(1)
+			molsurf_probe(1.4),
+			molsurf_grid_step_hint(0.4),
+			molsurf_smoothing(1)
 		{
 		}
 
@@ -138,8 +138,8 @@ public:
 		dc_atoms_points_inst_(4),
 		dc_atoms_points_impo_(4),
 		dc_atoms_cartoon_(3),
-		dc_atoms_ses_surface_(5),
-		dc_atoms_ses_surface_mesh_(6),
+		dc_atoms_molsurf_(5),
+		dc_atoms_molsurf_mesh_(6),
 		dc_contacts_faces_(0),
 		dc_contacts_sasmesh_(1),
 		dc_contacts_edges_(2),
@@ -177,23 +177,23 @@ public:
 				}
 				dc_atoms_cartoon_.draw();
 			}
-			if(drawing_request.atoms_ses_surface)
+			if(drawing_request.atoms_molsurf)
 			{
-				if(!dc_atoms_ses_surface_.valid() && data_manager_.is_any_atom_visible(dc_atoms_ses_surface_.representation_id))
+				if(!dc_atoms_molsurf_.valid() && data_manager_.is_any_atom_visible(dc_atoms_molsurf_.representation_id))
 				{
-					reset_drawing_atoms_ses_surface();
+					reset_drawing_atoms_molsurf();
 					update_drawing_atoms();
 				}
-				dc_atoms_ses_surface_.draw();
+				dc_atoms_molsurf_.draw();
 			}
-			if(drawing_request.atoms_ses_surface_mesh)
+			if(drawing_request.atoms_molsurf_mesh)
 			{
-				if(!dc_atoms_ses_surface_mesh_.valid() && data_manager_.is_any_atom_visible(dc_atoms_ses_surface_mesh_.representation_id))
+				if(!dc_atoms_molsurf_mesh_.valid() && data_manager_.is_any_atom_visible(dc_atoms_molsurf_mesh_.representation_id))
 				{
-					reset_drawing_atoms_ses_surface();
+					reset_drawing_atoms_molsurf();
 					update_drawing_atoms();
 				}
-				dc_atoms_ses_surface_mesh_.draw();
+				dc_atoms_molsurf_mesh_.draw();
 			}
 			if(drawing_request.contacts_faces)
 			{
@@ -433,8 +433,8 @@ private:
 		reset_drawing_atoms_points();
 
 		dc_atoms_cartoon_.unset();
-		dc_atoms_ses_surface_.unset();
-		dc_atoms_ses_surface_mesh_.unset();
+		dc_atoms_molsurf_.unset();
+		dc_atoms_molsurf_mesh_.unset();
 	}
 
 	void reset_drawing_atoms_balls()
@@ -701,22 +701,22 @@ private:
 		}
 	}
 
-	void reset_drawing_atoms_ses_surface()
+	void reset_drawing_atoms_molsurf()
 	{
-		dc_atoms_ses_surface_.unset();
-		dc_atoms_ses_surface_mesh_.unset();
+		dc_atoms_molsurf_.unset();
+		dc_atoms_molsurf_mesh_.unset();
 		if(!data_manager_.atoms().empty())
 		{
 			common::ConstructionOfGridBasedMolecularSurface::BundleOfMeshInformation bundle;
 			if(common::ConstructionOfGridBasedMolecularSurface::construct_bundle_of_mesh_information(
-					common::ConstructionOfGridBasedMolecularSurface::Parameters(0.05, rendering_parameters_.ses_probe, rendering_parameters_.ses_grid_step_hint, rendering_parameters_.ses_smoothing),
+					common::ConstructionOfGridBasedMolecularSurface::Parameters(0.05, rendering_parameters_.molsurf_probe, rendering_parameters_.molsurf_grid_step_hint, rendering_parameters_.molsurf_smoothing),
 					data_manager_.atoms(),
 					bundle))
 			{
 				const std::size_t number_of_atoms=data_manager_.atoms().size();
 				{
-					dc_atoms_ses_surface_.reset(number_of_atoms);
-					if(dc_atoms_ses_surface_.controller_ptr->init(bundle.global_buffer_of_vertices, bundle.global_buffer_of_normals, bundle.global_buffer_of_indices))
+					dc_atoms_molsurf_.reset(number_of_atoms);
+					if(dc_atoms_molsurf_.controller_ptr->init(bundle.global_buffer_of_vertices, bundle.global_buffer_of_normals, bundle.global_buffer_of_indices))
 					{
 						std::vector<bool> drawing_statuses(number_of_atoms, false);
 						for(std::size_t i=0;i<number_of_atoms;i++)
@@ -724,18 +724,18 @@ private:
 							if(!bundle.mapped_indices[i].empty())
 							{
 								const uv::DrawingID drawing_id=uv::get_free_drawing_id();
-								dc_atoms_ses_surface_.drawing_ids[i]=drawing_id;
-								dc_atoms_ses_surface_.map_of_drawing_ids[drawing_id]=i;
-								dc_atoms_ses_surface_.controller_ptr->object_register(drawing_id, bundle.mapped_indices[i]);
+								dc_atoms_molsurf_.drawing_ids[i]=drawing_id;
+								dc_atoms_molsurf_.map_of_drawing_ids[drawing_id]=i;
+								dc_atoms_molsurf_.controller_ptr->object_register(drawing_id, bundle.mapped_indices[i]);
 								drawing_statuses[i]=true;
 							}
 						}
-						data_manager_.set_atoms_representation_implemented(dc_atoms_ses_surface_.representation_id, drawing_statuses);
+						data_manager_.set_atoms_representation_implemented(dc_atoms_molsurf_.representation_id, drawing_statuses);
 					}
 				}
 				{
-					dc_atoms_ses_surface_mesh_.reset(number_of_atoms);
-					if(dc_atoms_ses_surface_mesh_.controller_ptr->init(bundle.global_buffer_of_vertices, bundle.global_buffer_of_normals, bundle.global_buffer_of_indices))
+					dc_atoms_molsurf_mesh_.reset(number_of_atoms);
+					if(dc_atoms_molsurf_mesh_.controller_ptr->init(bundle.global_buffer_of_vertices, bundle.global_buffer_of_normals, bundle.global_buffer_of_indices))
 					{
 						std::vector<bool> drawing_statuses(number_of_atoms, false);
 						for(std::size_t i=0;i<number_of_atoms;i++)
@@ -743,14 +743,14 @@ private:
 							if(!bundle.mapped_indices[i].empty())
 							{
 								const uv::DrawingID drawing_id=uv::get_free_drawing_id();
-								dc_atoms_ses_surface_mesh_.drawing_ids[i]=drawing_id;
-								dc_atoms_ses_surface_mesh_.map_of_drawing_ids[drawing_id]=i;
-								dc_atoms_ses_surface_mesh_.controller_ptr->object_register(drawing_id, bundle.mapped_indices[i]);
+								dc_atoms_molsurf_mesh_.drawing_ids[i]=drawing_id;
+								dc_atoms_molsurf_mesh_.map_of_drawing_ids[drawing_id]=i;
+								dc_atoms_molsurf_mesh_.controller_ptr->object_register(drawing_id, bundle.mapped_indices[i]);
 								drawing_statuses[i]=true;
 							}
 						}
-						data_manager_.set_atoms_representation_implemented(dc_atoms_ses_surface_mesh_.representation_id, drawing_statuses);
-						dc_atoms_ses_surface_mesh_.controller_ptr->set_wire_mode(true);
+						data_manager_.set_atoms_representation_implemented(dc_atoms_molsurf_mesh_.representation_id, drawing_statuses);
+						dc_atoms_molsurf_mesh_.controller_ptr->set_wire_mode(true);
 					}
 				}
 			}
@@ -1135,27 +1135,27 @@ private:
 					}
 				}
 
-				if(dc_atoms_ses_surface_.valid() && ds.visuals[dc_atoms_ses_surface_.representation_id].implemented)
+				if(dc_atoms_molsurf_.valid() && ds.visuals[dc_atoms_molsurf_.representation_id].implemented)
 				{
-					const uv::DrawingID drawing_id=dc_atoms_ses_surface_.drawing_ids[i];
+					const uv::DrawingID drawing_id=dc_atoms_molsurf_.drawing_ids[i];
 					if(drawing_id>0)
 					{
-						const std::size_t rep_id=dc_atoms_ses_surface_.representation_id;
-						dc_atoms_ses_surface_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
-						dc_atoms_ses_surface_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
-						dc_atoms_ses_surface_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						const std::size_t rep_id=dc_atoms_molsurf_.representation_id;
+						dc_atoms_molsurf_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+						dc_atoms_molsurf_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+						dc_atoms_molsurf_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
 					}
 				}
 
-				if(dc_atoms_ses_surface_mesh_.valid() && ds.visuals[dc_atoms_ses_surface_mesh_.representation_id].implemented)
+				if(dc_atoms_molsurf_mesh_.valid() && ds.visuals[dc_atoms_molsurf_mesh_.representation_id].implemented)
 				{
-					const uv::DrawingID drawing_id=dc_atoms_ses_surface_mesh_.drawing_ids[i];
+					const uv::DrawingID drawing_id=dc_atoms_molsurf_mesh_.drawing_ids[i];
 					if(drawing_id>0)
 					{
-						const std::size_t rep_id=dc_atoms_ses_surface_mesh_.representation_id;
-						dc_atoms_ses_surface_mesh_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
-						dc_atoms_ses_surface_mesh_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
-						dc_atoms_ses_surface_mesh_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						const std::size_t rep_id=dc_atoms_molsurf_mesh_.representation_id;
+						dc_atoms_molsurf_mesh_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+						dc_atoms_molsurf_mesh_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+						dc_atoms_molsurf_mesh_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
 					}
 				}
 			}
@@ -1422,7 +1422,7 @@ private:
 		}
 
 		{
-			const Map& map=dc_atoms_ses_surface_.map_of_drawing_ids;
+			const Map& map=dc_atoms_molsurf_.map_of_drawing_ids;
 			Iterator it=map.find(drawing_id);
 			if(it!=map.end())
 			{
@@ -1431,7 +1431,7 @@ private:
 		}
 
 		{
-			const Map& map=dc_atoms_ses_surface_mesh_.map_of_drawing_ids;
+			const Map& map=dc_atoms_molsurf_mesh_.map_of_drawing_ids;
 			Iterator it=map.find(drawing_id);
 			if(it!=map.end())
 			{
@@ -1525,8 +1525,8 @@ private:
 	WrappedDrawingWithInstancingController dc_atoms_points_inst_;
 	WrappedDrawingWithImpostoringController dc_atoms_points_impo_;
 	WrappedDrawingController dc_atoms_cartoon_;
-	WrappedDrawingController dc_atoms_ses_surface_;
-	WrappedDrawingController dc_atoms_ses_surface_mesh_;
+	WrappedDrawingController dc_atoms_molsurf_;
+	WrappedDrawingController dc_atoms_molsurf_mesh_;
 	WrappedDrawingController dc_contacts_faces_;
 	WrappedDrawingController dc_contacts_sasmesh_;
 	WrappedDrawingController dc_contacts_edges_;

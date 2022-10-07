@@ -1473,13 +1473,13 @@ private:
 							{
 								result=std::string("show-atoms -rep points -use (")+atoms_selection_string()+")";
 							}
-							if(ImGui::Selectable("  ses##show"))
+							if(ImGui::Selectable("  molsurf##show"))
 							{
-								result=std::string("show-atoms -rep ses -use (")+atoms_selection_string()+")";
+								result=std::string("show-atoms -rep molsurf -use (")+atoms_selection_string()+")";
 							}
-							if(ImGui::Selectable("  ses-mesh##show"))
+							if(ImGui::Selectable("  molsurf-mesh##show"))
 							{
-								result=std::string("show-atoms -rep ses-mesh -use (")+atoms_selection_string()+")";
+								result=std::string("show-atoms -rep molsurf-mesh -use (")+atoms_selection_string()+")";
 							}
 						}
 						else if(concept_mode()=="contacts")
@@ -1539,13 +1539,13 @@ private:
 							{
 								result=std::string("hide-atoms -rep points -use (")+atoms_selection_string()+")";
 							}
-							if(ImGui::Selectable("  ses##hide"))
+							if(ImGui::Selectable("  molsurf##hide"))
 							{
-								result=std::string("hide-atoms -rep ses -use (")+atoms_selection_string()+")";
+								result=std::string("hide-atoms -rep molsurf -use (")+atoms_selection_string()+")";
 							}
-							if(ImGui::Selectable("  ses-mesh##hide"))
+							if(ImGui::Selectable("  molsurf-mesh##hide"))
 							{
-								result=std::string("hide-atoms -rep ses-mesh -use (")+atoms_selection_string()+")";
+								result=std::string("hide-atoms -rep molsurf-mesh -use (")+atoms_selection_string()+")";
 							}
 						}
 						else if(concept_mode()=="contacts")
@@ -1586,8 +1586,8 @@ private:
 							static bool rep_sticks=true;
 							static bool rep_balls=true;
 							static bool rep_points=true;
-							static bool rep_ses=true;
-							static bool rep_ses_mesh=true;
+							static bool rep_molsurf=true;
+							static bool rep_molsurf_mesh=true;
 
 							{
 								const std::string checkbox_id=std::string("cartoon##cartoon_checkbox_rep");
@@ -1610,12 +1610,12 @@ private:
 								ImGui::Checkbox(checkbox_id.c_str(), &rep_points);
 							}
 							{
-								const std::string checkbox_id=std::string("ses##ses_checkbox_rep");
-								ImGui::Checkbox(checkbox_id.c_str(), &rep_ses);
+								const std::string checkbox_id=std::string("molsurf##molsurf_checkbox_rep");
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_molsurf);
 							}
 							{
-								const std::string checkbox_id=std::string("ses-mesh##ses_mesh_checkbox_rep");
-								ImGui::Checkbox(checkbox_id.c_str(), &rep_ses_mesh);
+								const std::string checkbox_id=std::string("molsurf-mesh##molsurf_mesh_checkbox_rep");
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_molsurf_mesh);
 							}
 
 							const std::string rep_string=std::string(" -rep")
@@ -1624,8 +1624,8 @@ private:
 								+(rep_sticks ? " sticks" : "")
 								+(rep_balls ? " balls" : "")
 								+(rep_points ? " points" : "")
-								+(rep_ses ? " ses" : "")
-								+(rep_ses_mesh ? " ses-mesh" : "");
+								+(rep_molsurf ? " molsurf" : "")
+								+(rep_molsurf_mesh ? " molsurf-mesh" : "");
 
 							ImGui::Separator();
 
@@ -2270,13 +2270,13 @@ private:
 							{
 								result=std::string("show-atoms -rep points -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
-							if(ImGui::Selectable("  ses##show"))
+							if(ImGui::Selectable("  molsurf##show"))
 							{
-								result=std::string("show-atoms -rep ses -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								result=std::string("show-atoms -rep molsurf -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
-							if(ImGui::Selectable("  ses-mesh##show"))
+							if(ImGui::Selectable("  molsurf-mesh##show"))
 							{
-								result=std::string("show-atoms -rep ses-mesh -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								result=std::string("show-atoms -rep molsurf-mesh -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 						}
 						else if(concept_mode()=="contacts")
@@ -2336,13 +2336,13 @@ private:
 							{
 								result=std::string("hide-atoms -rep points -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
-							if(ImGui::Selectable("  ses##hide"))
+							if(ImGui::Selectable("  molsurf##hide"))
 							{
-								result=std::string("hide-atoms -rep ses -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								result=std::string("hide-atoms -rep molsurf -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
-							if(ImGui::Selectable("  ses-mesh##hide"))
+							if(ImGui::Selectable("  molsurf-mesh##hide"))
 							{
-								result=std::string("hide-atoms -rep ses-mesh -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								result=std::string("hide-atoms -rep molsurf-mesh -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
 							}
 						}
 						else if(concept_mode()=="contacts")
@@ -2383,8 +2383,8 @@ private:
 							static bool rep_sticks=true;
 							static bool rep_balls=true;
 							static bool rep_points=true;
-							static bool rep_ses=true;
-							static bool rep_ses_mesh=true;
+							static bool rep_molsurf=true;
+							static bool rep_molsurf_mesh=true;
 
 							{
 								const std::string checkbox_id=std::string("cartoon##cartoon_checkbox_rep_")+os.name;
@@ -2407,12 +2407,12 @@ private:
 								ImGui::Checkbox(checkbox_id.c_str(), &rep_points);
 							}
 							{
-								const std::string checkbox_id=std::string("ses##ses_checkbox_rep_")+os.name;
-								ImGui::Checkbox(checkbox_id.c_str(), &rep_ses);
+								const std::string checkbox_id=std::string("molsurf##molsurf_checkbox_rep_")+os.name;
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_molsurf);
 							}
 							{
-								const std::string checkbox_id=std::string("ses-mesh##ses_mesh_checkbox_rep_")+os.name;
-								ImGui::Checkbox(checkbox_id.c_str(), &rep_ses_mesh);
+								const std::string checkbox_id=std::string("molsurf-mesh##molsurf_mesh_checkbox_rep_")+os.name;
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_molsurf_mesh);
 							}
 
 
@@ -2422,8 +2422,8 @@ private:
 								+(rep_sticks ? " sticks" : "")
 								+(rep_balls ? " balls" : "")
 								+(rep_points ? " points" : "")
-								+(rep_ses ? " ses" : "")
-								+(rep_ses_mesh ? " ses-mesh" : "");
+								+(rep_molsurf ? " molsurf" : "")
+								+(rep_molsurf_mesh ? " molsurf-mesh" : "");
 
 							ImGui::Separator();
 
