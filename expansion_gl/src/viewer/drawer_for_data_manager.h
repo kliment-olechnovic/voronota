@@ -101,6 +101,7 @@ public:
 		int prepare_impostoring;
 		double ses_probe;
 		double ses_grid_step_hint;
+		int ses_smoothing;
 
 		RenderingParameters() :
 			ball_sphere_quality(2),
@@ -111,7 +112,8 @@ public:
 			cartoon_style(0),
 			prepare_impostoring(1),
 			ses_probe(1.4),
-			ses_grid_step_hint(0.4)
+			ses_grid_step_hint(0.4),
+			ses_smoothing(1)
 		{
 		}
 
@@ -707,7 +709,7 @@ private:
 		{
 			common::ConstructionOfGridBasedMolecularSurface::BundleOfMeshInformation bundle;
 			if(common::ConstructionOfGridBasedMolecularSurface::construct_bundle_of_mesh_information(
-					common::ConstructionOfGridBasedMolecularSurface::Parameters(0.05, rendering_parameters_.ses_probe, rendering_parameters_.ses_grid_step_hint),
+					common::ConstructionOfGridBasedMolecularSurface::Parameters(0.05, rendering_parameters_.ses_probe, rendering_parameters_.ses_grid_step_hint, rendering_parameters_.ses_smoothing),
 					data_manager_.atoms(),
 					bundle))
 			{

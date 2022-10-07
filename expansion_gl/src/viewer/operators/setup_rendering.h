@@ -47,6 +47,7 @@ public:
 		rendering_parameters.prepare_impostoring=input.get_value_or_default<int>("use-impostoring", rendering_parameters.prepare_impostoring);
 		rendering_parameters.ses_probe=input.get_value_or_default<double>("ses-probe", rendering_parameters.ses_probe);
 		rendering_parameters.ses_grid_step_hint=input.get_value_or_default<double>("ses-grid-step-hint", rendering_parameters.ses_grid_step_hint);
+		rendering_parameters.ses_smoothing=input.get_value_or_default<int>("ses-smoothing", rendering_parameters.ses_smoothing);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -61,6 +62,7 @@ public:
 		doc.set_option_decription(CDOD("use-impostoring", CDOD::DATATYPE_INT, "impostoring mode", ""));
 		doc.set_option_decription(CDOD("ses-probe", CDOD::DATATYPE_FLOAT, "probe radius for SES", ""));
 		doc.set_option_decription(CDOD("ses-grid-step-hint", CDOD::DATATYPE_FLOAT, "grid step size hint for SES", ""));
+		doc.set_option_decription(CDOD("ses-smoothing", CDOD::DATATYPE_INT, "smoothing steps for SES", ""));
 	}
 
 	Result run(void*) const
