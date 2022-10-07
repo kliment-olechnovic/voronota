@@ -46,6 +46,7 @@ public:
 		rendering_parameters.cartoon_style=input.get_value_or_default<int>("cartoon-style", rendering_parameters.cartoon_style);
 		rendering_parameters.prepare_impostoring=input.get_value_or_default<int>("use-impostoring", rendering_parameters.prepare_impostoring);
 		rendering_parameters.molsurf_type=input.get_value_or_default<int>("molsurf-type", rendering_parameters.molsurf_type);
+		rendering_parameters.molsurf_vdw_radius_expansion=input.get_value_or_default<double>("molsurf-vdw-radius-expansion", rendering_parameters.molsurf_vdw_radius_expansion);
 		rendering_parameters.molsurf_probe=input.get_value_or_default<double>("molsurf-probe", rendering_parameters.molsurf_probe);
 		rendering_parameters.molsurf_grid_step_hint=input.get_value_or_default<double>("molsurf-grid-step-hint", rendering_parameters.molsurf_grid_step_hint);
 		rendering_parameters.molsurf_smoothing=input.get_value_or_default<int>("molsurf-smoothing", rendering_parameters.molsurf_smoothing);
@@ -62,6 +63,7 @@ public:
 		doc.set_option_decription(CDOD("cartoon-style", CDOD::DATATYPE_INT, "cartoon style identifier", ""));
 		doc.set_option_decription(CDOD("use-impostoring", CDOD::DATATYPE_INT, "impostoring mode", ""));
 		doc.set_option_decription(CDOD("molsurf-type", CDOD::DATATYPE_INT, "molecular surface type", ""));
+		doc.set_option_decription(CDOD("molsurf-vdw-radius-expansion", CDOD::DATATYPE_FLOAT, "van der Waals radius expansion for molecular surface", ""));
 		doc.set_option_decription(CDOD("molsurf-probe", CDOD::DATATYPE_FLOAT, "probe radius for molecular surface", ""));
 		doc.set_option_decription(CDOD("molsurf-grid-step-hint", CDOD::DATATYPE_FLOAT, "grid step size hint for molecular surface", ""));
 		doc.set_option_decription(CDOD("molsurf-smoothing", CDOD::DATATYPE_INT, "smoothing steps for molecular surface", ""));
