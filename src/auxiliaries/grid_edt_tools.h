@@ -440,7 +440,7 @@ public:
 				{
 					const int ids[3]={surface.triples[i*3+0], surface.triples[i*3+1], surface.triples[i*3+2]};
 					int v_ball_nums[3]={split_surface.vertices[ids[0]].ball_num, split_surface.vertices[ids[1]].ball_num, split_surface.vertices[ids[2]].ball_num};
-					if((v_ball_nums[0]==v_ball_nums[1] && v_ball_nums[0]==v_ball_nums[2]) || (split_mode==1 && (v_ball_nums[0]==v_ball_nums[1] || v_ball_nums[0]==v_ball_nums[2] || v_ball_nums[1]==v_ball_nums[2])))
+					if(v_ball_nums[0]==v_ball_nums[1] && v_ball_nums[0]==v_ball_nums[2])
 					{
 						split_surface.triples.push_back(ids[0]);
 						split_surface.triples.push_back(ids[1]);
@@ -448,106 +448,75 @@ public:
 					}
 					else
 					{
-						if(v_ball_nums[0]!=v_ball_nums[1] && v_ball_nums[0]!=v_ball_nums[2] && v_ball_nums[1]!=v_ball_nums[2])
+						int new_ids[9];
+						for(int j=0;j<9;j++)
 						{
-							int new_ids[4]={static_cast<int>(split_surface.vertices.size()), static_cast<int>(split_surface.vertices.size()+1), static_cast<int>(split_surface.vertices.size()+2), static_cast<int>(split_surface.vertices.size()+3)};
-							for(int j=0;j<4;j++)
-							{
-								split_surface.vertices.push_back(Surface::Vertex());
-							}
-							Surface::Vertex* v[3]={&(split_surface.vertices[ids[0]]), &(split_surface.vertices[ids[1]]), &(split_surface.vertices[ids[2]])};
-							Surface::Vertex* new_v[4]={&(split_surface.vertices[new_ids[0]]), &(split_surface.vertices[new_ids[1]]), &(split_surface.vertices[new_ids[2]]), &(split_surface.vertices[new_ids[3]])};
-							for(int j=0;j<4;j++)
-							{
-								new_v[j]->ball_num=-1;
-							}
-							calc_line_strip_weighted_middle_point(v[0]->center, v[1]->center, 0.5, 0.5, new_v[0]->center);
-							calc_line_strip_weighted_middle_point(v[0]->center, v[2]->center, 0.5, 0.5, new_v[1]->center);
-							calc_line_strip_weighted_middle_point(v[1]->center, v[2]->center, 0.5, 0.5, new_v[2]->center);
-							for(int k=0;k<3;k++)
-							{
-								new_v[0]->normal[k]=(v[0]->normal[k]+v[1]->normal[k])/2.0;
-								new_v[1]->normal[k]=(v[0]->normal[k]+v[2]->normal[k])/2.0;
-								new_v[2]->normal[k]=(v[1]->normal[k]+v[2]->normal[k])/2.0;
-							}
-							for(int k=0;k<3;k++)
-							{
-								new_v[3]->center[k]=(new_v[0]->center[k]+new_v[1]->center[k]+new_v[2]->center[k])/3.0;
-								new_v[3]->normal[k]=(new_v[0]->normal[k]+new_v[1]->normal[k]+new_v[2]->normal[k])/3.0;
-							}
-							{
-								split_surface.triples.push_back(ids[0]);
-								split_surface.triples.push_back(new_ids[0]);
-								split_surface.triples.push_back(new_ids[3]);
-								split_surface.triples.push_back(ids[0]);
-								split_surface.triples.push_back(new_ids[1]);
-								split_surface.triples.push_back(new_ids[3]);
-							}
-							{
-								split_surface.triples.push_back(ids[1]);
-								split_surface.triples.push_back(new_ids[0]);
-								split_surface.triples.push_back(new_ids[3]);
-								split_surface.triples.push_back(ids[1]);
-								split_surface.triples.push_back(new_ids[2]);
-								split_surface.triples.push_back(new_ids[3]);
-							}
-							{
-								split_surface.triples.push_back(ids[2]);
-								split_surface.triples.push_back(new_ids[1]);
-								split_surface.triples.push_back(new_ids[3]);
-								split_surface.triples.push_back(ids[2]);
-								split_surface.triples.push_back(new_ids[2]);
-								split_surface.triples.push_back(new_ids[3]);
-							}
+							new_ids[j]=split_surface.vertices.size();
+							split_surface.vertices.push_back(Surface::Vertex());
 						}
-						else
+
+						Surface::Vertex* new_v[9];
+						for(int j=0;j<9;j++)
 						{
-							int o[3]={0,1,2};
-							if(v_ball_nums[1]!=v_ball_nums[0] && v_ball_nums[0]==v_ball_nums[2])
-							{
-								o[0]=1;
-								o[1]=0;
-								o[2]=2;
-							}
-							else if(v_ball_nums[2]!=v_ball_nums[0] && v_ball_nums[0]==v_ball_nums[1])
-							{
-								o[0]=2;
-								o[1]=0;
-								o[2]=1;
-							}
-							int new_ids[2]={static_cast<int>(split_surface.vertices.size()), static_cast<int>(split_surface.vertices.size()+1)};
-							for(int j=0;j<2;j++)
-							{
-								split_surface.vertices.push_back(Surface::Vertex());
-							}
-							Surface::Vertex* v[3]={&(split_surface.vertices[ids[0]]), &(split_surface.vertices[ids[1]]), &(split_surface.vertices[ids[2]])};
-							Surface::Vertex* new_v[2]={&(split_surface.vertices[new_ids[0]]), &(split_surface.vertices[new_ids[1]])};
-							for(int j=0;j<2;j++)
-							{
-								new_v[j]->ball_num=-1;
-							}
-							calc_line_strip_weighted_middle_point(v[o[0]]->center, v[o[1]]->center, 0.5, 0.5, new_v[0]->center);
-							calc_line_strip_weighted_middle_point(v[o[0]]->center, v[o[2]]->center, 0.5, 0.5, new_v[1]->center);
-							for(int k=0;k<3;k++)
-							{
-								new_v[0]->normal[k]=(v[o[0]]->normal[k]+v[o[1]]->normal[k])/2.0;
-								new_v[1]->normal[k]=(v[o[0]]->normal[k]+v[o[2]]->normal[k])/2.0;
-							}
-							{
-								split_surface.triples.push_back(ids[o[0]]);
-								split_surface.triples.push_back(new_ids[0]);
-								split_surface.triples.push_back(new_ids[1]);
-							}
-							{
-								split_surface.triples.push_back(ids[o[1]]);
-								split_surface.triples.push_back(new_ids[0]);
-								split_surface.triples.push_back(new_ids[1]);
-							}
-							{
-								split_surface.triples.push_back(ids[o[1]]);
-								split_surface.triples.push_back(ids[o[2]]);
-								split_surface.triples.push_back(new_ids[1]);
-							}
+							new_v[j]=&(split_surface.vertices[new_ids[j]]);
+							new_v[j]->ball_num=v_ball_nums[j/3];
+						}
+
+						Surface::Vertex* v[3]={&(split_surface.vertices[ids[0]]), &(split_surface.vertices[ids[1]]), &(split_surface.vertices[ids[2]])};
+
+						{
+							calc_line_strip_middle_point(v[0]->center, v[1]->center, new_v[0]->center);
+							calc_triangle_middle_point(v[0]->center, v[1]->center, v[2]->center, new_v[1]->center);
+							calc_line_strip_middle_point(v[0]->center, v[2]->center, new_v[2]->center);
+
+							calc_line_strip_middle_point(v[1]->center, v[0]->center, new_v[3]->center);
+							calc_triangle_middle_point(v[0]->center, v[1]->center, v[2]->center, new_v[4]->center);
+							calc_line_strip_middle_point(v[1]->center, v[2]->center, new_v[5]->center);
+
+							calc_line_strip_middle_point(v[2]->center, v[0]->center, new_v[6]->center);
+							calc_triangle_middle_point(v[0]->center, v[1]->center, v[2]->center, new_v[7]->center);
+							calc_line_strip_middle_point(v[2]->center, v[1]->center, new_v[8]->center);
+						}
+
+						{
+							calc_line_strip_middle_point(v[0]->normal, v[1]->normal, new_v[0]->normal);
+							calc_triangle_middle_point(v[0]->normal, v[1]->normal, v[2]->normal, new_v[1]->normal);
+							calc_line_strip_middle_point(v[0]->normal, v[2]->normal, new_v[2]->normal);
+
+							calc_line_strip_middle_point(v[1]->normal, v[0]->normal, new_v[3]->normal);
+							calc_triangle_middle_point(v[0]->normal, v[1]->normal, v[2]->normal, new_v[4]->normal);
+							calc_line_strip_middle_point(v[1]->normal, v[2]->normal, new_v[5]->normal);
+
+							calc_line_strip_middle_point(v[2]->normal, v[0]->normal, new_v[6]->normal);
+							calc_triangle_middle_point(v[0]->normal, v[1]->normal, v[2]->normal, new_v[7]->normal);
+							calc_line_strip_middle_point(v[2]->normal, v[1]->normal, new_v[8]->normal);
+						}
+
+						{
+							split_surface.triples.push_back(ids[0]);
+							split_surface.triples.push_back(new_ids[0]);
+							split_surface.triples.push_back(new_ids[1]);
+							split_surface.triples.push_back(ids[0]);
+							split_surface.triples.push_back(new_ids[1]);
+							split_surface.triples.push_back(new_ids[2]);
+						}
+
+						{
+							split_surface.triples.push_back(ids[1]);
+							split_surface.triples.push_back(new_ids[3]);
+							split_surface.triples.push_back(new_ids[4]);
+							split_surface.triples.push_back(ids[1]);
+							split_surface.triples.push_back(new_ids[4]);
+							split_surface.triples.push_back(new_ids[5]);
+						}
+
+						{
+							split_surface.triples.push_back(ids[2]);
+							split_surface.triples.push_back(new_ids[6]);
+							split_surface.triples.push_back(new_ids[7]);
+							split_surface.triples.push_back(ids[2]);
+							split_surface.triples.push_back(new_ids[7]);
+							split_surface.triples.push_back(new_ids[8]);
 						}
 					}
 				}
@@ -560,26 +529,10 @@ public:
 
 			for(int i=0;i<static_cast<int>(surface.triples.size())/3;i++)
 			{
-				const int ball_nums[3]={surface.vertices[surface.triples[i*3+0]].ball_num, surface.vertices[surface.triples[i*3+1]].ball_num, surface.vertices[surface.triples[i*3+2]].ball_num};
 				int recorded_ball_num=-1;
-				if(ball_nums[0]>=0 && ball_nums[1]>=0 && ball_nums[2]>=0)
-				{
-					if(ball_nums[0]==ball_nums[1] || ball_nums[0]==ball_nums[2])
-					{
-						recorded_ball_num=ball_nums[0];
-					}
-					else if(ball_nums[1]==ball_nums[2])
-					{
-						recorded_ball_num=ball_nums[1];
-					}
-					else
-					{
-						recorded_ball_num=std::min(ball_nums[0], std::min(ball_nums[1], ball_nums[2]));
-					}
-				}
 				for(int j=0;j<3 && recorded_ball_num<0;j++)
 				{
-					recorded_ball_num=ball_nums[j];
+					recorded_ball_num=surface.vertices[surface.triples[i*3+j]].ball_num;
 				}
 				if(recorded_ball_num>=0)
 				{
@@ -792,11 +745,18 @@ public:
 			return ((rc_a[0]-rc_b[0])*(rc_a[0]-rc_b[0])+(rc_a[1]-rc_b[1])*(rc_a[1]-rc_b[1])+(rc_a[2]-rc_b[2])*(rc_a[2]-rc_b[2]));
 		}
 
-		inline void calc_line_strip_weighted_middle_point(const double* p1, const double* p2, const double w1, const double w2, double* pm) const
+		inline void calc_line_strip_middle_point(const double* p1, const double* p2, double* pm) const
 		{
-			pm[0]=(p1[0]*w1+p2[0]*w2)/(w1+w2);
-			pm[1]=(p1[1]*w1+p2[1]*w2)/(w1+w2);
-			pm[2]=(p1[2]*w1+p2[2]*w2)/(w1+w2);
+			pm[0]=(p1[0]+p2[0])/2.0;
+			pm[1]=(p1[1]+p2[1])/2.0;
+			pm[2]=(p1[2]+p2[2])/2.0;
+		}
+
+		inline void calc_triangle_middle_point(const double* p1, const double* p2, const double* p3, double* pm) const
+		{
+			pm[0]=(p1[0]+p2[0]+p3[0])/3.0;
+			pm[1]=(p1[1]+p2[1]+p3[1])/3.0;
+			pm[2]=(p1[2]+p2[2]+p3[2])/3.0;
 		}
 
 		inline bool check_grid_coords_in_range(const int* gc) const
@@ -837,7 +797,7 @@ public:
 				smoothing_iterations(1),
 				smoothing_self_proportion(0.0),
 				correct_burried_vertices(true),
-				split_mode(2)
+				split_mode(1)
 			{
 			}
 		};
