@@ -56,13 +56,9 @@ void main()
             float diffuse_value=abs(dot(normalize(fragment_normal), normalize(light_direction)));
             final_color=max(0.2, min(ambient_value+diffuse_value, 1.0))*fragment_color_for_display;
         }
-        if((fragment_adjunct[0]>0.5) && (mod(floor(gl_FragCoord.x), 2.0)<0.5 || mod(floor(gl_FragCoord.y), 2.0)<0.5))
+        if((fragment_adjunct[0]>0.5) && ((mod(floor(gl_FragCoord.x), 4.0)<0.5 && mod(floor(gl_FragCoord.y), 4.0)>0.5) || (mod(floor(gl_FragCoord.x), 4.0)>0.5 && mod(floor(gl_FragCoord.y), 4.0)<0.5) || (mod(floor(gl_FragCoord.x+2.0), 4.0)==mod(floor(gl_FragCoord.y+2.0), 4.0))))
         {
             final_color=vec3(1.0, 0.0, 1.0);
-            if(fragment_color_for_display[0]>0.5 && fragment_color_for_display[1]<0.25 && fragment_color_for_display[2]>0.5)
-            {
-                final_color=vec3(0.0, 1.0, 0.0);
-            }
         }
         gl_FragColor=vec4(final_color, gl_FragDepthEXT);
     }
