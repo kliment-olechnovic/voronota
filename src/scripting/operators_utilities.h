@@ -329,6 +329,15 @@ public:
 		return (L/(1.0+exp((0.0-k)*(x-x0))));
 	}
 
+	static double calculate_log_transform(const double x, const double base, const double k)
+	{
+		if(base>1.0)
+		{
+			return (k*(log(x)/log(base)));
+		}
+		return (k*log(x));
+	}
+
 	static void assert_new_object_name_input(const std::string& name)
 	{
 		if(name.empty())

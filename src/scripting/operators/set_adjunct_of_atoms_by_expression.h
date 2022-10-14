@@ -84,6 +84,17 @@ public:
 				throw std::runtime_error(std::string("Not 3 parameters for the defined expression."));
 			}
 		}
+		else if(expression=="_log")
+		{
+			if(input_adjuncts.size()!=1)
+			{
+				throw std::runtime_error(std::string("Not 1 input adjunct name for the defined expression."));
+			}
+			if(parameters.size()!=2)
+			{
+				throw std::runtime_error(std::string("Not 2 parameters for the defined expression."));
+			}
+		}
 		else if(expression=="_linear_combo")
 		{
 			if(input_adjuncts.empty())
@@ -195,6 +206,12 @@ public:
 					atom_adjuncts[output_adjunct]=OperatorsUtilities::calculate_logistic_transform(
 							input_adjunct_values[0],
 							parameters[0], parameters[1], parameters[2]);
+				}
+				else if(expression=="_log")
+				{
+					atom_adjuncts[output_adjunct]=OperatorsUtilities::calculate_log_transform(
+							input_adjunct_values[0],
+							parameters[0], parameters[1]);
 				}
 				else if(expression=="_linear_combo")
 				{
