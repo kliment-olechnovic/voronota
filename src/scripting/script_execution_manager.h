@@ -118,6 +118,7 @@
 #include "operators/set_chain_name.h"
 #include "operators/set_chain_names_and_residue_numbers_by_sequences.h"
 #include "operators/set_chain_names_by_guessing.h"
+#include "operators/set_global_adjunct_by_pooling.h"
 #include "operators/set_global_adjunct.h"
 #include "operators/set_tag_of_atoms_by_secondary_structure.h"
 #include "operators/set_tag_of_atoms.h"
@@ -309,6 +310,7 @@ public:
 		set_command_for_data_manager("set-chain-name", operators::SetChainName(), true);
 		set_command_for_data_manager("set-chain-names-and-residue-numbers-by-sequences", operators::SetChainNamesAndResidueNumbersBySequences(), true);
 		set_command_for_data_manager("set-chain-names-by-guessing", operators::SetChainNamesByGuessing(), true);
+		set_command_for_data_manager("set-global-adjunct-by-pooling", operators::SetGlobalAdjunctByPooling(), true);
 		set_command_for_data_manager("set-global-adjunct", operators::SetGlobalAdjunct(), true);
 		set_command_for_data_manager("set-tag-of-atoms-by-secondary-structure", operators::SetTagOfAtomsBySecondaryStructure(), true);
 		set_command_for_data_manager("set-tag-of-atoms", operators::SetTagOfAtoms(), true);
