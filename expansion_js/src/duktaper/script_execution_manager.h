@@ -8,6 +8,7 @@
 #include "operators/construct_or_load_contacts.h"
 #include "operators/construct_or_load_quality_scores.h"
 #include "operators/convert_bff_obj_to_svg.h"
+#include "operators/faspr.h"
 #include "operators/fetch.h"
 #include "operators/import_cod_cif.h"
 #include "operators/import_url.h"
@@ -44,6 +45,7 @@ public:
 
 		set_command_for_data_manager("construct-or-load-contacts", operators::ConstructOrLoadContacts(), true);
 		set_command_for_data_manager("construct-or-load-quality-scores", operators::ConstructOrLoadQualityScores(), true);
+		set_command_for_data_manager("faspr", operators::FASPR(), false);
 		set_command_for_data_manager("run-bff", operators::RunBFF(), true);
 		set_command_for_data_manager("run-faspr", operators::RunFASPR(), true);
 		set_command_for_data_manager("scwrl", operators::Scwrl(), true);
