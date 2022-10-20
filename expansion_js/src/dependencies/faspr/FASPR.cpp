@@ -53,16 +53,16 @@ int main_of_faspr(int argc, const char** argv, const FASPRConfig& faspr_config, 
     return 0;
   }
 
-  string rotfile=faspr_config.PROGRAM_PATH+"/"+faspr_config.ROTLIB2010;
-  fstream infile(rotfile.c_str(),ios::in|ios::binary);
-  if(!infile){
-    //cerr<<"error! cannot find rotamer library "<<faspr_config.ROTLIB2010<<endl;
-    //exit(0);
-    throw std::runtime_error(std::string("error! cannot find rotamer library ")+faspr_config.ROTLIB2010);
-  }
-  else{
-    infile.close();
-  }
+//  string rotfile=faspr_config.PROGRAM_PATH+"/"+faspr_config.ROTLIB2010;
+//  fstream infile(rotfile.c_str(),ios::in|ios::binary);
+//  if(!infile){
+//    //cerr<<"error! cannot find rotamer library "<<faspr_config.ROTLIB2010<<endl;
+//    //exit(0);
+//    throw std::runtime_error(std::string("error! cannot find rotamer library ")+faspr_config.ROTLIB2010);
+//  }
+//  else{
+//    infile.close();
+//  }
 
   string pdbin=(string)"example/1mol.pdb";
   string pdbout=(string)"example/1mol_FASPR.pdb";

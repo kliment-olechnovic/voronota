@@ -33,14 +33,14 @@ public:
 
 	void initialize(scripting::CommandInput& input)
 	{
-		lib_path=input.get_value<std::string>("lib-path");
+		lib_path=input.get_value_or_default<std::string>("lib-path", ".");
 		lib_name=input.get_value_or_default<std::string>("lib-name", FASPRConfig().ROTLIB2010);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(CDOD("lib-path", CDOD::DATATYPE_STRING, "path to FASPR rotamers library directory"));
-		doc.set_option_decription(CDOD("lib-name", CDOD::DATATYPE_STRING, "name of FASPR rotamers library"));
+		doc.set_option_decription(CDOD("lib-path", CDOD::DATATYPE_STRING, "path to FASPR rotamers library directory", "."));
+		doc.set_option_decription(CDOD("lib-name", CDOD::DATATYPE_STRING, "name of FASPR rotamers library", FASPRConfig().ROTLIB2010));
 	}
 
 	Result run(scripting::DataManager& data_manager) const
@@ -50,6 +50,11 @@ public:
 		FASPRConfig faspr_config;
 		faspr_config.PROGRAM_PATH=lib_path;
 		faspr_config.ROTLIB2010=lib_name;
+
+		if(!faspr_config.is_library_file_available())
+		{
+			throw std::runtime_error(std::string("No rotamer library '")+faspr_config.ROTLIB2010+"' in '"+faspr_config.PROGRAM_PATH+"'");
+		}
 
 		scripting::VirtualFileStorage::TemporaryFile backbone_pdb_file;
 		scripting::VirtualFileStorage::TemporaryFile rebuilt_pdb_file;
