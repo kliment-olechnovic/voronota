@@ -79,6 +79,10 @@
 #include <map>
 
 #include "../../../../src/scripting/io_selectors.h"
+
+namespace TMalign
+{
+
 typedef voronota::scripting::InputSelector InputSelector;
 typedef voronota::scripting::OutputSelector OutputSelector;
 typedef voronota::scripting::StandardOutputMockup StandardOutputMockup;
@@ -5196,3 +5200,6 @@ int main_of_tmalign(int argc, const char** argv, StandardOutputMockup& som)
     }
     return 0;
 }
+
+}
+

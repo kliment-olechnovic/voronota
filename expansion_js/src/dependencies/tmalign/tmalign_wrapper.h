@@ -2,9 +2,11 @@
 #define DEPENDENCIES_TMALIGN_TMALIGN_WRAPPER_H_
 
 #include "../../../../src/scripting/io_selectors.h"
-typedef voronota::scripting::StandardOutputMockup StandardOutputMockup;
 
-int main_of_tmalign(int argc, const char** argv, StandardOutputMockup& som);
+namespace TMalign
+{
+	int main_of_tmalign(int argc, const char** argv, voronota::scripting::StandardOutputMockup& som);
+}
 
 class TMAlignWrapper
 {
@@ -31,9 +33,9 @@ public:
 			argv.push_back(output_matrix_file.c_str());
 		}
 
-		StandardOutputMockup som;
+		voronota::scripting::StandardOutputMockup som;
 		ResultBundle result;
-		result.exit_code=main_of_tmalign(static_cast<int>(argv.size()), argv.data(), som);
+		result.exit_code=TMalign::main_of_tmalign(static_cast<int>(argv.size()), argv.data(), som);
 		result.stdout_str=som.cout_output();
 		result.stderr_str=som.cerr_output();
 
