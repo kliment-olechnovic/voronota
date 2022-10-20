@@ -29,22 +29,27 @@ public:
 	}
 
 	std::string lib_path;
+	std::string lib_name;
 
 	void initialize(scripting::CommandInput& input)
 	{
 		lib_path=input.get_value<std::string>("lib-path");
+		lib_name=input.get_value_or_default<std::string>("lib-name", FASPRConfig().ROTLIB2010);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("lib-path", CDOD::DATATYPE_STRING, "path to FASPR rotamers library directory"));
+		doc.set_option_decription(CDOD("lib-name", CDOD::DATATYPE_STRING, "name of FASPR rotamers library"));
 	}
 
 	Result run(scripting::DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_availability();
 
-		FASPRConfig::PROGRAM_PATH()=lib_path;
+		FASPRConfig faspr_config;
+		faspr_config.PROGRAM_PATH=lib_path;
+		faspr_config.ROTLIB2010=lib_name;
 
 		scripting::VirtualFileStorage::TemporaryFile backbone_pdb_file;
 		scripting::VirtualFileStorage::TemporaryFile rebuilt_pdb_file;
@@ -92,7 +97,7 @@ public:
 			common::WritingAtomicBallsInPDBFormat::write_atomic_balls(atoms_to_export, "tf", false, output);
 		}
 
-		const FASPRWrapper::ResultBundle faspr_result=FASPRWrapper().run_faspr(backbone_pdb_file.filename(), rebuilt_pdb_file.filename());
+		const FASPRWrapper::ResultBundle faspr_result=FASPRWrapper::run_faspr(faspr_config, backbone_pdb_file.filename(), rebuilt_pdb_file.filename());
 
 		scripting::operators::Import().init(CMDIN().set("file", rebuilt_pdb_file.filename()).set("format", "pdb")).run(data_manager);
 

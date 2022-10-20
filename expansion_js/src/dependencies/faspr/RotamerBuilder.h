@@ -23,6 +23,8 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <map>
 #include <cstring>
 
+#include "faspr_config.h"
+
 using namespace std;
 
 struct Topology
@@ -40,10 +42,10 @@ public:
   void LoadSeq(voronota::scripting::StandardOutputMockup& som);
   void LoadSeq(string &seqfile, voronota::scripting::StandardOutputMockup& som);
   void LoadParameter();
-  void LoadBBdepRotlib2010();
-  void BuildSidechain();
-  void RotlibFromBinary2Text(string binlibfile,string &txtlibfile);
-  void RotlibFromText2Binary(string &fulltextlib,string &binlibfile);
+  void LoadBBdepRotlib2010(const FASPRConfig& faspr_config);
+  void BuildSidechain(const FASPRConfig& faspr_config);
+  void RotlibFromBinary2Text(string binlibfile,string &txtlibfile, const FASPRConfig& faspr_config);
+  void RotlibFromText2Binary(string &fulltextlib,string &binlibfile, const FASPRConfig& faspr_config);
   void PhiPsi(voronota::scripting::StandardOutputMockup& som);
   void AssignSidechainTopology();
   int LoadBackbone(int site);

@@ -7,7 +7,7 @@
 
 namespace FASPR
 {
-	int main_of_faspr(int argc, const char** argv, voronota::scripting::StandardOutputMockup& som);
+	int main_of_faspr(int argc, const char** argv, const FASPRConfig& faspr_config, voronota::scripting::StandardOutputMockup& som);
 }
 
 class FASPRWrapper
@@ -20,7 +20,7 @@ public:
 		std::string stderr_str;
 	};
 
-	static ResultBundle run_faspr(const std::string& input_file, const std::string& output_file)
+	static ResultBundle run_faspr(const FASPRConfig& faspr_config, const std::string& input_file, const std::string& output_file)
 	{
 		const std::string program_name="FASPR";
 		const std::string input_option="-i";
@@ -35,7 +35,7 @@ public:
 
 		voronota::scripting::StandardOutputMockup som;
 		ResultBundle result;
-		result.exit_code=FASPR::main_of_faspr(static_cast<int>(argv.size()), argv.data(), som);
+		result.exit_code=FASPR::main_of_faspr(static_cast<int>(argv.size()), argv.data(), faspr_config, som);
 		result.stdout_str=som.cout_output();
 		result.stderr_str=som.cerr_output();
 

@@ -28,7 +28,7 @@ namespace FASPR
 
 using namespace std;
 
-int main_of_faspr(int argc, const char** argv, voronota::scripting::StandardOutputMockup& som)
+int main_of_faspr(int argc, const char** argv, const FASPRConfig& faspr_config, voronota::scripting::StandardOutputMockup& som)
 {
   som.cout() <<"###########################################################################"<<endl;
   som.cout() <<"                    FASPR (Version 20200309)                 "<<endl;
@@ -53,12 +53,12 @@ int main_of_faspr(int argc, const char** argv, voronota::scripting::StandardOutp
     return 0;
   }
 
-  string rotfile=FASPRConfig::PROGRAM_PATH()+"/"+FASPRConfig::ROTLIB2010();
+  string rotfile=faspr_config.PROGRAM_PATH+"/"+faspr_config.ROTLIB2010;
   fstream infile(rotfile.c_str(),ios::in|ios::binary);
   if(!infile){
-    //cerr<<"error! cannot find rotamer library "<<FASPRConfig::ROTLIB2010()<<endl;
+    //cerr<<"error! cannot find rotamer library "<<faspr_config.ROTLIB2010<<endl;
     //exit(0);
-    throw std::runtime_error(std::string("error! cannot find rotamer library ")+FASPRConfig::ROTLIB2010());
+    throw std::runtime_error(std::string("error! cannot find rotamer library ")+faspr_config.ROTLIB2010);
   }
   else{
     infile.close();
@@ -92,7 +92,7 @@ int main_of_faspr(int argc, const char** argv, voronota::scripting::StandardOutp
   faspr.ReadPDB(pdbin, som);
   if(sflag) faspr.LoadSeq(seqfile, som);
   else faspr.LoadSeq(som);
-  faspr.BuildSidechain();
+  faspr.BuildSidechain(faspr_config);
   faspr.CalcSelfEnergy(som);
   faspr.CalcPairEnergy();
   faspr.Search(som);

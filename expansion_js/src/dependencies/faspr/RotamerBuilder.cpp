@@ -17,8 +17,6 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************************************************************************/
 //#pragma warning(disable:4305)
 
-#include "faspr_config.h"
-
 #include "RotamerBuilder.h"
 #include <stdio.h>
 
@@ -119,7 +117,7 @@ void RotamerBuilder::LoadParameter()
 
 }
 
-void RotamerBuilder::LoadBBdepRotlib2010()
+void RotamerBuilder::LoadBBdepRotlib2010(const FASPRConfig& faspr_config)
 {
   map<char,int> Chin;//number of chi for the residue
   map<char,int> Rotn;//rotamer number of a residue
@@ -143,7 +141,7 @@ void RotamerBuilder::LoadBBdepRotlib2010()
   FV2 ctmp;
   fstream infile;
   short sht;
-  string rotfile=FASPRConfig::PROGRAM_PATH()+"/"+FASPRConfig::ROTLIB2010();
+  string rotfile=faspr_config.PROGRAM_PATH+"/"+faspr_config.ROTLIB2010;
   infile.open(rotfile.c_str(),ios::in|ios::binary);
   if(!infile){
     //cerr<<"error! cannot open rotamer library "<<rotfile<<endl;
@@ -203,10 +201,10 @@ CT:    chi.push_back(ctmp);
 }
 
 
-void RotamerBuilder::RotlibFromBinary2Text(string binlibfile,string &txtlibfile)
+void RotamerBuilder::RotlibFromBinary2Text(string binlibfile,string &txtlibfile, const FASPRConfig& faspr_config)
 {
   fstream infile;
-  string pp=FASPRConfig::PROGRAM_PATH()+binlibfile;
+  string pp=faspr_config.PROGRAM_PATH+binlibfile;
   infile.open(pp.c_str(),ios::in|ios::binary);
   if(!infile){
     //cerr<<"error! cannot open rotamer library "<<pp<<endl;exit(0);
@@ -234,13 +232,13 @@ void RotamerBuilder::RotlibFromBinary2Text(string binlibfile,string &txtlibfile)
 RotlibFromText2Binary() converts an standard Dunbrack library
 into a binary rotamer library for fast access
 ***************************************************************/
-void RotamerBuilder::RotlibFromText2Binary(string &fulltextlib,string &binlibfile)
+void RotamerBuilder::RotlibFromText2Binary(string &fulltextlib,string &binlibfile, const FASPRConfig& faspr_config)
 {
   ofstream outfile;
   outfile.open(binlibfile.c_str(),ios::binary);
 
   char inpath[2048];
-  sprintf(inpath,"%s%s",FASPRConfig::PROGRAM_PATH().c_str(),fulltextlib.c_str());
+  sprintf(inpath,"%s%s",faspr_config.PROGRAM_PATH.c_str(),fulltextlib.c_str());
   FILE* infile=fopen(inpath,"r");
   if(infile==NULL){
     //cerr<<"error! cannot open rotamer library "<<inpath<<endl;
@@ -942,10 +940,10 @@ RotamerBuilder::~RotamerBuilder()
 }
 
 
-void RotamerBuilder::BuildSidechain()
+void RotamerBuilder::BuildSidechain(const FASPRConfig& faspr_config)
 {
   LoadParameter();
-  LoadBBdepRotlib2010();
+  LoadBBdepRotlib2010(faspr_config);
   AssignSidechainTopology();
   int i,j;
   for(i=0;i<nres;i++){
