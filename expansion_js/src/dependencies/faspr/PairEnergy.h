@@ -31,7 +31,7 @@ public:
   ~PairEnergy();
   void CalcPairEnergy();
   bool EnergyRotamerSidechainAndRotamerSidechain(int site1,int site2,float **&tab);
-  void ShowPairEnergy();
+  void ShowPairEnergy(voronota::scripting::StandardOutputMockup& som);
   void ShowPairEnergy(int site1, int site2);
 };
 

@@ -109,7 +109,7 @@ public:
     type=Leaf;
     deployFlag=false;
   }
-  void ShowBag();
+  void ShowBag(voronota::scripting::StandardOutputMockup& som);
 };
 
 
@@ -121,8 +121,8 @@ public:
   vector <Bag> bags;
   vector <Bag> connBags;
 
-  void Subgraph2TreeDecomposition(int index,Graph &graph);
-  void MergeBags(int depth);
+  void Subgraph2TreeDecomposition(int index,Graph &graph, voronota::scripting::StandardOutputMockup& som);
+  void MergeBags(int depth, voronota::scripting::StandardOutputMockup& som);
   int CheckTreewidth();
 
 };
@@ -132,17 +132,17 @@ class Solution:public PairEnergy{
 public:
   ~Solution();
   IV1 unfixres;
-  bool DEESearch(IV1 &pos);
+  bool DEESearch(IV1 &pos, voronota::scripting::StandardOutputMockup& som);
   int DEEGoldstein(IV1& pos);
   int DEEsplit(IV1& pos);
   void Pick(int site,int rot);
 
   vector< Graph > graphs;
-  void ConstructAdjMatrix(int nunfix,IV2 &adjMatrix);
+  void ConstructAdjMatrix(int nunfix,IV2 &adjMatrix, voronota::scripting::StandardOutputMockup& som);
   void ConstructSubgraphs(int nunfix,IV1 &visited,IV2 &adjMatrix,IV2 &flagMatrix);
   void FindSubgraphByDFS(Graph &graph,int u,IV1 &visited,IV2 &adjMatrix,IV2 &flagMatrix,stack<int> &vertices);
-  void ShowGraphs();
-  void GraphEdgeDecomposition(IV2 &adjMatrix,float threshold);
+  void ShowGraphs(voronota::scripting::StandardOutputMockup& som);
+  void GraphEdgeDecomposition(IV2 &adjMatrix,float threshold, voronota::scripting::StandardOutputMockup& som);
 
   TreeDecomposition tree;
   void TreeDecompositionBottomToTopCalcEnergy();
@@ -156,7 +156,7 @@ public:
   void RootBagFindGMEC(Bag &rootbag);
   void TreeDecompositionTopToBottomAssignRotamer(Bag &parbag,Bag &childbag);
   void TreeDecompositionRelease();
-  void Search();
+  void Search(voronota::scripting::StandardOutputMockup& som);
 };
 
 #endif

@@ -22,8 +22,6 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "RotamerBuilder.h"
 #include <stdio.h>
 
-#include "../../../../src/scripting/io_selectors.h"
-
 #define WGT_CYS  5.5
 #define WGT_ASP  2.0
 #define WGT_GLU  1.0
@@ -45,16 +43,16 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define ROT_PROB_CUT_MIN  0.01
 #define ROT_PROB_CUT_ACC  0.97
 
-void RotamerBuilder::LoadSeq()
+void RotamerBuilder::LoadSeq(voronota::scripting::StandardOutputMockup& som)
 {
   Pdb2Fas();
   subStat.assign(nres,1);
-  PhiPsi();
+  PhiPsi(som);
 }
 
-void RotamerBuilder::LoadSeq(string &seqfile)
+void RotamerBuilder::LoadSeq(string &seqfile, voronota::scripting::StandardOutputMockup& som)
 {
-  LoadSeq();
+  LoadSeq(som);
   string stmp=seq;
   string buf,tmp;
 
@@ -96,7 +94,7 @@ void RotamerBuilder::LoadSeq(string &seqfile)
     }
     if(stmp[i]!=seq[i])One2Three(seq[i],pdb[i].name);
   }
-  PhiPsi();
+  PhiPsi(som);
 }
 void RotamerBuilder::LoadParameter()
 {
@@ -321,7 +319,7 @@ void RotamerBuilder::SideChain(int site,int rot,FV2& rxyz)
   }
 }
 
-void RotamerBuilder::PhiPsi()
+void RotamerBuilder::PhiPsi(voronota::scripting::StandardOutputMockup& som)
 {
   stru.clear();
   map<char,int> atNum;
@@ -388,19 +386,19 @@ ADDO:      Inx[3]=pdb[i].atNames.size();
     rtmp.xyz.clear();
     if(subStat[i]==0){
       if(atNum[seq[i]]>static_cast<int>(pdb[i].atNames.size())){
-        cout<<"warning! incomplete residue "<<pdb[i].name<<pdb[i].pos<<endl;
+        som.cout() <<"warning! incomplete residue "<<pdb[i].name<<pdb[i].pos<<endl;
         subStat[i]=1;
       }
     }
     for(j=0;j<3;j++){
       if(Distance(stru[i].xyz[j],stru[i].xyz[j+1])>BONDDIST){
-        cout<<"warning! chain is discontinuous at residue "<<pdb[i].name<<stru[i].pos<<endl;
+        som.cout() <<"warning! chain is discontinuous at residue "<<pdb[i].name<<stru[i].pos<<endl;
       }
     }
     if(i==0)continue;
     if(Distance(stru[i-1].xyz[2],stru[i].xyz[0])>BONDDIST){
-      cout<<"warning! chain is discontinuous at ";
-      cout<<seq[i-1]<<stru[i-1].pos<<" and "<<seq[i]<<stru[i].pos<<endl;
+      som.cout() <<"warning! chain is discontinuous at ";
+      som.cout() <<seq[i-1]<<stru[i-1].pos<<" and "<<seq[i]<<stru[i].pos<<endl;
       continue;
     }
     psi[i-1]=Dihedral(stru[i-1].xyz[0],stru[i-1].xyz[1],stru[i-1].xyz[2],stru[i].xyz[0]);

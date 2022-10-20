@@ -105,7 +105,7 @@ public:
 
   void EnergySidechainAndBackbone(int site,FV1 &ener);
   void EnergyRotamerSidechainAndFixedSidechain(int site,FV1 &ener);
-  void CalcSelfEnergy();
+  void CalcSelfEnergy(voronota::scripting::StandardOutputMockup& som);
   float HbondEnergyAtomAndAtom(FV1 &DBxyz,FV1 &Dxyz,FV1 &Axyz,FV1 &ABxyz,float Dangle,float Aangle);
   float SSbondEnergyAtomAndAtom(FV1 &CA1xyz,FV1 &CB1xyz,FV1 &SG1xyz,FV1 &SG2xyz,FV1 &CB2xyz,FV1 &CA2xyz);
   float EnergyPolarSidechainAndBackbone(int site1,int rot1,int site2);

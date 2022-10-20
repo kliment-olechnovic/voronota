@@ -37,14 +37,14 @@ class RotamerBuilder:public Structure
 {
 public:
   ~RotamerBuilder();
-  void LoadSeq();
-  void LoadSeq(string &seqfile);
+  void LoadSeq(voronota::scripting::StandardOutputMockup& som);
+  void LoadSeq(string &seqfile, voronota::scripting::StandardOutputMockup& som);
   void LoadParameter();
   void LoadBBdepRotlib2010();
   void BuildSidechain();
   void RotlibFromBinary2Text(string binlibfile,string &txtlibfile);
   void RotlibFromText2Binary(string &fulltextlib,string &binlibfile);
-  void PhiPsi();
+  void PhiPsi(voronota::scripting::StandardOutputMockup& som);
   void AssignSidechainTopology();
   int LoadBackbone(int site);
   void SideChain(int site,int rot,FV2& rxyz);

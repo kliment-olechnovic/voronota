@@ -803,7 +803,7 @@ void SelfEnergy::EnergyRotamerSidechainAndFixedSidechain(int site,FV1 &ener)
 
 
 
-void SelfEnergy::CalcSelfEnergy()
+void SelfEnergy::CalcSelfEnergy(voronota::scripting::StandardOutputMockup& som)
 {
   SetVdwPar();
   AssignConMap();
@@ -848,7 +848,7 @@ void SelfEnergy::CalcSelfEnergy()
       nPosFixedNonAlaGly++;
     }
   }
-  cout<<"#residues fixed during self-energy-check: "<<nPosFixedNonAlaGly<<endl;
+  som.cout() <<"#residues fixed during self-energy-check: "<<nPosFixedNonAlaGly<<endl;
   
   //update the self-energy table
   for(int i=0;i<nres;i++){

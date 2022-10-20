@@ -26,11 +26,9 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace FASPR
 {
 
-typedef voronota::scripting::StandardOutputMockup StandardOutputMockup;
-
 using namespace std;
 
-int main_of_faspr(int argc, const char** argv, StandardOutputMockup& som)
+int main_of_faspr(int argc, const char** argv, voronota::scripting::StandardOutputMockup& som)
 {
   som.cout() <<"###########################################################################"<<endl;
   som.cout() <<"                    FASPR (Version 20200309)                 "<<endl;
@@ -91,14 +89,14 @@ int main_of_faspr(int argc, const char** argv, StandardOutputMockup& som)
   }
   
   Solution faspr;
-  faspr.ReadPDB(pdbin);
-  if(sflag) faspr.LoadSeq(seqfile);
-  else faspr.LoadSeq();
+  faspr.ReadPDB(pdbin, som);
+  if(sflag) faspr.LoadSeq(seqfile, som);
+  else faspr.LoadSeq(som);
   faspr.BuildSidechain();
-  faspr.CalcSelfEnergy();
+  faspr.CalcSelfEnergy(som);
   faspr.CalcPairEnergy();
-  faspr.Search();
-  faspr.WritePDB(pdbout);
+  faspr.Search(som);
+  faspr.WritePDB(pdbout, som);
   finish = clock();
   duration = (float)(finish-start)/CLOCKS_PER_SEC;
   som.cout() <<"#computational time: "<<duration<<" seconds"<<endl;

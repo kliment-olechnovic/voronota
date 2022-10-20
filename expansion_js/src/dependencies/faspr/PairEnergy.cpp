@@ -117,18 +117,18 @@ void PairEnergy::CalcPairEnergy()
   }
 }
 
-void PairEnergy::ShowPairEnergy()
+void PairEnergy::ShowPairEnergy(voronota::scripting::StandardOutputMockup& som)
 {
   for(int i=0;i<nres-1;i++){
     for(int j=i+1;j<nres;j++){
       if(eTablePair[i][j] != NULL){
-        cout<<"pairwise energies between site "<<i<<" and "<<j<<":";
+        som.cout() <<"pairwise energies between site "<<i<<" and "<<j<<":";
         for(int k=0;k<nrots[i];k++){
           for(int s=0;s<nrots[j];s++){
-        	cout<<" "<<eTablePair[i][j][k][s];
+        	som.cout() <<" "<<eTablePair[i][j][k][s];
           }
         }
-        cout<<endl;
+        som.cout() <<endl;
       }
     }
   }

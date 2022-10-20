@@ -22,31 +22,31 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define EPAIR_CUT      2.0
 #define TREEWIDTH_CUT  5
 
-void ShowGraph(Graph &graph){
+void ShowGraph(Graph &graph, voronota::scripting::StandardOutputMockup& som){
   for(Graph::iterator it=graph.begin(); it!=graph.end(); ++it){
-    cout <<it->first<<" =>";
+    som.cout() <<it->first<<" =>";
     for(set<int>::iterator it2=it->second.begin();it2!=it->second.end();++it2){
-      cout<<" "<<*it2;
+      som.cout() <<" "<<*it2;
     }
-    cout<<endl;
+    som.cout() <<endl;
   }
 }
 
 
-void Bag::ShowBag(){
-  cout<<"(";
+void Bag::ShowBag(voronota::scripting::StandardOutputMockup& som){
+  som.cout() <<"(";
   for(set<int>::iterator it=left.begin();it!=left.end();++it){
-    cout<<*it<<" ";
+    som.cout() <<*it<<" ";
   }
-  cout<<"|";
+  som.cout() <<"|";
   for(set<int>::iterator it=right.begin();it!=right.end();++it){
-    cout<<" "<<*it;
+    som.cout() <<" "<<*it;
   }
-  cout<<")";
+  som.cout() <<")";
 }
 
 
-void TreeDecomposition::Subgraph2TreeDecomposition(int index,Graph &graph){
+void TreeDecomposition::Subgraph2TreeDecomposition(int index,Graph &graph, voronota::scripting::StandardOutputMockup& som){
   //sort the vertices in the cluster by the number of edges
   int ver=1;
   set <int> neibs;
@@ -60,14 +60,14 @@ void TreeDecomposition::Subgraph2TreeDecomposition(int index,Graph &graph){
     sortgraph.push_back(nbsize);
   }
   stable_sort(sortgraph.begin(), sortgraph.end(), less <RankSize<set<int> > >());
-  cout<<endl<<"*subgraph "<<index<<" sorted (low-to-high degree):"<<endl;
+  som.cout() <<endl<<"*subgraph "<<index<<" sorted (low-to-high degree):"<<endl;
   for(int i=0;i<static_cast<int>(sortgraph.size());++i){
     RankSize<set<int> > &st=sortgraph[i];
-    cout <<st.idx<<" => ";
+    som.cout() <<st.idx<<" => ";
     for(set<int>::iterator it2=st.element.begin();it2!=st.element.end();++it2){
-      cout<<" "<<*it2;
+      som.cout() <<" "<<*it2;
     }
-    cout<<endl;
+    som.cout() <<endl;
   }
 
   //construct the bags using a loop
@@ -149,10 +149,10 @@ void TreeDecomposition::Subgraph2TreeDecomposition(int index,Graph &graph){
 
   //show all of the bags on the tree
   if(true){
-    cout<<"@list bags (nodes) of the tree decomposition:"<<endl;
+    som.cout() <<"@list bags (nodes) of the tree decomposition:"<<endl;
     for(int i=0; i<static_cast<int>(bags.size()); ++i){
-      bags[i].ShowBag();
-      cout<<endl;
+      bags[i].ShowBag(som);
+      som.cout() <<endl;
     }
   }
 
@@ -213,49 +213,49 @@ void TreeDecomposition::Subgraph2TreeDecomposition(int index,Graph &graph){
 
   //show the connected bags, parent and children
   if(false){
-    cout<<"@list connected bags of the tree decomposition:"<<endl;
+    som.cout() <<"@list connected bags of the tree decomposition:"<<endl;
     for(int i=0; i<static_cast<int>(connBags.size()); ++i){
-      connBags[i].ShowBag();
+      connBags[i].ShowBag(som);
       if(connBags[i].type==Root){
-        cout<<":"<<endl<<"index = "<<setw(4)<<i<<", type =  root, parent = none";
-        cout<<", children =";
+        som.cout() <<":"<<endl<<"index = "<<setw(4)<<i<<", type =  root, parent = none";
+        som.cout() <<", children =";
         for(set<int>::iterator it1=connBags[i].childBagIdx.begin(); it1!=connBags[i].childBagIdx.end();++it1){
-          cout<<" "<<*it1;
+          som.cout() <<" "<<*it1;
         }
-        cout<<endl;
+        som.cout() <<endl;
       }
       else if(connBags[i].type==Inner){
-        cout<<":"<<endl<<"index = "<<setw(4)<<i<<", type = inner, parent = "<<setw(4)<<connBags[i].parentBagIdx;
-        cout<<", children =";
+        som.cout() <<":"<<endl<<"index = "<<setw(4)<<i<<", type = inner, parent = "<<setw(4)<<connBags[i].parentBagIdx;
+        som.cout() <<", children =";
         for(set<int>::iterator it1=connBags[i].childBagIdx.begin(); it1!=connBags[i].childBagIdx.end();++it1){
-          cout<<" "<<*it1;
+          som.cout() <<" "<<*it1;
         }
-        cout<<endl;
+        som.cout() <<endl;
       }
       else{
-        cout<<":"<<endl<<"index = "<<setw(4)<<i<<", type =  leaf, parent = "<<setw(4)<<connBags[i].parentBagIdx;
-        cout<<", children = none"<<endl;
+        som.cout() <<":"<<endl<<"index = "<<setw(4)<<i<<", type =  leaf, parent = "<<setw(4)<<connBags[i].parentBagIdx;
+        som.cout() <<", children = none"<<endl;
       }
     }
   }
 
 }
 
-void TreeDecomposition::MergeBags(int depth)
+void TreeDecomposition::MergeBags(int depth, voronota::scripting::StandardOutputMockup& som)
 {
   if(depth<static_cast<int>(connBags.size())){
     for(int i=0;i<static_cast<int>(connBags.size());i++){
       if(connBags[i].type==Leaf){
         //merge the leaf to its parent
-        cout<<"Merge leaf "<<i<<" with its parent "<<connBags[i].parentBagIdx<<": ";
+        som.cout() <<"Merge leaf "<<i<<" with its parent "<<connBags[i].parentBagIdx<<": ";
         set_union(connBags[i].total.begin(),connBags[i].total.end(),
           connBags[connBags[i].parentBagIdx].total.begin(),connBags[connBags[i].parentBagIdx].total.end(),
           inserter(connBags[connBags[i].parentBagIdx].total,connBags[connBags[i].parentBagIdx].total.begin())
           );
         for(set<int>::iterator it=connBags[connBags[i].parentBagIdx].total.begin();it!=connBags[connBags[i].parentBagIdx].total.end();++it){
-          cout<<*it<<" ";
+          som.cout() <<*it<<" ";
         }
-        cout<<endl;
+        som.cout() <<endl;
         connBags[i].type=None;
         connBags[connBags[i].parentBagIdx].childBagIdx.erase(i);
         if(connBags[connBags[i].parentBagIdx].childBagIdx.size()==0 && connBags[connBags[i].parentBagIdx].type != Root){
@@ -264,7 +264,7 @@ void TreeDecomposition::MergeBags(int depth)
         depth++;
       }
     }
-    MergeBags(depth);
+    MergeBags(depth, som);
   }
 }
 
@@ -287,14 +287,14 @@ Solution::~Solution()
 }
 
 
-bool Solution::DEESearch(IV1 &pos){
+bool Solution::DEESearch(IV1 &pos, voronota::scripting::StandardOutputMockup& som){
   //DEEGoldstein
   IV1 fixres;
   int ndeadDEE=1,iterDEE=1;
   unfixres.clear();
   while(ndeadDEE!=0){
     ndeadDEE=DEEGoldstein(pos);
-    cout<<"iter "<<iterDEE<<" DEEgoldstein eliminates "<<ndeadDEE<<" rotamers"<<endl;
+    som.cout() <<"iter "<<iterDEE<<" DEEgoldstein eliminates "<<ndeadDEE<<" rotamers"<<endl;
     iterDEE++;
   };
   for(int i=0;i<static_cast<int>(pos.size());i++){
@@ -316,8 +316,8 @@ bool Solution::DEESearch(IV1 &pos){
       unfixres.push_back(ip);
     }
   }
-  cout<<"#residues fixed after DEE-Goldstein: "<<fixres.size()<<endl;
-  cout<<"#residues unfixed after DEE-Goldstein: "<<unfixres.size()<<endl;
+  som.cout() <<"#residues fixed after DEE-Goldstein: "<<fixres.size()<<endl;
+  som.cout() <<"#residues unfixed after DEE-Goldstein: "<<unfixres.size()<<endl;
   if(unfixres.size()==0) return false;
   for(int i=0;i<static_cast<int>(unfixres.size());i++){
     int ipos=unfixres[i];
@@ -343,7 +343,7 @@ bool Solution::DEESearch(IV1 &pos){
   }
   while(ndeadDEE!=0){
     ndeadDEE=DEEsplit(pos);
-    cout<<"iter "<<iterDEE<<" DEEsplit eliminates "<<ndeadDEE<<" rotamers"<<endl;
+    som.cout() <<"iter "<<iterDEE<<" DEEsplit eliminates "<<ndeadDEE<<" rotamers"<<endl;
     iterDEE++;
   };
   for(int i=0;i<static_cast<int>(pos.size());i++){
@@ -365,8 +365,8 @@ bool Solution::DEESearch(IV1 &pos){
       unfixres.push_back(ip);
     }
   }
-  cout<<"#residues fixed after DEE-split: "<<fixres.size()<<endl;
-  cout<<"#residues unfixed after DEE-split: "<<unfixres.size()<<endl;
+  som.cout() <<"#residues fixed after DEE-split: "<<fixres.size()<<endl;
+  som.cout() <<"#residues unfixed after DEE-split: "<<unfixres.size()<<endl;
   if(unfixres.size()==0) return false;
   for(int i=0;i<static_cast<int>(unfixres.size());i++){
     int ipos=unfixres[i];
@@ -392,7 +392,7 @@ bool Solution::DEESearch(IV1 &pos){
   }
   while(ndeadDEE!=0){
     ndeadDEE=DEEGoldstein(pos);
-    cout<<"iter "<<iterDEE<<" DEEgoldstein eliminates "<<ndeadDEE<<" rotamers"<<endl;
+    som.cout() <<"iter "<<iterDEE<<" DEEgoldstein eliminates "<<ndeadDEE<<" rotamers"<<endl;
     iterDEE++;
   };
   for(int i=0;i<static_cast<int>(pos.size());i++){
@@ -414,8 +414,8 @@ bool Solution::DEESearch(IV1 &pos){
       unfixres.push_back(ip);
     }
   }
-  cout<<"#residues fixed after DEE-Goldstein: "<<fixres.size()<<endl;
-  cout<<"#residues unfixed after DEE-Goldstein: "<<unfixres.size()<<endl;
+  som.cout() <<"#residues fixed after DEE-Goldstein: "<<fixres.size()<<endl;
+  som.cout() <<"#residues unfixed after DEE-Goldstein: "<<unfixres.size()<<endl;
   if(unfixres.size()==0) return false;
   for(int i=0;i<static_cast<int>(unfixres.size());i++){
     int ipos=unfixres[i];
@@ -441,7 +441,7 @@ bool Solution::DEESearch(IV1 &pos){
   }
   while(ndeadDEE!=0){
     ndeadDEE=DEEsplit(pos);
-    cout<<"iter "<<iterDEE<<" DEEsplit eliminates "<<ndeadDEE<<" rotamers"<<endl;
+    som.cout() <<"iter "<<iterDEE<<" DEEsplit eliminates "<<ndeadDEE<<" rotamers"<<endl;
     iterDEE++;
   };
   for(int i=0;i<static_cast<int>(pos.size());i++){
@@ -463,8 +463,8 @@ bool Solution::DEESearch(IV1 &pos){
       unfixres.push_back(ip);
     }
   }
-  cout<<"#residues fixed after DEE-split: "<<fixres.size()<<endl;
-  cout<<"#residues unfixed after DEE-split: "<<unfixres.size()<<endl;
+  som.cout() <<"#residues fixed after DEE-split: "<<fixres.size()<<endl;
+  som.cout() <<"#residues unfixed after DEE-split: "<<unfixres.size()<<endl;
   if(unfixres.size()==0) return false;
   for(int i=0;i<static_cast<int>(unfixres.size());i++){
     int ipos=unfixres[i];
@@ -595,10 +595,10 @@ void Solution::Pick(int site,int rot)
   }
 }
 
-void Solution::ConstructAdjMatrix(int nunfix,IV2 &adjMatrix)
+void Solution::ConstructAdjMatrix(int nunfix,IV2 &adjMatrix, voronota::scripting::StandardOutputMockup& som)
 {
-  cout<<endl<<"construct adjacent matrix ..."<<endl;
-  cout<<"remove edges (residue-residue interactions) with small energy values ... ";
+  som.cout() <<endl<<"construct adjacent matrix ..."<<endl;
+  som.cout() <<"remove edges (residue-residue interactions) with small energy values ... ";
   int n_removed_edges=0;
   for(int i=0;i<nunfix-1;i++){
     int ipos=unfixres[i];
@@ -617,14 +617,14 @@ void Solution::ConstructAdjMatrix(int nunfix,IV2 &adjMatrix)
         }
       }
       eTablePair[ipos][jpos]=NULL;
-      //cout<<"residue "<<ipos<<" and "<<jpos<<" does not interact"<<endl;
+      //som.cout() <<"residue "<<ipos<<" and "<<jpos<<" does not interact"<<endl;
       n_removed_edges++;
 FLAG1: continue;
     }
   }
-  cout<<"#edges removed: "<<n_removed_edges<<endl;
+  som.cout() <<"#edges removed: "<<n_removed_edges<<endl;
 
-  cout<<"remove the residues that have no interaction edge ... ";
+  som.cout() <<"remove the residues that have no interaction edge ... ";
   int n_res_noedge=0;
   for(int i=0;i<nunfix;i++){
     bool allzeros=true;
@@ -648,7 +648,7 @@ FLAG1: continue;
       n_res_noedge++;
     }
   }
-  cout<<"#residues without edges removed: "<<n_res_noedge<<endl;
+  som.cout() <<"#residues without edges removed: "<<n_res_noedge<<endl;
 }
 
 
@@ -726,11 +726,11 @@ void Solution::FindSubgraphByDFS(Graph &graph,int u,IV1 &visited,IV2 &adjMatrix,
 }
 
 
-void Solution::ShowGraphs(){
+void Solution::ShowGraphs(voronota::scripting::StandardOutputMockup& som){
   for(int i1=0; i1<static_cast<int>(graphs.size()); i1++){
-    cout<<"*subgraph "<<i1<<":"<<endl;
+    som.cout() <<"*subgraph "<<i1<<":"<<endl;
     Graph &graph=graphs[i1];
-    ShowGraph(graph);
+    ShowGraph(graph, som);
   }
 }
 
@@ -1082,7 +1082,7 @@ void Solution::TreeDecompositionRelease()
 }
 
 
-void Solution::GraphEdgeDecomposition(IV2 &adjMatrix,float threshold)
+void Solution::GraphEdgeDecomposition(IV2 &adjMatrix,float threshold, voronota::scripting::StandardOutputMockup& som)
 {
   int nedgeremoved=0;
   for(int i=0;i<static_cast<int>(adjMatrix.size())-1;i++){
@@ -1158,13 +1158,13 @@ void Solution::GraphEdgeDecomposition(IV2 &adjMatrix,float threshold)
             if(eTableSelf[l][n]>999.) continue;
             eTableSelf[l][n]+=bl[n];
           }
-          //cout<<"edge between site "<<k<<" and "<<l<<" is decomposed with threshold "<<threshold<<endl;
+          //som.cout() <<"edge between site "<<k<<" and "<<l<<" is decomposed with threshold "<<threshold<<endl;
           nedgeremoved++;
         }
       }
     }
   }
-  cout<<"edge decomposition with threshold "<<threshold<<"... #edges removed: "<<nedgeremoved<<endl;
+  som.cout() <<"edge decomposition with threshold "<<threshold<<"... #edges removed: "<<nedgeremoved<<endl;
 
   int resremoved=0;
   for(int i=0;i<static_cast<int>(adjMatrix.size());i++){
@@ -1188,21 +1188,21 @@ void Solution::GraphEdgeDecomposition(IV2 &adjMatrix,float threshold)
       }
       bestrot[k]=best;
       nrots[k]=1;
-      //cout<<"residue "<<k<<" eliminated by edge decomposition"<<endl;
+      //som.cout() <<"residue "<<k<<" eliminated by edge decomposition"<<endl;
       resremoved++;
     }
   }
-  cout<<"remove residues with no edge ... "<<"#residues removed: "<<resremoved<<endl;
+  som.cout() <<"remove residues with no edge ... "<<"#residues removed: "<<resremoved<<endl;
 }
 
 
-void Solution::Search()
+void Solution::Search(voronota::scripting::StandardOutputMockup& som)
 {
   IV1 pos;
   for(int i=0;i<nres;i++){
     if(nrots[i]>1) pos.push_back(i);
   }
-  if(DEESearch(pos)==true){
+  if(DEESearch(pos, som)==true){
     bool hardmode=false;
     float threshold=0.5;
 LOOP:
@@ -1211,20 +1211,20 @@ LOOP:
     IV2 adjMatrix(nunfix,visited);
     IV2 flagMatrix(nunfix,visited);
     //construct subgraphs
-    ConstructAdjMatrix(nunfix,adjMatrix);
+    ConstructAdjMatrix(nunfix,adjMatrix, som);
     if(hardmode==true){
       hardmode=false;
-      GraphEdgeDecomposition(adjMatrix,threshold);
+      GraphEdgeDecomposition(adjMatrix,threshold, som);
       threshold*=2;
     }
     ConstructSubgraphs(nunfix,visited,adjMatrix,flagMatrix);
-    ShowGraphs();
+    ShowGraphs(som);
 
     for(int i1=0; i1<static_cast<int>(graphs.size()); i1++){
       Graph &graph=graphs[i1];
-      tree.Subgraph2TreeDecomposition(i1,graph);
+      tree.Subgraph2TreeDecomposition(i1,graph, som);
       int treewidth=tree.CheckTreewidth();
-      cout<<"#treewidth = "<<treewidth<<endl;
+      som.cout() <<"#treewidth = "<<treewidth<<endl;
       if(treewidth<=TREEWIDTH_CUT){
         TreeDecompositionBottomToTopCalcEnergy();
         RootBagFindGMEC(tree.connBags[0]);
@@ -1240,11 +1240,11 @@ LOOP:
             }
           }
         }
-        cout<<"current tree has been solved"<<endl;
+        som.cout() <<"current tree has been solved"<<endl;
       }
       else{
         hardmode=true;
-        cout<<"current tree is hard, to be solved later"<<endl;
+        som.cout() <<"current tree is hard, to be solved later"<<endl;
       }
       TreeDecompositionRelease();
       graph.clear();
@@ -1253,11 +1253,11 @@ LOOP:
     if(hardmode) goto LOOP;
   }
 
-  //cout<<"optimal rotamer index:"<<endl;
+  //som.cout() <<"optimal rotamer index:"<<endl;
   for(int i=0;i<nres;i++){
     if(nrots[i]==1){
       Pick(i,bestrot[i]);
-      //cout<<i<<"\t"<<optRotIdx[i]<<endl;
+      //som.cout() <<i<<"\t"<<optRotIdx[i]<<endl;
     }
   }
 

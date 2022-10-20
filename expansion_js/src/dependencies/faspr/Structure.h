@@ -51,10 +51,10 @@ public:
 
   ~Structure();
   void Pdb2Fas();
-  void ReadPDB(string &pdbfile);
-  void OutputPDB(PV1 &pdb);
+  void ReadPDB(string &pdbfile, voronota::scripting::StandardOutputMockup& som);
+  void OutputPDB(PV1 &pdb, voronota::scripting::StandardOutputMockup& som);
   void OutputPDB(PV1 &pdb,string &pdbfile);
-  void WritePDB(string &pdbfile);
+  void WritePDB(string &pdbfile, voronota::scripting::StandardOutputMockup& som);
 };
 
 

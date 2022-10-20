@@ -17,9 +17,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ********************************************************************************************************************************/
 #include "Structure.h"
 
-#include "../../../../src/scripting/io_selectors.h"
-
-void Structure::ReadPDB(string &pdbfile)
+void Structure::ReadPDB(string &pdbfile, voronota::scripting::StandardOutputMockup& som)
 {
   string buf,stmp1,stmp2;
   Residue rtmp;
@@ -78,31 +76,31 @@ void Structure::ReadPDB(string &pdbfile)
   rtmp.xyz.clear();
   
   nres=pdb.size();
-  cout<<"#residues in pdb: "<<nres<<endl;
-  cout<<"#alanines and glycines: "<<nAlaGly<<endl;
+  som.cout() <<"#residues in pdb: "<<nres<<endl;
+  som.cout() <<"#alanines and glycines: "<<nAlaGly<<endl;
 }
 
-void Structure::WritePDB(string &pdbfile)
+void Structure::WritePDB(string &pdbfile, voronota::scripting::StandardOutputMockup& som)
 {
   if(pdbfile=="" || pdbfile=="void"){
-    OutputPDB(pdb);
+    OutputPDB(pdb, som);
   }
   else{
     OutputPDB(pdb,pdbfile);
   }
 }
 
-void Structure::OutputPDB(PV1 &pdb)
+void Structure::OutputPDB(PV1 &pdb, voronota::scripting::StandardOutputMockup& som)
 {
-  cout<<setiosflags(ios::fixed)<<setprecision(3);
+  som.cout() <<setiosflags(ios::fixed)<<setprecision(3);
   int i,j,k,atomindex=1;
-  cout<<"REMARK repacked structure by FASPR"<<endl;
+  som.cout() <<"REMARK repacked structure by FASPR"<<endl;
   for(i=0;i<nres;i++){
     for(j=0;j<static_cast<int>(pdb[i].atNames.size());j++){
-      cout<<"ATOM  "<<setw(5)<<atomindex<<" ";
-      cout<<pdb[i].atNames[j]<<" "<<pdb[i].name<<" "<<pdb[i].chID<<setw(4)<<pdb[i].pos<<pdb[i].ins<<"   ";
-      for(k=0;k<3;k++) cout<<setw(8)<<pdb[i].xyz[j][k];
-      cout<<"  1.00  0.00           "<<pdb[i].atTypes[j]<<"  "<<endl;
+      som.cout() <<"ATOM  "<<setw(5)<<atomindex<<" ";
+      som.cout() <<pdb[i].atNames[j]<<" "<<pdb[i].name<<" "<<pdb[i].chID<<setw(4)<<pdb[i].pos<<pdb[i].ins<<"   ";
+      for(k=0;k<3;k++) som.cout() <<setw(8)<<pdb[i].xyz[j][k];
+      som.cout() <<"  1.00  0.00           "<<pdb[i].atTypes[j]<<"  "<<endl;
       atomindex++;
     }
     if(i==nres-1){
@@ -110,7 +108,7 @@ void Structure::OutputPDB(PV1 &pdb)
     }
     else{
       if(pdb[i].chID!=pdb[i+1].chID){
-TER:        cout<<"TER   "<<setw(5)<<atomindex<<"      "<<pdb[i].name<<" "<<pdb[i].chID<<setw(4)<<pdb[i].pos<<endl;
+TER:        som.cout() <<"TER   "<<setw(5)<<atomindex<<"      "<<pdb[i].name<<" "<<pdb[i].chID<<setw(4)<<pdb[i].pos<<endl;
       }
     }
   }
