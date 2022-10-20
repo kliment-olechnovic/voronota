@@ -81,12 +81,13 @@
 #include "../../../../src/scripting/io_selectors.h"
 typedef voronota::scripting::InputSelector InputSelector;
 typedef voronota::scripting::OutputSelector OutputSelector;
+typedef voronota::scripting::StandardOutputMockup StandardOutputMockup;
 
 using namespace std;
 
-void print_version()
+void print_version(StandardOutputMockup& som)
 {
-    cout << 
+    som.cout() <<
 "\n"
 " *********************************************************************\n"
 " * TM-align (Version 20190822): protein structure alignment          *\n"
@@ -96,9 +97,9 @@ void print_version()
     << endl;
 }
 
-void print_extra_help()
+void print_extra_help(StandardOutputMockup& som)
 {
-    cout <<
+    som.cout() <<
 "Additional options:\n"
 "    -dir     Perform all-against-all alignment among the list of PDB\n"
 "             chains listed by 'chain_list' under 'chain_folder'. Note\n"
@@ -174,10 +175,10 @@ void print_extra_help()
     <<endl;
 }
 
-void print_help(bool h_opt=false)
+void print_help(bool h_opt, StandardOutputMockup& som)
 {
-    print_version();
-    cout <<
+    print_version(som);
+    som.cout() <<
 "\n"
 "Usage: TMalign PDB1.pdb PDB2.pdb [Options]\n"
 "\n"
@@ -234,7 +235,7 @@ void print_help(bool h_opt=false)
 "    TMalign PDB1.pdb PDB2.pdb -cp\n"
     <<endl;
 
-    if (h_opt) print_extra_help();
+    if (h_opt) print_extra_help(som);
 
     //exit(EXIT_SUCCESS);
     throw std::runtime_error(std::string("TMalign exit after printing help"));
@@ -244,9 +245,9 @@ void print_help(bool h_opt=false)
 /* Functions for the core TMalign algorithm, including the entry function
  * TMalign_main */
 
-void PrintErrorAndQuit(const string sErrorString)
+void PrintErrorAndQuit(const string& sErrorString, StandardOutputMockup& som)
 {
-    cout << sErrorString << endl;
+    som.cout() << sErrorString << endl;
     //exit(1);
     throw std::runtime_error(std::string("TMalign exit on error: ")+sErrorString);
 }
@@ -389,7 +390,7 @@ void split_white(const string &line, vector<string> &line_vec,
 size_t get_PDB_lines(const string filename,
     vector<vector<string> >&PDB_lines, vector<string> &chainID_list,
     vector<int> &mol_vec, const int ter_opt, const int infmt_opt,
-    const string atom_opt, const int split_opt, const int het_opt)
+    const string atom_opt, const int split_opt, const int het_opt, StandardOutputMockup& som)
 {
     size_t i=0; // resi i.e. atom index
     string line;
@@ -409,7 +410,7 @@ size_t get_PDB_lines(const string filename,
             getline(fin, line);
             if (infmt_opt==-1 && line.compare(0,5,"loop_")==0) // PDBx/mmCIF
                 return get_PDB_lines(filename,PDB_lines,chainID_list,
-                    mol_vec, ter_opt, 3, atom_opt, split_opt,het_opt);
+                    mol_vec, ter_opt, 3, atom_opt, split_opt, het_opt, som);
             if (i > 0)
             {
                 if      (ter_opt>=1 && line.compare(0,3,"END")==0) break;
@@ -475,7 +476,7 @@ size_t get_PDB_lines(const string filename,
                     }
 
                     if (resi==line.substr(22,5))
-                        cerr<<"Warning! Duplicated residue "<<resi<<endl;
+                        som.cerr() << "Warning! Duplicated residue "<<resi<<endl;
                     resi=line.substr(22,5); // including insertion code
 
                     PDB_lines.back().push_back(line);
@@ -572,7 +573,7 @@ size_t get_PDB_lines(const string filename,
                 while(1)
                 {
                     if (fin.good()) getline(fin, line);
-                    else PrintErrorAndQuit("ERROR! Unexpected end of "+filename);
+                    else PrintErrorAndQuit("ERROR! Unexpected end of "+filename, som);
                     if (line.size()) break;
                 }
                 if (line.compare(0,11,"_atom_site.")) continue;
@@ -585,7 +586,7 @@ size_t get_PDB_lines(const string filename,
                 while(1)
                 {
                     if (fin.good()) getline(fin, line);
-                    else PrintErrorAndQuit("ERROR! Unexpected end of "+filename);
+                    else PrintErrorAndQuit("ERROR! Unexpected end of "+filename, som);
                     if (line.size()==0) continue;
                     if (line.compare(0,11,"_atom_site.")) break;
                     _atom_site[line.substr(11,line.size()-12)]=++atom_site_pos;
@@ -604,7 +605,7 @@ size_t get_PDB_lines(const string filename,
                     _atom_site.count("Cartn_z")==0)
                 {
                     loop_ = false;
-                    cerr<<"Warning! Missing one of the following _atom_site data items: group_PDB, label_atom_id, label_atom_id, auth_asym_id/label_asym_id, auth_seq_id/label_seq_id, Cartn_x, Cartn_y, Cartn_z"<<endl;
+                    som.cerr() << "Warning! Missing one of the following _atom_site data items: group_PDB, label_atom_id, label_atom_id, auth_asym_id/label_asym_id, auth_seq_id/label_seq_id, Cartn_x, Cartn_y, Cartn_z"<<endl;
                     continue;
                 }
             }
@@ -695,7 +696,7 @@ size_t get_PDB_lines(const string filename,
             else resi+=" ";
 
             if (prev_resi==resi)
-                cerr<<"Warning! Duplicated residue "<<resi<<endl;
+                som.cerr() << "Warning! Duplicated residue "<<resi<<endl;
             prev_resi=resi;
 
             i++;
@@ -728,7 +729,7 @@ size_t get_PDB_lines(const string filename,
  * if split_opt ==0 and ter_opt ==0, all sequences are combined into one */
 size_t get_FASTA_lines(const string filename,
     vector<vector<string> >&FASTA_lines, vector<string> &chainID_list,
-    vector<int> &mol_vec, const int ter_opt=3, const int split_opt=0)
+    vector<int> &mol_vec, const int ter_opt, const int split_opt)
 {
     string line;
     vector<string> tmp_str_vec;
@@ -904,10 +905,10 @@ string Trim(const string &inputString)
  * This function should only be called by main function, as it will
  * terminate a program if wrong alignment is given */
 void read_user_alignment(vector<string>&sequence, const string &fname_lign,
-    const int i_opt)
+    const int i_opt, StandardOutputMockup& som)
 {
     if (fname_lign == "")
-        PrintErrorAndQuit("Please provide a file name for option -i!");
+        PrintErrorAndQuit("Please provide a file name for option -i!", som);
     // open alignment file
     int n_p = 0;// number of structures in alignment file
     string line;
@@ -929,19 +930,19 @@ void read_user_alignment(vector<string>&sequence, const string &fname_lign,
             else if (n_p > 0 && line!="") sequence.back()+=line;
         }
     }
-    else PrintErrorAndQuit("ERROR! Alignment file does not exist.");
+    else PrintErrorAndQuit("ERROR! Alignment file does not exist.", som);
     
     if (n_p < 2)
-        PrintErrorAndQuit("ERROR: Fasta format is wrong, two proteins should be included.");
+        PrintErrorAndQuit("ERROR: Fasta format is wrong, two proteins should be included.", som);
     if (sequence[0].size() != sequence[1].size())
-        PrintErrorAndQuit("ERROR! FASTA file is wrong. The length in alignment should be equal for the two aligned proteins.");
+        PrintErrorAndQuit("ERROR! FASTA file is wrong. The length in alignment should be equal for the two aligned proteins.", som);
     if (i_opt==3)
     {
         int aligned_resNum=0;
         for (int i=0;i<static_cast<int>(sequence[0].size());i++)
             aligned_resNum+=(sequence[0][i]!='-' && sequence[1][i]!='-');
         if (aligned_resNum<3)
-            PrintErrorAndQuit("ERROR! Superposition is undefined for <3 aligned residues.");
+            PrintErrorAndQuit("ERROR! Superposition is undefined for <3 aligned residues.", som);
     }
     line.clear();
     return;
@@ -953,12 +954,12 @@ void read_user_alignment(vector<string>&sequence, const string &fname_lign,
  * This function should only be called by main function, as it will
  * terminate a program if wrong alignment is given */
 void file2chainlist(vector<string>&chain_list, const string &name,
-    const string &dir_opt, const string &suffix_opt)
+    const string &dir_opt, const string &suffix_opt, StandardOutputMockup& som)
 {
     InputSelector input_selector(name);
     istream& fp=input_selector.stream();
     if (! fp.good())
-        PrintErrorAndQuit(("Can not open file: "+name+'\n').c_str());
+        PrintErrorAndQuit(("Can not open file: "+name+'\n').c_str(), som);
     string line;
     while (fp.good())
     {
@@ -2199,7 +2200,7 @@ double detailed_search_standard( double **r1, double **r2,
 //compute the score quickly in three iterations
 double get_score_fast( double **r1, double **r2, double **xtm, double **ytm,
     double **x, double **y, int /*xlen*/, int ylen, int invmap[],
-    double d0, double d0_search, double t[3], double u[3][3])
+    double d0, double d0_search, double t[3], double u[3][3], StandardOutputMockup& som)
 {
     double rms, tmscore, tmscore1, tmscore2;
     int i, j, k;
@@ -2228,7 +2229,7 @@ double get_score_fast( double **r1, double **r2, double **xtm, double **ytm,
             
             k++;
         }
-        else if(i!=-1) PrintErrorAndQuit("Wrong map!\n");
+        else if(i!=-1) PrintErrorAndQuit("Wrong map!\n", som);
     }
     Kabsch(r1, r2, k, 1, &rms, t, u);
     
@@ -2347,10 +2348,10 @@ double get_score_fast( double **r1, double **r2, double **xtm, double **ytm,
 double get_initial(double **r1, double **r2, double **xtm, double **ytm,
     double **x, double **y, int xlen, int ylen, int *y2x,
     double d0, double d0_search, const bool fast_opt,
-    double t[3], double u[3][3])
+    double t[3], double u[3][3], StandardOutputMockup& som)
 {
     int min_len=getmin(xlen, ylen);
-    if(min_len<3) PrintErrorAndQuit("Sequence is too short <3!\n");
+    if(min_len<3) PrintErrorAndQuit("Sequence is too short <3!\n", som);
     
     int min_ali= min_len/2;              //minimum size of considered fragment 
     if(min_ali<=5)  min_ali=5;    
@@ -2375,7 +2376,7 @@ double get_initial(double **r1, double **r2, double **xtm, double **ytm,
         //evaluate the map quickly in three iterations
         //this is not real tmscore, it is used to evaluate the goodness of the initial alignment
         tmscore=get_score_fast(r1, r2, xtm, ytm,
-            x, y, xlen, ylen, y2x, d0,d0_search, t, u);
+            x, y, xlen, ylen, y2x, d0,d0_search, t, u, som);
         if(tmscore>=tmscore_max)
         {
             tmscore_max=tmscore;
@@ -2520,7 +2521,7 @@ void get_initial_ss(bool **path, double **val,
 bool get_initial5( double **r1, double **r2, double **xtm, double **ytm,
     bool **path, double **val,
     double **x, double **y, int xlen, int ylen, int *y2x,
-    double d0, double d0_search, const bool fast_opt, const double D0_MIN)
+    double d0, double d0_search, const bool fast_opt, const double D0_MIN, StandardOutputMockup& som)
 {
     double GL, rmsd;
     double t[3];
@@ -2601,7 +2602,7 @@ bool get_initial5( double **r1, double **r2, double **xtm, double **ytm,
                 NWDP_TM(path, val, x, y, xlen, ylen,
                     t, u, d02, gap_open, invmap);
                 GL = get_score_fast(r1, r2, xtm, ytm, x, y, xlen, ylen,
-                    invmap, d0, d0_search, t, u);
+                    invmap, d0, d0_search, t, u, som);
                 if (GL>GLmax)
                 {
                     GLmax = GL;
@@ -2750,7 +2751,7 @@ void find_max_frag(double **x, int len, int *start_max,
 double get_initial_fgt(double **r1, double **r2, double **xtm, double **ytm,
     double **x, double **y, int xlen, int ylen, 
     int *y2x, double d0, double d0_search,
-    double dcu0, const bool fast_opt, double t[3], double u[3][3])
+    double dcu0, const bool fast_opt, double t[3], double u[3][3], StandardOutputMockup& som)
 {
     int fra_min=4;           //minimum fragment for search
     if (fast_opt) fra_min=8;
@@ -2826,7 +2827,7 @@ double get_initial_fgt(double **r1, double **r2, double **xtm, double **ytm,
 
             //evaluate the map quickly in three iterations
             tmscore=get_score_fast(r1, r2, xtm, ytm, x, y, xlen, ylen, y2x_,
-                d0, d0_search, t, u);
+                d0, d0_search, t, u, som);
 
             if(tmscore>=tmscore_max)
             {
@@ -2873,7 +2874,7 @@ double get_initial_fgt(double **r1, double **r2, double **xtm, double **ytm,
         
             //evaluate the map quickly in three iterations
             tmscore=get_score_fast(r1, r2, xtm, ytm,
-                x, y, xlen, ylen, y2x_, d0,d0_search, t, u);
+                x, y, xlen, ylen, y2x_, d0,d0_search, t, u, som);
             if(tmscore>=tmscore_max)
             {
                 tmscore_max=tmscore;
@@ -2929,7 +2930,7 @@ double get_initial_fgt(double **r1, double **r2, double **xtm, double **ytm,
 
             //evaluate the map quickly in three iterations
             tmscore=get_score_fast(r1, r2, xtm, ytm, x, y, xlen, ylen, y2x_,
-                d0, d0_search, t, u);
+                d0, d0_search, t, u, som);
 
             if(tmscore>=tmscore_max)
             {
@@ -2963,7 +2964,7 @@ double get_initial_fgt(double **r1, double **r2, double **xtm, double **ytm,
         
             //evaluate the map quickly in three iterations
             tmscore=get_score_fast(r1, r2, xtm, ytm,
-                x, y, xlen, ylen, y2x_, d0,d0_search, t, u);
+                x, y, xlen, ylen, y2x_, d0,d0_search, t, u, som);
             if(tmscore>=tmscore_max)
             {
                 tmscore_max=tmscore;
@@ -3057,7 +3058,7 @@ void output_superpose(const string xname, const string yname,
     const vector<string>&resi_vec1, const vector<string>&resi_vec2,
     const char *chainID1, const char *chainID2,
     const int xlen, const int ylen, const double d0A, const int n_ali8,
-    const double rmsd, const double TM1, const double Liden)
+    const double rmsd, const double TM1, const double Liden, StandardOutputMockup& som)
 {
     stringstream buf;
     stringstream buf_all;
@@ -3207,7 +3208,7 @@ void output_superpose(const string xname, const string yname,
             while(1)
             {
                 if (fin.good()) getline(fin, line);
-                else PrintErrorAndQuit("ERROR! Unexpected end of "+xname);
+                else PrintErrorAndQuit("ERROR! Unexpected end of "+xname, som);
                 if (line.size()) break;
             }
             if (line.compare(0,11,"_atom_site.")) continue;
@@ -3217,7 +3218,7 @@ void output_superpose(const string xname, const string yname,
             while(1)
             {
                 if (fin.good()) getline(fin, line);
-                else PrintErrorAndQuit("ERROR! Unexpected end of "+xname);
+                else PrintErrorAndQuit("ERROR! Unexpected end of "+xname, som);
                 if (line.size()==0) continue;
                 if (line.compare(0,11,"_atom_site.")) break;
                 _atom_site[line.substr(11,line.size()-12)]=++atom_site_pos;
@@ -3440,7 +3441,7 @@ void output_superpose(const string xname, const string yname,
             while(1)
             {
                 if (fin.good()) getline(fin, line);
-                else PrintErrorAndQuit("ERROR! Unexpected end of "+yname);
+                else PrintErrorAndQuit("ERROR! Unexpected end of "+yname, som);
                 if (line.size()) break;
             }
             if (line.compare(0,11,"_atom_site.")) continue;
@@ -3450,7 +3451,7 @@ void output_superpose(const string xname, const string yname,
             while(1)
             {
                 if (fin.good()) getline(fin, line);
-                else PrintErrorAndQuit("ERROR! Unexpected end of "+yname);
+                else PrintErrorAndQuit("ERROR! Unexpected end of "+yname, som);
                 if (line.size()==0) continue;
                 if (line.compare(0,11,"_atom_site.")) break;
                 _atom_site[line.substr(11,line.size()-12)]=++atom_site_pos;
@@ -3674,7 +3675,7 @@ void output_superpose(const string xname, const string yname,
 
 /* extract rotation matrix based on TMscore8 */
 void output_rotation_matrix(const char* fname_matrix,
-    const double t[3], const double u[3][3])
+    const double t[3], const double u[3][3], StandardOutputMockup& som)
 {
 	OutputSelector output_selector(fname_matrix);
     ostream& fout=output_selector.stream();
@@ -3698,7 +3699,7 @@ void output_rotation_matrix(const char* fname_matrix,
                 "}\n";
     }
     else
-        cout << "Open file to output rotation matrix fail.\n";
+        som.cout() << "Open file to output rotation matrix fail.\n";
 }
 
 //output the final results
@@ -3718,103 +3719,103 @@ void output_results(
     const int outfmt_opt, const int ter_opt, const string fname_super,
     const int i_opt, const int a_opt, const bool u_opt, const bool d_opt,
     const int mirror_opt,
-    const vector<string>&resi_vec1, const vector<string>&resi_vec2)
+    const vector<string>&resi_vec1, const vector<string>&resi_vec2, StandardOutputMockup& som)
 {
 	char printf_buffer[5000];
     if (outfmt_opt<=0)
     {
         sprintf(printf_buffer, "\nName of Chain_1: %s%s (to be superimposed onto Chain_2)\n", xname.c_str(), chainID1);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
         sprintf(printf_buffer, "Name of Chain_2: %s%s\n", yname.c_str(), chainID2);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
         sprintf(printf_buffer, "Length of Chain_1: %d residues\n", xlen);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
         sprintf(printf_buffer, "Length of Chain_2: %d residues\n\n", ylen);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
 
         if (i_opt)
         {
         	sprintf(printf_buffer, "User-specified initial alignment: TM/Lali/rmsd = %7.5lf, %4d, %6.3lf\n", TM_ali, L_ali, rmsd_ali);
-            std::cout << std::string(printf_buffer);
+            som.cout() << std::string(printf_buffer);
         }
 
         sprintf(printf_buffer, "Aligned length= %d, RMSD= %6.2f, Seq_ID=n_identical/n_aligned= %4.3f\n", n_ali8, rmsd, (n_ali8>0)?Liden/n_ali8:0);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
         sprintf(printf_buffer, "TM-score= %6.5f (if normalized by length of Chain_1, i.e., LN=%d, d0=%.2f)\n", TM2, xlen, d0B);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
         sprintf(printf_buffer, "TM-score= %6.5f (if normalized by length of Chain_2, i.e., LN=%d, d0=%.2f)\n", TM1, ylen, d0A);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
 
         if (a_opt==1)
         {
         	sprintf(printf_buffer, "TM-score= %6.5f (if normalized by average length of two structures, i.e., LN= %.1f, d0= %.2f)\n", TM3, (xlen+ylen)*0.5, d0a);
-            std::cout << std::string(printf_buffer);
+            som.cout() << std::string(printf_buffer);
         }
         if (u_opt)
         {
         	sprintf(printf_buffer, "TM-score= %6.5f (if normalized by user-specified LN=%.2f and d0=%.2f)\n", TM4, Lnorm_ass, d0u);
-            std::cout << std::string(printf_buffer);
+            som.cout() << std::string(printf_buffer);
         }
         if (d_opt)
         {
         	sprintf(printf_buffer, "TM-score= %6.5f (if scaled by user-specified d0= %.2f, and LN= %d)\n", TM5, d0_scale, ylen);
-            std::cout << std::string(printf_buffer);
+            som.cout() << std::string(printf_buffer);
         }
         sprintf(printf_buffer, "(You should use TM-score normalized by length of the reference structure)\n");
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
     
         //output alignment
         sprintf(printf_buffer, "\n(\":\" denotes residue pairs of d < %4.1f Angstrom, ", d0_out);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
         sprintf(printf_buffer, "\".\" denotes other aligned residues)\n");
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
         sprintf(printf_buffer, "%s\n", seqxA);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
         sprintf(printf_buffer, "%s\n", seqM);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
         sprintf(printf_buffer, "%s\n", seqyA);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
     }
     else if (outfmt_opt==1)
     {
     	sprintf(printf_buffer, ">%s%s\tL=%d\td0=%.2f\tseqID=%.3f\tTM-score=%.5f\n", xname.c_str(), chainID1, xlen, d0B, Liden/xlen, TM2);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
         sprintf(printf_buffer, "%s\n", seqxA);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
         sprintf(printf_buffer, ">%s%s\tL=%d\td0=%.2f\tseqID=%.3f\tTM-score=%.5f\n", yname.c_str(), chainID2, ylen, d0A, Liden/ylen, TM1);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
         sprintf(printf_buffer, "%s\n", seqyA);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
 
         sprintf(printf_buffer, "# Lali=%d\tRMSD=%.2f\tseqID_ali=%.3f\n", n_ali8, rmsd, (n_ali8>0)?Liden/n_ali8:0);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
 
         if (i_opt)
         {
         	sprintf(printf_buffer, "# User-specified initial alignment: TM=%.5lf\tLali=%4d\trmsd=%.3lf\n", TM_ali, L_ali, rmsd_ali);
-            std::cout << std::string(printf_buffer);
+            som.cout() << std::string(printf_buffer);
         }
 
         if(a_opt)
         {
         	sprintf(printf_buffer, "# TM-score=%.5f (normalized by average length of two structures: L=%.1f\td0=%.2f)\n", TM3, (xlen+ylen)*0.5, d0a);
-            std::cout << std::string(printf_buffer);
+            som.cout() << std::string(printf_buffer);
         }
 
         if(u_opt)
         {
         	sprintf(printf_buffer, "# TM-score=%.5f (normalized by user-specified L=%.2f\td0=%.2f)\n", TM4, Lnorm_ass, d0u);
-            std::cout << std::string(printf_buffer);
+            som.cout() << std::string(printf_buffer);
         }
 
         if(d_opt)
         {
         	sprintf(printf_buffer, "# TM-score=%.5f (scaled by user-specified d0=%.2f\tL=%d)\n", TM5, d0_scale, ylen);
-            std::cout << std::string(printf_buffer);
+            som.cout() << std::string(printf_buffer);
         }
 
         sprintf(printf_buffer, "$$$$\n");
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
     }
     else if (outfmt_opt==2)
     {
@@ -3822,23 +3823,23 @@ void output_results(
             xname.c_str(), chainID1, yname.c_str(), chainID2, TM2, TM1, rmsd,
             Liden/xlen, Liden/ylen, (n_ali8>0)?Liden/n_ali8:0,
             xlen, ylen, n_ali8);
-        std::cout << std::string(printf_buffer);
+        som.cout() << std::string(printf_buffer);
     }
-    cout << endl;
+    som.cout() << endl;
 
     if (strlen(fname_matrix)) 
-        output_rotation_matrix(fname_matrix, t, u);
+        output_rotation_matrix(fname_matrix, t, u, som);
     if (fname_super.size())
         output_superpose(xname, yname, fname_super, t, u, ter_opt, mirror_opt,
             seqM, seqxA, seqyA, resi_vec1, resi_vec2, chainID1, chainID2,
-            xlen, ylen, d0A, n_ali8, rmsd, TM1, Liden);
+            xlen, ylen, d0A, n_ali8, rmsd, TM1, Liden, som);
 }
 
 double standard_TMscore(double **r1, double **r2, double **xtm, double **ytm,
     double **xt, double **x, double **y, int /*xlen*/, int ylen, int invmap[],
     int& L_ali, double& RMSD, double D0_MIN, double Lnorm, double d0,
     double /*d0_search*/, double score_d8, double t[3], double u[3][3],
-    const int mol_type)
+    const int mol_type, StandardOutputMockup& som)
 {
     D0_MIN = 0.5;
     Lnorm = ylen;
@@ -3885,7 +3886,7 @@ double standard_TMscore(double **r1, double **r2, double **xtm, double **ytm,
 
             n_al++;
         }
-        else if (i != -1) PrintErrorAndQuit("Wrong map!\n");
+        else if (i != -1) PrintErrorAndQuit("Wrong map!\n", som);
     }
     L_ali = n_al;
 
@@ -3983,7 +3984,7 @@ int TMalign_main(double **xa, double **ya,
     const vector<string> sequence, const double Lnorm_ass,
     const double d0_scale, const int i_opt, const int a_opt,
     const bool u_opt, const bool d_opt, const bool fast_opt,
-    const int mol_type, const double TMcut=-1)
+    const int mol_type, const double TMcut, StandardOutputMockup& som)
 {
     double D0_MIN;        //for d0
     double Lnorm;         //normalization length
@@ -4061,7 +4062,7 @@ int TMalign_main(double **xa, double **ya,
         double prevd0 = d0;
         TM_ali = standard_TMscore(r1, r2, xtm, ytm, xt, xa, ya, xlen, ylen,
             invmap, L_ali, rmsd_ali, D0_MIN, Lnorm, d0, d0_search, score_d8,
-            t, u, mol_type);
+            t, u, mol_type, som);
         D0_MIN = prevD0_MIN;
         Lnorm = prevLnorm;
         d0 = prevd0;
@@ -4081,7 +4082,7 @@ int TMalign_main(double **xa, double **ya,
     if (!bAlignStick)
     {
         get_initial(r1, r2, xtm, ytm, xa, ya, xlen, ylen, invmap0, d0,
-            d0_search, fast_opt, t, u);
+            d0_search, fast_opt, t, u, som);
         TM = detailed_search(r1, r2, xtm, ytm, xt, xa, ya, xlen, ylen, invmap0,
             t, u, simplify_step, score_sum_method, local_d0_search, Lnorm,
             score_d8, d0);
@@ -4157,7 +4158,7 @@ int TMalign_main(double **xa, double **ya,
         /************************************************************/
         //=initial5 in original TM-align
         if (get_initial5( r1, r2, xtm, ytm, path, val, xa, ya,
-            xlen, ylen, invmap, d0, d0_search, fast_opt, D0_MIN))
+            xlen, ylen, invmap, d0, d0_search, fast_opt, D0_MIN, som))
         {
             TM = detailed_search(r1, r2, xtm, ytm, xt, xa, ya, xlen, ylen,
                 invmap, t, u, simplify_step, score_sum_method,
@@ -4182,7 +4183,7 @@ int TMalign_main(double **xa, double **ya,
             }
         }
         else
-            cerr << "\n\nWarning: initial alignment from local superposition fail!\n\n" << endl;
+            som.cerr() << "\n\nWarning: initial alignment from local superposition fail!\n\n" << endl;
 
         if (TMcut>0) // pre-terminate if TM-score is too low
         {
@@ -4245,7 +4246,7 @@ int TMalign_main(double **xa, double **ya,
         /*******************************************************************/
         //=initial4 in original TM-align
         get_initial_fgt(r1, r2, xtm, ytm, xa, ya, xlen, ylen,
-            invmap, d0, d0_search, dcu0, fast_opt, t, u);
+            invmap, d0, d0_search, dcu0, fast_opt, t, u, som);
         TM = detailed_search(r1, r2, xtm, ytm, xt, xa, ya, xlen, ylen, invmap,
             t, u, simplify_step, score_sum_method, local_d0_search, Lnorm,
             score_d8, d0);
@@ -4313,7 +4314,7 @@ int TMalign_main(double **xa, double **ya,
             double prevd0 = d0;
             TM_ali = standard_TMscore(r1, r2, xtm, ytm, xt, xa, ya,
                 xlen, ylen, invmap, L_ali, rmsd_ali, D0_MIN, Lnorm, d0,
-                d0_search, score_d8, t, u, mol_type);
+                d0_search, score_d8, t, u, mol_type, som);
             D0_MIN = prevD0_MIN;
             Lnorm = prevLnorm;
             d0 = prevd0;
@@ -4355,8 +4356,8 @@ int TMalign_main(double **xa, double **ya,
     }
     if(!flag)
     {
-        cout << "There is no alignment between the two proteins!" << endl;
-        cout << "Program stop with no result!" << endl;
+        som.cout() << "There is no alignment between the two proteins!" << endl;
+        som.cout() << "Program stop with no result!" << endl;
         return 1;
     }
 
@@ -4588,7 +4589,7 @@ int CPalign_main(double **xa, double **ya,
     const vector<string> sequence, const double Lnorm_ass,
     const double d0_scale, const int i_opt, const int a_opt,
     const bool u_opt, const bool d_opt, const bool fast_opt,
-    const int mol_type, const double TMcut=-1)
+    const int mol_type, const double TMcut, StandardOutputMockup& som)
 {
     char   *seqx_cp/*, *seqy_cp*/; // for the protein sequence
     char   *secx_cp/*, *secy_cp*/; // for the secondary structure
@@ -4621,7 +4622,7 @@ int CPalign_main(double **xa, double **ya,
         d0_0, TM_0, d0A, d0B, d0u, d0a, d0_out, seqM, seqxA_cp, seqyA_cp,
         rmsd0, L_ali, Liden, TM_ali, rmsd_ali, n_ali, n_ali8,
         xlen*2, ylen, sequence, Lnorm_ass, d0_scale,
-        0, false, false, false, true, mol_type, -1);
+        0, false, false, false, true, mol_type, -1, som);
 
     /* delete gap in seqxA_cp */
     r=0;
@@ -4666,7 +4667,7 @@ int CPalign_main(double **xa, double **ya,
         d0_0, TM_0, d0A, d0B, d0u, d0a, d0_out, seqM, seqxA, seqyA,
         rmsd0, L_ali, Liden, TM_ali, rmsd_ali, n_ali, n_ali8,
         xlen, ylen, sequence, Lnorm_ass, d0_scale,
-        0, false, false, false, true, mol_type, -1);
+        0, false, false, false, true, mol_type, -1, som);
 
     /* do not use cricular permutation of number of aligned residues is not
      * larger than sequence-order dependent alignment */
@@ -4697,7 +4698,7 @@ int CPalign_main(double **xa, double **ya,
         d0_0, TM_0, d0A, d0B, d0u, d0a, d0_out, seqM, seqxA_cp, seqyA_cp,
         rmsd0, L_ali, Liden, TM_ali, rmsd_ali, n_ali, n_ali8,
         xlen, ylen, sequence, Lnorm_ass, d0_scale,
-        i_opt, a_opt, u_opt, d_opt, fast_opt, mol_type, TMcut);
+        i_opt, a_opt, u_opt, d_opt, fast_opt, mol_type, TMcut, som);
 
     /* correct alignment
      * r - residue index in the original unaligned sequence 
@@ -4733,9 +4734,9 @@ int CPalign_main(double **xa, double **ya,
     return cp_point;
 }
 
-int main_of_tmalign(int argc, const char** argv)
+int main_of_tmalign(int argc, const char** argv, StandardOutputMockup& som)
 {
-    if (argc < 2) print_help();
+    if (argc < 2) print_help(false, som);
 
 
     clock_t t1, t2;
@@ -4801,7 +4802,7 @@ int main_of_tmalign(int argc, const char** argv)
             {
                 a_opt=atoi(argv[i + 1]);
                 if (a_opt!=-2 && a_opt!=-1 && a_opt!=1)
-                    PrintErrorAndQuit("-a must be -2, -1, 1, T or F");
+                    PrintErrorAndQuit("-a must be -2, -1, 1, T or F", som);
             }
             i++;
         }
@@ -4820,13 +4821,13 @@ int main_of_tmalign(int argc, const char** argv)
         else if ( !strcmp(argv[i],"-i") && i < (argc-1) )
         {
             if (i_opt==3)
-                PrintErrorAndQuit("ERROR! -i and -I cannot be used together");
+                PrintErrorAndQuit("ERROR! -i and -I cannot be used together", som);
             fname_lign = argv[i + 1];      i_opt = 1; i++;
         }
         else if (!strcmp(argv[i], "-I") && i < (argc-1) )
         {
             if (i_opt==1)
-                PrintErrorAndQuit("ERROR! -I and -i cannot be used together");
+                PrintErrorAndQuit("ERROR! -I and -i cannot be used together", som);
             fname_lign = argv[i + 1];      i_opt = 3; i++;
         }
         else if (!strcmp(argv[i], "-m") && i < (argc-1) )
@@ -4903,91 +4904,91 @@ int main_of_tmalign(int argc, const char** argv)
         }
         else if (xname.size() == 0) xname=argv[i];
         else if (yname.size() == 0) yname=argv[i];
-        else PrintErrorAndQuit(string("ERROR! Undefined option ")+argv[i]);
+        else PrintErrorAndQuit(string("ERROR! Undefined option ")+argv[i], som);
     }
 
     if(xname.size()==0 || (yname.size()==0 && dir_opt.size()==0) || 
                           (yname.size()    && dir_opt.size()))
     {
-        if (h_opt) print_help(h_opt);
+        if (h_opt) print_help(h_opt, som);
         if (v_opt)
         {
-            print_version();
+            print_version(som);
             //exit(EXIT_FAILURE);
             throw std::runtime_error(std::string("TMalign exit on error"));
         }
         if (xname.size()==0)
-            PrintErrorAndQuit("Please provide input structures");
+            PrintErrorAndQuit("Please provide input structures", som);
         else if (yname.size()==0 && dir_opt.size()==0)
-            PrintErrorAndQuit("Please provide structure B");
+            PrintErrorAndQuit("Please provide structure B", som);
         else if (yname.size() && dir_opt.size())
-            PrintErrorAndQuit("Please provide only one file name if -dir is set");
+            PrintErrorAndQuit("Please provide only one file name if -dir is set", som);
     }
 
     if (suffix_opt.size() && dir_opt.size()+dir1_opt.size()+dir2_opt.size()==0)
-        PrintErrorAndQuit("-suffix is only valid if -dir, -dir1 or -dir2 is set");
+        PrintErrorAndQuit("-suffix is only valid if -dir, -dir1 or -dir2 is set", som);
     if ((dir_opt.size() || dir1_opt.size() || dir2_opt.size()))
     {
         if (m_opt || o_opt)
-            PrintErrorAndQuit("-m or -o cannot be set with -dir, -dir1 or -dir2");
+            PrintErrorAndQuit("-m or -o cannot be set with -dir, -dir1 or -dir2", som);
         else if (dir_opt.size() && (dir1_opt.size() || dir2_opt.size()))
-            PrintErrorAndQuit("-dir cannot be set with -dir1 or -dir2");
+            PrintErrorAndQuit("-dir cannot be set with -dir1 or -dir2", som);
     }
     if (atom_opt.size()!=4)
-        PrintErrorAndQuit("ERROR! atom name must have 4 characters, including space.");
+        PrintErrorAndQuit("ERROR! atom name must have 4 characters, including space.", som);
     if (mol_opt!="auto" && mol_opt!="protein" && mol_opt!="RNA")
-        PrintErrorAndQuit("ERROR! molecule type must be either RNA or protein.");
+        PrintErrorAndQuit("ERROR! molecule type must be either RNA or protein.", som);
     else if (mol_opt=="protein" && atom_opt=="auto")
         atom_opt=" CA ";
     else if (mol_opt=="RNA" && atom_opt=="auto")
         atom_opt=" C3'";
 
     if (u_opt && Lnorm_ass<=0)
-        PrintErrorAndQuit("Wrong value for option -u!  It should be >0");
+        PrintErrorAndQuit("Wrong value for option -u!  It should be >0", som);
     if (d_opt && d0_scale<=0)
-        PrintErrorAndQuit("Wrong value for option -d!  It should be >0");
+        PrintErrorAndQuit("Wrong value for option -d!  It should be >0", som);
     if (outfmt_opt>=2 && (a_opt || u_opt || d_opt))
-        PrintErrorAndQuit("-outfmt 2 cannot be used with -a, -u, -L, -d");
+        PrintErrorAndQuit("-outfmt 2 cannot be used with -a, -u, -L, -d", som);
     if (byresi_opt!=0)
     {
         if (i_opt)
-            PrintErrorAndQuit("-byresi >=1 cannot be used with -i or -I");
+            PrintErrorAndQuit("-byresi >=1 cannot be used with -i or -I", som);
         if (byresi_opt<0 || byresi_opt>3)
-            PrintErrorAndQuit("-byresi can only be 0, 1, 2 or 3");
+            PrintErrorAndQuit("-byresi can only be 0, 1, 2 or 3", som);
         if (byresi_opt>=2 && ter_opt>=2)
-            PrintErrorAndQuit("-byresi >=2 should be used with -ter <=1");
+            PrintErrorAndQuit("-byresi >=2 should be used with -ter <=1", som);
     }
     if (split_opt==1 && ter_opt!=0)
-        PrintErrorAndQuit("-split 1 should be used with -ter 0");
+        PrintErrorAndQuit("-split 1 should be used with -ter 0", som);
     else if (split_opt==2 && ter_opt!=0 && ter_opt!=1)
-        PrintErrorAndQuit("-split 2 should be used with -ter 0 or 1");
+        PrintErrorAndQuit("-split 2 should be used with -ter 0 or 1", som);
     if (split_opt<0 || split_opt>2)
-        PrintErrorAndQuit("-split can only be 0, 1 or 2");
+        PrintErrorAndQuit("-split can only be 0, 1 or 2", som);
     if (cp_opt!=0 && cp_opt!=1)
-        PrintErrorAndQuit("-cp can only be 0 or 1");
+        PrintErrorAndQuit("-cp can only be 0 or 1", som);
     if (cp_opt && i_opt)
-        PrintErrorAndQuit("-cp cannot be used with -i or -I");
+        PrintErrorAndQuit("-cp cannot be used with -i or -I", som);
 
     /* read initial alignment file from 'align.txt' */
-    if (i_opt) read_user_alignment(sequence, fname_lign, i_opt);
+    if (i_opt) read_user_alignment(sequence, fname_lign, i_opt, som);
 
     if (byresi_opt) i_opt=3;
 
     if (m_opt && fname_matrix == "") // Output rotation matrix: matrix.txt
-        PrintErrorAndQuit("ERROR! Please provide a file name for option -m!");
+        PrintErrorAndQuit("ERROR! Please provide a file name for option -m!", som);
 
     /* parse file list */
     if (dir1_opt.size()+dir_opt.size()==0) chain1_list.push_back(xname);
-    else file2chainlist(chain1_list, xname, dir_opt+dir1_opt, suffix_opt);
+    else file2chainlist(chain1_list, xname, dir_opt+dir1_opt, suffix_opt, som);
 
     if (dir_opt.size())
         for (int i=0;i<static_cast<int>(chain1_list.size());i++)
             chain2_list.push_back(chain1_list[i]);
     else if (dir2_opt.size()==0) chain2_list.push_back(yname);
-    else file2chainlist(chain2_list, yname, dir2_opt, suffix_opt);
+    else file2chainlist(chain2_list, yname, dir2_opt, suffix_opt, som);
 
     if (outfmt_opt==2)
-        cout<<"#PDBchain1\tPDBchain2\tTM1\tTM2\t"
+        som.cout() << "#PDBchain1\tPDBchain2\tTM1\tTM2\t"
             <<"RMSD\tID1\tID2\tIDali\tL1\tL2\tLali"<<endl;
 
     /* declare previously global variables */
@@ -5018,10 +5019,10 @@ int main_of_tmalign(int argc, const char** argv)
         /* parse chain 1 */
         xname=chain1_list[i];
         xchainnum=get_PDB_lines(xname, PDB_lines1, chainID_list1,
-            mol_vec1, ter_opt, infmt1_opt, atom_opt, split_opt, het_opt);
+            mol_vec1, ter_opt, infmt1_opt, atom_opt, split_opt, het_opt, som);
         if (!xchainnum)
         {
-            cerr<<"Warning! Cannot parse file: "<<xname
+            som.cerr() << "Warning! Cannot parse file: "<<xname
                 <<". Chain number 0."<<endl;
             continue;
         }
@@ -5031,13 +5032,13 @@ int main_of_tmalign(int argc, const char** argv)
             mol_vec1[chain_i]=-1;
             if (!xlen)
             {
-                cerr<<"Warning! Cannot parse file: "<<xname
+                som.cerr() << "Warning! Cannot parse file: "<<xname
                     <<". Chain length 0."<<endl;
                 continue;
             }
             else if (xlen<3)
             {
-                cerr<<"Sequence is too short <3!: "<<xname<<endl;
+                som.cerr() << "Sequence is too short <3!: "<<xname<<endl;
                 continue;
             }
             NewArray(&xa, xlen, 3);
@@ -5056,10 +5057,10 @@ int main_of_tmalign(int argc, const char** argv)
                     yname=chain2_list[j];
                     ychainnum=get_PDB_lines(yname, PDB_lines2, chainID_list2,
                         mol_vec2, ter_opt, infmt2_opt, atom_opt, split_opt,
-                        het_opt);
+                        het_opt, som);
                     if (!ychainnum)
                     {
-                        cerr<<"Warning! Cannot parse file: "<<yname
+                        som.cerr() << "Warning! Cannot parse file: "<<yname
                             <<". Chain number 0."<<endl;
                         continue;
                     }
@@ -5070,13 +5071,13 @@ int main_of_tmalign(int argc, const char** argv)
                     mol_vec2[chain_j]=-1;
                     if (!ylen)
                     {
-                        cerr<<"Warning! Cannot parse file: "<<yname
+                        som.cerr() << "Warning! Cannot parse file: "<<yname
                             <<". Chain length 0."<<endl;
                         continue;
                     }
                     else if (ylen<3)
                     {
-                        cerr<<"Sequence is too short <3!: "<<yname<<endl;
+                        som.cerr() << "Sequence is too short <3!: "<<yname<<endl;
                         continue;
                     }
                     NewArray(&ya, ylen, 3);
@@ -5112,7 +5113,7 @@ int main_of_tmalign(int argc, const char** argv)
                         rmsd0, L_ali, Liden, TM_ali, rmsd_ali, n_ali, n_ali8,
                         xlen, ylen, sequence, Lnorm_ass, d0_scale,
                         i_opt, a_opt, u_opt, d_opt, fast_opt,
-                        mol_vec1[chain_i]+mol_vec2[chain_j],TMcut);
+                        mol_vec1[chain_i]+mol_vec2[chain_j],TMcut, som);
                     else TMalign_main(
                         xa, ya, seqx, seqy, secx, secy,
                         t0, u0, TM1, TM2, TM3, TM4, TM5,
@@ -5121,10 +5122,10 @@ int main_of_tmalign(int argc, const char** argv)
                         rmsd0, L_ali, Liden, TM_ali, rmsd_ali, n_ali, n_ali8,
                         xlen, ylen, sequence, Lnorm_ass, d0_scale,
                         i_opt, a_opt, u_opt, d_opt, fast_opt,
-                        mol_vec1[chain_i]+mol_vec2[chain_j],TMcut);
+                        mol_vec1[chain_i]+mol_vec2[chain_j],TMcut, som);
 
                     /* print result */
-                    if (outfmt_opt==0) print_version();
+                    if (outfmt_opt==0) print_version(som);
                     output_results(
                         xname.substr(dir1_opt.size()),
                         yname.substr(dir2_opt.size()),
@@ -5140,7 +5141,7 @@ int main_of_tmalign(int argc, const char** argv)
                         outfmt_opt, ter_opt, 
                         (o_opt?fname_super+chainID_list1[chain_i]:"").c_str(),
                         i_opt, a_opt, u_opt, d_opt,mirror_opt,
-                        resi_vec1,resi_vec2);
+                        resi_vec1,resi_vec2, som);
 
                     /* Done! Free memory */
                     seqM.clear();
@@ -5191,7 +5192,7 @@ int main_of_tmalign(int argc, const char** argv)
     {
     char printf_buffer[1000];
     sprintf(printf_buffer, "Total CPU time is %5.2f seconds\n", diff);
-    std::cout << std::string(printf_buffer);
+    som.cout() << std::string(printf_buffer);
     }
     return 0;
 }

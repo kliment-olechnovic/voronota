@@ -2,6 +2,7 @@
 #define SCRIPTING_IO_SELECTORS_H_
 
 #include <iostream>
+#include <sstream>
 
 #include "virtual_file_storage.h"
 
@@ -137,6 +138,72 @@ private:
 	std::string filename_;
 	std::ostringstream memory_stream_;
 	std::ofstream disk_stream_;
+};
+
+class StandardOutputRedirector
+{
+public:
+	StandardOutputRedirector() :
+		cout_buf_(std::cout.rdbuf()),
+		cerr_buf_(std::cerr.rdbuf())
+	{
+		std::cout.rdbuf(cout_out_.rdbuf());
+		std::cerr.rdbuf(cerr_out_.rdbuf());
+	}
+
+	~StandardOutputRedirector()
+	{
+		std::cout.rdbuf(cout_buf_);
+		std::cerr.rdbuf(cerr_buf_);
+	}
+
+	std::string cout_output() const
+	{
+		return cout_out_.str();
+	}
+
+	std::string cerr_output() const
+	{
+		return cerr_out_.str();
+	}
+
+private:
+	std::streambuf* cout_buf_;
+	std::streambuf* cerr_buf_;
+	std::ostringstream cout_out_;
+	std::ostringstream cerr_out_;
+};
+
+class StandardOutputMockup
+{
+public:
+	StandardOutputMockup()
+	{
+	}
+
+	std::ostream& cout()
+	{
+		return cout_out_;
+	}
+
+	std::ostream& cerr()
+	{
+		return cerr_out_;
+	}
+
+	std::string cout_output() const
+	{
+		return cout_out_.str();
+	}
+
+	std::string cerr_output() const
+	{
+		return cerr_out_.str();
+	}
+
+private:
+	std::ostringstream cout_out_;
+	std::ostringstream cerr_out_;
 };
 
 }
