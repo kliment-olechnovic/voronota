@@ -70,7 +70,7 @@ protected:
 	{
 		if(good())
 		{
-			set_background_color(0xCCCCCC);
+			set_background_color(0x000000);
 			set_margin_color(0x7F7F7F);
 			set_margin_top_fixed(200);
 

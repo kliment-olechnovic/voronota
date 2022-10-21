@@ -23,12 +23,10 @@ fi
 
 BASENAME="$(basename "$INFILE" | cut -f 1 -d '.')"
 
-if ! cmp -s "$INFILE" "${BASENAME}.data"
-then
-	rm -f "${BASENAME}.data" "${BASENAME}.js"
-	python "${EMSDK}/upstream/emscripten/tools/file_packager.py" \
-	  ./${BASENAME}.data \
-	  --preload ${INFILE}@/ \
-	  --js-output=./${BASENAME}.js
-fi
+rm -f "${BASENAME}.data" "${BASENAME}.js"
+python "${EMSDK}/upstream/emscripten/tools/file_packager.py" \
+  ./${BASENAME}.data \
+  --preload ${INFILE}@/ \
+  --lz4 \
+  --js-output=./${BASENAME}.js
 
