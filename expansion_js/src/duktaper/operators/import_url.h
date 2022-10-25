@@ -3,9 +3,7 @@
 
 #include "../../../../src/scripting/operators/import.h"
 
-#include "../../dependencies/tinf/tinf_wrapper.h"
-
-#include "../call_shell_utilities.h"
+#include "../file_downloader.h"
 
 namespace voronota
 {
@@ -75,24 +73,10 @@ public:
 		}
 		else
 		{
-			std::ostringstream command_output;
-			command_output << "curl '" << url << "'";
-			operators::CallShell::Result download_result=operators::CallShell().init(CMDIN().set("command-string", command_output.str())).run(0);
-			if(download_result.exit_status==0 && !download_result.stdout_str.empty())
+			std::string download_result;
+			if(FileDownloader::download_file(url, true, download_result))
 			{
-				if(TinfWrapper::check_if_string_gzipped(download_result.stdout_str))
-				{
-					std::string uncompressed_data;
-					if(!TinfWrapper::uncompress_gzipped_string(download_result.stdout_str, uncompressed_data))
-					{
-						throw std::runtime_error(std::string("Failed to uncompress downloaded file."));
-					}
-					scripting::VirtualFileStorage::set_file(tmpfile.filename(), uncompressed_data);
-				}
-				else
-				{
-					scripting::VirtualFileStorage::set_file(tmpfile.filename(), download_result.stdout_str);
-				}
+				scripting::VirtualFileStorage::set_file(tmpfile.filename(), download_result);
 				import_operator_to_use.loading_parameters.file=tmpfile.filename();
 			}
 			else
