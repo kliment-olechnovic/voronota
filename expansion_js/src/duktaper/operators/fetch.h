@@ -3,6 +3,8 @@
 
 #include "../../../../src/scripting/operators/import_many.h"
 
+#include "../../dependencies/tinf/tinf_wrapper.h"
+
 #include "../call_shell_utilities.h"
 
 namespace voronota
@@ -84,11 +86,6 @@ public:
 			throw std::runtime_error(std::string("'curl' command not available."));
 		}
 
-		if(!CallShellUtilities::test_if_shell_command_available("zcat"))
-		{
-			throw std::runtime_error(std::string("'zcat' command not available."));
-		}
-
 		scripting::VirtualFileStorage::TemporaryFile tmpfile;
 
 		int used_assembly=assembly;
@@ -102,11 +99,11 @@ public:
 				std::ostringstream command_output;
 				if(used_assembly==0)
 				{
-					command_output << "curl 'https://files.rcsb.org/download/" << pdb_id << ".pdb.gz' | zcat";
+					command_output << "curl 'https://files.rcsb.org/download/" << pdb_id << ".pdb.gz'";
 				}
 				else
 				{
-					command_output << "curl 'https://files.rcsb.org/download/" << pdb_id << ".pdb" << used_assembly << ".gz' | zcat";
+					command_output << "curl 'https://files.rcsb.org/download/" << pdb_id << ".pdb" << used_assembly << ".gz'";
 				}
 				operators::CallShell::Result download_result=operators::CallShell().init(CMDIN().set("command-string", command_output.str())).run(0);
 				if(download_result.exit_status!=0 || download_result.stdout_str.empty())
@@ -122,7 +119,19 @@ public:
 				}
 				else
 				{
-					scripting::VirtualFileStorage::set_file(tmpfile.filename(), download_result.stdout_str);
+					if(TinfWrapper::check_if_string_gzipped(download_result.stdout_str))
+					{
+						std::string uncompressed_data;
+						if(!TinfWrapper::uncompress_gzipped_string(download_result.stdout_str, uncompressed_data))
+						{
+							throw std::runtime_error(std::string("Failed to uncompress downloaded file."));
+						}
+						scripting::VirtualFileStorage::set_file(tmpfile.filename(), uncompressed_data);
+					}
+					else
+					{
+						scripting::VirtualFileStorage::set_file(tmpfile.filename(), download_result.stdout_str);
+					}
 					finished=true;
 					downloaded=true;
 				}
