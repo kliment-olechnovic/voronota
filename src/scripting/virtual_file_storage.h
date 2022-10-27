@@ -24,9 +24,8 @@ public:
 		{
 		}
 
-		explicit TemporaryFile(const std::string& data) : filename_(VirtualFileStorage::get_unused_filename())
+		explicit TemporaryFile(const std::string& suffix) : filename_(VirtualFileStorage::get_unused_filename(suffix))
 		{
-			VirtualFileStorage::set_file(filename_, data);
 		}
 
 		~TemporaryFile()
@@ -41,6 +40,33 @@ public:
 
 	private:
 		std::string filename_;
+	};
+
+	class AutodeleterOfFiles
+	{
+	public:
+		AutodeleterOfFiles()
+		{
+		}
+
+		AutodeleterOfFiles(const std::vector<std::string>& filenames) : filenames_(filenames)
+		{
+		}
+
+		AutodeleterOfFiles(const std::string& filename) : filenames_(std::vector<std::string>(1, filename))
+		{
+		}
+
+		~AutodeleterOfFiles()
+		{
+			for(std::size_t i=0;i<filenames_.size();i++)
+			{
+				VirtualFileStorage::delete_file(filenames_[i]);
+			}
+		}
+
+	private:
+		std::vector<std::string> filenames_;
 	};
 
 	static bool writable()
@@ -166,6 +192,10 @@ public:
 
 	static void delete_file(const std::string& filename)
 	{
+		if(!file_exists(filename))
+		{
+			return;
+		}
 		assert_writable();
 		assert_file_not_locked(filename);
 #ifdef _OPENMP
@@ -233,7 +263,7 @@ public:
 		return sum;
 	}
 
-	static std::string get_unused_filename()
+	static std::string get_unused_filename(const std::string& suffix)
 	{
 		static long id=1000000;
 		std::string result;
@@ -245,7 +275,7 @@ public:
 			{
 				++id;
 				std::ostringstream output;
-				output << prefix() << "_file_" << id;
+				output << prefix() << "_file_" << id << suffix;
 				std::string candidate=output.str();
 				if(!file_exists(candidate))
 				{
@@ -254,6 +284,11 @@ public:
 			}
 		}
 		return result;
+	}
+
+	static std::string get_unused_filename()
+	{
+		return get_unused_filename(std::string());
 	}
 
 private:

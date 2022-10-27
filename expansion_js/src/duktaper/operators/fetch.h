@@ -74,80 +74,85 @@ public:
 			throw std::runtime_error(std::string("Invalid assembly number."));
 		}
 
-		if(assembly_provided && all_states)
+		if(assembly_provided && assembly!=0 && all_states)
 		{
-			throw std::runtime_error(std::string("Incompatible options 'assembly' and 'all-states' used together."));
+			throw std::runtime_error(std::string("Incompatible usage of options 'assembly' and 'all-states' together."));
 		}
 
-		if(!CallShellUtilities::test_if_shell_command_available("curl"))
+		std::vector<CandidateURL> candidate_urls;
+
+		if((assembly_provided && assembly!=0) || (!assembly_provided && !all_states))
 		{
-			throw std::runtime_error(std::string("'curl' command not available."));
+			std::ostringstream url_output;
+			url_output << "https://files.rcsb.org/download/" << pdb_id << ".pdb" << assembly << ".gz";
+			std::ostringstream title_output;
+			title_output << pdb_id << "_as_" << assembly;
+			candidate_urls.push_back(CandidateURL(url_output.str(), title_output.str(), true));
+		}
+
+		if((assembly==0) || (!assembly_provided && all_states))
+		{
+			std::ostringstream url_output;
+			url_output << "https://files.rcsb.org/download/" << pdb_id << ".pdb.gz";
+			std::ostringstream title_output;
+			title_output << pdb_id;
+			candidate_urls.push_back(CandidateURL(url_output.str(), title_output.str(), false));
+		}
+
+		if(candidate_urls.empty())
+		{
+			throw std::runtime_error(std::string("Failed to generate download URLs."));
+		}
+
+		CandidateURL downloaded_url;
+
+		for(std::size_t i=0;i<candidate_urls.size() && !downloaded_url.downloaded;i++)
+		{
+			downloaded_url=candidate_urls[i];
+			if(FileDownloader::download_file(downloaded_url.url, true, downloaded_url.downloaded_data))
+			{
+				downloaded_url.downloaded=true;
+			}
+		}
+
+		if(!downloaded_url.downloaded)
+		{
+			throw std::runtime_error(std::string("No data downloaded."));
 		}
 
 		scripting::VirtualFileStorage::TemporaryFile tmpfile;
-
-		int used_assembly=assembly;
-
-		{
-			bool finished=false;
-			bool downloaded=false;
-
-			for(int stage=1;stage<=2 && !finished;stage++)
-			{
-				std::ostringstream url_output;
-				if(used_assembly==0)
-				{
-					url_output << "https://files.rcsb.org/download/" << pdb_id << ".pdb.gz";
-				}
-				else
-				{
-					url_output << "https://files.rcsb.org/download/" << pdb_id << ".pdb" << used_assembly << ".gz";
-				}
-				std::string download_result;
-				if(FileDownloader::download_file(url_output.str(), true, download_result))
-				{
-					scripting::VirtualFileStorage::set_file(tmpfile.filename(), download_result);
-					finished=true;
-					downloaded=true;
-				}
-				else
-				{
-					if(assembly_provided || used_assembly==0)
-					{
-						finished=true;
-					}
-					else
-					{
-						used_assembly=0;
-					}
-				}
-			}
-
-			if(!downloaded)
-			{
-				throw std::runtime_error(std::string("No data downloaded."));
-			}
-		}
-
-		std::ostringstream title_output;
-		title_output << pdb_id;
-		if(used_assembly!=0)
-		{
-			title_output << "_as_" << used_assembly;
-		}
+		scripting::VirtualFileStorage::set_file(tmpfile.filename(), downloaded_url.downloaded_data);
 
 		Result result;
 
 		result.import_result=scripting::operators::ImportMany().init(CMDIN()
 				.set("files", tmpfile.filename())
 				.set("format", "pdb")
-				.set("as-assembly", (used_assembly!=0))
+				.set("as-assembly", downloaded_url.assembly)
 				.set("split-pdb-files", all_states)
 				.set("include-heteroatoms", !no_heteroatoms)
-				.set("title", title_output.str())).run(congregation_of_data_managers);
+				.set("title", downloaded_url.title)).run(congregation_of_data_managers);
 
 		return result;
 	}
+
+private:
+	struct CandidateURL
+	{
+		std::string url;
+		std::string title;
+		std::string downloaded_data;
+		bool assembly;
+		bool downloaded;
+
+		CandidateURL() : assembly(false), downloaded(false)
+		{
+		}
+
+		CandidateURL(const std::string& url, const std::string& title, const int assembly) : url(url), title(title), assembly(false), downloaded(false)
+		{
+		}
+	};
 };
 
 }
@@ -157,3 +162,4 @@ public:
 }
 
 #endif /* DUKTAPER_OPERATORS_FETCH_H_ */
+

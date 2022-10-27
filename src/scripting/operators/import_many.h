@@ -54,18 +54,34 @@ public:
 	{
 	}
 
-	void initialize(CommandInput& input)
+	void initialize(CommandInput& input, const bool managed)
 	{
-		files=input.get_value_vector_or_all_unused_unnamed_values("files");
+		if(!managed)
+		{
+			files=input.get_value_vector_or_all_unused_unnamed_values("files");
+		}
 		split_pdb_files=input.get_flag("split-pdb-files");
 		import_operator.initialize(input, true);
 	}
 
-	void document(CommandDocumentation& doc) const
+	void initialize(CommandInput& input)
 	{
-		doc.set_option_decription(CDOD("files", CDOD::DATATYPE_STRING_ARRAY, "paths to files"));
+		initialize(input, false);
+	}
+
+	void document(CommandDocumentation& doc, const bool managed) const
+	{
+		if(!managed)
+		{
+			doc.set_option_decription(CDOD("files", CDOD::DATATYPE_STRING_ARRAY, "paths to files"));
+		}
 		doc.set_option_decription(CDOD("split-pdb-files", CDOD::DATATYPE_BOOL, "flag to split PDB files by models"));
 		import_operator.document(doc, true);
+	}
+
+	void document(CommandDocumentation& doc) const
+	{
+		document(doc, false);
 	}
 
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
@@ -90,12 +106,15 @@ public:
 						.set("input-file", main_file)
 						.set("prefix", prefix)).run(0).result_filenames;
 
+				const scripting::VirtualFileStorage::AutodeleterOfFiles adf(subfiles);
+
 				for(std::size_t j=0;j<subfiles.size();j++)
 				{
 					Import import_operator_to_use=import_operator;
 					import_operator_to_use.loading_parameters.file=subfiles[j];
 					import_operator_to_use.title=OperatorsUtilities::get_basename_from_path(subfiles[j]);
 					result.add(import_operator_to_use.run(congregation_of_data_managers));
+					scripting::VirtualFileStorage::delete_file(subfiles[j]);
 				}
 			}
 			else
