@@ -1,6 +1,8 @@
 #ifndef DUKTAPER_REMOTE_IMPORT_PREPARATION_H_
 #define DUKTAPER_REMOTE_IMPORT_PREPARATION_H_
 
+#include <list>
+
 #include "../../../src/scripting/operators/import_many.h"
 
 #include "../dependencies/tinf/tinf_wrapper.h"
@@ -23,8 +25,9 @@ public:
 		std::string downloaded_data;
 		bool download_finished;
 		bool download_successful;
+		bool fully_processed;
 
-		Request() : download_finished(false), download_successful(false)
+		Request() : download_finished(false), download_successful(false), fully_processed(false)
 		{
 		}
 
@@ -32,12 +35,24 @@ public:
 		{
 		}
 
-		scripting::operators::ImportMany::Result import_downloaded_data(scripting::CongregationOfDataManagers& congregation_of_data_managers) const
+		scripting::operators::ImportMany::Result import_downloaded_data(scripting::CongregationOfDataManagers& congregation_of_data_managers)
 		{
+			fully_processed=true;
+
 			scripting::operators::ImportMany::Result result;
 
 			if(download_successful && !downloaded_data.empty())
 			{
+				if(TinfWrapper::check_if_string_gzipped(downloaded_data))
+				{
+					std::string uncompressed_data;
+					if(!TinfWrapper::uncompress_gzipped_string(downloaded_data, uncompressed_data))
+					{
+						throw std::runtime_error(std::string("Failed to uncompress downloaded file."));
+					}
+					downloaded_data.swap(uncompressed_data);
+				}
+
 				const std::string url_basename=scripting::OperatorsUtilities::remove_suffix(scripting::OperatorsUtilities::get_basename_from_path(url), ".gz");
 
 				scripting::VirtualFileStorage::TemporaryFile tmpfile(url_basename);
@@ -71,7 +86,7 @@ public:
 	Request* download_request_until_first_success()
 	{
 		bool success=false;
-		for(std::vector<Request>::iterator it=requests_.begin();it!=requests_.end() && !success;++it)
+		for(std::list<Request>::iterator it=requests_.begin();it!=requests_.end() && !success;++it)
 		{
 			Request& r=(*it);
 			r.download_successful=download_file(r.url, r.downloaded_data);
@@ -83,7 +98,7 @@ public:
 
 	Request* get_first_successfully_downloaded_request()
 	{
-		for(std::vector<Request>::iterator it=requests_.begin();it!=requests_.end();++it)
+		for(std::list<Request>::iterator it=requests_.begin();it!=requests_.end();++it)
 		{
 			Request& r=(*it);
 			if(r.download_successful)
@@ -121,20 +136,10 @@ private:
 			}
 		}
 
-		if(TinfWrapper::check_if_string_gzipped(result_data))
-		{
-			std::string uncompressed_data;
-			if(!TinfWrapper::uncompress_gzipped_string(result_data, uncompressed_data))
-			{
-				throw std::runtime_error(std::string("Failed to uncompress downloaded file."));
-			}
-			result_data.swap(uncompressed_data);
-		}
-
 		return true;
 	}
 
-	std::vector<Request> requests_;
+	std::list<Request> requests_;
 };
 
 }
