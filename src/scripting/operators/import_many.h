@@ -97,6 +97,7 @@ public:
 		{
 			const std::string& main_file=files[i];
 			const std::string main_file_basename=(import_operator.title.empty() ? OperatorsUtilities::get_basename_from_path(main_file) : import_operator.title);
+			bool unsplit_import=true;
 			if(split_pdb_files && (import_operator.loading_parameters.format=="pdb" || LoadingOfData::get_format_from_atoms_file_name(main_file)=="pdb"))
 			{
 				scripting::VirtualFileStorage::TemporaryFile tmpfile;
@@ -106,18 +107,22 @@ public:
 						.set("input-file", main_file)
 						.set("prefix", prefix)).run(0).result_filenames;
 
-				const scripting::VirtualFileStorage::AutodeleterOfFiles adf(subfiles);
-
-				for(std::size_t j=0;j<subfiles.size();j++)
+				if(!subfiles.empty())
 				{
-					Import import_operator_to_use=import_operator;
-					import_operator_to_use.loading_parameters.file=subfiles[j];
-					import_operator_to_use.title=OperatorsUtilities::get_basename_from_path(subfiles[j]);
-					result.add(import_operator_to_use.run(congregation_of_data_managers));
-					scripting::VirtualFileStorage::delete_file(subfiles[j]);
+					const scripting::VirtualFileStorage::AutodeleterOfFiles adf(subfiles);
+
+					for(std::size_t j=0;j<subfiles.size();j++)
+					{
+						Import import_operator_to_use=import_operator;
+						import_operator_to_use.loading_parameters.file=subfiles[j];
+						import_operator_to_use.title=OperatorsUtilities::get_basename_from_path(subfiles[j]);
+						result.add(import_operator_to_use.run(congregation_of_data_managers));
+					}
+
+					unsplit_import=false;
 				}
 			}
-			else
+			if(unsplit_import)
 			{
 				Import import_operator_to_use=import_operator;
 				import_operator_to_use.loading_parameters.file=main_file;

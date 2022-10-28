@@ -99,8 +99,7 @@ public:
 			import_many_operator_to_use.import_operator.title=title_output.str();
 			remote_input_preparation.add_request(RemoteImportPreparation::Request(url_output.str(), import_many_operator_to_use));
 		}
-
-		if((assembly==0) || (!assembly_provided && all_states))
+		else
 		{
 			std::ostringstream url_output;
 			url_output << "https://files.rcsb.org/download/" << pdb_id << ".pdb.gz";
