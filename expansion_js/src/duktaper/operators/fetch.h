@@ -1,9 +1,7 @@
 #ifndef DUKTAPER_OPERATORS_FETCH_H_
 #define DUKTAPER_OPERATORS_FETCH_H_
 
-#include "../../../../src/scripting/operators/import_many.h"
-
-#include "../file_downloader.h"
+#include "../remote_import_preparation.h"
 
 namespace voronota
 {
@@ -79,7 +77,17 @@ public:
 			throw std::runtime_error(std::string("Incompatible usage of options 'assembly' and 'all-states' together."));
 		}
 
-		std::vector<CandidateURL> candidate_urls;
+		scripting::operators::ImportMany import_many_operator;
+		import_many_operator.import_operator.title=pdb_id;
+		import_many_operator.split_pdb_files=all_states;
+		import_many_operator.import_operator.loading_parameters.forced_include_heteroatoms=true;
+		import_many_operator.import_operator.loading_parameters.include_heteroatoms=!no_heteroatoms;
+		import_many_operator.import_operator.loading_parameters.forced_multimodel_chains=true;
+		import_many_operator.import_operator.loading_parameters.multimodel_chains=(assembly!=0);
+		import_many_operator.import_operator.loading_parameters.format="pdb";
+		import_many_operator.import_operator.loading_parameters.format_fallback="pdb";
+
+		RemoteImportPreparation remote_input_preparation;
 
 		if((assembly_provided && assembly!=0) || (!assembly_provided && !all_states))
 		{
@@ -87,72 +95,33 @@ public:
 			url_output << "https://files.rcsb.org/download/" << pdb_id << ".pdb" << assembly << ".gz";
 			std::ostringstream title_output;
 			title_output << pdb_id << "_as_" << assembly;
-			candidate_urls.push_back(CandidateURL(url_output.str(), title_output.str(), true));
+			scripting::operators::ImportMany import_many_operator_to_use=import_many_operator;
+			import_many_operator_to_use.import_operator.title=title_output.str();
+			remote_input_preparation.add_request(RemoteImportPreparation::Request(url_output.str(), import_many_operator_to_use));
 		}
 
 		if((assembly==0) || (!assembly_provided && all_states))
 		{
 			std::ostringstream url_output;
 			url_output << "https://files.rcsb.org/download/" << pdb_id << ".pdb.gz";
-			std::ostringstream title_output;
-			title_output << pdb_id;
-			candidate_urls.push_back(CandidateURL(url_output.str(), title_output.str(), false));
+			scripting::operators::ImportMany import_many_operator_to_use=import_many_operator;
+			import_many_operator_to_use.import_operator.loading_parameters.multimodel_chains=false;
+			remote_input_preparation.add_request(RemoteImportPreparation::Request(url_output.str(), import_many_operator_to_use));
 		}
 
-		if(candidate_urls.empty())
-		{
-			throw std::runtime_error(std::string("Failed to generate download URLs."));
-		}
+		RemoteImportPreparation::Request* downloaded_request=remote_input_preparation.download_request_until_first_success();
 
-		CandidateURL downloaded_url;
-
-		for(std::size_t i=0;i<candidate_urls.size() && !downloaded_url.downloaded;i++)
-		{
-			downloaded_url=candidate_urls[i];
-			if(FileDownloader::download_file(downloaded_url.url, true, downloaded_url.downloaded_data))
-			{
-				downloaded_url.downloaded=true;
-			}
-		}
-
-		if(!downloaded_url.downloaded)
+		if(downloaded_request==0)
 		{
 			throw std::runtime_error(std::string("No data downloaded."));
 		}
 
-		scripting::VirtualFileStorage::TemporaryFile tmpfile;
-		scripting::VirtualFileStorage::set_file(tmpfile.filename(), downloaded_url.downloaded_data);
-
 		Result result;
-
-		result.import_result=scripting::operators::ImportMany().init(CMDIN()
-				.set("files", tmpfile.filename())
-				.set("format", "pdb")
-				.set("as-assembly", downloaded_url.assembly)
-				.set("split-pdb-files", all_states)
-				.set("include-heteroatoms", !no_heteroatoms)
-				.set("title", downloaded_url.title)).run(congregation_of_data_managers);
+		result.import_result=downloaded_request->import_downloaded_data(congregation_of_data_managers);
 
 		return result;
 	}
 
-private:
-	struct CandidateURL
-	{
-		std::string url;
-		std::string title;
-		std::string downloaded_data;
-		bool assembly;
-		bool downloaded;
-
-		CandidateURL() : assembly(false), downloaded(false)
-		{
-		}
-
-		CandidateURL(const std::string& url, const std::string& title, const int assembly) : url(url), title(title), assembly(false), downloaded(false)
-		{
-		}
-	};
 };
 
 }
