@@ -41,9 +41,8 @@ public:
 
 	const std::string& execute_native_script(const std::string& script)
 	{
-		while(!job_queue_.empty())
+		while(dequeue_job())
 		{
-			dequeue_job();
 		}
 		return script_execution_manager_.execute_script_and_return_last_output_string(script, false);
 	}
@@ -218,7 +217,7 @@ protected:
 		{
 			if(!widgets::WaitingIndicator::instance().decided())
 			{
-				widgets::WaitingIndicator::instance().set_activated(!job_queue_.empty() && !job_queue_.front().brief);
+				widgets::WaitingIndicator::instance().set_activated(pending_jobs_in_queue(false));
 			}
 			widgets::WaitingIndicator::instance().execute(box_x, box_y, box_w, box_h);
 		}
@@ -481,14 +480,26 @@ private:
 		return false;
 	}
 
-	bool enqueue_job(const Job& job)
+	bool enqueue_job(const Job& job, const bool in_front)
 	{
 		if(job.script.find_first_not_of(" \t\n")!=std::string::npos)
 		{
-			job_queue_.push_back(job);
+			if(in_front)
+			{
+				job_queue_.push_front(job);
+			}
+			else
+			{
+				job_queue_.push_back(job);
+			}
 			return true;
 		}
 		return false;
+	}
+
+	bool enqueue_job(const Job& job)
+	{
+		return enqueue_job(job, false);
 	}
 
 	bool enqueue_job(const JobFile& job_file)
@@ -511,8 +522,18 @@ private:
 		return false;
 	}
 
+	bool pending_jobs_in_queue(const bool including_brief_jobs) const
+	{
+		return ((!job_queue_.empty() && (including_brief_jobs || !job_queue_.front().brief)) || RemoteImportDownloaderAdaptive::instance().check_if_any_request_downloaded_and_not_fully_processed());
+	}
+
 	bool dequeue_job()
 	{
+		if(RemoteImportDownloaderAdaptive::instance().check_if_any_request_downloaded_and_not_fully_processed())
+		{
+			enqueue_job(Job("import-downloaded", Job::TYPE_NATIVE), true);
+		}
+
 		if(!job_queue_.empty())
 		{
 			const Job job=job_queue_.front();
