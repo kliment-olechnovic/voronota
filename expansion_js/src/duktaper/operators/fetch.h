@@ -1,7 +1,7 @@
 #ifndef DUKTAPER_OPERATORS_FETCH_H_
 #define DUKTAPER_OPERATORS_FETCH_H_
 
-#include "../remote_import_preparation.h"
+#include "../remote_import_downloader.h"
 
 namespace voronota
 {
@@ -17,21 +17,35 @@ class Fetch : public scripting::OperatorBase<Fetch>
 public:
 	struct Result : public scripting::OperatorResultBase<Result>
 	{
+		bool asynchronous;
+		std::string pdb_id;
+		std::string url;
 		scripting::operators::ImportMany::Result import_result;
+
+		Result() : asynchronous(false)
+		{
+		}
 
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
-			import_result.store(heterostorage);
+			heterostorage.variant_object.value("asynchronous")=asynchronous;
+			heterostorage.variant_object.value("pdb_id")=pdb_id;
+			heterostorage.variant_object.value("url")=url;
+			if(!asynchronous)
+			{
+				import_result.store(heterostorage);
+			}
 		}
 	};
 
+	RemoteImportDownloader* downloader_ptr;
 	std::string pdb_id;
 	bool assembly_provided;
 	int assembly;
 	bool no_heteroatoms;
 	bool all_states;
 
-	Fetch() : assembly_provided(false), assembly(1), no_heteroatoms(false), all_states(false)
+	Fetch(RemoteImportDownloader& downloader) : downloader_ptr(&downloader), assembly_provided(false), assembly(1), no_heteroatoms(false), all_states(false)
 	{
 	}
 
@@ -54,6 +68,11 @@ public:
 
 	Result run(scripting::CongregationOfDataManagers& congregation_of_data_managers) const
 	{
+		if(downloader_ptr==0)
+		{
+			throw std::runtime_error(std::string("Missing downloader."));
+		}
+
 		if(pdb_id.empty() || pdb_id.size()!=4 || pdb_id[0]<'1' || pdb_id[0]>'9')
 		{
 			throw std::runtime_error(std::string("Invalid PDB ID '")+pdb_id+"'.");
@@ -87,36 +106,41 @@ public:
 		import_many_operator.import_operator.loading_parameters.format="pdb";
 		import_many_operator.import_operator.loading_parameters.format_fallback="pdb";
 
-		RemoteImportPreparation remote_input_preparation;
+		RemoteImportDownloader& downloader=(*downloader_ptr);
+		RemoteImportDownloader::ScopeCleaner scope_cleaner(downloader);
+
+		std::ostringstream url_output;
+		scripting::operators::ImportMany import_many_operator_to_use=import_many_operator;
 
 		if((assembly_provided && assembly!=0) || (!assembly_provided && !all_states))
 		{
-			std::ostringstream url_output;
 			url_output << "https://files.rcsb.org/download/" << pdb_id << ".pdb" << assembly << ".gz";
 			std::ostringstream title_output;
 			title_output << pdb_id << "_as_" << assembly;
-			scripting::operators::ImportMany import_many_operator_to_use=import_many_operator;
 			import_many_operator_to_use.import_operator.title=title_output.str();
-			remote_input_preparation.add_request(RemoteImportPreparation::Request(url_output.str(), import_many_operator_to_use));
 		}
 		else
 		{
-			std::ostringstream url_output;
 			url_output << "https://files.rcsb.org/download/" << pdb_id << ".pdb.gz";
-			scripting::operators::ImportMany import_many_operator_to_use=import_many_operator;
 			import_many_operator_to_use.import_operator.loading_parameters.multimodel_chains=false;
-			remote_input_preparation.add_request(RemoteImportPreparation::Request(url_output.str(), import_many_operator_to_use));
 		}
 
-		RemoteImportPreparation::Request* downloaded_request=remote_input_preparation.download_request_until_first_success();
-
-		if(downloaded_request==0)
-		{
-			throw std::runtime_error(std::string("No data downloaded."));
-		}
+		RemoteImportRequest& request=downloader.add_request_and_start_download(RemoteImportRequest(url_output.str(), import_many_operator_to_use));
 
 		Result result;
-		result.import_result=downloaded_request->import_downloaded_data(congregation_of_data_managers);
+		result.asynchronous=!downloader.is_synchronous();
+		result.pdb_id=pdb_id;
+		result.url=request.url;
+
+		if(downloader.is_synchronous())
+		{
+			if(!request.download_successful)
+			{
+				throw std::runtime_error(std::string("No data downloaded."));
+			}
+
+			result.import_result=request.import_downloaded_data(congregation_of_data_managers);
+		}
 
 		return result;
 	}

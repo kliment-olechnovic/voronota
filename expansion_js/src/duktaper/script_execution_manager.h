@@ -49,9 +49,9 @@ public:
 		set_command_for_data_manager("voromqa-dark-local", operators::VoroMQADarkLocal(), true);
 		set_command_for_data_manager("voromqa-dark-split", operators::VoroMQADarkSplit(), true);
 
-		set_command_for_congregation_of_data_managers("fetch", operators::Fetch());
+		set_command_for_congregation_of_data_managers("fetch", operators::Fetch(RemoteImportDownloaderSimple::instance()));
 		set_command_for_congregation_of_data_managers("import-cod-cif", operators::ImportCODCIF());
-		set_command_for_congregation_of_data_managers("import-url", operators::ImportUrl());
+		set_command_for_congregation_of_data_managers("import-url", operators::ImportUrl(RemoteImportDownloaderSimple::instance()));
 		set_command_for_congregation_of_data_managers("run-nolb", operators::RunNolb());
 		set_command_for_congregation_of_data_managers("tmalign-many", operators::TMalignMany());
 		set_command_for_congregation_of_data_managers("tmalign", operators::TMalign());
