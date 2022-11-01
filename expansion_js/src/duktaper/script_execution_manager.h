@@ -5,6 +5,7 @@
 
 #include "operators/call_shell.h"
 #include "operators/checksum.h"
+#include "operators/congruence_score.h"
 #include "operators/construct_or_load_contacts.h"
 #include "operators/construct_or_load_quality_scores.h"
 #include "operators/convert_bff_obj_to_svg.h"
@@ -49,6 +50,7 @@ public:
 		set_command_for_data_manager("voromqa-dark-local", operators::VoroMQADarkLocal(), true);
 		set_command_for_data_manager("voromqa-dark-split", operators::VoroMQADarkSplit(), true);
 
+		set_command_for_congregation_of_data_managers("congruence-score", operators::CongruenceScore());
 		set_command_for_congregation_of_data_managers("fetch", operators::Fetch(RemoteImportDownloaderSimple::instance()));
 		set_command_for_congregation_of_data_managers("import-cod-cif", operators::ImportCODCIF());
 		set_command_for_congregation_of_data_managers("import-url", operators::ImportUrl(RemoteImportDownloaderSimple::instance()));
