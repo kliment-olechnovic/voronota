@@ -46,6 +46,8 @@ public:
 	std::string model_name;
 	std::string target_selection_expression;
 	std::string model_selection_expression;
+	std::string target_global_adj_prefix;
+	std::string model_global_adj_prefix;
 
 	CongruenceScore()
 	{
@@ -64,6 +66,11 @@ public:
 		}
 		target_selection_expression=input.get_value_or_default<std::string>("t-sel", "[--no-solvent --min-seq-sep 1]");
 		model_selection_expression=input.get_value_or_default<std::string>("m-sel", target_selection_expression);
+		if(!managed)
+		{
+			target_global_adj_prefix=input.get_value_or_default<std::string>("t-global-adj-prefix", "");
+		}
+		model_global_adj_prefix=input.get_value_or_default<std::string>("m-global-adj-prefix", "");
 	}
 
 	void initialize(scripting::CommandInput& input)
@@ -84,6 +91,11 @@ public:
 		}
 		doc.set_option_decription(CDOD("t-sel", CDOD::DATATYPE_STRING, "selection of contacts for target object", "[--no-solvent --min-seq-sep 1]"));
 		doc.set_option_decription(CDOD("m-sel", CDOD::DATATYPE_STRING, "selection of contacts for model object", "[--no-solvent --min-seq-sep 1]"));
+		if(!managed)
+		{
+			doc.set_option_decription(CDOD("t-global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts of target", ""));
+		}
+		doc.set_option_decription(CDOD("m-global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts of model", ""));
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -101,11 +113,6 @@ public:
 		if(model_name.empty())
 		{
 			throw std::runtime_error(std::string("No model object name provided."));
-		}
-
-		if(target_name==model_name)
-		{
-			throw std::runtime_error(std::string("Equal object names provided."));
 		}
 
 		congregation_of_data_managers.assert_object_availability(target_name);
@@ -155,10 +162,22 @@ public:
 			throw std::runtime_error(std::string("Failed to prepare model adjacency map."));
 		}
 
+		const double congruence_coefficient=congruence_coefficient::calculate_congruence_coefficient_of_two_square_symmetric_matrices(target_adjacency_map, model_adjacency_map);
+
+		if(!target_global_adj_prefix.empty())
+		{
+			target_dm.global_numeric_adjuncts_mutable()[target_global_adj_prefix+"_congruence_coefficient"]=congruence_coefficient;
+		}
+
+		if(!model_global_adj_prefix.empty())
+		{
+			model_dm.global_numeric_adjuncts_mutable()[model_global_adj_prefix+"_congruence_coefficient"]=congruence_coefficient;
+		}
+
 		Result result;
 		result.target_name=target_name;
 		result.model_name=model_name;
-		result.congruence_coefficient=congruence_coefficient::calculate_congruence_coefficient_of_two_square_symmetric_matrices(target_adjacency_map, model_adjacency_map);
+		result.congruence_coefficient=congruence_coefficient;
 
 		return result;
 	}
