@@ -45,7 +45,7 @@ public:
 
 		set_command_for_data_manager("construct-or-load-contacts", operators::ConstructOrLoadContacts(), true);
 		set_command_for_data_manager("construct-or-load-quality-scores", operators::ConstructOrLoadQualityScores(), true);
-		set_command_for_data_manager("faspr", operators::FASPR(), false);
+		set_command_for_data_manager("faspr", operators::FASPR(), true);
 		set_command_for_data_manager("run-bff", operators::RunBFF(), true);
 		set_command_for_data_manager("voromqa-dark-global", operators::VoroMQADarkGlobal(), true);
 		set_command_for_data_manager("voromqa-dark-local", operators::VoroMQADarkLocal(), true);
