@@ -84,6 +84,7 @@ public:
 		set_command_for_extra_actions("animate-spin-right", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_SPIN_RIGHT));
 
 		set_command_for_congregation_of_data_managers("fetch", duktaper::operators::Fetch(RemoteImportDownloaderAdaptive::instance()));
+		set_command_for_congregation_of_data_managers("fetch-afdb", duktaper::operators::FetchAFDB(RemoteImportDownloaderAdaptive::instance()));
 		set_command_for_congregation_of_data_managers("import-url", duktaper::operators::ImportUrl(RemoteImportDownloaderAdaptive::instance()));
 		set_command_for_congregation_of_data_managers("import-downloaded", operators::ImportDownloaded());
 

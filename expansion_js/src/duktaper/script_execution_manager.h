@@ -12,6 +12,7 @@
 #include "operators/convert_bff_obj_to_svg.h"
 #include "operators/faspr.h"
 #include "operators/fetch.h"
+#include "operators/fetch_afdb.h"
 #include "operators/import_cod_cif.h"
 #include "operators/import_url.h"
 #include "operators/music_background.h"
@@ -54,6 +55,7 @@ public:
 		set_command_for_congregation_of_data_managers("congruence-score", operators::CongruenceScore());
 		set_command_for_congregation_of_data_managers("congruence-score-many", operators::CongruenceScoreMany());
 		set_command_for_congregation_of_data_managers("fetch", operators::Fetch(RemoteImportDownloaderSimple::instance()));
+		set_command_for_congregation_of_data_managers("fetch-afdb", operators::FetchAFDB(RemoteImportDownloaderSimple::instance()));
 		set_command_for_congregation_of_data_managers("import-cod-cif", operators::ImportCODCIF());
 		set_command_for_congregation_of_data_managers("import-url", operators::ImportUrl(RemoteImportDownloaderSimple::instance()));
 		set_command_for_congregation_of_data_managers("run-nolb", operators::RunNolb());
