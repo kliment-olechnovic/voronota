@@ -410,6 +410,8 @@ protected:
 		{
 			uv::ViewerApplication::instance_refresh_frame(false);
 		}
+
+		insert_additional_script_if_requested(cr, data_manager);
 	}
 
 	void on_after_script_with_output(const scripting::VariantObject&)
@@ -603,6 +605,44 @@ private:
 					script_output << "clear-last\n";
 
 					script_output << "color-atoms [-v cif_cell=0] -col 0xFFFFFF -on-objects " << list_of_names << "\n";
+					script_output << "clear-last\n";
+				}
+
+				script_partitioner().add_pending_sentences_from_string_to_front(script_output.str());
+			}
+		}
+	}
+
+	void insert_additional_script_if_requested(const GenericCommandRecord& cr, scripting::DataManager& data_manager)
+	{
+		if(cr.successful && cr.heterostorage.summaries_of_atoms.count("reloaded")==1)
+		{
+			scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(&data_manager);
+			if(object_attributes.valid && !object_attributes.name.empty())
+			{
+				std::ostringstream script_output;
+
+				script_output << "set-tag-of-atoms-by-secondary-structure -on-objects " << object_attributes.name << "\n";
+				script_output << "clear-last\n";
+
+				script_output << "hide-atoms -on-objects " << object_attributes.name << "\n";
+				script_output << "clear-last\n";
+
+				if(!data_manager.contacts().empty())
+				{
+					script_output << "hide-contacts -on-objects " << object_attributes.name << "\n";
+					script_output << "clear-last\n";
+				}
+
+				script_output << "show-atoms -rep sticks -on-objects " << object_attributes.name << "\n";
+				script_output << "clear-last\n";
+
+				script_output << "color-atoms [-t! het] -next-random-color -on-objects " << object_attributes.name << "\n";
+				script_output << "clear-last\n";
+
+				if(data_manager.is_any_atom_with_tag("het"))
+				{
+					script_output << "color-atoms [-t het] -next-random-color -on-objects " << object_attributes.name << "\n";
 					script_output << "clear-last\n";
 				}
 

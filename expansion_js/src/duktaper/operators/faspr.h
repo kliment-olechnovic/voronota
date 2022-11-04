@@ -19,8 +19,15 @@ class FASPR : public scripting::OperatorBase<FASPR>
 public:
 	struct Result : public scripting::OperatorResultBase<Result>
 	{
-		void store(scripting::HeterogeneousStorage&) const
+		scripting::operators::Import::Result import_result;
+
+		Result()
 		{
+		}
+
+		void store(scripting::HeterogeneousStorage& heterostorage) const
+		{
+			import_result.store(heterostorage);
 		}
 	};
 
@@ -104,9 +111,8 @@ public:
 
 		const FASPRWrapper::ResultBundle faspr_result=FASPRWrapper::run_faspr(faspr_config, backbone_pdb_file.filename(), rebuilt_pdb_file.filename());
 
-		scripting::operators::Import().init(CMDIN().set("file", rebuilt_pdb_file.filename()).set("format", "pdb")).run(data_manager);
-
 		Result result;
+		result.import_result=scripting::operators::Import().init(CMDIN().set("file", rebuilt_pdb_file.filename()).set("format", "pdb")).run(data_manager);
 
 		return result;
 	}
