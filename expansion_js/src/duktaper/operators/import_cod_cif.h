@@ -134,7 +134,12 @@ public:
 
 		result.import_result=scripting::operators::Import().init(import_operator_params).run(congregation_of_data_managers);
 
-		scripting::DataManager* new_object=congregation_of_data_managers.get_object(result.import_result.object_name);
+		if(result.import_result.object_names.size()!=1)
+		{
+			throw std::runtime_error(std::string("Failed to import a single new data object."));
+		}
+
+		scripting::DataManager* new_object=congregation_of_data_managers.get_object(result.import_result.object_names.front());
 
 		if(new_object==0)
 		{

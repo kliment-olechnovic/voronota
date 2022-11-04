@@ -370,7 +370,7 @@ protected:
 			uv::ViewerApplication::instance_refresh_frame(true);
 		}
 
-		insert_additional_script_if_requested(cr);
+		insert_additional_script_if_requested(cr, congregation_of_data_managers);
 
 		if(ci.changed())
 		{
@@ -515,14 +515,17 @@ private:
 		script_partitioner().set_alias("click-button2-on-figure", "print-figures -on-objects ${1} -id ${2}");
 	}
 
-	template<typename CommandRecord>
-	void insert_additional_script_if_requested(const CommandRecord& cr)
+	void insert_additional_script_if_requested(const GenericCommandRecord& cr, scripting::CongregationOfDataManagers& congregation_of_data_managers)
 	{
-		if(cr.successful && cr.heterostorage.summaries_of_atoms.count("loaded")==1)
+		if(cr.successful && cr.heterostorage.summaries_of_atoms.count("loaded")==1 && cr.heterostorage.variant_object.values_arrays().count("object_names")==1)
 		{
 			scripting::CongregationOfDataManagers::ObjectQuery object_query;
-			object_query.picked=true;
-			const std::vector<scripting::DataManager*> objects=congregation_of_data_managers().get_objects(object_query);
+			const std::vector<scripting::VariantValue>& object_names_values_array=cr.heterostorage.variant_object.values_arrays().find("object_names")->second;
+			for(std::size_t i=0;i<object_names_values_array.size();i++)
+			{
+				object_query.names.insert(object_names_values_array[i].value_string());
+			}
+			const std::vector<scripting::DataManager*> objects=congregation_of_data_managers.get_objects(object_query);
 			if(!objects.empty())
 			{
 				bool available_contacts=false;
@@ -539,14 +542,34 @@ private:
 						checked=available_contacts || available_tags_het || available_adjuncts_cif_cell;
 					}
 				}
+
+				std::string list_of_names;
+				{
+					std::ostringstream list_output;
+					for(std::set<std::string>::const_iterator it=object_query.names.begin();it!=object_query.names.end();++it)
+					{
+						list_output << " " << (*it);
+					}
+					list_of_names=list_output.str();
+				}
+
 				std::ostringstream script_output;
-				script_output << "set-tag-of-atoms-by-secondary-structure\n";
-				script_output << "zoom-by-objects -picked\n";
-				script_output << "hide-atoms\n";
+
+				script_output << "set-tag-of-atoms-by-secondary-structure -on-objects " << list_of_names << "\n";
+				script_output << "clear-last\n";
+
+				script_output << "zoom-by-objects  -names " << list_of_names << "\n";
+				script_output << "clear-last\n";
+
+				script_output << "hide-atoms -on-objects " << list_of_names << "\n";
+				script_output << "clear-last\n";
+
 				if(available_contacts)
 				{
-					script_output << "hide-contacts\n";
+					script_output << "hide-contacts -on-objects " << list_of_names << "\n";
+					script_output << "clear-last\n";
 				}
+
 				script_output << "show-atoms [-t! het] -rep ";
 				if(GUIConfiguration::instance().initial_main_representation_variant==GUIConfiguration::INITIAL_REPRESENTATION_VARIANT_TRACE)
 				{
@@ -556,19 +579,33 @@ private:
 				{
 					script_output << "cartoon";
 				}
-				script_output << "\n";
-				script_output << "color-atoms [-t! het] -next-random-color\n";
+				script_output << " -on-objects " << list_of_names << "\n";
+				script_output << "clear-last\n";
+
+				script_output << "color-atoms [-t! het] -next-random-color -on-objects " << list_of_names << "\n";
+				script_output << "clear-last\n";
+
 				if(available_tags_het)
 				{
-					script_output << "show-atoms [-t het] -rep sticks\n";
-					script_output << "color-atoms [-t het] -next-random-color\n";
+					script_output << "show-atoms [-t het] -rep sticks -on-objects " << list_of_names << "\n";
+					script_output << "clear-last\n";
+
+					script_output << "color-atoms [-t het] -next-random-color -on-objects " << list_of_names << "\n";
+					script_output << "clear-last\n";
 				}
+
 				if(available_adjuncts_cif_cell)
 				{
-					script_output << "show-atoms [-v cif_cell] -rep balls\n";
-					script_output << "spectrum-atoms [-v cif_cell] -adjunct cif_cell -scheme bcgyr\n";
-					script_output << "color-atoms [-v cif_cell=0] -col 0xFFFFFF\n";
+					script_output << "show-atoms [-v cif_cell] -rep balls -on-objects " << list_of_names << "\n";
+					script_output << "clear-last\n";
+
+					script_output << "spectrum-atoms [-v cif_cell] -adjunct cif_cell -scheme bcgyr -on-objects " << list_of_names << "\n";
+					script_output << "clear-last\n";
+
+					script_output << "color-atoms [-v cif_cell=0] -col 0xFFFFFF -on-objects " << list_of_names << "\n";
+					script_output << "clear-last\n";
 				}
+
 				script_partitioner().add_pending_sentences_from_string_to_front(script_output.str());
 			}
 		}

@@ -42,7 +42,7 @@ public:
 		{
 			atoms_summary.feed(import_result.atoms_summary);
 			contacts_summary.feed(import_result.contacts_summary);
-			object_names.push_back(import_result.object_name);
+			object_names.insert(object_names.end(), import_result.object_names.begin(), import_result.object_names.end());
 		}
 	};
 

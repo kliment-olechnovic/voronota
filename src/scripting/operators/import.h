@@ -18,20 +18,29 @@ class Import : public OperatorBase<Import>
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
+		std::string effect;
 		SummaryOfAtoms atoms_summary;
 		SummaryOfContacts contacts_summary;
-		std::string object_name;
+		std::vector<std::string> object_names;
+
+		Result() : effect("loaded")
+		{
+		}
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
-			heterostorage.summaries_of_atoms["loaded"]=atoms_summary;
+			heterostorage.summaries_of_atoms[effect]=atoms_summary;
 			if(contacts_summary.number_total>0)
 			{
 				VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
-				heterostorage.summaries_of_contacts["loaded"]=contacts_summary;
+				heterostorage.summaries_of_contacts[effect]=contacts_summary;
 			}
-			heterostorage.variant_object.value("object_name")=object_name;
+			std::vector<VariantValue>& object_names_array=heterostorage.variant_object.values_array("object_names");
+			for(std::size_t i=0;i<object_names.size();i++)
+			{
+				object_names_array.push_back(VariantValue(object_names[i]));
+			}
 		}
 	};
 
@@ -112,7 +121,7 @@ public:
 		Result result;
 		result.atoms_summary=SummaryOfAtoms(data_manager.atoms());
 		result.contacts_summary=SummaryOfContacts(data_manager.contacts());
-		result.object_name=congregation_of_data_managers.get_object_attributes(object_new).name;
+		result.object_names.push_back(congregation_of_data_managers.get_object_attributes(object_new).name);
 
 		return result;
 	}
@@ -134,9 +143,9 @@ public:
 		}
 
 		Result result;
+		result.effect="reloaded";
 		result.atoms_summary=SummaryOfAtoms(data_manager.atoms());
 		result.contacts_summary=SummaryOfContacts(data_manager.contacts());
-		result.object_name=title;
 
 		return result;
 	}
