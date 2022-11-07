@@ -81,6 +81,14 @@ inline void assert_file_name_input(const std::string& name, const bool allow_emp
 	}
 }
 
+inline void assert_extension_in_file_name_input(const std::string& name, const std::string& extension)
+{
+	if(!(name.size()>extension.size() && name.substr(name.size()-extension.size())==extension))
+	{
+		throw std::runtime_error(std::string("File name '")+name+"' does not have required extension '"+extension+"'.");
+	}
+}
+
 inline void assert_io_stream(const std::string& name, const std::ostream& output)
 {
 	if(!output.good())

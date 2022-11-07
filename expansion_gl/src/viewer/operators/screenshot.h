@@ -4,7 +4,7 @@
 #include "../operators_common.h"
 #include "../gui_configuration.h"
 
-#include "../dependencies/lodepng/lodepng.h"
+#include "../../../expansion_js/src/dependencies/lodepng/lodepng.h"
 
 namespace voronota
 {
@@ -113,7 +113,7 @@ public:
 					png_image_data[png_pos+3]=255;
 				}
 			}
-			unsigned int error = lodepng::encode(filename, png_image_data, static_cast<unsigned int>(W), static_cast<unsigned int>(H));
+			unsigned int error=lodepng::encode(filename, png_image_data, static_cast<unsigned int>(W), static_cast<unsigned int>(H));
 			if(error>0)
 			{
 				throw std::runtime_error(std::string("PNG encoding failed with error '")+lodepng_error_text(error)+"'.");
