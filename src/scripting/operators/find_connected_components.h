@@ -162,7 +162,7 @@ public:
 				}
 			}
 
-			components_info.value("number_of_components")=map_of_component_nums_to_counts.size();
+			components_info.value("number_of_components")=map_of_counts_to_ranks.size();
 			for(std::map<int, int>::reverse_iterator it=map_of_counts_to_ranks.rbegin();it!=map_of_counts_to_ranks.rend();++it)
 			{
 				VariantObject obj;
