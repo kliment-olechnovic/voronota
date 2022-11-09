@@ -386,7 +386,7 @@ var target_object_names=['target_receptor'];
 for(var i=0;i<params.target_ligands.length;i++)
 {
 	voronota_import('-file', params.target_ligands[i].ligand_file, '-title', 'tlig'+i);
-	var object_name=voronota_last_output().results[0].output.object_name;
+	var object_name=voronota_last_output().results[0].output.object_names[0];
 	voronota_pick_objects(object_name);
 	voronota_set_chain_name('-chain-name', params.target_ligands[i].ligand_id);
 	voronota_set_tag_of_atoms('-tag', 'ligand');
@@ -398,7 +398,7 @@ var model_object_names=['model_receptor'];
 for(var i=0;i<params.model_ligands.length;i++)
 {
 	voronota_import('-file', params.model_ligands[i].ligand_file, '-title', 'mlig'+i);
-	var object_name=voronota_last_output().results[0].output.object_name;
+	var object_name=voronota_last_output().results[0].output.object_names[0];
 	voronota_pick_objects(object_name);
 	voronota_set_chain_name('-chain-name', params.model_ligands[i].ligand_id);
 	voronota_set_tag_of_atoms('-tag', 'ligand');

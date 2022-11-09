@@ -7,7 +7,7 @@
         "atoms_summary":{
           "number_total":2952,
           "volume":null},
-        "object_name":"balls"},
+        "object_names":["balls"]},
       "success":true},
     {
       "command_line":"construct-contacts",

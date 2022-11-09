@@ -238,7 +238,7 @@ void RotamerBuilder::RotlibFromText2Binary(string &fulltextlib,string &binlibfil
   outfile.open(binlibfile.c_str(),ios::binary);
 
   char inpath[2048];
-  sprintf(inpath,"%s%s",faspr_config.PROGRAM_PATH.c_str(),fulltextlib.c_str());
+  snprintf(inpath,2048,"%s%s",faspr_config.PROGRAM_PATH.c_str(),fulltextlib.c_str());
   FILE* infile=fopen(inpath,"r");
   if(infile==NULL){
     //cerr<<"error! cannot open rotamer library "<<inpath<<endl;

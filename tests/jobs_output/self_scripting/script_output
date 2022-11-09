@@ -18,7 +18,7 @@
         "atoms_summary":{
           "number_total":1771,
           "volume":null},
-        "object_name":"structure.cif"},
+        "object_names":["structure.cif"]},
       "success":true},
     {
       "command_line":"import -file \"./input/single/structure.pdb\"",
@@ -27,7 +27,7 @@
         "atoms_summary":{
           "number_total":1717,
           "volume":null},
-        "object_name":"structure.pdb"},
+        "object_names":["structure.pdb"]},
       "success":true},
     {
       "command_line":"import ./input/single/structure.pdb --include-heteroatoms",
@@ -36,7 +36,7 @@
         "atoms_summary":{
           "number_total":1771,
           "volume":null},
-        "object_name":"structure.pdb_2"},
+        "object_names":["structure.pdb_2"]},
       "success":true},
     {
       "command_line":"print-sequence --secondary-structure",
@@ -234,7 +234,7 @@
         "atoms_summary":{
           "number_total":1717,
           "volume":41027.8},
-        "object_name":"plain_atoms"},
+        "object_names":["plain_atoms"]},
       "success":true},
     {
       "command_line":"list-objects",
@@ -797,7 +797,7 @@
           "number_total":12469,
           "number_drawable":120,
           "area":47017.2},
-        "object_name":"plain_atoms_and_contacts"},
+        "object_names":["plain_atoms_and_contacts"]},
       "success":true},
     {
       "command_line":"import './jobs_output/self_scripting/plain_atoms' -format plain",
@@ -806,7 +806,7 @@
         "atoms_summary":{
           "number_total":1717,
           "volume":41027.8},
-        "object_name":"plain_atoms_2"},
+        "object_names":["plain_atoms_2"]},
       "success":true},
     {
       "command_line":"construct-triangulation",
@@ -1107,6 +1107,9 @@
             "name":"import-docking-result",
             "short_description":""},
           {
+            "name":"import-figure-voxels",
+            "short_description":""},
+          {
             "name":"import-many",
             "short_description":""},
           {
@@ -1276,6 +1279,9 @@
             "short_description":""},
           {
             "name":"set-global-adjunct",
+            "short_description":""},
+          {
+            "name":"set-global-adjunct-by-pooling",
             "short_description":""},
           {
             "name":"set-tag-of-atoms",

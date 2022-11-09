@@ -2968,7 +2968,7 @@ private:
 								if(!sequence.chains[j].name.empty())
 								{
 									char button_label[64];
-									sprintf(button_label, "%s##chain_button_%d", sequence.chains[j].name.c_str(), used_buttons++);
+									snprintf(button_label, 64, "%s##chain_button_%d", sequence.chains[j].name.c_str(), used_buttons++);
 									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(sequence.chains[j].name.size()), 0.0f)))
 									{
 										if(!sequence.chains[j].residues.empty())
@@ -2997,7 +2997,7 @@ private:
 									}
 									const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
 									char button_label[64];
-									sprintf(button_label, "%s##seq_num_button_%d", residue.num_label.c_str(), used_buttons++);
+									snprintf(button_label, 64, "%s##seq_num_button_%d", residue.num_label.c_str(), used_buttons++);
 									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(residue.display_size()), 0.0f)))
 									{
 										result=std::string("vsb: ")+(residue.marked ? "unmark-atoms" : "mark-atoms")
@@ -3038,7 +3038,7 @@ private:
 									}
 									const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
 									char button_label[64];
-									sprintf(button_label, "%s##seq_button_%d", residue.name.c_str(), used_buttons++);
+									snprintf(button_label, 64, "%s##seq_button_%d", residue.name.c_str(), used_buttons++);
 
 									if(residue.marked)
 									{
