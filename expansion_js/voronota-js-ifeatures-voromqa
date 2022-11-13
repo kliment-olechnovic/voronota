@@ -41,10 +41,12 @@ ALLARGS=("$@")
 
 if [[ $ZEROARG == *"/"* ]]
 then
-	cd $(dirname $ZEROARG)
-	export PATH=$(pwd):$PATH
+	cd "$(dirname ${ZEROARG})"
+	export PATH="$(pwd):${PATH}"
 	cd - &> /dev/null
 fi
+
+export LC_ALL=C
 
 command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
 

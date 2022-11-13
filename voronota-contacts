@@ -32,6 +32,19 @@ exit 1
 }
 
 readonly ZEROARG=$0
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd "$(dirname ${ZEROARG})"
+	export PATH="$(pwd):${PATH}"
+	cd - &> /dev/null
+fi
+
+export LC_ALL=C
+
+command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
+command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
+
 INFILE=""
 INPUT_FILTER_QUERY_PARAMETERS=""
 CONTACTS_QUERY_FIRST_PARAMETERS="--match-min-seq-sep 1"
@@ -109,16 +122,6 @@ if [ -z "$INFILE" ] || $HELP_MODE
 then
 	print_help_and_exit
 fi
-
-if [[ $ZEROARG == *"/"* ]]
-then
-	cd $(dirname $ZEROARG)
-	export PATH=$(pwd):$PATH
-	cd - &> /dev/null
-fi
-
-command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
-command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
 
 if $USE_HBPLUS
 then
