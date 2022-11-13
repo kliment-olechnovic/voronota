@@ -33,8 +33,9 @@ public:
 	std::vector<std::string> representation_names;
 	std::string file;
 	int fixed_plot_size;
+	bool on_white;
 
-	PlotContactsMap() : fixed_plot_size(0)
+	PlotContactsMap() : fixed_plot_size(0), on_white(false)
 	{
 	}
 
@@ -43,6 +44,7 @@ public:
 		parameters_for_selecting=scripting::OperatorsUtilities::read_generic_selecting_query(input);
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 		fixed_plot_size=input.get_value_or_default<int>("fixed-plot-size", 0);
+		on_white=input.get_flag("on-white");
 		file=input.get_value<std::string>("file");
 		scripting::assert_file_name_input(file, false);
 	}
@@ -52,6 +54,7 @@ public:
 		scripting::OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("rep", CDOD::DATATYPE_STRING_ARRAY, "representation names", ""));
 		doc.set_option_decription(CDOD("fixed-plot-size", CDOD::DATATYPE_INT, "fixed side length of output plot", ""));
+		doc.set_option_decription(CDOD("on-white", CDOD::DATATYPE_BOOL, "flag to use white background", false));
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to output PNG file"));
 	}
 
@@ -175,7 +178,7 @@ public:
 		}
 
 		{
-			std::vector<unsigned char> png_image_data(plot_size*plot_size*4, 0);
+			std::vector<unsigned char> png_image_data(plot_size*plot_size*4, (on_white ? 255 : 0));
 			for(std::size_t i=3;i<png_image_data.size();i+=4)
 			{
 				png_image_data[i]=255;

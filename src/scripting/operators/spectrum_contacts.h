@@ -91,7 +91,7 @@ public:
 
 		const std::set<std::size_t> representation_ids=data_manager.contacts_representation_descriptor().ids_by_names(representation_names);
 
-		if(by!="area" && by!="adjunct" && by!="dist-centers" && by!="dist-balls" && by!="seq-sep" && by!="residue-ids")
+		if(by!="area" && by!="residue-area" && by!="adjunct" && by!="dist-centers" && by!="dist-balls" && by!="seq-sep" && by!="residue-ids")
 		{
 			throw std::runtime_error(std::string("Invalid 'by' value '")+by+"'.");
 		}
@@ -142,6 +142,19 @@ public:
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				map_of_ids_values[*it]=data_manager.contacts()[*it].value.area;
+			}
+		}
+		else if(by=="residue-area")
+		{
+			std::map<common::ChainResidueAtomDescriptorsPair, double> residue_ids_to_values;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const Contact& contact=data_manager.contacts()[*it];
+				residue_ids_to_values[common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact).without_some_info(true, true, false, false)]+=contact.value.area;
+			}
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				map_of_ids_values[*it]=residue_ids_to_values[common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, true, false, false)];
 			}
 		}
 		else if(by=="dist-centers")
