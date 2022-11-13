@@ -853,7 +853,7 @@ private:
 	static bool check_atom_record_acceptability(const AtomRecord& record, const bool include_heteroatoms, const bool include_hydrogens)
 	{
 		return ((record.record_name=="ATOM" || (include_heteroatoms && record.record_name=="HETATM")) &&
-				(record.altLoc.empty() || record.altLoc=="A" || record.altLoc==".") &&
+				(record.altLoc.empty() || record.altLoc=="A" || record.altLoc=="1" || record.altLoc==".") &&
 				(include_hydrogens || record.name.find("H")!=0) &&
 				(include_hydrogens || (record.element!="H" && record.element!="D")) &&
 				record.resName!="HOH");
