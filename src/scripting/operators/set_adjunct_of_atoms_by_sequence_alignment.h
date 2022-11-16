@@ -61,7 +61,15 @@ public:
 
 		assert_adjunct_name_input(name, false);
 
-		const std::string sequence=common::SequenceUtilities::read_sequence_from_file(sequence_file);
+		InputSelector finput_selector(sequence_file);
+		std::istream& finput=finput_selector.stream();
+
+		if(!finput.good())
+		{
+			throw std::runtime_error(std::string("Failed to read file '")+sequence_file+"'.");
+		}
+
+		const std::string sequence=common::SequenceUtilities::read_sequence_from_stream(finput);
 
 		if(sequence.empty())
 		{
