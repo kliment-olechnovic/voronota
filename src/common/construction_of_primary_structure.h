@@ -114,7 +114,7 @@ public:
 				{
 					residue.residue_type=RESIDUE_TYPE_AMINO_ACID;
 				}
-				else if(names.count("C2")+names.count("C3'")+names.count("O3'")+names.count("P")==4)
+				else if(names.count("C2")+names.count("C3'")+names.count("O3'")+names.count("O5'")==4)
 				{
 					residue.residue_type=RESIDUE_TYPE_NUCLEOTIDE;
 				}
@@ -336,6 +336,51 @@ public:
 			collect_atom_ids_from_residue_ids(bundle, residue_ids[i], atom_ids);
 		}
 		return atom_ids;
+	}
+
+	static std::map<std::string, std::string> collect_chain_sequences_from_atom_ids(const BundleOfPrimaryStructure& bundle, const std::set<std::size_t>& atom_ids, const bool fill_middle_gaps, const bool fill_start_gaps)
+	{
+		std::map< std::string, std::map<int, std::string> > needed_chains_and_residues_info;
+		for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
+		{
+			const std::size_t atom_id=(*it);
+			if(atom_id<bundle.map_of_atoms_to_residues.size())
+			{
+				const Residue& residue=bundle.residues[bundle.map_of_atoms_to_residues[atom_id]];
+				if(residue.residue_type==RESIDUE_TYPE_AMINO_ACID || residue.residue_type==RESIDUE_TYPE_NUCLEOTIDE)
+				{
+					needed_chains_and_residues_info[residue.chain_residue_descriptor.chainID][residue.chain_residue_descriptor.resSeq]=residue.short_name;
+				}
+			}
+		}
+
+		std::map<std::string, std::string> chain_sequences;
+		for(std::map< std::string, std::map<int, std::string> >::const_iterator it=needed_chains_and_residues_info.begin();it!=needed_chains_and_residues_info.end();++it)
+		{
+			std::string& sequence=chain_sequences[it->first];
+			const std::map<int, std::string>& residues_info=it->second;
+			for(std::map<int, std::string>::const_iterator jt=residues_info.begin();jt!=residues_info.end();++jt)
+			{
+				const int num=jt->first;
+				const std::string& letter=jt->second;
+				if(jt==residues_info.begin() && fill_start_gaps && num>1)
+				{
+					sequence+=std::string(static_cast<std::size_t>(num-1), 'X');
+				}
+				if(jt!=residues_info.begin() && fill_middle_gaps)
+				{
+					std::map<int, std::string>::const_iterator prev_jt=jt;
+					--prev_jt;
+					const int prev_num=prev_jt->first;
+					if(num>(prev_num+1))
+					{
+						sequence+=std::string(static_cast<std::size_t>(num-(prev_num+1)), 'X');
+					}
+				}
+				sequence+=letter;
+			}
+		}
+		return chain_sequences;
 	}
 
 private:

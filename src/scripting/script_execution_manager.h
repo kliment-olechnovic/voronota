@@ -52,6 +52,7 @@
 #include "operators/export_global_adjuncts.h"
 #include "operators/export_selection_of_atoms.h"
 #include "operators/export_selection_of_contacts.h"
+#include "operators/export_sequence.h"
 #include "operators/export_triangulated_convex_hull.h"
 #include "operators/export_triangulation.h"
 #include "operators/export_triangulation_voxels.h"
@@ -257,6 +258,7 @@ public:
 		set_command_for_data_manager("export-figures-as-pymol-cgo", operators::ExportFiguresAsPymolCGO(), false);
 		set_command_for_data_manager("export-selection-of-atoms", operators::ExportSelectionOfAtoms(), false);
 		set_command_for_data_manager("export-selection-of-contacts", operators::ExportSelectionOfContacts(), false);
+		set_command_for_data_manager("export-sequence", operators::ExportSequence(), false);
 		set_command_for_data_manager("export-triangulated-convex-hull", operators::ExportTriangulatedConvexHull(), false);
 		set_command_for_data_manager("export-triangulation", operators::ExportTriangulation(), false);
 		set_command_for_data_manager("export-triangulation-voxels", operators::ExportTriangulationVoxels(), false);
