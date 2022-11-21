@@ -167,6 +167,10 @@ protected:
 					Console::instance().set_need_keyboard_focus_in_command_input(true);
 				}
 			}
+			else if(key==GLFW_KEY_GRAVE_ACCENT)
+			{
+				GUIConfiguration::instance().enabled_console=!GUIConfiguration::instance().enabled_console;
+			}
 		}
 
 		ImGui_ImplGlfw_KeyCallback(window(), key, scancode, action, mods);

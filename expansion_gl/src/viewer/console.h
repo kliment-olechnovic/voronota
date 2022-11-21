@@ -264,6 +264,11 @@ public:
 	{
 		std::string result;
 
+		if(!GUIConfiguration::instance().enabled_console)
+		{
+			return result;
+		}
+
 		{
 			const float actual_min_height=std::max(static_cast<float>(min_height), command_line_interface_state_.height_for_command_line+sequence_viewer_state_.calc_total_container_height()+15.0f);
 
@@ -433,11 +438,19 @@ public:
 
 	int current_width() const
 	{
+		if(!GUIConfiguration::instance().enabled_console)
+		{
+			return 0;
+		}
 		return static_cast<int>(current_width_);
 	}
 
 	int current_heigth() const
 	{
+		if(!GUIConfiguration::instance().enabled_console)
+		{
+			return 0;
+		}
 		return static_cast<int>(current_heigth_);
 	}
 

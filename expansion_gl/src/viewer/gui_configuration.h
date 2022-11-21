@@ -69,6 +69,7 @@ public:
 	int json_writing_level;
 	double animation_step_miliseconds;
 	bool enabled_sequence_view;
+	bool enabled_console;
 
 	static GUIConfiguration& instance()
 	{
@@ -115,7 +116,8 @@ private:
 		enabled_waiting_indicator(true),
 		json_writing_level(1),
 		animation_step_miliseconds(1000.0/30.0),
-		enabled_sequence_view(false)
+		enabled_sequence_view(false),
+		enabled_console(true)
 	{
 	}
 
