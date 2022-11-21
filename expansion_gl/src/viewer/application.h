@@ -386,6 +386,23 @@ private:
 
 		static Bundle parse(const std::string& script)
 		{
+			return add_briefness_if_needed(parse_with_prefix(script));
+		}
+
+	private:
+		static std::map<Mode, std::string> generate_map_of_mode_prefixes()
+		{
+			std::map<Mode, std::string> map_of_mode_prefixes;
+			map_of_mode_prefixes[MODE_NATIVE]="vs:";
+			map_of_mode_prefixes[MODE_NATIVE_BRIEF]="vsb:";
+			map_of_mode_prefixes[MODE_JAVASCRIPT]="js:";
+			map_of_mode_prefixes[MODE_JAVASCRIPT_BRIEF]="jsb:";
+			map_of_mode_prefixes[MODE_FILES]="files:";
+			return map_of_mode_prefixes;
+		}
+
+		static Bundle parse_with_prefix(const std::string& script)
+		{
 			static const std::map<Mode, std::string> map_of_mode_prefixes=generate_map_of_mode_prefixes();
 			for(std::map<Mode, std::string>::const_iterator it=map_of_mode_prefixes.begin();it!=map_of_mode_prefixes.end();++it)
 			{
@@ -399,16 +416,17 @@ private:
 			return Bundle(MODE_NATIVE, "", script);
 		}
 
-	private:
-		static std::map<Mode, std::string> generate_map_of_mode_prefixes()
+		static Bundle add_briefness_if_needed(const Bundle& bundle)
 		{
-			std::map<Mode, std::string> map_of_mode_prefixes;
-			map_of_mode_prefixes[MODE_NATIVE]="vs:";
-			map_of_mode_prefixes[MODE_NATIVE_BRIEF]="vsb:";
-			map_of_mode_prefixes[MODE_JAVASCRIPT]="js:";
-			map_of_mode_prefixes[MODE_JAVASCRIPT_BRIEF]="jsb:";
-			map_of_mode_prefixes[MODE_FILES]="files:";
-			return map_of_mode_prefixes;
+			if(bundle.mode==MODE_NATIVE && bundle.script.find("screenshot")<bundle.script.size())
+			{
+				return Bundle(MODE_NATIVE_BRIEF, bundle.prefix, bundle.script);
+			}
+			else if(bundle.mode==MODE_JAVASCRIPT && bundle.script.find("screenshot")<bundle.script.size())
+			{
+				return Bundle(MODE_JAVASCRIPT_BRIEF, bundle.prefix, bundle.script);
+			}
+			return bundle;
 		}
 	};
 
