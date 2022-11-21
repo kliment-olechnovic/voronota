@@ -1494,6 +1494,48 @@ private:
 						if(concept_mode()=="atoms")
 						{
 							ImGui::TextUnformatted("Show atoms:");
+
+							if(ImGui::BeginMenu("  as##atoms_show_as"))
+							{
+								if(ImGui::MenuItem("cartoon##show_as"))
+								{
+									result=std::string("hide-atoms -use (")+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep cartoon -use (")+atoms_selection_string()+")";
+								}
+								if(ImGui::MenuItem("trace##show_as"))
+								{
+									result=std::string("hide-atoms -use (")+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep trace -use (")+atoms_selection_string()+")";
+								}
+								if(ImGui::MenuItem("sticks##show_as"))
+								{
+									result=std::string("hide-atoms -use (")+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep sticks -use (")+atoms_selection_string()+")";
+								}
+								if(ImGui::MenuItem("balls##show_as"))
+								{
+									result=std::string("hide-atoms -use (")+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep balls -use (")+atoms_selection_string()+")";
+								}
+								if(ImGui::MenuItem("points##show_as"))
+								{
+									result=std::string("hide-atoms -use (")+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep points -use (")+atoms_selection_string()+")";
+								}
+								if(ImGui::MenuItem("molsurf##show_as"))
+								{
+									result=std::string("hide-atoms -use (")+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep molsurf -use (")+atoms_selection_string()+")";
+								}
+								if(ImGui::MenuItem("molsurf-mesh##show_as"))
+								{
+									result=std::string("hide-atoms -use (")+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep molsurf-mesh -use (")+atoms_selection_string()+")";
+								}
+
+								ImGui::EndMenu();
+							}
+
 							if(ImGui::Selectable("  cartoon##show"))
 							{
 								result=std::string("show-atoms -rep cartoon -use (")+atoms_selection_string()+")";
@@ -1526,6 +1568,28 @@ private:
 						else if(concept_mode()=="contacts")
 						{
 							ImGui::TextUnformatted("Show contacts:");
+
+							if(ImGui::BeginMenu("  as##contacts_show_as"))
+							{
+								if(ImGui::MenuItem("faces##show_as"))
+								{
+									result=std::string("hide-contacts -use (")+contacts_selection_string()+")\n";
+									result+=std::string("show-contacts -rep faces -use (")+contacts_selection_string()+")";
+								}
+								if(ImGui::MenuItem("edges##show_as"))
+								{
+									result=std::string("hide-contacts -use (")+contacts_selection_string()+")\n";
+									result+=std::string("show-contacts -rep edges -use (")+contacts_selection_string()+")";
+								}
+								if(ImGui::MenuItem("sas-mesh##show_as"))
+								{
+									result=std::string("hide-contacts -use (")+contacts_selection_string()+")\n";
+									result+=std::string("show-contacts -rep sas-mesh -use (")+contacts_selection_string()+")";
+								}
+
+								ImGui::EndMenu();
+							}
+
 							if(ImGui::Selectable("  faces##show"))
 							{
 								result="construct-contacts\n";
@@ -2291,6 +2355,48 @@ private:
 						if(concept_mode()=="atoms")
 						{
 							ImGui::TextUnformatted("Show atoms:");
+
+							if(ImGui::BeginMenu("  as##atoms_show_as"))
+							{
+								if(ImGui::MenuItem("cartoon##show_as"))
+								{
+									result=std::string("hide-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep cartoon -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								if(ImGui::MenuItem("trace##show_as"))
+								{
+									result=std::string("hide-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep trace -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								if(ImGui::MenuItem("sticks##show_as"))
+								{
+									result=std::string("hide-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep sticks -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								if(ImGui::MenuItem("balls##show_as"))
+								{
+									result=std::string("hide-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep balls  -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								if(ImGui::MenuItem("points##show_as"))
+								{
+									result=std::string("hide-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep points -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								if(ImGui::MenuItem("molsurf##show_as"))
+								{
+									result=std::string("hide-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep molsurf -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+								if(ImGui::MenuItem("molsurf-mesh##show_as"))
+								{
+									result=std::string("hide-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")\n";
+									result+=std::string("show-atoms -rep molsurf-mesh -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
+								}
+
+								ImGui::EndMenu();
+							}
+
 							if(ImGui::Selectable("  cartoon##show"))
 							{
 								result=std::string("show-atoms -rep cartoon -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")";
@@ -2323,6 +2429,28 @@ private:
 						else if(concept_mode()=="contacts")
 						{
 							ImGui::TextUnformatted("Show contacts:");
+
+							if(ImGui::BeginMenu("  as##contacts_show_as"))
+							{
+								if(ImGui::MenuItem("faces##show_as"))
+								{
+									result=std::string("hide-contacts -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")\n";
+									result+=std::string("show-contacts -rep faces -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+								}
+								if(ImGui::MenuItem("edges##show_as"))
+								{
+									result=std::string("hide-contacts -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")\n";
+									result+=std::string("show-contacts -rep edges -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+								}
+								if(ImGui::MenuItem("sas-mesh##show_as"))
+								{
+									result=std::string("hide-contacts -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")\n";
+									result+=std::string("show-contacts -rep sas-mesh -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")";
+								}
+
+								ImGui::EndMenu();
+							}
+
 							if(ImGui::Selectable("  faces##show"))
 							{
 								result=std::string("construct-contacts -on-objects '")+os.name+"'\n";
