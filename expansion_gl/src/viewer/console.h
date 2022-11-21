@@ -410,6 +410,11 @@ public:
 				documentation_viewer_state_.execute();
 			}
 
+			if(shading_control_toolbar_state_.visible && ImGui::CollapsingHeader("Shading controls##header_for_shading_controls"))
+			{
+				shading_control_toolbar_state_.execute(result);
+			}
+
 			if(display_control_toolbar_state_.visible && ImGui::CollapsingHeader("Display controls##header_for_display_controls", ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				display_control_toolbar_state_.execute(result);
@@ -896,6 +901,24 @@ private:
 			}
 			ImGui::SameLine();
 			{
+				static bool perspective=false;
+
+				perspective=uv::ViewerApplication::instance().projection_mode_is_perspective();
+
+				if(ImGui::Checkbox("Perspective", &perspective))
+				{
+					if(perspective)
+					{
+						result="vsb: perspective";
+					}
+					else
+					{
+						result="vsb: ortho";
+					}
+				}
+			}
+
+			{
 				static bool grid=false;
 
 				grid=uv::ViewerApplication::instance().rendering_mode_is_grid();
@@ -914,41 +937,41 @@ private:
 			}
 			ImGui::SameLine();
 			{
-				static bool impostoring=false;
-
-				impostoring=(GUIConfiguration::instance().impostoring_variant==GUIConfiguration::IMPOSTORING_VARIANT_SIMPLE);
-
-				if(ImGui::Checkbox("Impostoring", &impostoring))
+				const std::string button_id=std::string("Set background##background_color_button");
+				const std::string menu_id=std::string("Background##background_color_button_menu");
+				ImGui::Button(button_id.c_str(), ImVec2(130,0));
+				if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 				{
-					if(impostoring)
+					if(ImGui::Selectable("white"))
 					{
-						result="vsb: impostoring-simple";
+						result="background white";
 					}
-					else
+					if(ImGui::Selectable("black"))
 					{
-						result="vsb: impostoring-none";
+						result="background black";
 					}
+					if(ImGui::Selectable("gray"))
+					{
+						result="background 0xCCCCCC";
+					}
+					ImGui::EndPopup();
 				}
 			}
+		}
+	};
 
-			{
-				static bool perspective=false;
+	class ShadingControlToolbarState
+	{
+	public:
+		bool visible;
 
-				perspective=uv::ViewerApplication::instance().projection_mode_is_perspective();
+		ShadingControlToolbarState() :
+			visible(true)
+		{
+		}
 
-				if(ImGui::Checkbox("Perspective", &perspective))
-				{
-					if(perspective)
-					{
-						result="vsb: perspective";
-					}
-					else
-					{
-						result="vsb: ortho";
-					}
-				}
-			}
-			ImGui::SameLine();
+		void execute(std::string& result)
+		{
 			{
 				static bool antialiasing=false;
 
@@ -958,7 +981,7 @@ private:
 				{
 					if(antialiasing)
 					{
-						result="vsb: antialiasing-fast";
+						result="vsb: antialiasing-fast ; multisampling-none";
 					}
 					else
 					{
@@ -976,7 +999,7 @@ private:
 				{
 					if(multisampling)
 					{
-						result="vsb: multisampling-basic";
+						result="vsb: multisampling-basic ; antialiasing-none";
 					}
 					else
 					{
@@ -1021,6 +1044,24 @@ private:
 				}
 			}
 
+			{
+				static bool impostoring=false;
+
+				impostoring=(GUIConfiguration::instance().impostoring_variant==GUIConfiguration::IMPOSTORING_VARIANT_SIMPLE);
+
+				if(ImGui::Checkbox("Impostors", &impostoring))
+				{
+					if(impostoring)
+					{
+						result="vsb: impostoring-simple";
+					}
+					else
+					{
+						result="vsb: impostoring-none";
+					}
+				}
+			}
+			ImGui::SameLine();
 			{
 				static bool show_fps=false;
 
@@ -3209,6 +3250,7 @@ private:
 	ScriptEditorState script_editor_state_;
 	DocumentationViewerState documentation_viewer_state_;
 	DisplayControlToolbarState display_control_toolbar_state_;
+	ShadingControlToolbarState shading_control_toolbar_state_;
 	ObjectListViewerState object_list_viewer_state_;
 	SequenceViewerState sequence_viewer_state_;
 };
