@@ -521,7 +521,7 @@ private:
 					command_buffer_.assign(command_buffer_.size(), 0);
 					need_keyboard_focus_in_command_input=true;
 				}
-				if(need_keyboard_focus_in_command_input)
+				if(need_keyboard_focus_in_command_input || ((ImGui::IsWindowFocused() || !ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow)) && !ImGui::IsAnyItemActive()))
 				{
 					ImGui::SetKeyboardFocusHere(-1);
 					need_keyboard_focus_in_command_input=false;
