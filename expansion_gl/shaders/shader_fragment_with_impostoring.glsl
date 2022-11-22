@@ -40,7 +40,9 @@ void main()
     }
     
     float z = ((-xpPrimeTDc3-sqrt(square))/c3TDc3);
+#ifdef GL_EXT_frag_depth
     gl_FragDepthEXT=z;
+#endif
 
     vec4 pointclip = VP_inverse*vec4(gl_FragCoord.x, gl_FragCoord.y, z, 1);
     vec3 pointnormclip = vec3(pointclip)/pointclip.w;
@@ -60,11 +62,11 @@ void main()
         {
             final_color=vec3(1.0, 0.0, 1.0);
         }
-        gl_FragColor=vec4(final_color, gl_FragDepthEXT);
+        gl_FragColor=vec4(final_color, z);
     }
     else
     {
-        gl_FragColor=vec4(fragment_color_for_selection, gl_FragDepthEXT);
+        gl_FragColor=vec4(fragment_color_for_selection, z);
     }
 }
 

@@ -1,5 +1,4 @@
 #version 100
-#extension GL_EXT_frag_depth : enable
 
 precision highp float;
 uniform int selection_mode_enabled;
