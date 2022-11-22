@@ -257,7 +257,10 @@ public:
 
 	void shrink_to_minimal_view()
 	{
-		shrink_to_minimal_view_=true;
+		if(GUIConfiguration::instance().enabled_console)
+		{
+			shrink_to_minimal_view_=true;
+		}
 	}
 
 	std::string execute(

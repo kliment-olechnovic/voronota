@@ -160,18 +160,18 @@ protected:
 	{
 		if(action==GLFW_PRESS)
 		{
-			if(key==GLFW_KEY_ENTER || key==GLFW_KEY_ESCAPE || key==GLFW_KEY_UP || key==GLFW_KEY_DOWN)
+			if(key==GLFW_KEY_ENTER || key==GLFW_KEY_UP || key==GLFW_KEY_DOWN)
 			{
 				if(hovered())
 				{
 					Console::instance().set_need_keyboard_focus_in_command_input(true);
 				}
 			}
-			else if(key==GLFW_KEY_GRAVE_ACCENT && mods==GLFW_MOD_CONTROL)
+			else if(key==GLFW_KEY_ESCAPE && mods==0)
 			{
 				GUIConfiguration::instance().enabled_console=!GUIConfiguration::instance().enabled_console;
 			}
-			else if(key==GLFW_KEY_GRAVE_ACCENT && mods==(GLFW_MOD_CONTROL+GLFW_MOD_SHIFT))
+			else if(key==GLFW_KEY_ESCAPE && mods==GLFW_MOD_SHIFT)
 			{
 				Console::instance().shrink_to_minimal_view();
 			}

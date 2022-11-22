@@ -90,6 +90,13 @@ public:
 		set_command_for_congregation_of_data_managers("import-url", duktaper::operators::ImportUrl(RemoteImportDownloaderAdaptive::instance()));
 		set_command_for_congregation_of_data_managers("import-downloaded", operators::ImportDownloaded());
 
+#ifdef FOR_WEB
+		unset_command("exit");
+		unset_command("call-shell");
+		unset_command("run-nolb");
+		unset_command("run-bff");
+#endif
+
 		set_default_aliases();
 
 		forward_documentation();
