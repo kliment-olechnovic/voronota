@@ -167,9 +167,13 @@ protected:
 					Console::instance().set_need_keyboard_focus_in_command_input(true);
 				}
 			}
-			else if(key==GLFW_KEY_GRAVE_ACCENT)
+			else if(key==GLFW_KEY_GRAVE_ACCENT && mods==GLFW_MOD_CONTROL)
 			{
 				GUIConfiguration::instance().enabled_console=!GUIConfiguration::instance().enabled_console;
+			}
+			else if(key==GLFW_KEY_GRAVE_ACCENT && mods==(GLFW_MOD_CONTROL+GLFW_MOD_SHIFT))
+			{
+				Console::instance().shrink_to_minimal_view();
 			}
 		}
 

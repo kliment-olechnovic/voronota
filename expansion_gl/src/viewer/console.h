@@ -255,6 +255,11 @@ public:
 		documentation_viewer_state_.documentation=documentation;
 	}
 
+	void shrink_to_minimal_view()
+	{
+		shrink_to_minimal_view_=true;
+	}
+
 	std::string execute(
 			const int x_pos, const int y_pos,
 			const int recommended_width,
@@ -275,7 +280,12 @@ public:
 			ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
 			ImGui::SetNextWindowSizeConstraints(ImVec2(min_width, actual_min_height), ImVec2(max_width, max_height));
 			ImGui::SetNextWindowSize(ImVec2(recommended_width, recommended_height), ImGuiCond_FirstUseEver);
-			if(current_width_>0.0f && current_max_width_>0.0f && current_heigth_>0.0f)
+			if(shrink_to_minimal_view_ && current_max_width_>0.0f)
+			{
+				ImGui::SetNextWindowSize(ImVec2(max_width, actual_min_height), ImGuiCond_Always);
+				shrink_to_minimal_view_=false;
+			}
+			else if(current_width_>0.0f && current_max_width_>0.0f && current_heigth_>0.0f)
 			{
 				ImGui::SetNextWindowSize(ImVec2(current_width_+(max_width-current_max_width_), ((current_heigth_!=current_max_heigth_) ? current_heigth_ : max_height)), ImGuiCond_Always);
 			}
@@ -3370,6 +3380,7 @@ private:
 		current_heigth_(0.0f),
 		current_max_width_(0.0f),
 		current_max_heigth_(0.0f),
+		shrink_to_minimal_view_(false),
 		object_list_viewer_state_(objects_info_),
 		sequence_viewer_state_(objects_info_)
 	{
@@ -3385,6 +3396,7 @@ private:
 	float current_heigth_;
 	float current_max_width_;
 	float current_max_heigth_;
+	bool shrink_to_minimal_view_;
 
 	ObjectsInfo objects_info_;
 	CommandLineInterfaceState command_line_interface_state_;
