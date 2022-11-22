@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>voronota-viewer</title>
+		
+		<style>
+			body
+			{
+				font-family: arial;
+				margin: 0;
+				padding: none;
+				background-color: #AAAAAA;
+			}
+	
+			canvas.emscripten
+			{
+				border: 0px none;
+				background-color: black;
+			}
+			
+			#controls
+			{
+				bottom: 0;
+				left: 0;
+				position: absolute;
+				margin: 0;
+				padding: none;
+				height: 30px;
+			}
+			
+			.button
+			{
+				background-color: #777777;
+				border: none;
+				color: white;
+				text-align: center;
+				text-decoration: none;
+				display: inline-block;
+				padding-top: 5px;
+				padding-bottom: 5px;
+				padding-left: 10px;
+				padding-right: 10px;
+				margin-top: 0px;
+				margin-bottom: 0px;
+				margin-left: 0px;
+				margin-right: 5px;
+				height: 30px;
+				font-size: 12px;
+			}
+		</style>
+	</head>
+	
+	<body>
+
+		<div>
+			<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+		</div>
+		
+		<script type='text/javascript'>
+			var Module = {
+				preRun: [],
+				postRun: [(function(){on_post_init();})],
+				arguments: ['--window-width', '2000', '--window-height', '1500'],
+				print: (function()
+				{
+					return function(text)
+					{
+						console.log(text);
+					};
+				})(),
+				canvas: (function()
+				{
+					var canvas = document.getElementById('canvas');
+					canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+					return canvas;
+				})()
+			};
+		</script>
+		
+		<script type='text/javascript'>
+			function on_post_init()
+			{
+				Module.canvas.style.setProperty("width", 1000 + "px", "important");
+                Module.canvas.style.setProperty("height", 750 + "px", "important");
+                Module.canvas.width = 2000;
+                Module.canvas.height = 1500;
+			}
+		</script>
+		
+		<script type='text/javascript'>
+			function voronota_viewer_enqueue_script(str)
+			{
+				Module.ccall('voronota_viewer_enqueue_script', null, ['string'], [str]);
+			}
+			
+			function voronota_viewer_execute_native_script(str)
+			{
+				var result=JSON.parse(Module.ccall('voronota_viewer_execute_native_script', 'string', ['string'], [str]));
+				return result;
+			}
+			
+			function voronota_viewer_get_last_script_output()
+			{
+				var result=JSON.parse(Module.ccall('voronota_viewer_get_last_script_output', 'string'));
+				return result;
+			}
+			
+			function voronota_viewer_upload_file(name, data, parameters)
+			{
+				Module.ccall('voronota_viewer_upload_file', null, ['string','string','string'], [name,data,parameters]);
+			}
+			
+			function voronota_viewer_resize_window(width, height)
+			{
+				Module.ccall('voronota_viewer_resize_window', null, ['int','int'], [width,height]);
+			}
+		</script>
+		
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "dun2010bbdep.js";
+			document.body.appendChild(script);
+		</script>
+		
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "4ung.js";
+			document.body.appendChild(script);
+		</script>
+
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "voronota_viewer.js";
+			document.body.appendChild(script);
+		</script>
+
+	</body>
+</html>
