@@ -56,6 +56,13 @@
 
 		<div>
 			<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+			<p id="controls">
+				<input type="file" id="file_input" style="display: none;" multiple>
+				<button class="button" onclick="document.getElementById('file_input').click();">Import local files</button>
+				<button class="button" onclick="fetch_from_PDB()">Fetch from PDB</button>
+				<button class="button" onclick="fetch_from_AFDB()">Fetch from AlphaFold DB</button>
+				<button class="button" onclick="paste_and_run_command()">Paste command</button>
+			</p>
 		</div>
 		
 		<script type='text/javascript'>
@@ -103,6 +110,7 @@
 		<script type='text/javascript'>
 			function on_update_window_size()
 			{
+				var pixel_ratio=screen_pixel_ratio();
 				var new_width=window.innerWidth;
 				if(new_width<500)
 				{
@@ -113,11 +121,11 @@
 				{
 					new_heigth=500;
 				}
-				voronota_viewer_resize_window(new_width*screen_pixel_ratio(), new_heigth*screen_pixel_ratio());
+				voronota_viewer_resize_window(new_width*pixel_ratio, new_heigth*pixel_ratio);
 				Module.canvas.style.setProperty("width", new_width + "px", "important");
 				Module.canvas.style.setProperty("height", new_heigth + "px", "important");
-				Module.canvas.width=new_width*screen_pixel_ratio();
-				Module.canvas.height=new_heigth*screen_pixel_ratio();
+				Module.canvas.width=new_width*pixel_ratio;
+				Module.canvas.height=new_heigth*pixel_ratio;
 			}
 			
 			window.addEventListener('resize', function(event){on_update_window_size()});
@@ -168,6 +176,64 @@
 			var script = document.createElement('script');
 			script.src = "voronota_viewer.js";
 			document.body.appendChild(script);
+		</script>
+		
+		<script type='text/javascript'>
+			function setupFileReader(file)
+			{
+				var file_reader=new FileReader();
+				file_reader.onloadend=function(e){voronota_viewer_upload_file(file.name, file_reader.result, '--include-heteroatoms');}
+				file_reader.readAsText(file);	
+			}
+			var file_input=document.getElementById('file_input');
+			file_input.addEventListener('change', function(e)
+			{
+				for(var i=0;i<file_input.files.length;i++)
+				{
+					setupFileReader(file_input.files[i]);
+				}
+			});
+		</script>
+		
+		<script type='text/javascript'>
+			function load_input_file_by_url(file_url)
+			{
+				if(file_url===null)
+				{
+					return;
+				}
+				var file_base=file_url.split('/').pop();
+				var file_reader=new FileReader();
+				file_reader.onloadend=function(e){voronota_viewer_upload_file(file_base, file_reader.result, '--include-heteroatoms');}
+				var xhr=new XMLHttpRequest();
+				xhr.open('GET', file_url);
+				xhr.responseType='blob';
+				xhr.onload=function()
+				{
+					file_reader.readAsText(xhr.response);
+				}
+				xhr.send();
+			}
+
+			function fetch_from_PDB()
+			{
+				alert("Use 'fetch' command, e.g. 'fetch 4ung'.");
+			}
+			
+			function fetch_from_AFDB()
+			{
+				alert("Use 'fetch-afdb' command, e.g. 'fetch-afdb Q5VSL9'.");
+			}
+			
+			function paste_and_run_command()
+			{
+				var command_str=prompt('Paste or enter command', '');
+				if(command_str===null || command_str=='')
+				{
+					return;
+				}
+				voronota_viewer_enqueue_script(command_str);
+			}
 		</script>
 
 	</body>
