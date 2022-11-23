@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../../dependencies/imgui/imgui_impl_glfw.h"
+#include "../gui_style_wrapper.h"
 
 namespace voronota
 {
@@ -40,8 +40,8 @@ public:
 
 		static bool open=false;
 
-		ImGui::SetNextWindowPos(ImVec2(mouse_x+5.0f, std::max(0.0f, mouse_y-35.0f)), 0);
-		ImGui::SetNextWindowSize(ImVec2(3+(text.size()*8), 30), ImGuiCond_Always);
+		ImGui::SetNextWindowPos(ImVec2(mouse_x+5.0f*GUIStyleWrapper::scale_factor(), std::max(0.0f, mouse_y-35.0f*GUIStyleWrapper::scale_factor())), 0);
+		ImGui::SetNextWindowSize(ImVec2(3+(text.size()*8)*GUIStyleWrapper::scale_factor(), 30*GUIStyleWrapper::scale_factor()), ImGuiCond_Always);
 		ImGui::SetNextWindowBgAlpha(0.5f);
 		ImGui::Begin("Label", &open, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
 		ImGui::Text("%s", text.c_str());

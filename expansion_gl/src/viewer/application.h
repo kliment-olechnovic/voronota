@@ -79,6 +79,11 @@ protected:
 			ImGui_ImplOpenGL3_Init();
 
 			{
+				ImGuiIO& io=ImGui::GetIO();
+				io.IniFilename=0;
+			}
+
+			{
 				ImGuiStyle& style=ImGui::GetStyle();
 
 				style.WindowRounding                          = 0.0f;
@@ -121,8 +126,6 @@ protected:
 				style.Colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
 				style.Colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.87f, 0.87f, 0.87f, 0.35f);
 				style.Colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
-
-				ImGui::GetIO().IniFilename=0;
 			}
 
 			duktaper::DuktapeManager::set_output_director(DuktaperOutputDirector::instance());

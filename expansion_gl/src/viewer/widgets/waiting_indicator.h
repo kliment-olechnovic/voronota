@@ -1,7 +1,7 @@
 #ifndef VIEWER_WIDGETS_WAITING_INDICATOR_H_
 #define VIEWER_WIDGETS_WAITING_INDICATOR_H_
 
-#include "../../dependencies/imgui/imgui_impl_glfw.h"
+#include "../gui_style_wrapper.h"
 
 namespace voronota
 {
@@ -56,8 +56,8 @@ public:
 			return;
 		}
 
-		const int label_width=150;
-		const int label_height=30;
+		const int label_width=static_cast<int>(150*GUIStyleWrapper::scale_factor());
+		const int label_height=static_cast<int>(30*GUIStyleWrapper::scale_factor());
 		const int label_x_pos=box_x+(box_w/2)-(label_width/2);
 		const int label_y_pos=box_y+(box_h/2)-(label_height/2);
 

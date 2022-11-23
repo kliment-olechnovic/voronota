@@ -7,9 +7,9 @@
 #include <deque>
 
 #include "../uv/viewer_application.h"
-#include "../dependencies/imgui/imgui_impl_glfw.h"
 #include "../../../expansion_js/src/duktaper/stocked_data_resources.h"
 
+#include "gui_style_wrapper.h"
 #include "gui_configuration.h"
 
 namespace voronota
@@ -278,7 +278,7 @@ public:
 		}
 
 		{
-			const float actual_min_height=std::max(static_cast<float>(min_height), command_line_interface_state_.height_for_command_line+sequence_viewer_state_.calc_total_container_height()+15.0f);
+			const float actual_min_height=std::max(static_cast<float>(min_height), (command_line_interface_state_.height_for_command_line+15.0f)*GUIStyleWrapper::scale_factor()+sequence_viewer_state_.calc_total_container_height());
 
 			ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
 			ImGui::SetNextWindowSizeConstraints(ImVec2(min_width, actual_min_height), ImVec2(max_width, max_height));
@@ -489,10 +489,10 @@ private:
 
 		void execute(std::string& result, const float leave_more_space)
 		{
-			const float height_for_command_line_and_end=(height_for_command_line+leave_more_space);
+			const float height_for_command_line_and_end=(height_for_command_line*GUIStyleWrapper::scale_factor()+leave_more_space);
 			const float height_for_output_block=ImGui::GetWindowHeight()-height_for_command_line_and_end;
 
-			if(height_for_output_block>20.0f)
+			if(height_for_output_block>20.0f*GUIStyleWrapper::scale_factor())
 			{
 				ImGui::BeginChild("##console_scrolling_region", ImVec2(0, 0-height_for_command_line_and_end), true);
 				ImGui::PushItemWidth(-1);
@@ -689,14 +689,14 @@ private:
 
 		void execute(std::string& result)
 		{
-			if(ImGui::Button("Run##script_editor", ImVec2(70,0)))
+			if(ImGui::Button("Run##script_editor", ImVec2(70*GUIStyleWrapper::scale_factor(),0)))
 			{
 				result=(std::string(multiline_command_buffer_.data()));
 			}
 
 			ImGui::SameLine();
 
-			if(ImGui::Button("Clear##script_editor", ImVec2(70,0)))
+			if(ImGui::Button("Clear##script_editor", ImVec2(70*GUIStyleWrapper::scale_factor(),0)))
 			{
 				multiline_command_buffer_[0]=0;
 			}
@@ -704,7 +704,7 @@ private:
 			ImGui::SameLine();
 
 			{
-				ImGui::Button("Load example##script_editor", ImVec2(100,0));
+				ImGui::Button("Load example##script_editor", ImVec2(100*GUIStyleWrapper::scale_factor(),0));
 				if(ImGui::BeginPopupContextItem("load example script context menu", 0))
 				{
 					for(std::size_t i=0;i<example_scripts().size();i++)
@@ -731,7 +731,7 @@ private:
 			ImGui::SameLine();
 
 			{
-				ImGui::Button("Options##script_editor", ImVec2(70,0));
+				ImGui::Button("Options##script_editor", ImVec2(70*GUIStyleWrapper::scale_factor(),0));
 				if(ImGui::BeginPopupContextItem("script editor options context menu", 0))
 				{
 					ImGui::PushItemWidth(150);
@@ -825,7 +825,7 @@ private:
 
 			ImGui::SameLine();
 
-			if(ImGui::Button("Clear##doc_viewer", ImVec2(70,0)))
+			if(ImGui::Button("Clear##doc_viewer", ImVec2(70*GUIStyleWrapper::scale_factor(),0)))
 			{
 				search_string_buffer.clear();
 				search_string_buffer.resize(256, 0);
@@ -844,7 +844,7 @@ private:
 			ImGui::SameLine();
 
 			{
-				ImGui::Button("Options##doc_viewer", ImVec2(70,0));
+				ImGui::Button("Options##doc_viewer", ImVec2(70*GUIStyleWrapper::scale_factor(),0));
 				if(ImGui::BeginPopupContextItem("doc viewer options context menu", 0))
 				{
 					ImGui::PushItemWidth(150);
@@ -965,7 +965,7 @@ private:
 			{
 				const std::string button_id=std::string("Set background##background_color_button");
 				const std::string menu_id=std::string("Background##background_color_button_menu");
-				ImGui::Button(button_id.c_str(), ImVec2(130,0));
+				ImGui::Button(button_id.c_str(), ImVec2(130*GUIStyleWrapper::scale_factor(),0));
 				if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 				{
 					if(ImGui::Selectable("white"))
@@ -1311,7 +1311,7 @@ private:
 				{
 					const std::string button_id=std::string("P##button_picking_all");
 					const std::string menu_id=std::string("Picking##menu_picking");
-					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(ImGui::Selectable("Pick all"))
@@ -1341,7 +1341,7 @@ private:
 				{
 					const std::string button_id=std::string("V##button_visibility_all");
 					const std::string menu_id=std::string("Visibility##menu_visibility");
-					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(ImGui::Selectable("Show all"))
@@ -1421,7 +1421,7 @@ private:
 				{
 					const std::string button_id=std::string("O##button_objects");
 					const std::string menu_id=std::string("Objects##menu_objects");
-					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(ImGui::Selectable("Zoom"))
@@ -1457,7 +1457,7 @@ private:
 				{
 					const std::string button_id=std::string("A##button_actions");
 					const std::string menu_id=std::string("Actions##menu_actions");
-					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(concept_mode()=="atoms")
@@ -1514,7 +1514,7 @@ private:
 				{
 					const std::string button_id=std::string("S##button_show");
 					const std::string menu_id=std::string("Show##menu_show");
-					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(concept_mode()=="atoms")
@@ -1640,7 +1640,7 @@ private:
 				{
 					const std::string button_id=std::string("H##button_hide");
 					const std::string menu_id=std::string("Hide##menu_hide");
-					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(concept_mode()=="atoms")
@@ -1707,7 +1707,7 @@ private:
 				{
 					const std::string button_id=std::string("C##button_color");
 					const std::string menu_id=std::string("Color##menu_color");
-					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(concept_mode()=="atoms")
@@ -2084,7 +2084,7 @@ private:
 				{
 					const std::string button_id=std::string("O##button_object_")+os.name;
 					const std::string menu_id=std::string("Object##menu_object_")+os.name;
-					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						{
@@ -2270,7 +2270,7 @@ private:
 				{
 					const std::string button_id=std::string("A##button_actions_")+os.name;
 					const std::string menu_id=std::string("Actions##menu_actions_")+os.name;
-					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(concept_mode()=="atoms")
@@ -2375,7 +2375,7 @@ private:
 				{
 					const std::string button_id=std::string("S##button_show_")+os.name;
 					const std::string menu_id=std::string("Show##menu_show_")+os.name;
-					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(concept_mode()=="atoms")
@@ -2501,7 +2501,7 @@ private:
 				{
 					const std::string button_id=std::string("H##button_hide_")+os.name;
 					const std::string menu_id=std::string("Hide##menu_hide_")+os.name;
-					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(concept_mode()=="atoms")
@@ -2568,7 +2568,7 @@ private:
 				{
 					const std::string button_id=std::string("C##button_color_")+os.name;
 					const std::string menu_id=std::string("Color##menu_color_")+os.name;
-					ImGui::Button(button_id.c_str(), ImVec2(19,0));
+					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
 						if(concept_mode()=="atoms")
@@ -3067,7 +3067,7 @@ private:
 			{
 				return 0.0f;
 			}
-			return static_cast<float>(std::min(objects_info.num_of_visible_objects(), std::min(max_visible_slots, max_slots))*sequence_frame_height);
+			return static_cast<float>(std::min(objects_info.num_of_visible_objects(), std::min(max_visible_slots, max_slots))*sequence_frame_height)*GUIStyleWrapper::scale_factor();
 		}
 
 		float calc_name_column_width(const float total_width) const
@@ -3090,7 +3090,7 @@ private:
 
 			const float width=std::min(static_cast<float>(max_name_size)*7.0f+5.0f, total_width*0.2f);
 
-			return width;
+			return width*GUIStyleWrapper::scale_factor();
 		}
 
 		void execute(std::string& result) const
@@ -3115,9 +3115,9 @@ private:
 
 			ImGui::BeginChild("##sequence_view_container", ImVec2(0, total_container_height), false);
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 0.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f*GUIStyleWrapper::scale_factor(), 0.0f));
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1.0f, 0.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1.0f*GUIStyleWrapper::scale_factor(), 0.0f));
 
 			int used_slots=0;
 			int used_buttons=0;
@@ -3131,7 +3131,7 @@ private:
 
 					{
 						const std::string region_id=std::string("##name_of_sequence_scrolling_region_")+object_states[i].name;
-						ImGui::BeginChild(region_id.c_str(), ImVec2(names_frame_width, sequence_frame_height), false, ImGuiWindowFlags_HorizontalScrollbar);
+						ImGui::BeginChild(region_id.c_str(), ImVec2(names_frame_width, sequence_frame_height*GUIStyleWrapper::scale_factor()), false, ImGuiWindowFlags_HorizontalScrollbar);
 						ImGui::TextUnformatted(object_states[i].name.c_str());
 						ImGui::EndChild();
 					}
@@ -3145,7 +3145,7 @@ private:
 						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
 						const std::string region_id=std::string("##sequence_scrolling_region_")+object_states[i].name;
-						ImGui::BeginChild(region_id.c_str(), ImVec2(0, sequence_frame_height), true, ImGuiWindowFlags_HorizontalScrollbar|ImGuiWindowFlags_AlwaysHorizontalScrollbar);
+						ImGui::BeginChild(region_id.c_str(), ImVec2(0, sequence_frame_height*GUIStyleWrapper::scale_factor()), true, ImGuiWindowFlags_HorizontalScrollbar|ImGuiWindowFlags_AlwaysHorizontalScrollbar);
 
 						std::map<std::string, ObjectsInfo::ObjectDetails>::const_iterator details_it=object_details.find(object_states[i].name);
 						if(details_it!=object_details.end())
@@ -3157,14 +3157,14 @@ private:
 								if(j>0)
 								{
 									ImGui::SameLine();
-									ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+									ImGui::Dummy(ImVec2(button_width_unit*GUIStyleWrapper::scale_factor(), 0.0f));
 									ImGui::SameLine();
 								}
 								if(!sequence.chains[j].name.empty())
 								{
 									char button_label[64];
 									snprintf(button_label, 64, "%s##chain_button_%d", sequence.chains[j].name.c_str(), used_buttons++);
-									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(sequence.chains[j].name.size()), 0.0f)))
+									if(ImGui::Button(button_label, ImVec2(button_width_unit*GUIStyleWrapper::scale_factor()*static_cast<float>(sequence.chains[j].name.size()), 0.0f)))
 									{
 										if(!sequence.chains[j].residues.empty())
 										{
@@ -3176,7 +3176,7 @@ private:
 										}
 									}
 									ImGui::SameLine();
-									ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+									ImGui::Dummy(ImVec2(button_width_unit*GUIStyleWrapper::scale_factor(), 0.0f));
 									ImGui::SameLine();
 								}
 								for(std::size_t e=0;e<sequence.chains[j].residues.size();e++)
@@ -3186,14 +3186,14 @@ private:
 										ImGui::SameLine();
 										if(sequence.chains[j].residues[e].num!=sequence.chains[j].residues[e-1].num+1)
 										{
-											ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+											ImGui::Dummy(ImVec2(button_width_unit*GUIStyleWrapper::scale_factor(), 0.0f));
 											ImGui::SameLine();
 										}
 									}
 									const ObjectsInfo::ObjectSequenceInfo::ResidueInfo& residue=sequence.chains[j].residues[e];
 									char button_label[64];
 									snprintf(button_label, 64, "%s##seq_num_button_%d", residue.num_label.c_str(), used_buttons++);
-									if(ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(residue.display_size()), 0.0f)))
+									if(ImGui::Button(button_label, ImVec2(button_width_unit*GUIStyleWrapper::scale_factor()*static_cast<float>(residue.display_size()), 0.0f)))
 									{
 										result=std::string("vsb: ")+(residue.marked ? "unmark-atoms" : "mark-atoms")
 											+" -on-objects "+object_states[i].name
@@ -3210,14 +3210,14 @@ private:
 								if(j>0)
 								{
 									ImGui::SameLine();
-									ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+									ImGui::Dummy(ImVec2(button_width_unit*GUIStyleWrapper::scale_factor(), 0.0f));
 									ImGui::SameLine();
 								}
 								if(!sequence.chains[j].name.empty())
 								{
-									ImGui::Dummy(ImVec2(button_width_unit*static_cast<float>(sequence.chains[j].name.size()), 0.0f));
+									ImGui::Dummy(ImVec2(button_width_unit*GUIStyleWrapper::scale_factor()*static_cast<float>(sequence.chains[j].name.size()), 0.0f));
 									ImGui::SameLine();
-									ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+									ImGui::Dummy(ImVec2(button_width_unit*GUIStyleWrapper::scale_factor(), 0.0f));
 									ImGui::SameLine();
 								}
 								for(std::size_t e=0;e<sequence.chains[j].residues.size();e++)
@@ -3227,7 +3227,7 @@ private:
 										ImGui::SameLine();
 										if(sequence.chains[j].residues[e].num!=sequence.chains[j].residues[e-1].num+1)
 										{
-											ImGui::Dummy(ImVec2(button_width_unit, 0.0f));
+											ImGui::Dummy(ImVec2(button_width_unit*GUIStyleWrapper::scale_factor(), 0.0f));
 											ImGui::SameLine();
 										}
 									}
@@ -3246,7 +3246,7 @@ private:
 										ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(residue.rgb[0], residue.rgb[1], residue.rgb[2], 1.0f));
 									}
 
-									ImGui::Button(button_label, ImVec2(button_width_unit*static_cast<float>(residue.display_size()), 0.0f));
+									ImGui::Button(button_label, ImVec2(button_width_unit*GUIStyleWrapper::scale_factor()*static_cast<float>(residue.display_size()), 0.0f));
 
 									bool action_needed=false;
 
