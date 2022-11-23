@@ -292,6 +292,6 @@ select-contacts [-a1 [-chain B -rnum 15]] -name contacts_r2
 color-contacts ([contacts_r1] or [contacts_r2])  -rep edges -col black
 show-contacts ([contacts_r1] or [contacts_r2]) -rep edges
 select-contacts [-inter-chain -a1 [-chain A -rnum 16] -a2 [-chain B -rnum 15]] -name iface
-color-contacts [iface] -col yellow
+color-contacts [iface] -rep faces -col yellow
 show-contacts [iface] -rep faces
 

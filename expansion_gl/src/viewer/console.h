@@ -319,99 +319,10 @@ public:
 
 			ImGui::SetNextWindowSize(panel_size, ImGuiCond_FirstUseEver);
 			ImGui::SetNextWindowBgAlpha(0.5f);
-			if(!ImGui::Begin("Panel", 0, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_MenuBar))
+			if(!ImGui::Begin("Panel", 0, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize))
 			{
 				ImGui::End();
 				return result;
-			}
-
-			if(ImGui::BeginMenuBar())
-			{
-				if(ImGui::BeginMenu("Options"))
-				{
-					if(ImGui::BeginMenu("Set background"))
-					{
-						if(ImGui::MenuItem("white"))
-						{
-							result="background white";
-						}
-						if(ImGui::MenuItem("black"))
-						{
-							result="background black";
-						}
-						if(ImGui::MenuItem("gray"))
-						{
-							result="background 0xCCCCCC";
-						}
-						ImGui::EndMenu();
-					}
-
-					if(ImGui::BeginMenu("Set projection mode"))
-					{
-						if(ImGui::MenuItem("perspective"))
-						{
-							result="perspective";
-						}
-						if(ImGui::MenuItem("orthographic"))
-						{
-							result="ortho";
-						}
-						ImGui::EndMenu();
-					}
-
-					if(ImGui::BeginMenu("Set grid mode"))
-					{
-						if(ImGui::MenuItem("by object"))
-						{
-							result="grid-by-object";
-						}
-						if(ImGui::MenuItem("stereo"))
-						{
-							result="stereo";
-						}
-						if(ImGui::MenuItem("mono"))
-						{
-							result="mono";
-						}
-						ImGui::EndMenu();
-					}
-
-					if(ImGui::BeginMenu("Set JSON write level"))
-					{
-						if(ImGui::MenuItem("level 0"))
-						{
-							result="configure-gui-json-write-level-0";
-						}
-						if(ImGui::MenuItem("level 1"))
-						{
-							result="configure-gui-json-write-level-1";
-						}
-						if(ImGui::MenuItem("level 2"))
-						{
-							result="configure-gui-json-write-level-2";
-						}
-						if(ImGui::MenuItem("level 3"))
-						{
-							result="configure-gui-json-write-level-3";
-						}
-						if(ImGui::MenuItem("level 4"))
-						{
-							result="configure-gui-json-write-level-4";
-						}
-						if(ImGui::MenuItem("level 5"))
-						{
-							result="configure-gui-json-write-level-5";
-						}
-						if(ImGui::MenuItem("level 6"))
-						{
-							result="configure-gui-json-write-level-6";
-						}
-						ImGui::EndMenu();
-					}
-
-					ImGui::EndMenu();
-				}
-				ImGui::EndMenuBar();
 			}
 
 			if(script_editor_state_.visible && ImGui::CollapsingHeader("Script editor##header_for_script_editor"))
@@ -748,7 +659,7 @@ private:
 
 			script_editor_size=std::max(script_editor_size_min, std::min(script_editor_size, script_editor_size_max));
 
-			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0, script_editor_size));
+			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0, script_editor_size*GUIStyleWrapper::scale_factor()));
 			ImVec4 color_text=(script_editor_colors_black_on_white ? ImVec4(0.0f, 0.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			ImVec4 color_background=(script_editor_colors_black_on_white ? ImVec4(1.0f, 1.0f, 1.0f, 1.0f) : ImVec4(0.10f, 0.10f, 0.10f, 1.0f));
 			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
@@ -866,7 +777,7 @@ private:
 			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, color_background);
 
-			ImGui::BeginChild("##area_for_list_of_documentation", ImVec2(0, doc_viewer_size));
+			ImGui::BeginChild("##area_for_list_of_documentation", ImVec2(0, doc_viewer_size*GUIStyleWrapper::scale_factor()));
 
 			for(std::map<std::string, std::string>::const_iterator it=documentation.begin();it!=documentation.end();++it)
 			{
@@ -927,24 +838,6 @@ private:
 			}
 			ImGui::SameLine();
 			{
-				static bool perspective=false;
-
-				perspective=uv::ViewerApplication::instance().projection_mode_is_perspective();
-
-				if(ImGui::Checkbox("Perspective", &perspective))
-				{
-					if(perspective)
-					{
-						result="vsb: perspective";
-					}
-					else
-					{
-						result="vsb: ortho";
-					}
-				}
-			}
-
-			{
 				static bool grid=false;
 
 				grid=uv::ViewerApplication::instance().rendering_mode_is_grid();
@@ -962,6 +855,60 @@ private:
 				}
 			}
 			ImGui::SameLine();
+			{
+				static bool stereo=false;
+
+				stereo=uv::ViewerApplication::instance().rendering_mode_is_stereo();
+
+				if(ImGui::Checkbox("Stereo", &stereo))
+				{
+					if(stereo)
+					{
+						result="vsb: stereo";
+					}
+					else
+					{
+						result="vsb: mono";
+					}
+				}
+			}
+
+			{
+				static bool perspective=false;
+
+				perspective=uv::ViewerApplication::instance().projection_mode_is_perspective();
+
+				if(ImGui::Checkbox("Perspective", &perspective))
+				{
+					if(perspective)
+					{
+						result="vsb: perspective";
+					}
+					else
+					{
+						result="vsb: ortho";
+					}
+				}
+			}
+			ImGui::SameLine();
+			{
+				static bool compact_printing=false;
+
+				compact_printing=(GUIConfiguration::instance().json_writing_level<6);
+
+				if(ImGui::Checkbox("Compact printing", &compact_printing))
+				{
+					if(compact_printing)
+					{
+						result="vsb: configure-gui-json-write-level-0";
+					}
+					else
+					{
+						result="vsb: configure-gui-json-write-level-6";
+					}
+				}
+			}
+
 			{
 				const std::string button_id=std::string("Set background##background_color_button");
 				const std::string menu_id=std::string("Background##background_color_button_menu");
