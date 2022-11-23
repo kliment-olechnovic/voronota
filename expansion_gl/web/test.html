@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>voronota-viewer</title>
+		<title>Voronota-GL</title>
 		
 		<style>
 			body
@@ -59,10 +59,31 @@
 		</div>
 		
 		<script type='text/javascript'>
+			function is_retina_display()
+			{
+				if (window.matchMedia)
+				{
+					var mq=window.matchMedia("only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen  and (min-device-pixel-ratio: 1.3), only screen and (min-resolution: 1.3dppx)");
+					return (mq && mq.matches || (window.devicePixelRatio>1));
+			    }
+			    return false;
+			}
+			
+			function screen_pixel_ratio()
+			{
+				if(is_retina_display())
+				{
+					return 2.0;
+				}
+				return 1.0;
+			}
+		</script>
+		
+		<script type='text/javascript'>
 			var Module = {
 				preRun: [],
-				postRun: [(function(){on_post_init();})],
-				arguments: ['--window-width', '2000', '--window-height', '1500', '--gui-scaling', '2.0'],
+				postRun: [(function(){on_update_window_size();})],
+				arguments: ['--window-width', '800', '--window-height', '600', '--gui-scaling', ''+screen_pixel_ratio()],
 				print: (function()
 				{
 					return function(text)
@@ -80,13 +101,26 @@
 		</script>
 		
 		<script type='text/javascript'>
-			function on_post_init()
+			function on_update_window_size()
 			{
-				Module.canvas.style.setProperty("width", 1000 + "px", "important");
-                Module.canvas.style.setProperty("height", 750 + "px", "important");
-                Module.canvas.width = 2000;
-                Module.canvas.height = 1500;
+				var new_width=window.innerWidth;
+				if(new_width<500)
+				{
+					new_width=500;
+				}
+				var new_heigth=window.innerHeight-30;
+				if(new_heigth<500)
+				{
+					new_heigth=500;
+				}
+				voronota_viewer_resize_window(new_width*screen_pixel_ratio(), new_heigth*screen_pixel_ratio());
+				Module.canvas.style.setProperty("width", new_width + "px", "important");
+				Module.canvas.style.setProperty("height", new_heigth + "px", "important");
+				Module.canvas.width=new_width*screen_pixel_ratio();
+				Module.canvas.height=new_heigth*screen_pixel_ratio();
 			}
+			
+			window.addEventListener('resize', function(event){on_update_window_size()});
 		</script>
 		
 		<script type='text/javascript'>
