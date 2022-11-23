@@ -23,12 +23,13 @@ public:
 		return mutable_scale_factor();
 	}
 
-	static bool set_scale_factor(const float value)
+	static bool set_scale_factor(const float value, const bool scale_font)
 	{
 		if(initialized() && value>0.2f && value<=5.0f)
 		{
 			mutable_scale_factor()=value;
 
+			if(scale_font)
 			{
 				ImGuiIO& io=ImGui::GetIO();
 				io.FontGlobalScale=value;

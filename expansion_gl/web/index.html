@@ -90,7 +90,7 @@
 			var Module = {
 				preRun: [],
 				postRun: [(function(){on_update_window_size();})],
-				arguments: ['--window-width', '800', '--window-height', '600', '--gui-scaling', ''+screen_pixel_ratio()],
+				arguments: ['--window-width', '800', '--window-height', '600', '--gui-scaling', ''+screen_pixel_ratio(), '--custom-font-file', 'font.ttf'],
 				print: (function()
 				{
 					return function(text)
@@ -163,6 +163,12 @@
 		<script type='text/javascript'>
 			var script = document.createElement('script');
 			script.src = "dun2010bbdep.js";
+			document.body.appendChild(script);
+		</script>
+		
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "font.js";
 			document.body.appendChild(script);
 		</script>
 		

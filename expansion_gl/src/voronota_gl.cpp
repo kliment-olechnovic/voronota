@@ -25,6 +25,7 @@ int main(const int argc, const char** argv)
 		app_init_parameters.shader_fragment_with_instancing=command_args_input.get_value_or_default<std::string>("shader-fragment-with-instancing", "_shader_fragment_simple");
 		app_init_parameters.shader_fragment_with_impostoring=command_args_input.get_value_or_default<std::string>("shader-fragment-with-impostoring", "_shader_fragment_with_impostoring");
 		const float gui_scaling=command_args_input.get_value_or_default<float>("gui-scaling", 1.0f);
+		const std::string custom_font_file=command_args_input.get_value_or_default<std::string>("custom-font-file", "");
 		const std::vector<std::string> files=command_args_input.get_value_vector_or_all_unused_unnamed_values("files");
 		const std::vector<std::string> scripts=command_args_input.get_value_vector_or_default<std::string>("scripts", std::vector<std::string>());
 		const bool musical=command_args_input.get_flag("musical");
@@ -36,8 +37,14 @@ int main(const int argc, const char** argv)
 			throw std::runtime_error(std::string("Failed to init application."));
 		}
 
+		if(!custom_font_file.empty())
+		{
+			ImGuiIO& io=ImGui::GetIO();
+			io.Fonts->AddFontFromFileTTF(custom_font_file.c_str(), 13.0f*gui_scaling);
+		}
+
 		voronota::viewer::GUIStyleWrapper::initialized()=true;
-		voronota::viewer::GUIStyleWrapper::set_scale_factor(gui_scaling);
+		voronota::viewer::GUIStyleWrapper::set_scale_factor(gui_scaling, custom_font_file.empty());
 
 		voronota::viewer::Application::instance().enqueue_script("clear");
 		voronota::viewer::Application::instance().enqueue_script("setup-defaults");
