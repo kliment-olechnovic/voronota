@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>voronota-viewer</title>
+		<title>Voronota-GL</title>
 		
 		<style>
 			body
@@ -58,16 +58,39 @@
 			<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 			<p id="controls">
 				<input type="file" id="file_input" style="display: none;" multiple>
-				<button class="button" onclick="document.getElementById('file_input').click();">Import files</button>
+				<button class="button" onclick="document.getElementById('file_input').click();">Import local files</button>
 				<button class="button" onclick="fetch_from_PDB()">Fetch from PDB</button>
+				<button class="button" onclick="fetch_from_AFDB()">Fetch from AlphaFold DB</button>
+				<button class="button" onclick="paste_and_run_command()">Paste command</button>
 			</p>
 		</div>
+		
+		<script type='text/javascript'>
+			function is_retina_display()
+			{
+				if (window.matchMedia)
+				{
+					var mq=window.matchMedia("only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen  and (min-device-pixel-ratio: 1.3), only screen and (min-resolution: 1.3dppx)");
+					return (mq && mq.matches || (window.devicePixelRatio>1));
+			    }
+			    return false;
+			}
+			
+			function screen_pixel_ratio()
+			{
+				if(is_retina_display())
+				{
+					return 2.0;
+				}
+				return 1.0;
+			}
+		</script>
 		
 		<script type='text/javascript'>
 			var Module = {
 				preRun: [],
 				postRun: [(function(){on_update_window_size();})],
-				arguments: ['--window-width', '500', '--window-height', '500'],
+				arguments: ['--window-width', '800', '--window-height', '600', '--gui-scaling', ''+screen_pixel_ratio()],
 				print: (function()
 				{
 					return function(text)
@@ -87,6 +110,7 @@
 		<script type='text/javascript'>
 			function on_update_window_size()
 			{
+				var pixel_ratio=screen_pixel_ratio();
 				var new_width=window.innerWidth;
 				if(new_width<500)
 				{
@@ -97,7 +121,11 @@
 				{
 					new_heigth=500;
 				}
-				voronota_viewer_resize_window(new_width, new_heigth);
+				voronota_viewer_resize_window(new_width*pixel_ratio, new_heigth*pixel_ratio);
+				Module.canvas.style.setProperty("width", new_width + "px", "important");
+				Module.canvas.style.setProperty("height", new_heigth + "px", "important");
+				Module.canvas.width=new_width*pixel_ratio;
+				Module.canvas.height=new_heigth*pixel_ratio;
 			}
 			
 			window.addEventListener('resize', function(event){on_update_window_size()});
@@ -187,24 +215,24 @@
 				xhr.send();
 			}
 
-			function fetch_from_URL()
-			{
-				var file_url=prompt('Enter URL', 'http://predictioncenter.org/caspcommons/MODELS/C1906/C1906TS156_1');
-				if(file_url===null)
-				{
-					return;
-				}
-				load_input_file_by_url('https://cors-anywhere.herokuapp.com/'+file_url);
-			}
-
 			function fetch_from_PDB()
 			{
-				var pdb_id=prompt('Enter PDB ID', '2ZSK');
-				if(pdb_id===null)
+				alert("Use 'fetch' command, e.g. 'fetch 4ung'.");
+			}
+			
+			function fetch_from_AFDB()
+			{
+				alert("Use 'fetch-afdb' command, e.g. 'fetch-afdb Q5VSL9'.");
+			}
+			
+			function paste_and_run_command()
+			{
+				var command_str=prompt('Paste or enter command', '');
+				if(command_str===null || command_str=='')
 				{
 					return;
 				}
-				load_input_file_by_url('https://files.rcsb.org/download/'+pdb_id+'.pdb');
+				voronota_viewer_enqueue_script(command_str);
 			}
 		</script>
 
