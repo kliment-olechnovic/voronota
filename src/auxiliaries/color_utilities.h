@@ -154,6 +154,10 @@ public:
 		{
 			return 0xFF00FF;
 		}
+		else if(name=="orange")
+		{
+			return 0xFF8000;
+		}
 		else if(name=="white")
 		{
 			return 0xFFFFFF;

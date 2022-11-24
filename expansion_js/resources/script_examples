@@ -1,11 +1,11 @@
-### Draw and show interface contacts
+### Draw and show inter-chain interface contacts
 spectrum-atoms -by chain
 construct-contacts
 select-contacts [-inter-chain] -name iface
 show-contacts [iface]
 color-contacts [iface] -col yellow
 
-### Draw and show interface contacts plus SAS
+### Draw and show inter-chain interface contacts plus some adjacent SAS
 spectrum-atoms -by chain
 construct-contacts
 select-contacts [-inter-chain] -name iface
@@ -27,147 +27,6 @@ select-contacts [-a1 [iface_atoms_A] -solvent] \
 show-contacts [iface_atoms_A_sas]
 color-contacts [iface_atoms_A_sas] -col 0x77FFFF
 
-### Change background color
-background black
-#background white
-#background 0xCCCCCC
-
-### Align all, zoom all, enable grid by object
-tmalign-many
-zoom-by-objects
-grid-by-object
-
-### List objects and selections
-list-objects
-list-selections-of-atoms
-list-selections-of-contacts
-
-### Calculate VoroMQA-light global and local scores
-restrict-atoms [-t! het]
-construct-contacts
-voromqa-global
-spectrum-atoms -adjunct voromqa_score_r \
-  -scheme rwb -min-val 0.25 -max-val 0.75
-
-### Color atoms by VoroMQA-light local scores
-spectrum-atoms \
-  -adjunct voromqa_score_r \
-  -scheme rwb \
-  -min-val 0.25 \
-  -max-val 0.75
-
-### Calculate VoroMQA-dark global and local scores
-restrict-atoms [-t! het]
-construct-contacts
-voromqa-global
-voromqa-dark-global
-set-adjunct-of-atoms-by-residue-pooling \
-  -source-name vd1 -destination-name vd1s \
-  -pooling-mode min -smoothing-window 0
-spectrum-atoms -adjunct vd1s \
-  -scheme rwb -min-val 0.45 -max-val 0.75
-
-### Color atoms by VoroMQA-dark local scores, level 1
-set-adjunct-of-atoms-by-residue-pooling \
-  -source-name vd1 \
-  -destination-name vd1s \
-  -pooling-mode min \
-  -smoothing-window 0
-spectrum-atoms \
-  -adjunct vd1s \
-  -scheme rwb \
-  -min-val 0.45 \
-  -max-val 0.75
-
-### Color atoms by VoroMQA-dark local scores, level 2
-set-adjunct-of-atoms-by-residue-pooling \
-  -source-name vd2 \
-  -destination-name vd2s \
-  -pooling-mode min \
-  -smoothing-window 0
-spectrum-atoms \
-  -adjunct vd2s \
-  -scheme rwb \
-  -min-val 0.45 \
-  -max-val 0.75
-
-### Color atoms by VoroMQA-dark local scores, level 3
-set-adjunct-of-atoms-by-residue-pooling \
-  -source-name vd3 \
-  -destination-name vd3s \
-  -pooling-mode min \
-  -smoothing-window 0
-spectrum-atoms \
-  -adjunct vd3s \
-  -scheme rwb \
-  -min-val 0.45 \
-  -max-val 0.75
-
-### Calculate VoroMQA surface frustration scores
-#restrict-atoms [c<A>]
-restrict-atoms [-t! het]
-construct-contacts
-voromqa-global
-voromqa-frustration -adj-atom-frustration-energy-mean afem \
-  -adj-contact-frustration-energy-mean cfem \
-  -smoothing-iterations 1 -smoothing-depth 3
-hide-atoms
-show-atoms -rep balls
-color-atoms 0x555555
-spectrum-atoms -adjunct afem -scheme bwr -min-val -0.5 -max-val 0.5
-
-### Calculate VoroMQA hydrophobic belt
-restrict-atoms [-t! het]
-construct-contacts
-voromqa-global
-voromqa-frustration \
-  -smoothing-iterations 3 -smoothing-depth 1
-describe-exposure \
-  -probe-min 2.0 -probe-max 30 -expansion 1 \
-  -smoothing-iterations 3 -smoothing-depth 1
-voromqa-membrane-place \
-  -adj-atom-weighted-membrane-place-value weighted_membrane_place_value \
-  -membrane-width 25 -membrane-width-extended 25
-set-adjunct-of-atoms-by-expression \
-  -use [-v weighted_membrane_place_value] -expression _logistic \
-  -input-adjuncts weighted_membrane_place_value \
-  -parameters 1 30 0.3 -output-adjunct area_alt_part
-set-adjunct-of-contacts-by-atom-adjuncts \
-  -atoms [-v area_alt_part=0.01:1] \
-  -contacts [-solvent] -source-name area_alt_part \
-  -destination-name area_alt_part -pooling-mode min
-hide-atoms
-hide-contacts
-color-contacts -col yellow
-spectrum-contacts -adjunct area_alt_part -scheme bwr -min-val 0 -max-val 1
-show-contacts [-solvent] -rep faces
-
-### Calculate VoroMQA hydrophobic belt-adjusted QA score
-restrict-atoms [-t! het]
-construct-contacts
-voromqa-global
-voromqa-frustration \
-  -smoothing-iterations 3 -smoothing-depth 1
-describe-exposure \
-  -probe-min 2.0 -probe-max 30 -expansion 1 \
-  -smoothing-iterations 3 -smoothing-depth 1
-voromqa-membrane-place \
-  -adj-atom-weighted-membrane-place-value weighted_membrane_place_value \
-  -membrane-width 25 -membrane-width-extended 25
-set-adjunct-of-atoms-by-expression \
-  -use [-v weighted_membrane_place_value] -expression _logistic \
-  -input-adjuncts weighted_membrane_place_value \
-  -parameters 1 30 0.3 -output-adjunct area_alt_part
-set-adjunct-of-contacts-by-atom-adjuncts \
-  -atoms [-v area_alt_part=0.01:1] \
-  -contacts [-solvent] -source-name area_alt_part \
-  -destination-name area_alt_part -pooling-mode min
-hide-atoms
-hide-contacts
-voromqa-global -adj-area-alt-part area_alt_part
-spectrum-atoms -adjunct voromqa_score_r -scheme rwb -min-val 0 -max-val 1
-show-atoms -rep cartoon sticks
-
 ### Draw and show protein-ligand interface contacts
 hide-atoms
 show-atoms -rep sticks
@@ -188,7 +47,49 @@ show-atoms ([prot_to_lig] or [ligand]) \
   -full-residues -rep sticks
 show-atoms -rep cartoon
 
-### Calculate exposure
+### Calculate VoroMQA-light global and local scores
+restrict-atoms [-t! het]
+construct-contacts
+voromqa-global
+spectrum-atoms -adjunct voromqa_score_r \
+  -scheme rwb -min-val 0.25 -max-val 0.75
+
+### Calculate VoroMQA-dark global and local scores
+restrict-atoms [-t! het]
+construct-contacts
+voromqa-global
+voromqa-dark-global
+set-adjunct-of-atoms-by-residue-pooling \
+  -source-name vd1 -destination-name vd1s \
+  -pooling-mode min -smoothing-window 0
+spectrum-atoms -adjunct vd1s \
+  -scheme rwb -min-val 0.45 -max-val 0.75
+
+### Calculate VoroMQA surface frustration scores
+#restrict-atoms [c<A>]
+restrict-atoms [-t! het]
+construct-contacts
+voromqa-global
+voromqa-frustration -adj-atom-frustration-energy-mean afem \
+  -adj-contact-frustration-energy-mean cfem \
+  -smoothing-iterations 1 -smoothing-depth 3
+hide-atoms
+show-atoms -rep balls
+color-atoms 0x555555
+spectrum-atoms -adjunct afem -scheme bwr -min-val -0.5 -max-val 0.5
+
+### Calculate VoroMQA inter-chain interface frustration scores
+restrict-atoms [-t! het]
+construct-contacts
+voromqa-global
+voromqa-interface-frustration [-inter-chain] \
+  -adj-contact-interface-frustration-energy-mean cifem \
+  -smoothing-iterations 2
+hide-contacts
+spectrum-contacts [-inter-chain] -adjunct cifem -scheme bwr -min-val -2 -max-val 1
+show-contacts [-inter-chain]
+
+### Calculate geometric exposure values for surface atoms
 restrict-atoms [-t! het]
 construct-contacts
 delete-adjuncts-of-atoms -adjuncts ev
@@ -200,67 +101,16 @@ show-atoms
 color-atoms 0x555555
 spectrum-atoms -adjunct ev -scheme bwr # -min-val 0.1 -max-val 0.5
 
-### Describe pockets
-restrict-atoms [-t! het]
-construct-contacts
-describe-exposure -probe-min 2 -probe-max 30 \
-  -adj-atom-exposure-value buriedness -weight-power 3 \
-  -expansion 0.5 -smoothing-iterations 3 -smoothing-depth 1
-color-atoms 0x555555
-spectrum-atoms -adjunct buriedness -min-val 0 -max-val 1 -scheme bwr
-find-connected-components -atoms-core-use [-v buriedness=0.7:1.0] \
-  -atoms-all-use [-v buriedness=0.5:1.0] -adj-component-number pocket_id \
-  -contacts-use [-t peripherial]
-select-atoms -use [-v pocket_id=1:999999] -name pocket_atoms_main
-select-atoms-by-triangulation-query -use [pocket_atoms_main] \
-  -expansion 0.5 -min-radius 1.4 -max-edge 999999 -name pocket_atoms_all
-delete-figures
-add-figure-of-triangulation [pocket_atoms_all] -strict \
-  -min-radius 1.4 -max-edge 999999 -figure-name pocket_tetrahedrons
-color-figures -name pocket_tetrahedrons -col 0xFFFF00
-show-figures
-
-### Calculate VoroMQA interface frustration scores
-restrict-atoms [-t! het]
-construct-contacts
-voromqa-global
-voromqa-interface-frustration [-inter-chain] \
-  -adj-contact-interface-frustration-energy-mean cifem \
-  -smoothing-iterations 2
-hide-contacts
-spectrum-contacts [-inter-chain] -adjunct cifem -scheme bwr -min-val -2 -max-val 1
-show-contacts [-inter-chain]
-
-### Draw skin-shape surface
-construct-contacts
-hide-atoms
-show-contacts [-solvent] -rep skin-shape
-color-contacts -col cyan
-
-### Draw a subset of empty tangent spheres
-construct-contacts
-delete-figures -name et_spheres
-add-figure-of-triangulation [] -strict \
-  -min-radius 0.1 -max-radius 3.0 \
-  -as-spheres -figure-name et_spheres
-hide-figures
-show-figures
-color-figures 0xFF7777
-hide-atoms
-show-atoms -rep balls
-color-atoms 0x7777FF
-
 ### Demo multiple representations
 grid-by-object
-configure-gui-json-write-level-6
 
 import 4ung.pdb
-spectrum-atoms -by chain -scheme cm
+spectrum-atoms -by chain -scheme co
 hide-atoms
-show-atoms -rep balls
+show-atoms -rep molsurf
 
 import 4ung.pdb
-spectrum-atoms -by chain -scheme cm
+spectrum-atoms -by chain -scheme co
 hide-atoms
 show-atoms -rep sticks
 construct-contacts
@@ -268,12 +118,11 @@ select-contacts [-inter-chain] -name iface
 color-contacts [iface] -col yellow
 show-contacts [iface]
 select-contacts [-solvent -a1 [-chain B]] -name sas_b
-color-contacts [sas_b] -col magenta
+color-contacts [sas_b] -col orange
 show-contacts [sas_b]
 
-
 import 4ung.pdb
-spectrum-atoms -by chain -scheme cm
+spectrum-atoms -by chain -scheme co
 construct-contacts
 select-contacts [-inter-chain] -name iface
 color-contacts [iface] -rep edges -col black
@@ -281,10 +130,10 @@ spectrum-contacts [iface] -by residue-ids -scheme random
 show-contacts [iface] -rep faces
 
 import 4ung.pdb
-spectrum-atoms -by chain -scheme cm
+spectrum-atoms -by chain -scheme co
 color-atoms -col 0xBBBBBB
 color-atoms [-chain A -rnum 16] -col cyan
-color-atoms [-chain B -rnum 15] -col magenta
+color-atoms [-chain B -rnum 15] -col orange
 show-atoms ([-chain A -rnum 16] or [-chain B -rnum 15]) -rep sticks
 construct-contacts
 select-contacts [-a1 [-chain A -rnum 16]] -name contacts_r1

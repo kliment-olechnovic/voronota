@@ -1734,6 +1734,11 @@ private:
 								result=std::string("spectrum-atoms -by residue-id -use (")+atoms_selection_string()+")"+rep_string;
 							}
 
+							if(ImGui::Selectable("  by residue ID randomly"))
+							{
+								result=std::string("spectrum-atoms -by residue-id -scheme random -use (")+atoms_selection_string()+")"+rep_string;
+							}
+
 							if(ImGui::Selectable("  by chain"))
 							{
 								result=std::string("spectrum-atoms -by chain -use (")+atoms_selection_string()+")"+rep_string;
@@ -1900,6 +1905,25 @@ private:
 								+(rep_faces ? " faces" : "")
 								+(rep_edges ? " edges" : "")
 								+(rep_sas_mesh ? " sas-mesh" : "");
+
+							ImGui::Separator();
+
+							ImGui::TextUnformatted("Spectrum contacts:");
+
+							if(ImGui::Selectable("  by inter-residue ID randomly"))
+							{
+								result=std::string("spectrum-contacts -by residue-ids -scheme random -use (")+contacts_selection_string()+")"+rep_string;
+							}
+
+							if(ImGui::Selectable("  by inter-residue area, 0-45"))
+							{
+								result=std::string("spectrum-contacts -by residue-area -min-val 0 -max-val 45 -use (")+contacts_selection_string()+")"+rep_string;
+							}
+
+							if(ImGui::Selectable("  by inter-atom area, 0-15"))
+							{
+								result=std::string("spectrum-contacts -by area -min-val 0 -max-val 15 -use (")+contacts_selection_string()+")"+rep_string;
+							}
 
 							ImGui::Separator();
 
@@ -2618,6 +2642,11 @@ private:
 								result=std::string("spectrum-atoms -by residue-id -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
 							}
 
+							if(ImGui::Selectable("  by residue ID randomly"))
+							{
+								result=std::string("spectrum-atoms -by residue-id -scheme random -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
+							}
+
 							if(ImGui::Selectable("  by chain"))
 							{
 								result=std::string("spectrum-atoms -by chain -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
@@ -2784,6 +2813,25 @@ private:
 								+(rep_faces ? " faces" : "")
 								+(rep_edges ? " edges" : "")
 								+(rep_sas_mesh ? " sas-mesh" : "");
+
+							ImGui::Separator();
+
+							ImGui::TextUnformatted("Spectrum contacts:");
+
+							if(ImGui::Selectable("  by inter-residue ID randomly"))
+							{
+								result=std::string("spectrum-contacts -by residue-ids -scheme random -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+							}
+
+							if(ImGui::Selectable("  by inter-residue area, 0-45"))
+							{
+								result=std::string("spectrum-contacts -by residue-area -min-val 0 -max-val 45 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+							}
+
+							if(ImGui::Selectable("  by inter-atom area, 0-15"))
+							{
+								result=std::string("spectrum-contacts -by area -min-val 0 -max-val 15 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+							}
 
 							ImGui::Separator();
 
