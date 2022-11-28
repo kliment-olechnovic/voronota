@@ -1095,6 +1095,9 @@ private:
 					ImGui::TextUnformatted("Selection:");
 					ImGui::SameLine();
 
+					static std::vector<char> atoms_selection_buffer;
+					static std::vector<char> contacts_selection_buffer;
+
 					{
 						std::string button_id;
 						if(concept_mode()=="contacts")
@@ -1108,12 +1111,12 @@ private:
 						button_id+="##button_selection_change";
 						ImGui::Button(button_id.c_str());
 					}
+
 					const std::string submenu_id=std::string("Change##submenu_selection");
 					if(ImGui::BeginPopupContextItem(submenu_id.c_str(), 0))
 					{
 						if(concept_mode()=="atoms")
 						{
-							static std::vector<char> atoms_selection_buffer;
 							if(atoms_selection_buffer.empty())
 							{
 								atoms_selection_buffer=std::vector<char>(atoms_selection_string().begin(), atoms_selection_string().end());
@@ -1154,7 +1157,7 @@ private:
 								const std::string button_id=std::string("Reset##button_atoms_selection_reset");
 								if(ImGui::Button(button_id.c_str()))
 								{
-									set_atoms_selection_string_and_save_suggestion("");
+									set_atoms_selection_string_and_save_suggestion(default_atoms_selection_string());
 									atoms_selection_buffer.clear();
 									ImGui::CloseCurrentPopup();
 								}
@@ -1190,7 +1193,6 @@ private:
 						}
 						else if(concept_mode()=="contacts")
 						{
-							static std::vector<char> contacts_selection_buffer;
 							if(contacts_selection_buffer.empty())
 							{
 								contacts_selection_buffer=std::vector<char>(contacts_selection_string().begin(), contacts_selection_string().end());
@@ -1231,7 +1233,7 @@ private:
 								const std::string button_id=std::string("Reset##button_contacts_selection_reset");
 								if(ImGui::Button(button_id.c_str()))
 								{
-									set_contacts_selection_string_and_save_suggestion("");
+									set_contacts_selection_string_and_save_suggestion(default_contacts_selection_string());
 									contacts_selection_buffer.clear();
 									ImGui::CloseCurrentPopup();
 								}
@@ -1267,6 +1269,31 @@ private:
 						}
 
 						ImGui::EndPopup();
+					}
+
+					ImGui::SameLine();
+
+					{
+						std::string button_id="prev##button_"+concept_mode()+"_selection_change_previous";
+						if(ImGui::Button(button_id.c_str()))
+						{
+							if(concept_mode()=="contacts")
+							{
+								if(!contacts_selection_string_previous().empty())
+								{
+									set_contacts_selection_string_and_save_suggestion(contacts_selection_string_previous());
+									contacts_selection_buffer.clear();
+								}
+							}
+							else
+							{
+								if(!atoms_selection_string_previous().empty())
+								{
+									set_atoms_selection_string_and_save_suggestion(atoms_selection_string_previous());
+									atoms_selection_buffer.clear();
+								}
+							}
+						}
 					}
 				}
 
@@ -2988,13 +3015,25 @@ private:
 			}
 		}
 
+		static const std::string& default_atoms_selection_string()
+		{
+			static std::string value="[]";
+			return value;
+		}
+
 		static std::string& atoms_selection_string()
 		{
 			static std::string value;
 			if(value.empty() || value=="[" || value=="]")
 			{
-				value="[]";
+				value=default_atoms_selection_string();
 			}
+			return value;
+		}
+
+		static std::string& atoms_selection_string_previous()
+		{
+			static std::string value;
 			return value;
 		}
 
@@ -3017,6 +3056,7 @@ private:
 
 		static void set_atoms_selection_string_and_save_suggestion(const std::string& value)
 		{
+			const std::string future_previous_string=atoms_selection_string();
 			atoms_selection_string()=value;
 			bool already_suggested=false;
 			for(std::size_t i=0;i<atoms_selection_string_suggestions().first.size() && !already_suggested;i++)
@@ -3035,6 +3075,16 @@ private:
 					atoms_selection_string_suggestions().second.pop_front();
 				}
 			}
+			if(future_previous_string!=atoms_selection_string_previous() && future_previous_string!=atoms_selection_string())
+			{
+				atoms_selection_string_previous()=future_previous_string;
+			}
+		}
+
+		static const std::string& default_contacts_selection_string()
+		{
+			static std::string value="[-no-solvent]";
+			return value;
 		}
 
 		static std::string& contacts_selection_string()
@@ -3042,8 +3092,14 @@ private:
 			static std::string value;
 			if(value.empty() || value=="[" || value=="]")
 			{
-				value="[-no-solvent]";
+				value=default_contacts_selection_string();
 			}
+			return value;
+		}
+
+		static std::string& contacts_selection_string_previous()
+		{
+			static std::string value;
 			return value;
 		}
 
@@ -3069,6 +3125,7 @@ private:
 
 		static void set_contacts_selection_string_and_save_suggestion(const std::string& value)
 		{
+			const std::string future_previous_string=contacts_selection_string();
 			contacts_selection_string()=value;
 			bool already_suggested=false;
 			for(std::size_t i=0;i<contacts_selection_string_suggestions().first.size() && !already_suggested;i++)
@@ -3086,6 +3143,10 @@ private:
 				{
 					contacts_selection_string_suggestions().second.pop_front();
 				}
+			}
+			if(future_previous_string!=contacts_selection_string_previous() && future_previous_string!=contacts_selection_string())
+			{
+				contacts_selection_string_previous()=future_previous_string;
 			}
 		}
 	};
