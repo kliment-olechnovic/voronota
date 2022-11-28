@@ -1076,14 +1076,25 @@ private:
 
 			{
 				{
+					ImGui::TextUnformatted("Operate on:");
+					ImGui::SameLine();
+
 					{
-						const std::string button_id=concept_mode()+"##concept_mode_switch";
-						if(ImGui::Button(button_id.c_str()))
+						static int radio_choice=0;
+						if(ImGui::RadioButton("Atoms", &radio_choice, 0))
 						{
-							set_concept_mode(concept_mode()=="atoms" ? "contacts" : "atoms");
+							set_concept_mode("atoms");
+						}
+						ImGui::SameLine();
+						if(ImGui::RadioButton("Contacts", &radio_choice, 1))
+						{
+							set_concept_mode("contacts");
 						}
 					}
+
+					ImGui::TextUnformatted("Selection:");
 					ImGui::SameLine();
+
 					{
 						std::string button_id;
 						if(concept_mode()=="contacts")
@@ -1109,6 +1120,7 @@ private:
 								atoms_selection_buffer.resize(atoms_selection_string().size()+128, 0);
 							}
 							const std::string textbox_id=std::string("##atoms_selection");
+							ImGui::PushItemWidth(400.0f*GUIStyleWrapper::scale_factor());
 							if(ImGui::InputText(textbox_id.c_str(), atoms_selection_buffer.data(), 128, ImGuiInputTextFlags_EnterReturnsTrue))
 							{
 								const std::string newvalue(atoms_selection_buffer.data());
@@ -1119,6 +1131,7 @@ private:
 									ImGui::CloseCurrentPopup();
 								}
 							}
+							ImGui::PopItemWidth();
 							{
 								const std::string button_id=std::string("OK##button_atoms_selection_ok");
 								if(ImGui::Button(button_id.c_str()))
@@ -1184,6 +1197,7 @@ private:
 								contacts_selection_buffer.resize(contacts_selection_string().size()+128, 0);
 							}
 							const std::string textbox_id=std::string("##contacts_selection");
+							ImGui::PushItemWidth(400.0f*GUIStyleWrapper::scale_factor());
 							if(ImGui::InputText(textbox_id.c_str(), contacts_selection_buffer.data(), 128, ImGuiInputTextFlags_EnterReturnsTrue))
 							{
 								const std::string newvalue(contacts_selection_buffer.data());
@@ -1194,6 +1208,7 @@ private:
 									ImGui::CloseCurrentPopup();
 								}
 							}
+							ImGui::PopItemWidth();
 							{
 								const std::string button_id=std::string("OK##button_contacts_selection_ok");
 								if(ImGui::Button(button_id.c_str()))
@@ -1254,6 +1269,8 @@ private:
 						ImGui::EndPopup();
 					}
 				}
+
+				ImGui::Separator();
 
 				{
 					const std::string button_id=std::string("P##button_picking_all");
