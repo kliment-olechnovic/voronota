@@ -1271,25 +1271,66 @@ private:
 						ImGui::EndPopup();
 					}
 
-					ImGui::SameLine();
-
 					{
-						std::string button_id="prev##button_"+concept_mode()+"_selection_change_previous";
-						if(ImGui::Button(button_id.c_str()))
+						ImGui::TextUnformatted("Switch selection:");
+						ImGui::SameLine();
+
 						{
-							if(concept_mode()=="contacts")
+							std::string button_id="default##button_"+concept_mode()+"_selection_change_default";
+							if(ImGui::Button(button_id.c_str()))
 							{
-								if(!contacts_selection_string_previous().empty())
+								if(concept_mode()=="contacts")
 								{
-									set_contacts_selection_string_and_save_suggestion(contacts_selection_string_previous());
+									set_contacts_selection_string_and_save_suggestion(default_contacts_selection_string());
 									contacts_selection_buffer.clear();
 								}
-							}
-							else
-							{
-								if(!atoms_selection_string_previous().empty())
+								else
 								{
-									set_atoms_selection_string_and_save_suggestion(atoms_selection_string_previous());
+									set_atoms_selection_string_and_save_suggestion(default_atoms_selection_string());
+									atoms_selection_buffer.clear();
+								}
+							}
+						}
+
+						ImGui::SameLine();
+
+						{
+							std::string button_id="previous##button_"+concept_mode()+"_selection_change_previous";
+							if(ImGui::Button(button_id.c_str()))
+							{
+								if(concept_mode()=="contacts")
+								{
+									if(!contacts_selection_string_previous().empty())
+									{
+										set_contacts_selection_string_and_save_suggestion(contacts_selection_string_previous());
+										contacts_selection_buffer.clear();
+									}
+								}
+								else
+								{
+									if(!atoms_selection_string_previous().empty())
+									{
+										set_atoms_selection_string_and_save_suggestion(atoms_selection_string_previous());
+										atoms_selection_buffer.clear();
+									}
+								}
+							}
+						}
+
+						ImGui::SameLine();
+
+						{
+							std::string button_id="marked##button_"+concept_mode()+"_selection_change_marked";
+							if(ImGui::Button(button_id.c_str()))
+							{
+								if(concept_mode()=="contacts")
+								{
+									set_contacts_selection_string_and_save_suggestion(marked_contacts_selection_string());
+									contacts_selection_buffer.clear();
+								}
+								else
+								{
+									set_atoms_selection_string_and_save_suggestion(marked_atoms_selection_string());
 									atoms_selection_buffer.clear();
 								}
 							}
@@ -3021,6 +3062,12 @@ private:
 			return value;
 		}
 
+		static const std::string& marked_atoms_selection_string()
+		{
+			static std::string value="[_marked]";
+			return value;
+		}
+
 		static std::string& atoms_selection_string()
 		{
 			static std::string value;
@@ -3084,6 +3131,12 @@ private:
 		static const std::string& default_contacts_selection_string()
 		{
 			static std::string value="[-no-solvent]";
+			return value;
+		}
+
+		static const std::string& marked_contacts_selection_string()
+		{
+			static std::string value="[_marked]";
 			return value;
 		}
 
