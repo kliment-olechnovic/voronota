@@ -593,7 +593,7 @@ private:
 				script_output << " -on-objects " << list_of_names << "\n";
 				script_output << "clear-last\n";
 
-				script_output << "color-atoms [-t! het] -next-random-color -on-objects " << list_of_names << "\n";
+				script_output << "spectrum-atoms [] -by chain -scheme random -on-objects " << list_of_names << "\n";
 				script_output << "clear-last\n";
 
 				if(available_tags_het)
@@ -601,7 +601,7 @@ private:
 					script_output << "show-atoms [-t het] -rep sticks -on-objects " << list_of_names << "\n";
 					script_output << "clear-last\n";
 
-					script_output << "color-atoms [-t het] -next-random-color -on-objects " << list_of_names << "\n";
+					script_output << "spectrum-atoms [-t het -t! el=C] -by atom-type -on-objects " << list_of_names << "\n";
 					script_output << "clear-last\n";
 				}
 

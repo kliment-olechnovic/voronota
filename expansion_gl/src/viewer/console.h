@@ -1839,34 +1839,59 @@ private:
 								result=std::string("spectrum-atoms -by secondary-structure -use (")+atoms_selection_string()+")"+rep_string;
 							}
 
-							if(ImGui::Selectable("  by atom type"))
+							if(ImGui::BeginMenu("  by atom type"))
 							{
-								result=std::string("spectrum-atoms -by atom-type -use (")+atoms_selection_string()+")"+rep_string;
+								if(ImGui::MenuItem("all"))
+								{
+									result=std::string("spectrum-atoms -by atom-type -use (")+atoms_selection_string()+")"+rep_string;
+								}
+
+								if(ImGui::MenuItem("all except carbon"))
+								{
+									result=std::string("spectrum-atoms -by atom-type -use ((")+atoms_selection_string()+") and ([-t! el=C]))"+rep_string;
+								}
+
+								ImGui::EndMenu();
+							}
+
+							if(ImGui::BeginMenu("  by B-factor"))
+							{
+								if(ImGui::MenuItem("blue-white-red"))
+								{
+									result=std::string("spectrum-atoms -adjunct tf -scheme bwr -use (")+atoms_selection_string()+")"+rep_string;
+								}
+
+								if(ImGui::MenuItem("red-white-blue"))
+								{
+									result=std::string("spectrum-atoms -adjunct tf -scheme rwb -use (")+atoms_selection_string()+")"+rep_string;
+								}
+
+								if(ImGui::MenuItem("blue-white-red, 0-100"))
+								{
+									result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100 -use (")+atoms_selection_string()+")"+rep_string;
+								}
+
+								if(ImGui::MenuItem("red-white-blue, 0-100"))
+								{
+									result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100 -use (")+atoms_selection_string()+")"+rep_string;
+								}
+
+								if(ImGui::MenuItem("blue-white-red, 0-1"))
+								{
+									result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 1 -use (")+atoms_selection_string()+")"+rep_string;
+								}
+
+								if(ImGui::MenuItem("red-white-blue, 0-1"))
+								{
+									result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 1 -use (")+atoms_selection_string()+")"+rep_string;
+								}
+
+								ImGui::EndMenu();
 							}
 
 							if(ImGui::Selectable("  by hydropathy"))
 							{
 								result=std::string("spectrum-atoms -by hydropathy -use (")+atoms_selection_string()+")"+rep_string;
-							}
-
-							if(ImGui::Selectable("  by B-factor, blue-white-red"))
-							{
-								result=std::string("spectrum-atoms -adjunct tf -scheme bwr -use (")+atoms_selection_string()+")"+rep_string;
-							}
-
-							if(ImGui::Selectable("  by B-factor, red-white-blue"))
-							{
-								result=std::string("spectrum-atoms -adjunct tf -scheme rwb -use (")+atoms_selection_string()+")"+rep_string;
-							}
-
-							if(ImGui::Selectable("  by B-factor, blue-white-red, 0-100"))
-							{
-								result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100 -use (")+atoms_selection_string()+")"+rep_string;
-							}
-
-							if(ImGui::Selectable("  by B-factor, red-white-blue, 0-100"))
-							{
-								result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100 -use (")+atoms_selection_string()+")"+rep_string;
 							}
 
 							ImGui::Separator();
@@ -2747,34 +2772,59 @@ private:
 								result=std::string("spectrum-atoms -by secondary-structure -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
 							}
 
-							if(ImGui::Selectable("  by atom type"))
+							if(ImGui::BeginMenu("  by atom type"))
 							{
-								result=std::string("spectrum-atoms -by atom-type -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
+								if(ImGui::MenuItem("all"))
+								{
+									result=std::string("spectrum-atoms -by atom-type -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
+								}
+
+								if(ImGui::MenuItem("all except carbon"))
+								{
+									result=std::string("spectrum-atoms -by atom-type -on-objects '")+os.name+"' -use (("+atoms_selection_string()+") and ([-t! el=C]))"+rep_string;
+								}
+
+								ImGui::EndMenu();
+							}
+
+							if(ImGui::BeginMenu("  by B-factor"))
+							{
+								if(ImGui::MenuItem("blue-white-red"))
+								{
+									result=std::string("spectrum-atoms -adjunct tf -scheme bwr -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
+								}
+
+								if(ImGui::MenuItem("red-white-blue"))
+								{
+									result=std::string("spectrum-atoms -adjunct tf -scheme rwb -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
+								}
+
+								if(ImGui::MenuItem("blue-white-red, 0-100"))
+								{
+									result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
+								}
+
+								if(ImGui::MenuItem("red-white-blue, 0-100"))
+								{
+									result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
+								}
+
+								if(ImGui::MenuItem("blue-white-red, 0-1"))
+								{
+									result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 1 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
+								}
+
+								if(ImGui::MenuItem("red-white-blue, 0-1"))
+								{
+									result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 1 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
+								}
+
+								ImGui::EndMenu();
 							}
 
 							if(ImGui::Selectable("  by hydropathy"))
 							{
 								result=std::string("spectrum-atoms -by hydropathy -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
-							}
-
-							if(ImGui::Selectable("  by B-factor, blue-white-red"))
-							{
-								result=std::string("spectrum-atoms -adjunct tf -scheme bwr -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
-							}
-
-							if(ImGui::Selectable("  by B-factor, red-white-blue"))
-							{
-								result=std::string("spectrum-atoms -adjunct tf -scheme rwb -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
-							}
-
-							if(ImGui::Selectable("  by B-factor, blue-white-red, 0-100"))
-							{
-								result=std::string("spectrum-atoms -adjunct tf -scheme bwr -min-val 0 -max-val 100 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
-							}
-
-							if(ImGui::Selectable("  by B-factor, red-white-blue, 0-100"))
-							{
-								result=std::string("spectrum-atoms -adjunct tf -scheme rwb -min-val 0 -max-val 100 -on-objects '")+os.name+"' -use ("+atoms_selection_string()+")"+rep_string;
 							}
 
 							ImGui::Separator();
