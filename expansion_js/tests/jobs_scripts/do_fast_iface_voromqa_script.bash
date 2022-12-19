@@ -8,6 +8,8 @@ find "$INPUTDIR/complex/" -type f \
   --input _list \
   --processors 4 \
   --subselect-contacts '[-a1 [-chain A] -a2 [-chain B]]' \
+  --output-ia-contacts-file "$SUBDIR/inter_atom_contacts_for_-BASENAME-.txt" \
+  --output-ir-contacts-file "$SUBDIR/inter_residue_contacts_for_-BASENAME-.txt" \
 | column -t \
 > "$SUBDIR/global_scores"
 
@@ -18,6 +20,7 @@ find "$INPUTDIR/complex/" -type f \
   --subselect-contacts '[-a1 [-chain A] -a2 [-chain B]]' \
   --blanket \
   --score-symmetry \
+  --output-ir-contacts-file "$SUBDIR/inter_residue_contacts_blanket_for_-BASENAME-.txt" \
 | column -t \
 > "$SUBDIR/global_scores_blanket"
 

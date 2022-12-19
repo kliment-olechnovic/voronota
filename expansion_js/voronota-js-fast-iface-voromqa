@@ -7,23 +7,25 @@ cat >&2 << 'EOF'
 'voronota-js-fast-iface-voromqa' script rapidly computes VoroMQA-based interface energy of protein complexes.
 
 Options:
-    --input | -i              string  *  input file path or '_list' to read file paths from stdin
-    --restrict-input          string     query to restrict input atoms, default is '[]'
-    --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
-    --constraints-required    string     query to check required contacts, default is ''
-    --constraints-banned      string     query to check banned contacts, default is ''
-    --constraint-clashes      number     max allowed clash score, default is 0.9
-    --output-table-file       string     output table file path, default is '_stdout' to print to stdout
-    --processors              number     maximum number of processors to run in parallel, default is 1
-    --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
-    --stdin-file              string     input file path to replace stdin
-    --run-faspr               string     path to FASPR binary to rebuild side-chains
-    --input-is-script                    flag to treat input file as vs script
-    --as-assembly                        flag to treat input file as biological assembly
-    --detailed-times                     flag to output detailed times
-    --score-symmetry                     flag to score interface symmetry
-    --blanket                            flag to keep nucleic acids and use blanket potential
-    --help | -h                          flag to display help message and exit
+    --input | -i                string  *  input file path or '_list' to read file paths from stdin
+    --restrict-input            string     query to restrict input atoms, default is '[]'
+    --subselect-contacts        string     query to subselect inter-chain contacts, default is '[]'
+    --constraints-required      string     query to check required contacts, default is ''
+    --constraints-banned        string     query to check banned contacts, default is ''
+    --constraint-clashes        number     max allowed clash score, default is 0.9
+    --output-table-file         string     output table file path, default is '_stdout' to print to stdout
+    --output-ia-contacts-file   string     output inter-atom contacts file path, default is ''
+    --output-ir-contacts-file   string     output inter-residue contacts file path, default is ''
+    --processors                number     maximum number of processors to run in parallel, default is 1
+    --sbatch-parameters         string     sbatch parameters to run in parallel, default is ''
+    --stdin-file                string     input file path to replace stdin
+    --run-faspr                 string     path to FASPR binary to rebuild side-chains
+    --input-is-script                      flag to treat input file as vs script
+    --as-assembly                          flag to treat input file as biological assembly
+    --detailed-times                       flag to output detailed times
+    --score-symmetry                       flag to score interface symmetry
+    --blanket                              flag to keep nucleic acids and use blanket potential
+    --help | -h                            flag to display help message and exit
 
 Standard output:
     space-separated table of scores
@@ -99,6 +101,8 @@ CONSTRAINTS_REQUIRED=""
 CONSTRAINTS_BANNED=""
 CONSTRAINT_CLASHES="0.9"
 OUTPUT_TABLE_FILE="_stdout"
+OUTPUT_INTER_ATOM_CONTACTS_FILE=""
+OUTPUT_INTER_RESIDUE_CONTACTS_FILE=""
 MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
 STDIN_FILE="_stream"
@@ -142,6 +146,14 @@ do
 		;;
 	--output-table-file)
 		OUTPUT_TABLE_FILE="$OPTARG"
+		shift
+		;;
+	--output-ia-contacts-file)
+		OUTPUT_INTER_ATOM_CONTACTS_FILE="$OPTARG"
+		shift
+		;;
+	--output-ir-contacts-file)
+		OUTPUT_INTER_RESIDUE_CONTACTS_FILE="$OPTARG"
 		shift
 		;;
 	--processors)
@@ -364,6 +376,8 @@ common_params.score_symmetry='$SCORE_SYMMETRY';
 common_params.blanket='$BLANKET';
 common_params.output_detailed_times='$DETAILED_TIMES';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
+common_params.output_inter_atom_contacts_file='$OUTPUT_INTER_ATOM_CONTACTS_FILE';
+common_params.output_inter_residue_contacts_file='$OUTPUT_INTER_RESIDUE_CONTACTS_FILE';
 var input_info_array=[];
 EOF
 
@@ -444,6 +458,24 @@ if(params.output_detailed_times===undefined || params.output_detailed_times===""
 if(params.output_table_file===undefined || params.output_table_file==="")
 {
 	params.output_table_file="_stdout";
+}
+
+if(params.output_inter_atom_contacts_file===undefined || params.output_inter_atom_contacts_file==="")
+{
+	params.output_inter_atom_contacts_file="";
+}
+else
+{
+	params.output_inter_atom_contacts_file=params.output_inter_atom_contacts_file.replace('-BASENAME-', input.input_file_name);
+}
+
+if(params.output_inter_residue_contacts_file===undefined || params.output_inter_residue_contacts_file==="")
+{
+	params.output_inter_residue_contacts_file="";
+}
+else
+{
+	params.output_inter_residue_contacts_file=params.output_inter_residue_contacts_file.replace('-BASENAME-', input.input_file_name);
 }
 
 voronota_reset_time();
@@ -544,6 +576,20 @@ else
 	var result_voromqa_light_local_inter_chain=voronota_last_output().results[0].output;
 	computed_iface_energy_scores.area=result_voromqa_light_local_inter_chain.contacts_result.area;
 	computed_iface_energy_scores.pseudo_energy=result_voromqa_light_local_inter_chain.contacts_result.pseudo_energy;
+}
+
+if(params.output_inter_atom_contacts_file!="")
+{
+	var voromqa_energy_adjunct_name=((params.blanket=="true") ? "mock_voromqa_energy" : "voromqa_energy");
+	voronota_export_adjuncts_of_contacts('-file', params.output_inter_atom_contacts_file, '-contacts-use', '[inter_chain_contacts]', '-no-serial', '-adjuncts', ['area', voromqa_energy_adjunct_name]);
+	voronota_assert_full_success("Failed to export inter-atom contacts info");
+}
+
+if(params.output_inter_residue_contacts_file!="")
+{
+	var voromqa_energy_adjunct_name=((params.blanket=="true") ? "mock_voromqa_energy" : "voromqa_energy");
+	voronota_export_adjuncts_of_contacts('-inter-residue', '-file', params.output_inter_residue_contacts_file, '-contacts-use', '[inter_chain_contacts]', '-no-serial', '-adjuncts', ['area', voromqa_energy_adjunct_name]);
+	voronota_assert_full_success("Failed to export inter-residue contacts info");
 }
 
 voronota_print_time();
