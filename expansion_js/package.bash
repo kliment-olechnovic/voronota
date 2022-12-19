@@ -26,7 +26,6 @@ rm -rf "$PACKAGE_NAME/src/src/modes"
 
 cp "./README.markdown" "$PACKAGE_NAME/README.txt"
 cp "./index.html" "$PACKAGE_NAME/README.html"
-cp "./CMakeLists.txt" "$PACKAGE_NAME/CMakeLists.txt"
 cp "./voronota-js" "$PACKAGE_NAME/voronota-js"
 cp "./voronota-js-voromqa" "$PACKAGE_NAME/voronota-js-voromqa"
 cp "./voronota-js-membrane-voromqa" "$PACKAGE_NAME/voronota-js-membrane-voromqa"
@@ -36,6 +35,7 @@ cp "./voronota-js-fast-iface-cadscore" "$PACKAGE_NAME/voronota-js-fast-iface-cad
 cp "./voronota-js-fast-iface-cadscore-matrix" "$PACKAGE_NAME/voronota-js-fast-iface-cadscore-matrix"
 cp "./voronota-js-ligand-cadscore" "$PACKAGE_NAME/voronota-js-ligand-cadscore"
 cp "../LICENSE.txt" "$PACKAGE_NAME/LICENSE.txt"
+cat "./CMakeLists.txt" | sed 's|/\.\./expansion_|/src/expansion_|g' > "$PACKAGE_NAME/CMakeLists.txt"
 
 echo "Voronota-JS version ${VERSIONID}" > "$PACKAGE_NAME/VERSION.txt"
 

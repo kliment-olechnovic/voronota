@@ -26,8 +26,8 @@ rm -rf "$PACKAGE_NAME/src/src/modes"
 rm -f "$PACKAGE_NAME/src/expansion_js/src/voronota_js.cpp"
 
 cp "./README.markdown" "$PACKAGE_NAME/README.txt"
-cp "./CMakeLists.txt" "$PACKAGE_NAME/CMakeLists.txt"
 cp "../LICENSE.txt" "$PACKAGE_NAME/LICENSE.txt"
+cat "./CMakeLists.txt" | sed 's|/\.\./expansion_|/src/expansion_|g' > "$PACKAGE_NAME/CMakeLists.txt"
 
 tar -czf "$PACKAGE_NAME.tar.gz" $PACKAGE_NAME
 rm -r -f $PACKAGE_NAME
