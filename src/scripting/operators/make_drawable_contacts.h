@@ -35,7 +35,6 @@ public:
 	void initialize(CommandInput& input)
 	{
 		parameters_to_draw_contacts=common::ConstructionOfContacts::ParametersToDrawContacts();
-		parameters_to_draw_contacts.probe=input.get_value_or_default<double>("probe", parameters_to_draw_contacts.probe);
 		parameters_to_draw_contacts.step=input.get_value_or_default<double>("step", parameters_to_draw_contacts.step);
 		parameters_to_draw_contacts.projections=input.get_value_or_default<int>("projections", parameters_to_draw_contacts.projections);
 		parameters_to_draw_contacts.simplify=input.get_flag("simplify");
@@ -47,7 +46,6 @@ public:
 	void document(CommandDocumentation& doc) const
 	{
 		common::ConstructionOfContacts::ParametersToDrawContacts params;
-		doc.set_option_decription(CDOD("probe", CDOD::DATATYPE_FLOAT, "probe radius", params.probe));
 		doc.set_option_decription(CDOD("step", CDOD::DATATYPE_FLOAT, "edge step size", params.step));
 		doc.set_option_decription(CDOD("projections", CDOD::DATATYPE_INT, "number of projections for edge calculation", params.projections));
 		doc.set_option_decription(CDOD("simplify", CDOD::DATATYPE_BOOL, "flag to simplify graphics"));
@@ -67,7 +65,10 @@ public:
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
-		data_manager.reset_contacts_graphics_by_creating(parameters_to_draw_contacts, ids, false);
+		common::ConstructionOfContacts::ParametersToDrawContacts parameters_to_draw_contacts_to_use=parameters_to_draw_contacts;
+		parameters_to_draw_contacts_to_use.probe=data_manager.history_of_actions_on_contacts().probe();
+
+		data_manager.reset_contacts_graphics_by_creating(parameters_to_draw_contacts_to_use, ids, false);
 
 		Result result;
 		result.contacts_summary=SummaryOfContacts(data_manager.contacts(), ids);

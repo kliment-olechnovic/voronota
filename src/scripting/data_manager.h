@@ -547,6 +547,30 @@ public:
 		}
 	};
 
+	struct HistoryOfActionsOnContacts
+	{
+		std::vector<common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation> constructing;
+		std::vector<common::ConstructionOfContacts::ParametersToEnhanceContacts> enhancing;
+		std::map<std::size_t, common::ConstructionOfContacts::ParametersToDrawContacts> graphics_creating;
+
+		void clear()
+		{
+			constructing.clear();
+			enhancing.clear();
+			graphics_creating.clear();
+		}
+
+		double probe() const
+		{
+			if(!constructing.empty())
+			{
+				return constructing.back().probe;
+			}
+			return common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation().probe;
+		}
+
+	};
+
 	DataManager()
 	{
 		add_atoms_representation("balls");
@@ -675,6 +699,11 @@ public:
 	const ChangeIndicator& change_indicator() const
 	{
 		return change_indicator_;
+	}
+
+	const HistoryOfActionsOnContacts& history_of_actions_on_contacts() const
+	{
+		return history_of_actions_on_contacts_;
 	}
 
 	void assert_atoms_representations_availability() const
@@ -1784,20 +1813,6 @@ public:
 	}
 
 private:
-	struct HistoryOfActionsOnContacts
-	{
-		std::vector<common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation> constructing;
-		std::vector<common::ConstructionOfContacts::ParametersToEnhanceContacts> enhancing;
-		std::map<std::size_t, common::ConstructionOfContacts::ParametersToDrawContacts> graphics_creating;
-
-		void clear()
-		{
-			constructing.clear();
-			enhancing.clear();
-			graphics_creating.clear();
-		}
-	};
-
 	static bool add_names_to_representations(const std::vector<std::string>& names, std::vector<std::string>& representations)
 	{
 		if(names.empty())

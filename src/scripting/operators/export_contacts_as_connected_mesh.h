@@ -50,7 +50,7 @@ public:
 	void initialize(CommandInput& input, const bool managed)
 	{
 		parameters_to_draw_contacts=common::ConstructionOfContacts::ParametersToDrawContacts();
-		parameters_to_draw_contacts.probe=input.get_value_or_default<double>("probe", parameters_to_draw_contacts.probe);
+		parameters_to_draw_contacts.probe=input.get_value_or_default<double>("probe", 0.0);
 		parameters_to_draw_contacts.step=input.get_value_or_default<double>("step", parameters_to_draw_contacts.step);
 		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		only_largest_component=input.get_flag("only-largest-component");
@@ -74,7 +74,7 @@ public:
 	void document(CommandDocumentation& doc, const bool managed) const
 	{
 		common::ConstructionOfContacts::ParametersToDrawContacts params;
-		doc.set_option_decription(CDOD("probe", CDOD::DATATYPE_FLOAT, "probe radius", params.probe));
+		doc.set_option_decription(CDOD("probe", CDOD::DATATYPE_FLOAT, "probe radius, or 0.0 to use the probe radius of construction", 0.0));
 		doc.set_option_decription(CDOD("step", CDOD::DATATYPE_FLOAT, "edge step size", params.step));
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("only-largest-component", CDOD::DATATYPE_BOOL, "flag to only output the largest connected component"));
@@ -139,29 +139,35 @@ public:
 			}
 		}
 
+		common::ConstructionOfContacts::ParametersToDrawContacts parameters_to_draw_contacts_to_use=parameters_to_draw_contacts;
+		if(parameters_to_draw_contacts_to_use.probe<0.0001)
+		{
+			parameters_to_draw_contacts_to_use.probe=data_manager.history_of_actions_on_contacts().probe();
+		}
+
 		apollota::ConstrainedContactsInterfaceMesh ccim(
 				data_manager.triangulation_info().spheres,
 				data_manager.triangulation_info().quadruples_map,
 				set_of_ab_pairs,
-				parameters_to_draw_contacts.probe,
-				parameters_to_draw_contacts.step,
-				parameters_to_draw_contacts.projections,
+				parameters_to_draw_contacts_to_use.probe,
+				parameters_to_draw_contacts_to_use.step,
+				parameters_to_draw_contacts_to_use.projections,
 				only_largest_component);
 
-		double step_used=parameters_to_draw_contacts.step;
+		double step_used=parameters_to_draw_contacts_to_use.step;
 
 		for(std::size_t i=0;i<alt_step_tries.size() && !ccim.check_manifold();i++)
 		{
 			const double alt_step=alt_step_tries[i];
-			if(alt_step!=parameters_to_draw_contacts.step)
+			if(alt_step!=parameters_to_draw_contacts_to_use.step)
 			{
 				ccim=apollota::ConstrainedContactsInterfaceMesh(
 						data_manager.triangulation_info().spheres,
 						data_manager.triangulation_info().quadruples_map,
 						set_of_ab_pairs,
-						parameters_to_draw_contacts.probe,
+						parameters_to_draw_contacts_to_use.probe,
 						alt_step,
-						parameters_to_draw_contacts.projections,
+						parameters_to_draw_contacts_to_use.projections,
 						only_largest_component);
 				step_used=alt_step;
 			}
