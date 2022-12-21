@@ -522,6 +522,46 @@ public:
 					&& enable_alt==b.enable_alt
 					&& circular_angle_step==b.circular_angle_step);
 		}
+
+		bool operator==(const ParametersToDrawContacts& v) const
+		{
+			return equals(v);
+		}
+
+		bool operator!=(const ParametersToDrawContacts& v) const
+		{
+			return (!((*this)==v));
+		}
+
+		bool operator<(const ParametersToDrawContacts& v) const
+		{
+			if(probe<v.probe) { return true; }
+			else if(probe==v.probe)
+			{
+				if(step<v.step) { return true; }
+				else if(step==v.step)
+				{
+					if(projections<v.projections) { return true; }
+					else if(projections==v.projections)
+					{
+						if(sih_depth<v.sih_depth) { return true; }
+						else if(sih_depth==v.sih_depth)
+						{
+							if(circular_angle_step<v.circular_angle_step) { return true; }
+							else if(circular_angle_step==v.circular_angle_step)
+							{
+								if(simplify<v.simplify) { return true; }
+								else if(simplify==v.simplify)
+								{
+									return (enable_alt<v.enable_alt);
+								}
+							}
+						}
+					}
+				}
+			}
+			return false;
+		}
 	};
 
 	template<typename ContainerOfIds>
@@ -712,6 +752,97 @@ inline std::ostream& operator<<(std::ostream& output, const ConstructionOfContac
 inline std::istream& operator>>(std::istream& input, ConstructionOfContacts::Contact& contact)
 {
 	input >> contact.ids[0] >> contact.ids[1] >> contact.value;
+	return input;
+}
+
+inline std::ostream& operator<<(std::ostream& output, const ConstructionOfContacts::ParametersToConstructBundleOfContactInformation& params)
+{
+	output << params.probe;
+	output << " " << params.step;
+	output << " " << params.projections;
+	output << " " << params.sih_depth;
+	output << " " << params.calculate_volumes;
+	output << " " << params.calculate_bounding_arcs;
+	output << " " << params.calculate_adjacencies;
+	output << " " << params.skip_sas;
+	output << " " << params.skip_same_group;
+	output << " " << params.lookup_groups.size();
+	for(std::size_t i=0;i<params.lookup_groups.size();i++)
+	{
+		output << " " << params.lookup_groups[i];
+	}
+	return output;
+}
+
+inline std::istream& operator>>(std::istream& input, ConstructionOfContacts::ParametersToConstructBundleOfContactInformation& params)
+{
+	input >> params.probe;
+	input >> params.step;
+	input >> params.projections;
+	input >> params.sih_depth;
+	input >> params.calculate_volumes;
+	input >> params.calculate_bounding_arcs;
+	input >> params.calculate_adjacencies;
+	input >> params.skip_sas;
+	input >> params.skip_same_group;
+	{
+		int n=0;
+		input >> n;
+		if(n>0)
+		{
+			params.lookup_groups.reserve(n);
+			for(int i=0;i<n;i++)
+			{
+				int val=0;
+				input >> val;
+				params.lookup_groups.push_back(val);
+			}
+		}
+	}
+	return input;
+}
+
+inline std::ostream& operator<<(std::ostream& output, const ConstructionOfContacts::ParametersToEnhanceContacts& params)
+{
+	output << params.probe;
+	output << " " << params.sih_depth;
+	output << " " << params.tag_centrality;
+	output << " " << params.tag_peripherial;
+	output << " " << params.adjunct_solvent_direction;
+	return output;
+}
+
+inline std::istream& operator>>(std::istream& input, ConstructionOfContacts::ParametersToEnhanceContacts& params)
+{
+	input >> params.probe;
+	input >> params.sih_depth;
+	input >> params.tag_centrality;
+	input >> params.tag_peripherial;
+	input >> params.adjunct_solvent_direction;
+	return input;
+}
+
+inline std::ostream& operator<<(std::ostream& output, const ConstructionOfContacts::ParametersToDrawContacts& params)
+{
+	output << params.probe;
+	output << " " << params.step;
+	output << " " << params.projections;
+	output << " " << params.simplify;
+	output << " " << params.sih_depth;
+	output << " " << params.enable_alt;
+	output << " " << params.circular_angle_step;
+	return output;
+}
+
+inline std::istream& operator>>(std::istream& input, ConstructionOfContacts::ParametersToDrawContacts& params)
+{
+	input >> params.probe;
+	input >> params.step;
+	input >> params.projections;
+	input >> params.simplify;
+	input >> params.sih_depth;
+	input >> params.enable_alt;
+	input >> params.circular_angle_step;
 	return input;
 }
 

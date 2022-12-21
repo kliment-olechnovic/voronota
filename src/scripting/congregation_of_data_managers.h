@@ -443,6 +443,48 @@ public:
 		return false;
 	}
 
+	bool save_to_stream(const ObjectQuery& query, std::ostream& output)
+	{
+		std::vector<DataManager*> objects=get_objects(query);
+		if(objects.empty())
+		{
+			return false;
+		}
+
+		output << objects.size() << "\n";
+		for(std::size_t i=0;i<objects.size();i++)
+		{
+			const ObjectAttributes attributes=get_object_attributes(objects[i]);
+			output << attributes.name << " " << attributes.valid << " " << attributes.picked << " " << attributes.visible << "\n";
+			objects[i]->save_to_stream(output);
+		}
+
+		return true;
+	}
+
+	void load_from_stream(std::istream& input)
+	{
+		int count=0;
+		input >> count;
+		if(count<=0)
+		{
+			throw std::runtime_error(std::string("No objects when loading from stream."));
+		}
+		AutodeleterOfObjects auotodeleter(*this);
+		for(int i=0;i<count;i++)
+		{
+			ObjectAttributes attributes;
+			input >> attributes.name >> attributes.valid >> attributes.picked >> attributes.visible;
+			DataManager* object_new=add_object(DataManager(), attributes.name);
+			auotodeleter.objects.push_back(object_new);
+			DataManager& data_manager=*object_new;
+			data_manager.load_from_stream(input);
+			set_object_picked(object_new, attributes.picked);
+			set_object_visible(object_new, attributes.visible);
+		}
+		auotodeleter.objects.clear();
+	}
+
 private:
 	struct ObjectDescriptor
 	{
@@ -453,6 +495,25 @@ private:
 			data_manager(data_manager),
 			attributes(name)
 		{
+		}
+	};
+
+	class AutodeleterOfObjects
+	{
+	public:
+		CongregationOfDataManagers& cdm;
+		std::vector<DataManager*> objects;
+
+		AutodeleterOfObjects(CongregationOfDataManagers& cdm) : cdm(cdm)
+		{
+		}
+
+		~AutodeleterOfObjects()
+		{
+			for(std::size_t i=0;i<objects.size();i++)
+			{
+				cdm.delete_object(objects[i]);
+			}
 		}
 	};
 

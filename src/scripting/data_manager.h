@@ -186,6 +186,37 @@ public:
 			}
 			return result;
 		}
+
+		friend std::ostream& operator<<(std::ostream& output, const DisplayState& ds)
+		{
+			output << ds.drawable << " " << ds.marked << "\n";
+			output << ds.visuals.size() << "\n";
+			for(std::size_t i=0;i<ds.visuals.size();i++)
+			{
+				output << ds.visuals[i].color << " " << ds.visuals[i].implemented << " " << ds.visuals[i].visible << "\n";
+			}
+			return output;
+		}
+
+		friend std::istream& operator>>(std::istream& input, DisplayState& ds)
+		{
+			input >> ds.drawable >> ds.marked;
+			{
+				int n=0;
+				input >> n;
+				if(n>0)
+				{
+					ds.visuals.reserve(n);
+					for(int i=0;i<n;i++)
+					{
+						Visual val;
+						input >> val.color >> val.implemented >> val.visible;
+						ds.visuals.push_back(val);
+					}
+				}
+			}
+			return input;
+		}
 	};
 
 	class DisplayStateUpdater
@@ -1810,6 +1841,204 @@ public:
 			sync_atoms_selections_with_display_states();
 			sync_contacts_selections_with_display_states();
 		}
+	}
+
+	void save_to_stream(std::ostream& output) const
+	{
+		output << atoms_.size() << "\n";
+		for(std::size_t i=0;i<atoms_.size();i++)
+		{
+			output << atoms_[i] << "\n";
+		}
+
+		output << atoms_display_states_.size() << "\n";
+		for(std::size_t i=0;i<atoms_display_states_.size();i++)
+		{
+			output << atoms_display_states_[i] << "\n";
+		}
+
+		output << history_of_actions_on_contacts_.constructing.size() << "\n";
+		for(std::size_t i=0;i<history_of_actions_on_contacts_.constructing.size();i++)
+		{
+			output << history_of_actions_on_contacts_.constructing[i] << "\n";
+		}
+
+		output << history_of_actions_on_contacts_.enhancing.size() << "\n";
+		for(std::size_t i=0;i<history_of_actions_on_contacts_.enhancing.size();i++)
+		{
+			output << history_of_actions_on_contacts_.enhancing[i] << "\n";
+		}
+
+		output << history_of_actions_on_contacts_.graphics_creating.size() << "\n";
+		for(std::map<std::size_t, common::ConstructionOfContacts::ParametersToDrawContacts>::const_iterator it=history_of_actions_on_contacts_.graphics_creating.begin();it!=history_of_actions_on_contacts_.graphics_creating.end();++it)
+		{
+			output << it->first << " " << it->second << "\n";
+		}
+
+		output << contacts_.size() << "\n";
+		for(std::size_t i=0;i<contacts_.size();i++)
+		{
+			output << contacts_[i].value.props << "\n";
+		}
+
+		output << contacts_display_states_.size() << "\n";
+		for(std::size_t i=0;i<contacts_display_states_.size();i++)
+		{
+			output << contacts_display_states_[i] << "\n";
+		}
+	}
+
+	void load_from_stream(std::istream& input)
+	{
+		std::vector<Atom> atoms;
+		{
+			int count=0;
+			input >> count;
+			for(int i=0;i<count;i++)
+			{
+				Atom atom;
+				input >> atom;
+				atoms.push_back(atom);
+			}
+		}
+
+		std::vector<DisplayState> atoms_display_states;
+		{
+			int count=0;
+			input >> count;
+			for(int i=0;i<count;i++)
+			{
+				DisplayState ds;
+				input >> ds;
+				atoms_display_states.push_back(ds);
+			}
+		}
+
+		std::vector<common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation> contacts_params_constructing;
+		{
+			int count=0;
+			input >> count;
+			for(int i=0;i<count;i++)
+			{
+				common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation params;
+				input >> params;
+				contacts_params_constructing.push_back(params);
+			}
+		}
+
+		std::vector<common::ConstructionOfContacts::ParametersToEnhanceContacts> contacts_params_enhancing;
+		{
+			int count=0;
+			input >> count;
+			for(int i=0;i<count;i++)
+			{
+				common::ConstructionOfContacts::ParametersToEnhanceContacts params;
+				input >> params;
+				contacts_params_enhancing.push_back(params);
+			}
+		}
+
+		std::map< common::ConstructionOfContacts::ParametersToDrawContacts, std::set<std::size_t> > contacts_params_drawing;
+		{
+			int count=0;
+			input >> count;
+			for(int i=0;i<count;i++)
+			{
+				std::size_t id=0;
+				common::ConstructionOfContacts::ParametersToDrawContacts params;
+				params.probe=1.0;
+				params.step=2.0;
+				params.projections=3;
+				params.simplify=true;
+				params.sih_depth=5;
+				params.enable_alt=true;
+				params.circular_angle_step=6.0;
+
+				input >> id >> params;
+				contacts_params_drawing[params].insert(id);
+			}
+		}
+
+		std::vector<common::PropertiesValue> contacts_properties;
+		{
+			int count=0;
+			input >> count;
+			for(int i=0;i<count;i++)
+			{
+				common::PropertiesValue props;
+				input >> props;
+				contacts_properties.push_back(props);
+			}
+		}
+
+		std::vector<DisplayState> contacts_display_states;
+		{
+			int count=0;
+			input >> count;
+			for(int i=0;i<count;i++)
+			{
+				DisplayState ds;
+				input >> ds;
+				contacts_display_states.push_back(ds);
+			}
+		}
+
+		if(atoms.empty())
+		{
+			throw std::runtime_error(std::string("No atoms when loading from stream."));
+		}
+
+		if(atoms_display_states.size()!=atoms.size())
+		{
+			throw std::runtime_error(std::string("Invalid number of atom display states when loading from stream."));
+		}
+
+		if(contacts_params_constructing.empty()!=contacts_params_enhancing.empty())
+		{
+			throw std::runtime_error(std::string("Invalid parameters for constructing contacts when loading from stream."));
+		}
+
+		if(contacts_params_constructing.empty() && !contacts_params_drawing.empty())
+		{
+			throw std::runtime_error(std::string("Invalid parameters for drawing contacts when loading from stream."));
+		}
+
+		if(contacts_params_constructing.empty()!=contacts_properties.empty())
+		{
+			throw std::runtime_error(std::string("Invalid contacts data when loading from stream."));
+		}
+
+		if(contacts_display_states.size()!=contacts_properties.size())
+		{
+			throw std::runtime_error(std::string("Invalid number of contact display states when loading from stream."));
+		}
+
+		reset_atoms_by_copying(atoms);
+		atoms_display_states_=atoms_display_states;
+
+		if(contacts_params_constructing.empty())
+		{
+			return;
+		}
+
+		reset_contacts_by_creating(contacts_params_constructing.back(), contacts_params_enhancing.back());
+
+		if(contacts_.size()!=contacts_properties.size())
+		{
+			throw std::runtime_error(std::string("Invalid number of contact properties when loading from stream."));
+		}
+
+		for(std::map< common::ConstructionOfContacts::ParametersToDrawContacts, std::set<std::size_t> >::const_iterator it=contacts_params_drawing.begin();it!=contacts_params_drawing.end();++it)
+		{
+			reset_contacts_graphics_by_creating(it->first, it->second, false);
+		}
+
+		for(std::size_t i=0;i<contacts_.size();i++)
+		{
+			contacts_[i].value.props=contacts_properties[i];
+		}
+
+		contacts_display_states_=contacts_display_states;
 	}
 
 private:

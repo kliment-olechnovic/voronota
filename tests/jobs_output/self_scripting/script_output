@@ -1062,6 +1062,9 @@
             "name":"export-global-adjuncts",
             "short_description":""},
           {
+            "name":"export-objects",
+            "short_description":""},
+          {
             "name":"export-selection-of-atoms",
             "short_description":""},
           {
@@ -1114,6 +1117,9 @@
             "short_description":""},
           {
             "name":"import-many",
+            "short_description":""},
+          {
+            "name":"import-objects",
             "short_description":""},
           {
             "name":"import-selection-of-atoms",

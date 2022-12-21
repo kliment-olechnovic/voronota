@@ -50,6 +50,7 @@
 #include "operators/export_contacts.h"
 #include "operators/export_figures_as_pymol_cgo.h"
 #include "operators/export_global_adjuncts.h"
+#include "operators/export_objects.h"
 #include "operators/export_selection_of_atoms.h"
 #include "operators/export_selection_of_contacts.h"
 #include "operators/export_sequence.h"
@@ -63,6 +64,7 @@
 #include "operators/import_docking_result.h"
 #include "operators/import_figure_voxels.h"
 #include "operators/import_many.h"
+#include "operators/import_objects.h"
 #include "operators/import.h"
 #include "operators/import_selection_of_atoms.h"
 #include "operators/import_selection_of_contacts.h"
@@ -217,6 +219,8 @@ public:
 		set_command_for_congregation_of_data_managers("cad-score", operators::CADScore());
 		set_command_for_congregation_of_data_managers("cad-score-many", operators::CADScoreMany());
 		set_command_for_congregation_of_data_managers("export-global-adjuncts", operators::ExportGlobalAdjuncts());
+		set_command_for_congregation_of_data_managers("export-objects", operators::ExportObjects());
+		set_command_for_congregation_of_data_managers("import-objects", operators::ImportObjects());
 
 		set_command_for_data_manager("add-figure", operators::AddFigure(), true);
 		set_command_for_data_manager("add-figure-of-convex-hull", operators::AddFigureOfConvexHull(), true);
