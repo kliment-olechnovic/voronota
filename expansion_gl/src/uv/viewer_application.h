@@ -635,22 +635,57 @@ public:
 	void save_view_to_stream(std::ostream& output) const
 	{
 		output << zoom_value_ << "\n";
+
 		output << modeltransform_matrix_ << "\n";
+
+		output << background_color_[0] << " " << background_color_[1] << " " << background_color_[2] << "\n";
+
+		if(projection_mode_==ProjectionMode::perspective) { output << "perspective"; }
+		else { output << "ortho"; }
+		output << "\n";
+
+		if(rendering_mode_==RenderingMode::grid) { output << "grid"; }
+		else if(rendering_mode_==RenderingMode::stereo) { output << "stereo"; }
+		else { output << "simple"; }
+		output << "\n";
 	}
 
 	bool load_view_from_stream(std::istream& input)
 	{
 		double zoom_value=0.0;
 		TransformationMatrixController modeltransform_matrix;
+		float background_color[3];
+		std::string projection_mode;
+		std::string rendering_mode;
+
 		input >> zoom_value >> modeltransform_matrix;
+		input >> background_color[0] >> background_color[1] >> background_color[2];
+		input >> projection_mode >> rendering_mode;
+
 		if(input.fail() || zoom_value<=0.0)
 		{
 			return false;
 		}
+
+		if(projection_mode=="perspective") { projection_mode_=ProjectionMode::perspective; }
+		else if(projection_mode=="ortho") { projection_mode_=ProjectionMode::ortho; }
+		else { return false; }
+
+		if(rendering_mode=="grid") { rendering_mode_=RenderingMode::grid; }
+		else if(rendering_mode=="stereo") { rendering_mode_=RenderingMode::stereo; }
+		else if(rendering_mode=="simple") { rendering_mode_=RenderingMode::simple; }
+		else { return false; }
+
 		zoom_value_=zoom_value;
 		modeltransform_matrix_=modeltransform_matrix;
+		background_color_[0]=background_color[0];
+		background_color_[1]=background_color[1];
+		background_color_[2]=background_color[2];
+
 		refresh_shading_viewtransform();
 		refresh_shading_modeltransform();
+		refresh_shading_projection();
+
 		return true;
 	}
 
