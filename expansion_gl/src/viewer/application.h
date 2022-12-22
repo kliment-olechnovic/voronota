@@ -330,6 +330,7 @@ private:
 		{
 			TYPE_NATIVE,
 			TYPE_JAVASCRIPT,
+			TYPE_OBJECTS,
 			TYPE_DATA
 		};
 
@@ -368,6 +369,8 @@ private:
 			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_NATIVE, ".VS"));
 			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_JAVASCRIPT, ".js"));
 			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_JAVASCRIPT, ".JS"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_OBJECTS, ".vos"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_OBJECTS, ".VOS"));
 			return map_of_format_extensions;
 		}
 	};
@@ -542,6 +545,10 @@ private:
 			else if(job_file.type==JobFile::TYPE_JAVASCRIPT)
 			{
 				return enqueue_job(Job(std::string("source('")+job_file.filename+"');", Job::TYPE_JAVASCRIPT));
+			}
+			else if(job_file.type==JobFile::TYPE_OBJECTS)
+			{
+				return enqueue_job(Job(std::string("import-objects --file '")+job_file.filename+"'", Job::TYPE_NATIVE));
 			}
 			else
 			{

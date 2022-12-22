@@ -17,8 +17,17 @@ class ImportObjects : public OperatorBase<ImportObjects>
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
-		void store(HeterogeneousStorage&) const
+		std::vector<VariantObject> objects;
+		SummaryOfAtoms summary_of_atoms;
+
+		void store(HeterogeneousStorage& heterostorage) const
 		{
+			heterostorage.variant_object.objects_array("objects")=objects;
+			if(summary_of_atoms.bounding_box.filled)
+			{
+				heterostorage.summaries_of_atoms["zoomed"]=summary_of_atoms;
+				VariantSerialization::write(summary_of_atoms.bounding_box, heterostorage.variant_object.object("bounding_box"));
+			}
 		}
 	};
 
@@ -53,9 +62,24 @@ public:
 			throw std::runtime_error(std::string("Failed to read file '")+file+"'.");
 		}
 
-		congregation_of_data_managers.load_from_stream(finput);
+		const std::vector<DataManager*> objects=congregation_of_data_managers.load_from_stream(finput);
+		if(objects.empty())
+		{
+			throw std::runtime_error(std::string("No objects loaded."));
+		}
 
 		Result result;
+
+		for(std::size_t i=0;i<objects.size();i++)
+		{
+			const CongregationOfDataManagers::ObjectAttributes attributes=congregation_of_data_managers.get_object_attributes(objects[i]);
+			VariantObject info;
+			info.value("name")=attributes.name;
+			info.value("picked")=attributes.picked;
+			info.value("visible")=attributes.visible;
+			result.objects.push_back(info);
+			result.summary_of_atoms.feed(SummaryOfAtoms(objects[i]->atoms()));
+		}
 
 		return result;
 	}

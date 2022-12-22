@@ -462,7 +462,7 @@ public:
 		return true;
 	}
 
-	void load_from_stream(std::istream& input)
+	std::vector<DataManager*> load_from_stream(std::istream& input)
 	{
 		int count=0;
 		input >> count;
@@ -482,7 +482,9 @@ public:
 			set_object_picked(object_new, attributes.picked);
 			set_object_visible(object_new, attributes.visible);
 		}
-		auotodeleter.objects.clear();
+		std::vector<DataManager*> result;
+		result.swap(auotodeleter.objects);
+		return result;
 	}
 
 private:
