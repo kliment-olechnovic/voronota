@@ -282,16 +282,55 @@ public:
 
 			ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
 			ImGui::SetNextWindowSizeConstraints(ImVec2(min_width, actual_min_height), ImVec2(max_width, max_height));
-			ImGui::SetNextWindowSize(ImVec2(recommended_width, recommended_height), ImGuiCond_FirstUseEver);
-			if(shrink_to_minimal_view_ && current_max_width_>0.0f)
+
+			if(shrink_to_minimal_view_)
 			{
-				ImGui::SetNextWindowSize(ImVec2(max_width, actual_min_height), ImGuiCond_Always);
-				shrink_to_minimal_view_=false;
+				GUIConfiguration::instance().hint_render_area_width=-1;
+				GUIConfiguration::instance().hint_render_area_height=-1;
 			}
-			else if(current_width_>0.0f && current_max_width_>0.0f && current_heigth_>0.0f)
+
+			if(GUIConfiguration::instance().hint_render_area_width>0 || GUIConfiguration::instance().hint_render_area_height>0)
 			{
-				ImGui::SetNextWindowSize(ImVec2(current_width_+(max_width-current_max_width_), ((current_heigth_!=current_max_heigth_) ? current_heigth_ : max_height)), ImGuiCond_Always);
+				int hint_width=GUIConfiguration::instance().hint_render_area_width;
+				if(hint_width<=0)
+				{
+					hint_width=(current_width_>0.0f ? static_cast<int>(current_width_) : recommended_width);
+				}
+				else
+				{
+					hint_width=std::min(std::max(min_width, hint_width), max_width);
+				}
+
+				int hint_height=GUIConfiguration::instance().hint_render_area_height;
+				if(hint_height<=0)
+				{
+					hint_height=(current_heigth_>0.0f ? static_cast<int>(current_heigth_) : recommended_height);
+				}
+				else
+				{
+					hint_height=(max_height-hint_height);
+					hint_height=std::min(std::max(static_cast<int>(actual_min_height), hint_height), max_height);
+				}
+
+				GUIConfiguration::instance().hint_render_area_width=-1;
+				GUIConfiguration::instance().hint_render_area_height=-1;
+
+				ImGui::SetNextWindowSize(ImVec2(hint_width, hint_height), ImGuiCond_Always);
 			}
+			else
+			{
+				ImGui::SetNextWindowSize(ImVec2(recommended_width, recommended_height), ImGuiCond_FirstUseEver);
+				if(shrink_to_minimal_view_ && current_max_width_>0.0f)
+				{
+					ImGui::SetNextWindowSize(ImVec2(max_width, actual_min_height), ImGuiCond_Always);
+					shrink_to_minimal_view_=false;
+				}
+				else if(current_width_>0.0f && current_max_width_>0.0f && current_heigth_>0.0f)
+				{
+					ImGui::SetNextWindowSize(ImVec2(current_width_+(max_width-current_max_width_), ((current_heigth_!=current_max_heigth_) ? current_heigth_ : max_height)), ImGuiCond_Always);
+				}
+			}
+
 			ImGui::SetNextWindowBgAlpha(0.5f);
 			if(!ImGui::Begin("Console", 0, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoScrollbar))
 			{

@@ -70,6 +70,8 @@ public:
 	double animation_step_miliseconds;
 	bool enabled_sequence_view;
 	bool enabled_console;
+	int hint_render_area_width;
+	int hint_render_area_height;
 
 	static GUIConfiguration& instance()
 	{
@@ -117,7 +119,9 @@ private:
 		json_writing_level(0),
 		animation_step_miliseconds(1000.0/30.0),
 		enabled_sequence_view(false),
-		enabled_console(true)
+		enabled_console(true),
+		hint_render_area_width(-1),
+		hint_render_area_height(-1)
 	{
 	}
 
