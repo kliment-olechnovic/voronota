@@ -109,6 +109,31 @@ public:
 		add_translation(glm::vec3(matrix_*glm::vec4(pos, 1.0f))*(-1.0f));
 	}
 
+	friend std::ostream& operator<<(std::ostream& output, const TransformationMatrixController& tmc)
+	{
+		for(int i=0;i<4;i++)
+		{
+			for(int j=0;j<4;j++)
+			{
+				output << tmc.matrix_[i][j] << (j<3 ? " " : "\n");
+			}
+		}
+		return output;
+	}
+
+	friend std::istream& operator>>(std::istream& input, TransformationMatrixController& tmc)
+	{
+		tmc.reset();
+		for(int i=0;i<4;i++)
+		{
+			for(int j=0;j<4;j++)
+			{
+				input >> tmc.matrix_[i][j];
+			}
+		}
+		return input;
+	}
+
 private:
 	glm::mat4 matrix_;
 };

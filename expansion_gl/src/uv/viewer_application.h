@@ -632,6 +632,28 @@ public:
 		return true;
 	}
 
+	void save_view_to_stream(std::ostream& output) const
+	{
+		output << zoom_value_ << "\n";
+		output << modeltransform_matrix_ << "\n";
+	}
+
+	bool load_view_from_stream(std::istream& input)
+	{
+		double zoom_value=0.0;
+		TransformationMatrixController modeltransform_matrix;
+		input >> zoom_value >> modeltransform_matrix;
+		if(input.fail() || zoom_value<=0.0)
+		{
+			return false;
+		}
+		zoom_value_=zoom_value;
+		modeltransform_matrix_=modeltransform_matrix;
+		refresh_shading_viewtransform();
+		refresh_shading_modeltransform();
+		return true;
+	}
+
 protected:
 	ViewerApplication() :
 		good_(false),

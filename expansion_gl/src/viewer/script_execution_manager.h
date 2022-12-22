@@ -24,6 +24,8 @@
 #include "operators/sleep.h"
 #include "operators/configure_gui.h"
 #include "operators/import_downloaded.h"
+#include "operators/export_view.h"
+#include "operators/import_view.h"
 
 namespace voronota
 {
@@ -84,6 +86,8 @@ public:
 		set_command_for_extra_actions("animate-loop-picked-objects", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS));
 		set_command_for_extra_actions("animate-spin-left", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_SPIN_LEFT));
 		set_command_for_extra_actions("animate-spin-right", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_SPIN_RIGHT));
+		set_command_for_extra_actions("export-view", operators::ExportView());
+		set_command_for_extra_actions("import-view", operators::ImportView());
 
 		set_command_for_congregation_of_data_managers("fetch", duktaper::operators::Fetch(RemoteImportDownloaderAdaptive::instance()));
 		set_command_for_congregation_of_data_managers("fetch-afdb", duktaper::operators::FetchAFDB(RemoteImportDownloaderAdaptive::instance()));
