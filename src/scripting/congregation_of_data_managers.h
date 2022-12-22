@@ -451,6 +451,8 @@ public:
 			return false;
 		}
 
+		output << "SCRIPTING_CONGREGATION_OF_DATA_MANAGERS_EXPORTED\n";
+
 		output << objects.size() << "\n";
 		for(std::size_t i=0;i<objects.size();i++)
 		{
@@ -464,6 +466,18 @@ public:
 
 	std::vector<DataManager*> load_from_stream(std::istream& input)
 	{
+		bool good_start=false;
+		while(!good_start && input.good())
+		{
+			std::string token;
+			input >> token;
+			good_start=(token=="SCRIPTING_CONGREGATION_OF_DATA_MANAGERS_EXPORTED");
+		}
+		if(!good_start)
+		{
+			throw std::runtime_error(std::string("Invalid start of objects stream."));
+		}
+
 		int count=0;
 		input >> count;
 		if(count<=0)

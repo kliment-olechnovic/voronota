@@ -634,6 +634,8 @@ public:
 
 	void save_view_to_stream(std::ostream& output) const
 	{
+		output << "UV_VIEWER_APPLICATION_EXPORTED_VIEW\n";
+
 		output << zoom_value_ << "\n";
 
 		output << modeltransform_matrix_ << "\n";
@@ -652,6 +654,18 @@ public:
 
 	bool load_view_from_stream(std::istream& input)
 	{
+		bool good_start=false;
+		while(!good_start && input.good())
+		{
+			std::string token;
+			input >> token;
+			good_start=(token=="UV_VIEWER_APPLICATION_EXPORTED_VIEW");
+		}
+		if(!good_start)
+		{
+			return false;
+		}
+
 		double zoom_value=0.0;
 		TransformationMatrixController modeltransform_matrix;
 		float background_color[3];
