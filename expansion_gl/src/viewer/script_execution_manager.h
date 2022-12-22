@@ -26,6 +26,8 @@
 #include "operators/import_downloaded.h"
 #include "operators/export_view.h"
 #include "operators/import_view.h"
+#include "operators/export_session.h"
+#include "operators/import_session.h"
 
 namespace voronota
 {
@@ -93,6 +95,8 @@ public:
 		set_command_for_congregation_of_data_managers("fetch-afdb", duktaper::operators::FetchAFDB(RemoteImportDownloaderAdaptive::instance()));
 		set_command_for_congregation_of_data_managers("import-url", duktaper::operators::ImportUrl(RemoteImportDownloaderAdaptive::instance()));
 		set_command_for_congregation_of_data_managers("import-downloaded", operators::ImportDownloaded());
+		set_command_for_congregation_of_data_managers("export-session", operators::ExportSession());
+		set_command_for_congregation_of_data_managers("import-session", operators::ImportSession());
 
 #ifdef FOR_WEB
 		unset_command("exit");
