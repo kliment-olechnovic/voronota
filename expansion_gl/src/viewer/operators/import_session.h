@@ -68,7 +68,9 @@ public:
 			throw std::runtime_error(std::string("No objects loaded."));
 		}
 
-		const bool view_loaded=uv::ViewerApplication::instance().load_view_from_stream(finput);
+		std::vector<int> recommended_effective_rendering_size;
+
+		const bool view_loaded=uv::ViewerApplication::instance().load_view_from_stream(finput, recommended_effective_rendering_size);
 
 		Result result;
 

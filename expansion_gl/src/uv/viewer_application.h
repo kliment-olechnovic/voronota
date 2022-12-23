@@ -634,10 +634,15 @@ public:
 		else if(rendering_mode_==RenderingMode::stereo) { output << "stereo"; }
 		else { output << "simple"; }
 		output << "\n";
+
+		output << window_width() << " " << window_height() << "\n";
+		output << effective_rendering_window_width() << " " << effective_rendering_window_height() << "\n";
 	}
 
-	bool load_view_from_stream(std::istream& input)
+	bool load_view_from_stream(std::istream& input, std::vector<int>& recommended_effective_rendering_size)
 	{
+		recommended_effective_rendering_size.clear();
+
 		bool good_start=false;
 		while(!good_start && input.good())
 		{
@@ -655,10 +660,16 @@ public:
 		float background_color[3];
 		std::string projection_mode;
 		std::string rendering_mode;
+		int used_window_width=0;
+		int used_window_height=0;
+		int recommended_width=0;
+		int recommended_height=0;
 
 		input >> zoom_value >> modeltransform_matrix;
 		input >> background_color[0] >> background_color[1] >> background_color[2];
 		input >> projection_mode >> rendering_mode;
+		input >> used_window_width >> used_window_height;
+		input >> recommended_width >> recommended_height;
 
 		if(input.fail() || zoom_value<=0.0)
 		{
@@ -679,6 +690,12 @@ public:
 		background_color_[0]=background_color[0];
 		background_color_[1]=background_color[1];
 		background_color_[2]=background_color[2];
+
+		if(recommended_width>0 && recommended_height>0 && used_window_width<=window_width() && used_window_height<=window_height())
+		{
+			recommended_effective_rendering_size.push_back(recommended_width);
+			recommended_effective_rendering_size.push_back(recommended_height);
+		}
 
 		refresh_shading_viewtransform();
 		refresh_shading_modeltransform();
