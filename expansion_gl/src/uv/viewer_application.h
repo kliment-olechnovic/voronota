@@ -260,22 +260,22 @@ public:
 
 	int effective_rendering_window_width() const
 	{
-		return adjust_length_with_margin(window_width_, margin_right_ratio_, margin_right_fixed_);
+		return adjust_length_with_margin(window_width_, margin_right_fixed_);
 	}
 
 	int effective_rendering_window_height() const
 	{
-		return adjust_length_with_margin(window_height_, margin_top_ratio_, margin_top_fixed_);
+		return adjust_length_with_margin(window_height_, margin_top_fixed_);
 	}
 
 	int effective_rendering_framebuffer_width() const
 	{
-		return adjust_length_with_margin(framebuffer_width_, margin_right_ratio_, static_cast<int>(margin_right_fixed_*framebuffer_and_window_ratio()));
+		return adjust_length_with_margin(framebuffer_width_, static_cast<int>(margin_right_fixed_*framebuffer_and_window_ratio()));
 	}
 
 	int effective_rendering_framebuffer_height() const
 	{
-		return adjust_length_with_margin(framebuffer_height_, margin_top_ratio_, static_cast<int>(margin_top_fixed_*framebuffer_and_window_ratio()));
+		return adjust_length_with_margin(framebuffer_height_, static_cast<int>(margin_top_fixed_*framebuffer_and_window_ratio()));
 	}
 
 	float mouse_x() const
@@ -579,30 +579,14 @@ public:
 		grid_size_=(grid_size>=1 ? grid_size : 1);
 	}
 
-	void set_margin_right_ratio(const double margin_right_ratio)
-	{
-		margin_right_ratio_=margin_right_ratio;
-		margin_right_fixed_=0;
-		refresh_shading_projection();
-	}
-
-	void set_margin_top_ratio(const double margin_top_ratio)
-	{
-		margin_top_ratio_=margin_top_ratio;
-		margin_top_fixed_=0;
-		refresh_shading_projection();
-	}
-
 	void set_margin_right_fixed(const int margin_right_size)
 	{
-		margin_right_ratio_=0.0;
 		margin_right_fixed_=margin_right_size;
 		refresh_shading_projection();
 	}
 
 	void set_margin_top_fixed(const int margin_top_size)
 	{
-		margin_top_ratio_=0.0;
 		margin_top_fixed_=margin_top_size;
 		refresh_shading_projection();
 	}
@@ -712,15 +696,12 @@ protected:
 		window_height_(0),
 		framebuffer_width_(0),
 		framebuffer_height_(0),
-		margin_right_ratio_(0.0),
-		margin_top_ratio_(0.0),
 		margin_right_fixed_(0),
 		margin_top_fixed_(0),
 		zoom_value_(1.0),
 		zoom_value_step_(1.05),
 		ortho_z_near_(-3.0f),
 		ortho_z_far_(3.0f),
-		ortho_z_step_(1.05),
 		mouse_button_left_down_(false),
 		mouse_button_right_down_(false),
 		mouse_button_left_click_possible_(false),
@@ -951,14 +932,10 @@ private:
 		return value;
 	}
 
-	static int adjust_length_with_margin(const int length, const double margin_ratio, const int margin_fixed)
+	static int adjust_length_with_margin(const int length, const int margin_fixed)
 	{
 		int value=length;
-		if(margin_ratio>0.0)
-		{
-			value=static_cast<int>(length*(1.0-margin_ratio));
-		}
-		else if(margin_fixed>0)
+		if(margin_fixed>0)
 		{
 			value=(length-margin_fixed);
 		}
@@ -1658,15 +1635,12 @@ private:
 	int window_height_;
 	int framebuffer_width_;
 	int framebuffer_height_;
-	double margin_right_ratio_;
-	double margin_top_ratio_;
 	int margin_right_fixed_;
 	int margin_top_fixed_;
 	double zoom_value_;
 	double zoom_value_step_;
 	double ortho_z_near_;
 	double ortho_z_far_;
-	double ortho_z_step_;
 	bool mouse_button_left_down_;
 	bool mouse_button_right_down_;
 	bool mouse_button_left_click_possible_;
