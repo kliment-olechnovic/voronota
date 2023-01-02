@@ -35,7 +35,7 @@ public:
 		else
 		{
 			location_type_=DISK;
-			disk_stream_.open(filename.c_str(), std::ios::in);
+			disk_stream_.open(filename.c_str(), std::ios::in | std::ios::binary);
 		}
 	}
 
@@ -87,7 +87,7 @@ public:
 		else if(!VirtualFileStorage::filename_is_valid(filename))
 		{
 			location_type_=DISK;
-			disk_stream_.open(filename.c_str(), std::ios::out);
+			disk_stream_.open(filename.c_str(), std::ios::out | std::ios::binary);
 		}
 		else
 		{
