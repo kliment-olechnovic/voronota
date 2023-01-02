@@ -47,6 +47,16 @@ struct PropertiesValue
 			}
 		}
 	}
+
+	bool operator<(const PropertiesValue& v) const
+	{
+		if(tags<v.tags) { return true; }
+		else if(tags==v.tags)
+		{
+			return (adjuncts<v.adjuncts);
+		}
+		return false;
+	}
 };
 
 inline std::ostream& operator<<(std::ostream& output, const PropertiesValue& value)

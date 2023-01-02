@@ -141,6 +141,20 @@ public:
 			Visual() : implemented(false), visible(false), color(0x7F7F7F)
 			{
 			}
+
+			bool operator<(const Visual& v) const
+			{
+				if(implemented<v.implemented) { return true; }
+				else if(implemented==v.implemented)
+				{
+					if(visible<v.visible) { return true; }
+					else if(visible==v.visible)
+					{
+						return (color<v.color);
+					}
+				}
+				return false;
+			}
 		};
 
 		bool drawable;
@@ -185,6 +199,20 @@ public:
 				}
 			}
 			return result;
+		}
+
+		bool operator<(const DisplayState& v) const
+		{
+			if(drawable<v.drawable) { return true; }
+			else if(drawable==v.drawable)
+			{
+				if(marked<v.marked) { return true; }
+				else if(marked==v.marked)
+				{
+					return (visuals<v.visuals);
+				}
+			}
+			return false;
 		}
 
 		friend std::ostream& operator<<(std::ostream& output, const DisplayState& ds)
@@ -1875,16 +1903,42 @@ public:
 			output << it->first << " " << it->second << "\n";
 		}
 
-		output << contacts_.size() << "\n";
-		for(std::size_t i=0;i<contacts_.size();i++)
 		{
-			output << contacts_[i].value.props << "\n";
+			std::map< common::PropertiesValue, std::vector< std::pair<std::size_t, std::size_t> > > map_of_contacts_properties;
+			for(std::size_t i=0;i<contacts_.size();i++)
+			{
+				map_of_contacts_properties[contacts_[i].value.props].push_back(std::pair<std::size_t, std::size_t>(contacts_[i].ids[0], contacts_[i].ids[1]));
+			}
+
+			output << map_of_contacts_properties.size() << "\n";
+			for(std::map< common::PropertiesValue, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_properties.begin();it!=map_of_contacts_properties.end();++it)
+			{
+				output << it->first << "\n";
+				output << it->second.size() << "\n";
+				for(std::size_t i=0;i<(it->second.size());i++)
+				{
+					output << it->second[i].first << " " << it->second[i].second << "\n";
+				}
+			}
 		}
 
-		output << contacts_display_states_.size() << "\n";
-		for(std::size_t i=0;i<contacts_display_states_.size();i++)
 		{
-			output << contacts_display_states_[i] << "\n";
+			std::map< DisplayState, std::vector< std::pair<std::size_t, std::size_t> > > map_of_contacts_display_states;
+			for(std::size_t i=0;i<contacts_display_states_.size();i++)
+			{
+				map_of_contacts_display_states[contacts_display_states_[i]].push_back(std::pair<std::size_t, std::size_t>(contacts_[i].ids[0], contacts_[i].ids[1]));
+			}
+
+			output << map_of_contacts_display_states.size() << "\n";
+			for(std::map< DisplayState, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_display_states.begin();it!=map_of_contacts_display_states.end();++it)
+			{
+				output << it->first << "\n";
+				output << it->second.size() << "\n";
+				for(std::size_t i=0;i<(it->second.size());i++)
+				{
+					output << it->second[i].first << " " << it->second[i].second << "\n";
+				}
+			}
 		}
 	}
 
@@ -1959,7 +2013,7 @@ public:
 			}
 		}
 
-		std::vector<common::PropertiesValue> contacts_properties;
+		std::map< common::PropertiesValue, std::vector< std::pair<std::size_t, std::size_t> > > map_of_contacts_properties;
 		{
 			int count=0;
 			input >> count;
@@ -1967,11 +2021,23 @@ public:
 			{
 				common::PropertiesValue props;
 				input >> props;
-				contacts_properties.push_back(props);
+				int pairs_count=0;
+				input >> pairs_count;
+				if(pairs_count>0)
+				{
+					std::vector< std::pair<std::size_t, std::size_t> >& pairs_vector=map_of_contacts_properties[props];
+					pairs_vector.reserve(pairs_count);
+					for(int i=0;i<pairs_count;i++)
+					{
+						std::pair<std::size_t, std::size_t> pair_value;
+						input >> pair_value.first >> pair_value.second;
+						pairs_vector.push_back(pair_value);
+					}
+				}
 			}
 		}
 
-		std::vector<DisplayState> contacts_display_states;
+		std::map< DisplayState, std::vector< std::pair<std::size_t, std::size_t> > > map_of_contacts_display_states;
 		{
 			int count=0;
 			input >> count;
@@ -1979,7 +2045,19 @@ public:
 			{
 				DisplayState ds;
 				input >> ds;
-				contacts_display_states.push_back(ds);
+				int pairs_count=0;
+				input >> pairs_count;
+				if(pairs_count>0)
+				{
+					std::vector< std::pair<std::size_t, std::size_t> >& pairs_vector=map_of_contacts_display_states[ds];
+					pairs_vector.reserve(pairs_count);
+					for(int i=0;i<pairs_count;i++)
+					{
+						std::pair<std::size_t, std::size_t> pair_value;
+						input >> pair_value.first >> pair_value.second;
+						pairs_vector.push_back(pair_value);
+					}
+				}
 			}
 		}
 
@@ -2003,14 +2081,9 @@ public:
 			throw std::runtime_error(std::string("Invalid parameters for drawing contacts when loading from stream."));
 		}
 
-		if(contacts_params_constructing.empty()!=contacts_properties.empty())
+		if(contacts_params_constructing.empty()!=map_of_contacts_properties.empty())
 		{
 			throw std::runtime_error(std::string("Invalid contacts data when loading from stream."));
-		}
-
-		if(contacts_display_states.size()!=contacts_properties.size())
-		{
-			throw std::runtime_error(std::string("Invalid number of contact display states when loading from stream."));
 		}
 
 		reset_atoms_by_copying(atoms);
@@ -2023,22 +2096,40 @@ public:
 
 		reset_contacts_by_creating(contacts_params_constructing.back(), contacts_params_enhancing.back());
 
-		if(contacts_.size()!=contacts_properties.size())
-		{
-			throw std::runtime_error(std::string("Invalid number of contact properties when loading from stream."));
-		}
-
 		for(std::map< common::ConstructionOfContacts::ParametersToDrawContacts, std::set<std::size_t> >::const_iterator it=contacts_params_drawing.begin();it!=contacts_params_drawing.end();++it)
 		{
 			reset_contacts_graphics_by_creating(it->first, it->second, false);
 		}
 
+		std::map<std::pair<std::size_t, std::size_t>, std::size_t> map_of_pairs_to_contact_ids;
 		for(std::size_t i=0;i<contacts_.size();i++)
 		{
-			contacts_[i].value.props=contacts_properties[i];
+			map_of_pairs_to_contact_ids[std::pair<std::size_t, std::size_t>(contacts_[i].ids[0], contacts_[i].ids[1])]=i;
 		}
 
-		contacts_display_states_=contacts_display_states;
+		for(std::map< common::PropertiesValue, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_properties.begin();it!=map_of_contacts_properties.end();++it)
+		{
+			for(std::size_t i=0;i<(it->second.size());i++)
+			{
+				std::map<std::pair<std::size_t, std::size_t>, std::size_t>::const_iterator id_it=map_of_pairs_to_contact_ids.find(it->second[i]);
+				if(id_it!=map_of_pairs_to_contact_ids.end())
+				{
+					contacts_[id_it->second].value.props=it->first;
+				}
+			}
+		}
+
+		for(std::map< DisplayState, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_display_states.begin();it!=map_of_contacts_display_states.end();++it)
+		{
+			for(std::size_t i=0;i<(it->second.size());i++)
+			{
+				std::map<std::pair<std::size_t, std::size_t>, std::size_t>::const_iterator id_it=map_of_pairs_to_contact_ids.find(it->second[i]);
+				if(id_it!=map_of_pairs_to_contact_ids.end())
+				{
+					contacts_display_states_[id_it->second]=it->first;
+				}
+			}
+		}
 	}
 
 private:
