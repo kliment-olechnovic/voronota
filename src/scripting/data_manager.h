@@ -1879,10 +1879,23 @@ public:
 			output << atoms_[i] << "\n";
 		}
 
-		output << atoms_display_states_.size() << "\n";
-		for(std::size_t i=0;i<atoms_display_states_.size();i++)
 		{
-			output << atoms_display_states_[i] << "\n";
+			std::map< DisplayState, std::vector<std::size_t> > map_of_atoms_display_states;
+			for(std::size_t i=0;i<atoms_display_states_.size();i++)
+			{
+				map_of_atoms_display_states[atoms_display_states_[i]].push_back(i);
+			}
+
+			output << map_of_atoms_display_states.size() << "\n";
+			for(std::map< DisplayState, std::vector<std::size_t> >::const_iterator it=map_of_atoms_display_states.begin();it!=map_of_atoms_display_states.end();++it)
+			{
+				output << it->first << "\n";
+				output << it->second.size() << "\n";
+				for(std::size_t i=0;i<(it->second.size());i++)
+				{
+					output << it->second[i] << "\n";
+				}
+			}
 		}
 
 		output << history_of_actions_on_contacts_.constructing.size() << "\n";
@@ -1956,7 +1969,7 @@ public:
 			}
 		}
 
-		std::vector<DisplayState> atoms_display_states;
+		std::map< DisplayState, std::vector<std::size_t> > map_of_atoms_display_states;
 		{
 			int count=0;
 			input >> count;
@@ -1964,7 +1977,19 @@ public:
 			{
 				DisplayState ds;
 				input >> ds;
-				atoms_display_states.push_back(ds);
+				int ids_count=0;
+				input >> ids_count;
+				if(ids_count>0)
+				{
+					std::vector<std::size_t>& ids_vector=map_of_atoms_display_states[ds];
+					ids_vector.reserve(ids_count);
+					for(int i=0;i<ids_count;i++)
+					{
+						std::size_t id_value=0;
+						input >> id_value;
+						ids_vector.push_back(id_value);
+					}
+				}
 			}
 		}
 
@@ -2066,11 +2091,6 @@ public:
 			throw std::runtime_error(std::string("No atoms when loading from stream."));
 		}
 
-		if(atoms_display_states.size()!=atoms.size())
-		{
-			throw std::runtime_error(std::string("Invalid number of atom display states when loading from stream."));
-		}
-
 		if(contacts_params_constructing.empty()!=contacts_params_enhancing.empty())
 		{
 			throw std::runtime_error(std::string("Invalid parameters for constructing contacts when loading from stream."));
@@ -2087,7 +2107,18 @@ public:
 		}
 
 		reset_atoms_by_copying(atoms);
-		atoms_display_states_=atoms_display_states;
+
+		for(std::map< DisplayState, std::vector<std::size_t> >::const_iterator it=map_of_atoms_display_states.begin();it!=map_of_atoms_display_states.end();++it)
+		{
+			for(std::size_t i=0;i<(it->second.size());i++)
+			{
+				const std::size_t id=it->second[i];
+				if(id<atoms_display_states_.size())
+				{
+					atoms_display_states_[id]=it->first;
+				}
+			}
+		}
 
 		if(contacts_params_constructing.empty())
 		{
