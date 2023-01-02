@@ -6,6 +6,10 @@
 #include <vector>
 #include <deque>
 
+#ifndef FOR_WEB
+#include "../dependencies/ImGuiFileDialog/ImGuiFileDialog.h"
+#endif
+
 #include "../uv/viewer_application.h"
 #include "../../../expansion_js/src/duktaper/stocked_data_resources.h"
 
@@ -281,13 +285,16 @@ public:
 			current_menu_bar_height_=0.0f;
 			if(ImGui::BeginMainMenuBar())
 			{
+#ifndef FOR_WEB
 				if(ImGui::BeginMenu("File"))
 				{
-					if(ImGui::MenuItem("Import file"))
+					if(ImGui::MenuItem("Import session"))
 					{
+						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ImportSession", "Import session file", ".vses", ".", 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
 					}
-					if(ImGui::MenuItem("Export file"))
+					if(ImGui::MenuItem("Export session"))
 					{
+						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ExportSession", "Export session file", ".vses", ".", 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_ConfirmOverwrite);
 					}
 					ImGui::Separator();
 					if(ImGui::MenuItem("Exit"))
@@ -296,17 +303,44 @@ public:
 					}
 					ImGui::EndMenu();
 				}
+#endif
 				if(ImGui::BeginMenu("Help"))
 				{
 					if(ImGui::MenuItem("About"))
 					{
+						result="about";
 					}
 					ImGui::EndMenu();
 				}
+
 				current_menu_bar_height_=ImGui::GetWindowHeight();
 				ImGui::EndMainMenuBar();
 			}
 		}
+
+#ifndef FOR_WEB
+		{
+			if(ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey_ImportSession", ImGuiWindowFlags_NoCollapse, ImVec2(400*GUIStyleWrapper::scale_factor(), 300*GUIStyleWrapper::scale_factor()), ImVec2(800*GUIStyleWrapper::scale_factor(), 600*GUIStyleWrapper::scale_factor())))
+			{
+				if(ImGuiFileDialog::Instance()->IsOk())
+				{
+					const std::string file_path=ImGuiFileDialog::Instance()->GetFilePathName();
+					result=std::string("import-session '")+file_path+"'";
+				}
+				ImGuiFileDialog::Instance()->Close();
+			}
+
+			if(ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey_ExportSession", ImGuiWindowFlags_NoCollapse, ImVec2(400*GUIStyleWrapper::scale_factor(), 300*GUIStyleWrapper::scale_factor()), ImVec2(800*GUIStyleWrapper::scale_factor(), 600*GUIStyleWrapper::scale_factor())))
+			{
+				if(ImGuiFileDialog::Instance()->IsOk())
+				{
+					const std::string file_path=ImGuiFileDialog::Instance()->GetFilePathName();
+					result=std::string("export-session '")+file_path+"'";
+				}
+				ImGuiFileDialog::Instance()->Close();
+			}
+		}
+#endif
 
 		{
 			const float actual_min_height=std::max(static_cast<float>(min_height), (command_line_interface_state_.height_for_command_line+15.0f)*GUIStyleWrapper::scale_factor()+sequence_viewer_state_.calc_total_container_height());

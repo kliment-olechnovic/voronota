@@ -375,8 +375,8 @@ private:
 			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_OBJECTS, ".VO"));
 			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_VIEW, ".vview"));
 			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_VIEW, ".VVIEW"));
-			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_SESSION, ".vsession"));
-			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_SESSION, ".VSESSION"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_SESSION, ".vses"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_SESSION, ".VSES"));
 			return map_of_format_extensions;
 		}
 	};
