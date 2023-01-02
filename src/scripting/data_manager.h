@@ -1898,6 +1898,33 @@ public:
 			}
 		}
 
+		{
+			std::map< std::string, std::vector<std::size_t> > map_of_atoms_selections;
+			for(std::map< std::string, std::set<std::size_t> >::const_iterator it=selection_manager_.map_of_atoms_selections().begin();it!=selection_manager_.map_of_atoms_selections().end();++it)
+			{
+				if(!it->first.empty() && it->first[0]!='_')
+				{
+					std::vector<std::size_t>& ids_vector=map_of_atoms_selections[it->first];
+					ids_vector.reserve(it->second.size());
+					for(std::set<std::size_t>::const_iterator jt=it->second.begin();jt!=it->second.end();++jt)
+					{
+						ids_vector.push_back(*jt);
+					}
+				}
+			}
+
+			output << map_of_atoms_selections.size() << "\n";
+			for(std::map< std::string, std::vector<std::size_t> >::const_iterator it=map_of_atoms_selections.begin();it!=map_of_atoms_selections.end();++it)
+			{
+				output << it->first << "\n";
+				output << it->second.size() << "\n";
+				for(std::size_t i=0;i<(it->second.size());i++)
+				{
+					output << it->second[i] << "\n";
+				}
+			}
+		}
+
 		output << history_of_actions_on_contacts_.constructing.size() << "\n";
 		for(std::size_t i=0;i<history_of_actions_on_contacts_.constructing.size();i++)
 		{
@@ -1953,6 +1980,33 @@ public:
 				}
 			}
 		}
+
+		{
+			std::map< std::string, std::vector< std::pair<std::size_t, std::size_t> > > map_of_contacts_selections;
+			for(std::map< std::string, std::set<std::size_t> >::const_iterator it=selection_manager_.map_of_contacts_selections().begin();it!=selection_manager_.map_of_contacts_selections().end();++it)
+			{
+				if(!it->first.empty() && it->first[0]!='_')
+				{
+					std::vector< std::pair<std::size_t, std::size_t> >& ids_vector=map_of_contacts_selections[it->first];
+					ids_vector.reserve(it->second.size());
+					for(std::set<std::size_t>::const_iterator jt=it->second.begin();jt!=it->second.end();++jt)
+					{
+						ids_vector.push_back(std::pair<std::size_t, std::size_t>(contacts_[*jt].ids[0], contacts_[*jt].ids[1]));
+					}
+				}
+			}
+
+			output << map_of_contacts_selections.size() << "\n";
+			for(std::map< std::string, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_selections.begin();it!=map_of_contacts_selections.end();++it)
+			{
+				output << it->first << "\n";
+				output << it->second.size() << "\n";
+				for(std::size_t i=0;i<(it->second.size());i++)
+				{
+					output << it->second[i].first << " " << it->second[i].second << "\n";
+				}
+			}
+		}
 	}
 
 	void load_from_stream(std::istream& input)
@@ -1982,6 +2036,30 @@ public:
 				if(ids_count>0)
 				{
 					std::vector<std::size_t>& ids_vector=map_of_atoms_display_states[ds];
+					ids_vector.reserve(ids_count);
+					for(int i=0;i<ids_count;i++)
+					{
+						std::size_t id_value=0;
+						input >> id_value;
+						ids_vector.push_back(id_value);
+					}
+				}
+			}
+		}
+
+		std::map< std::string, std::vector<std::size_t> > map_of_atoms_selections;
+		{
+			int count=0;
+			input >> count;
+			for(int i=0;i<count;i++)
+			{
+				std::string name;
+				input >> name;
+				int ids_count=0;
+				input >> ids_count;
+				if(ids_count>0)
+				{
+					std::vector<std::size_t>& ids_vector=map_of_atoms_selections[name];
 					ids_vector.reserve(ids_count);
 					for(int i=0;i<ids_count;i++)
 					{
@@ -2086,6 +2164,30 @@ public:
 			}
 		}
 
+		std::map< std::string, std::vector< std::pair<std::size_t, std::size_t> > > map_of_contacts_selections;
+		{
+			int count=0;
+			input >> count;
+			for(int i=0;i<count;i++)
+			{
+				std::string name;
+				input >> name;
+				int pairs_count=0;
+				input >> pairs_count;
+				if(pairs_count>0)
+				{
+					std::vector< std::pair<std::size_t, std::size_t> >& pairs_vector=map_of_contacts_selections[name];
+					pairs_vector.reserve(pairs_count);
+					for(int i=0;i<pairs_count;i++)
+					{
+						std::pair<std::size_t, std::size_t> pair_value;
+						input >> pair_value.first >> pair_value.second;
+						pairs_vector.push_back(pair_value);
+					}
+				}
+			}
+		}
+
 		if(atoms.empty())
 		{
 			throw std::runtime_error(std::string("No atoms when loading from stream."));
@@ -2118,6 +2220,11 @@ public:
 					atoms_display_states_[id]=it->first;
 				}
 			}
+		}
+
+		for(std::map< std::string, std::vector<std::size_t> >::const_iterator it=map_of_atoms_selections.begin();it!=map_of_atoms_selections.end();++it)
+		{
+			selection_manager_.set_atoms_selection(it->first, std::set<std::size_t>(it->second.begin(), it->second.end()));
 		}
 
 		if(contacts_params_constructing.empty())
@@ -2160,6 +2267,21 @@ public:
 					contacts_display_states_[id_it->second]=it->first;
 				}
 			}
+		}
+
+		for(std::map< std::string, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_selections.begin();it!=map_of_contacts_selections.end();++it)
+		{
+			std::vector<std::size_t> ids_vector;
+			ids_vector.reserve(it->second.size());
+			for(std::size_t i=0;i<(it->second.size());i++)
+			{
+				std::map<std::pair<std::size_t, std::size_t>, std::size_t>::const_iterator id_it=map_of_pairs_to_contact_ids.find(it->second[i]);
+				if(id_it!=map_of_pairs_to_contact_ids.end())
+				{
+					ids_vector.push_back(id_it->second);
+				}
+			}
+			selection_manager_.set_contacts_selection(it->first, std::set<std::size_t>(ids_vector.begin(), ids_vector.end()));
 		}
 	}
 
