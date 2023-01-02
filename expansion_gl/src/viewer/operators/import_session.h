@@ -3,6 +3,8 @@
 
 #include "../operators_common.h"
 
+#include "../../../expansion_js/src/dependencies/lodepng/lodepng.h"
+
 namespace voronota
 {
 
@@ -54,15 +56,35 @@ public:
 			throw std::runtime_error(std::string("Empty input file name."));
 		}
 
-		scripting::InputSelector finput_selector(file);
-		std::istream& finput=finput_selector.stream();
+		std::string compressed_data_str;
+		{
+			scripting::InputSelector finput_selector(file);
+			std::istream& finput=finput_selector.stream();
 
-		if(!finput.good())
+			if(!finput.good())
+			{
+				throw std::runtime_error(std::string("Failed to open file '")+file+"'.");
+			}
+
+			std::istreambuf_iterator<char> eos;
+			compressed_data_str=std::string(std::istreambuf_iterator<char>(finput), eos);
+		}
+
+		if(compressed_data_str.empty())
 		{
 			throw std::runtime_error(std::string("Failed to read file '")+file+"'.");
 		}
 
-		const std::vector<scripting::DataManager*> objects=congregation_of_data_managers.load_from_stream(finput);
+		std::vector<unsigned char> uncompressed_data;
+		int decompression_status=lodepng::decompress(uncompressed_data, reinterpret_cast<const unsigned char*>(compressed_data_str.c_str()), compressed_data_str.size());
+		if(decompression_status!=0 || uncompressed_data.empty())
+		{
+			throw std::runtime_error(std::string("Failed to decompress data."));
+		}
+
+		std::istringstream str_input(std::string(reinterpret_cast<const char*>(&uncompressed_data[0]), uncompressed_data.size()));
+
+		const std::vector<scripting::DataManager*> objects=congregation_of_data_managers.load_from_stream(str_input);
 		if(objects.empty())
 		{
 			throw std::runtime_error(std::string("No objects loaded."));
@@ -70,7 +92,7 @@ public:
 
 		std::vector<int> recommended_effective_rendering_size;
 
-		const bool view_loaded=uv::ViewerApplication::instance().load_view_from_stream(finput, recommended_effective_rendering_size);
+		const bool view_loaded=uv::ViewerApplication::instance().load_view_from_stream(str_input, recommended_effective_rendering_size);
 
 		Result result;
 

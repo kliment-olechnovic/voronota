@@ -3,6 +3,8 @@
 
 #include "../operators_common.h"
 
+#include "../../../expansion_js/src/dependencies/lodepng/lodepng.h"
+
 namespace voronota
 {
 
@@ -51,16 +53,32 @@ public:
 			throw std::runtime_error(std::string("No objects selected."));
 		}
 
-		scripting::OutputSelector output_selector(file);
-		std::ostream& output=output_selector.stream();
-		scripting::assert_io_stream(file, output);
-
-		if(!congregation_of_data_managers.save_to_stream(query, output))
+		std::string data_str;
 		{
-			throw std::runtime_error(std::string("Failed to export objects."));
+			std::ostringstream str_output;
+
+			if(!congregation_of_data_managers.save_to_stream(query, str_output))
+			{
+				throw std::runtime_error(std::string("Failed to export objects."));
+			}
+
+			uv::ViewerApplication::instance().save_view_to_stream(str_output);
+
+			data_str=str_output.str();
 		}
 
-		uv::ViewerApplication::instance().save_view_to_stream(output);
+		std::vector<unsigned char> compressed_data;
+		int compression_status=lodepng::compress(compressed_data, reinterpret_cast<const unsigned char*>(data_str.c_str()), data_str.size());
+		if(compression_status!=0 || compressed_data.empty())
+		{
+			throw std::runtime_error(std::string("Failed to compress data."));
+		}
+
+		scripting::OutputSelector foutput_selector(file);
+		std::ostream& foutput=foutput_selector.stream();
+		scripting::assert_io_stream(file, foutput);
+
+		foutput.write(reinterpret_cast<const char*>(&compressed_data[0]), compressed_data.size());
 
 		Result result;
 
