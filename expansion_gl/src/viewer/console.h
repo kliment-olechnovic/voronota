@@ -290,16 +290,16 @@ public:
 				{
 					if(ImGui::MenuItem("Open files"))
 					{
-						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_OpenFiles", "Open files", ".*,.pdb,.cif", ".", 0, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
+						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_OpenFiles", "Open files", ".*,.pdb,.cif", file_search_root_dir_, 0, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
 					}
 					ImGui::Separator();
 					if(ImGui::MenuItem("Import session"))
 					{
-						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ImportSession", "Import session file", ".vses", ".", 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
+						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ImportSession", "Import session file", ".vses", file_search_root_dir_, 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
 					}
 					if(ImGui::MenuItem("Export session"))
 					{
-						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ExportSession", "Export session file", ".vses", ".", 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_ConfirmOverwrite);
+						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ExportSession", "Export session file", ".vses", file_search_root_dir_, 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_ConfirmOverwrite);
 					}
 					ImGui::Separator();
 					if(ImGui::MenuItem("Exit"))
@@ -325,13 +325,14 @@ public:
 
 #ifndef FOR_WEB
 		{
-			ImVec2 file_dialog_min_size(400*GUIStyleWrapper::scale_factor(), 300*GUIStyleWrapper::scale_factor());
+			ImVec2 file_dialog_min_size(600*GUIStyleWrapper::scale_factor(), 450*GUIStyleWrapper::scale_factor());
 			ImVec2 file_dialog_max_size(800*GUIStyleWrapper::scale_factor(), 600*GUIStyleWrapper::scale_factor());
 
 			if(ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey_OpenFiles", ImGuiWindowFlags_NoCollapse, file_dialog_min_size, file_dialog_max_size))
 			{
 				if(ImGuiFileDialog::Instance()->IsOk())
 				{
+					file_search_root_dir_=ImGuiFileDialog::Instance()->GetCurrentPath()+"/";
 					const std::map<std::string, std::string> file_paths=ImGuiFileDialog::Instance()->GetSelection();
 					if(!file_paths.empty())
 					{
@@ -351,6 +352,7 @@ public:
 			{
 				if(ImGuiFileDialog::Instance()->IsOk())
 				{
+					file_search_root_dir_=ImGuiFileDialog::Instance()->GetCurrentPath()+"/";
 					const std::string file_path=ImGuiFileDialog::Instance()->GetFilePathName();
 					result=std::string("import-session '")+file_path+"'";
 				}
@@ -361,6 +363,7 @@ public:
 			{
 				if(ImGuiFileDialog::Instance()->IsOk())
 				{
+					file_search_root_dir_=ImGuiFileDialog::Instance()->GetCurrentPath()+"/";
 					const std::string file_path=ImGuiFileDialog::Instance()->GetFilePathName();
 					result=std::string("export-session '")+file_path+"'";
 				}
@@ -3730,6 +3733,7 @@ private:
 		current_max_heigth_(0.0f),
 		current_menu_bar_height_(0.0f),
 		shrink_to_minimal_view_(false),
+		file_search_root_dir_("."),
 		object_list_viewer_state_(objects_info_),
 		sequence_viewer_state_(objects_info_)
 	{
@@ -3747,6 +3751,7 @@ private:
 	float current_max_heigth_;
 	float current_menu_bar_height_;
 	bool shrink_to_minimal_view_;
+	std::string file_search_root_dir_;
 
 	ObjectsInfo objects_info_;
 	CommandLineInterfaceState command_line_interface_state_;
