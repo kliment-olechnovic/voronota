@@ -281,6 +281,11 @@ public:
 			return result;
 		}
 
+#ifndef FOR_WEB
+		static bool menu_open_include_heteroatoms=true;
+		static bool menu_open_as_assembly=false;
+		static bool menu_open_split_pdb_files=false;
+#endif
 		{
 			current_menu_bar_height_=0.0f;
 			if(ImGui::BeginMainMenuBar())
@@ -288,18 +293,41 @@ public:
 #ifndef FOR_WEB
 				if(ImGui::BeginMenu("File"))
 				{
-					if(ImGui::MenuItem("Open files"))
+					if(ImGui::BeginMenu("Structures"))
 					{
-						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_OpenFiles", "Open files", ".*,.pdb,.cif", file_search_root_dir_, 0, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
+						if(ImGui::MenuItem("Open ..."))
+						{
+							ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_OpenFiles", "Open files", ".*,.pdb,.cif", file_search_root_dir_, 0, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
+						}
+						ImGui::Separator();
+						{
+							const std::string checkbox_id=std::string("include heteroatoms");
+							ImGui::Checkbox(checkbox_id.c_str(), &menu_open_include_heteroatoms);
+						}
+						{
+							const std::string checkbox_id=std::string("load assemblies from PDB files");
+							ImGui::Checkbox(checkbox_id.c_str(), &menu_open_as_assembly);
+							menu_open_split_pdb_files=(menu_open_split_pdb_files && !menu_open_as_assembly);
+						}
+						{
+							const std::string checkbox_id=std::string("split PDB files by models");
+							ImGui::Checkbox(checkbox_id.c_str(), &menu_open_split_pdb_files);
+							menu_open_as_assembly=(menu_open_as_assembly && !menu_open_split_pdb_files);
+						}
+						ImGui::EndMenu();
 					}
 					ImGui::Separator();
-					if(ImGui::MenuItem("Import session"))
+					if(ImGui::BeginMenu("Session"))
 					{
-						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ImportSession", "Import session file", ".vses", file_search_root_dir_, 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
-					}
-					if(ImGui::MenuItem("Export session"))
-					{
-						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ExportSession", "Export session file", ".vses", file_search_root_dir_, 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_ConfirmOverwrite);
+						if(ImGui::MenuItem("Open ..."))
+						{
+							ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ImportSession", "Import session file", ".vses", file_search_root_dir_, 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
+						}
+						if(ImGui::MenuItem("Save ..."))
+						{
+							ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ExportSession", "Export session file", ".vses", file_search_root_dir_, 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_ConfirmOverwrite);
+						}
+						ImGui::EndMenu();
 					}
 					ImGui::Separator();
 					if(ImGui::MenuItem("Exit"))
@@ -336,12 +364,26 @@ public:
 					const std::map<std::string, std::string> file_paths=ImGuiFileDialog::Instance()->GetSelection();
 					if(!file_paths.empty())
 					{
-						result=std::string("import-many -files");
+						result="";
 						for(std::map<std::string, std::string>::const_iterator it=file_paths.begin();it!=file_paths.end();++it)
 						{
+							result+="import-many -files ";
 							result+=" '";
 							result+=it->second;
 							result+="' ";
+							if(menu_open_include_heteroatoms)
+							{
+								result+=" -include-heteroatoms ";
+							}
+							if(menu_open_as_assembly)
+							{
+								result+=" -as-assembly ";
+							}
+							if(menu_open_split_pdb_files)
+							{
+								result+=" -split-pdb-files ";
+							}
+							result+="\n";
 						}
 					}
 				}
