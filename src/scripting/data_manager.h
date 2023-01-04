@@ -1374,9 +1374,18 @@ public:
 
 		change_indicator_.set_changed_atoms(true);
 
+		const std::size_t num_of_all_atoms=atoms_.size();
+
 		transformation.transform_coordinates_of_atoms(atoms_, ids);
 
-		reset_data_dependent_on_atoms();
+		if(ids.size()==num_of_all_atoms && atoms_.size()==num_of_all_atoms)
+		{
+			refresh_by_saving_and_loading();
+		}
+		else
+		{
+			reset_data_dependent_on_atoms();
+		}
 	}
 
 	void transform_coordinates_of_atoms(const TransformationOfCoordinates& transformation)
@@ -1387,7 +1396,7 @@ public:
 
 		transformation.transform_coordinates_of_atoms(atoms_);
 
-		reset_data_dependent_on_atoms();
+		refresh_by_saving_and_loading();
 	}
 
 	void remove_bonding_links_info()
@@ -1937,10 +1946,23 @@ public:
 			output << history_of_actions_on_contacts_.enhancing[i] << "\n";
 		}
 
-		output << history_of_actions_on_contacts_.graphics_creating.size() << "\n";
-		for(std::map<std::size_t, common::ConstructionOfContacts::ParametersToDrawContacts>::const_iterator it=history_of_actions_on_contacts_.graphics_creating.begin();it!=history_of_actions_on_contacts_.graphics_creating.end();++it)
 		{
-			output << it->first << " " << it->second << "\n";
+			std::map< common::ConstructionOfContacts::ParametersToDrawContacts, std::vector< std::pair<std::size_t, std::size_t> > > map_of_contacts_graphics_creating_parameters;
+			for(std::map<std::size_t, common::ConstructionOfContacts::ParametersToDrawContacts>::const_iterator it=history_of_actions_on_contacts_.graphics_creating.begin();it!=history_of_actions_on_contacts_.graphics_creating.end();++it)
+			{
+				map_of_contacts_graphics_creating_parameters[it->second].push_back(std::pair<std::size_t, std::size_t>(contacts_[it->first].ids[0], contacts_[it->first].ids[1]));
+			}
+
+			output << map_of_contacts_graphics_creating_parameters.size() << "\n";
+			for(std::map< common::ConstructionOfContacts::ParametersToDrawContacts, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_graphics_creating_parameters.begin();it!=map_of_contacts_graphics_creating_parameters.end();++it)
+			{
+				output << it->first << "\n";
+				output << it->second.size() << "\n";
+				for(std::size_t i=0;i<(it->second.size());i++)
+				{
+					output << it->second[i].first << " " << it->second[i].second << "\n";
+				}
+			}
 		}
 
 		{
@@ -2011,6 +2033,8 @@ public:
 
 	void load_from_stream(std::istream& input)
 	{
+		(*this)=DataManager();
+
 		std::vector<Atom> atoms;
 		{
 			int count=0;
@@ -2095,13 +2119,12 @@ public:
 			}
 		}
 
-		std::map< common::ConstructionOfContacts::ParametersToDrawContacts, std::set<std::size_t> > contacts_params_drawing;
+		std::map< common::ConstructionOfContacts::ParametersToDrawContacts, std::vector< std::pair<std::size_t, std::size_t> > > map_of_contacts_graphics_creating_parameters;
 		{
 			int count=0;
 			input >> count;
 			for(int i=0;i<count;i++)
 			{
-				std::size_t id=0;
 				common::ConstructionOfContacts::ParametersToDrawContacts params;
 				params.probe=1.0;
 				params.step=2.0;
@@ -2110,9 +2133,20 @@ public:
 				params.sih_depth=5;
 				params.enable_alt=true;
 				params.circular_angle_step=6.0;
-
-				input >> id >> params;
-				contacts_params_drawing[params].insert(id);
+				input >> params;
+				int pairs_count=0;
+				input >> pairs_count;
+				if(pairs_count>0)
+				{
+					std::vector< std::pair<std::size_t, std::size_t> >& pairs_vector=map_of_contacts_graphics_creating_parameters[params];
+					pairs_vector.reserve(pairs_count);
+					for(int i=0;i<pairs_count;i++)
+					{
+						std::pair<std::size_t, std::size_t> pair_value;
+						input >> pair_value.first >> pair_value.second;
+						pairs_vector.push_back(pair_value);
+					}
+				}
 			}
 		}
 
@@ -2198,7 +2232,7 @@ public:
 			throw std::runtime_error(std::string("Invalid parameters for constructing contacts when loading from stream."));
 		}
 
-		if(contacts_params_constructing.empty() && !contacts_params_drawing.empty())
+		if(contacts_params_constructing.empty() && !map_of_contacts_graphics_creating_parameters.empty())
 		{
 			throw std::runtime_error(std::string("Invalid parameters for drawing contacts when loading from stream."));
 		}
@@ -2234,15 +2268,24 @@ public:
 
 		reset_contacts_by_creating(contacts_params_constructing.back(), contacts_params_enhancing.back());
 
-		for(std::map< common::ConstructionOfContacts::ParametersToDrawContacts, std::set<std::size_t> >::const_iterator it=contacts_params_drawing.begin();it!=contacts_params_drawing.end();++it)
-		{
-			reset_contacts_graphics_by_creating(it->first, it->second, false);
-		}
-
 		std::map<std::pair<std::size_t, std::size_t>, std::size_t> map_of_pairs_to_contact_ids;
 		for(std::size_t i=0;i<contacts_.size();i++)
 		{
 			map_of_pairs_to_contact_ids[std::pair<std::size_t, std::size_t>(contacts_[i].ids[0], contacts_[i].ids[1])]=i;
+		}
+
+		for(std::map< common::ConstructionOfContacts::ParametersToDrawContacts, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_graphics_creating_parameters.begin();it!=map_of_contacts_graphics_creating_parameters.end();++it)
+		{
+			std::set<std::size_t> ids_for_params;
+			for(std::size_t i=0;i<(it->second.size());i++)
+			{
+				std::map<std::pair<std::size_t, std::size_t>, std::size_t>::const_iterator id_it=map_of_pairs_to_contact_ids.find(it->second[i]);
+				if(id_it!=map_of_pairs_to_contact_ids.end())
+				{
+					ids_for_params.insert(id_it->second);
+				}
+			}
+			reset_contacts_graphics_by_creating(it->first, ids_for_params, false);
 		}
 
 		for(std::map< common::PropertiesValue, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_properties.begin();it!=map_of_contacts_properties.end();++it)
@@ -2454,6 +2497,14 @@ private:
 			}
 		}
 		resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_);
+	}
+
+	void refresh_by_saving_and_loading()
+	{
+		std::ostringstream output;
+		save_to_stream(output);
+		std::istringstream input(output.str());
+		load_from_stream(input);
 	}
 
 	RepresentationsDescriptor atoms_representations_descriptor_;
