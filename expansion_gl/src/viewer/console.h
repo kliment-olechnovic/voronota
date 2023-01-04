@@ -299,6 +299,47 @@ public:
 						{
 							ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_OpenFiles", "Open files", ".*,.pdb,.cif", file_search_root_dir_, 0, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
 						}
+						if(ImGui::BeginMenu("Fetch"))
+						{
+							static std::vector<char> pdbid_buffer;
+							if(pdbid_buffer.empty())
+							{
+								const std::string example("2zsk");
+								pdbid_buffer=std::vector<char>(example.begin(), example.end());
+								pdbid_buffer.resize(128, 0);
+							}
+							const std::string textbox_id=std::string("##pdbid");
+							bool requested=false;
+							ImGui::PushItemWidth(70*GUIStyleWrapper::scale_factor());
+							if(ImGui::InputText(textbox_id.c_str(), pdbid_buffer.data(), pdbid_buffer.size()-1, ImGuiInputTextFlags_EnterReturnsTrue))
+							{
+								requested=true;
+							}
+							ImGui::PopItemWidth();
+							ImGui::SameLine();
+							{
+								const std::string button_id=std::string("fetch");
+								if(ImGui::Button(button_id.c_str()))
+								{
+									requested=true;
+								}
+							}
+							if(requested && pdbid_buffer.data()[0]!=0)
+							{
+								const std::string pdbid_str(pdbid_buffer.data());
+								result="fetch ";
+								result+=pdbid_str;
+								if(!menu_open_include_heteroatoms)
+								{
+									result+=" -no-heteroatoms ";
+								}
+								if(menu_open_split_pdb_files)
+								{
+									result+=" -all-states ";
+								}
+							}
+							ImGui::EndMenu();
+						}
 						ImGui::Separator();
 						{
 							const std::string checkbox_id=std::string("include heteroatoms");
