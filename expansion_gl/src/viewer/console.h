@@ -639,18 +639,7 @@ private:
 					{
 						ImVec4 color_text=ImVec4(ot.r, ot.g, ot.b, 1.0f);
 						ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-						if(ot.content.size()<10000)
-						{
-							ImGui::TextUnformatted(ot.content.c_str());
-						}
-						else
-						{
-							ImGui::TextUnformatted(ot.content.c_str(), &(ot.content.c_str()[4000]));
-							ImGui::TextUnformatted("------------------------------");
-							ImGui::TextUnformatted("------------ skip ------------");
-							ImGui::TextUnformatted("------------------------------");
-							ImGui::TextUnformatted(&(ot.content.c_str()[ot.content.size()-4000]), &(ot.content.c_str()[ot.content.size()-1]));
-						}
+						ImGui::TextUnformatted(ot.content.c_str());
 						ImGui::PopStyleColor();
 						execute_copy_menu(i, ot.content);
 					}

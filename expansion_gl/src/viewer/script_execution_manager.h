@@ -437,6 +437,7 @@ protected:
 	{
 		Console::instance().add_output_separator();
 		scripting::JSONWriter::Configuration json_writing_configuration(GUIConfiguration::instance().json_writing_level);
+		json_writing_configuration.value_string_length_limit=5000;
 		if(last_output().objects_arrays().count("results")>0)
 		{
 			const std::vector<scripting::VariantObject>& results=last_output().objects_arrays().find("results")->second;

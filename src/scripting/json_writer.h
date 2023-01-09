@@ -18,25 +18,29 @@ public:
 		int indentation_max_level;
 		int indentation_length;
 		bool indentation_enabled_for_value_arrays;
+		int value_string_length_limit;
 
 		Configuration() :
 			indentation_max_level(100),
 			indentation_length(2),
-			indentation_enabled_for_value_arrays(false)
+			indentation_enabled_for_value_arrays(false),
+			value_string_length_limit(0)
 		{
 		}
 
 		explicit Configuration(int indentation_max_level) :
 			indentation_max_level(indentation_max_level),
 			indentation_length(2),
-			indentation_enabled_for_value_arrays(false)
+			indentation_enabled_for_value_arrays(false),
+			value_string_length_limit(0)
 		{
 		}
 
 		Configuration(int indentation_max_level, int indentation_length, bool indentation_enabled_for_value_arrays) :
 			indentation_max_level(indentation_max_level),
 			indentation_length(indentation_length),
-			indentation_enabled_for_value_arrays(indentation_enabled_for_value_arrays)
+			indentation_enabled_for_value_arrays(indentation_enabled_for_value_arrays),
+			value_string_length_limit(0)
 		{
 		}
 
@@ -144,7 +148,16 @@ private:
 		{
 			if(value.value_type()==VariantValue::VARIANT_STRING)
 			{
-				output << "\"" << replace_special_characters_with_escape_sequences(value.value_as_string()) << "\"";
+				output << "\"";
+				if(config_.value_string_length_limit>0 && config_.value_string_length_limit<static_cast<int>(value.value_string().size()))
+				{
+					output << "STRING_TOO_LONG_TO_PRINT";
+				}
+				else
+				{
+					output << replace_special_characters_with_escape_sequences(value.value_string());
+				}
+				output << "\"";
 			}
 			else
 			{
