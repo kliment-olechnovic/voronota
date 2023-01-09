@@ -10,6 +10,8 @@
 #include "../dependencies/ImGuiFileDialog/ImGuiFileDialog.h"
 #endif
 
+#include "../dependencies/ImGuiColorTextEdit/TextEditor.h"
+
 #include "../uv/viewer_application.h"
 #include "../../../expansion_js/src/duktaper/stocked_data_resources.h"
 
@@ -812,22 +814,30 @@ private:
 		ScriptEditorState() :
 			visible(true),
 			focused(false),
-			multiline_command_buffer_(16384, 0)
+			script_editor_colors_black_on_white_(false)
 		{
+			if(script_editor_colors_black_on_white_)
+			{
+				editor_.SetPalette(TextEditor::GetLightPalette());
+			}
+			else
+			{
+				editor_.SetPalette(TextEditor::GetDarkPalette());
+			}
 		}
 
 		void execute(std::string& result)
 		{
 			if(ImGui::Button("Run##script_editor", ImVec2(70*GUIStyleWrapper::scale_factor(),0)))
 			{
-				result=(std::string(multiline_command_buffer_.data()));
+				result=editor_.GetText();
 			}
 
 			ImGui::SameLine();
 
 			if(ImGui::Button("Clear##script_editor", ImVec2(70*GUIStyleWrapper::scale_factor(),0)))
 			{
-				multiline_command_buffer_[0]=0;
+				editor_.SetText(std::string());
 			}
 
 			ImGui::SameLine();
@@ -842,7 +852,7 @@ private:
 						const std::string& script_body=example_scripts()[i].second;
 						if(ImGui::Selectable(script_name.c_str()))
 						{
-							write_string_to_vector(script_body, multiline_command_buffer_);
+							editor_.SetText(script_body);
 						}
 					}
 					ImGui::EndPopup();
@@ -853,7 +863,6 @@ private:
 			const int script_editor_size_max=1000;
 
 			static int script_editor_size=300;
-			static bool script_editor_colors_black_on_white=false;
 
 			ImGui::SameLine();
 			ImGui::TextUnformatted(" ");
@@ -869,7 +878,17 @@ private:
 
 					ImGui::Separator();
 
-					ImGui::Checkbox("Black on white", &script_editor_colors_black_on_white);
+					if(ImGui::Checkbox("Black on white", &script_editor_colors_black_on_white_))
+					{
+						if(script_editor_colors_black_on_white_)
+						{
+							editor_.SetPalette(TextEditor::GetLightPalette());
+						}
+						else
+						{
+							editor_.SetPalette(TextEditor::GetDarkPalette());
+						}
+					}
 
 					ImGui::EndPopup();
 				}
@@ -878,16 +897,8 @@ private:
 			script_editor_size=std::max(script_editor_size_min, std::min(script_editor_size, script_editor_size_max));
 
 			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0, script_editor_size*GUIStyleWrapper::scale_factor()));
-			ImVec4 color_text=(script_editor_colors_black_on_white ? ImVec4(0.0f, 0.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-			ImVec4 color_background=(script_editor_colors_black_on_white ? ImVec4(1.0f, 1.0f, 1.0f, 1.0f) : ImVec4(0.10f, 0.10f, 0.10f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, color_background);
-			ImGui::PushItemWidth(-1);
-			ImGui::InputTextMultiline("##script_editor_input", multiline_command_buffer_.data(), multiline_command_buffer_.size(), ImVec2(-1,-1), ImGuiInputTextFlags_AllowTabInput);
-			focused=ImGui::IsItemActive();
-			ImGui::PopItemWidth();
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
+			editor_.Render("ScriptEditor");
+			focused=editor_.IsFocused();
 			ImGui::EndChild();
 		}
 
@@ -926,7 +937,8 @@ private:
 			}
 		}
 
-		std::vector<char> multiline_command_buffer_;
+		bool script_editor_colors_black_on_white_;
+		TextEditor editor_;
 	};
 
 	class DocumentationViewerState
