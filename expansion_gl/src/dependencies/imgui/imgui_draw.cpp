@@ -38,6 +38,8 @@ Index of this file:
 #include "misc/freetype/imgui_freetype.h"
 #endif
 
+#include "addons/global_text_color_vector.h"
+
 #include <stdio.h>      // vsnprintf, sscanf, printf
 #if !defined(alloca)
 #if defined(__GLIBC__) || defined(__sun) || defined(__APPLE__) || defined(__NEWLIB__)
@@ -3593,8 +3595,6 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, const ImVec2& pos, Im
     ImDrawIdx* idx_write = draw_list->_IdxWritePtr;
     unsigned int vtx_current_idx = draw_list->_VtxCurrentIdx;
 
-    const ImU32 col_untinted = col | ~IM_COL32_A_MASK;
-
     while (s < text_end)
     {
         if (word_wrap_enabled)
@@ -3700,8 +3700,11 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, const ImVec2& pos, Im
                     }
                 }
 
+                const ImU32 over_col=(ImGuiAddonGlobalTextColorVector::active() ? ImGuiAddonGlobalTextColorVector::color(s-text_begin-1, col) : col);
+
                 // Support for untinted glyphs
-                ImU32 glyph_col = glyph->Colored ? col_untinted : col;
+                const ImU32 col_untinted = over_col | ~IM_COL32_A_MASK;
+                const ImU32 glyph_col = glyph->Colored ? col_untinted : over_col;
 
                 // We are NOT calling PrimRectUV() here because non-inlined causes too much overhead in a debug builds. Inlined here:
                 {

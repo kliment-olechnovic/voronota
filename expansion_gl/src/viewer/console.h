@@ -6,6 +6,8 @@
 #include <vector>
 #include <deque>
 
+#include "../dependencies/imgui/addons/global_text_color_vector.h"
+
 #ifndef FOR_WEB
 #include "../dependencies/ImGuiFileDialog/ImGuiFileDialog.h"
 #endif
@@ -29,13 +31,106 @@ class Console
 public:
 	struct OutputToken
 	{
-		std::string content;
 		float r;
 		float g;
 		float b;
+		std::string content;
+		std::vector<unsigned int> char_colors;
 
-		OutputToken(const std::string& content, const float r, const float g, const float b) : content(content), r(r), g(g), b(b)
+		OutputToken(const std::string& content, const float r, const float g, const float b) : r(r), g(g), b(b), content(content)
 		{
+			const ImU32 cui_default=0xFFAAAAAA;
+			const ImU32 cui_string=ImGui::ColorConvertFloat4ToU32(ImVec4(r, g, b, 1.0f));
+			const ImU32 cui_number=0xFF00EE33;
+			const ImU32 cui_key=0xFF00EEEE;
+			const ImU32 cui_punctuation=0xFFCCCCCC;
+
+			char_colors.resize(content.size(), cui_default);
+
+			{
+				int i=0;
+				while(i<static_cast<int>(content.size()))
+				{
+					if(content[i]=='"')
+					{
+						char_colors[i]=cui_string;
+						i++;
+						bool ended=false;
+						while(i<static_cast<int>(content.size()) && !ended)
+						{
+							if(content[i]=='"' && content[i-1]!='\\')
+							{
+								ended=true;
+							}
+							char_colors[i]=cui_string;
+							i++;
+						}
+					}
+					else
+					{
+						i++;
+					}
+				}
+			}
+
+			{
+				int i=0;
+				while(i<static_cast<int>(content.size()))
+				{
+					if(char_colors[i]==cui_default && ((content[i]>='0' && content[i]<='9') || (content[i]=='-' && (i+1)<static_cast<int>(content.size()) && char_colors[i+1]==cui_default && content[i+1]>='0' && content[i+1]<='9')))
+					{
+						char_colors[i]=cui_number;
+						i++;
+						bool ended=false;
+						while(i<static_cast<int>(content.size()) && !ended)
+						{
+							if(char_colors[i]==cui_default && ((content[i]>='0' && content[i]<='9') || content[i]=='.'))
+							{
+								char_colors[i]=cui_number;
+							}
+							else
+							{
+								ended=true;
+							}
+							i++;
+						}
+					}
+					else
+					{
+						i++;
+					}
+				}
+			}
+
+			for(int i=0;i<static_cast<int>(content.size());i++)
+			{
+				if(i>=2 && content[i]==':' && i>0 && content[i-1]=='"')
+				{
+					char_colors[i]=cui_punctuation;
+					char_colors[i-1]=cui_key;
+					int j=(i-2);
+					for(;j>=0;j--)
+					{
+						char_colors[j]=cui_key;
+						if(content[j]=='"')
+						{
+							j=-1;
+						}
+					}
+				}
+			}
+
+			for(int i=0;i<static_cast<int>(content.size());i++)
+			{
+				if(char_colors[i]==cui_default)
+				{
+					const char c=content[i];
+					if(c=='{' || c=='}' || c=='[' || c==']' || c==',')
+					{
+						char_colors[i]=cui_punctuation;
+					}
+				}
+			}
 		}
 	};
 
@@ -639,7 +734,10 @@ private:
 					{
 						ImVec4 color_text=ImVec4(ot.r, ot.g, ot.b, 1.0f);
 						ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-						ImGui::TextUnformatted(ot.content.c_str());
+						{
+							ImGuiAddonGlobalTextColorVector gtcv(ot.char_colors.size(), ot.char_colors.data());
+							ImGui::TextUnformatted(ot.content.c_str());
+						}
 						ImGui::PopStyleColor();
 						execute_copy_menu(i, ot.content);
 					}
