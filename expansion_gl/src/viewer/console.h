@@ -41,8 +41,8 @@ public:
 		{
 			const ImU32 cui_default=0xFFAAAAAA;
 			const ImU32 cui_string=ImGui::ColorConvertFloat4ToU32(ImVec4(r, g, b, 1.0f));
-			const ImU32 cui_number=0xFF00EE33;
-			const ImU32 cui_key=0xFF00EEEE;
+			const ImU32 cui_number=0xFF55EE55;
+			const ImU32 cui_key=0xFF55EEEE;
 			const ImU32 cui_punctuation=0xFFCCCCCC;
 
 			char_colors.resize(content.size(), cui_default);
