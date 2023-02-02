@@ -266,7 +266,7 @@ voronota_assert_full_success("Failed to restrict input atoms by the input query"
 
 if(params.run_faspr!="")
 {
-	voronota_run_faspr("-faspr-binary", params.run_faspr);
+	voronota_faspr("-lib-file", params.run_faspr);
 	voronota_assert_full_success("Failed to run FASPR");
 }
 
@@ -507,7 +507,7 @@ voronota_assert_full_success("Failed to restrict input atoms to protein only");
 
 if(params.run_faspr!="")
 {
-	voronota_run_faspr("-faspr-binary", params.run_faspr);
+	voronota_faspr("-lib-file", params.run_faspr);
 	voronota_assert_full_success("Failed to run FASPR");
 }
 

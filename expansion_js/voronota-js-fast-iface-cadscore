@@ -391,7 +391,7 @@ prepare_atoms=function(params, run_faspr)
 	
 	if(run_faspr!="")
 	{
-		voronota_run_faspr("-faspr-binary", run_faspr);
+		voronota_faspr("-lib-file", run_faspr);
 		voronota_assert_full_success("Failed to run FASPR");
 	}
 	

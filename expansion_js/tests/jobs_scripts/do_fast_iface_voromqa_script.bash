@@ -30,3 +30,10 @@ find "$INPUTDIR/complex/" -type f \
   --output-table-file "$SUBDIR/global_scores_for_-BASENAME-.txt" \
   --input
 
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-voromqa \
+  --input _list \
+  --processors 4 \
+  --run-faspr "${HOME}/software/FASPR/dun2010bbdep.bin" \
+| column -t \
+> "$SUBDIR/global_scores_after_faspr"

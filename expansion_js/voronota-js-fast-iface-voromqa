@@ -515,7 +515,7 @@ var result_initial_number_of_accepted_atoms=voronota_last_output().results[0].ou
 
 if(params.run_faspr!="")
 {
-	voronota_run_faspr("-faspr-binary", params.run_faspr);
+	voronota_faspr("-lib-file", params.run_faspr);
 	voronota_assert_full_success("Failed to run FASPR");
 }
 

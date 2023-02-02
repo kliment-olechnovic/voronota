@@ -37,17 +37,20 @@ public:
 
 	std::string lib_path;
 	std::string lib_name;
+	std::string lib_file;
 
 	void initialize(scripting::CommandInput& input)
 	{
 		lib_path=input.get_value_or_default<std::string>("lib-path", ".");
 		lib_name=input.get_value_or_default<std::string>("lib-name", FASPRConfig().ROTLIB2010);
+		lib_file=input.get_value_or_default<std::string>("lib-file", "");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("lib-path", CDOD::DATATYPE_STRING, "path to FASPR rotamers library directory", "."));
 		doc.set_option_decription(CDOD("lib-name", CDOD::DATATYPE_STRING, "name of FASPR rotamers library", FASPRConfig().ROTLIB2010));
+		doc.set_option_decription(CDOD("lib-file", CDOD::DATATYPE_STRING, "file path to FASPR rotamers library, rewrites other arguments", ""));
 	}
 
 	Result run(scripting::DataManager& data_manager) const
@@ -55,8 +58,25 @@ public:
 		data_manager.assert_atoms_availability();
 
 		FASPRConfig faspr_config;
-		faspr_config.PROGRAM_PATH=lib_path;
-		faspr_config.ROTLIB2010=lib_name;
+		if(!lib_file.empty())
+		{
+			const std::size_t slashpos=lib_file.find_last_of("/\\");
+			if(slashpos<lib_file.size())
+			{
+				faspr_config.PROGRAM_PATH=lib_file.substr(0, slashpos+1);
+				faspr_config.ROTLIB2010=lib_file.substr(slashpos+1);
+			}
+			else
+			{
+				faspr_config.PROGRAM_PATH=".";
+				faspr_config.ROTLIB2010=lib_file;
+			}
+		}
+		else
+		{
+			faspr_config.PROGRAM_PATH=lib_path;
+			faspr_config.ROTLIB2010=lib_name;
+		}
 
 		if(!faspr_config.is_library_file_available())
 		{

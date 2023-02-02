@@ -1,0 +1,4 @@
+input_name  input_atoms  iface_area  iface_energy  iface_energy_norm  iface_clash_score
+target.pdb  2095         953.198     -367.644      -0.3857            0
+model1.pdb  2720         1044.28     -321.361      -0.30773           0.0223
+model2.pdb  2440         928.921     -289.576      -0.31173           0.0121
