@@ -31,8 +31,9 @@ public:
 	std::vector<double> tolerances;
 	std::string add_win_score_column;
 	std::string add_rank_column;
+	bool no_tournament;
 
-	TournamentSort()
+	TournamentSort() : no_tournament(false)
 	{
 	}
 
@@ -45,6 +46,7 @@ public:
 		tolerances=input.get_value_vector_or_default<double>("tolerances", std::vector<double>());
 		add_win_score_column=input.get_value_or_default<std::string>("add-win-score-column", "");
 		add_rank_column=input.get_value_or_default<std::string>("add-rank-column", "");
+		no_tournament=input.get_flag("no-tournament");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -56,6 +58,7 @@ public:
 		doc.set_option_decription(CDOD("tolerances", CDOD::DATATYPE_FLOAT_ARRAY, "tolerances for column values", ""));
 		doc.set_option_decription(CDOD("add-win-score-column", CDOD::DATATYPE_STRING, "new column name for win scores", ""));
 		doc.set_option_decription(CDOD("add-rank-column", CDOD::DATATYPE_STRING, "new column name for win score-based ranks", ""));
+		doc.set_option_decription(CDOD("no-tournament", CDOD::DATATYPE_BOOL, "flag to sort simply without tournament"));
 	}
 
 	Result run(void*) const
@@ -208,15 +211,38 @@ public:
 			for(std::size_t b=(a+1);b<N;b++)
 			{
 				bool win_a=true;
-				for(std::size_t i=0;i<column_values.size() && win_a;i++)
-				{
-					win_a=(win_a && ((column_values[i][a]+usable_tolerances[i])>column_values[i][b]));
-				}
-
 				bool win_b=true;
-				for(std::size_t i=0;i<column_values.size() && win_b;i++)
+
+				if(!no_tournament)
 				{
-					win_b=(win_b && ((column_values[i][b]+usable_tolerances[i])>column_values[i][a]));
+					for(std::size_t i=0;i<column_values.size() && win_a;i++)
+					{
+						win_a=(win_a && ((column_values[i][a]+usable_tolerances[i])>column_values[i][b]));
+					}
+
+					for(std::size_t i=0;i<column_values.size() && win_b;i++)
+					{
+						win_b=(win_b && ((column_values[i][b]+usable_tolerances[i])>column_values[i][a]));
+					}
+				}
+				else
+				{
+					bool finished=false;
+					for(std::size_t i=0;i<column_values.size() && !finished;i++)
+					{
+						if(column_values[i][a]>column_values[i][b])
+						{
+							win_a=true;
+							win_b=false;
+							finished=true;
+						}
+						else if(column_values[i][a]<column_values[i][b])
+						{
+							win_a=false;
+							win_b=true;
+							finished=true;
+						}
+					}
 				}
 
 				if(win_a==win_b)
@@ -232,7 +258,6 @@ public:
 				{
 					sortable_ids[b].first.first++;
 				}
-
 			}
 		}
 
