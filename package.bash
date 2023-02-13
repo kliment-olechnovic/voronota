@@ -82,6 +82,19 @@ cp "./expansion_js/index.html" "${PACKAGE_NAME}/expansion_js/README.html"
 
 ################################################################################
 
+mkdir -p "${PACKAGE_NAME}/expansion_gl"
+
+cp -r "./expansion_gl/src" "${PACKAGE_NAME}/expansion_gl/src"
+
+cp \
+  "./expansion_gl/CMakeLists.txt" \
+  "./LICENSE.txt" \
+  "${PACKAGE_NAME}/expansion_gl/"
+
+cp "./expansion_gl/README.markdown" "${PACKAGE_NAME}/expansion_gl/README.txt"
+
+################################################################################
+
 tar -czf "${PACKAGE_NAME}.tar.gz" "$PACKAGE_NAME"
 rm -r -f "$PACKAGE_NAME"
 

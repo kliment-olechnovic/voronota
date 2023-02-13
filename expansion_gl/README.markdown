@@ -26,5 +26,5 @@ Alternatively, to keep files more organized, CMake can be run in a separate "bui
 For example, "voronota-gl" executable can be built from
 the sources in "src" directory using GNU C++ compiler:
 
-    g++ -std=c++14 -I"./src/expansion_js/src/dependencies" -I"./src/expansion_gl/src/dependencies" -O3 -o "./voronota-gl" $(find ./src/ -name '*.cpp') -lm -lGL -lGLEW -lglfw
+    g++ -std=c++14 -I"../expansion_js/src/dependencies" -I"./src/dependencies" -O3 -o "./voronota-gl" $(find ../expansion_js/src/dependencies/ -name '*.cpp') $(find ./src/ -name '*.cpp' ) -lm -lGL -lGLEW -lglfw
 
