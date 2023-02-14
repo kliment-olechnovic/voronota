@@ -41,19 +41,6 @@ Windows Subsystem for Linux (WSL).
 Voronota has no required external dependencies, only
 a standard-compliant C++ compiler is needed to build it.
 
-## Using make
-
-Inside the unpacked downloaded Voronota archive,
-you can generate and use a makefile:
-
-    ./configure
-    make
-
-It allows to install and uninstall Voronota executables:
-
-    make install
-    make uninstall
-
 ## Using CMake
 
 You can build using CMake for makefile generation.
@@ -86,12 +73,6 @@ the "-fopenmp" flag needs to be set when building.
 When building using C++ compiler directly, just add "-fopenmp":
 
     g++ -O3 -fopenmp -o voronota $(find ./src/ -name '*.cpp')
-
-When generating a makefile with the "configure" script,
-set the CXXFLAGS variable:
-
-    ./configure CXXFLAGS="-O3 -fopenmp"
-    make
 
 When using CMake, set the CMAKE_CXX_FLAGS variable:
 

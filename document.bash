@@ -88,3 +88,5 @@ pandoc $TMPDIR/documentation.markdown -f markdown -t html --toc -H $TMPDIR/inclu
 
 mv $TMPDIR/documentation.markdown ./README.markdown
 
+pandoc -s -t man ./resources/texts/manpage.markdown -o "$TMPDIR/manpage.troff"
+mv "$TMPDIR/manpage.troff" "./voronota.man"

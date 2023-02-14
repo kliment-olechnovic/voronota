@@ -20,7 +20,6 @@
 <li><a href="#getting-the-latest-version">Getting the latest version</a></li>
 <li><a href="#building-from-source-code">Building from source code</a><ul>
 <li><a href="#requirements">Requirements</a></li>
-<li><a href="#using-make">Using make</a></li>
 <li><a href="#using-cmake">Using CMake</a></li>
 <li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
 <li><a href="#enabling-openmp">Enabling OpenMP</a></li>
@@ -137,13 +136,6 @@
 <h1 id="building-from-source-code">Building from source code</h1>
 <h2 id="requirements">Requirements</h2>
 <p>Voronota has no required external dependencies, only a standard-compliant C++ compiler is needed to build it.</p>
-<h2 id="using-make">Using make</h2>
-<p>Inside the unpacked downloaded Voronota archive, you can generate and use a makefile:</p>
-<pre><code>./configure
-make</code></pre>
-<p>It allows to install and uninstall Voronota executables:</p>
-<pre><code>make install
-make uninstall</code></pre>
 <h2 id="using-cmake">Using CMake</h2>
 <p>You can build using CMake for makefile generation. Starting in the directory containing &quot;CMakeLists.txt&quot; file, run the sequence of commands:</p>
 <pre><code>cmake ./
@@ -161,9 +153,6 @@ cp ./voronota ../voronota</code></pre>
 <p>To allow the usage of OpenMP when calling the &quot;calculate-vertices-in-parallel&quot; command, the &quot;-fopenmp&quot; flag needs to be set when building.</p>
 <p>When building using C++ compiler directly, just add &quot;-fopenmp&quot;:</p>
 <pre><code>g++ -O3 -fopenmp -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
-<p>When generating a makefile with the &quot;configure&quot; script, set the CXXFLAGS variable:</p>
-<pre><code>./configure CXXFLAGS=&quot;-O3 -fopenmp&quot;
-make</code></pre>
 <p>When using CMake, set the CMAKE_CXX_FLAGS variable:</p>
 <pre><code>cmake -DCMAKE_CXX_FLAGS=&quot;-fopenmp&quot; ./
 make</code></pre>
