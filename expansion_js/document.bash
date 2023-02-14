@@ -5,12 +5,13 @@ cd $(dirname "$0")
 TMPDIR=$(mktemp -d)
 trap "rm -r $TMPDIR" EXIT
 
+################################################################################
+
 {
 
 cat ./resources/texts/intro.markdown
 
-echo -e "\n# Usage"
-
+echo -e "\n# Wrapper scripts"
 
 echo -e "\n## VoroMQA dark and light methods\n"
 
@@ -62,6 +63,8 @@ EOF
 
 } > $TMPDIR/documentation.markdown
 
+################################################################################
+
 cat > $TMPDIR/include_in_header.html << 'EOF'
 <style type="text/css">
 a { color: #0000CC; }
@@ -74,22 +77,41 @@ echo "<h1>Voronota-JS</h1>" > $TMPDIR/include_before_body.html
 
 pandoc $TMPDIR/documentation.markdown -f markdown -t html --toc -H $TMPDIR/include_in_header.html -B $TMPDIR/include_before_body.html -s -o ./index.html
 
+################################################################################
+
 mv $TMPDIR/documentation.markdown ./README.markdown
 
+################################################################################
 
 {
-cat ./resources/texts/ligand_cadscore_intro.markdown
+cat ./resources/texts/ligand_cadscore_info.markdown
 
 cat << 'EOF'
+# Software usage reference
+
+'voronota-js-ligand-cadscore' script computes receptor-ligand variation of CAD-score.
+
 ### Script interface
 
 EOF
 
 ./voronota-js-ligand-cadscore -h 2>&1 | tail -n +3 | sed 's/^/    /'
 
-cat ./resources/texts/ligand_cadscore_info.markdown
-
 } > $TMPDIR/ligand_cadscore_info.markdown
 
-pandoc $TMPDIR/ligand_cadscore_info.markdown -f markdown -t html -s -o ./ligand_cadscore_info.html
+################################################################################
+
+cat > $TMPDIR/include_in_header.html << 'EOF'
+<style type="text/css">
+a { color: #0000CC; }
+td { padding-right: 1em; }
+div#TOC > ul > li > ul > li ul { display: none; }
+</style>
+EOF
+
+echo "<h1>Protein-ligand variation of CAD-score</h1>" > $TMPDIR/include_before_body.html
+
+pandoc $TMPDIR/ligand_cadscore_info.markdown -f markdown -t html --toc -H $TMPDIR/include_in_header.html -B $TMPDIR/include_before_body.html -s -o ./ligand_cadscore_info.html
+
+################################################################################
 

@@ -23,7 +23,7 @@
 <li><a href="#using-cmake">Using CMake</a></li>
 <li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
 </ul></li>
-<li><a href="#usage">Usage</a><ul>
+<li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
 <li><a href="#voromqa-dark-and-light-methods">VoroMQA dark and light methods</a><ul>
 <li><a href="#script-interface">Script interface</a></li>
 </ul></li>
@@ -40,18 +40,18 @@
 </ul>
 </div>
 <h1 id="about-voronota-js-expansion">About Voronota-JS expansion</h1>
-<p>Voronota-JS is an expansion of the core Voronota software. Voronota-JS provides a way to write JavaScript scripts for the comprehensive analysis of macromolecular structures, including the Voronoi tesselation-based analysis.</p>
+<p>Voronota-JS is an expansion of <a href="../index.html">the core Voronota software</a>. Voronota-JS provides a way to write JavaScript scripts for the comprehensive analysis of macromolecular structures, including the Voronoi tesselation-based analysis.</p>
 <p>Currently, the Voronota-JS package contains several executables:</p>
 <ul>
 <li>&quot;voronota-js&quot; - core engine that executes JavaScript scripts.</li>
 <li>&quot;voronota-js-voromqa&quot; - wrapper to a voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).</li>
 <li>&quot;voronota-js-membrane-voromqa&quot; - wrapper to a voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.</li>
 <li>&quot;voronota-js-ifeatures-voromqa&quot; - wrapper to a voronota-js program for the computation of multiple VoroMQA-based features of protein-protein complexes.</li>
-<li>&quot;voronota-js-ligand-cadscore&quot; - wrapper to a voronota-js program for the computation of protein-ligand variation of CAD-score (developed to analyze protein-ligand models from CASP15).</li>
+<li>&quot;voronota-js-ligand-cadscore&quot; - wrapper to a voronota-js program for the computation of protein-ligand variation of CAD-score. It was developed to analyze protein-ligand models from CASP15, as described in <a href="./ligand_cadscore_info.html">the dedicated page about the protein-ligand variation of CAD-score</a>.</li>
 </ul>
 <h1 id="getting-the-latest-version">Getting the latest version</h1>
-<p>Download the archive from <a href="https://kliment-olechnovic.github.io/voronota/expansion_js/voronota-js_release.tar.gz" class="uri">https://kliment-olechnovic.github.io/voronota/expansion_js/voronota-js_release.tar.gz</a>.</p>
-<p>The archive contains ready-to-use statically compiled &quot;voronota-js&quot; program for 64 bit Linux systems. This executable can be rebuilt from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>
+<p>Download the latest archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases" class="uri">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
+<p>The archive contains the Voronota-JS software in the 'expansion_js' subdirectory. There is a ready-to-use statically compiled &quot;voronota-js&quot; program for 64 bit Linux systems. This executable can be rebuilt from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>
 <h1 id="building-from-source-code">Building from source code</h1>
 <h2 id="requirements">Requirements</h2>
 <p>Voronota-JS has no required external dependencies, only a C++14-compliant compiler is needed to build it.</p>
@@ -68,7 +68,7 @@ cp ./voronota-js ../voronota-js</code></pre>
 <h2 id="using-c-compiler-directly">Using C++ compiler directly</h2>
 <p>For example, &quot;voronota-js&quot; executable can be built from the sources in &quot;src&quot; directory using GNU C++ compiler:</p>
 <pre><code>g++ -std=c++14 -I&quot;./src/expansion_js/src/dependencies&quot; -O3 -o &quot;./voronota-js&quot; $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
-<h1 id="usage">Usage</h1>
+<h1 id="wrapper-scripts">Wrapper scripts</h1>
 <h2 id="voromqa-dark-and-light-methods">VoroMQA dark and light methods</h2>
 <p>'voronota-js-voromqa' script provides an interface to VoroMQA dark (newer) and light (classic) methods.</p>
 <h3 id="script-interface">Script interface</h3>

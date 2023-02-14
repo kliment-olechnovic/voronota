@@ -38,11 +38,11 @@ cp \
   "voronota-membrane" \
   "CMakeLists.txt" \
   "LICENSE.txt" \
+  "index.html" \
   "voronota.man" \
   "${PACKAGE_NAME}/"
 
 cp ./README.markdown "${PACKAGE_NAME}/README.txt"
-cp ./index.html "${PACKAGE_NAME}/README.html"
 
 ./voronota-resources radii > "${PACKAGE_NAME}/radii"
 
@@ -65,10 +65,10 @@ cp \
   "./expansion_js/voronota-js-ligand-cadscore" \
   "./expansion_js/CMakeLists.txt" \
   "./LICENSE.txt" \
+  "./expansion_js/index.html" \
   "${PACKAGE_NAME}/expansion_js/"
 
 cp "./expansion_js/README.markdown" "${PACKAGE_NAME}/expansion_js/README.txt"
-cp "./expansion_js/index.html" "${PACKAGE_NAME}/expansion_js/README.html"
 
 ################################################################################
 
