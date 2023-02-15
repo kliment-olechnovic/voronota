@@ -80,10 +80,10 @@ pandoc $TMPLDIR/documentation.markdown -f markdown -t html --toc -H $TMPLDIR/inc
 ################################################################################
 
 cat $TMPLDIR/documentation.markdown \
-| sed 's|\./index.html|./README.markdown|g' \
-| sed 's|expansion_js/index.html|expansion_js/README.markdown|g' \
-| sed 's|expansion_gl/index.html|expansion_gl/README.markdown|g' \
-> ./README.markdown
+| sed 's|\./index.html|./README.md|g' \
+| sed 's|expansion_js/index.html|expansion_js/README.md|g' \
+| sed 's|expansion_gl/index.html|expansion_gl/README.md|g' \
+> ./README.md
 
 ################################################################################
 

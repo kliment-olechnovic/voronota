@@ -1,6 +1,6 @@
 # About Voronota-JS expansion
 
-Voronota-JS is an expansion of [the core Voronota software](../README.markdown).
+Voronota-JS is an expansion of [the core Voronota software](../README.md).
 Voronota-JS provides a way to write JavaScript scripts for the comprehensive
 analysis of macromolecular structures, including the Voronoi tesselation-based analysis.
 
