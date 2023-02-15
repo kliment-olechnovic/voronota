@@ -13,6 +13,5 @@ set(CMAKE_BUILD_TYPE Release)
 add_executable(voronota-js ${VORONOTA_JS_SRC})
 
 install(TARGETS voronota-js RUNTIME DESTINATION bin)
-install(PROGRAMS voronota-js-voromqa DESTINATION bin)
-install(PROGRAMS voronota-js-membrane-voromqa DESTINATION bin)
-install(PROGRAMS voronota-js-ifeatures-voromqa DESTINATION bin)
+install(PROGRAMS voronota-js-voromqa voronota-js-membrane-voromqa voronota-js-ifeatures-voromqa voronota-js-fast-iface-voromqa voronota-js-fast-iface-cadscore voronota-js-fast-iface-cadscore-matrix voronota-js-fast-iface-data-graph DESTINATION bin)
+
