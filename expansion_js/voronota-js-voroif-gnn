@@ -1,0 +1,751 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-voroif-gnn' scores protein-protein interfaces using the VoroIF-GNN method
+
+Options:
+    --input                   string  *  input file
+    --gnn                     string     GNN package file or directory with package files, default is '${SCRIPT_DIRECTORY}/voroif/gnn_packages/v1'
+    --gnn-add                 string     additional GNN package file or directory with package files, default is ''
+    --restrict-input          string     query to restrict input atoms, default is '[]'
+    --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
+    --as-assembly             string     flag to treat input file as biological assembly
+    --input-is-script         string     flag to treat input file as vs script
+    --conda-path              string     conda installation path, default is ''
+    --conda-env               string     conda environment name, default is ''
+    --faspr-path              string     path to FASPR binary, default is ''
+    --run-faspr               string     flag to rebuild sidechains using FASPR, default is 'false'
+    --processors              number     maximum number of processors to run in parallel, default is 1
+    --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
+    --stdin-file              string     input file path to replace stdin
+    --local-column            string     flag to add per-residue scores to the global output table
+    --cache-dir               string     cache directory path to store results of past calls
+    --output-dir              string     output directory path for all results
+    --output-pdb-file         string     output path for PDB file with interface residue scores, default is ''
+    --output-pdb-mode         string     mode to write b-factors ('overwrite_all', 'overwrite_iface' or 'combine'), default is 'overwrite_all'
+    --help | -h                          flag to display help message and exit
+
+Standard output:
+    space-separated table of global scores
+    
+Important note about output interpretation:
+    higher GNN scores are better, lower GNN scores are worse (with VoroMQA energy it is the other way around)
+
+Examples:
+
+    voronota-js-voroif-gnn --conda-path ~/miniconda3 --input './model.pdb'
+    
+    voronota-js-voroif-gnn --input './model.pdb' --gnn "${HOME}/git/voronota/expansion_js/voroif/gnn_packages/v1"
+
+Requirements installation example using Miniconda (may need more than 10 GB of disk space):
+
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh
+    source ~/miniconda3/bin/activate
+    conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia # using instructions from 'https://pytorch.org/get-started/locally/'
+    conda install pyg -c pyg # using instructions from 'https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html'
+    conda install pandas
+    conda install r # may skip this if you have R already and do not want it in Miniconda
+
+EOF
+exit 1
+}
+
+################################################################################
+
+function substitute_id_in_filename
+{
+	SUBSTITUTE_BASENAME="$(basename "$1")"
+	SUBSTITUTE_TEMPLATE="$2"
+	
+	echo "$SUBSTITUTE_TEMPLATE" \
+	| sed "s|-BASENAME-|${SUBSTITUTE_BASENAME}|"
+}
+
+function cat_stdin
+{
+	STDIN_SOURCE="$1"
+	if [ "$STDIN_SOURCE" == "_stream" ]
+	then
+		cat
+	else
+		cat "$STDIN_SOURCE"
+	fi
+}
+
+################################################################################
+
+SCRIPTDIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [ -z "$1" ]
+then
+	print_help_and_exit
+fi
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	export PATH="${SCRIPTDIR}:${PATH}"
+fi
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+command -v voronota-js-fast-iface-data-graph &> /dev/null || { echo >&2 "Error: 'voronota-js-fast-iface-data-graph' executable not in binaries path"; exit 1; }
+
+INFILE=""
+GNN_PACKAGE_FILES=""
+RESTRICT_INPUT="[]"
+AS_ASSEMBLY="false"
+INPUT_IS_SCRIPT="false"
+SUBSELECT_CONTACTS="[]"
+CONDA_PATH=""
+CONDA_ENV=""
+FASPR_PATH=""
+RUN_FASPR="false"
+MAX_PROCESSORS="1"
+SBATCH_PARAMETERS=""
+STDIN_FILE="_stream"
+LOCAL_COLUMN="false"
+CACHE_DIR=""
+OUTDIR=""
+OUTPUT_PDB_FILE=""
+OUTPUT_PDB_MODE="overwrite_all"
+JUST_OUTPUT_FROM_DIR=""
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	--gnn)
+		GNN_PACKAGE_FILES="$OPTARG"
+		shift
+		;;
+	--gnn-add)
+		GNN_PACKAGE_FILES="$GNN_PACKAGE_FILES $OPTARG"
+		shift
+		;;
+	--restrict-input)
+		RESTRICT_INPUT="$OPTARG"
+		shift
+		;;
+	--subselect-contacts)
+		SUBSELECT_CONTACTS="$OPTARG"
+		shift
+		;;
+	--as-assembly)
+		AS_ASSEMBLY="$OPTARG"
+		shift
+		;;
+	--input-is-script)
+		INPUT_IS_SCRIPT="$OPTARG"
+		shift
+		;;
+	--conda-path)
+		CONDA_PATH="$OPTARG"
+		shift
+		;;
+	--conda-env)
+		CONDA_ENV="$OPTARG"
+		shift
+		;;
+	--faspr-path)
+		FASPR_PATH="$OPTARG"
+		shift
+		;;
+	--run-faspr)
+		RUN_FASPR="$OPTARG"
+		shift
+		;;
+	--processors)
+		MAX_PROCESSORS="$OPTARG"
+		shift
+		;;
+	--sbatch-parameters)
+		SBATCH_PARAMETERS="$OPTARG"
+		shift
+		;;
+	--stdin-file)
+		STDIN_FILE="$OPTARG"
+		shift
+		;;
+	--local-column)
+		LOCAL_COLUMN="$OPTARG"
+		shift
+		;;
+	--cache-dir)
+		CACHE_DIR="$OPTARG"
+		shift
+		;;
+	--output-dir)
+		OUTDIR="$OPTARG"
+		shift
+		;;
+	--output-pdb-file)
+		OUTPUT_PDB_FILE="$OPTARG"
+		shift
+		;;
+	--output-pdb-mode)
+		OUTPUT_PDB_MODE="$OPTARG"
+		shift
+		;;
+	--jofd)
+		JUST_OUTPUT_FROM_DIR="$OPTARG"
+		shift
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ -z "$INFILE" ]
+then
+	echo >&2 "Error: no input file specified"
+	exit 1
+fi
+
+if [ "$INFILE" != "_list" ] && [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: invalid input file '$INFILE'"
+	exit 1
+fi
+
+if [ "$STDIN_FILE" != "_stream" ] && [ ! -s "$STDIN_FILE" ]
+then
+	echo >&2 "Error: stdin replacement file '$STDIN_FILE' does not exist"
+	exit 1
+fi
+
+if [ -n "$OUTPUT_PDB_FILE" ] && [ "$OUTPUT_PDB_MODE" != "overwrite_all" ] && [ "$OUTPUT_PDB_MODE" != "overwrite_iface" ] && [ "$OUTPUT_PDB_MODE" != "combine" ]
+then
+	echo >&2 "Error: invalid mode for PDB output"
+	exit 1
+fi
+
+INFILENAME="$(basename $INFILE)"
+OUTDIR="$(substitute_id_in_filename "$INFILENAME" "$OUTDIR")"
+OUTPUT_PDB_FILE="$(substitute_id_in_filename "$INFILENAME" "$OUTPUT_PDB_FILE")"
+
+################################################################################
+
+if [ -n "$JUST_OUTPUT_FROM_DIR" ]
+then
+	{
+		if [ "$LOCAL_COLUMN" == "true" ]
+		then
+			cat "$JUST_OUTPUT_FROM_DIR/results_summary_table_with_local_column.txt"
+		else
+			cat "$JUST_OUTPUT_FROM_DIR/results_summary_table.txt"
+		fi
+	} \
+	| sed '1 s|^|input_name |' \
+	| sed "2 s|^|${INFILENAME} |" \
+	| {
+		if [ -n "$OUTDIR" ]
+		then
+			mkdir -p "$OUTDIR"
+			cat > "${OUTDIR}/${INFILENAME}__gnn_scores_global.txt"
+			cat "$JUST_OUTPUT_FROM_DIR/results_per_contact.txt" > "${OUTDIR}/${INFILENAME}__gnn_scores_per_contact.txt"
+			cat "$JUST_OUTPUT_FROM_DIR/results_per_residue.txt" > "${OUTDIR}/${INFILENAME}__gnn_scores_per_residue.txt"
+			cat "${OUTDIR}/${INFILENAME}__gnn_scores_global.txt"
+		else 
+			cat
+		fi
+	}
+	
+	if [ -n "$OUTPUT_PDB_FILE" ]
+	then
+		if [ -n "$OUTPUT_PDB_FILE" ]
+		then
+			mkdir -p "$(dirname $OUTPUT_PDB_FILE)"
+		fi
+		
+{
+cat << EOF
+var common_params={}
+common_params.input_is_script='$INPUT_IS_SCRIPT';
+common_params.input_as_assembly='$AS_ASSEMBLY';
+common_params.restrict_input_atoms='$RESTRICT_INPUT';
+common_params.output_pdb_file='$OUTPUT_PDB_FILE';
+common_params.output_pdb_mode='$OUTPUT_PDB_MODE';
+var input_info={"input_file": "$INFILE", "input_file_name": "$INFILENAME", "input_adjuncts_file": "$JUST_OUTPUT_FROM_DIR/results_per_residue.txt"}
+EOF
+
+cat << 'EOF'
+analyze_structure=function(params, input)
+{
+
+if(input.input_file===undefined || input.input_file==="")
+{
+	throw ("No input file");
+}
+
+if(input.input_adjuncts_file===undefined || input.input_adjuncts_file==="")
+{
+	throw ("No input adjuncts file");
+}
+
+if(params.output_pdb_file===undefined || params.output_pdb_file==="")
+{
+	throw ("No output file path file");
+}
+
+if(params.output_pdb_mode!="overwrite_all" && params.output_pdb_mode!="overwrite_iface" && params.output_pdb_mode!="combine")
+{
+	throw ("Invalid mode for PDB output");
+}
+
+if(params.input_is_script===undefined || params.input_is_script==="")
+{
+	params.input_is_script="false";
+}
+
+if(params.input_as_assembly===undefined || params.input_as_assembly==="")
+{
+	params.input_as_assembly="false";
+}
+
+if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
+{
+	params.restrict_input_atoms='[]';
+}
+
+voronota_delete_objects();
+
+if(params.input_is_script=="true")
+{
+	voronota_source("-file", input.input_file);
+	voronota_assert_partial_success("Failed when running provided input script");
+}
+else
+{
+	voronota_import("-file", input.input_file, "-as-assembly", params.input_as_assembly);
+	voronota_assert_partial_success("Failed to import file");
+}
+
+voronota_restrict_atoms("-use", params.restrict_input_atoms);
+voronota_assert_full_success("Failed to restrict input atoms by the input query");
+
+voronota_import_adjuncts_of_atoms("-file", input.input_adjuncts_file);
+voronota_assert_full_success("Failed to import adjuncts");
+
+if(params.output_pdb_mode=="overwrite_all")
+{
+	voronota_set_adjunct_of_atoms("-use", "[-adjuncts-not pcadscore]", "-name", "pcadscore", "-value", 1.0);
+	
+	voronota_set_adjunct_of_atoms_by_expression("-use", "[-adjuncts pcadscore]", "-expression", "_linear_combo", "-input-adjuncts", "pcadscore", "-parameters", [100, 0], "-output-adjunct", "tf");
+	voronota_assert_full_success("Failed to set output adjuncts");
+}
+
+if(params.output_pdb_mode=="overwrite_iface")
+{
+	voronota_set_adjunct_of_atoms_by_expression("-use", "[-adjuncts pcadscore]", "-expression", "_linear_combo", "-input-adjuncts", "pcadscore", "-parameters", [100, 0], "-output-adjunct", "tf");
+	voronota_assert_full_success("Failed to set output adjuncts");
+}
+
+if(params.output_pdb_mode=="combine")
+{
+	voronota_set_adjunct_of_atoms_by_expression("-use", "[-adjuncts pcadscore]", "-expression", "_linear_combo", "-input-adjuncts", "pcadscore", "-parameters", [100, 0], "-output-adjunct", "pcadscore100");
+	voronota_assert_full_success("Failed to transform adjuncts");
+	
+	voronota_set_adjunct_of_atoms_by_expression("-use", "[-adjuncts pcadscore100]", "-expression", "_multiply", "-input-adjuncts", ["pcadscore100", "tf"], "-output-adjunct", "combo_product");
+	voronota_assert_full_success("Failed to multiply adjuncts");
+	
+	voronota_set_adjunct_of_atoms_by_expression("-use", "[-adjuncts combo_product]", "-expression", "_sqrt", "-input-adjuncts", "combo_product", "-output-adjunct", "tf");
+	voronota_assert_full_success("Failed to sqrt adjuncts");
+}
+
+voronota_export_atoms("-file", params.output_pdb_file, "-as-pdb", "-pdb-b-factor", "tf", "-pdb-ter");
+voronota_assert_full_success("Failed to export atoms with adjuncts");
+}
+
+try
+{
+	analyze_structure(common_params, input_info);
+}
+catch(error)
+{
+	log("Failed with '"+input_info.input_file_name+"': "+error);
+}
+
+EOF
+} \
+| voronota-js --no-setup-defaults
+	fi
+	
+	exit 0
+fi
+
+################################################################################
+
+if [ -z "$GNN_PACKAGE_FILES" ]
+then
+	GNN_PACKAGE_FILES="${SCRIPTDIR}/voroif/gnn_packages/v1"
+fi
+
+if [ -z "$GNN_PACKAGE_FILES" ] || [ ! -d "$GNN_PACKAGE_FILES" ] || [ ! -s "$GNN_PACKAGE_FILES" ]
+then
+	echo >&2 "Error: no GNN package file or directory specified"
+	exit 1
+fi
+
+if [ "$RUN_FASPR" == "true" ] && [ -z "$FASPR_PATH" ]
+then
+	echo >&2 "Error: non FASPR path provided"
+	exit 1
+fi
+
+if [ "$RUN_FASPR" == "true" ] &&  [ ! -s "$FASPR_PATH" ]
+then
+	echo >&2 "Error: non FASPR file '$FASPR_PATH'"
+	exit 1
+fi
+
+################################################################################
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+################################################################################
+
+HASHSUM=""
+
+if [ -n "$CACHE_DIR" ] && [ "$INFILE" != "_list" ]
+then
+	{
+		echo "$RESTRICT_INPUT $AS_ASSEMBLY $INPUT_IS_SCRIPT $SUBSELECT_CONTACTS $RUN_FASPR"
+		
+		if [ "$INPUT_IS_SCRIPT" == "true" ]
+		then
+			cat "$INFILE"
+		else
+			cat "$INFILE" | egrep '^ATOM ' | cut -c 1-60 | sed 's/\s\+/ /g' | sed 's/\s\+$//'
+		fi
+		
+		echo "$GNN_PACKAGE_FILES" \
+		| sed 's|\s\+|\n|g' \
+		| egrep . \
+		| while read -r GNN_PACKAGE_FILE
+		do
+			if [ -d "$GNN_PACKAGE_FILE" ]
+			then
+				find "$GNN_PACKAGE_FILE" -type f -name '*.tar' -not -empty | sort | xargs cat
+			else
+				cat "$GNN_PACKAGE_FILE"
+			fi
+		done
+	} \
+	| md5sum | awk '{print $1}' \
+	> "${TMPLDIR}/hashsum.txt"
+	
+	HASHSUM="voronota-js-voroif-gnn-$(cat ${TMPLDIR}/hashsum.txt)"
+	
+	if [ -s "${CACHE_DIR}/${HASHSUM}.tar.gz" ]
+	then
+		mkdir -p "${TMPLDIR}/saved_results"
+		
+		cp "${CACHE_DIR}/${HASHSUM}.tar.gz" "${TMPLDIR}/saved_results/archive.tar.gz"
+		
+		cd "${TMPLDIR}/saved_results"
+		tar -xf "./archive.tar.gz"
+		cd - &> /dev/null
+		
+		if [ ! -s "${TMPLDIR}/saved_results/results_summary_table.txt" ] || [ ! -s "${TMPLDIR}/saved_results/results_summary_table_with_local_column.txt" ] || [ ! -s "${TMPLDIR}/saved_results/results_per_contact.txt" ] || [ ! -s "${TMPLDIR}/saved_results/results_per_residue.txt" ]
+		then
+			echo >&2 "Error: invalid cached archive '${CACHE_DIR}/${HASHSUM}.tar.gz'"
+			exit 1
+		fi
+		
+		"$ZEROARG" "${ALLARGS[@]}" --jofd "$TMPLDIR/saved_results"
+		
+		exit 0
+	fi
+fi
+
+################################################################################
+
+if [ -z "$CONDA_DEFAULT_ENV" ]
+then
+	if [ -z "$CONDA_PATH" ]
+	then
+		echo >&2 "Error: not in conda environment, and the conda path is not provided"
+		exit 1
+	fi
+	if [ ! -s "${CONDA_PATH}/bin/activate" ]
+	then
+		echo >&2 "Error: no conda activation script '${CONDA_PATH}/bin/activate'"
+		exit 1
+	fi
+	source "${CONDA_PATH}/bin/activate"
+fi
+
+if [ -n "$CONDA_ENV" ]
+then
+	if [ "$CONDA_DEFAULT_ENV" != "$CONDA_ENV" ]
+	then
+		conda activate "$CONDA_ENV"
+	fi
+	
+	if [ "$CONDA_DEFAULT_ENV" != "$CONDA_ENV" ]
+	then
+		echo >&2 "Error: no '$CONDA_ENV' environment"
+		exit 1
+	fi
+fi
+
+command -v R &> /dev/null || { echo >&2 "Error: 'R' executable not in binaries path"; exit 1; }
+
+################################################################################
+
+mkdir -p "${TMPLDIR}/gnn_runs"
+
+{
+echo "$GNN_PACKAGE_FILES" \
+| sed 's|\s\+|\n|g' \
+| egrep . \
+| while read -r GNN_PACKAGE_FILE
+do
+	if [ -d "$GNN_PACKAGE_FILE" ]
+	then
+		find "$GNN_PACKAGE_FILE" -type f -name '*.tar' -not -empty | sort
+	else
+		echo "$GNN_PACKAGE_FILE"
+	fi
+done
+} \
+| awk '{print "v" NR " " $1}' \
+> "${TMPLDIR}/gnn_runs/list.txt"
+
+while read -r GNN_RUN_NAME GNN_PACKAGE_FILE
+do
+	if [ ! -s "$GNN_PACKAGE_FILE" ]
+	then
+		echo >&2 "Error: no GNN package file '$GNN_PACKAGE_FILE'"
+		exit 1
+	fi
+done < "${TMPLDIR}/gnn_runs/list.txt"
+
+################################################################################
+
+if [ "$INFILE" == "_list" ]
+then
+	cat_stdin "$STDIN_FILE" | egrep . | sort | uniq > "$TMPLDIR/input_list"
+	
+	if [ ! -s "$TMPLDIR/input_list" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	if [ -n "$SBATCH_PARAMETERS" ]
+	then
+		NUM_OF_INPUTS="$(cat $TMPLDIR/input_list | wc -l)"
+		SIZE_OF_PORTION="$(echo "a=$NUM_OF_INPUTS; b=$MAX_PROCESSORS; if(a%b) a/b+1 else a/b" | bc)"
+	
+		mkdir -p "$TMPLDIR/portions"
+	
+		split -l "$SIZE_OF_PORTION" "$TMPLDIR/input_list" "$TMPLDIR/portions/portion_"
+	
+		mkdir -p "$TMPLDIR/slurm_logs"
+		
+		find $TMPLDIR/portions/ -type f -not -empty \
+		| xargs -L 1 sbatch -o "$TMPLDIR/slurm_logs/slurmjob-%j.out" -e "$TMPLDIR/slurm_logs/slurmjob-%j.err" $SBATCH_PARAMETERS "$ZEROARG" "${ALLARGS[@]}" --sbatch-parameters '' --processors 1 --output-dir "${TMPLDIR}/outdir" --input _list --stdin-file \
+		| egrep '^Submitted batch job ' \
+		| awk '{print $4}' \
+		> "$TMPLDIR/slurm_job_ids"
+		
+		sleep 1
+		REMAINING_SLURM_JOBS="$(squeue | grep -f "$TMPLDIR/slurm_job_ids" | wc -l)"
+		while [ "$REMAINING_SLURM_JOBS" -gt "0" ]
+		do
+			sleep 5
+			REMAINING_SLURM_JOBS="$(squeue | grep -f "$TMPLDIR/slurm_job_ids" | wc -l)"
+		done
+		
+		find "$TMPLDIR/slurm_logs/" -type f -name '*.err' -not -empty | xargs -L 1 cat >&2
+	else
+		cat "$TMPLDIR/input_list" \
+		| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" --conda-path "" --conda-env "" --output-dir "${TMPLDIR}/outdir" --input \
+		> /dev/null
+	fi
+	
+	find "${TMPLDIR}/outdir/" -type f -name '*__gnn_scores_global.txt' \
+	| xargs cat \
+	| awk '{if(NR==1 || $1!="input_name") print $0}' \
+	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns sum_of_gnn_scores -multipliers 1 -tolerances 0.0');"
+	
+	if [ -n "$OUTDIR" ]
+	then
+		mkdir -p "$OUTDIR"
+		mv $TMPLDIR/outdir/* "$OUTDIR"
+	fi
+	
+	exit 0
+fi
+
+################################################################################
+
+MORE_FAST_IFACE_DATA_GRAPH_PARAMETERS=()
+
+if [ "$AS_ASSEMBLY" == "true" ]
+then
+	MORE_FAST_IFACE_DATA_GRAPH_PARAMETERS+=("--as-assembly")
+fi
+
+if [ "$INPUT_IS_SCRIPT" == "true" ]
+then
+	MORE_FAST_IFACE_DATA_GRAPH_PARAMETERS+=("--input-is-script")
+fi
+
+if [ "$RUN_FASPR" == "true" ]
+then
+	MORE_FAST_IFACE_DATA_GRAPH_PARAMETERS+=("--run-faspr")
+	MORE_FAST_IFACE_DATA_GRAPH_PARAMETERS+=("$FASPR_PATH")
+fi
+
+################################################################################
+
+voronota-js-fast-iface-data-graph \
+  --coarse-grained \
+  --input "$INFILE" \
+  --restrict-input "$RESTRICT_INPUT" \
+  --subselect-contacts "$SUBSELECT_CONTACTS" \
+  --processors "1" \
+  --output-data-prefix "${TMPLDIR}/" \
+  "${MORE_FAST_IFACE_DATA_GRAPH_PARAMETERS[@]}" \
+> /dev/null
+
+if [ ! -s "${TMPLDIR}/${INFILENAME}_edges.txt" ] || [ ! -s "${TMPLDIR}/${INFILENAME}_vertices.txt" ]
+then
+	echo >&2 "Error: failed to generate data graph"
+	exit 1
+fi
+
+while read -r GNN_RUN_NAME GNN_PACKAGE_FILE
+do
+	mkdir -p "${TMPLDIR}/gnn_runs/${GNN_RUN_NAME}"
+	cp "$GNN_PACKAGE_FILE" "${TMPLDIR}/gnn_runs/${GNN_RUN_NAME}/gnn_package.tar"
+	cd "${TMPLDIR}/gnn_runs/${GNN_RUN_NAME}"
+	cp "${TMPLDIR}/${INFILENAME}_edges.txt" "./raw_graph_edges.txt"
+	cp "${TMPLDIR}/${INFILENAME}_vertices.txt" "./raw_graph_vertices.txt"
+	tar -xf "./gnn_package.tar"
+	source "./workflow.bash"
+	if [ ! -s "./results_summary.txt" ] || [ ! -s "./results_detailed.txt" ]
+	then
+		echo >&2 "Error: failed to produce results with GNN package '$GNN_PACKAGE_FILE'"
+		exit 1
+	fi
+	cd - &> /dev/null
+done < "${TMPLDIR}/gnn_runs/list.txt"
+
+cd "$TMPLDIR"
+
+R --vanilla << 'EOF' &> /dev/null
+runnames=read.table("gnn_runs/list.txt", header=FALSE, stringsAsFactors=FALSE)[[1]];
+
+dt=c();
+for(runname in runnames)
+{
+	dt0=read.table(paste0("gnn_runs/", runname, "/results_detailed.txt"), header=TRUE, stringsAsFactors=FALSE);
+	if(length(dt)==0) {
+		dt=dt0;
+	} else {
+		dt$gnn_score=dt$gnn_score+dt0$gnn_score;
+	}
+}
+dt$gnn_score=dt$gnn_score/length(runnames);
+
+dt_glob=data.frame(
+  sum_of_gnn_scores=sum(dt$gnn_score),
+  sum_of_areas=sum(dt$area),
+  average_gnn_score=sum(dt$gnn_score)/sum(dt$area),
+  voromqa_energy=sum(dt$VE),
+  mock_voromqa_energy=sum(dt$MVE));
+
+residue_ids=union(dt$ID1, dt$ID2);
+N=length(residue_ids);
+dt_res=data.frame(ID=residue_ids, area=rep(0, N), gnn_score=rep(0, N), voromqa_energy=rep(0, N), mock_voromqa_energy=rep(0, N));
+for(i in 1:N)
+{
+	sel=union(which(dt$ID1==dt_res$ID[i]), which(dt$ID2==dt_res$ID[i]));
+	dt_res$area[i]=sum(dt$area[sel]);
+	dt_res$gnn_score[i]=sum(dt$gnn_score[sel]);
+	dt_res$voromqa_energy[i]=sum(dt$VE[sel]);
+	dt_res$mock_voromqa_energy[i]=sum(dt$MVE[sel]);
+}
+
+dt_res$pcadscore=pnorm(dt_res$gnn_score/dt_res$area);
+
+dt_glob$num_of_residues=nrow(dt_res);
+dt_glob$average_pcadscore=mean(dt_res$pcadscore);
+dt_glob$weighted_average_pcadscore=sum(dt_res$pcadscore*dt_res$area)/sum(dt_res$area);
+
+dt_res_pretty=dt_res[, c("ID", "pcadscore")];
+dt_res_pretty$pcadscore=round(dt_res_pretty$pcadscore, digits=2);
+
+write.table(dt, file="results_per_contact.txt", quote=FALSE, col.names=TRUE, row.names=FALSE, sep=" ");
+write.table(dt_glob, file="results_summary_table.txt", quote=FALSE, col.names=TRUE, row.names=FALSE, sep=" ");
+write.table(dt_res, file="results_per_residue.txt", quote=FALSE, col.names=TRUE, row.names=FALSE, sep=" ");
+write.table(dt_res_pretty, file="results_per_residue_pretty.txt", quote=FALSE, col.names=FALSE, row.names=FALSE, sep=" ");
+EOF
+
+if [ ! -s "./results_per_contact.txt" ] || [ ! -s "./results_summary_table.txt" ] || [ ! -s "./results_per_residue.txt" ]
+then
+	echo >&2 "Error: failed to summarize results"
+	exit 1
+fi
+
+{
+	echo "local_column"
+	cat "./results_per_residue_pretty.txt" \
+	| sed 's/R<\S\+//' \
+	| sed 's/c<//' \
+	| sed 's/r<//' \
+	| tr -d '>' \
+	| awk '{print $1 ":" $2}' \
+	| tr '\n' ',' \
+	| sed 's/,$/\n/'
+} > "./results_local_column.txt"
+
+paste "./results_summary_table.txt" "./results_local_column.txt" \
+| tr '\t' ' ' \
+> "./results_summary_table_with_local_column.txt"
+
+if [ -n "$CACHE_DIR" ] && [ -n "$HASHSUM" ]
+then
+	tar -czf "${HASHSUM}.tar.gz" "./results_summary_table.txt" "./results_summary_table_with_local_column.txt" "./results_per_contact.txt" "./results_per_residue.txt"
+fi
+
+cd - &> /dev/null
+
+if [ -n "$CACHE_DIR" ] && [ -n "$HASHSUM" ]
+then
+	mkdir -p "$CACHE_DIR"
+	mv "${TMPLDIR}/${HASHSUM}.tar.gz" "$CACHE_DIR/${HASHSUM}.tar.gz"
+fi
+
+"$ZEROARG" "${ALLARGS[@]}" --jofd "$TMPLDIR"
+
+exit 0
+

@@ -53,6 +53,8 @@ mkdir -p "${PACKAGE_NAME}/expansion_js"
 
 cp -r "./expansion_js/src" "${PACKAGE_NAME}/expansion_js/src"
 
+cp -r "./expansion_js/voroif" "${PACKAGE_NAME}/expansion_js/voroif"
+
 cp \
   "./expansion_js/voronota-js" \
   "./expansion_js/voronota-js-voromqa" \
@@ -61,6 +63,8 @@ cp \
   "./expansion_js/voronota-js-fast-iface-voromqa" \
   "./expansion_js/voronota-js-fast-iface-cadscore" \
   "./expansion_js/voronota-js-fast-iface-cadscore-matrix" \
+  "./expansion_js/voronota-js-fast-iface-data-graph" \
+  "./expansion_js/voronota-js-voroif-gnn" \
   "./expansion_js/voronota-js-ligand-cadscore" \
   "./expansion_js/CMakeLists.txt" \
   "./LICENSE.txt" \
