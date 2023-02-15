@@ -17,6 +17,7 @@
 <div id="TOC">
 <ul>
 <li><a href="#about-voronota">About Voronota</a></li>
+<li><a href="#about-voronota-expansions">About Voronota expansions</a></li>
 <li><a href="#getting-the-latest-version">Getting the latest version</a></li>
 <li><a href="#building-from-source-code">Building from source code</a><ul>
 <li><a href="#requirements">Requirements</a></li>
@@ -127,6 +128,13 @@
 <p>The analysis of macromolecular structures often requires a comprehensive definition of atomic neighborhoods. Such a definition can be based on the Voronoi diagram of balls, where each ball represents an atom of some van der Waals radius. Voronota is a software tool for finding all the vertices of the Voronoi diagram of balls. Such vertices correspond to the centers of the empty tangent spheres defined by quadruples of balls. Voronota is especially suitable for processing three-dimensional structures of biological macromolecules such as proteins and RNA.</p>
 <p>Since version 1.2 Voronota also uses the Voronoi vertices to construct inter-atom contact surfaces and solvent accessible surfaces. Voronota provides tools to query contacts, generate contacts graphics, compare contacts and evaluate quality of protein structural models using contacts.</p>
 <p>Voronota is developed by Kliment Olechnovic (kliment.olechnovic@bti.vu.lt).</p>
+<h1 id="about-voronota-expansions">About Voronota expansions</h1>
+<p>Currently there are two expansions of Voronota with separate dedicated documentation pages:</p>
+<ul>
+<li><a href="./expansion_js/index.html">Voronota-JS</a>, located in the 'expansion_js' subdirectory of the Voronota package</li>
+<li><a href="./expansion_gl/index.html">Voronota-GL</a>, located in the 'expansion_gl' subdirectory of the Voronota package</li>
+</ul>
+<p>The expansions need to be built separately in their subdirectories.</p>
 <h1 id="getting-the-latest-version">Getting the latest version</h1>
 <p>Download the latest archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases" class="uri">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
 <p>The archive contains ready-to-use statically compiled 'voronota' program for 64 bit Linux systems. This executable can be rebuilt from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>

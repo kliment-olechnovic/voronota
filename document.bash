@@ -2,8 +2,10 @@
 
 cd $(dirname "$0")
 
-TMPDIR=$(mktemp -d)
-trap "rm -r $TMPDIR" EXIT
+TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+################################################################################
 
 {
 
@@ -72,9 +74,11 @@ cat << EOF
 EOF
 ./voronota-membrane -h 2>&1 | tail -n +4 | sed 's/^/    /'
 
-} > $TMPDIR/documentation.markdown
+} > $TMPLDIR/documentation.markdown
 
-cat > $TMPDIR/include_in_header.html << 'EOF'
+################################################################################
+
+cat > $TMPLDIR/include_in_header.html << 'EOF'
 <style type="text/css">
 a { color: #0000CC; }
 td { padding-right: 1em; }
@@ -82,11 +86,18 @@ div#TOC > ul > li > ul > li ul { display: none; }
 </style>
 EOF
 
-echo "<h1>$(./voronota | head -1)</h1>" > $TMPDIR/include_before_body.html
+echo "<h1>$(./voronota | head -1)</h1>" > $TMPLDIR/include_before_body.html
 
-pandoc $TMPDIR/documentation.markdown -f markdown -t html --toc -H $TMPDIR/include_in_header.html -B $TMPDIR/include_before_body.html -s -o ./index.html
+pandoc $TMPLDIR/documentation.markdown -f markdown -t html --toc -H $TMPLDIR/include_in_header.html -B $TMPLDIR/include_before_body.html -s -o ./index.html
 
-mv $TMPDIR/documentation.markdown ./README.markdown
+################################################################################
 
-pandoc -s -t man ./resources/texts/manpage.markdown -o "$TMPDIR/manpage.troff"
-mv "$TMPDIR/manpage.troff" "./voronota.man"
+mv $TMPLDIR/documentation.markdown ./README.markdown
+
+################################################################################
+
+pandoc -s -t man ./resources/texts/manpage.markdown -o "$TMPLDIR/manpage.troff"
+mv "$TMPLDIR/manpage.troff" "./voronota.man"
+
+################################################################################
+

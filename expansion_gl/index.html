@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+  a { color: #0000CC; }
+  td { padding-right: 1em; }
+  div#TOC > ul > li > ul > li ul { display: none; }
+  </style>
+</head>
+<body>
+<h1>Voronota-GL version 1.24</h1>
+<div id="TOC">
+<ul>
+<li><a href="#about-voronota-gl-expansion">About Voronota-GL expansion</a></li>
+<li><a href="#getting-the-latest-version">Getting the latest version</a></li>
+<li><a href="#building-from-source-code">Building from source code</a><ul>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#using-cmake">Using CMake</a></li>
+<li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
+</ul></li>
+</ul>
+</div>
+<h1 id="about-voronota-gl-expansion">About Voronota-GL expansion</h1>
+<p>Voronota-GL is an expansion of <a href="../index.html">the core Voronota software</a>. Voronota-GL is built on top of <a href="../expansion_js/index.html">the Voronota-JS expansion</a>.</p>
+<p>Voronota-GL is a visual tool for the comprehensive interactive analysis of macromolecular structures, including the Voronoi tesselation-based analysis.</p>
+<p>Voronota-GL can be built to run as a standalone application, or as a WebAssembly application to run on a web page - <a href="./web/index.html">a working web version is available</a>.</p>
+<h1 id="getting-the-latest-version">Getting the latest version</h1>
+<p>Download the latest archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases" class="uri">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
+<p>The archive contains the Voronota-GL software in the 'expansion_gl' subdirectory. The 'voronota-gl' executable can be built from the provided source code.</p>
+<h1 id="building-from-source-code">Building from source code</h1>
+<h2 id="requirements">Requirements</h2>
+<p>Voronota-GL requires the following libraries: m GL GLEW glfw</p>
+<h2 id="using-cmake">Using CMake</h2>
+<p>You can build using CMake for makefile generation. Starting in the directory containing &quot;CMakeLists.txt&quot; file, run the sequence of commands:</p>
+<pre><code>cmake ./
+make</code></pre>
+<p>Alternatively, to keep files more organized, CMake can be run in a separate &quot;build&quot; directory:</p>
+<pre><code>mkdir build
+cd build
+cmake ../
+make
+cp ./voronota-gl ../voronota-gl</code></pre>
+<h2 id="using-c-compiler-directly">Using C++ compiler directly</h2>
+<p>For example, &quot;voronota-gl&quot; executable can be built from the sources in &quot;src&quot; directory using GNU C++ compiler:</p>
+<pre><code>g++ -std=c++14 -I&quot;../expansion_js/src/dependencies&quot; -I&quot;./src/dependencies&quot; -O3 -o &quot;./voronota-gl&quot; $(find ../expansion_js/src/dependencies/ -name &#39;*.cpp&#39;) $(find ./src/ -name &#39;*.cpp&#39; ) -lm -lGL -lGLEW -lglfw</code></pre>
+</body>
+</html>

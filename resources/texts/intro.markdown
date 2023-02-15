@@ -17,6 +17,14 @@ compare contacts and evaluate quality of protein structural models using contact
 
 Voronota is developed by Kliment Olechnovic (kliment.olechnovic@bti.vu.lt).
 
+# About Voronota expansions
+
+Currently there are two expansions of Voronota with separate dedicated documentation pages:
+
+ * [Voronota-JS](./expansion_js/index.html), located in the 'expansion_js' subdirectory of the Voronota package
+ * [Voronota-GL](./expansion_gl/index.html), located in the 'expansion_gl' subdirectory of the Voronota package
+
+The expansions need to be built separately in their subdirectories.
 
 # Getting the latest version
 

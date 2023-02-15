@@ -18,7 +18,7 @@ Download the latest archive from the official downloads page:
 [https://github.com/kliment-olechnovic/voronota/releases](https://github.com/kliment-olechnovic/voronota/releases).
 
 The archive contains the Voronota-JS software in the 'expansion_js' subdirectory.
-There is a ready-to-use statically compiled "voronota-js" program for 64 bit Linux systems.
+There is a ready-to-use statically compiled 'voronota-js' program for 64 bit Linux systems.
 This executable can be rebuilt from the provided
 source code to work on any modern Linux, macOS or Windows operating systems.
 
