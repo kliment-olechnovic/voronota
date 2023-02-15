@@ -21,8 +21,8 @@ Voronota is developed by Kliment Olechnovic (kliment.olechnovic@bti.vu.lt).
 
 Currently there are two expansions of Voronota with separate dedicated documentation pages:
 
- * [Voronota-JS](./expansion_js/index.html), located in the 'expansion_js' subdirectory of the Voronota package
- * [Voronota-GL](./expansion_gl/index.html), located in the 'expansion_gl' subdirectory of the Voronota package
+ * [Voronota-JS](./expansion_js/README.markdown), located in the 'expansion_js' subdirectory of the Voronota package
+ * [Voronota-GL](./expansion_gl/README.markdown), located in the 'expansion_gl' subdirectory of the Voronota package
 
 The expansions need to be built separately in their subdirectories.
 

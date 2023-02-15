@@ -1,7 +1,7 @@
 # About Voronota-GL expansion
 
-Voronota-GL is an expansion of [the core Voronota software](../index.html).
-Voronota-GL is built on top of [the Voronota-JS expansion](../expansion_js/index.html).
+Voronota-GL is an expansion of [the core Voronota software](../README.markdown).
+Voronota-GL is built on top of [the Voronota-JS expansion](../expansion_js/README.markdown).
 
 Voronota-GL is a visual tool for the comprehensive interactive
 analysis of macromolecular structures, including the Voronoi tesselation-based analysis.
