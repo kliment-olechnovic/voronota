@@ -92,5 +92,3 @@ cp \
 tar -czf "${PACKAGE_NAME}.tar.gz" "$PACKAGE_NAME"
 rm -r -f "$PACKAGE_NAME"
 
-echo "${PACKAGE_NAME}.tar.gz"
-

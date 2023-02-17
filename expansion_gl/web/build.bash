@@ -28,6 +28,7 @@ emcc --std=c++14 \
 -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
 ../src/voronota_gl.cpp ../src/dependencies/imgui/*.cpp ../../expansion_js/src/dependencies/lodepng/*.cpp ../../expansion_js/src/dependencies/duktape/duktape.cpp ../../expansion_js/src/dependencies/tmalign/TMalign.cpp ../../expansion_js/src/dependencies/faspr/*.cpp ../../expansion_js/src/dependencies/tinf/*.cpp ../../expansion_js/src/dependencies/utilities/congruence_coefficient.cpp ../../expansion_gl/src/dependencies/ImGuiColorTextEdit/TextEditor.cpp \
 -DFOR_WEB \
+-DUSE_LINENOISE=0 \
 -I "../../expansion_js/src/dependencies/" \
 -I "../src/dependencies/" \
 -I "/usr/include/glm/" \
