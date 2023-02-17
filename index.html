@@ -137,8 +137,22 @@
 <p>The expansions have separate separate dedicated documentation pages.</p>
 <h2 id="voronota-js">Voronota-JS</h2>
 <p><a href="./expansion_js/index.html">Voronota-JS</a> expansion is located in the 'expansion_js' subdirectory of the Voronota package.</p>
+<p>Voronota-JS provides a way to write JavaScript scripts for the comprehensive analysis of macromolecular structures, including the Voronoi tesselation-based analysis. Currently, the Voronota-JS package contains several executables:</p>
+<ul>
+<li>&quot;voronota-js&quot; - core engine that executes JavaScript scripts.</li>
+<li>&quot;voronota-js-voromqa&quot; - wrapper to a voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).</li>
+<li>&quot;voronota-js-membrane-voromqa&quot; - wrapper to a voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.</li>
+<li>&quot;voronota-js-ifeatures-voromqa&quot; - wrapper to a voronota-js program for the computation of multiple VoroMQA-based features of protein-protein complexes.</li>
+<li>&quot;voronota-js-fast-iface-voromqa&quot; - wrapper to a voronota-js program for the very fast computation of the inter-chain interface VoroMQA energy.</li>
+<li>&quot;voronota-js-fast-iface-cadscore&quot; - wrapper to a voronota-js program for the very fast computation of the inter-chain interface CAD-score.</li>
+<li>&quot;voronota-js-fast-iface-cadscore-matrix&quot; - wrapper to a voronota-js program for the very fast computation of the inter-chain interface CAD-score matrix.</li>
+<li>&quot;voronota-js-fast-iface-data-graph&quot; - wrapper to a voronota-js program for the computation of interface graphs used by the VoroIF-GNN method.</li>
+<li>&quot;voronota-js-voroif-gnn&quot; - wrapper to a voronota-js program and GNN inference scripts that run the VoroIF-GNN method for scoring models of protein-protein complexes (developed for CASP15).</li>
+<li>&quot;voronota-js-ligand-cadscore&quot; - wrapper to a voronota-js program for the computation of protein-ligand variation of CAD-score (developed to analyze protein-ligand models from CASP15).</li>
+</ul>
 <h2 id="voronota-gl">Voronota-GL</h2>
 <p><a href="./expansion_gl/index.html">Voronota-GL</a> expansion is located in the 'expansion_gl' subdirectory of the Voronota package</p>
+<p>Voronota-GL is a visual tool for the comprehensive interactive analysis of macromolecular structures, including the Voronoi tesselation-based analysis.</p>
 <h1 id="getting-the-latest-version">Getting the latest version</h1>
 <p>Download the latest archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases" class="uri">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
 <p>The archive contains ready-to-use statically compiled 'voronota' program for 64 bit Linux systems. This executable can be rebuilt from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>
