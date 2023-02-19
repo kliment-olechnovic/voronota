@@ -35,6 +35,7 @@ Currently, the Voronota-JS package contains several executables:
 
  * "voronota-js" - core engine that executes JavaScript scripts.
  * "voronota-js-voromqa" - wrapper to a voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).
+ * "voronota-js-only-global-voromqa" - wrapper to a voronota-js program for computing only global VoroMQA scores with fast caching.
  * "voronota-js-membrane-voromqa" - wrapper to a voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.
  * "voronota-js-ifeatures-voromqa" - wrapper to a voronota-js program for the computation of multiple VoroMQA-based features of protein-protein complexes.
  * "voronota-js-fast-iface-voromqa" - wrapper to a voronota-js program for the very fast computation of the inter-chain interface VoroMQA energy.

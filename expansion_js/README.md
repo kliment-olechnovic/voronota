@@ -8,6 +8,7 @@ Currently, the Voronota-JS package contains several executables:
 
  * "voronota-js" - core engine that executes JavaScript scripts.
  * "voronota-js-voromqa" - wrapper to a voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).
+ * "voronota-js-only-global-voromqa" - wrapper to a voronota-js program for computing only global VoroMQA scores with fast caching.
  * "voronota-js-membrane-voromqa" - wrapper to a voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.
  * "voronota-js-ifeatures-voromqa" - wrapper to a voronota-js program for the computation of multiple VoroMQA-based features of protein-protein complexes.
  * "voronota-js-fast-iface-voromqa" - wrapper to a voronota-js program for the very fast computation of the inter-chain interface VoroMQA energy.
@@ -193,6 +194,37 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
           --processors 8 \
           --select-contacts '[-a1 [-chain A -rnum 1:500] -a2 [-chain B -rnum 1:500]]' \
           --tour-sort '-columns full_dark_score sel_energy -multipliers 1 -1 -tolerances 0.02 0.0'
+    
+
+## VoroMQA for only global scores with fast caching
+
+'voronota-js-only-global-voromqa' script computes global VoroMQA scores and can use fast caching.
+
+### Script interface
+
+    
+    Options:
+        --input | -i              string  *  input file path or '_list' to read file paths from stdin
+        --restrict-input          string     query to restrict input atoms, default is '[]'
+        --output-table-file       string     output table file path, default is '_stdout' to print to stdout
+        --output-dark-pdb         string     output path for PDB file with VoroMQA-dark scores, default is ''
+        --output-light-pdb        string     output path for PDB file with VoroMQA-light scores, default is ''
+        --processors              number     maximum number of processors to run in parallel, default is 1
+        --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
+        --cache-dir               string     cache directory path to store results of past calls
+        --run-faspr               string     path to FASPR binary to rebuild side-chains
+        --input-is-script                    flag to treat input file as vs script
+        --as-assembly                        flag to treat input file as biological assembly
+        --help | -h                          flag to display help message and exit
+    
+    Standard output:
+        space-separated table of scores
+        
+    Examples:
+    
+        voronota-js-only-global-voromqa --input model.pdb
+        
+        ls *.pdb | voronota-js-only-global-voromqa --input _list --processors 8 | column -t
     
 
 ## VoroMQA-based membrane protein structure assessment
@@ -388,7 +420,7 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
 
     
     Options:
-        --input                   string  *  input file
+        --input                   string  *  input file path, or '_list' to read multiple input files paths from stdin
         --gnn                     string     GNN package file or directory with package files, default is '${SCRIPT_DIRECTORY}/voroif/gnn_packages/v1'
         --gnn-add                 string     additional GNN package file or directory with package files, default is ''
         --restrict-input          string     query to restrict input atoms, default is '[]'
@@ -401,10 +433,10 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         --run-faspr               string     flag to rebuild sidechains using FASPR, default is 'false'
         --processors              number     maximum number of processors to run in parallel, default is 1
         --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
-        --stdin-file              string     input file path to replace stdin
-        --local-column            string     flag to add per-residue scores to the global output table
-        --cache-dir               string     cache directory path to store results of past calls
-        --output-dir              string     output directory path for all results
+        --stdin-file              string     input file path to replace stdin, default is '_stream'
+        --local-column            string     flag to add per-residue scores to the global output table, default is 'false'
+        --cache-dir               string     cache directory path to store results of past calls, default is ''
+        --output-dir              string     output directory path for all results, default is ''
         --output-pdb-file         string     output path for PDB file with interface residue scores, default is ''
         --output-pdb-mode         string     mode to write b-factors ('overwrite_all', 'overwrite_iface' or 'combine'), default is 'overwrite_all'
         --help | -h                          flag to display help message and exit
@@ -420,6 +452,8 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         voronota-js-voroif-gnn --conda-path ~/miniconda3 --input './model.pdb'
         
         voronota-js-voroif-gnn --input './model.pdb' --gnn "${HOME}/git/voronota/expansion_js/voroif/gnn_packages/v1"
+        
+        find ./models/ -type f | voronota-js-voroif-gnn --conda-path ~/miniconda3 --input _list
     
     Requirements installation example using Miniconda (may need more than 10 GB of disk space):
     

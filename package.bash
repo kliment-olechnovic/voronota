@@ -58,6 +58,7 @@ cp -r "./expansion_js/voroif" "${PACKAGE_NAME}/expansion_js/voroif"
 cp \
   "./expansion_js/voronota-js" \
   "./expansion_js/voronota-js-voromqa" \
+  "./expansion_js/voronota-js-only-global-voromqa" \
   "./expansion_js/voronota-js-membrane-voromqa" \
   "./expansion_js/voronota-js-ifeatures-voromqa" \
   "./expansion_js/voronota-js-fast-iface-voromqa" \

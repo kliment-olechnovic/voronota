@@ -32,6 +32,19 @@ EOF
 
 ########################################
 
+echo -e "\n## VoroMQA for only global scores with fast caching\n"
+
+cat << 'EOF'
+'voronota-js-only-global-voromqa' script computes global VoroMQA scores and can use fast caching.
+
+### Script interface
+
+EOF
+
+./voronota-js-only-global-voromqa -h 2>&1 | tail -n +3 | sed 's/^/    /'
+
+########################################
+
 echo -e "\n## VoroMQA-based membrane protein structure assessment\n"
 
 cat << 'EOF'
