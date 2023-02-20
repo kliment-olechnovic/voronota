@@ -18,6 +18,23 @@ Currently, the Voronota-JS package contains several executables:
  * "voronota-js-voroif-gnn" - wrapper to a voronota-js program and GNN inference scripts that run the VoroIF-GNN method for scoring models of protein-protein complexes (developed for CASP15).
  * "voronota-js-ligand-cadscore" - wrapper to a voronota-js program for the computation of protein-ligand variation of CAD-score (developed to analyze protein-ligand models from CASP15).
 
+## Usage of externally developed software
+
+Voronota-JS relies on several externally developed software projects (big thanks to their authors):
+
+* Duktape - [https://duktape.org/](https://duktape.org/)
+* PStreams - [https://github.com/jwakely/pstreams](https://github.com/jwakely/pstreams)
+* TM-align - [https://zhanggroup.org/TM-align/](https://zhanggroup.org/TM-align/)
+* FASPR - [https://zhanggroup.org/FASPR/](https://zhanggroup.org/FASPR/)
+* linenoise - [https://github.com/antirez/linenoise](https://github.com/antirez/linenoise)
+* PicoSHA2 - [https://github.com/okdshin/PicoSHA2](https://github.com/okdshin/PicoSHA2)
+* frugally-deep - [https://github.com/Dobiasd/frugally-deep](https://github.com/Dobiasd/frugally-deep)
+    * FunctionalPlus - [https://github.com/Dobiasd/FunctionalPlus](https://github.com/Dobiasd/FunctionalPlus)
+    * Eigen - [http://eigen.tuxfamily.org/](http://eigen.tuxfamily.org/)
+    * json  - [https://github.com/nlohmann/json](https://github.com/nlohmann/json)
+* tinf - [https://github.com/jibsen/tinf](https://github.com/jibsen/tinf)
+* LodePNG - [https://github.com/lvandeve/lodepng](https://github.com/lvandeve/lodepng)
+
 # Getting the latest version
 
 Download the latest archive from the official downloads page:

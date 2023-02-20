@@ -8,6 +8,18 @@ analysis of macromolecular structures, including the Voronoi tesselation-based a
 
 Voronota-GL can be built to run as a standalone application, or as a WebAssembly application to run on a web page - [a working web version is available](./web/index.html).
 
+## Usage of externally developed software
+
+Voronota-GL relies on several externally developed software projects (big thanks to their authors):
+
+* ImGui - [https://github.com/ocornut/imgui](https://github.com/ocornut/imgui)
+* ImGuiColorTextEdit - [https://github.com/BalazsJako/ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit)
+* ImGuiFileDialog - [https://github.com/aiekick/ImGuiFileDialog](https://github.com/aiekick/ImGuiFileDialog)
+* GLFW - [https://www.glfw.org/](https://www.glfw.org/)
+* GLM - [https://github.com/g-truc/glm](https://github.com/g-truc/glm)
+* GLEW - [https://glew.sourceforge.net/](https://glew.sourceforge.net/)
+* and all the externally developed software that is used in [the Voronota-JS expansion](../expansion_js/index.html)
+
 # Getting the latest version
 
 Download the latest archive from the official downloads page:
@@ -20,7 +32,7 @@ The 'voronota-gl' executable can be built from the provided source code.
 
 ## Requirements
 
-Voronota-GL requires the following libraries: m GL GLEW glfw
+Voronota-GL requires the following dynamic libraries to link with: m GL GLEW glfw
 
 ## Using CMake
 
