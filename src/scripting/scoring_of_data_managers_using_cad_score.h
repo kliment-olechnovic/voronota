@@ -112,6 +112,12 @@ public:
 
 		if(params.also_site_based)
 		{
+			if(params.remap_chains && !result.bundle.map_of_renamings_from_remapping.empty())
+			{
+				parameters_for_cad_score.map_of_renamings=result.bundle.map_of_renamings_from_remapping;
+				parameters_for_cad_score.remap_chains=false;
+			}
+
 			if(!common::ConstructionOfCADScore::construct_bundle_of_cadscore_information(
 					parameters_for_cad_score,
 					collect_map_of_contacts_summarized_by_first(target_dm.atoms(), target_dm.contacts(), target_contacts_ids),
