@@ -79,6 +79,7 @@ TARGET_INPUT_IS_SCRIPT="false"
 MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 REMAP_CHAINS="false"
+REMAP_CHAINS_LOGGING="false"
 TEST_COMMON_IDS="false"
 CRUDE_MODE="false"
 HELP_MODE="false"
@@ -140,6 +141,9 @@ do
 		;;
 	--remap-chains)
 		REMAP_CHAINS="true"
+		;;
+	--remap-chains-logging)
+		REMAP_CHAINS_LOGGING="true"
 		;;
 	--test-common-ids)
 		TEST_COMMON_IDS="true"
@@ -369,6 +373,7 @@ common_params.contacts_subselection='$SUBSELECT_CONTACTS';
 common_params.run_faspr='$RUN_FASPR';
 common_params.shuffle_chains='$SHUFFLE_CHAINS';
 common_params.remap_chains='$REMAP_CHAINS';
+common_params.remap_chains_logging='$REMAP_CHAINS_LOGGING';
 common_params.crude_mode='$CRUDE_MODE'
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 var input_info_array=[];
@@ -456,7 +461,7 @@ prepare_contacts=function(params)
 
 analyze_interface=function(params, target_object, model_object, initial_summary)
 {
-	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based", "-remap-chains", params.remap_chains);
+	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based", "-remap-chains", params.remap_chains, "-remap-chains-logging", params.remap_chains_logging);
 	voronota_assert_full_success("Failed to compute CAD-score");
 	result_cadscore=voronota_last_output().results[0].output.residue_level_result;
 	result_cadscore_site_based=voronota_last_output().results[0].output.site_residue_level_result;

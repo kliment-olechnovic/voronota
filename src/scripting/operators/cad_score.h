@@ -104,6 +104,7 @@ public:
 		params.also_site_based=input.get_flag("also-site-based");
 		params.chain_renaming_pairs=input.get_value_vector_or_default<std::string>("m-chain-renaming-pairs", std::vector<std::string>());
 		params.remap_chains=input.get_flag("remap-chains");
+		params.remap_chains_logging=input.get_flag("remap-chains-logging");
 		if(!managed)
 		{
 			target_global_adj_prefix=input.get_value_or_default<std::string>("t-global-adj-prefix", "");

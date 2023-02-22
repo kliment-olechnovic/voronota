@@ -467,6 +467,8 @@ private:
 			std::set< std::pair<std::string, std::string> > set_of_hopeless_pairs;
 			std::map< std::string, std::set<std::string> > map_of_chain_neighbors=collect_map_of_chain_neighbors_from_map_of_contacts(assessment_map_of_contacts);
 			std::map< std::string, std::set<std::string> > map_of_chain_neighbors_in_target=collect_map_of_chain_neighbors_from_map_of_contacts(assessment_map_of_target_contacts);
+			long number_of_comparisons_overall=0;
+			long number_of_comparisons_at_first_stage=0;
 			while(!set_of_free_chains_left.empty() && !set_of_free_chains_right.empty())
 			{
 				std::pair<std::string, std::string> best_pair(*set_of_free_chains_left.begin(), *set_of_free_chains_right.begin());
@@ -524,6 +526,11 @@ private:
 												new_submap_of_target_contacts,
 												select_contacts_with_defined_chain_names(rename_chains_in_map_of_contacts(assessment_map_of_contacts, new_map_of_renamings)),
 												binarize);
+										number_of_comparisons_overall++;
+										if(set_of_free_chains_left.size()==chain_names.size())
+										{
+											number_of_comparisons_at_first_stage++;
+										}
 										const double score=cad_descriptor.score()*cad_descriptor.target_area_sum;
 										if(score>best_score)
 										{
@@ -559,6 +566,8 @@ private:
 			{
 				std::cerr << "remapping:\n";
 				auxiliaries::IOUtilities().write_map(map_of_renamings, std::cerr);
+				std::cerr << "number_of_comparisons_at_first_stage: " << number_of_comparisons_at_first_stage << "\n";
+				std::cerr << "number_of_comparisons_overall: " << number_of_comparisons_overall << "\n";
 			}
 			final_map_of_renamings.swap(map_of_renamings);
 		}
