@@ -376,12 +376,12 @@ private:
 		return result;
 	}
 
-	static std::map<CRADsPair, double> select_contacts_with_defined_chain_names(const std::map<CRADsPair, double>& map_of_contacts)
+	static std::map<CRADsPair, double> select_contacts_involving_chain_name(const std::map<CRADsPair, double>& map_of_contacts, const std::string& chain_name)
 	{
 		std::map<CRADsPair, double> result;
 		for(std::map<CRADsPair, double>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
-			if(!it->first.a.chainID.empty() || !it->first.b.chainID.empty())
+			if(it->first.a.chainID==chain_name || it->first.b.chainID==chain_name)
 			{
 				result[it->first]+=it->second;
 			}
@@ -505,7 +505,7 @@ private:
 							std::map<std::string, std::string> new_map_of_renamings_in_target=map_of_renamings_in_target;
 							new_map_of_renamings_in_target[*it_right]=(*it_right);
 							const std::map<CRADsPair, double> new_submap_of_target_contacts=
-									select_contacts_with_defined_chain_names(rename_chains_in_map_of_contacts(assessment_map_of_target_contacts, new_map_of_renamings_in_target));
+									rename_chains_in_map_of_contacts(select_contacts_involving_chain_name(assessment_map_of_target_contacts, *it_right), new_map_of_renamings_in_target);
 							for(std::set<std::string>::const_iterator it_left=set_of_free_chains_left.begin();it_left!=set_of_free_chains_left.end();++it_left)
 							{
 								if(set_of_hopeless_pairs.count(std::make_pair(*it_left, *it_right))==0)
@@ -524,7 +524,7 @@ private:
 										new_map_of_renamings[*it_left]=(*it_right);
 										const CADDescriptor cad_descriptor=construct_global_cad_descriptor(
 												new_submap_of_target_contacts,
-												select_contacts_with_defined_chain_names(rename_chains_in_map_of_contacts(assessment_map_of_contacts, new_map_of_renamings)),
+												rename_chains_in_map_of_contacts(select_contacts_involving_chain_name(assessment_map_of_contacts, *it_left), new_map_of_renamings),
 												binarize);
 										number_of_comparisons_overall++;
 										if(set_of_free_chains_left.size()==chain_names.size())
