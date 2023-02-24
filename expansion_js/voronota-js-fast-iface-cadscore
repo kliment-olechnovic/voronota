@@ -75,6 +75,7 @@ SBATCH_PARAMETERS=""
 STDIN_FILE="_stream"
 RUN_FASPR=""
 SHUFFLE_CHAINS=""
+INVERT_CASE_OF_CHAINS="false"
 TARGET_INPUT_IS_SCRIPT="false"
 MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
@@ -129,6 +130,9 @@ do
 	--shuffle-chains)
 		SHUFFLE_CHAINS="$OPTARG"
 		shift
+		;;
+	--invert-case-of-chains)
+		INVERT_CASE_OF_CHAINS="true"
 		;;
 	--target-input-is-script)
 		TARGET_INPUT_IS_SCRIPT="true"
@@ -377,6 +381,7 @@ common_params.output_table_file='$OUTPUT_TABLE_FILE';
 common_model_mod_params={}
 common_model_mod_params.run_faspr='$RUN_FASPR';
 common_model_mod_params.shuffle_chains='$SHUFFLE_CHAINS';
+common_model_mod_params.invert_case_of_chains='$INVERT_CASE_OF_CHAINS';
 var input_info_array=[];
 EOF
 
@@ -417,6 +422,12 @@ prepare_atoms=function(params, model_mod_params)
 			voronota_assert_full_success("Failed to shuffle chains");
 			voronota_order_atoms_by_residue_id();
 			voronota_assert_full_success("Failed reorder atoms by residue ids after shuffling chains");
+		}
+		
+		if(model_mod_params.invert_case_of_chains=="true")
+		{
+			voronota_set_chain_name("_invert_case");
+			voronota_assert_full_success("Failed to invert case of chains");
 		}
 	}
 	
