@@ -370,12 +370,13 @@ common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.test_common_ids='$TEST_COMMON_IDS';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
-common_params.run_faspr='$RUN_FASPR';
-common_params.shuffle_chains='$SHUFFLE_CHAINS';
 common_params.remap_chains='$REMAP_CHAINS';
 common_params.remap_chains_logging='$REMAP_CHAINS_LOGGING';
 common_params.crude_mode='$CRUDE_MODE'
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
+common_model_mod_params={}
+common_model_mod_params.run_faspr='$RUN_FASPR';
+common_model_mod_params.shuffle_chains='$SHUFFLE_CHAINS';
 var input_info_array=[];
 EOF
 
@@ -395,25 +396,28 @@ EOF
 done
 
 cat << 'EOF'
-prepare_atoms=function(params, run_faspr, shuffle_chains)
+prepare_atoms=function(params, model_mod_params)
 {
 	voronota_restrict_atoms("-use", params.restrict_input_atoms);
 	voronota_assert_full_success("Failed to restrict input atoms by the input query");
 	
-	if(run_faspr!="")
+	if(model_mod_params!==null)
 	{
-		voronota_faspr("-lib-file", run_faspr);
-		voronota_assert_full_success("Failed to run FASPR");
-	}
-	
-	if(shuffle_chains!="")
-	{
-		voronota_setup_random_seed("-seed", shuffle_chains);
-		voronota_assert_full_success("Failed to set random seed");
-		voronota_set_chain_name("_shuffle");
-		voronota_assert_full_success("Failed to shuffle chains");
-		voronota_order_atoms_by_residue_id();
-		voronota_assert_full_success("Failed reorder atoms by residue ids after shuffling chains");
+		if(model_mod_params.run_faspr!="")
+		{
+			voronota_faspr("-lib-file", model_mod_params.run_faspr);
+			voronota_assert_full_success("Failed to run FASPR");
+		}
+		
+		if(model_mod_params.shuffle_chains!="")
+		{
+			voronota_setup_random_seed("-seed", model_mod_params.shuffle_chains);
+			voronota_assert_full_success("Failed to set random seed");
+			voronota_set_chain_name("_shuffle");
+			voronota_assert_full_success("Failed to shuffle chains");
+			voronota_order_atoms_by_residue_id();
+			voronota_assert_full_success("Failed reorder atoms by residue ids after shuffling chains");
+		}
 	}
 	
 	if(params.crude_mode=="true")
@@ -585,7 +589,7 @@ target_object=voronota_last_output().results[0].output.objects[0].name;
 
 voronota_pick_objects("-names", target_object);
 
-var target_initial_number_of_accepted_atoms=prepare_atoms(common_params, "", "");
+var target_initial_number_of_accepted_atoms=prepare_atoms(common_params, null);
 
 if(common_params.test_common_ids=="true")
 {
@@ -635,7 +639,7 @@ for(var i=0;i<input_info_array.length;i++)
 		
 		voronota_pick_objects("-names", model_object);
 		
-		var model_initial_number_of_accepted_atoms=prepare_atoms(common_params, common_params.run_faspr, common_params.shuffle_chains);
+		var model_initial_number_of_accepted_atoms=prepare_atoms(common_params, common_model_mod_params);
 		
 		if(common_params.test_common_ids=="true")
 		{
