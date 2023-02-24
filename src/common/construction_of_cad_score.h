@@ -363,14 +363,18 @@ private:
 		return std::vector<std::string>(set_of_names.begin(), set_of_names.end());
 	}
 
-	static std::map<std::string, std::string> generate_map_of_renamings_from_two_lists(const std::vector<std::string>& left, const std::vector<std::string>& right)
+	static std::map<std::string, std::string> generate_map_of_renamings_from_two_lists_with_padding(const std::vector<std::string>& left, const std::vector<std::string>& right)
 	{
 		std::map<std::string, std::string> result;
-		if(left.size()==right.size())
+		for(std::size_t i=0;i<left.size();i++)
 		{
-			for(std::size_t i=0;i<left.size();i++)
+			if(i<right.size())
 			{
 				result[left[i]]=right[i];
+			}
+			else
+			{
+				result[left[i]]=std::string();
 			}
 		}
 		return result;
@@ -404,47 +408,53 @@ private:
 	}
 
 	static void remap_chains_optimally(
-			const std::map<CRADsPair, double>& map_of_target_contacts,
+			const std::map<CRADsPair, double>& map_of_contacts_in_target,
 			const bool ignore_residue_names,
 			const bool binarize,
 			const bool write_log_to_stderr,
 			std::map<std::string, std::string>& final_map_of_renamings,
-			std::map<CRADsPair, double>& map_of_contacts)
+			std::map<CRADsPair, double>& map_of_contacts_in_model)
 	{
-		const std::vector<std::string> chain_names=get_sorted_chain_names_from_map_of_contacts(map_of_contacts);
-		std::map<CRADsPair, double> assessment_map_of_target_contacts=summarize_pair_mapping_of_values(map_of_target_contacts, ignore_residue_names);
-		std::map<CRADsPair, double> assessment_map_of_contacts=summarize_pair_mapping_of_values(map_of_contacts, ignore_residue_names);
-		if(chain_names.size()<2)
+		const std::vector<std::string> chain_names_in_target=get_sorted_chain_names_from_map_of_contacts(map_of_contacts_in_target);
+		const std::vector<std::string> chain_names_in_model=get_sorted_chain_names_from_map_of_contacts(map_of_contacts_in_model);
+		std::map<CRADsPair, double> assessment_map_of_contacts_in_target=summarize_pair_mapping_of_values(map_of_contacts_in_target, ignore_residue_names);
+		std::map<CRADsPair, double> assessment_map_of_contacts_in_model=summarize_pair_mapping_of_values(map_of_contacts_in_model, ignore_residue_names);
+		if(chain_names_in_model.size()<2)
 		{
 			return;
 		}
-		if(chain_names.size()<=6)
+		if(chain_names_in_model.size()<=6 && chain_names_in_target.size()<=6)
 		{
-			std::pair<std::map<std::string, std::string>, double> best_renaming(generate_map_of_renamings_from_two_lists(chain_names, chain_names), 0.0);
-			std::vector<std::string> permutated_chain_names=chain_names;
-			do
+			std::pair<std::map<std::string, std::string>, double> best_renaming(generate_map_of_renamings_from_two_lists_with_padding(chain_names_in_model, chain_names_in_target), 0.0);
 			{
-				const std::map<std::string, std::string> map_of_renamings=generate_map_of_renamings_from_two_lists(chain_names, permutated_chain_names);
-				const double score=construct_global_cad_descriptor(
-						assessment_map_of_target_contacts,
-						rename_chains_in_map_of_contacts(assessment_map_of_contacts, map_of_renamings),
-						binarize).score();
-				if(score>best_renaming.second)
+				const bool model_not_shorter=(chain_names_in_model.size()>=chain_names_in_target.size());
+				std::vector<std::string> permutated_chain_names=(model_not_shorter ? chain_names_in_model : chain_names_in_target);
+				do
 				{
-					best_renaming.first=map_of_renamings;
-					best_renaming.second=score;
-				}
-				if(write_log_to_stderr)
-				{
-					for(std::size_t i=0;i<permutated_chain_names.size();i++)
+					std::map<std::string, std::string> map_of_renamings=(model_not_shorter ?
+							generate_map_of_renamings_from_two_lists_with_padding(permutated_chain_names, chain_names_in_target) :
+							generate_map_of_renamings_from_two_lists_with_padding(chain_names_in_model, permutated_chain_names));
+					const double score=construct_global_cad_descriptor(
+							assessment_map_of_contacts_in_target,
+							rename_chains_in_map_of_contacts(assessment_map_of_contacts_in_model, map_of_renamings),
+							binarize).score();
+					if(score>best_renaming.second)
 					{
-						std::cerr << permutated_chain_names[i] << " ";
+						best_renaming.first=map_of_renamings;
+						best_renaming.second=score;
 					}
-					std::cerr << " " << score << "\n";
+					if(write_log_to_stderr)
+					{
+						for(std::size_t i=0;i<chain_names_in_model.size();i++)
+						{
+							std::cerr << map_of_renamings[chain_names_in_model[i]] << " ";
+						}
+						std::cerr << " " << score << "\n";
+					}
 				}
+				while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
 			}
-			while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
-			map_of_contacts=rename_chains_in_map_of_contacts(map_of_contacts, best_renaming.first);
+			map_of_contacts_in_model=rename_chains_in_map_of_contacts(map_of_contacts_in_model, best_renaming.first);
 			if(write_log_to_stderr)
 			{
 				std::cerr << "remapping:\n";
@@ -454,19 +464,22 @@ private:
 		}
 		else
 		{
-			std::map<std::string, std::string> map_of_renamings;
-			std::map<std::string, std::string> map_of_renamings_in_target;
-			for(std::size_t i=0;i<chain_names.size();i++)
+			std::map<std::string, std::string> map_of_renamings_in_model;
+			for(std::size_t i=0;i<chain_names_in_model.size();i++)
 			{
-				map_of_renamings[chain_names[i]]=std::string();
-				map_of_renamings_in_target[chain_names[i]]=std::string();
+				map_of_renamings_in_model[chain_names_in_model[i]]=std::string();
+			}
+			std::map<std::string, std::string> map_of_renamings_in_target;
+			for(std::size_t i=0;i<chain_names_in_target.size();i++)
+			{
+				map_of_renamings_in_target[chain_names_in_target[i]]=std::string();
 			}
 			std::map<std::string, std::string> reverse_map_of_renamings;
-			std::set<std::string> set_of_free_chains_left(chain_names.begin(), chain_names.end());
-			std::set<std::string> set_of_free_chains_right(chain_names.begin(), chain_names.end());
+			std::set<std::string> set_of_free_chains_left(chain_names_in_model.begin(), chain_names_in_model.end());
+			std::set<std::string> set_of_free_chains_right(chain_names_in_target.begin(), chain_names_in_target.end());
 			std::set< std::pair<std::string, std::string> > set_of_hopeless_pairs;
-			std::map< std::string, std::set<std::string> > map_of_chain_neighbors=collect_map_of_chain_neighbors_from_map_of_contacts(assessment_map_of_contacts);
-			std::map< std::string, std::set<std::string> > map_of_chain_neighbors_in_target=collect_map_of_chain_neighbors_from_map_of_contacts(assessment_map_of_target_contacts);
+			std::map< std::string, std::set<std::string> > map_of_chain_neighbors=collect_map_of_chain_neighbors_from_map_of_contacts(assessment_map_of_contacts_in_model);
+			std::map< std::string, std::set<std::string> > map_of_chain_neighbors_in_target=collect_map_of_chain_neighbors_from_map_of_contacts(assessment_map_of_contacts_in_target);
 			long number_of_comparisons_overall=0;
 			long number_of_comparisons_at_first_stage=0;
 			while(!set_of_free_chains_left.empty() && !set_of_free_chains_right.empty())
@@ -505,7 +518,7 @@ private:
 							std::map<std::string, std::string> new_map_of_renamings_in_target=map_of_renamings_in_target;
 							new_map_of_renamings_in_target[*it_right]=(*it_right);
 							const std::map<CRADsPair, double> new_submap_of_target_contacts=
-									rename_chains_in_map_of_contacts(select_contacts_involving_chain_name(assessment_map_of_target_contacts, *it_right), new_map_of_renamings_in_target);
+									rename_chains_in_map_of_contacts(select_contacts_involving_chain_name(assessment_map_of_contacts_in_target, *it_right), new_map_of_renamings_in_target);
 							for(std::set<std::string>::const_iterator it_left=set_of_free_chains_left.begin();it_left!=set_of_free_chains_left.end();++it_left)
 							{
 								if(set_of_hopeless_pairs.count(std::make_pair(*it_left, *it_right))==0)
@@ -520,14 +533,14 @@ private:
 									}
 									if(allowed_left)
 									{
-										std::map<std::string, std::string> new_map_of_renamings=map_of_renamings;
+										std::map<std::string, std::string> new_map_of_renamings=map_of_renamings_in_model;
 										new_map_of_renamings[*it_left]=(*it_right);
 										const CADDescriptor cad_descriptor=construct_global_cad_descriptor(
 												new_submap_of_target_contacts,
-												rename_chains_in_map_of_contacts(select_contacts_involving_chain_name(assessment_map_of_contacts, *it_left), new_map_of_renamings),
+												rename_chains_in_map_of_contacts(select_contacts_involving_chain_name(assessment_map_of_contacts_in_model, *it_left), new_map_of_renamings),
 												binarize);
 										number_of_comparisons_overall++;
-										if(set_of_free_chains_left.size()==chain_names.size())
+										if(set_of_free_chains_left.size()==chain_names_in_model.size())
 										{
 											number_of_comparisons_at_first_stage++;
 										}
@@ -555,21 +568,21 @@ private:
 				{
 					std::cerr << best_pair.first << " " << best_pair.second << "  " << best_score << " fixed\n";
 				}
-				map_of_renamings[best_pair.first]=best_pair.second;
+				map_of_renamings_in_model[best_pair.first]=best_pair.second;
 				map_of_renamings_in_target[best_pair.second]=best_pair.second;
 				reverse_map_of_renamings[best_pair.second]=best_pair.first;
 				set_of_free_chains_left.erase(best_pair.first);
 				set_of_free_chains_right.erase(best_pair.second);
 			}
-			map_of_contacts=rename_chains_in_map_of_contacts(map_of_contacts, map_of_renamings);
+			map_of_contacts_in_model=rename_chains_in_map_of_contacts(map_of_contacts_in_model, map_of_renamings_in_model);
 			if(write_log_to_stderr)
 			{
 				std::cerr << "remapping:\n";
-				auxiliaries::IOUtilities().write_map(map_of_renamings, std::cerr);
+				auxiliaries::IOUtilities().write_map(map_of_renamings_in_model, std::cerr);
 				std::cerr << "number_of_comparisons_at_first_stage: " << number_of_comparisons_at_first_stage << "\n";
 				std::cerr << "number_of_comparisons_overall: " << number_of_comparisons_overall << "\n";
 			}
-			final_map_of_renamings.swap(map_of_renamings);
+			final_map_of_renamings.swap(map_of_renamings_in_model);
 		}
 	}
 };
