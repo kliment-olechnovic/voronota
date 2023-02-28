@@ -10,7 +10,6 @@ find "$INPUTDIR/complex/" -type f \
 
 find "$INPUTDIR/complex/" -type f \
 | $VORONOTAJSDIR/voronota-js-fast-iface-cadscore-matrix \
-  --processors 4 \
 | column -t \
 > "$SUBDIR/global_scores_formatted"
 

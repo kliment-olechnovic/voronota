@@ -1,7 +1,7 @@
 target model iface_cadscore iface_site_based_cadscore iface_ratio_of_areas iface_target_area iface_model_area
 model2.pdb target.pdb 0.72197 0.78234 0.94583 980.663 927.537
+model2.pdb model1.pdb 0.66178 0.78464 0.81299 980.663 797.273
+model1.pdb model2.pdb 0.6341 0.73047 0.90522 982.91 889.752
 target.pdb model2.pdb 0.62521 0.77886 0.89725 1052.61 944.454
 model1.pdb target.pdb 0.55752 0.66419 0.89612 982.91 880.809
 target.pdb model1.pdb 0.51398 0.71477 0.7573 1052.61 797.144
-model1.pdb model2.pdb 0.6341 0.73047 0.90522 982.91 889.752
-model2.pdb model1.pdb 0.66178 0.78464 0.81299 980.663 797.273
