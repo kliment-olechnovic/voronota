@@ -26,3 +26,13 @@ find "$INPUTDIR/complex/" -type f \
   --remap-chains \
 | column -t \
 > "$SUBDIR/global_scores_remapped_formatted"
+
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-cadscore \
+  --target "$INPUTDIR/complex/target.pdb" \
+  --model _list \
+  --processors 4 \
+  --remap-chains \
+  --crude \
+| column -t \
+> "$SUBDIR/global_scores_crude_remapped_formatted"

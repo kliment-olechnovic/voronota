@@ -21,3 +21,10 @@ find "$INPUTDIR/complex/" -type f \
 | column -t \
 > "$SUBDIR/global_scores_remapped_formatted"
 
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-cadscore-matrix \
+  --processors 4 \
+  --remap-chains \
+  --crude \
+| column -t \
+> "$SUBDIR/global_scores_crude_remapped_formatted"
