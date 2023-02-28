@@ -364,9 +364,9 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         
     Examples:
     
-        voronota-js-fast-iface-cadscore --input target.pdb --model model.pdb
+        voronota-js-fast-iface-cadscore --target target.pdb --model model.pdb
         
-        ls *.pdb | voronota-js-fast-iface-cadscore --input target.pdb --model _list --processors 8 | column -t
+        ls *.pdb | voronota-js-fast-iface-cadscore --target target.pdb --model _list --processors 8 | column -t
     
 
 ## Fast inter-chain interface CAD-score matrix

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+SUBDIR=$OUTPUTDIR/fast_iface_cadscore_matrix_script
+mkdir -p $SUBDIR
+
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-cadscore-matrix \
+  --processors 4 \
+  --output-table-file "$SUBDIR/global_scores"
+
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-cadscore-matrix \
+  --processors 4 \
+| column -t \
+> "$SUBDIR/global_scores_formatted"
+
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-cadscore-matrix \
+  --processors 4 \
+  --remap-chains \
+| column -t \
+> "$SUBDIR/global_scores_remapped_formatted"
+
