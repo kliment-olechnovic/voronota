@@ -338,8 +338,10 @@ for(var i=0;i<input_info_array.length;i++)
 		if(i>0)
 		{
 			voronota_list_objects();
-			voronota_assert_full_success("Failed to list objects");
-			prev_number_of_objects=voronota_last_output().results[0].output.objects.length;
+			if(voronota_last_output().results_summary.full_success)
+			{
+				prev_number_of_objects=voronota_last_output().results[0].output.objects.length;
+			}
 		}
 		
 		if(common_params.model_input_is_script=="true")
