@@ -53,15 +53,15 @@ private:
 		m["ASX"]="B";
 		m["GLX"]="Z";
 		m["XLE"]="J";
-		m["A"]="a";
-		m["C"]="c";
-		m["G"]="g";
-		m["T"]="t";
-		m["U"]="u";
-		m["DA"]="a";
-		m["DC"]="c";
-		m["DG"]="g";
-		m["DT"]="t";
+		m["A"]="A";
+		m["C"]="C";
+		m["G"]="G";
+		m["T"]="T";
+		m["U"]="U";
+		m["DA"]="A";
+		m["DC"]="C";
+		m["DG"]="G";
+		m["DT"]="T";
 		m["XAA"]="X";
 		return m;
 	}
