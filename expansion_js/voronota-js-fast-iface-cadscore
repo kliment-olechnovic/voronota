@@ -311,6 +311,11 @@ then
 	NUM_OF_INPUTS="$(cat $TMPLDIR/input_list | wc -l)"
 	SIZE_OF_PORTION="$(echo "a=$NUM_OF_INPUTS; b=$MAX_PROCESSORS; if(a%b) a/b+1 else a/b" | bc)"
 	
+	if [ "$SIZE_OF_PORTION" -gt "19997" ]
+	then
+		SIZE_OF_PORTION="19997"
+	fi
+	
 	mkdir -p "$TMPLDIR/portions"
 	
 	split -l "$SIZE_OF_PORTION" "$TMPLDIR/input_list" "$TMPLDIR/portions/portion_"
