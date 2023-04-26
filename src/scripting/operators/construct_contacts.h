@@ -27,6 +27,7 @@ public:
 
 	common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation parameters_to_construct_contacts;
 	common::ConstructionOfContacts::ParametersToEnhanceContacts parameters_to_enhance_contacts;
+	std::string sas_mask_tag;
 	bool force;
 
 	ConstructContacts() : force(false)
@@ -51,6 +52,7 @@ public:
 		parameters_to_enhance_contacts.tag_centrality=!input.get_flag("no-tag-centrality");
 		parameters_to_enhance_contacts.tag_peripherial=!input.get_flag("no-tag-peripherial");
 		parameters_to_enhance_contacts.adjunct_solvent_direction=input.get_flag("adjunct-solvent-direction");
+		sas_mask_tag=input.get_value_or_default<std::string>("sas-mask-tag", "");
 		force=input.get_flag("force");
 	}
 
@@ -87,6 +89,7 @@ public:
 		else
 		{
 			common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation parameters_to_construct_contacts_with_lookup=parameters_to_construct_contacts;
+
 			parameters_to_construct_contacts_with_lookup.lookup_groups.resize(data_manager.atoms().size(), 0);
 			std::map<std::string, int> chain_numbers;
 			for(std::size_t i=0;i<data_manager.atoms().size();i++)
@@ -97,6 +100,19 @@ public:
 			{
 				parameters_to_construct_contacts_with_lookup.lookup_groups[i]=chain_numbers[data_manager.atoms()[i].crad.chainID];
 			}
+
+			if(parameters_to_construct_contacts.skip_sas && !sas_mask_tag.empty())
+			{
+				parameters_to_construct_contacts_with_lookup.sas_mask.resize(data_manager.atoms().size(), 0);
+				for(std::size_t i=0;i<data_manager.atoms().size();i++)
+				{
+					if(data_manager.atoms()[i].value.props.tags.count(sas_mask_tag)>0)
+					{
+						parameters_to_construct_contacts_with_lookup.sas_mask[i]=1;
+					}
+				}
+			}
+
 			data_manager.reset_contacts_by_creating(parameters_to_construct_contacts_with_lookup, parameters_to_enhance_contacts);
 		}
 

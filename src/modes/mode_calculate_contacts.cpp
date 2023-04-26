@@ -79,7 +79,7 @@ void calculate_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 	std::pair< bool, std::map<voronota::apollota::Triple, double> > edge_strips_map_bundle(false, std::map<voronota::apollota::Triple, double>());
 	
 	{
-		const std::map<voronota::apollota::Pair, double> constrained_contacts=voronota::apollota::ConstrainedContactsConstruction::construct_contacts(spheres, vertices_vector, probe, step, projections, mock_solvent_ids, std::vector<int>(0), volumes_map_bundle, bounding_arcs_map_bundle, edge_strips_map_bundle);
+		const std::map<voronota::apollota::Pair, double> constrained_contacts=voronota::apollota::ConstrainedContactsConstruction::construct_contacts(spheres, vertices_vector, probe, step, projections, mock_solvent_ids, std::vector<int>(), volumes_map_bundle, bounding_arcs_map_bundle, edge_strips_map_bundle);
 		for(std::map<voronota::apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
 		{
 			if(it->first.get(0)<input_spheres_count && it->first.get(1)<input_spheres_count)
@@ -91,7 +91,7 @@ void calculate_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 
 	if(mock_solvent_ids.empty())
 	{
-		const std::map<std::size_t, double> constrained_contact_remainders=voronota::apollota::ConstrainedContactsConstruction::construct_contact_remainders(spheres, vertices_vector, probe, sih_depth, volumes_map_bundle);
+		const std::map<std::size_t, double> constrained_contact_remainders=voronota::apollota::ConstrainedContactsConstruction::construct_contact_remainders(spheres, vertices_vector, probe, sih_depth, std::vector<int>(), volumes_map_bundle);
 		for(std::map<std::size_t, double>::const_iterator it=constrained_contact_remainders.begin();it!=constrained_contact_remainders.end();++it)
 		{
 			if(it->first<input_spheres_count)

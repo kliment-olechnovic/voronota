@@ -173,6 +173,7 @@ public:
 			const Triangulation::VerticesVector& vertices_vector,
 			const double probe,
 			const int sih_depth,
+			const std::vector<int>& sas_mask,
 			std::pair< bool, std::map<std::size_t, double> >& volumes_bundle)
 	{
 		std::map<std::size_t, double> result;
@@ -182,21 +183,24 @@ public:
 		for(TriangulationQueries::IDsMap::const_iterator ids_vertices_it=ids_vertices.begin();ids_vertices_it!=ids_vertices.end();++ids_vertices_it)
 		{
 			const std::size_t a=ids_vertices_it->first;
-			const ConstrainedContactRemainder::Remainder remainder=ConstrainedContactRemainder::construct_contact_remainder(spheres, vertices_vector, ids_vertices_it->second, a, probe, sih);
-			if(!remainder.empty())
+			if(sas_mask.empty() || (a<sas_mask.size() && sas_mask[a]>0))
 			{
-				const SimpleSphere surface_sphere(spheres[a], spheres[a].r+probe);
-				double sum=0.0;
-				for(ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
+				const ConstrainedContactRemainder::Remainder remainder=ConstrainedContactRemainder::construct_contact_remainder(spheres, vertices_vector, ids_vertices_it->second, a, probe, sih);
+				if(!remainder.empty())
 				{
-					sum+=spherical_triangle_area(surface_sphere, remainder_it->p[0], remainder_it->p[1], remainder_it->p[2]);
-				}
-				if(sum>0.0)
-				{
-					result[a]=sum;
-					if(volumes_bundle.first)
+					const SimpleSphere surface_sphere(spheres[a], spheres[a].r+probe);
+					double sum=0.0;
+					for(ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
 					{
-						volumes_bundle.second[a]+=((sum*surface_sphere.r)/3.0);
+						sum+=spherical_triangle_area(surface_sphere, remainder_it->p[0], remainder_it->p[1], remainder_it->p[2]);
+					}
+					if(sum>0.0)
+					{
+						result[a]=sum;
+						if(volumes_bundle.first)
+						{
+							volumes_bundle.second[a]+=((sum*surface_sphere.r)/3.0);
+						}
 					}
 				}
 			}

@@ -59,6 +59,7 @@ public:
 		bool skip_sas;
 		bool skip_same_group;
 		std::vector<int> lookup_groups;
+		std::vector<int> sas_mask;
 
 		ParametersToConstructBundleOfContactInformation() :
 			probe(1.4),
@@ -147,7 +148,7 @@ public:
 		std::pair< bool, std::map<apollota::Triple, double> > edge_strips_map_bundle(parameters.calculate_adjacencies, std::map<apollota::Triple, double>());
 
 		{
-			const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.step, parameters.projections, std::set<std::size_t>(), (parameters.skip_same_group ?  parameters.lookup_groups : std::vector<int>(0)), volumes_map_bundle, bounding_arcs_map_bundle, edge_strips_map_bundle);
+			const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.step, parameters.projections, std::set<std::size_t>(), (parameters.skip_same_group ?  parameters.lookup_groups : std::vector<int>()), volumes_map_bundle, bounding_arcs_map_bundle, edge_strips_map_bundle);
 			for(std::map<apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
 			{
 				const std::size_t id_a=it->first.get(0);
@@ -159,9 +160,9 @@ public:
 			}
 		}
 
-		if(!parameters.skip_sas)
+		if(!(parameters.skip_sas && parameters.sas_mask.empty()))
 		{
-			const std::map<std::size_t, double> constrained_contact_remainders=apollota::ConstrainedContactsConstruction::construct_contact_remainders(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.sih_depth, volumes_map_bundle);
+			const std::map<std::size_t, double> constrained_contact_remainders=apollota::ConstrainedContactsConstruction::construct_contact_remainders(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.sih_depth, (parameters.skip_sas ? parameters.sas_mask : std::vector<int>()), volumes_map_bundle);
 			for(std::map<std::size_t, double>::const_iterator it=constrained_contact_remainders.begin();it!=constrained_contact_remainders.end();++it)
 			{
 				const std::size_t id=it->first;
@@ -771,6 +772,11 @@ inline std::ostream& operator<<(std::ostream& output, const ConstructionOfContac
 	{
 		output << " " << params.lookup_groups[i];
 	}
+	output << " " << params.sas_mask.size();
+	for(std::size_t i=0;i<params.sas_mask.size();i++)
+	{
+		output << " " << params.sas_mask[i];
+	}
 	return output;
 }
 
@@ -796,6 +802,20 @@ inline std::istream& operator>>(std::istream& input, ConstructionOfContacts::Par
 				int val=0;
 				input >> val;
 				params.lookup_groups.push_back(val);
+			}
+		}
+	}
+	{
+		int n=0;
+		input >> n;
+		if(n>0)
+		{
+			params.sas_mask.reserve(n);
+			for(int i=0;i<n;i++)
+			{
+				int val=0;
+				input >> val;
+				params.sas_mask.push_back(val);
 			}
 		}
 	}
