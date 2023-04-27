@@ -380,25 +380,15 @@ public:
 		return result;
 	}
 
-	std::set<std::size_t> select_contacts_by_atoms(const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids, const bool full_residues) const
-	{
-		return select_contacts_by_atoms(from_ids, atom_ids, full_residues, false);
-	}
-
 	std::set<std::size_t> select_contacts_by_atoms(const std::set<std::size_t>& atom_ids, const bool full_residues, const bool full_chains) const
 	{
 		return select_contacts_by_atoms(std::set<std::size_t>(), atom_ids, full_residues, full_chains);
 	}
 
-	std::set<std::size_t> select_contacts_by_atoms(const std::set<std::size_t>& atom_ids, const bool full_residues) const
-	{
-		return select_contacts_by_atoms(atom_ids, full_residues, false);
-	}
-
 	std::set<std::size_t> select_contacts_by_atoms_and_atoms(
-			const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2, const bool full_residues, const bool full_chains) const
+			const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2, const bool allow_solvent_contacts, const bool full_residues, const bool full_chains) const
 	{
-		const std::set<std::size_t> result=select_contacts_by_atoms_and_atoms(from_ids.empty(), from_ids, atom_ids1, atom_ids2);
+		const std::set<std::size_t> result=select_contacts_by_atoms_and_atoms(from_ids.empty(), from_ids, atom_ids1, atom_ids2, allow_solvent_contacts);
 		if(full_chains)
 		{
 			return get_ids_for_full_groupings(result, contacts_chains_definition_, contacts_chains_reference_);
@@ -411,21 +401,9 @@ public:
 	}
 
 	std::set<std::size_t> select_contacts_by_atoms_and_atoms(
-			const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2, const bool full_residues) const
+			const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2, const bool allow_solvent_contacts, const bool full_residues, const bool full_chains) const
 	{
-		return select_contacts_by_atoms_and_atoms(from_ids, atom_ids1, atom_ids2, full_residues, false);
-	}
-
-	std::set<std::size_t> select_contacts_by_atoms_and_atoms(
-			const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2, const bool full_residues, const bool full_chains) const
-	{
-		return select_contacts_by_atoms_and_atoms(std::set<std::size_t>(), atom_ids1, atom_ids2, full_residues, full_chains);
-	}
-
-	std::set<std::size_t> select_contacts_by_atoms_and_atoms(
-			const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2, const bool full_residues) const
-	{
-		return select_contacts_by_atoms_and_atoms(atom_ids1, atom_ids2, full_residues, false);
+		return select_contacts_by_atoms_and_atoms(std::set<std::size_t>(), atom_ids1, atom_ids2, allow_solvent_contacts, full_residues, full_chains);
 	}
 
 	std::set<std::size_t> select_contacts_by_set_of_crads_pairs(const std::set<common::ChainResidueAtomDescriptorsPair>& set_of_crads_pairs) const
@@ -814,7 +792,7 @@ private:
 	}
 
 	std::set<std::size_t> select_contacts_by_atoms_and_atoms(
-			const bool from_all, const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2) const
+			const bool from_all, const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2, const bool allow_solvent_contacts) const
 	{
 		std::set<std::size_t> result;
 		if(from_all)
@@ -822,11 +800,19 @@ private:
 			for(std::size_t id=0;id<contacts().size();id++)
 			{
 				const Contact& contact=contacts()[id];
-				if(!contact.solvent()
-						&& ((atom_ids1.count(contact.ids[0])>0 && atom_ids2.count(contact.ids[1])>0)
-								|| (atom_ids2.count(contact.ids[0])>0 && atom_ids1.count(contact.ids[1])>0)))
+				if(contact.solvent())
 				{
-					result.insert(id);
+					if(allow_solvent_contacts && (atom_ids1.count(contact.ids[0])>0 || atom_ids2.count(contact.ids[0])>0))
+					{
+						result.insert(id);
+					}
+				}
+				else
+				{
+					if((atom_ids1.count(contact.ids[0])>0 && atom_ids2.count(contact.ids[1])>0) || (atom_ids2.count(contact.ids[0])>0 && atom_ids1.count(contact.ids[1])>0))
+					{
+						result.insert(id);
+					}
 				}
 			}
 		}
@@ -838,11 +824,19 @@ private:
 				if(id<contacts().size())
 				{
 					const Contact& contact=contacts()[id];
-					if(!contact.solvent()
-							&& ((atom_ids1.count(contact.ids[0])>0 && atom_ids2.count(contact.ids[1])>0)
-									|| (atom_ids2.count(contact.ids[0])>0 && atom_ids1.count(contact.ids[1])>0)))
+					if(contact.solvent())
 					{
-						result.insert(id);
+						if(allow_solvent_contacts && (atom_ids1.count(contact.ids[0])>0 || atom_ids2.count(contact.ids[0])>0))
+						{
+							result.insert(id);
+						}
+					}
+					else
+					{
+						if((atom_ids1.count(contact.ids[0])>0 && atom_ids2.count(contact.ids[1])>0) || (atom_ids2.count(contact.ids[0])>0 && atom_ids1.count(contact.ids[1])>0))
+						{
+							result.insert(id);
+						}
 					}
 				}
 			}

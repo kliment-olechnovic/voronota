@@ -138,7 +138,7 @@ public:
 		{
 			contact_ids=data_manager.selection_manager().select_contacts(SelectionManager::Query(selection_expresion_for_contacts, false));
 			atom_ids=data_manager.selection_manager().select_atoms_by_contacts(atom_ids, contact_ids, false);
-			contact_ids=data_manager.selection_manager().select_contacts_by_atoms(contact_ids, atom_ids, false);
+			contact_ids=data_manager.selection_manager().select_contacts_by_atoms(contact_ids, atom_ids, false, false);
 		}
 
 		Result result;

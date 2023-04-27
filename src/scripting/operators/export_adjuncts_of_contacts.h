@@ -103,9 +103,9 @@ public:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		const std::set<std::size_t> contact_ids=data_manager.selection_manager().select_contacts_by_atoms_and_atoms(
-				data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts),
-				atom_ids, atom_ids, false);
+		const std::set<std::size_t> contact_ids=(atom_ids.size()==data_manager.atoms().size()
+				? data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts)
+				: data_manager.selection_manager().select_contacts_by_atoms_and_atoms(data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts),	atom_ids, atom_ids, true, false, false));
 		if(contact_ids.empty())
 		{
 			throw std::runtime_error(std::string("No contacts selected."));
@@ -140,21 +140,30 @@ public:
 			throw std::runtime_error(std::string("No adjuncts specified."));
 		}
 
+		const std::set<std::string> adjuncts_filled_set(adjuncts_filled.begin(), adjuncts_filled.end());
+
 		std::map<std::size_t, std::size_t> map_of_contact_indices;
-		for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
+		if(!adjacency_file.empty() || adjuncts_filled_set.count("contact_index")>0)
 		{
-			const std::size_t current_size=map_of_contact_indices.size();
-			map_of_contact_indices[*it]=current_size;
+			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
+			{
+				const std::size_t current_size=map_of_contact_indices.size();
+				map_of_contact_indices[*it]=current_size;
+			}
 		}
 
 		std::map<std::size_t, std::size_t> map_of_atom_indices;
-		for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
+		if(adjuncts_filled_set.count("atom_index1")>0 || adjuncts_filled_set.count("atom_index2")>0)
 		{
-			const std::size_t current_size=map_of_atom_indices.size();
-			map_of_atom_indices[*it]=current_size;
+			for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
+			{
+				const std::size_t current_size=map_of_atom_indices.size();
+				map_of_atom_indices[*it]=current_size;
+			}
 		}
 
 		std::map<std::size_t, std::size_t> map_of_inter_residue_contact_indices;
+		if(inter_residue || adjuncts_filled_set.count("ir_contact_index")>0)
 		{
 			std::set<common::ChainResidueAtomDescriptorsPair> set_of_inter_residue_contact_crads;
 			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
