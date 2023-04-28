@@ -10,7 +10,7 @@ Options:
     --input                   string  *  input file path or '_list' to read file paths from stdin
     --restrict-input          string     query to restrict input atoms, default is '[]'
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
-    --output-table-file       string     output table file path, default is '_stdout' to print to stdout
+    --output-contacts-file    string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to run in parallel, default is 1
     --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
     --stdin-file              string     input file path to replace stdin
@@ -29,7 +29,7 @@ Examples:
 
     voronota-js-fast-iface-contacts --input "./input/model.pdb" --with-sas-areas --coarse-grained > "./output/contacts.tsv"
     
-    ls *.pdb | voronota-js-fast-iface-contacts --input _list --processors 8 --output-table-file "./output/-BASENAME-.tsv"
+    ls *.pdb | voronota-js-fast-iface-contacts --input _list --processors 8 --output-contacts-file "./output/-BASENAME-.tsv"
 
 EOF
 exit 1
@@ -83,7 +83,7 @@ command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executab
 INFILE=""
 RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
-OUTPUT_TABLE_FILE="_stdout"
+OUTPUT_CONTACTS_FILE="_stdout"
 MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
 STDIN_FILE="_stream"
@@ -113,8 +113,8 @@ do
 		SUBSELECT_CONTACTS="$OPTARG"
 		shift
 		;;
-	--output-table-file)
-		OUTPUT_TABLE_FILE="$OPTARG"
+	--output-contacts-file)
+		OUTPUT_CONTACTS_FILE="$OPTARG"
 		shift
 		;;
 	--processors)
@@ -194,6 +194,21 @@ then
 	exit 0
 fi
 
+if [ -z "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -ne "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -lt "1" ]
+then
+	echo >&2 "Error: invalid number of processors '$MAX_PROCESSORS', must be a positive number"
+	exit 1
+fi
+
+if [ "$INFILE" == "_list" ]
+then
+	if [[ "$OUTPUT_CONTACTS_FILE" != *"-BASENAME-"* ]]
+	then
+		echo >&2 "Error: invalid output contacts file for multi-file processing, must contain '-BASENAME-'"
+		exit 1
+	fi
+fi
+
 if [ "$INFILE" != "_list" ] && [ "$INFILE" != "_stream" ] && [ ! -s "$INFILE" ]
 then
 	echo >&2 "Error: input file '$INFILE' does not exist"
@@ -222,12 +237,6 @@ then
 	"$ZEROARG" "${ALLARGS[@]}" --input "$TMPLDIR/_stream"
 	
 	exit 0
-fi
-
-if [ -z "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -ne "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -lt "1" ]
-then
-	echo >&2 "Error: invalid number of processors '$MAX_PROCESSORS', must be a positive number"
-	exit 1
 fi
 
 if [ -n "$SBATCH_PARAMETERS" ]
@@ -273,14 +282,12 @@ then
 	
 	split -l "$SIZE_OF_PORTION" "$TMPLDIR/input_list" "$TMPLDIR/portions/portion_"
 	
-	mkdir -p "$TMPLDIR/children_tables"
-	
 	if [ -n "$SBATCH_PARAMETERS" ]
 	then
 		mkdir -p "$TMPLDIR/slurm_logs"
 		
 		find $TMPLDIR/portions/ -type f -not -empty \
-		| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
+		| awk '{print "--stdin-file " $1}' \
 		| xargs -L 1 sbatch -o "$TMPLDIR/slurm_logs/slurmjob-%j.out" -e "$TMPLDIR/slurm_logs/slurmjob-%j.err" $SBATCH_PARAMETERS "$ZEROARG" "${ALLARGS[@]}" --sbatch-parameters '' --processors 1 --input _list \
 		| egrep '^Submitted batch job ' \
 		| awk '{print $4}' \
@@ -297,22 +304,8 @@ then
 		find "$TMPLDIR/slurm_logs/" -type f -not -empty | xargs -L 1 cat >&2
 	else
 		find $TMPLDIR/portions/ -type f -not -empty \
-		| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
+		| awk '{print "--stdin-file " $1}' \
 		| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" --processors 1 --input _list
-	fi
-		
-	find "$TMPLDIR/children_tables" -type f -not -empty \
-	| sort \
-	| xargs -L 1 cat \
-	| awk '{if(NR==1 || $1!="input_name") print $0}' \
-	> "$TMPLDIR/full_output_table"
-	
-	if [ -n "$OUTPUT_TABLE_FILE" ] && [ "$OUTPUT_TABLE_FILE" != "_stdout" ]
-	then
-		mkdir -p "$(dirname "$OUTPUT_TABLE_FILE")"
-		cat "$TMPLDIR/full_output_table" > "$OUTPUT_TABLE_FILE"
-	else
-		cat "$TMPLDIR/full_output_table"
 	fi
 	
 	exit 0
@@ -329,7 +322,7 @@ common_params.run_faspr='$RUN_FASPR';
 common_params.with_sas_areas='$WITH_SAS_AREAS';
 common_params.coarse_grained='$COARSE_GRAINED';
 common_params.expand_ids='$EXPAND_IDS';
-common_params.output_table_file='$OUTPUT_TABLE_FILE';
+common_params.output_contacts_file='$OUTPUT_CONTACTS_FILE';
 var input_info_array=[];
 EOF
 
@@ -504,9 +497,9 @@ if(common_params.run_faspr===undefined)
 	common_params.run_faspr="";
 }
 
-if(common_params.output_table_file===undefined || common_params.output_table_file==="")
+if(common_params.output_contacts_file===undefined || common_params.output_contacts_file==="")
 {
-	common_params.output_table_file="_stdout";
+	common_params.output_contacts_file="_stdout";
 }
 
 voronota_setup_defaults("-no-load-voromqa-potentials -no-load-more-atom-types -no-load-mock-voromqa-potential");
@@ -518,7 +511,7 @@ for(var i=0;i<input_info_array.length;i++)
 	try
 	{
 		prepare_object(subinput.input_file, "model");
-		process_object("model", common_params.output_table_file.replace("-BASENAME-", subinput.input_file_name));
+		process_object("model", common_params.output_contacts_file.replace("-BASENAME-", subinput.input_file_name));
 	}
 	catch(error)
 	{
