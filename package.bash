@@ -65,6 +65,7 @@ cp \
   "./expansion_js/voronota-js-fast-iface-cadscore" \
   "./expansion_js/voronota-js-fast-iface-cadscore-matrix" \
   "./expansion_js/voronota-js-fast-iface-data-graph" \
+  "./expansion_js/voronota-js-fast-iface-contacts" \
   "./expansion_js/voronota-js-voroif-gnn" \
   "./expansion_js/voronota-js-ligand-cadscore" \
   "./expansion_js/CMakeLists.txt" \
