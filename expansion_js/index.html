@@ -57,14 +57,17 @@
 <li><a href="#fast-inter-chain-interface-cad-score-matrix">Fast inter-chain interface CAD-score matrix</a><ul>
 <li><a href="#script-interface-6">Script interface</a></li>
 </ul></li>
-<li><a href="#computation-of-inter-chain-interface-graphs">Computation of inter-chain interface graphs</a><ul>
+<li><a href="#fast-inter-chain-interface-contacts">Fast inter-chain interface contacts</a><ul>
 <li><a href="#script-interface-7">Script interface</a></li>
 </ul></li>
-<li><a href="#voroif-gnn-method-for-scoring-models-of-protein-protein-complexes">VoroIF-GNN method for scoring models of protein-protein complexes</a><ul>
+<li><a href="#computation-of-inter-chain-interface-graphs">Computation of inter-chain interface graphs</a><ul>
 <li><a href="#script-interface-8">Script interface</a></li>
 </ul></li>
-<li><a href="#protein-ligand-interface-variation-of-cad-score">Protein-ligand interface variation of CAD-score</a><ul>
+<li><a href="#voroif-gnn-method-for-scoring-models-of-protein-protein-complexes">VoroIF-GNN method for scoring models of protein-protein complexes</a><ul>
 <li><a href="#script-interface-9">Script interface</a></li>
+</ul></li>
+<li><a href="#protein-ligand-interface-variation-of-cad-score">Protein-ligand interface variation of CAD-score</a><ul>
+<li><a href="#script-interface-10">Script interface</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -81,6 +84,7 @@
 <li>&quot;voronota-js-fast-iface-voromqa&quot; - wrapper to a voronota-js program for the very fast computation of the inter-chain interface VoroMQA energy.</li>
 <li>&quot;voronota-js-fast-iface-cadscore&quot; - wrapper to a voronota-js program for the very fast computation of the inter-chain interface CAD-score.</li>
 <li>&quot;voronota-js-fast-iface-cadscore-matrix&quot; - wrapper to a voronota-js program for the very fast computation of the inter-chain interface CAD-score matrix.</li>
+<li>&quot;voronota-js-fast-iface-contacts&quot; - wrapper to a voronota-js program for the very fast computation of the inter-chain interface contact areas.</li>
 <li>&quot;voronota-js-fast-iface-data-graph&quot; - wrapper to a voronota-js program for the computation of interface graphs used by the VoroIF-GNN method.</li>
 <li>&quot;voronota-js-voroif-gnn&quot; - wrapper to a voronota-js program and GNN inference scripts that run the VoroIF-GNN method for scoring models of protein-protein complexes (developed for CASP15).</li>
 <li>&quot;voronota-js-ligand-cadscore&quot; - wrapper to a voronota-js program for the computation of protein-ligand variation of CAD-score (developed to analyze protein-ligand models from CASP15).</li>
@@ -382,9 +386,42 @@ Standard output:
 Examples:
 
     ls *.pdb | voronota-js-fast-iface-cadscore-matrix | column -t</code></pre>
+<h2 id="fast-inter-chain-interface-contacts">Fast inter-chain interface contacts</h2>
+<p>'voronota-js-fast-iface-contacts' script rapidly computes contacts of inter-chain interface in a molecular complex.</p>
+<h3 id="script-interface-7">Script interface</h3>
+<pre><code>Options:
+    --input                   string  *  input file path or &#39;_list&#39; to read file paths from stdin
+    --restrict-input          string     query to restrict input atoms, default is &#39;[]&#39;
+    --subselect-contacts      string     query to subselect inter-chain contacts, default is &#39;[]&#39;
+    --output-contacts-file    string     output table file path, default is &#39;_stdout&#39; to print to stdout
+    --output-drawing-script   string     output PyMol drawing script file path, default is &#39;&#39;
+    --processors              number     maximum number of processors to run in parallel, default is 1
+    --sbatch-parameters       string     sbatch parameters to run in parallel, default is &#39;&#39;
+    --stdin-file              string     input file path to replace stdin
+    --run-faspr               string     path to FASPR binary to rebuild side-chains
+    --with-sas-areas                     flag to also compute and output solvent-accessible areas of interface residue atoms
+    --coarse-grained                     flag to output a inter-residue contacts
+    --input-is-script                    flag to treat input file as vs script
+    --as-assembly                        flag to treat input file as biological assembly
+    --expand-ids                         flag to output expanded IDs
+    --og-pipeable                        flag to format output to be pipeable to &#39;voronota query-contacts&#39;
+    --help | -h                          flag to display help message and exit
+
+Standard output:
+    tab-separated table of contacts
+    
+Examples:
+
+    voronota-js-fast-iface-contacts --input &quot;./model.pdb&quot; --expand-ids &gt; &quot;./contacts.tsv&quot;
+    
+    voronota-js-fast-iface-contacts --input &quot;./model.pdb&quot; --with-sas-areas --coarse-grained --og-pipeable | voronota query-contacts --summarize-by-first
+    
+    cat &quot;./model.pdb&quot; | voronota-js-fast-iface-contacts --input _stream --with-sas-areas --coarse-grained --og-pipeable | voronota query-contacts --summarize
+    
+    ls *.pdb | voronota-js-fast-iface-contacts --input _list --processors 8 --output-contacts-file &quot;./output/-BASENAME-.tsv&quot;</code></pre>
 <h2 id="computation-of-inter-chain-interface-graphs">Computation of inter-chain interface graphs</h2>
 <p>'voronota-js-fast-iface-data-graph' script generates interface data graphs of protein complexes.</p>
-<h3 id="script-interface-7">Script interface</h3>
+<h3 id="script-interface-8">Script interface</h3>
 <pre><code>Options:
     --input                   string  *  input file path or &#39;_list&#39; to read file paths from stdin
     --restrict-input          string     query to restrict input atoms, default is &#39;[]&#39;
@@ -411,7 +448,7 @@ Examples:
     ls *.pdb | voronota-js-fast-iface-data-graph --input _list --processors 8 --output-prefix ./data_graphs/ | column -t</code></pre>
 <h2 id="voroif-gnn-method-for-scoring-models-of-protein-protein-complexes">VoroIF-GNN method for scoring models of protein-protein complexes</h2>
 <p>'voronota-js-voroif-gnn' scores protein-protein interfaces using the VoroIF-GNN method</p>
-<h3 id="script-interface-8">Script interface</h3>
+<h3 id="script-interface-9">Script interface</h3>
 <pre><code>Options:
     --input                   string  *  input file path, or &#39;_list&#39; to read multiple input files paths from stdin
     --gnn                     string     GNN package file or directory with package files, default is &#39;${SCRIPT_DIRECTORY}/voroif/gnn_packages/v1&#39;
@@ -459,7 +496,7 @@ Requirements installation example using Miniconda (may need more than 10 GB of d
     conda install r # may skip this if you have R already and do not want it in Miniconda</code></pre>
 <h2 id="protein-ligand-interface-variation-of-cad-score">Protein-ligand interface variation of CAD-score</h2>
 <p>'voronota-js-ligand-cadscore' script computes protein-ligand variation of CAD-score.</p>
-<h3 id="script-interface-9">Script interface</h3>
+<h3 id="script-interface-10">Script interface</h3>
 <pre><code>Input options, basic:
     --target-receptor             string  *  target receptor file path
     --target-ligands              string  *  list of target ligand file paths

@@ -110,6 +110,19 @@ EOF
 
 ########################################
 
+echo -e "\n## Fast inter-chain interface contacts\n"
+
+cat << 'EOF'
+'voronota-js-fast-iface-contacts' script rapidly computes contacts of inter-chain interface in a molecular complex.
+
+### Script interface
+
+EOF
+
+./voronota-js-fast-iface-contacts -h 2>&1 | tail -n +3 | sed 's/^/    /'
+
+########################################
+
 echo -e "\n## Computation of inter-chain interface graphs\n"
 
 cat << 'EOF'

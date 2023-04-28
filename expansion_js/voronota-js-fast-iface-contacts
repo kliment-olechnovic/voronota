@@ -4,7 +4,7 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-fast-iface-contacts' script computes contacts of inter-chain interface in a molecular complex.
+'voronota-js-fast-iface-contacts' script rapidly computes contacts of inter-chain interface in a molecular complex.
 
 Options:
     --input                   string  *  input file path or '_list' to read file paths from stdin
@@ -29,7 +29,11 @@ Standard output:
     
 Examples:
 
-    voronota-js-fast-iface-contacts --input "./input/model.pdb" --with-sas-areas --coarse-grained > "./output/contacts.tsv"
+    voronota-js-fast-iface-contacts --input "./model.pdb" --expand-ids > "./contacts.tsv"
+    
+    voronota-js-fast-iface-contacts --input "./model.pdb" --with-sas-areas --coarse-grained --og-pipeable | voronota query-contacts --summarize-by-first
+    
+    cat "./model.pdb" | voronota-js-fast-iface-contacts --input _stream --with-sas-areas --coarse-grained --og-pipeable | voronota query-contacts --summarize
     
     ls *.pdb | voronota-js-fast-iface-contacts --input _list --processors 8 --output-contacts-file "./output/-BASENAME-.tsv"
 

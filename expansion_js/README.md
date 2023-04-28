@@ -14,6 +14,7 @@ Currently, the Voronota-JS package contains several executables:
  * "voronota-js-fast-iface-voromqa" - wrapper to a voronota-js program for the very fast computation of the inter-chain interface VoroMQA energy.
  * "voronota-js-fast-iface-cadscore" - wrapper to a voronota-js program for the very fast computation of the inter-chain interface CAD-score.
  * "voronota-js-fast-iface-cadscore-matrix" - wrapper to a voronota-js program for the very fast computation of the inter-chain interface CAD-score matrix.
+ * "voronota-js-fast-iface-contacts" - wrapper to a voronota-js program for the very fast computation of the inter-chain interface contact areas.
  * "voronota-js-fast-iface-data-graph" - wrapper to a voronota-js program for the computation of interface graphs used by the VoroIF-GNN method.
  * "voronota-js-voroif-gnn" - wrapper to a voronota-js program and GNN inference scripts that run the VoroIF-GNN method for scoring models of protein-protein complexes (developed for CASP15).
  * "voronota-js-ligand-cadscore" - wrapper to a voronota-js program for the computation of protein-ligand variation of CAD-score (developed to analyze protein-ligand models from CASP15).
@@ -394,6 +395,45 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
     Examples:
     
         ls *.pdb | voronota-js-fast-iface-cadscore-matrix | column -t
+    
+
+## Fast inter-chain interface contacts
+
+'voronota-js-fast-iface-contacts' script rapidly computes contacts of inter-chain interface in a molecular complex.
+
+### Script interface
+
+    
+    Options:
+        --input                   string  *  input file path or '_list' to read file paths from stdin
+        --restrict-input          string     query to restrict input atoms, default is '[]'
+        --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
+        --output-contacts-file    string     output table file path, default is '_stdout' to print to stdout
+        --output-drawing-script   string     output PyMol drawing script file path, default is ''
+        --processors              number     maximum number of processors to run in parallel, default is 1
+        --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
+        --stdin-file              string     input file path to replace stdin
+        --run-faspr               string     path to FASPR binary to rebuild side-chains
+        --with-sas-areas                     flag to also compute and output solvent-accessible areas of interface residue atoms
+        --coarse-grained                     flag to output a inter-residue contacts
+        --input-is-script                    flag to treat input file as vs script
+        --as-assembly                        flag to treat input file as biological assembly
+        --expand-ids                         flag to output expanded IDs
+        --og-pipeable                        flag to format output to be pipeable to 'voronota query-contacts'
+        --help | -h                          flag to display help message and exit
+    
+    Standard output:
+        tab-separated table of contacts
+        
+    Examples:
+    
+        voronota-js-fast-iface-contacts --input "./model.pdb" --expand-ids > "./contacts.tsv"
+        
+        voronota-js-fast-iface-contacts --input "./model.pdb" --with-sas-areas --coarse-grained --og-pipeable | voronota query-contacts --summarize-by-first
+        
+        cat "./model.pdb" | voronota-js-fast-iface-contacts --input _stream --with-sas-areas --coarse-grained --og-pipeable | voronota query-contacts --summarize
+        
+        ls *.pdb | voronota-js-fast-iface-contacts --input _list --processors 8 --output-contacts-file "./output/-BASENAME-.tsv"
     
 
 ## Computation of inter-chain interface graphs
