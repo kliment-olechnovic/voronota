@@ -21,6 +21,7 @@ Options:
     --input-is-script                    flag to treat input file as vs script
     --as-assembly                        flag to treat input file as biological assembly
     --expand-ids                         flag to output expanded IDs
+    --og-pipeable                        flag to format output to be pipeable to 'voronota query-contacts'
     --help | -h                          flag to display help message and exit
 
 Standard output:
@@ -95,6 +96,7 @@ COARSE_GRAINED="false"
 INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 EXPAND_IDS="false"
+OG_PIPEABLE="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -154,6 +156,9 @@ do
 	--expand-ids)
 		EXPAND_IDS="true"
 		;;
+	--og-pipeable)
+		OG_PIPEABLE="true"
+		;;
 	-h|--help)
 		HELP_MODE="true"
 		;;
@@ -172,6 +177,12 @@ fi
 if [ -z "$INFILE" ]
 then
 	echo >&2 "Error: input file not provided"
+	exit 1
+fi
+
+if [ "$EXPAND_IDS" == "true" ] && [ "$OG_PIPEABLE" == "true" ]
+then
+	echo >&2 "Error: '--expand-ids' and '--og-pipeable' cannot be enabled together"
 	exit 1
 fi
 
@@ -337,6 +348,7 @@ common_params.run_faspr='$RUN_FASPR';
 common_params.with_sas_areas='$WITH_SAS_AREAS';
 common_params.coarse_grained='$COARSE_GRAINED';
 common_params.expand_ids='$EXPAND_IDS';
+common_params.og_pipeable='$OG_PIPEABLE';
 common_params.output_contacts_file='$OUTPUT_CONTACTS_FILE';
 common_params.output_drawing_script='$OUTPUT_DRAWING_SCRIPT';
 var input_info_array=[];
@@ -479,8 +491,18 @@ process_object=function(title, output_file, output_drawing_script_file)
 		shell('mkdir -p "$(dirname '+output_file+')"');
 	}
 	
-	voronota_export_adjuncts_of_contacts("-contacts-use", "[final_contacts]", "-inter-residue", common_params.coarse_grained, "-adjuncts", ["area", "distance"], "-file", output_file, "-expand-ids", common_params.expand_ids, "-no-serial", common_params.expand_ids!=="true", "-sep", '\t');
+	voronota_export_adjuncts_of_contacts("-contacts-use", "[final_contacts]", "-inter-residue", common_params.coarse_grained, "-adjuncts", ["area", "distance"], "-file", "_virtual/contacts_table", "-expand-ids", common_params.expand_ids, "-no-serial", common_params.expand_ids!=="true", "-sep", '\t');
 	voronota_assert_full_success("Failed to export contacts data");
+	
+	if(common_params.og_pipeable=="true")
+	{
+		fwrite(output_file, spipe(fread("_virtual/contacts_table"), 'tail -n +2 | awk \'{print $0 "\\t.\\t."\'}').stdout);
+	}
+	else
+	{
+		voronota_cat_files("_virtual/contacts_table", output_file);
+		voronota_assert_full_success("Failed to write output contacts file");
+	}
 	
 	if(!(output_drawing_script_file===undefined || output_drawing_script_file===""))
 	{
