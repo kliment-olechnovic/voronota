@@ -19,16 +19,17 @@ Options:
     --coarse-grained                     flag to output a inter-residue contacts
     --input-is-script                    flag to treat input file as vs script
     --as-assembly                        flag to treat input file as biological assembly
+    --expand-ids                         flag to output expanded IDs
     --help | -h                          flag to display help message and exit
 
 Standard output:
-    space-separated table of contacts
+    tab-separated table of contacts
     
 Examples:
 
-    voronota-js-fast-iface-contacts --input "./input/model.pdb" --with-sas-areas --coarse-grained > "./output/contacts.txt"
+    voronota-js-fast-iface-contacts --input "./input/model.pdb" --with-sas-areas --coarse-grained > "./output/contacts.tsv"
     
-    ls *.pdb | voronota-js-fast-iface-contacts --input _list --processors 8 --output-table-file "./output/-BASENAME-.txt"
+    ls *.pdb | voronota-js-fast-iface-contacts --input _list --processors 8 --output-table-file "./output/-BASENAME-.tsv"
 
 EOF
 exit 1
@@ -91,6 +92,7 @@ WITH_SAS_AREAS="false"
 COARSE_GRAINED="false"
 INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
+EXPAND_IDS="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -142,6 +144,9 @@ do
 		;;
 	--as-assembly)
 		AS_ASSEMBLY="true"
+		;;
+	--expand-ids)
+		EXPAND_IDS="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -323,6 +328,7 @@ common_params.contacts_subselection='$SUBSELECT_CONTACTS';
 common_params.run_faspr='$RUN_FASPR';
 common_params.with_sas_areas='$WITH_SAS_AREAS';
 common_params.coarse_grained='$COARSE_GRAINED';
+common_params.expand_ids='$EXPAND_IDS';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 var input_info_array=[];
 EOF
@@ -355,7 +361,7 @@ prepare_object=function(input_file, title)
 		throw ("No object title");
 	}
 	
-	voronota_delete_objects("-names", title);
+	voronota_delete_objects();
 	
 	voronota_unpick_objects();
 	
@@ -464,7 +470,7 @@ process_object=function(title, output_file)
 		shell('mkdir -p "$(dirname '+output_file+')"');
 	}
 	
-	voronota_export_adjuncts_of_contacts("-inter-residue", common_params.coarse_grained, "-file", output_file, "-contacts-use", "[final_contacts]", "-no-serial", "-adjuncts", ["area", "distance"]);
+	voronota_export_adjuncts_of_contacts("-contacts-use", "[final_contacts]", "-inter-residue", common_params.coarse_grained, "-adjuncts", ["area", "distance"], "-file", output_file, "-expand-ids", common_params.expand_ids, "-no-serial", common_params.expand_ids!=="true", "-sep", '\t');
 	voronota_assert_full_success("Failed to export contacts data");
 }
 

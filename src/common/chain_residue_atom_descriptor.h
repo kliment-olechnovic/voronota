@@ -71,6 +71,23 @@ public:
 		return v;
 	}
 
+	static std::string str_header(const std::string& title, const bool columns, const std::string& title_sep, const std::string& sep)
+	{
+		if(!columns)
+		{
+			return title;
+		}
+		std::ostringstream output;
+		output << title << title_sep << "chainID" << sep;
+		output << title << title_sep << "resSeq" << sep;
+		output << title << title_sep << "iCode" << sep;
+		output << title << title_sep << "serial" << sep;
+		output << title << title_sep << "altLoc" << sep;
+		output << title << title_sep << "resName" << sep;
+		output << title << title_sep << "name";
+		return output.str();
+	}
+
 	static std::string from_str(const std::string& input_str, ChainResidueAtomDescriptor& output_descriptor)
 	{
 		static const MarkerNaming mn;
@@ -374,6 +391,23 @@ public:
 		static const std::string markers_array[7]={mn.chainID, mn.resSeq, mn.iCode, mn.serial, mn.altLoc, mn.resName, mn.name};
 		static const std::vector<std::string> markers(markers_array, markers_array+7);
 		return str(markers);
+	}
+
+	std::string str(const bool columns, const std::string& sep) const
+	{
+		if(!columns)
+		{
+			return str();
+		}
+		std::ostringstream output;
+		output << (chainID.empty() ? std::string(".") : chainID) << sep;
+		if(resSeq==null_num()) { output << "." << sep; } else { output << resSeq << sep; }
+		output << (iCode.empty() ? std::string(".") : iCode) << sep;
+		if(serial==null_num()) { output << "." << sep; } else { output << serial << sep; }
+		output << (altLoc.empty() ? std::string(".") : altLoc) << sep;
+		output << (resName.empty() ? std::string(".") : resName) << sep;
+		output << (name.empty() ? std::string(".") : name);
+		return output.str();
 	}
 
 private:
