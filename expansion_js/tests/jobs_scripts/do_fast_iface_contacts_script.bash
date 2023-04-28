@@ -12,6 +12,7 @@ do
 	  --subselect-contacts "[]" \
 	  --processors "1" \
 	  --expand-ids \
+	  --output-drawing-script "${SUBDIR}/draw_aa_sas_-BASENAME-.py" \
 	| column -t \
 	> "${SUBDIR}/aa_nosas_$(basename ${INFILE}).tsv"
 done
@@ -25,6 +26,5 @@ find "$INPUTDIR/complex/" -type f \
   --coarse-grained \
   --with-sas-areas \
   --og-pipeable \
-  --output-drawing-script "${SUBDIR}/draw_rr_sas_-BASENAME-.py" \
   --output-contacts-file "${SUBDIR}/rr_sas_-BASENAME-.tsv"
 
