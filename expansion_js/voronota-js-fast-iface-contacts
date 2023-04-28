@@ -11,6 +11,7 @@ Options:
     --restrict-input          string     query to restrict input atoms, default is '[]'
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
     --output-contacts-file    string     output table file path, default is '_stdout' to print to stdout
+    --output-drawing-script   string     output PyMol drawing script file path, default is ''
     --processors              number     maximum number of processors to run in parallel, default is 1
     --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
     --stdin-file              string     input file path to replace stdin
@@ -84,6 +85,7 @@ INFILE=""
 RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
 OUTPUT_CONTACTS_FILE="_stdout"
+OUTPUT_DRAWING_SCRIPT=""
 MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
 STDIN_FILE="_stream"
@@ -115,6 +117,10 @@ do
 		;;
 	--output-contacts-file)
 		OUTPUT_CONTACTS_FILE="$OPTARG"
+		shift
+		;;
+	--output-drawing-script)
+		OUTPUT_DRAWING_SCRIPT="$OPTARG"
 		shift
 		;;
 	--processors)
@@ -204,7 +210,16 @@ if [ "$INFILE" == "_list" ]
 then
 	if [[ "$OUTPUT_CONTACTS_FILE" != *"-BASENAME-"* ]]
 	then
-		echo >&2 "Error: invalid output contacts file for multi-file processing, must contain '-BASENAME-'"
+		echo >&2 "Error: invalid output contacts file path for multi-file processing, must contain '-BASENAME-'"
+		exit 1
+	fi
+fi
+
+if [ "$INFILE" == "_list" ] && [ -n "$OUTPUT_DRAWING_SCRIPT" ]
+then
+	if [[ "$OUTPUT_DRAWING_SCRIPT" != *"-BASENAME-"* ]]
+	then
+		echo >&2 "Error: invalid output drawing script file path for multi-file processing, must contain '-BASENAME-'"
 		exit 1
 	fi
 fi
@@ -323,6 +338,7 @@ common_params.with_sas_areas='$WITH_SAS_AREAS';
 common_params.coarse_grained='$COARSE_GRAINED';
 common_params.expand_ids='$EXPAND_IDS';
 common_params.output_contacts_file='$OUTPUT_CONTACTS_FILE';
+common_params.output_drawing_script='$OUTPUT_DRAWING_SCRIPT';
 var input_info_array=[];
 EOF
 
@@ -393,7 +409,7 @@ prepare_object=function(input_file, title)
 	}
 }
 
-process_object=function(title, output_file)
+process_object=function(title, output_file, output_drawing_script_file)
 {
 	if(title===undefined || title==="")
 	{
@@ -465,6 +481,20 @@ process_object=function(title, output_file)
 	
 	voronota_export_adjuncts_of_contacts("-contacts-use", "[final_contacts]", "-inter-residue", common_params.coarse_grained, "-adjuncts", ["area", "distance"], "-file", output_file, "-expand-ids", common_params.expand_ids, "-no-serial", common_params.expand_ids!=="true", "-sep", '\t');
 	voronota_assert_full_success("Failed to export contacts data");
+	
+	if(!(output_drawing_script_file===undefined || output_drawing_script_file===""))
+	{
+		shell('mkdir -p "$(dirname '+output_drawing_script_file+')"');
+		
+		voronota_show_contacts('-use', '[final_contacts]');
+		voronota_assert_full_success("Failed to visualize contacts");
+		
+		voronota_spectrum_contacts('-use', '[final_contacts]', '-by', 'residue-ids', '-scheme', 'random');
+		voronota_assert_full_success("Failed to color contacts");
+		
+		voronota_export_contacts_as_pymol_cgo('-use', '[final_contacts]', '-file', output_drawing_script_file, '-name', 'interface_contacts');
+		voronota_assert_full_success("Failed to export contacts graphics");
+	}
 }
 
 if(input_info_array.length<1)
@@ -511,7 +541,7 @@ for(var i=0;i<input_info_array.length;i++)
 	try
 	{
 		prepare_object(subinput.input_file, "model");
-		process_object("model", common_params.output_contacts_file.replace("-BASENAME-", subinput.input_file_name));
+		process_object("model", common_params.output_contacts_file.replace("-BASENAME-", subinput.input_file_name), common_params.output_drawing_script.replace("-BASENAME-", subinput.input_file_name));
 	}
 	catch(error)
 	{
