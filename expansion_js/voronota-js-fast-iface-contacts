@@ -431,6 +431,9 @@ process_object=function(title, output_file)
 		voronota_select_atoms("-use", "[actiicoreraw]", "-full-residues", "-name", "actiicore");
 		voronota_assert_full_success("Failed to select interface residues atoms");
 		
+		voronota_set_tag_of_atoms("-use", "[actiicore]", "-tag", "probifaceres");
+		voronota_assert_full_success("Failed to tag probable interface residues atoms");
+		
 		voronota_select_atoms_close_to_interchain_interface("-atoms-first", "[actiicore]", "-atoms-second", "(not [actiicore])", "-name", "actiibuf");
 		voronota_assert_full_success("Failed to select interface residues buffer atoms");
 		
@@ -442,29 +445,17 @@ process_object=function(title, output_file)
 		
 		voronota_restrict_atoms("-use", "[actii]");
 		voronota_assert_full_success("Failed to restrict input atoms to interface zone atoms");
-
-		voronota_construct_contacts("-probe 1.4 -skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
-		voronota_assert_full_success("Failed to construct inter-chain contacts");
 		
-		voronota_select_contacts("-use", "([-inter-chain] and "+common_params.contacts_subselection+")", "-name", "inter_chain_contacts");
-		voronota_assert_full_success("Failed to select inter-chain contacts");
-		
-		voronota_select_atoms("[-sel-of-contacts inter_chain_contacts]", "-full-residues", "-name", "iface_atoms");
-		voronota_assert_full_success("Failed to select interface atoms");
-		
-		voronota_set_tag_of_atoms("-use", "[iface_atoms]", "-tag", "ifaceres");
-		voronota_assert_full_success("Failed to tag interface atoms");
-		
-		voronota_construct_contacts("-probe 1.4 -skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial -sas-mask-tag ifaceres -force");
+		voronota_construct_contacts("-probe 1.4 -skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial -sas-mask-tag probifaceres");
 		voronota_assert_full_success("Failed to construct inter-chain contacts and related SAS contacts");
 		
 		voronota_select_contacts("-use", "([-inter-chain] and "+common_params.contacts_subselection+")", "-name", "inter_chain_contacts");
 		voronota_assert_full_success("Failed to select inter-chain contacts");
 		
-		voronota_select_atoms("[-sel-of-contacts inter_chain_contacts]", "-full-residues", "-name", "iface_atoms");
+		voronota_select_atoms("[-sel-of-contacts inter_chain_contacts]", "-full-residues", "-name", "iface_residues_atoms");
 		voronota_assert_full_success("Failed to select interface atoms");
 		
-		voronota_select_contacts("-use", "([inter_chain_contacts] or [-a1 [iface_atoms] -solvent])", "-name", "final_contacts")
+		voronota_select_contacts("-use", "([inter_chain_contacts] or [-a1 [iface_residues_atoms] -solvent])", "-name", "final_contacts")
 		voronota_assert_full_success("Failed to select inter-chain contacts and related SAS contacts");
 	}
 	
