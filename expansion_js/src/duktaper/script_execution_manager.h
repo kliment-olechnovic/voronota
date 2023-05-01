@@ -19,6 +19,7 @@
 #include "operators/nnport_predict.h"
 #include "operators/plot_contacts_map.h"
 #include "operators/run_bff.h"
+#include "operators/run_hbplus.h"
 #include "operators/run_nolb.h"
 #include "operators/setup_defaults.h"
 #include "operators/tmalign_many.h"
@@ -50,6 +51,7 @@ public:
 		set_command_for_data_manager("faspr", operators::FASPR(), true);
 		set_command_for_data_manager("plot-contacts-map", operators::PlotContactsMap(), true);
 		set_command_for_data_manager("run-bff", operators::RunBFF(), true);
+		set_command_for_data_manager("run-hbplus", operators::RunHBPlus(), true);
 		set_command_for_data_manager("voromqa-dark-global", operators::VoroMQADarkGlobal(), true);
 		set_command_for_data_manager("voromqa-dark-local", operators::VoroMQADarkLocal(), true);
 		set_command_for_data_manager("voromqa-dark-split", operators::VoroMQADarkSplit(), true);
