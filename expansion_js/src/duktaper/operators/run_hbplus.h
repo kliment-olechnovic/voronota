@@ -35,6 +35,7 @@ public:
 	};
 
 	std::string pairs_file;
+	std::string select_contacts;
 	std::string hb2_file;
 
 	RunHBPlus()
@@ -43,19 +44,33 @@ public:
 
 	void initialize(scripting::CommandInput& input)
 	{
-		pairs_file=input.get_value<std::string>("pairs-file");
+		pairs_file=input.get_value_or_default<std::string>("pairs-file", "");
+		select_contacts=input.get_value_or_default<std::string>("select-contacts", "");
 		hb2_file=input.get_value_or_default<std::string>("hb2-file", "");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(CDOD("pairs_file", CDOD::DATATYPE_STRING, "path to output pairs file"));
+		doc.set_option_decription(CDOD("pairs_file", CDOD::DATATYPE_STRING, "path to output pairs file", ""));
+		doc.set_option_decription(CDOD("select_contacts", CDOD::DATATYPE_STRING, "name of selection to select h-bonding contacts", ""));
 		doc.set_option_decription(CDOD("hb2_file", CDOD::DATATYPE_STRING, "path to output hb2 file", ""));
 	}
 
 	Result run(scripting::DataManager& data_manager) const
 	{
+		if(pairs_file.empty() && select_contacts.empty() && hb2_file.empty())
+		{
+			throw std::runtime_error(std::string("No output outcome specified."));
+		}
+
+		scripting::assert_selection_name_input(select_contacts, true);
+
 		data_manager.assert_atoms_availability();
+
+		if(!select_contacts.empty())
+		{
+			data_manager.assert_contacts_availability();
+		}
 
 		if(!CallShellUtilities::test_if_shell_command_available("hbplus"))
 		{
@@ -104,6 +119,18 @@ public:
 			}
 		}
 
+		if(!select_contacts.empty())
+		{
+			std::set<std::size_t> ids=data_manager.selection_manager().select_contacts_by_set_of_crads_pairs(set_of_hbplus_crad_pairs);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			data_manager.selection_manager().set_contacts_selection(select_contacts, ids);
+		}
+
+		if(!pairs_file.empty())
 		{
 			scripting::OutputSelector output_selector(pairs_file);
 			std::ostream& output=output_selector.stream();
