@@ -418,6 +418,7 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         --coarse-grained                     flag to output a inter-residue contacts
         --input-is-script                    flag to treat input file as vs script
         --as-assembly                        flag to treat input file as biological assembly
+        --use-hbplus                         flag to run 'hbplus' to tag H-bonds
         --expand-ids                         flag to output expanded IDs
         --og-pipeable                        flag to format output to be pipeable to 'voronota query-contacts'
         --help | -h                          flag to display help message and exit

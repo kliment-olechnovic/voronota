@@ -1,0 +1,9 @@
+c<A>r<50>R<SER>   c<B>r<118>R<LEU>  17.9256  2.77303  hb  .
+c<A>r<52>R<GLY>   c<B>r<84>R<LYS>   22.7072  2.87334  hb  .
+c<A>r<54>R<VAL>   c<B>r<82>R<HIS>   35.342   2.82347  hb  .
+c<A>r<56>R<GLU>   c<B>r<80>R<HIS>   39.4563  2.73772  hb  .
+c<A>r<78>R<ASP>   c<B>r<58>R<TYR>   14.7731  3.07677  hb  .
+c<A>r<80>R<HIS>   c<B>r<56>R<GLU>   35.9045  2.70261  hb  .
+c<A>r<82>R<HIS>   c<B>r<54>R<VAL>   33.8858  2.7474   hb  .
+c<A>r<84>R<LYS>   c<B>r<52>R<GLY>   18.6376  2.66353  hb  .
+c<A>r<118>R<LEU>  c<B>r<50>R<SER>   17.683   2.6578   hb  .

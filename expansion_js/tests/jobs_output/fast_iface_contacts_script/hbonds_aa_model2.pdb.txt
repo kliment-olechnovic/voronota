@@ -1,0 +1,14 @@
+c<A>r<50>R<SER>A<OG>   c<B>r<117>R<VAL>A<O>   3.33451  2.74286  hb  .
+c<A>r<52>R<GLY>A<O>    c<B>r<84>R<LYS>A<N>    6.65488  2.85277  hb  .
+c<A>r<54>R<VAL>A<N>    c<B>r<82>R<HIS>A<O>    5.75267  2.93837  hb  .
+c<A>r<54>R<VAL>A<O>    c<B>r<82>R<HIS>A<N>    6.13205  2.92823  hb  .
+c<A>r<56>R<GLU>A<N>    c<B>r<80>R<HIS>A<O>    5.85402  2.81675  hb  .
+c<A>r<56>R<GLU>A<OE2>  c<B>r<82>R<HIS>A<NE2>  10.1981  3.05906  hb  .
+c<A>r<56>R<GLU>A<O>    c<B>r<80>R<HIS>A<N>    4.23092  2.88972  hb  .
+c<A>r<58>R<TYR>A<N>    c<B>r<78>R<ASP>A<O>    7.81316  2.71819  hb  .
+c<A>r<78>R<ASP>A<O>    c<B>r<58>R<TYR>A<N>    5.71736  2.79624  hb  .
+c<A>r<80>R<HIS>A<N>    c<B>r<56>R<GLU>A<O>    3.90461  2.87085  hb  .
+c<A>r<80>R<HIS>A<O>    c<B>r<56>R<GLU>A<N>    6.25015  2.86683  hb  .
+c<A>r<82>R<HIS>A<N>    c<B>r<54>R<VAL>A<O>    4.39467  3.04366  hb  .
+c<A>r<82>R<HIS>A<O>    c<B>r<54>R<VAL>A<N>    5.74208  2.83919  hb  .
+c<A>r<84>R<LYS>A<N>    c<B>r<52>R<GLY>A<O>    6.64992  2.85425  hb  .

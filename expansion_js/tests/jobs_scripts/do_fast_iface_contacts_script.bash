@@ -10,11 +10,29 @@ do
 	  --input "$INFILE" \
 	  --restrict-input "[]" \
 	  --subselect-contacts "[]" \
-	  --processors "1" \
 	  --expand-ids \
 	  --output-drawing-script "${SUBDIR}/draw_aa_sas_-BASENAME-.py" \
 	| column -t \
 	> "${SUBDIR}/aa_nosas_$(basename ${INFILE}).tsv"
+	
+	$VORONOTAJSDIR/voronota-js-fast-iface-contacts \
+	  --input "$INFILE" \
+	  --with-sas-areas \
+	  --og-pipeable \
+	  --use-hbplus \
+	| grep hb \
+	| column -t \
+	> "${SUBDIR}/hbonds_aa_$(basename ${INFILE}).txt"
+	
+	$VORONOTAJSDIR/voronota-js-fast-iface-contacts \
+	  --input "$INFILE" \
+	  --with-sas-areas \
+	  --og-pipeable \
+	  --use-hbplus \
+	  --coarse-grained \
+	| grep hb \
+	| column -t \
+	> "${SUBDIR}/hbonds_rr_$(basename ${INFILE}).txt"
 	
 	cat "$INFILE" \
 	| $VORONOTAJSDIR/voronota-js-fast-iface-contacts \

@@ -51,9 +51,9 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(CDOD("pairs_file", CDOD::DATATYPE_STRING, "path to output pairs file", ""));
-		doc.set_option_decription(CDOD("select_contacts", CDOD::DATATYPE_STRING, "name of selection to select h-bonding contacts", ""));
-		doc.set_option_decription(CDOD("hb2_file", CDOD::DATATYPE_STRING, "path to output hb2 file", ""));
+		doc.set_option_decription(CDOD("pairs-file", CDOD::DATATYPE_STRING, "path to output pairs file", ""));
+		doc.set_option_decription(CDOD("select-contacts", CDOD::DATATYPE_STRING, "name of selection to select h-bonding contacts", ""));
+		doc.set_option_decription(CDOD("hb2-file", CDOD::DATATYPE_STRING, "path to output hb2 file", ""));
 	}
 
 	Result run(scripting::DataManager& data_manager) const

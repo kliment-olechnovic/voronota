@@ -20,6 +20,7 @@ Options:
     --coarse-grained                     flag to output a inter-residue contacts
     --input-is-script                    flag to treat input file as vs script
     --as-assembly                        flag to treat input file as biological assembly
+    --use-hbplus                         flag to run 'hbplus' to tag H-bonds
     --expand-ids                         flag to output expanded IDs
     --og-pipeable                        flag to format output to be pipeable to 'voronota query-contacts'
     --help | -h                          flag to display help message and exit
@@ -99,6 +100,7 @@ WITH_SAS_AREAS="false"
 COARSE_GRAINED="false"
 INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
+USE_HBPLUS="false"
 EXPAND_IDS="false"
 OG_PIPEABLE="false"
 HELP_MODE="false"
@@ -157,6 +159,9 @@ do
 	--as-assembly)
 		AS_ASSEMBLY="true"
 		;;
+	--use-hbplus)
+		USE_HBPLUS="true"
+		;;
 	--expand-ids)
 		EXPAND_IDS="true"
 		;;
@@ -182,6 +187,11 @@ if [ -z "$INFILE" ]
 then
 	echo >&2 "Error: input file not provided"
 	exit 1
+fi
+
+if [ "$USE_HBPLUS" == "true" ]
+then
+	command -v hbplus &> /dev/null || { echo >&2 "Warning: 'hbplus' executable not in binaries path, thus no 'hb' tags will be assigned"; USE_HBPLUS="false"; }
 fi
 
 if [ "$EXPAND_IDS" == "true" ] && [ "$OG_PIPEABLE" == "true" ]
@@ -349,6 +359,7 @@ common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
 common_params.run_faspr='$RUN_FASPR';
+common_params.use_hbplus='$USE_HBPLUS';
 common_params.with_sas_areas='$WITH_SAS_AREAS';
 common_params.coarse_grained='$COARSE_GRAINED';
 common_params.expand_ids='$EXPAND_IDS';
@@ -387,8 +398,7 @@ prepare_object=function(input_file, title)
 	}
 	
 	voronota_delete_objects();
-	
-	voronota_unpick_objects();
+	voronota_delete_virtual_files();
 	
 	if(common_params.input_is_script=="true")
 	{
@@ -423,6 +433,12 @@ prepare_object=function(input_file, title)
 		voronota_faspr("-lib-file", common_params.run_faspr);
 		voronota_assert_full_success("Failed to run FASPR");
 	}
+	
+	if(common_params.use_hbplus=="true")
+	{
+		voronota_run_hbplus("-pairs-file", "_virtual/hbonds_"+title);
+		voronota_assert_full_success("Failed to run hbplus");
+	}
 }
 
 process_object=function(title, output_file, output_drawing_script_file)
@@ -451,7 +467,7 @@ process_object=function(title, output_file, output_drawing_script_file)
 		voronota_construct_contacts("-probe 1.4 -skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
 		voronota_assert_full_success("Failed to construct inter-chain contacts");
 		
-		voronota_select_contacts("-use", "([-inter-chain] and "+common_params.contacts_subselection+")", "-name", "final_contacts")
+		voronota_select_contacts("-use", "([-inter-chain] and "+common_params.contacts_subselection+")", "-name", "final_contacts");
 		voronota_assert_full_success("Failed to select inter-chain contacts");
 	}
 	else
@@ -490,17 +506,33 @@ process_object=function(title, output_file, output_drawing_script_file)
 		voronota_assert_full_success("Failed to select inter-chain contacts and related SAS contacts");
 	}
 	
+	var adjuncts_to_export=["area", "distance"];
+	
+	if(common_params.use_hbplus=="true")
+	{
+		voronota_import_selection_of_contacts("-file", "_virtual/hbonds_"+title, "-name", "hbonds");
+		voronota_assert_full_success("Failed to import hbonds selection");
+		
+		voronota_set_adjunct_of_contacts("-use", "[]", "-name", "hbond", "-value", 0);
+		voronota_assert_full_success("Failed to set all contacts adjunct values");
+		
+		voronota_set_adjunct_of_contacts("-use", "[hbonds]", "-name", "hbond", "-value", 1);
+		voronota_assert_full_success("Failed to set selected contacts adjunct values");
+		
+		adjuncts_to_export.push("hbond");
+	}
+	
 	if(output_file!=="_stdout")
 	{
 		shell('mkdir -p "$(dirname '+output_file+')"');
 	}
 	
-	voronota_export_adjuncts_of_contacts("-contacts-use", "[final_contacts]", "-inter-residue", common_params.coarse_grained, "-adjuncts", ["area", "distance"], "-file", "_virtual/contacts_table", "-expand-ids", common_params.expand_ids, "-no-serial", common_params.expand_ids!=="true", "-sep", '\t');
+	voronota_export_adjuncts_of_contacts("-contacts-use", "[final_contacts]", "-inter-residue", common_params.coarse_grained, "-adjuncts", adjuncts_to_export, "-file", "_virtual/contacts_table", "-expand-ids", common_params.expand_ids, "-no-serial", common_params.expand_ids!=="true", "-sep", '\t');
 	voronota_assert_full_success("Failed to export contacts data");
 	
 	if(common_params.og_pipeable=="true")
 	{
-		fwrite(output_file, spipe(fread("_virtual/contacts_table"), 'tail -n +2 | awk \'{print $0 "\\t.\\t."\'}').stdout);
+		fwrite(output_file, spipe(fread("_virtual/contacts_table"), 'tail -n +2 | awk \'{print $0 "\\t0"}\' | awk \'{print $1 "\\t" $2 "\\t" $3 "\\t" $4 "\\thb" $5 "\\t."}\' | sed "s|\\shb0|\\t.|" | sed "s|\\shb.|\\thb|"').stdout);
 	}
 	else
 	{
