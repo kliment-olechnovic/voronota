@@ -441,6 +441,24 @@ prepare_object=function(input_file, title)
 	}
 }
 
+use_hbplus_if_needed=function(title)
+{
+	if(common_params.use_hbplus=="true")
+	{
+		voronota_import_selection_of_contacts("-file", "_virtual/hbonds_"+title, "-name", "hbonds");
+		voronota_assert_full_success("Failed to import hbonds selection");
+		
+		voronota_set_adjunct_of_contacts("-use", "[]", "-name", "hbond", "-value", 0);
+		voronota_assert_full_success("Failed to set all contacts adjunct values");
+		
+		voronota_set_adjunct_of_contacts("-use", "[hbonds]", "-name", "hbond", "-value", 1);
+		voronota_assert_full_success("Failed to set selected contacts adjunct values");
+		
+		voronota_set_tag_of_contacts("-use", "[hbonds]", "-tag", "hb");
+		voronota_assert_full_success("Failed to tag selected contacts");
+	}
+}
+
 process_object=function(title, output_file, output_drawing_script_file)
 {
 	if(title===undefined || title==="")
@@ -466,6 +484,8 @@ process_object=function(title, output_file, output_drawing_script_file)
 		
 		voronota_construct_contacts("-probe 1.4 -skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
 		voronota_assert_full_success("Failed to construct inter-chain contacts");
+		
+		use_hbplus_if_needed(title);
 		
 		voronota_select_contacts("-use", "([-inter-chain] and "+common_params.contacts_subselection+")", "-name", "final_contacts");
 		voronota_assert_full_success("Failed to select inter-chain contacts");
@@ -496,6 +516,8 @@ process_object=function(title, output_file, output_drawing_script_file)
 		voronota_construct_contacts("-probe 1.4 -skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial -sas-mask-tag probifaceres");
 		voronota_assert_full_success("Failed to construct inter-chain contacts and related SAS contacts");
 		
+		use_hbplus_if_needed(title);
+		
 		voronota_select_contacts("-use", "([-inter-chain] and "+common_params.contacts_subselection+")", "-name", "inter_chain_contacts");
 		voronota_assert_full_success("Failed to select inter-chain contacts");
 		
@@ -506,19 +528,9 @@ process_object=function(title, output_file, output_drawing_script_file)
 		voronota_assert_full_success("Failed to select inter-chain contacts and related SAS contacts");
 	}
 	
-	var adjuncts_to_export=["area", "distance"];
-	
+	var adjuncts_to_export=["area", "distance"];	
 	if(common_params.use_hbplus=="true")
 	{
-		voronota_import_selection_of_contacts("-file", "_virtual/hbonds_"+title, "-name", "hbonds");
-		voronota_assert_full_success("Failed to import hbonds selection");
-		
-		voronota_set_adjunct_of_contacts("-use", "[]", "-name", "hbond", "-value", 0);
-		voronota_assert_full_success("Failed to set all contacts adjunct values");
-		
-		voronota_set_adjunct_of_contacts("-use", "[hbonds]", "-name", "hbond", "-value", 1);
-		voronota_assert_full_success("Failed to set selected contacts adjunct values");
-		
 		adjuncts_to_export.push("hbond");
 	}
 	
