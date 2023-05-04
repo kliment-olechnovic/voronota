@@ -110,7 +110,25 @@ public:
 		return seq;
 	}
 
-	static std::map<common::ChainResidueAtomDescriptor, int> construct_sequence_mapping(const std::vector<common::ChainResidueAtomDescriptor>& residue_sequence_vector, const std::string& reference_sequence, const bool only_equal_pairs, const std::string& ref_seq_alignment_output_filename)
+	static bool char_counts_as_residue(const char c)
+	{
+		return ((c>='A' && c<='Z') || (c>='a' && c<='z'));
+	}
+
+	static int count_residues_in_sequence(const std::string& seq)
+	{
+		int n=0;
+		for(std::size_t i=0;i<seq.size();i++)
+		{
+			if(char_counts_as_residue(seq[i]))
+			{
+				n++;
+			}
+		}
+		return n;
+	}
+
+	static std::map<common::ChainResidueAtomDescriptor, int> construct_sequence_mapping(const std::vector<common::ChainResidueAtomDescriptor>& residue_sequence_vector, const std::string& reference_sequence, const bool only_equal_pairs, double* identity, const std::string& ref_seq_alignment_output_filename)
 	{
 		std::map<common::ChainResidueAtomDescriptor, int> result;
 		if(!residue_sequence_vector.empty() && !reference_sequence.empty())
@@ -125,6 +143,27 @@ public:
 					if(p.first>=0 && p.second>=0 && (!only_equal_pairs || (p.first<static_cast<int>(reference_sequence.size()) && p.second<static_cast<int>(seq.size()) && reference_sequence[p.first]==seq[p.second])))
 					{
 						result[residue_sequence_vector.at(p.second)]=(p.first+1);
+					}
+				}
+				if(identity!=0)
+				{
+					int max_seq_size=std::max(count_residues_in_sequence(reference_sequence), count_residues_in_sequence(seq));
+					if(max_seq_size>0)
+					{
+						int matches=0;
+						for(std::size_t i=0;i<alignment.size();i++)
+						{
+							const std::pair<int, int>& p=alignment[i];
+							if(p.first>=0 && p.first<static_cast<int>(reference_sequence.size()) && p.second>=0 && p.second<static_cast<int>(seq.size()) && reference_sequence[p.first]==seq[p.second] && char_counts_as_residue(reference_sequence[p.first]))
+							{
+								matches++;
+							}
+						}
+						(*identity)=(static_cast<double>(matches)/static_cast<double>(max_seq_size));
+					}
+					else
+					{
+						(*identity)=0.0;
 					}
 				}
 				if(!ref_seq_alignment_output_filename.empty())
@@ -142,15 +181,15 @@ public:
 
 	static double calculate_sequence_identity(const std::string& seq_a, const std::string& seq_b)
 	{
-		const std::size_t max_seq_size=std::max(seq_a.size(), seq_b.size());
+		const std::size_t max_seq_size=std::max(count_residues_in_sequence(seq_a), count_residues_in_sequence(seq_b));
 		if(max_seq_size>0)
 		{
-			int matches=0.0;
+			int matches=0;
 			const std::vector< std::pair<int, int> >& alignment=auxiliaries::PairwiseSequenceAlignment::construct_sequence_alignment(seq_a, seq_b, auxiliaries::PairwiseSequenceAlignment::SimpleScorer(10, -10, -11, -1), false, 0);
 			for(std::size_t i=0;i<alignment.size();i++)
 			{
 				const std::pair<int, int>& p=alignment[i];
-				if(p.first>=0 && p.first<static_cast<int>(seq_a.size()) && p.second>=0 && p.second<static_cast<int>(seq_b.size()) && seq_a[p.first]==seq_b[p.second])
+				if(p.first>=0 && p.first<static_cast<int>(seq_a.size()) && p.second>=0 && p.second<static_cast<int>(seq_b.size()) && seq_a[p.first]==seq_b[p.second] && char_counts_as_residue(seq_a[p.first]))
 				{
 					matches++;
 				}

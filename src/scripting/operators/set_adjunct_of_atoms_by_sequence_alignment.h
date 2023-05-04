@@ -21,12 +21,18 @@ public:
 	{
 		SummaryOfAtoms atoms_summary;
 		std::string sequence;
+		double sequence_identity;
+
+		Result() : sequence_identity(0.0)
+		{
+		}
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
 			heterostorage.variant_object.value("sequence")=sequence;
 			heterostorage.variant_object.value("sequence_length")=sequence.size();
+			heterostorage.variant_object.value("sequence_identity")=sequence_identity;
 		}
 	};
 
@@ -98,7 +104,8 @@ public:
 			residue_sequence_vector.push_back(data_manager.primary_structure_info().residues[*it].chain_residue_descriptor);
 		}
 
-		const std::map<common::ChainResidueAtomDescriptor, int> sequence_mapping=common::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, sequence, false, alignment_file);
+		double sequence_identity=0.0;
+		const std::map<common::ChainResidueAtomDescriptor, int> sequence_mapping=common::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, sequence, false, &sequence_identity, alignment_file);
 
 		for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
 		{
@@ -116,6 +123,7 @@ public:
 		Result result;
 		result.atoms_summary=SummaryOfAtoms(data_manager.atoms(), atom_ids);
 		result.sequence=sequence;
+		result.sequence_identity=sequence_identity;
 
 		return result;
 	}

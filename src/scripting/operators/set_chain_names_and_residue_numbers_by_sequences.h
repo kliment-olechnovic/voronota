@@ -160,7 +160,7 @@ public:
 			}
 			chain_info.best_sequence_identity=(0.0-sequence_identities.begin()->first);
 			chain_info.closest_sequence_id=sequence_identities.begin()->second;
-			chain_info.sequence_mapping=common::SequenceUtilities::construct_sequence_mapping(chain_info.residue_sequence_vector, sequences[chain_info.closest_sequence_id], true, "");
+			chain_info.sequence_mapping=common::SequenceUtilities::construct_sequence_mapping(chain_info.residue_sequence_vector, sequences[chain_info.closest_sequence_id], true, 0, "");
 		}
 
 		std::vector< std::deque<std::string> > mapping_of_sequences_to_chain_names(sequences.size());
