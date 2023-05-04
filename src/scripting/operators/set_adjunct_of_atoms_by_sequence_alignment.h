@@ -34,8 +34,9 @@ public:
 	std::string name;
 	std::string sequence_file;
 	std::string alignment_file;
+	bool keep_dashes;
 
-	SetAdjunctOfAtomsBySequenceAlignment()
+	SetAdjunctOfAtomsBySequenceAlignment() : keep_dashes(false)
 	{
 	}
 
@@ -44,6 +45,7 @@ public:
 		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		name=input.get_value<std::string>("name");
 		sequence_file=input.get_value<std::string>("sequence-file");
+		keep_dashes=input.get_flag("keep-dashes");
 		alignment_file=input.get_value_or_default<std::string>("alignment-file", "");
 	}
 
@@ -53,6 +55,7 @@ public:
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "adjunct name"));
 		doc.set_option_decription(CDOD("sequence-file", CDOD::DATATYPE_STRING, "sequence input file"));
 		doc.set_option_decription(CDOD("alignment-file", CDOD::DATATYPE_STRING, "sequence alignment output file", ""));
+		doc.set_option_decription(CDOD("keep-dashes", CDOD::DATATYPE_BOOL, "flag to keep dashes in sequence before alignment"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -69,7 +72,7 @@ public:
 			throw std::runtime_error(std::string("Failed to read file '")+sequence_file+"'.");
 		}
 
-		const std::string sequence=common::SequenceUtilities::read_sequence_from_stream(finput);
+		const std::string sequence=common::SequenceUtilities::read_sequence_from_stream(finput, keep_dashes);
 
 		if(sequence.empty())
 		{

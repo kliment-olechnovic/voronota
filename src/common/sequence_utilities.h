@@ -19,7 +19,7 @@ namespace common
 class SequenceUtilities
 {
 public:
-	static std::vector<std::string> read_sequences_from_stream(std::istream& input)
+	static std::vector<std::string> read_sequences_from_stream(std::istream& input, const bool allow_special_symbols)
 	{
 		std::vector<std::string> result;
 		while(input.good())
@@ -50,6 +50,10 @@ public:
 							{
 								result.back().append(1, c-('a'-'A'));
 							}
+							else if(allow_special_symbols && c=='-')
+							{
+								result.back().append(1, c);
+							}
 						}
 					}
 				}
@@ -63,7 +67,7 @@ public:
 		if(!filename.empty())
 		{
 			std::ifstream finput(filename.c_str(), std::ios::in);
-			return read_sequences_from_stream(finput);
+			return read_sequences_from_stream(finput, false);
 		}
 		else
 		{
@@ -71,9 +75,9 @@ public:
 		}
 	}
 
-	static std::string read_sequence_from_stream(std::istream& input)
+	static std::string read_sequence_from_stream(std::istream& input, const bool allow_special_symbols)
 	{
-		const std::vector<std::string> sequences=read_sequences_from_stream(input);
+		const std::vector<std::string> sequences=read_sequences_from_stream(input, allow_special_symbols);
 		std::string result;
 		for(std::size_t i=0;i<sequences.size();i++)
 		{
@@ -87,7 +91,7 @@ public:
 		if(!filename.empty())
 		{
 			std::ifstream finput(filename.c_str(), std::ios::in);
-			return read_sequence_from_stream(finput);
+			return read_sequence_from_stream(finput, false);
 		}
 		else
 		{
