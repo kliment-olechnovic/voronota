@@ -254,6 +254,7 @@ public:
 		bool unmark;
 		bool show;
 		bool hide;
+		bool additive_color;
 		auxiliaries::ColorUtilities::ColorInteger color;
 		std::set<std::size_t> visual_ids;
 
@@ -262,6 +263,7 @@ public:
 			unmark(false),
 			show(false),
 			hide(false),
+			additive_color(false),
 			color(auxiliaries::ColorUtilities::null_color())
 		{
 		}
@@ -423,8 +425,17 @@ public:
 
 				if(color_valid())
 				{
-					updated=(updated || (visual.color!=color));
-					visual.color=color;
+					if(!additive_color)
+					{
+						updated=(updated || (visual.color!=color));
+						visual.color=color;
+					}
+					else
+					{
+						auxiliaries::ColorUtilities::ColorInteger sum_of_colors=auxiliaries::ColorUtilities::color_sum(visual.color, color);
+						updated=(updated || (visual.color!=sum_of_colors));
+						visual.color=sum_of_colors;
+					}
 				}
 			}
 

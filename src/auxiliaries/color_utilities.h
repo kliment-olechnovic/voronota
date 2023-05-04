@@ -314,6 +314,13 @@ public:
 
 		return color_from_gradient(anchors, value);
 	}
+
+	static ColorInteger color_sum(const ColorInteger a, const ColorInteger b)
+	{
+		return ((std::min(static_cast<ColorInteger>(((a&0xFF0000) >> 16)+((b&0xFF0000) >> 16)), static_cast<ColorInteger>(0xFF)) << 16)+
+				(std::min(static_cast<ColorInteger>(((a&0x00FF00) >> 8) +((b&0x00FF00) >> 8)),  static_cast<ColorInteger>(0xFF)) << 8)+
+				(std::min(static_cast<ColorInteger>(((a&0x0000FF))      +((b&0x0000FF))),       static_cast<ColorInteger>(0xFF))));
+	}
 };
 
 }

@@ -47,6 +47,7 @@ public:
 	std::string by;
 	std::string scheme;
 	bool scheme_present;
+	bool additive_coloring;
 	bool as_z_scores;
 	bool min_val_present;
 	double min_val;
@@ -54,7 +55,7 @@ public:
 	double max_val;
 	bool only_summarize;
 
-	SpectrumAtoms() : scheme_present(false), as_z_scores(false), min_val_present(false), min_val(0.0), max_val_present(false), max_val(1.0), only_summarize(false)
+	SpectrumAtoms() : scheme_present(false), additive_coloring(false), as_z_scores(false), min_val_present(false), min_val(0.0), max_val_present(false), max_val(1.0), only_summarize(false)
 	{
 	}
 
@@ -66,6 +67,7 @@ public:
 		by=adjunct.empty() ? input.get_value_or_default<std::string>("by", "residue-number") : std::string("adjunct");
 		scheme_present=input.is_option("scheme");
 		scheme=input.get_value_or_default<std::string>("scheme", "reverse-rainbow");
+		additive_coloring=input.get_flag("additive-coloring");
 		as_z_scores=input.get_flag("as-z-scores");
 		min_val_present=input.is_option("min-val");
 		min_val=input.get_value_or_default<double>("min-val", (as_z_scores ? -2.0 : 0.0));
@@ -81,6 +83,7 @@ public:
 		doc.set_option_decription(CDOD("adjunct", CDOD::DATATYPE_STRING, "adjunct name", ""));
 		doc.set_option_decription(CDOD("by", CDOD::DATATYPE_STRING, "spectrum source ID", "residue-number"));
 		doc.set_option_decription(CDOD("scheme", CDOD::DATATYPE_STRING, "coloring scheme", "reverse-rainbow"));
+		doc.set_option_decription(CDOD("additive-coloring", CDOD::DATATYPE_BOOL, "flag to sum new color with current color in RGB space"));
 		doc.set_option_decription(CDOD("as-z-scores", CDOD::DATATYPE_BOOL, "flag to convert values to z-scores"));
 		doc.set_option_decription(CDOD("min-val", CDOD::DATATYPE_FLOAT, "min value", 0.0));
 		doc.set_option_decription(CDOD("max-val", CDOD::DATATYPE_FLOAT, "max value", 1.0));
@@ -339,6 +342,7 @@ public:
 		{
 			DataManager::DisplayStateUpdater dsu;
 			dsu.visual_ids=representation_ids;
+			dsu.additive_color=additive_coloring;
 			if(usable_scheme=="random")
 			{
 				std::map<double, auxiliaries::ColorUtilities::ColorInteger> map_of_values_colors;
