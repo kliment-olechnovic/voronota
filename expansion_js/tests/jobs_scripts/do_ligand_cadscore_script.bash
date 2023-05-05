@@ -15,3 +15,15 @@ $VORONOTAJSDIR/voronota-js-ligand-cadscore \
 | column -t \
 > "$SUBDIR/stdout.txt"
 
+$VORONOTAJSDIR/voronota-js-ligand-cadscore \
+  --casp15-target "$INPUTDIR/protein_ligand/T1118v1LG035_1" \
+  --casp15-target-pose 1 \
+  --casp15-model "$INPUTDIR/protein_ligand/T1118v1LG046_1" \
+  --casp15-model-pose 2 \
+  --table-dir "$SUBDIR/table_mod_b" \
+  --details-dir "$SUBDIR/details_mod_b" \
+  --and-swap true \
+  --ignore-ligand-headers true \
+| column -t \
+> "$SUBDIR/stdout_mod_b.txt"
+

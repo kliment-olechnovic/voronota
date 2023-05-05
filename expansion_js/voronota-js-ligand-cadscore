@@ -27,6 +27,7 @@ Other options:
     --details-dir                 string     directory to output lists of contacts used for scoring
     --drawing-dir                 string     directory to output files to visualize with pymol
     --and-swap                    string     flag to compute everything after swapping target and model, default is 'false'
+    --ignore-ligand-headers       string     flag to ignore title header in ligand files
     --help | -h                              display help message and exit
     
 Standard output:
@@ -78,6 +79,7 @@ TABLE_DIR=""
 DETAILS_DIR=""
 DRAWING_DIR=""
 AND_SWAP="false"
+IGNORE_LIGAND_HEADERS="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -148,6 +150,10 @@ do
 		;;
 	--and-swap)
 		AND_SWAP="$OPTARG"
+		shift
+		;;
+	--ignore-ligand-headers)
+		IGNORE_LIGAND_HEADERS="$OPTARG"
 		shift
 		;;
 	-h|--help)
@@ -259,7 +265,7 @@ EOF
 	  --target-receptor "${TMPLDIR}/target_receptor.pdb" --target-ligands "$(cat ${TMPLDIR}/target_list)" --target-ligand-ids "$(cat ${TMPLDIR}/target_list_ids)" \
       --model-receptor "${TMPLDIR}/model_receptor.pdb" --model-ligands "$(cat ${TMPLDIR}/model_list)" --model-ligand-ids "$(cat ${TMPLDIR}/model_list_ids)" \
       --target-name "$(basename ${CASP15_TARGET})_pose${CASP15_TARGET_POSE}" --model-name "$(basename ${CASP15_MODEL})_pose${CASP15_MODEL_POSE}" \
-      --table-dir "$TABLE_DIR" --details-dir "$DETAILS_DIR" --drawing-dir "$DRAWING_DIR" --and-swap "$AND_SWAP"
+      --table-dir "$TABLE_DIR" --details-dir "$DETAILS_DIR" --drawing-dir "$DRAWING_DIR" --and-swap "$AND_SWAP" --ignore-ligand-headers "$IGNORE_LIGAND_HEADERS"
 	
 	exit 0
 fi
@@ -293,6 +299,28 @@ do
 		exit 1
 	fi
 done < <(echo "${MODEL_LIGANDS}" | tr ' ' '\n' | egrep .)
+
+if [ "$IGNORE_LIGAND_HEADERS" == "true" ]
+then
+	echo ${TARGET_LIGANDS} | tr ' ' '\n' | egrep . \
+	| while read LIGFILE
+	do
+		LIGFILENAME="$(basename ${LIGFILE})"
+		(cat "$LIGFILE" | head -1 | sed 's/^\(\S\+\)/GEN/' ; cat "$LIGFILE" | tail -n +2) > "${TMPLDIR}/headless_${LIGFILENAME}"
+		echo "${TMPLDIR}/headless_${LIGFILENAME}"
+	done > "${TMPLDIR}/list_of_modified_target_ligand_files"
+	
+	echo ${MODEL_LIGANDS} | tr ' ' '\n' | egrep . \
+	| while read LIGFILE
+	do
+		LIGFILENAME="$(basename ${LIGFILE})"
+		(cat "$LIGFILE" | head -1 | sed 's/^\(\S\+\)/GEN/' ; cat "$LIGFILE" | tail -n +2) > "${TMPLDIR}/headless_${LIGFILENAME}"
+		echo "${TMPLDIR}/headless_${LIGFILENAME}"
+	done > "${TMPLDIR}/list_of_modified_model_ligand_files"
+		
+	TARGET_LIGANDS="$(cat ${TMPLDIR}/list_of_modified_target_ligand_files | tr '\n' ' ' | sed 's/\s\+$//')"
+	MODEL_LIGANDS="$(cat ${TMPLDIR}/list_of_modified_model_ligand_files | tr '\n' ' ' | sed 's/\s\+$//')"
+fi
 
 if [ -z "$TARGET_NAME" ]
 then

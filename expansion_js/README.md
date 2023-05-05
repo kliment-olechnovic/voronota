@@ -552,6 +552,7 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         --details-dir                 string     directory to output lists of contacts used for scoring
         --drawing-dir                 string     directory to output files to visualize with pymol
         --and-swap                    string     flag to compute everything after swapping target and model, default is 'false'
+        --ignore-ligand-headers       string     flag to ignore title header in ligand files
         --help | -h                              display help message and exit
         
     Standard output:
