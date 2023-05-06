@@ -1272,6 +1272,9 @@
             "name":"set-adjunct-of-contacts-by-expression",
             "short_description":""},
           {
+            "name":"set-adjuncts-of-atoms-by-ufsr",
+            "short_description":""},
+          {
             "name":"set-alias",
             "short_description":""},
           {
