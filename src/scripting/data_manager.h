@@ -1299,6 +1299,25 @@ public:
 		restrict_atoms(ids);
 	}
 
+	void restrict_atoms_and_renumber_residues(const std::set<std::size_t>& atom_ids_to_keep, const std::map<std::size_t, int>& atom_ids_to_renumber)
+	{
+		if(atom_ids_to_keep.empty())
+		{
+			throw std::runtime_error(std::string("No atoms to keep after renumbering residues"));
+		}
+
+		for(std::map<std::size_t, int>::const_iterator it=atom_ids_to_renumber.begin();it!=atom_ids_to_renumber.end();++it)
+		{
+			const std::size_t atom_id=it->first;
+			if(atom_id<atoms_.size())
+			{
+				atoms_[atom_id].crad.resSeq=it->second;
+			}
+		}
+
+		restrict_atoms(atom_ids_to_keep);
+	}
+
 	void sort_atoms_by_residue_id()
 	{
 		std::map< common::ChainResidueAtomDescriptor, std::vector<std::size_t> > map_of_residue_ids;

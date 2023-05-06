@@ -1287,6 +1287,9 @@
             "name":"set-chain-names-by-guessing",
             "short_description":""},
           {
+            "name":"set-chain-residue-numbers-by-sequence",
+            "short_description":""},
+          {
             "name":"set-global-adjunct",
             "short_description":""},
           {
