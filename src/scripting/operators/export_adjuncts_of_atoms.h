@@ -32,10 +32,11 @@ public:
 	bool no_resSeq;
 	bool no_resName;
 	bool all;
+	bool expand_ids;
 	std::vector<std::string> adjuncts;
 	std::string sep;
 
-	ExportAdjunctsOfAtoms() : no_serial(false), no_name(false), no_resSeq(false), no_resName(false), all(false), sep(" ")
+	ExportAdjunctsOfAtoms() : no_serial(false), no_name(false), no_resSeq(false), no_resName(false), all(false), expand_ids(false), sep(" ")
 	{
 	}
 
@@ -49,6 +50,7 @@ public:
 		no_resSeq=input.get_flag("no-resSeq");
 		no_resName=input.get_flag("no-resName");
 		all=input.get_flag("all");
+		expand_ids=input.get_flag("expand-ids");
 		adjuncts=input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
 		sep=input.get_value_or_default<std::string>("sep", " ");
 	}
@@ -62,6 +64,7 @@ public:
 		doc.set_option_decription(CDOD("no-resSeq", CDOD::DATATYPE_BOOL, "flag to exclude residue sequence numbers"));
 		doc.set_option_decription(CDOD("no-resName", CDOD::DATATYPE_BOOL, "flag to exclude residue names"));
 		doc.set_option_decription(CDOD("all", CDOD::DATATYPE_BOOL, "flag to export all adjuncts"));
+		doc.set_option_decription(CDOD("expand-ids", CDOD::DATATYPE_BOOL, "flag to output expanded IDs"));
 		doc.set_option_decription(CDOD("adjuncts", CDOD::DATATYPE_STRING_ARRAY, "adjunct names", ""));
 		doc.set_option_decription(CDOD("sep", CDOD::DATATYPE_STRING, "output separator string", " "));
 	}
@@ -142,7 +145,7 @@ public:
 		std::ostream& output=output_selector.stream();
 		assert_io_stream(file, output);
 
-		output << "ID";
+		output << common::ChainResidueAtomDescriptor::str_header("ID", expand_ids, "_", sep);
 		for(std::size_t i=0;i<adjuncts_filled.size();i++)
 		{
 			output << sep << adjuncts_filled[i];
@@ -178,12 +181,28 @@ public:
 						output_values[i]=index_it->second;
 					}
 				}
+				else if(adjuncts_filled[i]=="center_x")
+				{
+					output_values[i]=atom.value.x;
+				}
+				else if(adjuncts_filled[i]=="center_y")
+				{
+					output_values[i]=atom.value.y;
+				}
+				else if(adjuncts_filled[i]=="center_z")
+				{
+					output_values[i]=atom.value.z;
+				}
+				else if(adjuncts_filled[i]=="radius")
+				{
+					output_values[i]=atom.value.r;
+				}
 			}
 		}
 
 		for(std::map< std::size_t, std::vector<double> >::const_iterator it=map_of_output.begin();it!=map_of_output.end();++it)
 		{
-			output << data_manager.atoms()[it->first].crad.without_some_info(no_serial, no_name, no_resSeq, no_resName);
+			output << data_manager.atoms()[it->first].crad.without_some_info(no_serial, no_name, no_resSeq, no_resName).str(expand_ids, sep);
 			const std::vector<double>& output_values=it->second;
 			for(std::size_t i=0;i<output_values.size();i++)
 			{
