@@ -26,21 +26,27 @@ public:
 	};
 
 	SelectionManager::Query parameters_for_selecting;
+	std::string mode;
+	int in_chain_sep_max;
 	std::string name_prefix;
 
-	SetAdjunctsOfAtomsByTypeUFSR()
+	SetAdjunctsOfAtomsByTypeUFSR() : in_chain_sep_max(30)
 	{
 	}
 
 	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
+		mode=input.get_value_or_default<std::string>("mode", "simple");
+		in_chain_sep_max=input.get_value_or_default<int>("in-chain-sep-max", 30);
 		name_prefix=input.get_value<std::string>("name-prefix");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
+		doc.set_option_decription(CDOD("mode", CDOD::DATATYPE_STRING, "distance calculation method, may be 'simple', 'out-chain', 'in-chain', 'in-chain-sep'"));
+		doc.set_option_decription(CDOD("in-chain-sep-max", CDOD::DATATYPE_INT, "max sequence separation for 'in-chain-sep' mode"));
 		doc.set_option_decription(CDOD("name-prefix", CDOD::DATATYPE_STRING, "adjuncts name prefix"));
 	}
 
@@ -49,6 +55,11 @@ public:
 		data_manager.assert_atoms_availability();
 
 		assert_adjunct_name_input(name_prefix+"a1", false);
+
+		if(mode!="simple" && mode!="in-chain" && mode!="out-chain" && mode!="in-chain-sep")
+		{
+			throw std::runtime_error(std::string("Invalid mode, must be 'simple' or 'chained'."));
+		}
 
 		const std::set<std::size_t> atom_ids=data_manager.selection_manager().select_atoms(parameters_for_selecting);
 		if(atom_ids.empty())
@@ -66,9 +77,12 @@ public:
 			for(std::size_t j=(i+1);j<ids.size();j++)
 			{
 				const Atom& aj=data_manager.atoms()[ids[j]];
-				const double d=apollota::distance_from_point_to_point(ai.value, aj.value);
-				distances[i][j]=d;
-				distances[j][i]=d;
+				if((mode=="simple") || (mode=="out-chain" && ai.crad.chainID!=aj.crad.chainID)|| (mode=="in-chain" && ai.crad.chainID==aj.crad.chainID) || (mode=="in-chain-sep" && ai.crad.chainID==aj.crad.chainID && std::abs(ai.crad.resSeq-aj.crad.resSeq)<=in_chain_sep_max))
+				{
+					const double d=apollota::distance_from_point_to_point(ai.value, aj.value);
+					distances[i][j]=d;
+					distances[j][i]=d;
+				}
 			}
 		}
 
