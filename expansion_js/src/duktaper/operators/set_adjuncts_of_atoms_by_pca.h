@@ -3,7 +3,7 @@
 
 #include "../operators_common.h"
 
-#include "../../dependencies/Eigen/Dense"
+#include "../../dependencies/utilities/eigen_pca.h"
 
 namespace voronota
 {
@@ -27,9 +27,10 @@ public:
 	scripting::SelectionManager::Query parameters_for_selecting;
 	std::vector<std::string> input_adjuncts;
 	int components;
+	bool no_zscores;
 	std::string output_prefix;
 
-	SetAdjunctsOfAtomsByPCA() : components(0)
+	SetAdjunctsOfAtomsByPCA() : components(0), no_zscores(false)
 	{
 	}
 
@@ -38,6 +39,7 @@ public:
 		parameters_for_selecting=scripting::OperatorsUtilities::read_generic_selecting_query(input);
 		input_adjuncts=input.get_value_vector<std::string>("input-adjuncts");
 		components=input.get_value<int>("components");
+		no_zscores=input.get_flag("no-zscores");
 		output_prefix=input.get_value<std::string>("output-prefix");
 	}
 
@@ -46,6 +48,7 @@ public:
 		scripting::OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("input-adjuncts", CDOD::DATATYPE_STRING_ARRAY, "input adjunct names"));
 		doc.set_option_decription(CDOD("components", CDOD::DATATYPE_INT, "number of transformed coordinates to output"));
+		doc.set_option_decription(CDOD("no-zscores", CDOD::DATATYPE_BOOL, "flag to not convert input values to z-scores"));
 		doc.set_option_decription(CDOD("output-prefix", CDOD::DATATYPE_STRING, "prefix string for names of output adjuncts"));
 	}
 
@@ -88,14 +91,14 @@ public:
 			}
 		}
 
-		Eigen::MatrixXd raw_data_matrix(static_cast<int>(atom_ids.size()), static_cast<int>(input_adjuncts.size()));
+		std::vector< std::vector<double> > io_data(atom_ids.size(), std::vector<double>(input_adjuncts.size(), 0.0));
 
 		{
-			int row_i=0;
+			int atom_i=0;
 			for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
 			{
 				std::map<std::string, double>& atom_adjuncts=data_manager.atom_adjuncts_mutable(*it);
-				std::vector<double> input_adjunct_values(input_adjuncts.size(), 0.0);
+				std::vector<double>& input_adjunct_values=io_data[atom_i];
 				for(std::size_t i=0;i<input_adjuncts.size();i++)
 				{
 					if(input_adjuncts[i]=="center_x")
@@ -119,38 +122,22 @@ public:
 						input_adjunct_values[i]=atom_adjuncts[input_adjuncts[i]];
 					}
 				}
-				Eigen::VectorXd row_data_vector=Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(input_adjunct_values.data(), static_cast<int>(input_adjunct_values.size()));
-				raw_data_matrix.row(row_i)=row_data_vector;
-				row_i++;
+				atom_i++;
 			}
 		}
 
-		Eigen::MatrixXd centered_data_matrix=raw_data_matrix.rowwise()-raw_data_matrix.colwise().mean();
-
-		Eigen::MatrixXd covariance_matrix=centered_data_matrix.adjoint()*centered_data_matrix;
-
-		Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigensolver(covariance_matrix);
-
-		if(eigensolver.info()!=Eigen::Success)
-		{
-			throw std::runtime_error(std::string("Failed to perform eigendecomposition."));
-		}
-
-		Eigen::MatrixXd pca_basis=eigensolver.eigenvectors().rightCols(components);
-
-		Eigen::MatrixXd projected_data_matrix=(centered_data_matrix*pca_basis);
+		eigen_pca::compute_pca_and_project_on_basis(components, no_zscores, io_data);
 
 		{
 			int row_i=0;
 			for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
 			{
 				std::map<std::string, double>& atom_adjuncts=data_manager.atom_adjuncts_mutable(*it);
-				Eigen::VectorXd row_data_vector=projected_data_matrix.row(row_i);
-				for(int i=0;i<components;i++)
+				for(std::size_t j=0;j<io_data[row_i].size();j++)
 				{
 					std::ostringstream name_output;
-					name_output << output_prefix << (i+1);
-					atom_adjuncts[name_output.str()]=row_data_vector[i];
+					name_output << output_prefix << (j+1);
+					atom_adjuncts[name_output.str()]=io_data[row_i][j];
 				}
 				row_i++;
 			}
