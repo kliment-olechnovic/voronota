@@ -971,22 +971,24 @@ private:
 				}
 			}
 
-			const float script_editor_size_min=100;
-			const float script_editor_size_max=1000*GUIStyleWrapper::scale_factor();
+			{
+				const float flexible_region_size_min=100;
+				const float flexible_region_size_max=1000*GUIStyleWrapper::scale_factor();
 
-			static float script_editor_size=300;
-			static float script_editor_size_left=script_editor_size_max-script_editor_size;
+				static float flexible_region_size=300;
+				static float flexible_region_size_left=flexible_region_size_max-flexible_region_size;
 
-			script_editor_size=std::max(script_editor_size_min, std::min(script_editor_size, script_editor_size_max));
+				flexible_region_size=std::max(flexible_region_size_min, std::min(flexible_region_size, flexible_region_size_max));
 
-			ImGuiAddonSimpleSplitter::set_splitter("##script_editor_splitter", &script_editor_size, &script_editor_size_left, script_editor_size_min, script_editor_size_min, 1.0f);
+				ImGuiAddonSimpleSplitter::set_splitter("##script_editor_splitter", &flexible_region_size, &flexible_region_size_left, flexible_region_size_min, flexible_region_size_min, GUIStyleWrapper::scale_factor());
 
-			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0, (script_editor_size-4.0f*GUIStyleWrapper::scale_factor())));
-			editor_.Render("ScriptEditor");
-			focused=editor_.IsFocused();
-			ImGui::EndChild();
+				ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0, (flexible_region_size-4.0f*GUIStyleWrapper::scale_factor())));
+				editor_.Render("ScriptEditor");
+				focused=editor_.IsFocused();
+				ImGui::EndChild();
 
-			ImGui::Dummy(ImVec2(0.0f, 4.0f*GUIStyleWrapper::scale_factor()));
+				ImGui::Dummy(ImVec2(0.0f, 4.0f*GUIStyleWrapper::scale_factor()));
+			}
 		}
 
 	private:
@@ -1061,10 +1063,6 @@ private:
 
 			const std::string search_string(search_string_buffer.data());
 
-			const int doc_viewer_size_min=200;
-			const int doc_viewer_size_max=800;
-
-			static int doc_viewer_size=300;
 			static bool doc_viewer_colors_black_on_white=false;
 
 			ImGui::SameLine();
@@ -1075,49 +1073,55 @@ private:
 				ImGui::Button("Options##doc_viewer", ImVec2(70*GUIStyleWrapper::scale_factor(),0));
 				if(ImGui::BeginPopupContextItem("doc viewer options context menu", 0))
 				{
-					ImGui::PushItemWidth(150);
-					ImGui::SliderInt("Resize##doc_viewer_slider_resize", &doc_viewer_size, doc_viewer_size_min, doc_viewer_size_max);
-					ImGui::PopItemWidth();
-
-					ImGui::Separator();
-
 					ImGui::Checkbox("Black on white", &doc_viewer_colors_black_on_white);
 
 					ImGui::EndPopup();
 				}
 			}
 
-			doc_viewer_size=std::max(doc_viewer_size_min, std::min(doc_viewer_size, doc_viewer_size_max));
-
 			ImVec4 color_text=(doc_viewer_colors_black_on_white ? ImVec4(0.0f, 0.0f, 0.0f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			ImVec4 color_background=(doc_viewer_colors_black_on_white ? ImVec4(1.0f, 1.0f, 1.0f, 1.0f) : ImVec4(0.10f, 0.10f, 0.10f, 1.0f));
 			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, color_background);
 
-			ImGui::BeginChild("##area_for_list_of_documentation", ImVec2(0, doc_viewer_size*GUIStyleWrapper::scale_factor()));
-
-			for(std::map<std::string, std::string>::const_iterator it=documentation.begin();it!=documentation.end();++it)
 			{
-				const std::string& title=it->first;
-				const std::string& content=it->second;
-				if(search_string.empty() || title.find(search_string)!=std::string::npos)
+				const float flexible_region_size_min=100;
+				const float flexible_region_size_max=800*GUIStyleWrapper::scale_factor();
+
+				static float flexible_region_size=300;
+				static float flexible_region_size_left=flexible_region_size_max-flexible_region_size;
+
+				flexible_region_size=std::max(flexible_region_size_min, std::min(flexible_region_size, flexible_region_size_max));
+
+				ImGuiAddonSimpleSplitter::set_splitter("##documentation_viewer_splitter", &flexible_region_size, &flexible_region_size_left, flexible_region_size_min, flexible_region_size_min, GUIStyleWrapper::scale_factor());
+
+				ImGui::BeginChild("##area_for_list_of_documentation", ImVec2(0, (flexible_region_size-4.0f*GUIStyleWrapper::scale_factor())));
+
+				for(std::map<std::string, std::string>::const_iterator it=documentation.begin();it!=documentation.end();++it)
 				{
-					if(ImGui::TreeNode(title.c_str()))
+					const std::string& title=it->first;
+					const std::string& content=it->second;
+					if(search_string.empty() || title.find(search_string)!=std::string::npos)
 					{
-						if(content.empty())
+						if(ImGui::TreeNode(title.c_str()))
 						{
-							ImGui::TextUnformatted("    no arguments");
+							if(content.empty())
+							{
+								ImGui::TextUnformatted("    no arguments");
+							}
+							else
+							{
+								ImGui::TextUnformatted(content.c_str());
+							}
+							ImGui::TreePop();
 						}
-						else
-						{
-							ImGui::TextUnformatted(content.c_str());
-						}
-						ImGui::TreePop();
 					}
 				}
-			}
 
-			ImGui::EndChild();
+				ImGui::EndChild();
+
+				ImGui::Dummy(ImVec2(0.0f, 4.0f*GUIStyleWrapper::scale_factor()));
+			}
 
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
