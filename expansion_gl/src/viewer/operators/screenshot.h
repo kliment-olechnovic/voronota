@@ -26,19 +26,22 @@ public:
 	};
 
 	std::string filename;
+	bool transparent;
 
-	Screenshot()
+	Screenshot() : transparent(false)
 	{
 	}
 
 	void initialize(scripting::CommandInput& input)
 	{
 		filename=input.get_value_or_first_unused_unnamed_value("file");
+		transparent=input.get_flag("transparent");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
+		doc.set_option_decription(CDOD("transparent", CDOD::DATATYPE_BOOL, "flag for transparent PNG background"));
 	}
 
 	Result run(void*) const
@@ -63,6 +66,18 @@ public:
 		{
 			throw std::runtime_error(std::string("Invalid file extension, must be '.ppm' or '.png'."));
 		}
+
+		if(transparent && format_to_use!=".png")
+		{
+			throw std::runtime_error(std::string("Transparency flag incompatible with provided file extension, must be '.png'."));
+		}
+
+		unsigned char background_rgb[3]={0, 0, 0};
+		if(transparent)
+		{
+			auxiliaries::ColorUtilities::color_to_components<unsigned char>(auxiliaries::ColorUtilities::color_from_components<float>(uv::ViewerApplication::instance().background_color(), true), &background_rgb[0], false);
+		}
+
 
 		int W=0;
 		int H=0;
@@ -110,7 +125,7 @@ public:
 					png_image_data[png_pos]=static_cast<unsigned char>(image_data[pos]);
 					png_image_data[png_pos+1]=static_cast<unsigned char>(image_data[pos+1]);
 					png_image_data[png_pos+2]=static_cast<unsigned char>(image_data[pos+2]);
-					png_image_data[png_pos+3]=255;
+					png_image_data[png_pos+3]=((transparent && background_rgb[0]==png_image_data[png_pos] && background_rgb[1]==png_image_data[png_pos+1] && background_rgb[2]==png_image_data[png_pos+2]) ? 0 : 255);
 				}
 			}
 			unsigned int error=lodepng::encode(filename, png_image_data, static_cast<unsigned int>(W), static_cast<unsigned int>(H));
@@ -128,6 +143,7 @@ public:
 
 		return result;
 	}
+
 };
 
 }
