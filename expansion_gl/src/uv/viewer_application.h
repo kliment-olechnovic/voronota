@@ -616,6 +616,26 @@ public:
 		return true;
 	}
 
+	bool render_in_screenshot_mode_and_read_pixels(const int image_width, const int image_height, std::vector<char>& image_data)
+	{
+		if(allowed_to_refresh_frame_)
+		{
+			render_frame_raw_to_buffer(image_width, image_height);
+
+			image_data.clear();
+			image_data.resize(image_width*image_height*3);
+
+			glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+			glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
+			glPixelStorei(GL_PACK_SKIP_ROWS, 0);
+			glPixelStorei(GL_PACK_ALIGNMENT, 1);
+			glReadPixels(0, 0, image_width, image_height, GL_RGB, GL_UNSIGNED_BYTE, &image_data[0]);
+
+			return true;
+		}
+		return false;
+	}
+
 	void save_view_to_stream(std::ostream& output) const
 	{
 		output << "UV_VIEWER_APPLICATION_EXPORTED_VIEW\n";
@@ -1320,13 +1340,95 @@ private:
 		}
 	}
 
-	void render_scene(const ShadingMode::Mode shading_mode)
+	void render_frame_raw_to_buffer(const int image_width, const int image_height)
+	{
+		if(!good())
+		{
+			return;
+		}
+
+		on_before_rendered_frame();
+
+		glEnable(GL_DEPTH_TEST);
+
+		glUseProgram(0);
+
+		virtual_screen_a_framebuffer_controller_.init(image_width, image_height);
+		glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
+
+		glScissor(0, 0, image_width, image_height);
+		glViewport(0, 0, image_width, image_height);
+		refresh_shading_viewport(0, 0, image_width, image_height);
+		glClearColor(background_color_[0], background_color_[1], background_color_[2], 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		shading_simple_.enable();
+		render_scene(ShadingMode::simple, image_width, image_height, true);
+
+		shading_with_instancing_.enable();
+		render_scene(ShadingMode::with_instancing, image_width, image_height, true);
+
+		shading_with_impostoring_.enable();
+		render_scene(ShadingMode::with_impostoring, image_width, image_height, true);
+
+		if(occlusion_mode_!=OcclusionMode::none || antialiasing_mode_!=AntialiasingMode::none)
+		{
+			virtual_screen_b_framebuffer_controller_.init(image_width, image_height);
+
+			shading_screen_.set_viewport(0, 0, image_width, image_height);
+
+			glDisable(GL_DEPTH_TEST);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glScissor(0, 0, image_width, image_height);
+			glViewport(0, 0, image_width, image_height);
+
+			if(occlusion_mode_==OcclusionMode::noisy)
+			{
+				shading_screen_.set_mode_number(12);
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+				drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+				virtual_screen_a_framebuffer_controller_.swap(virtual_screen_b_framebuffer_controller_);
+			}
+			else if(occlusion_mode_==OcclusionMode::smooth)
+			{
+				shading_screen_.set_mode_number(11);
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+				drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+				shading_screen_.set_mode_number(21);
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
+				drawing_for_screen_controller_.draw(virtual_screen_b_framebuffer_controller_.texture());
+
+				shading_screen_.set_mode_number(22);
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+				drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+				virtual_screen_a_framebuffer_controller_.swap(virtual_screen_b_framebuffer_controller_);
+			}
+
+			if(antialiasing_mode_==AntialiasingMode::fast)
+			{
+				shading_screen_.set_mode_number(30);
+				glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_b_framebuffer_controller_.framebuffer());
+				drawing_for_screen_controller_.draw(virtual_screen_a_framebuffer_controller_.texture());
+
+				virtual_screen_a_framebuffer_controller_.swap(virtual_screen_b_framebuffer_controller_);
+			}
+
+			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
+		}
+
+		glUseProgram(0);
+	}
+
+	void render_scene(const ShadingMode::Mode shading_mode, const int effective_width, const int effective_height, const bool force_refresh_projection)
 	{
 		if(rendering_mode_==RenderingMode::stereo)
 		{
-			const int width=effective_rendering_framebuffer_width()/2;
+			const int width=effective_width/2;
 			{
-				refresh_shading_projection(width, effective_rendering_framebuffer_height(), shading_mode);
+				refresh_shading_projection(width, effective_height, shading_mode);
 			}
 			for(int i=0;i<2;i++)
 			{
@@ -1339,8 +1441,8 @@ private:
 					refresh_shading_viewtransform(TransformationMatrixController::create_viewtransform_simple_stereo(zoom_value_, stereo_angle_, stereo_offset_, i), shading_mode);
 				}
 				const int xpos=(width*i);
-				glViewport(xpos, 0, width, effective_rendering_framebuffer_height());
-				refresh_shading_viewport(xpos, 0, width, effective_rendering_framebuffer_height(), shading_mode);
+				glViewport(xpos, 0, width, effective_height);
+				refresh_shading_viewport(xpos, 0, width, effective_height, shading_mode);
 				draw_scene(shading_mode, 0);
 			}
 			refresh_shading_viewtransform(shading_mode);
@@ -1350,9 +1452,9 @@ private:
 		{
 			int n_rows=1;
 			int n_columns=1;
-			Utilities::calculate_grid_dimensions(grid_size_, effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height(), n_rows, n_columns);
-			const int width=effective_rendering_framebuffer_width()/n_columns;
-			const int height=effective_rendering_framebuffer_height()/n_rows;
+			Utilities::calculate_grid_dimensions(grid_size_, effective_width, effective_height, n_rows, n_columns);
+			const int width=effective_width/n_columns;
+			const int height=effective_height/n_rows;
 			{
 				refresh_shading_projection(width, height, shading_mode);
 			}
@@ -1373,8 +1475,21 @@ private:
 		}
 		else
 		{
+			if(force_refresh_projection)
+			{
+				refresh_shading_projection(effective_width, effective_height, shading_mode);
+			}
 			draw_scene(shading_mode, 0);
+			if(force_refresh_projection)
+			{
+				refresh_shading_projection(shading_mode);
+			}
 		}
+	}
+
+	void render_scene(const ShadingMode::Mode shading_mode)
+	{
+		render_scene(shading_mode, effective_rendering_framebuffer_width(), effective_rendering_framebuffer_height(), false);
 	}
 
 	void draw_scene(const ShadingMode::Mode shading_mode, const int grid_id)
