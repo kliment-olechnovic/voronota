@@ -591,32 +591,7 @@ public:
 		refresh_shading_projection();
 	}
 
-	bool read_pixels(int& image_width, int& image_height, std::vector<char>& image_data)
-	{
-		image_width=effective_rendering_framebuffer_width();
-		image_height=effective_rendering_framebuffer_height();
-		image_data.clear();
-		image_data.resize(image_width*image_height*3);
-
-		if(skipping_virtual_screen_framebuffers_)
-		{
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
-		else
-		{
-			glBindFramebuffer(GL_FRAMEBUFFER, virtual_screen_a_framebuffer_controller_.framebuffer());
-		}
-
-		glPixelStorei(GL_PACK_ROW_LENGTH, 0);
-		glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
-		glPixelStorei(GL_PACK_SKIP_ROWS, 0);
-		glPixelStorei(GL_PACK_ALIGNMENT, 1);
-		glReadPixels(0, 0, image_width, image_height, GL_RGB, GL_UNSIGNED_BYTE, &image_data[0]);
-
-		return true;
-	}
-
-	bool render_in_screenshot_mode_and_read_pixels(const int image_width, const int image_height, std::vector<char>& image_data)
+	bool render_in_screenshot_mode_and_read_pixels(const int image_width, const int image_height, std::vector<unsigned char>& image_data)
 	{
 		if(allowed_to_refresh_frame_)
 		{
