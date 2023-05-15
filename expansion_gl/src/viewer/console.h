@@ -7,7 +7,7 @@
 #include <deque>
 
 #include "../dependencies/imgui/addons/global_text_color_vector.h"
-#include "../dependencies/imgui/imgui_internal.h"
+#include "../dependencies/imgui/addons/simple_splitter.h"
 
 #ifndef FOR_WEB
 #include "../dependencies/ImGuiFileDialog/ImGuiFileDialog.h"
@@ -979,20 +979,9 @@ private:
 
 			script_editor_size=std::max(script_editor_size_min, std::min(script_editor_size, script_editor_size_max));
 
-			{
-				ImGuiWindow* window = ImGui::GetCurrentContext()->CurrentWindow;
-				ImGuiID id=window->GetID("##splitter_script_editor");
-				ImRect region_rect;
-				region_rect.Min=window->DC.CursorPos;
-				region_rect.Min.y+=script_editor_size;
-				region_rect.Max=region_rect.Min;
-				ImVec2 gui_size=ImGui::CalcItemSize(ImVec2(-1.0f, 4.0f*GUIStyleWrapper::scale_factor()), 0.0f, 0.0f);
-				region_rect.Max.x+=gui_size.x;
-				region_rect.Max.y+=gui_size.y;
-				ImGui::SplitterBehavior(region_rect, id, ImGuiAxis_Y, &script_editor_size, &script_editor_size_left, script_editor_size_min, script_editor_size_min, 1.0f);
-			}
+			ImGuiAddonSimpleSplitter::set_splitter("##script_editor_splitter", &script_editor_size, &script_editor_size_left, script_editor_size_min, script_editor_size_min, 1.0f);
 
-			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0, script_editor_size));
+			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0, (script_editor_size-4.0f*GUIStyleWrapper::scale_factor())));
 			editor_.Render("ScriptEditor");
 			focused=editor_.IsFocused();
 			ImGui::EndChild();
