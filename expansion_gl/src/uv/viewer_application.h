@@ -445,6 +445,17 @@ public:
 		}
 	}
 
+	void reset_view(const glm::mat4& matrix)
+	{
+		if(!good())
+		{
+			return;
+		}
+
+		modeltransform_matrix_.reset(matrix);
+		refresh_shading_modeltransform();
+	}
+
 	void set_window_size(const int width, const int height)
 	{
 		glfwSetWindowSize(window_, width, height);

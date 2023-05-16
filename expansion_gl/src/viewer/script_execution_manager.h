@@ -29,6 +29,7 @@
 #include "operators/export_session.h"
 #include "operators/import_session.h"
 #include "operators/hint_render_area_size.h"
+#include "operators/orient.h"
 
 namespace voronota
 {
@@ -99,6 +100,7 @@ public:
 		set_command_for_congregation_of_data_managers("import-downloaded", operators::ImportDownloaded());
 		set_command_for_congregation_of_data_managers("export-session", operators::ExportSession());
 		set_command_for_congregation_of_data_managers("import-session", operators::ImportSession());
+		set_command_for_congregation_of_data_managers("orient", operators::Orient());
 
 #ifdef FOR_WEB
 		unset_command("exit");

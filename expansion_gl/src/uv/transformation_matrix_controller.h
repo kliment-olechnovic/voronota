@@ -104,6 +104,11 @@ public:
 		matrix_=glm::mat4(1.0f);
 	}
 
+	void reset(const glm::mat4& matrix)
+	{
+		matrix_=matrix;
+	}
+
 	void center(const glm::vec3& pos)
 	{
 		add_translation(glm::vec3(matrix_*glm::vec4(pos, 1.0f))*(-1.0f));
