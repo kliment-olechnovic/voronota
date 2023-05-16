@@ -24,6 +24,8 @@ int main(const int argc, const char** argv)
 		app_init_parameters.shader_fragment=command_args_input.get_value_or_default<std::string>("shader-fragment", "_shader_fragment_simple");
 		app_init_parameters.shader_fragment_with_instancing=command_args_input.get_value_or_default<std::string>("shader-fragment-with-instancing", "_shader_fragment_simple");
 		app_init_parameters.shader_fragment_with_impostoring=command_args_input.get_value_or_default<std::string>("shader-fragment-with-impostoring", "_shader_fragment_with_impostoring");
+		app_init_parameters.verbose=command_args_input.get_flag("verbose");
+		app_init_parameters.hidden=command_args_input.get_flag("hidden");
 		const float gui_scaling=command_args_input.get_value_or_default<float>("gui-scaling", 1.0f);
 		const std::string custom_font_file=command_args_input.get_value_or_default<std::string>("custom-font-file", "");
 		const std::vector<std::string> files=command_args_input.get_value_vector_or_all_unused_unnamed_values("files");

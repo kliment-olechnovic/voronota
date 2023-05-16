@@ -27,6 +27,8 @@ public:
 		int suggested_window_width;
 		int suggested_window_height;
 		bool no_fps_limit;
+		bool verbose;
+		bool hidden;
 		std::string title;
 		std::string shader_vertex_screen;
 		std::string shader_vertex;
@@ -40,7 +42,9 @@ public:
 		InitializationParameters() :
 			suggested_window_width(800),
 			suggested_window_height(600),
-			no_fps_limit(false)
+			no_fps_limit(false),
+			verbose(false),
+			hidden(false)
 		{
 		}
 	};
@@ -89,6 +93,11 @@ public:
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		glfwWindowHint(GLFW_SAMPLES, 4);
 
+		if(parameters.hidden)
+		{
+			glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+		}
+
 		window_=glfwCreateWindow(parameters.suggested_window_width, parameters.suggested_window_height, parameters.title.c_str(), 0, 0);
 		if(!window_)
 		{
@@ -121,16 +130,19 @@ public:
 		glewExperimental=GL_TRUE;
 		glewInit();
 
+		if(parameters.verbose)
 		{
-			const GLubyte* renderer;
-			renderer=glGetString(GL_RENDERER);
-			std::cerr << "Renderer: " << renderer << std::endl;
-		}
+			{
+				const GLubyte* renderer;
+				renderer=glGetString(GL_RENDERER);
+				std::cerr << "Renderer: " << renderer << std::endl;
+			}
 
-		{
-			const GLubyte* version;
-			version=glGetString(GL_VERSION);
-			std::cerr << "Version: " << version << std::endl;
+			{
+				const GLubyte* version;
+				version=glGetString(GL_VERSION);
+				std::cerr << "Version: " << version << std::endl;
+			}
 		}
 
 		glEnable(GL_SCISSOR_TEST);
