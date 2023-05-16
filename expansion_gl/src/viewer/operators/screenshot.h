@@ -28,8 +28,9 @@ public:
 	std::string filename;
 	bool opaque;
 	std::vector<int> size;
+	double scale;
 
-	Screenshot() : opaque(false)
+	Screenshot() : opaque(false), scale(1.0)
 	{
 	}
 
@@ -38,6 +39,7 @@ public:
 		filename=input.get_value_or_first_unused_unnamed_value("file");
 		opaque=input.get_flag("opaque");
 		size=input.get_value_vector_or_default<int>("size", std::vector<int>());
+		scale=input.get_value_or_default<double>("scale", 1.0);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -45,6 +47,7 @@ public:
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
 		doc.set_option_decription(CDOD("opaque", CDOD::DATATYPE_BOOL, "flag to disable transparency of PNG background"));
 		doc.set_option_decription(CDOD("size", CDOD::DATATYPE_INT_ARRAY, "width and height", ""));
+		doc.set_option_decription(CDOD("scale", CDOD::DATATYPE_FLOAT, "scaling coefficient for width and height", 1.0));
 	}
 
 	Result run(void*) const
@@ -75,30 +78,30 @@ public:
 			throw std::runtime_error(std::string("Invalid size, must be two numbers, width and height."));
 		}
 
-		if(size.size()==2 && (size[0]<10 || size[1]<10))
+		if(scale<=0.0)
 		{
-			throw std::runtime_error(std::string("Invalid size, too small."));
+			throw std::runtime_error(std::string("Invalid scale value, must be positive."));
 		}
 
-		int W=static_cast<int>(static_cast<double>(size.empty() ? uv::ViewerApplication::instance().effective_rendering_window_width() : size[0]));
-		int H=static_cast<int>(static_cast<double>(size.empty() ? uv::ViewerApplication::instance().effective_rendering_window_height() : size[1]));
+		int W=static_cast<int>(static_cast<double>(size.empty() ? uv::ViewerApplication::instance().effective_rendering_window_width() : size[0])*scale);
+		int H=static_cast<int>(static_cast<double>(size.empty() ? uv::ViewerApplication::instance().effective_rendering_window_height() : size[1])*scale);
 
-		if(W<10 || H<10)
+		if(!(W>10 && H>10))
 		{
-			throw std::runtime_error(std::string("Invalid calculated size, too small."));
+			throw std::runtime_error(std::string("Invalid scaled size, too small, both width and height must be greater than 10."));
 		}
 
-		if(W>10000 || H>10000)
+		if(!(W<10000 && H<10000))
 		{
-			throw std::runtime_error(std::string("Invalid calculated size, too big."));
+			throw std::runtime_error(std::string("Invalid scaled size, too big, both width and height must be less than 10000."));
 		}
 
 		unsigned char background_rgb[3]={0, 0, 0};
 		auxiliaries::ColorUtilities::color_to_components<unsigned char>(auxiliaries::ColorUtilities::color_from_components<float>(uv::ViewerApplication::instance().background_color(), true), &background_rgb[0], false);
 
-		const bool supersample=(W*H<(2000*2000));
+		const int supersampling_levels=((W*H<(2000*2000)) ? ((W*H<(800*800)) ? 2 : 1) : 0);
 
-		if(supersample)
+		for(int l=0;l<supersampling_levels;l++)
 		{
 			W*=2;
 			H*=2;
@@ -128,7 +131,7 @@ public:
 			}
 		}
 
-		if(supersample)
+		for(int l=0;l<supersampling_levels;l++)
 		{
 			W/=2;
 			H/=2;
