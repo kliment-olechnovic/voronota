@@ -603,6 +603,10 @@ if(common_params.output_contacts_file===undefined || common_params.output_contac
 }
 
 voronota_setup_defaults("-no-load-voromqa-potentials -no-load-more-atom-types -no-load-mock-voromqa-potential");
+voronota_assert_full_success("Failed to setup defaults");
+
+voronota_setup_loading("-include-heteroatoms");
+voronota_assert_full_success("Failed to setup loading");
 
 for(var i=0;i<input_info_array.length;i++)
 {
