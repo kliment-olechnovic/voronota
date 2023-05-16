@@ -29,8 +29,9 @@ public:
 	bool opaque;
 	std::vector<int> size;
 	double scale;
+	bool autocrop;
 
-	Screenshot() : opaque(false), scale(1.0)
+	Screenshot() : opaque(false), scale(1.0), autocrop(false)
 	{
 	}
 
@@ -40,6 +41,7 @@ public:
 		opaque=input.get_flag("opaque");
 		size=input.get_value_vector_or_default<int>("size", std::vector<int>());
 		scale=input.get_value_or_default<double>("scale", 1.0);
+		autocrop=input.get_flag("autocrop");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -48,6 +50,7 @@ public:
 		doc.set_option_decription(CDOD("opaque", CDOD::DATATYPE_BOOL, "flag to disable transparency of PNG background"));
 		doc.set_option_decription(CDOD("size", CDOD::DATATYPE_INT_ARRAY, "width and height", ""));
 		doc.set_option_decription(CDOD("scale", CDOD::DATATYPE_FLOAT, "scaling coefficient for width and height", 1.0));
+		doc.set_option_decription(CDOD("autocrop", CDOD::DATATYPE_BOOL, "flag to automatically crop empty space around image"));
 	}
 
 	Result run(void*) const
@@ -126,7 +129,7 @@ public:
 					image_data_rgba[pos_b]=image_data_rgb[pos_a];
 					image_data_rgba[pos_b+1]=image_data_rgb[pos_a+1];
 					image_data_rgba[pos_b+2]=image_data_rgb[pos_a+2];
-					image_data_rgba[pos_b+3]=((!opaque && background_rgb[0]==image_data_rgba[pos_b] && background_rgb[1]==image_data_rgba[pos_b+1] && background_rgb[2]==image_data_rgba[pos_b+2]) ? 0 : 255);
+					image_data_rgba[pos_b+3]=((background_rgb[0]==image_data_rgba[pos_b] && background_rgb[1]==image_data_rgba[pos_b+1] && background_rgb[2]==image_data_rgba[pos_b+2]) ? 0 : 255);
 				}
 			}
 		}
@@ -154,6 +157,48 @@ public:
 			image_data_rgba.swap(sample);
 		}
 
+		if(autocrop)
+		{
+			int min_y=H;
+			int min_x=W;
+			int max_y=-1;
+			int max_x=-1;
+			for(int y=0;y<H;y++)
+			{
+				for(int x=0;x<W;x++)
+				{
+					const int pos=4*(y*W+x);
+					if(image_data_rgba[pos+3]!=0)
+					{
+						min_y=std::min(min_y, y);
+						min_x=std::min(min_x, x);
+						max_y=std::max(max_y, y);
+						max_x=std::max(max_x, x);
+					}
+				}
+			}
+			if(min_y>=0 && max_y<H && min_y<=max_y && min_x>=0 && max_x<W && min_x<=max_x)
+			{
+				const int oW=W;
+				W=(max_x-min_x)+1;
+				H=(max_y-min_y)+1;
+				std::vector<unsigned char> sample(W*H*4);
+				for(int y=0;y<H;y++)
+				{
+					for(int x=0;x<W;x++)
+					{
+						const int pos_a=4*((y+min_y)*oW+(x+min_x));
+						const int pos_b=4*(y*W+x);
+						for(int i=0;i<4;i++)
+						{
+							sample[pos_b+i]=image_data_rgba[pos_a+i];
+						}
+					}
+				}
+				image_data_rgba.swap(sample);
+			}
+		}
+
 		if(format_to_use==".ppm")
 		{
 			std::ofstream output(filename.c_str(), std::ios::out);
@@ -175,6 +220,13 @@ public:
 		}
 		else if(format_to_use==".png")
 		{
+			if(opaque)
+			{
+				for(std::size_t i=3;i<image_data_rgba.size();i+=4)
+				{
+					image_data_rgba[i]=static_cast<unsigned char>(255);
+				}
+			}
 			unsigned int error=lodepng::encode(filename, image_data_rgba, static_cast<unsigned int>(W), static_cast<unsigned int>(H));
 			if(error>0)
 			{
