@@ -55,7 +55,7 @@ public:
 		return glm::vec3(0.0f, 0.0f, 0.0f);
 	}
 
-	float get_bounding_radius() const
+	float get_bounding_diameter() const
 	{
 		return glm::distance(low_, high_);
 	}
@@ -64,7 +64,7 @@ public:
 	{
 		if(modified_)
 		{
-			return (2.0/static_cast<double>(get_bounding_radius()));
+			return (3.0/static_cast<double>(get_bounding_diameter()));
 		}
 		return 1.0f;
 	}

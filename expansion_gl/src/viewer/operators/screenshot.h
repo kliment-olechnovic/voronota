@@ -102,7 +102,7 @@ public:
 		unsigned char background_rgb[3]={0, 0, 0};
 		auxiliaries::ColorUtilities::color_to_components<unsigned char>(auxiliaries::ColorUtilities::color_from_components<float>(uv::ViewerApplication::instance().background_color(), true), &background_rgb[0], false);
 
-		const int supersampling_levels=((W*H<(2000*2000)) ? ((W*H<(800*800)) ? 2 : 1) : 0);
+		const int supersampling_levels=((W*H<(2001*2001)) ? ((W*H<(801*801)) ? 2 : 1) : 0);
 
 		for(int l=0;l<supersampling_levels;l++)
 		{
