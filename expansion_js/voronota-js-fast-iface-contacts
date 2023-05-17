@@ -407,7 +407,7 @@ prepare_object=function(input_file, title)
 	}
 	else
 	{
-		voronota_import("-file", input_file, "-as-assembly", common_params.input_as_assembly, "-include-heteroatoms");
+		voronota_import("-file", input_file, "-as-assembly", common_params.input_as_assembly);
 		voronota_assert_partial_success("Failed to import file");
 	}
 	
@@ -602,7 +602,7 @@ if(common_params.output_contacts_file===undefined || common_params.output_contac
 	common_params.output_contacts_file="_stdout";
 }
 
-voronota_setup_defaults("-no-load-voromqa-potentials -no-load-more-atom-types -no-load-mock-voromqa-potential");
+voronota_setup_defaults("-no-load-voromqa-potentials -no-load-more-atom-types -no-load-mock-voromqa-potential -include-heteroatoms");
 voronota_assert_full_success("Failed to setup defaults");
 
 for(var i=0;i<input_info_array.length;i++)

@@ -26,6 +26,7 @@ public:
 		}
 	};
 
+	scripting::operators::SetupLoading setup_loading_operator;
 	bool no_load_voromqa_potentials;
 	bool no_load_alt_voromqa_potential;
 	bool faster_load_voromqa_potentials;
@@ -38,6 +39,7 @@ public:
 
 	void initialize(scripting::CommandInput& input)
 	{
+		setup_loading_operator.initialize(input);
 		no_load_voromqa_potentials=input.get_flag("no-load-voromqa-potentials");
 		no_load_alt_voromqa_potential=input.get_flag("no-load-alt-voromqa-potential");
 		faster_load_voromqa_potentials=input.get_flag("faster-load-voromqa-potentials");
@@ -47,6 +49,7 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
+		setup_loading_operator.document(doc);
 		doc.set_option_decription(CDOD("no-load-voromqa-potentials", CDOD::DATATYPE_BOOL, "flag to not load VoroMQA potentials, to save time"));
 		doc.set_option_decription(CDOD("no-load-alt-voromqa-potential", CDOD::DATATYPE_BOOL, "flag to not load alternative VoroMQA potential, to save time"));
 		doc.set_option_decription(CDOD("faster-load-voromqa-potentials", CDOD::DATATYPE_BOOL, "flag to load VoroMQA potentials faster"));
@@ -57,9 +60,14 @@ public:
 	Result run(void*) const
 	{
 		{
+			scripting::operators::SetupLoading setup_loading_operator_to_use=setup_loading_operator;
 			scripting::VirtualFileStorage::TemporaryFile tmp_radii;
-			voronota::scripting::VirtualFileStorage::set_file(tmp_radii.filename(), voronota::duktaper::resources::data_radii());
-			scripting::operators::SetupLoading().init(CMDIN().set("radii-file", tmp_radii.filename())).run(0);
+			if(setup_loading_operator.radii_file.empty() || setup_loading_operator.radii_file=="_default")
+			{
+				voronota::scripting::VirtualFileStorage::set_file(tmp_radii.filename(), voronota::duktaper::resources::data_radii());
+				setup_loading_operator_to_use.radii_file=tmp_radii.filename();
+			}
+			setup_loading_operator_to_use.run(0);
 		}
 
 		if(!no_load_voromqa_potentials)
