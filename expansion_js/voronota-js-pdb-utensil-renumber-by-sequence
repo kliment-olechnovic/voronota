@@ -1,0 +1,165 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-pdb-utensil-renumber-by-sequence' script reads structure, renumbers and restricts residues, outputs structure.
+
+Options:
+    --chain-id                string     name of the chain to alter, required for multi-chain input, default is ''
+    --sequence-str            string  *  sequence string to perform alignment for renumbering and restricting, may contain '-' characters
+    --strict                             flag to only use correspondences from sequence alignment
+    --report-alignment                   flag to print sequence alignment to stderr
+    --help | -h                          flag to display help message and exit
+
+Standard input:
+    structure in PDB format
+    
+Standard output:
+    structure in PDB format
+    
+Examples:
+    
+    cat "./model.pdb" | voronota-js-pdb-utensil-renumber-by-sequence --sequence-str "MKKIGIIGGTTPESTLYYYKKYIEISREKFEK" --strict > "./result.pdb"
+    
+    cat "./model.pdb" | voronota-js-pdb-utensil-renumber-by-sequence --strict --chain-id A --sequence-str "---MKKIGIIGGTTPESTLYYYK-------KYFYPELIIYSINFKEF--" \
+    | voronota-js-pdb-utensil-renumber-by-sequence --strict --chain-id B --sequence-str "MKKIGIIG----TPESTLYYYKK------LIIYSINFKEF----KHYK" > "./result.pdb"
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [ -z "$1" ]
+then
+	print_help_and_exit
+fi
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd "$(dirname ${ZEROARG})"
+	export PATH="$(pwd):${PATH}"
+	cd - &> /dev/null
+fi
+
+export LC_ALL=C
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+CHAIN_ID=""
+SEQUENCE_STR=""
+STRICT="false"
+REPORT_ALIGNMENT="false"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	--chain-id)
+		CHAIN_ID="$OPTARG"
+		shift
+		;;
+	--sequence-str)
+		SEQUENCE_STR="$OPTARG"
+		shift
+		;;
+	--strict)
+		STRICT="true"
+		;;
+	--report-alignment)
+		REPORT_ALIGNMENT="true"
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ -z "$SEQUENCE_STR" ]
+then
+	echo >&2 "Error: no sequence provided"
+	exit 1
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+cat > "$TMPLDIR/input.pdb"
+
+INFILE="${TMPLDIR}/input.pdb"
+
+if [ ! -s "$TMPLDIR/input.pdb" ]
+then
+	echo >&2 "Error: no stdin data"
+	exit 1
+fi
+
+{
+cat << EOF
+var params={}
+params.input_file='$TMPLDIR/input.pdb';
+params.output_file='$TMPLDIR/output.pdb';
+params.alignment_file='$TMPLDIR/alignment.txt';
+params.chain_id='$CHAIN_ID';
+params.sequence_str='$SEQUENCE_STR';
+params.strict='$STRICT';
+EOF
+
+cat << 'EOF'
+voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential");
+voronota_assert_full_success("Failed to setup defaults");
+
+voronota_import("-file", params.input_file, "-as-assembly");
+voronota_assert_full_success("Failed to input structure");
+
+var selection="[]";
+if(params.chain_id!='')
+{
+	selection="[-chain "+params.chain_id+"]";
+}
+
+voronota_set_chain_residue_numbers_by_sequence("-use "+selection+" -sequence-string '"+params.sequence_str+"' -keep-dashes -alignment-file '"+params.alignment_file+"' -only-equal-pairs "+params.strict);
+voronota_assert_full_success("Failed to align sequences and renumber");
+
+voronota_export_atoms("-as-pdb", "-file", params.output_file);
+voronota_assert_full_success("Failed to output structure");
+EOF
+
+} \
+| voronota-js --no-setup-defaults
+
+if [ ! -s "$TMPLDIR/output.pdb" ]
+then
+	echo >&2 "Error: no output produced"
+	exit 1
+fi
+
+if [ "$REPORT_ALIGNMENT" == "true" ]
+then
+
+	if [ ! -s "$TMPLDIR/alignment.txt" ]
+	then
+		echo >&2 "Error: requested alignment not produced"
+		exit 1
+	fi
+	
+	cat "$TMPLDIR/alignment.txt" >&2
+fi
+
+cat "$TMPLDIR/output.pdb"
+

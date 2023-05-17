@@ -41,8 +41,9 @@ public:
 	std::string sequence_string;
 	std::string alignment_file;
 	bool keep_dashes;
+	bool only_equal_pairs;
 
-	SetChainResidueNumbersBySequences() : keep_dashes(false)
+	SetChainResidueNumbersBySequences() : keep_dashes(false), only_equal_pairs(false)
 	{
 	}
 
@@ -51,17 +52,19 @@ public:
 		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		sequence_file=input.get_value_or_default<std::string>("sequence-file", "");
 		sequence_string=input.get_value_or_default<std::string>("sequence-string", "");
-		keep_dashes=input.get_flag("keep-dashes");
 		alignment_file=input.get_value_or_default<std::string>("alignment-file", "");
+		keep_dashes=input.get_flag("keep-dashes");
+		only_equal_pairs=input.get_flag("only-equal-pairs");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("sequence-file", CDOD::DATATYPE_STRING, "sequence input file", ""));
-		doc.set_option_decription(CDOD("sequence-file", CDOD::DATATYPE_STRING, "sequence string", ""));
+		doc.set_option_decription(CDOD("sequence-string", CDOD::DATATYPE_STRING, "sequence string", ""));
 		doc.set_option_decription(CDOD("alignment-file", CDOD::DATATYPE_STRING, "sequence alignment output file", ""));
 		doc.set_option_decription(CDOD("keep-dashes", CDOD::DATATYPE_BOOL, "flag to keep dashes in sequence before alignment"));
+		doc.set_option_decription(CDOD("only-equal-pairs", CDOD::DATATYPE_BOOL, "flag to only leave equal pairs from alignment"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -76,11 +79,6 @@ public:
 		if(!sequence_file.empty() && !sequence_string.empty())
 		{
 			throw std::runtime_error(std::string("No exactly one sequence input provided."));
-		}
-
-		if(!sequence_string.empty() && keep_dashes)
-		{
-			throw std::runtime_error(std::string("Keeping dashes not supported for direct string input."));
 		}
 
 		std::string sequence;
@@ -137,7 +135,7 @@ public:
 		}
 
 		double sequence_identity=0.0;
-		const std::map<common::ChainResidueAtomDescriptor, int> sequence_mapping=common::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, sequence, false, &sequence_identity, alignment_file);
+		const std::map<common::ChainResidueAtomDescriptor, int> sequence_mapping=common::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, sequence, only_equal_pairs, &sequence_identity, alignment_file);
 
 		std::vector<std::size_t> atom_ids_to_keep;
 		atom_ids_to_keep.reserve(data_manager.atoms().size());
