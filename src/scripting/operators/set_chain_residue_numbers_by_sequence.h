@@ -113,6 +113,8 @@ public:
 
 		std::string chain_name;
 		std::vector<common::ChainResidueAtomDescriptor> residue_sequence_vector;
+		std::set<std::size_t> untouchable_atom_ids;
+
 		{
 			std::set<std::size_t> chain_ids;
 			for(std::set<std::size_t>::const_iterator it=initial_atom_ids.begin();it!=initial_atom_ids.end();++it)
@@ -130,12 +132,20 @@ public:
 			residue_sequence_vector.reserve(chain_info.residue_ids.size());
 			for(std::vector<std::size_t>::const_iterator it=chain_info.residue_ids.begin();it!=chain_info.residue_ids.end();++it)
 			{
-				residue_sequence_vector.push_back(data_manager.primary_structure_info().residues[*it].chain_residue_descriptor);
+				const common::ConstructionOfPrimaryStructure::Residue& residue=data_manager.primary_structure_info().residues[*it];
+				if(residue.residue_type==common::ConstructionOfPrimaryStructure::RESIDUE_TYPE_OTHER)
+				{
+					untouchable_atom_ids.insert(residue.atom_ids.begin(), residue.atom_ids.end());
+				}
+				else
+				{
+					residue_sequence_vector.push_back(residue.chain_residue_descriptor);
+				}
 			}
 		}
 
 		double sequence_identity=0.0;
-		const std::map<common::ChainResidueAtomDescriptor, int> sequence_mapping=common::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, sequence, only_equal_pairs, &sequence_identity, alignment_file);
+		const std::map<common::ChainResidueAtomDescriptor, int> sequence_mapping=common::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, sequence, only_equal_pairs, true, &sequence_identity, alignment_file);
 
 		std::vector<std::size_t> atom_ids_to_keep;
 		atom_ids_to_keep.reserve(data_manager.atoms().size());
@@ -143,7 +153,7 @@ public:
 
 		for(std::size_t i=0;i<data_manager.atoms().size();i++)
 		{
-			if(data_manager.atoms()[i].crad.chainID!=chain_name)
+			if(data_manager.atoms()[i].crad.chainID!=chain_name || untouchable_atom_ids.count(i)>0)
 			{
 				atom_ids_to_keep.push_back(i);
 			}

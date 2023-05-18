@@ -271,7 +271,7 @@ void query_balls(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 		const std::map<CRAD, double> map_of_external_adjunct_values=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_adjuncts);
 		const std::map<CRAD, DSSPRecord> map_of_dssp_records=init_map_of_dssp_records(set_dssp_info);
 		const std::string reference_sequence=voronota::common::SequenceUtilities::read_sequence_from_file(set_ref_seq_num_adjunct);
-		const std::map<CRAD, int> sequence_mapping=voronota::common::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, false, 0, ref_seq_alignment);
+		const std::map<CRAD, int> sequence_mapping=voronota::common::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, false, false, 0, ref_seq_alignment);
 
 		for(std::set<std::size_t>::const_iterator it=selected_set_of_ball_ids.begin();it!=selected_set_of_ball_ids.end();++it)
 		{

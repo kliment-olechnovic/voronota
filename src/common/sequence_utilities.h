@@ -128,7 +128,7 @@ public:
 		return n;
 	}
 
-	static std::map<common::ChainResidueAtomDescriptor, int> construct_sequence_mapping(const std::vector<common::ChainResidueAtomDescriptor>& residue_sequence_vector, const std::string& reference_sequence, const bool only_equal_pairs, double* identity, const std::string& ref_seq_alignment_output_filename)
+	static std::map<common::ChainResidueAtomDescriptor, int> construct_sequence_mapping(const std::vector<common::ChainResidueAtomDescriptor>& residue_sequence_vector, const std::string& reference_sequence, const bool only_equal_pairs, const bool treat_X_permissively, double* identity, const std::string& ref_seq_alignment_output_filename)
 	{
 		std::map<common::ChainResidueAtomDescriptor, int> result;
 		if(!residue_sequence_vector.empty() && !reference_sequence.empty())
@@ -140,7 +140,7 @@ public:
 				for(std::size_t i=0;i<alignment.size();i++)
 				{
 					const std::pair<int, int>& p=alignment[i];
-					if(p.first>=0 && p.second>=0 && (!only_equal_pairs || (p.first<static_cast<int>(reference_sequence.size()) && p.second<static_cast<int>(seq.size()) && reference_sequence[p.first]==seq[p.second])))
+					if(p.first>=0 && p.second>=0 && (!only_equal_pairs || (p.first<static_cast<int>(reference_sequence.size()) && p.second<static_cast<int>(seq.size()) && (reference_sequence[p.first]==seq[p.second] || (treat_X_permissively && seq[p.second]=='X')))))
 					{
 						result[residue_sequence_vector.at(p.second)]=(p.first+1);
 					}

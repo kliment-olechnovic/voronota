@@ -105,7 +105,7 @@ public:
 		}
 
 		double sequence_identity=0.0;
-		const std::map<common::ChainResidueAtomDescriptor, int> sequence_mapping=common::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, sequence, false, &sequence_identity, alignment_file);
+		const std::map<common::ChainResidueAtomDescriptor, int> sequence_mapping=common::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, sequence, false, false, &sequence_identity, alignment_file);
 
 		for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
 		{

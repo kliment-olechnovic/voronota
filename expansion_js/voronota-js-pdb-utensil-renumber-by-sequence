@@ -121,7 +121,7 @@ params.strict='$STRICT';
 EOF
 
 cat << 'EOF'
-voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential");
+voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential -include-heteroatoms");
 voronota_assert_full_success("Failed to setup defaults");
 
 voronota_import("-file", params.input_file, "-as-assembly");
