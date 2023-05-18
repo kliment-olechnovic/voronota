@@ -356,6 +356,7 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         --run-faspr               string     path to FASPR binary to rebuild side-chains
         --as-assembly                        flag to treat input files as biological assemblies
         --remap-chains                       flag to calculate and use optimal chains remapping
+        --ignore-residue-names               flag to ignore residue names in residue identifiers
         --test-common-ids                    flag to fail quickly if there are no common residues
         --crude                              flag to enable very crude faster mode
         --help | -h                          flag to display help message and exit
@@ -386,6 +387,7 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         --stdin-file              string     input file path to replace stdin
         --as-assembly                        flag to treat input files as biological assemblies
         --remap-chains                       flag to calculate and use optimal chains remapping
+        --ignore-residue-names               flag to ignore residue names in residue identifiers
         --crude                              flag to enable very crude faster mode
         --help | -h                          flag to display help message and exit
     

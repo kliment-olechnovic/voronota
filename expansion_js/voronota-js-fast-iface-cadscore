@@ -18,6 +18,7 @@ Options:
     --run-faspr               string     path to FASPR binary to rebuild side-chains
     --as-assembly                        flag to treat input files as biological assemblies
     --remap-chains                       flag to calculate and use optimal chains remapping
+    --ignore-residue-names               flag to ignore residue names in residue identifiers
     --test-common-ids                    flag to fail quickly if there are no common residues
     --crude                              flag to enable very crude faster mode
     --help | -h                          flag to display help message and exit
@@ -81,6 +82,7 @@ MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 REMAP_CHAINS="false"
 REMAP_CHAINS_LOGGING="false"
+IGNORE_RESIDUE_NAMES="false"
 TEST_COMMON_IDS="false"
 CRUDE_MODE="false"
 HELP_MODE="false"
@@ -149,6 +151,9 @@ do
 	--remap-chains-logging)
 		REMAP_CHAINS_LOGGING="true"
 		;;
+	--ignore-residue-names)
+		IGNORE_RESIDUE_NAMES="true"
+		;;	
 	--test-common-ids)
 		TEST_COMMON_IDS="true"
 		;;
@@ -377,6 +382,7 @@ common_params.target_input_is_script='$TARGET_INPUT_IS_SCRIPT';
 common_params.model_input_is_script='$MODEL_INPUT_IS_SCRIPT';
 common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
+common_params.ignore_residue_names='$IGNORE_RESIDUE_NAMES';
 common_params.test_common_ids='$TEST_COMMON_IDS';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
 common_params.remap_chains='$REMAP_CHAINS';
@@ -481,7 +487,7 @@ prepare_contacts=function(params)
 
 analyze_interface=function(params, target_object, model_object, initial_summary)
 {
-	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based", "-remap-chains", params.remap_chains, "-remap-chains-logging", params.remap_chains_logging);
+	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based", "-remap-chains", params.remap_chains, "-remap-chains-logging", params.remap_chains_logging, "-ignore-residue-names", params.ignore_residue_names);
 	voronota_assert_full_success("Failed to compute CAD-score");
 	result_cadscore=voronota_last_output().results[0].output.residue_level_result;
 	result_cadscore_site_based=voronota_last_output().results[0].output.site_residue_level_result;
@@ -564,6 +570,11 @@ if(common_params.restrict_input_atoms===undefined || common_params.restrict_inpu
 	common_params.restrict_input_atoms='[]';
 }
 
+if(common_params.ignore_residue_names===undefined || common_params.ignore_residue_names==="")
+{
+	common_params.ignore_residue_names="false";
+}
+
 if(common_params.test_common_ids===undefined || common_params.test_common_ids==="")
 {
 	common_params.test_common_ids="false";
@@ -609,7 +620,7 @@ var target_initial_number_of_accepted_atoms=prepare_atoms(common_params, null);
 
 if(common_params.test_common_ids=="true")
 {
-	voronota_export_selection_of_atoms("-on-objects", target_object, "-no-serial", "-no-name", "-file", "_virtual/target_residue_ids");
+	voronota_export_selection_of_atoms("-on-objects", target_object, "-no-serial", "-no-name", "-file", "_virtual/target_residue_ids", "-no-resName", common_params.ignore_residue_names);
 	voronota_assert_full_success("Failed to export target residue ids");
 }
 

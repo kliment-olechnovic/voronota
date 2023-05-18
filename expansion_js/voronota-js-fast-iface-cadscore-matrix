@@ -15,6 +15,7 @@ Options:
     --stdin-file              string     input file path to replace stdin
     --as-assembly                        flag to treat input files as biological assemblies
     --remap-chains                       flag to calculate and use optimal chains remapping
+    --ignore-residue-names               flag to ignore residue names in residue identifiers
     --crude                              flag to enable very crude faster mode
     --help | -h                          flag to display help message and exit
 
@@ -63,6 +64,7 @@ STDIN_FILE="_stream"
 MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 REMAP_CHAINS="false"
+IGNORE_RESIDUE_NAMES="false"
 CRUDE_MODE="false"
 HELP_MODE="false"
 
@@ -105,6 +107,9 @@ do
 	--remap-chains)
 		REMAP_CHAINS="true"
 		;;
+	--ignore-residue-names)
+		IGNORE_RESIDUE_NAMES="true"
+		;;	
 	--crude)
 		CRUDE_MODE="true"
 		;;
@@ -238,6 +243,7 @@ common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
 common_params.remap_chains='$REMAP_CHAINS';
+common_params.ignore_residue_names='$IGNORE_RESIDUE_NAMES';
 common_params.crude_mode='$CRUDE_MODE';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 var input_info_array=[];
@@ -255,7 +261,7 @@ done
 cat << 'EOF'
 analyze_interface=function(params, target_object, model_object, initial_summary)
 {
-	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based", "-remap-chains", params.remap_chains);
+	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based", "-remap-chains", params.remap_chains, "-ignore-residue-names", params.ignore_residue_names);
 	voronota_assert_full_success("Failed to compute CAD-score");
 	result_cadscore=voronota_last_output().results[0].output.residue_level_result;
 	result_cadscore_site_based=voronota_last_output().results[0].output.site_residue_level_result;
@@ -321,6 +327,11 @@ if(common_params.contacts_subselection===undefined || common_params.contacts_sub
 if(common_params.remap_chains===undefined || common_params.remap_chains==="")
 {
 	common_params.remap_chains="false";
+}
+
+if(common_params.ignore_residue_names===undefined || common_params.ignore_residue_names==="")
+{
+	common_params.ignore_residue_names="false";
 }
 
 if(common_params.output_table_file===undefined || common_params.output_table_file==="")
