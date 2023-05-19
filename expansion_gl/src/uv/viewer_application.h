@@ -621,13 +621,13 @@ public:
 			render_frame_raw_to_buffer(image_width, image_height);
 
 			image_data.clear();
-			image_data.resize(image_width*image_height*3);
+			image_data.resize(image_width*image_height*4);
 
 			glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 			glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
 			glPixelStorei(GL_PACK_SKIP_ROWS, 0);
 			glPixelStorei(GL_PACK_ALIGNMENT, 1);
-			glReadPixels(0, 0, image_width, image_height, GL_RGB, GL_UNSIGNED_BYTE, &image_data[0]);
+			glReadPixels(0, 0, image_width, image_height, GL_RGBA, GL_UNSIGNED_BYTE, &image_data[0]);
 
 			return true;
 		}
@@ -1357,7 +1357,7 @@ private:
 		glScissor(0, 0, image_width, image_height);
 		glViewport(0, 0, image_width, image_height);
 		refresh_shading_viewport(0, 0, image_width, image_height);
-		glClearColor(background_color_[0], background_color_[1], background_color_[2], 1.0f);
+		glClearColor(background_color_[0], background_color_[1], background_color_[2], 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shading_simple_.enable();
@@ -1376,7 +1376,7 @@ private:
 			shading_screen_.set_viewport(0, 0, image_width, image_height);
 
 			glDisable(GL_DEPTH_TEST);
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 			glScissor(0, 0, image_width, image_height);
 			glViewport(0, 0, image_width, image_height);
 

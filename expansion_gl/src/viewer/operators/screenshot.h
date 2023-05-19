@@ -99,9 +99,6 @@ public:
 			throw std::runtime_error(std::string("Invalid scaled size, too big, both width and height must be less than 10000."));
 		}
 
-		unsigned char background_rgb[3]={0, 0, 0};
-		auxiliaries::ColorUtilities::color_to_components<unsigned char>(auxiliaries::ColorUtilities::color_from_components<float>(uv::ViewerApplication::instance().background_color(), true), &background_rgb[0], false);
-
 		const int supersampling_levels=((W*H<(2001*2001)) ? ((W*H<(801*801)) ? 2 : 1) : 0);
 
 		for(int l=0;l<supersampling_levels;l++)
@@ -124,12 +121,12 @@ public:
 			{
 				for(int x=0;x<W;x++)
 				{
-					const int pos_a=3*((H-1-y)*W+x);
+					const int pos_a=4*((H-1-y)*W+x);
 					const int pos_b=4*(y*W+x);
 					image_data_rgba[pos_b]=image_data_rgb[pos_a];
 					image_data_rgba[pos_b+1]=image_data_rgb[pos_a+1];
 					image_data_rgba[pos_b+2]=image_data_rgb[pos_a+2];
-					image_data_rgba[pos_b+3]=((background_rgb[0]==image_data_rgba[pos_b] && background_rgb[1]==image_data_rgba[pos_b+1] && background_rgb[2]==image_data_rgba[pos_b+2]) ? 0 : 255);
+					image_data_rgba[pos_b+3]=(image_data_rgb[pos_a+3]==0 ? 0 : 255);
 				}
 			}
 		}
