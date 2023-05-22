@@ -103,7 +103,7 @@ public:
 							std::map< char, std::vector<std::size_t> > chains;
 							for(std::size_t i=0;i<current_model_lines.size();i++)
 							{
-								if(current_model_lines[i].size()>=54 && current_model_lines[i].rfind("ATOM ", 0)==0)
+								if(current_model_lines[i].size()>=54 && (current_model_lines[i].rfind("ATOM  ", 0)==0 || current_model_lines[i].rfind("HETATM", 0)==0))
 								{
 									char chain=current_model_lines[i][21];
 									chain=(chain<=32 ? '.' : chain);
@@ -112,7 +112,7 @@ public:
 							}
 							for(std::map< char, std::vector<std::size_t> >::const_iterator it=chains.begin();it!=chains.end();++it)
 							{
-								const std::string filename=prefix+current_model_id+std::string("chain")+std::string(1, it->first)+postfix;
+								const std::string filename=prefix+current_model_id+std::string("_chain_")+std::string(1, it->first)+postfix;
 								OutputSelector foutput_selector(filename);
 								std::ostream& foutput=foutput_selector.stream();
 								for(std::size_t i=0;i<it->second.size();i++)

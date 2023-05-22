@@ -1008,6 +1008,9 @@
             "name":"describe-exposure",
             "short_description":""},
           {
+            "name":"detect-any-contact-between-structures",
+            "short_description":""},
+          {
             "name":"distance",
             "short_description":""},
           {

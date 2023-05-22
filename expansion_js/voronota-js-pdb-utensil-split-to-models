@@ -4,7 +4,7 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-pdb-utensil-split' script reads PDB file, splits it by models and outputs the models into separate files.
+'voronota-js-pdb-utensil-split-to-models' script reads PDB file, splits it by models and outputs the models into separate files.
 
 Options:
     --prefix                  string  *  output file path prefix
@@ -20,7 +20,7 @@ Standard output:
     
 Example:
     
-    cat "./ensemble.pdb" | voronota-js-pdb-utensil-split --prefix "./output/model_" --postfix ".pdb"
+    cat "./ensemble.pdb" | voronota-js-pdb-utensil-split-to-models --prefix "./output/model_" --postfix ".pdb"
 
 EOF
 exit 1
