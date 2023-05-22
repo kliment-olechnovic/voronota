@@ -99,51 +99,71 @@ public:
 			throw std::runtime_error(std::string("Only one file provided with no consideration of chains."));
 		}
 
-		std::map< std::pair<std::string, std::string>, std::vector<apollota::SimpleSphere> > substructures;
+		std::vector< std::pair<std::string, std::string> > ids_of_substructures;
+		std::vector< std::vector<apollota::SimpleSphere> > substructures;
 
-		for(std::size_t i=0;i<input_filenames.size();i++)
 		{
-			const std::string& input_name=input_filenames[i];
-			LoadingOfData::Parameters loading_parameters_to_use=loading_parameters;
-			loading_parameters_to_use.file=input_name;
-			LoadingOfData::Result loading_result;
-			LoadingOfData::construct_result(loading_parameters_to_use, loading_result);
+			std::map< std::pair<std::string, std::string>, std::size_t > map_of_indices;
 
-			if(loading_result.atoms.empty())
+			for(std::size_t i=0;i<input_filenames.size();i++)
 			{
-				throw std::runtime_error(std::string("No atoms read from file '")+input_name+"'.");
-			}
+				const std::string& input_name=input_filenames[i];
+				LoadingOfData::Parameters loading_parameters_to_use=loading_parameters;
+				loading_parameters_to_use.file=input_name;
+				LoadingOfData::Result loading_result;
+				LoadingOfData::construct_result(loading_parameters_to_use, loading_result);
 
-			std::pair<std::string, std::string> substructure_id(input_name, std::string());
-
-			if(!consider_chains)
-			{
-				std::vector<apollota::SimpleSphere>& spheres=substructures[substructure_id];
-				spheres.reserve(loading_result.atoms.size());
-				for(std::size_t j=0;j<loading_result.atoms.size();j++)
+				if(loading_result.atoms.empty())
 				{
-					const Atom& atom=loading_result.atoms[j];
-					spheres.push_back(apollota::SimpleSphere(atom.value.x, atom.value.y, atom.value.z, atom.value.r+probe));
+					throw std::runtime_error(std::string("No atoms read from file '")+input_name+"'.");
 				}
-			}
-			else
-			{
-				for(std::size_t j=0;j<loading_result.atoms.size();j++)
+
+				std::pair<std::string, std::string> substructure_id(input_name, std::string());
+
+				if(!consider_chains)
 				{
-					const Atom& atom=loading_result.atoms[j];
-					substructure_id.second=atom.crad.chainID;
-					std::vector<apollota::SimpleSphere>& spheres=substructures[substructure_id];
-					spheres.push_back(apollota::SimpleSphere(atom.value.x, atom.value.y, atom.value.z, atom.value.r+probe));
+					ids_of_substructures.push_back(substructure_id);
+					substructures.push_back(std::vector<apollota::SimpleSphere>());
+					std::vector<apollota::SimpleSphere>& spheres=substructures.back();
+					spheres.reserve(loading_result.atoms.size());
+					for(std::size_t j=0;j<loading_result.atoms.size();j++)
+					{
+						const Atom& atom=loading_result.atoms[j];
+						spheres.push_back(apollota::SimpleSphere(atom.value.x, atom.value.y, atom.value.z, atom.value.r+probe));
+					}
+				}
+				else
+				{
+					for(std::size_t j=0;j<loading_result.atoms.size();j++)
+					{
+						const Atom& atom=loading_result.atoms[j];
+						substructure_id.second=atom.crad.chainID;
+						std::map< std::pair<std::string, std::string>, std::size_t >::const_iterator index_it=map_of_indices.find(substructure_id);
+						std::size_t index=0;
+						if(index_it==map_of_indices.end())
+						{
+							index=map_of_indices.size();
+							map_of_indices[substructure_id]=index;
+							ids_of_substructures.push_back(substructure_id);
+							substructures.push_back(std::vector<apollota::SimpleSphere>());
+						}
+						else
+						{
+							index=index_it->second;
+						}
+						std::vector<apollota::SimpleSphere>& spheres=substructures[index];
+						spheres.push_back(apollota::SimpleSphere(atom.value.x, atom.value.y, atom.value.z, atom.value.r+probe));
+					}
 				}
 			}
 		}
 
-		std::map< std::pair<std::string, std::string>, apollota::SimpleSphere > bounding_spheres;
+		std::vector< apollota::SimpleSphere > bounding_spheres(substructures.size());
 
-		for(std::map< std::pair<std::string, std::string>, std::vector<apollota::SimpleSphere> >::const_iterator it=substructures.begin();it!=substructures.end();++it)
+		for(std::size_t i=0;i<substructures.size();i++)
 		{
 			apollota::SimplePoint center;
-			const std::vector<apollota::SimpleSphere>& spheres=it->second;
+			const std::vector<apollota::SimpleSphere>& spheres=substructures[i];
 			for(std::size_t j=0;j<spheres.size();j++)
 			{
 				center=center+apollota::custom_point_from_object<apollota::SimplePoint>(spheres[j]);
@@ -154,60 +174,64 @@ public:
 			{
 				boundary.r=std::max(boundary.r, apollota::maximal_distance_from_point_to_sphere(center, spheres[j]));
 			}
-			bounding_spheres[it->first]=boundary;
+			bounding_spheres[i]=boundary;
 		}
 
-		std::map< std::pair<std::string, std::string>, apollota::BoundingSpheresHierarchy > search_hierarchies;
+		std::vector<apollota::BoundingSpheresHierarchy> search_hierarchies(substructures.size());
 
-		std::vector< std::pair< std::pair<std::string, std::string>, std::pair<std::string, std::string> > > pairs_of_interacting_substructures;
+		std::vector< std::pair<std::size_t, std::size_t> > pairs_of_interacting_substructures;
 
-		for(std::map< std::pair<std::string, std::string>, apollota::SimpleSphere >::const_iterator it1=bounding_spheres.begin();it1!=bounding_spheres.end();++it1)
+		for(std::size_t i1=0;i1<substructures.size();i1++)
 		{
-			std::map< std::pair<std::string, std::string>, apollota::SimpleSphere >::const_iterator it2=it1;
-			++it2;
-			for(;it2!=bounding_spheres.end();++it2)
+			for(std::size_t i2=(i1+1);i2<substructures.size();i2++)
 			{
-				if(apollota::sphere_intersects_sphere(it1->second, it2->second))
+				if(apollota::sphere_intersects_sphere(bounding_spheres[i1], bounding_spheres[i2]))
 				{
-					std::pair<std::string, std::string> id1=it1->first;
-					std::pair<std::string, std::string> id2=it2->first;
-					apollota::SimpleSphere bs1=it1->second;
-					apollota::SimpleSphere bs2=it2->second;
-					std::map< std::pair<std::string, std::string>, std::vector<apollota::SimpleSphere> >::const_iterator it_spheres1=substructures.find(id1);
-					std::map< std::pair<std::string, std::string>, std::vector<apollota::SimpleSphere> >::const_iterator it_spheres2=substructures.find(id2);
-					if(it_spheres1!=substructures.end() && it_spheres2!=substructures.end())
+					std::size_t id1=i1;
+					std::size_t id2=i2;
 					{
-						std::map< std::pair<std::string, std::string>, apollota::BoundingSpheresHierarchy >::iterator it_bsh1=search_hierarchies.find(id1);
-						std::map< std::pair<std::string, std::string>, apollota::BoundingSpheresHierarchy >::iterator it_bsh2=search_hierarchies.find(id2);
-						if((it_bsh1!=search_hierarchies.end() && it_bsh2==search_hierarchies.end()) || ((it_bsh2==search_hierarchies.end() || (it_bsh1!=search_hierarchies.end() && it_bsh2!=search_hierarchies.end())) && it_spheres1->second.size()<it_spheres2->second.size()))
 						{
-							std::swap(id1, id2);
-							std::swap(bs1, bs2);
-							std::swap(it_spheres1, it_spheres2);
-							std::swap(it_bsh1, it_bsh2);
+							const bool bsh_status1=!search_hierarchies[i1].leaves_spheres().empty();
+							const bool bsh_status2=!search_hierarchies[i2].leaves_spheres().empty();
+							if(bsh_status1 && !bsh_status2)
+							{
+								id1=i2;
+								id2=i1;
+							}
+							else if(!bsh_status1 && bsh_status2)
+							{
+								id1=i1;
+								id2=i2;
+							}
+							else if(substructures[i1].size()<substructures[i2].size())
+							{
+								id1=i2;
+								id2=i1;
+							}
 						}
-						const std::vector<apollota::SimpleSphere>& spheres1=it_spheres1->second;
-						const std::vector<apollota::SimpleSphere>& spheres2=it_spheres2->second;
-						apollota::BoundingSpheresHierarchy& bsh2=(it_bsh2!=search_hierarchies.end() ? (it_bsh2->second) : search_hierarchies[id2]);
-						if(bsh2.leaves_spheres().empty())
+
+						if(search_hierarchies[id2].leaves_spheres().empty())
 						{
-							bsh2=apollota::BoundingSpheresHierarchy(spheres2, 3.5+probe, 1);
+							search_hierarchies[id2]=apollota::BoundingSpheresHierarchy(substructures[id2], 3.5+probe, 1);
 						}
+
 						bool found_collision=false;
-						if(!apollota::SearchForSphericalCollisions::find_any_collision(bsh2, bs1).empty())
+
+						if(!apollota::SearchForSphericalCollisions::find_any_collision(search_hierarchies[id2], bounding_spheres[id1]).empty())
 						{
-							for(std::vector<apollota::SimpleSphere>::const_iterator sphere_it=spheres1.begin();sphere_it!=spheres1.end() && !found_collision;++sphere_it)
+							for(std::vector<apollota::SimpleSphere>::const_iterator sphere_it=substructures[id1].begin();sphere_it!=substructures[id1].end() && !found_collision;++sphere_it)
 							{
 								const apollota::SimpleSphere& sphere=(*sphere_it);
-								if(apollota::sphere_intersects_sphere(bs2, sphere) && !apollota::SearchForSphericalCollisions::find_any_collision(bsh2, sphere).empty())
+								if(apollota::sphere_intersects_sphere(bounding_spheres[id2], sphere) && !apollota::SearchForSphericalCollisions::find_any_collision(search_hierarchies[id2], sphere).empty())
 								{
 									found_collision=true;
 								}
 							}
 						}
+
 						if(found_collision)
 						{
-							pairs_of_interacting_substructures.push_back(std::make_pair(it1->first, it2->first));
+							pairs_of_interacting_substructures.push_back(std::make_pair(i1, i2));
 						}
 					}
 				}
@@ -227,11 +251,11 @@ public:
 
 			for(std::size_t i=0;i<pairs_of_interacting_substructures.size();i++)
 			{
-				const std::pair< std::pair<std::string, std::string>, std::pair<std::string, std::string> >& p=pairs_of_interacting_substructures[i];
-				foutput << p.first.first << " " << p.second.first;
+				const std::pair<std::size_t, std::size_t>& p=pairs_of_interacting_substructures[i];
+				foutput << ids_of_substructures[p.first].first << " " << ids_of_substructures[p.second].first;
 				if(consider_chains)
 				{
-					foutput << " " << p.first.second << " " << p.second.second;
+					foutput << " " << ids_of_substructures[p.first].second << " " << ids_of_substructures[p.second].second;
 				}
 				foutput << "\n";
 			}
