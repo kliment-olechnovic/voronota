@@ -103,8 +103,6 @@ public:
 		std::vector< std::vector<apollota::SimpleSphere> > substructures;
 
 		{
-			std::map< std::pair<std::string, std::string>, std::size_t > map_of_indices;
-
 			for(std::size_t i=0;i<input_filenames.size();i++)
 			{
 				const std::string& input_name=input_filenames[i];
@@ -134,16 +132,17 @@ public:
 				}
 				else
 				{
+					std::map<std::string, std::size_t> map_of_chains_to_indices;
 					for(std::size_t j=0;j<loading_result.atoms.size();j++)
 					{
 						const Atom& atom=loading_result.atoms[j];
-						substructure_id.second=atom.crad.chainID;
-						std::map< std::pair<std::string, std::string>, std::size_t >::const_iterator index_it=map_of_indices.find(substructure_id);
+						std::map<std::string, std::size_t>::const_iterator index_it=map_of_chains_to_indices.find(atom.crad.chainID);
 						std::size_t index=0;
-						if(index_it==map_of_indices.end())
+						if(index_it==map_of_chains_to_indices.end())
 						{
-							index=map_of_indices.size();
-							map_of_indices[substructure_id]=index;
+							index=substructures.size();
+							map_of_chains_to_indices[atom.crad.chainID]=index;
+							substructure_id.second=atom.crad.chainID;
 							ids_of_substructures.push_back(substructure_id);
 							substructures.push_back(std::vector<apollota::SimpleSphere>());
 						}
