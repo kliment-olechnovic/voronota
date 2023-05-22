@@ -9,6 +9,7 @@ cat >&2 << 'EOF'
 Options:
     --prefix                  string  *  output file path prefix
     --postfix                 string     output file path postfix, default is ''
+    --to-chains                          flag to split to separate chains inside models
     --help | -h                          flag to display help message and exit
 
 Standard input:
@@ -46,6 +47,7 @@ command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executab
 
 PREFIX=""
 POSTFIX=""
+TO_CHAINS="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -61,6 +63,9 @@ do
 	--postfix)
 		POSTFIX="$OPTARG"
 		shift
+		;;
+	--to-chains)
+		TO_CHAINS="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -105,10 +110,11 @@ params.input_file='$TMPLDIR/input.pdb';
 params.output_file='$TMPLDIR/output.txt';
 params.prefix='$PREFIX';
 params.postfix='$POSTFIX';
+params.to_chains='$TO_CHAINS';
 EOF
 
 cat << 'EOF'
-voronota_split_pdb_file("-input-file", params.input_file, "-output-file", params.output_file, "-prefix", params.prefix, "-postfix", params.postfix);
+voronota_split_pdb_file("-input-file", params.input_file, "-output-file", params.output_file, "-prefix", params.prefix, "-postfix", params.postfix, "-to-chains", params.to_chains);
 voronota_assert_full_success("Failed to split pdb file");
 EOF
 } \

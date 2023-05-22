@@ -29,14 +29,15 @@ public:
 		}
 	};
 
-	SplitPDBFile()
-	{
-	}
-
 	std::string input_file;
 	std::string output_file;
 	std::string prefix;
 	std::string postfix;
+	bool to_chains;
+
+	SplitPDBFile() : to_chains(false)
+	{
+	}
 
 	void initialize(CommandInput& input)
 	{
@@ -44,6 +45,7 @@ public:
 		output_file=input.get_value_or_default<std::string>("output-file", "");
 		prefix=input.get_value<std::string>("prefix");
 		postfix=input.get_value_or_default<std::string>("postfix", "");
+		to_chains=input.get_flag("to-chains");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -52,6 +54,7 @@ public:
 		doc.set_option_decription(CDOD("output-file", CDOD::DATATYPE_STRING, "path to output file with list of written files", ""));
 		doc.set_option_decription(CDOD("prefix", CDOD::DATATYPE_STRING, "prefix for file paths"));
 		doc.set_option_decription(CDOD("postfix", CDOD::DATATYPE_STRING, "postfix for file paths", ""));
+		doc.set_option_decription(CDOD("to-chains", CDOD::DATATYPE_BOOL, "flag to split to separate chains inside models", ""));
 	}
 
 	Result run(void*) const
@@ -84,14 +87,41 @@ public:
 
 					if(model_start || model_end)
 					{
-						const std::string filename=prefix+current_model_id+postfix;
-						OutputSelector foutput_selector(filename);
-						std::ostream& foutput=foutput_selector.stream();
-						for(std::size_t i=0;i<current_model_lines.size();i++)
+						if(!to_chains)
 						{
-							foutput << current_model_lines[i] << "\n";
+							const std::string filename=prefix+current_model_id+postfix;
+							OutputSelector foutput_selector(filename);
+							std::ostream& foutput=foutput_selector.stream();
+							for(std::size_t i=0;i<current_model_lines.size();i++)
+							{
+								foutput << current_model_lines[i] << "\n";
+							}
+							result_filenames.push_back(filename);
 						}
-						result_filenames.push_back(filename);
+						else
+						{
+							std::map< char, std::vector<std::size_t> > chains;
+							for(std::size_t i=0;i<current_model_lines.size();i++)
+							{
+								if(current_model_lines[i].size()>=54 && current_model_lines[i].rfind("ATOM ", 0)==0)
+								{
+									char chain=current_model_lines[i][21];
+									chain=(chain<=32 ? '.' : chain);
+									chains[chain].push_back(i);
+								}
+							}
+							for(std::map< char, std::vector<std::size_t> >::const_iterator it=chains.begin();it!=chains.end();++it)
+							{
+								const std::string filename=prefix+current_model_id+std::string("chain")+std::string(1, it->first)+postfix;
+								OutputSelector foutput_selector(filename);
+								std::ostream& foutput=foutput_selector.stream();
+								for(std::size_t i=0;i<it->second.size();i++)
+								{
+									foutput << current_model_lines[it->second[i]] << "\n";
+								}
+								result_filenames.push_back(filename);
+							}
+						}
 						current_model_id.clear();
 						current_model_lines.clear();
 					}
