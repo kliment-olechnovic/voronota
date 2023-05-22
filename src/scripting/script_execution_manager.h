@@ -32,6 +32,7 @@
 #include "operators/delete_tags_of_contacts.h"
 #include "operators/delete_virtual_files.h"
 #include "operators/describe_exposure.h"
+#include "operators/detect_any_contact_between_structures.h"
 #include "operators/distance.h"
 #include "operators/download_virtual_file.h"
 #include "operators/echo.h"
@@ -365,6 +366,7 @@ public:
 		set_command_for_extra_actions("cat-files", operators::CatFiles());
 		set_command_for_extra_actions("ranks-jury-score", operators::RanksJuryScore());
 		set_command_for_extra_actions("redundancy-score", operators::RedundancyScore());
+		set_command_for_extra_actions("detect-any-contact-between-structures", operators::DetectAnyContactBetweenStructures());
 	}
 
 	virtual ~ScriptExecutionManager()

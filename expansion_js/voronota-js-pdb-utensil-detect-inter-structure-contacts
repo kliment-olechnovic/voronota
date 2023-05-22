@@ -1,0 +1,126 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-pdb-utensil-detect-inter-structure-contacts' script reads structures and detects presence of contacts between them.
+
+Options:
+    --probe                   number     probe radius, default is 1.4
+    --as-assembly                        flag to read every file as a biological assembly
+    --consider-chain-ids                 flag to consider chains IDs and detects presence of contacts between chains
+    --output-header                      flag to print output header
+    --help | -h                          flag to display help message and exit
+
+Standard input:
+    list of input file paths
+    
+Standard output:
+    list of pairs of contacting structures
+    
+Examples:
+    
+    find ./input/ -type f -name '*.pdb' | voronota-js-pdb-utensil-detect-inter-structure-contacts
+    
+    find ./input/ -type f -name '*.pdb' | voronota-js-pdb-utensil-detect-inter-structure-contacts -probe 1.4 --output-header
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd "$(dirname ${ZEROARG})"
+	export PATH="$(pwd):${PATH}"
+	cd - &> /dev/null
+fi
+
+export LC_ALL=C
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+PROBE="1.4"
+AS_ASSEMBLY="false"
+CONSIDER_CHAIN_IDS="false"
+OUTPUT_HEADER="false"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	--probe)
+		PROBE="$OPTARG"
+		shift
+		;;
+	--as-assembly)
+		AS_ASSEMBLY="true"
+		;;
+	--consider-chain-ids)
+		CONSIDER_CHAIN_IDS="true"
+		;;
+	--output-header)
+		OUTPUT_HEADER="true"
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+cat > "$TMPLDIR/input.txt"
+
+if [ ! -s "$TMPLDIR/input.txt" ]
+then
+	echo >&2 "Error: no stdin data"
+	exit 1
+fi
+
+{
+cat << EOF
+var params={}
+params.input_file='$TMPLDIR/input.txt';
+params.output_file='$TMPLDIR/output.txt';
+params.probe='$PROBE';
+params.as_assembly='$AS_ASSEMBLY';
+params.consider_chain_ids='$CONSIDER_CHAIN_IDS';
+params.output_header='$OUTPUT_HEADER';
+EOF
+
+cat << 'EOF'
+voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential -include-heteroatoms");
+voronota_assert_full_success("Failed to setup defaults");
+
+voronota_detect_any_contact_between_structures("-input-file", params.input_file, "-output-file", params.output_file, "-probe", params.probe, "-as-assembly", params.as_assembly, "-consider-chains", params.consider_chain_ids, "-output-header", params.output_header);
+voronota_assert_full_success("Failed to search for any contact between structures");
+EOF
+
+} \
+| voronota-js --no-setup-defaults
+
+if [ ! -s "$TMPLDIR/output.txt" ]
+then
+	echo >&2 "Error: no output produced"
+	exit 1
+fi
+
+cat "$TMPLDIR/output.txt"
+

@@ -1,0 +1,124 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-pdb-utensil-split' script reads PDB file, splits it by models and outputs the models into separate files.
+
+Options:
+    --prefix                  string  *  output file path prefix
+    --postfix                 string     output file path postfix, default is ''
+    --help | -h                          flag to display help message and exit
+
+Standard input:
+    file in PDB format
+    
+Standard output:
+    list of output files
+    
+Example:
+    
+    cat "./ensemble.pdb" | voronota-js-pdb-utensil-split --prefix "./output/model_" --postfix ".pdb"
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [ -z "$1" ]
+then
+	print_help_and_exit
+fi
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd "$(dirname ${ZEROARG})"
+	export PATH="$(pwd):${PATH}"
+	cd - &> /dev/null
+fi
+
+export LC_ALL=C
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+PREFIX=""
+POSTFIX=""
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	--prefix)
+		PREFIX="$OPTARG"
+		shift
+		;;
+	--postfix)
+		POSTFIX="$OPTARG"
+		shift
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ -z "$PREFIX" ]
+then
+	echo >&2 "Error: no prefix provided"
+	exit 1
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+cat > "$TMPLDIR/input.pdb"
+
+INFILE="${TMPLDIR}/input.pdb"
+
+if [ ! -s "$TMPLDIR/input.pdb" ]
+then
+	echo >&2 "Error: no stdin data"
+	exit 1
+fi
+
+mkdir -p "$(dirname ${PREFIX}id${POSTFIX})"
+
+{
+cat << EOF
+var params={}
+params.input_file='$TMPLDIR/input.pdb';
+params.output_file='$TMPLDIR/output.txt';
+params.prefix='$PREFIX';
+params.postfix='$POSTFIX';
+EOF
+
+cat << 'EOF'
+voronota_split_pdb_file("-input-file", params.input_file, "-output-file", params.output_file, "-prefix", params.prefix, "-postfix", params.postfix);
+voronota_assert_full_success("Failed to split pdb file");
+EOF
+} \
+| voronota-js --no-setup-defaults
+
+if [ ! -s "$TMPLDIR/output.txt" ]
+then
+	echo >&2 "Error: no output files produced"
+	exit 1
+fi
+
+cat "$TMPLDIR/output.txt"
+

@@ -101,8 +101,6 @@ trap "rm -r $TMPLDIR" EXIT
 
 cat > "$TMPLDIR/input.pdb"
 
-INFILE="${TMPLDIR}/input.pdb"
-
 if [ ! -s "$TMPLDIR/input.pdb" ]
 then
 	echo >&2 "Error: no stdin data"
