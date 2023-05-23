@@ -18,25 +18,46 @@ class PrintSequence : public OperatorBase<PrintSequence>
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
+		struct ChainSegmentInfo
+		{
+			std::vector<std::size_t> residue_ids;
+			std::string residue_sequence;
+			std::string secondary_structure_sequence;
+		};
+
 		SummaryOfAtoms atoms_summary;
-		std::map< std::string, std::vector< std::vector<std::size_t> > > chain_segments;
+		std::map< std::string, std::vector<ChainSegmentInfo> > chain_segments;
 		std::string residue_sequence;
 		std::string secondary_structure_sequence;
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
-			for(std::map< std::string, std::vector< std::vector<std::size_t> > >::const_iterator it=chain_segments.begin();it!=chain_segments.end();++it)
+			for(std::map< std::string, std::vector<ChainSegmentInfo> >::const_iterator it=chain_segments.begin();it!=chain_segments.end();++it)
 			{
 				VariantObject chain_info;
 				chain_info.value("chain_name")=(it->first);
 				std::size_t total_length=0;
+				std::string total_residue_sequence;
+				std::string total_secondary_structure_sequence;
 				for(std::size_t i=0;i<it->second.size();i++)
 				{
-					total_length+=it->second[i].size();
-					chain_info.values_array("segment_lengths").push_back(VariantValue(it->second[i].size()));
+					chain_info.values_array("segment_lengths").push_back(VariantValue(it->second[i].residue_ids.size()));
+					total_length+=it->second[i].residue_ids.size();
+					chain_info.values_array("residue_sequences").push_back(VariantValue(it->second[i].residue_sequence));
+					total_residue_sequence+=it->second[i].residue_sequence;
+					if(!secondary_structure_sequence.empty())
+					{
+						chain_info.values_array("secondary_structure_sequences").push_back(VariantValue(it->second[i].secondary_structure_sequence));
+						total_secondary_structure_sequence+=it->second[i].secondary_structure_sequence;
+					}
 				}
 				chain_info.value("total_length")=total_length;
+				chain_info.value("total_residue_sequence")=total_residue_sequence;
+				if(!secondary_structure_sequence.empty())
+				{
+					chain_info.value("total_secondary_structure_sequence")=total_secondary_structure_sequence;
+				}
 				heterostorage.variant_object.objects_array("chains").push_back(chain_info);
 			}
 			heterostorage.variant_object.value("residue_sequence")=residue_sequence;
@@ -136,33 +157,44 @@ public:
 			for(std::size_t i=0;i<group_ids.size();i++)
 			{
 				const std::vector<std::size_t>& group=grouping[group_ids[i]];
-				result.chain_segments[it->first].push_back(group);
+				std::ostringstream output_for_chain_residue_sequence;
+				std::ostringstream output_for_chain_secondary_structure_sequence;
 				if(!group.empty())
 				{
 					for(std::size_t j=0;j<group.size();j++)
 					{
 						{
 							const common::ConstructionOfPrimaryStructure::Residue& r=data_manager.primary_structure_info().residues[group[j]];
-							output_for_residue_sequence << auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(r.chain_residue_descriptor.resName);
+							output_for_chain_residue_sequence << auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(r.chain_residue_descriptor.resName);
 						}
 						if(secondary_structure)
 						{
 							const common::ConstructionOfSecondaryStructure::ResidueDescriptor& r=data_manager.secondary_structure_info().residue_descriptors[group[j]];
 							if(r.secondary_structure_type==common::ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
 							{
-								output_for_secondary_structure_sequence << "H";
+								output_for_chain_secondary_structure_sequence << "H";
 							}
 							else if(r.secondary_structure_type==common::ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_BETA_STRAND)
 							{
-								output_for_secondary_structure_sequence << "S";
+								output_for_chain_secondary_structure_sequence << "S";
 							}
 							else
 							{
-								output_for_secondary_structure_sequence << "-";
+								output_for_chain_secondary_structure_sequence << "-";
 							}
 						}
 					}
 				}
+				Result::ChainSegmentInfo chain_segment_info;
+				chain_segment_info.residue_ids=group;
+				chain_segment_info.residue_sequence=output_for_chain_residue_sequence.str();
+				output_for_residue_sequence << chain_segment_info.residue_sequence;
+				if(secondary_structure)
+				{
+					chain_segment_info.secondary_structure_sequence=output_for_chain_secondary_structure_sequence.str();
+					output_for_secondary_structure_sequence << chain_segment_info.secondary_structure_sequence;
+				}
+				result.chain_segments[it->first].push_back(chain_segment_info);
 			}
 		}
 
