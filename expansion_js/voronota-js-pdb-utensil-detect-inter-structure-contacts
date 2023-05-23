@@ -10,6 +10,7 @@ Options:
     --probe                   number     probe radius, default is 1.4
     --as-assembly                        flag to read every file as a biological assembly
     --consider-chain-ids                 flag to consider chains IDs and detects presence of contacts between chains
+    --include-heteroatoms                flag to include heteroatoms
     --output-header                      flag to print output header
     --help | -h                          flag to display help message and exit
 
@@ -46,6 +47,7 @@ command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executab
 PROBE="1.4"
 AS_ASSEMBLY="false"
 CONSIDER_CHAIN_IDS="false"
+INCLUDE_HETEROATOMS="false"
 OUTPUT_HEADER="false"
 HELP_MODE="false"
 
@@ -64,6 +66,9 @@ do
 		;;
 	--consider-chain-ids)
 		CONSIDER_CHAIN_IDS="true"
+		;;
+	--include-heteroatoms)
+		INCLUDE_HETEROATOMS="true"
 		;;
 	--output-header)
 		OUTPUT_HEADER="true"
@@ -102,14 +107,15 @@ params.output_file='$TMPLDIR/output.txt';
 params.probe='$PROBE';
 params.as_assembly='$AS_ASSEMBLY';
 params.consider_chain_ids='$CONSIDER_CHAIN_IDS';
+params.include_heteroatoms='$INCLUDE_HETEROATOMS';
 params.output_header='$OUTPUT_HEADER';
 EOF
 
 cat << 'EOF'
-voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential -include-heteroatoms");
+voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential");
 voronota_assert_full_success("Failed to setup defaults");
 
-voronota_detect_any_contact_between_structures("-input-file", params.input_file, "-output-file", params.output_file, "-probe", params.probe, "-as-assembly", params.as_assembly, "-consider-chains", params.consider_chain_ids, "-output-header", params.output_header);
+voronota_detect_any_contact_between_structures("-input-file", params.input_file, "-output-file", params.output_file, "-probe", params.probe, "-as-assembly", params.as_assembly, "-consider-chains", params.consider_chain_ids, "-include-heteroatoms", params.include_heteroatoms, "-output-header", params.output_header);
 voronota_assert_full_success("Failed to search for any contact between structures");
 EOF
 
