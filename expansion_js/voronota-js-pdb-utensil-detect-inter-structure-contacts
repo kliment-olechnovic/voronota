@@ -24,7 +24,7 @@ Examples:
     
     find ./input/ -type f -name '*.pdb' | voronota-js-pdb-utensil-detect-inter-structure-contacts
     
-    find ./input/ -type f -name '*.pdb' | voronota-js-pdb-utensil-detect-inter-structure-contacts -probe 1.4 --output-header
+    find ./input/ -type f -name '*.pdb' | voronota-js-pdb-utensil-detect-inter-structure-contacts --probe 1.4 --output-header
 
 EOF
 exit 1
@@ -91,7 +91,7 @@ fi
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
-cat > "$TMPLDIR/input.txt"
+cat | sort | uniq > "$TMPLDIR/input.txt"
 
 if [ ! -s "$TMPLDIR/input.txt" ]
 then

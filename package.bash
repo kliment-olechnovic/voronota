@@ -71,6 +71,7 @@ cp \
   "./expansion_js/voronota-js-pdb-utensil-renumber-by-sequence" \
   "./expansion_js/voronota-js-pdb-utensil-detect-inter-structure-contacts" \
   "./expansion_js/voronota-js-pdb-utensil-split-to-models" \
+  "./expansion_js/voronota-js-pdb-utensil-filter-atoms" \
   "./expansion_js/CMakeLists.txt" \
   "./LICENSE.txt" \
   "./expansion_js/README.md" \
