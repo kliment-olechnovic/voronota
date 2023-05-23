@@ -4,11 +4,10 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-pdb-utensil-filter-atoms' script reads structure, restricts atoms by a query, outputs structure.
+'voronota-js-pdb-utensil-rename-chains' script reads structure, renames chains by, outputs structure.
 
 Options:
-    --selection               string     selection string, default is '[]'
-    --motif                   string     motif string, default is ''
+    --rule                    string  *  chain renaming rule
     --as-assembly                        flag to read input as a biological assembly
     --help | -h                          flag to display help message and exit
 
@@ -20,19 +19,15 @@ Standard output:
     
 Examples:
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms --selection '[-chain A,B -rnum 10:100]' > "./result.pdb"
+    cat "./model.pdb" | voronota-js-pdb-utensil-rename-chains --rule 'A=B,B=A' > "./result.pdb"
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '[-chain A,B -rnum 10:100 -aname ]' > "./result.pdb"
+    cat "./model.pdb" | voronota-js-pdb-utensil-rename-chains 'A=B,B=A' > "./result.pdb"
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '([-chain A -rnum 10:100] or [-chain B -rnum 101:200])' > "./result.pdb"
+    cat "./model.pdb" | voronota-js-pdb-utensil-rename-chains 'C' > "./result_with_all_chains_named_C.pdb"
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '([-protein] or [-t het])' > "./result.pdb"
+    cat "./model.pdb" | voronota-js-pdb-utensil-rename-chains '_invert_case' > "./result.pdb"
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '([-nucleic] or [-t het])' | voronota-js-pdb-utensil-filter-atoms '[-chain A,B -rnum 10:100]'
-    
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '[-chain A,A2]' --as-assembly > "./result.pdb"
-    
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '[-protein -aname CA,C,N,O,CB]' --motif 'LYYYK?Y' > "./result.pdb"
+    cat "./model.pdb" | voronota-js-pdb-utensil-rename-chains 'A2=B' --as-assembly > "./result.pdb"
     
 EOF
 exit 1
@@ -40,6 +35,11 @@ exit 1
 
 readonly ZEROARG=$0
 ALLARGS=("$@")
+
+if [ -z "$1" ]
+then
+	print_help_and_exit
+fi
 
 if [[ $ZEROARG == *"/"* ]]
 then
@@ -52,9 +52,8 @@ export LC_ALL=C
 
 command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
 
-SELECTION="[]"
-SELECTION_READ="false"
-MOTIF=""
+RULE=""
+RULE_READ="false"
 AS_ASSEMBLY="false"
 HELP_MODE="false"
 
@@ -64,13 +63,9 @@ do
 	OPTARG="$2"
 	shift
 	case $OPTION in
-	--selection)
-		SELECTION="$OPTARG"
-		SELECTION_READ="true"
-		shift
-		;;
-	--motif)
-		MOTIF="$OPTARG"
+	--rule)
+		RULE="$OPTARG"
+		RULE_READ="true"
 		shift
 		;;
 	--as-assembly)
@@ -80,10 +75,10 @@ do
 		HELP_MODE="true"
 		;;
 	*)
-		if [ "$SELECTION_READ" == "false" ]
+		if [ "$RULE_READ" == "false" ]
 		then
-			SELECTION="$OPTION"
-			SELECTION_READ="true";
+			RULE="$OPTION"
+			RULE_READ="true";
 		else
 			echo >&2 "Error: invalid command line option '$OPTION'"
 			exit 1
@@ -97,9 +92,9 @@ then
 	print_help_and_exit
 fi
 
-if [ -z "$SELECTION" ]
+if [ -z "$RULE" ]
 then
-	echo >&2 "Error: no selection provided"
+	echo >&2 "Error: no rule provided"
 	exit 1
 fi
 
@@ -119,8 +114,7 @@ cat << EOF
 var params={}
 params.input_file='$TMPLDIR/input.pdb';
 params.output_file='$TMPLDIR/output.pdb';
-params.selection='$SELECTION';
-params.motif='$MOTIF';
+params.rule='$RULE';
 params.as_assembly='$AS_ASSEMBLY';
 EOF
 
@@ -131,11 +125,8 @@ voronota_assert_full_success("Failed to setup defaults");
 voronota_import("-file", params.input_file, "-as-assembly", params.as_assembly);
 voronota_assert_full_success("Failed to input structure");
 
-voronota_select_atoms("-use", "("+params.selection+")", "-motif", params.motif, "-name", "restriction");
-voronota_assert_full_success("Failed to select atoms");
-
-voronota_restrict_atoms("-use", "[restriction]");
-voronota_assert_full_success("Failed to restrict atoms");
+voronota_set_chain_name("-use", "[]", "-chain-name", params.rule);
+voronota_assert_full_success("Failed to change chain names");
 
 voronota_export_atoms("-as-pdb", "-file", params.output_file);
 voronota_assert_full_success("Failed to output structure");
@@ -146,7 +137,7 @@ EOF
 
 if [ ! -s "$TMPLDIR/output.pdb" ]
 then
-	echo >&2 "Error: no output produced for selection '$SELECTION'"
+	echo >&2 "Error: no output produced for rule '$RULE'"
 	exit 1
 fi
 

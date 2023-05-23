@@ -26,3 +26,9 @@ find "${SUBDIR}/" -type f -name 'separate_chain_*.pdb' \
 
 find "${SUBDIR}/" -type f -name 'separate_chain_*.pdb' | xargs rm
 
+cat "$INPUTDIR/complex/target.pdb" \
+| $VORONOTAJSDIR/voronota-js-pdb-utensil-filter-atoms '[-rnum 30]' \
+| $VORONOTAJSDIR/voronota-js-pdb-utensil-rename-chains '_invert_case' \
+| $VORONOTAJSDIR/voronota-js-pdb-utensil-rename-chains 'a=X,b=X2' \
+> "${SUBDIR}/filtered.pdb"
+
