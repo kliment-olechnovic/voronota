@@ -4,29 +4,25 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-pdb-utensil-rename-chains' script reads structure, renames chains by, outputs structure.
+'voronota-js-pdb-utensil-download-structure' script downloads and outputs structure in PDB format.
 
 Options:
-    --rule                    string  *  chain renaming rule
+    --id                      string  *  chain renaming rule
+    --assembly                number     biological assembly number (0 for asymmetric unit), default is 1
     --help | -h                          flag to display help message and exit
-
-Standard input:
-    structure in PDB format
     
 Standard output:
     structure in PDB format
     
 Examples:
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-rename-chains --rule 'A=B,B=A' > "./result.pdb"
+    voronota-js-pdb-utensil-download-structure 2zsk > "./assembly.pdb"
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-rename-chains 'A=B,B=A' > "./result.pdb"
+    voronota-js-pdb-utensil-download-structure 2ZSK > "./assembly.pdb"
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-rename-chains 'C' > "./result_with_all_chains_named_C.pdb"
+    voronota-js-pdb-utensil-download-structure 2zsk --assembly 1 > "./assembly.pdb"
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-rename-chains '_invert_case' > "./result.pdb"
-    
-    cat "./model.pdb" | voronota-js-pdb-utensil-rename-chains 'A2=B' > "./result.pdb"
+    voronota-js-pdb-utensil-download-structure 2zsk --assembly 0 > "./asymmetric_unit.pdb"
     
 EOF
 exit 1
@@ -51,9 +47,9 @@ export LC_ALL=C
 
 command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
 
-RULE=""
-RULE_READ="false"
-AS_ASSEMBLY="true"
+ENTRYID=""
+ENTRYID_READ="false"
+ASSEMBLY="1"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -62,22 +58,23 @@ do
 	OPTARG="$2"
 	shift
 	case $OPTION in
-	--rule)
-		RULE="$OPTARG"
-		RULE_READ="true"
+	--id)
+		ENTRYID="$OPTARG"
+		ENTRYID_READ="true"
 		shift
 		;;
-	--not-as-assembly)
-		AS_ASSEMBLY="false"
+	--assembly)
+		ASSEMBLY="$OPTARG"
+		shift
 		;;
 	-h|--help)
 		HELP_MODE="true"
 		;;
 	*)
-		if [ "$RULE_READ" == "false" ]
+		if [ "$ENTRYID_READ" == "false" ]
 		then
-			RULE="$OPTION"
-			RULE_READ="true";
+			ENTRYID="$OPTION"
+			ENTRYID_READ="true";
 		else
 			echo >&2 "Error: invalid command line option '$OPTION'"
 			exit 1
@@ -91,41 +88,29 @@ then
 	print_help_and_exit
 fi
 
-if [ -z "$RULE" ]
+if [ -z "$ENTRYID" ]
 then
-	echo >&2 "Error: no rule provided"
+	echo >&2 "Error: no ID provided"
 	exit 1
 fi
 
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
-cat > "$TMPLDIR/input.pdb"
-
-if [ ! -s "$TMPLDIR/input.pdb" ]
-then
-	echo >&2 "Error: no stdin data"
-	exit 1
-fi
-
 {
 cat << EOF
 var params={}
-params.input_file='$TMPLDIR/input.pdb';
 params.output_file='$TMPLDIR/output.pdb';
-params.rule='$RULE';
-params.as_assembly='$AS_ASSEMBLY';
+params.entry_id='$ENTRYID';
+params.assembly=$ASSEMBLY;
 EOF
 
 cat << 'EOF'
 voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential -include-heteroatoms");
 voronota_assert_full_success("Failed to setup defaults");
 
-voronota_import("-file", params.input_file, "-as-assembly", params.as_assembly);
-voronota_assert_full_success("Failed to input structure");
-
-voronota_set_chain_name("-use", "[]", "-chain-name", params.rule);
-voronota_assert_full_success("Failed to change chain names");
+voronota_fetch("-pdb-id", params.entry_id, "-assembly", params.assembly);
+voronota_assert_full_success("Failed to fetch structure");
 
 voronota_export_atoms("-as-pdb", "-file", params.output_file);
 voronota_assert_full_success("Failed to output structure");
@@ -136,7 +121,7 @@ EOF
 
 if [ ! -s "$TMPLDIR/output.pdb" ]
 then
-	echo >&2 "Error: no output produced for rule '$RULE'"
+	echo >&2 "Error: no output produced for ID '$ENTRYID' assembly '$ASSEMBLY'"
 	exit 1
 fi
 

@@ -4,36 +4,28 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-pdb-utensil-filter-atoms' script reads structure, restricts atoms by a query, outputs structure.
+'voronota-js-pdb-utensil-print-sequence-from-structure' script reads structure, and prints chain sequence.
 
 Options:
     --selection               string     selection string, default is '[]'
-    --motif                   string     motif string, default is ''
+    --not-as-assembly                    flag to read input not as a biological assembly, only read one MODEL block
     --help | -h                          flag to display help message and exit
 
 Standard input:
     structure in PDB format
     
 Standard output:
-    structure in PDB format
+    chain sequences in FASTA format
     
 Examples:
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms --selection '[-chain A,B -rnum 10:100]' > "./result.pdb"
+    cat "./model.pdb" | voronota-js-pdb-utensil-print-sequence-from-structure > "./sequences.fasta"
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '[-chain A,B -rnum 10:100 -aname ]' > "./result.pdb"
+    cat "./model.pdb" | voronota-js-pdb-utensil-print-sequence-from-structure --selection '[-chain A,B]' > "./sequences.fasta"
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '(not [-chain A,B -rnum 10:100 -aname ])' > "./result.pdb"
+    cat "./model.pdb" | voronota-js-pdb-utensil-print-sequence-from-structure --selection '[-protein]' > "./sequences.fasta"
     
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '([-chain A -rnum 10:100] or [-chain B -rnum 101:200])' > "./result.pdb"
-    
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '([-protein] or [-t het])' > "./result.pdb"
-    
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '([-nucleic] or [-t het])' | voronota-js-pdb-utensil-filter-atoms '[-chain A,B -rnum 10:100]'
-    
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '[-chain A,A2]' > "./result.pdb"
-    
-    cat "./model.pdb" | voronota-js-pdb-utensil-filter-atoms '[-protein -aname CA,C,N,O,CB]' --motif 'LYYYK?Y' > "./result.pdb"
+    cat "./model.pdb" | voronota-js-pdb-utensil-print-sequence-from-structure --selection '[-nucleic]' > "./sequences.fasta"
     
 EOF
 exit 1
@@ -55,7 +47,6 @@ command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executab
 
 SELECTION="[]"
 SELECTION_READ="false"
-MOTIF=""
 AS_ASSEMBLY="true"
 HELP_MODE="false"
 
@@ -68,10 +59,6 @@ do
 	--selection)
 		SELECTION="$OPTARG"
 		SELECTION_READ="true"
-		shift
-		;;
-	--motif)
-		MOTIF="$OPTARG"
 		shift
 		;;
 	--not-as-assembly)
@@ -119,9 +106,8 @@ fi
 cat << EOF
 var params={}
 params.input_file='$TMPLDIR/input.pdb';
-params.output_file='$TMPLDIR/output.pdb';
+params.output_file='$TMPLDIR/output.fasta';
 params.selection='$SELECTION';
-params.motif='$MOTIF';
 params.as_assembly='$AS_ASSEMBLY';
 EOF
 
@@ -132,24 +118,21 @@ voronota_assert_full_success("Failed to setup defaults");
 voronota_import("-file", params.input_file, "-as-assembly", params.as_assembly);
 voronota_assert_full_success("Failed to input structure");
 
-voronota_select_atoms("-use", "("+params.selection+")", "-motif", params.motif, "-name", "restriction");
+voronota_select_atoms("-use", "("+params.selection+")", "-name", "restriction");
 voronota_assert_full_success("Failed to select atoms");
 
-voronota_restrict_atoms("-use", "[restriction]");
-voronota_assert_full_success("Failed to restrict atoms");
-
-voronota_export_atoms("-as-pdb", "-file", params.output_file);
-voronota_assert_full_success("Failed to output structure");
+voronota_export_sequence("-file", params.output_file, "-use", "[restriction]", "-full-residues", "-not-fill-start-gaps", "-not-fill-middle-gaps");
+voronota_assert_full_success("Failed to print sequence");
 EOF
 
 } \
 | voronota-js --no-setup-defaults
 
-if [ ! -s "$TMPLDIR/output.pdb" ]
+if [ ! -s "$TMPLDIR/output.fasta" ]
 then
 	echo >&2 "Error: no output produced for selection '$SELECTION'"
 	exit 1
 fi
 
-cat "$TMPLDIR/output.pdb"
+cat "$TMPLDIR/output.fasta"
 

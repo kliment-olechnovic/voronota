@@ -73,6 +73,8 @@ cp \
   "./expansion_js/voronota-js-pdb-utensil-split-to-models" \
   "./expansion_js/voronota-js-pdb-utensil-filter-atoms" \
   "./expansion_js/voronota-js-pdb-utensil-rename-chains" \
+  "./expansion_js/voronota-js-pdb-utensil-print-sequence-from-structure" \
+  "./expansion_js/voronota-js-pdb-utensil-download-structure" \
   "./expansion_js/CMakeLists.txt" \
   "./LICENSE.txt" \
   "./expansion_js/README.md" \

@@ -32,3 +32,11 @@ cat "$INPUTDIR/complex/target.pdb" \
 | $VORONOTAJSDIR/voronota-js-pdb-utensil-rename-chains 'a=X,b=X2' \
 > "${SUBDIR}/filtered.pdb"
 
+cat "$INPUTDIR/complex/target.pdb" \
+| $VORONOTAJSDIR/voronota-js-pdb-utensil-print-sequence-from-structure \
+> "${SUBDIR}/sequences_all.fasta"
+
+cat "$INPUTDIR/complex/target.pdb" \
+| $VORONOTAJSDIR/voronota-js-pdb-utensil-print-sequence-from-structure '[-rnum 30:50]' \
+> "${SUBDIR}/sequences_of_selection.fasta"
+

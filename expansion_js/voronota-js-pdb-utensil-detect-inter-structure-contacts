@@ -8,7 +8,6 @@ cat >&2 << 'EOF'
 
 Options:
     --probe                   number     probe radius, default is 1.4
-    --as-assembly                        flag to read every file as a biological assembly
     --consider-chain-ids                 flag to consider chains IDs and detects presence of contacts between chains
     --include-heteroatoms                flag to include heteroatoms
     --output-header                      flag to print output header
@@ -45,7 +44,7 @@ export LC_ALL=C
 command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
 
 PROBE="1.4"
-AS_ASSEMBLY="false"
+AS_ASSEMBLY="true"
 CONSIDER_CHAIN_IDS="false"
 INCLUDE_HETEROATOMS="false"
 OUTPUT_HEADER="false"
@@ -61,8 +60,8 @@ do
 		PROBE="$OPTARG"
 		shift
 		;;
-	--as-assembly)
-		AS_ASSEMBLY="true"
+	--not-as-assembly)
+		AS_ASSEMBLY="false"
 		;;
 	--consider-chain-ids)
 		CONSIDER_CHAIN_IDS="true"
