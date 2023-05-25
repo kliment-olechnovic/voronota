@@ -163,45 +163,80 @@ then
 		exit 1
 	fi
 	
-	NUM_OF_INPUTS="$(cat $TMPLDIR/input_list | wc -l)"
+	mkdir -p "$TMPLDIR/portions"
+	mkdir -p "$TMPLDIR/portions_pairs"
 	
 	NUM_OF_INPUT_GROUPS="$(cat $TMPLDIR/input_list | awk '{print $2}' | sort | uniq | egrep . | wc -l)"
 	
-	if [ "$NUM_OF_INPUT_GROUPS" != "0" ]
+	if [ "$NUM_OF_INPUT_GROUPS" -lt "2" ]
 	then
-		echo >&2 "Error: parallelization for inter-group computation is not implemented yet."
-		exit 1
-	fi
-	
-	NUM_OF_SPLITS="$(echo $MAX_PROCESSORS | awk '{v=(1+(sqrt(1+8*$1)/2)); print int(v);}')"
-	
-	SIZE_OF_PORTION="$(echo "a=$NUM_OF_INPUTS; b=$NUM_OF_SPLITS; if(a%b) a/b+1 else a/b" | bc)"
-	
-	if [ "$SIZE_OF_PORTION" -gt "19997" ]
-	then
-		SIZE_OF_PORTION="19997"
-	fi
-	
-	mkdir -p "$TMPLDIR/portions"
-	
-	split -l "$SIZE_OF_PORTION" "$TMPLDIR/input_list" "$TMPLDIR/portions/portion_"
-	
-	mkdir -p "$TMPLDIR/portions_pairs"
-	
-	find $TMPLDIR/portions/ -type f -not -empty | sort | while read -r PORTIONFILE1
-	do
-		cat "$PORTIONFILE1" | awk '{print $1 " self"}' > "$TMPLDIR/portions_pairs/$(basename $PORTIONFILE1)_$(basename $PORTIONFILE1)"
-		find $TMPLDIR/portions/ -type f -not -empty | sort | while read -r PORTIONFILE2
+		NUM_OF_SPLITS="$(echo $MAX_PROCESSORS | awk '{v=(1+(sqrt(1+8*$1)/2)); print int(v);}')"
+		
+		NUM_OF_INPUTS="$(cat $TMPLDIR/input_list | wc -l)"
+		
+		SIZE_OF_PORTION="$(echo "a=$NUM_OF_INPUTS; b=$NUM_OF_SPLITS; if(a%b) a/b+1 else a/b" | bc)"
+		
+		if [ "$SIZE_OF_PORTION" -gt "19997" ]
+		then
+			SIZE_OF_PORTION="19997"
+		fi
+		
+		split -l "$SIZE_OF_PORTION" "$TMPLDIR/input_list" "$TMPLDIR/portions/portion_"
+		
+		find $TMPLDIR/portions/ -type f -not -empty | sort | while read -r PORTIONFILE1
 		do
-			if [[ "$PORTIONFILE1" < "$PORTIONFILE2" ]]
-			then
-				{
-					cat "$PORTIONFILE1" | awk '{print $1 " a"}'
-					cat "$PORTIONFILE2" | awk '{print $1 " b"}'
-				} > "$TMPLDIR/portions_pairs/$(basename $PORTIONFILE1)_$(basename $PORTIONFILE2)"
-			fi
+			cat "$PORTIONFILE1" | awk '{print $1 " self"}' > "$TMPLDIR/portions_pairs/$(basename $PORTIONFILE1)_$(basename $PORTIONFILE1)"
+			find $TMPLDIR/portions/ -type f -not -empty | sort | while read -r PORTIONFILE2
+			do
+				if [[ "$PORTIONFILE1" < "$PORTIONFILE2" ]]
+				then
+					{
+						cat "$PORTIONFILE1" | awk '{print $1 " a"}'
+						cat "$PORTIONFILE2" | awk '{print $1 " b"}'
+					} > "$TMPLDIR/portions_pairs/$(basename $PORTIONFILE1)_$(basename $PORTIONFILE2)"
+				fi
+			done
 		done
-	done
+	else
+		cat "$TMPLDIR/input_list" | awk '{if($2=="self"){print $0}}' > "$TMPLDIR/input_list_self"
+		cat "$TMPLDIR/input_list" | awk '{if($2!="self"){print $0}}' > "$TMPLDIR/input_list_grouped"
+		
+		if [ -s "$TMPLDIR/input_list_self" ]
+		then
+			echo >&2 "Error: group name 'self' is not supported for parallelization"
+			exit 1
+		fi
+		
+		if [ -s "$TMPLDIR/input_list_grouped" ]
+		then
+			mv "$TMPLDIR/input_list_grouped" "$TMPLDIR/input_list"
+			
+			SMALLEST_GROUP="$(cat $TMPLDIR/input_list | awk '{print $2}' | sort | uniq -c | sort | head -1 | awk '{print $2}')"
+			cat $TMPLDIR/input_list | awk -v sgroup="$SMALLEST_GROUP" '{if($2==sgroup){print $0}}' > $TMPLDIR/input_list_a
+			cat $TMPLDIR/input_list | awk -v sgroup="$SMALLEST_GROUP" '{if($2!=sgroup){print $0}}' > $TMPLDIR/input_list_b
+			
+			NUM_OF_SPLITS="$MAX_PROCESSORS"
+			
+			NUM_OF_INPUTS="$(cat $TMPLDIR/input_list_b | wc -l)"
+			
+			SIZE_OF_PORTION="$(echo "a=$NUM_OF_INPUTS; b=$NUM_OF_SPLITS; if(a%b) a/b+1 else a/b" | bc)"
+			
+			if [ "$SIZE_OF_PORTION" -gt "19997" ]
+			then
+				SIZE_OF_PORTION="19997"
+			fi
+			
+			split -l "$SIZE_OF_PORTION" "$TMPLDIR/input_list_b" "$TMPLDIR/portions/portion_"
+			
+			find $TMPLDIR/portions/ -type f -not -empty | sort | while read -r PORTIONFILE
+			do
+				{
+					cat "$TMPLDIR/input_list_a"
+					cat "$PORTIONFILE"
+				} > "$TMPLDIR/portions_pairs/grouped_$(basename $PORTIONFILE)"
+			done
+		fi
+	fi
 	
 	mkdir -p "$TMPLDIR/children_tables"
 	

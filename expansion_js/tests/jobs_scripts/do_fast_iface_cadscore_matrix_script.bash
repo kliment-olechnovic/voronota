@@ -58,7 +58,7 @@ find "${SUBDIR}/augmented_input" -type f | grep 'model1.pdb' | awk '{print $1 " 
 | $VORONOTAJSDIR/voronota-js-fast-iface-cadscore-matrix \
   --remap-chains \
   --processors 4 \
-&> "$SUBDIR/global_scores_submatrix_parallel"
+  --output-table-file "$SUBDIR/global_scores_submatrix_parallel"
 
 rm -r "${SUBDIR}/augmented_input"
 
