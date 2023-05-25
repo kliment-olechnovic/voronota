@@ -357,7 +357,7 @@ then
 	| sort \
 	| xargs -L 1 cat \
 	| awk '{if(NR==1 || $1!="target") print $0}' \
-	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas -multipliers 1 1 1 -tolerances 0.0 0.0 0.0 -no-tournament');" \
+	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas iface_model_area iface_target_area -multipliers 1 1 1 1 1 -tolerances 0.0 0.0 0.0 0.0 0.0 -no-tournament');" \
 	> "$TMPLDIR/full_output_table"
 	
 	if [ -n "$OUTPUT_TABLE_FILE" ] && [ "$OUTPUT_TABLE_FILE" != "_stdout" ]
@@ -708,7 +708,7 @@ if(common_params.output_table_file!=="_stdout")
 	shell('mkdir -p "$(dirname '+common_params.output_table_file+')"');
 }
 
-voronota_tournament_sort('-input-file', '_virtual/summary', '-output-file', common_params.output_table_file, '-columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas -multipliers 1 1 1 -tolerances 0.0 0.0 0.0 -no-tournament');
+voronota_tournament_sort('-input-file', '_virtual/summary', '-output-file', common_params.output_table_file, '-columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas iface_model_area iface_target_area -multipliers 1 1 1 1 1 -tolerances 0.0 0.0 0.0 0.0 0.0 -no-tournament');
 
 EOF
 

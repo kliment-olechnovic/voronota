@@ -14,12 +14,12 @@ do
 	done
 done
 
-find "${SUBDIR}/augmented_input" -type f \
+find "${SUBDIR}/augmented_input" -type f | sort \
 | $VORONOTAJSDIR/voronota-js-fast-iface-cadscore-matrix \
   --processors 4 \
   --output-table-file "$SUBDIR/global_scores"
 
-find "${SUBDIR}/augmented_input" -type f \
+find "${SUBDIR}/augmented_input" -type f | sort \
 | $VORONOTAJSDIR/voronota-js-fast-iface-cadscore-matrix \
   --output-table-file "$SUBDIR/global_scores_non_parallel"
 
