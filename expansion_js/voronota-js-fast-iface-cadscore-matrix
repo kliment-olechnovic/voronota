@@ -159,8 +159,18 @@ then
 		exit 1
 	fi
 	
-	NUM_OF_SPLITS="$(echo $MAX_PROCESSORS | awk '{v=(1+(sqrt(1+8*$1)/2)); print int(v);}')"
 	NUM_OF_INPUTS="$(cat $TMPLDIR/input_list | wc -l)"
+	
+	NUM_OF_INPUT_GROUPS="$(cat $TMPLDIR/input_list | awk '{print $2}' | sort | uniq | egrep . | wc -l)"
+	
+	if [ "$NUM_OF_INPUT_GROUPS" != "0" ]
+	then
+		echo >&2 "Error: parallelization for inter-group computation is not implemented yet."
+		exit 1
+	fi
+	
+	NUM_OF_SPLITS="$(echo $MAX_PROCESSORS | awk '{v=(1+(sqrt(1+8*$1)/2)); print int(v);}')"
+	
 	SIZE_OF_PORTION="$(echo "a=$NUM_OF_INPUTS; b=$NUM_OF_SPLITS; if(a%b) a/b+1 else a/b" | bc)"
 	
 	if [ "$SIZE_OF_PORTION" -gt "19997" ]
