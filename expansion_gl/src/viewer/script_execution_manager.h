@@ -90,6 +90,8 @@ public:
 		set_command_for_extra_actions("animate-loop-picked-objects", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS));
 		set_command_for_extra_actions("animate-spin-left", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_SPIN_LEFT));
 		set_command_for_extra_actions("animate-spin-right", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_SPIN_RIGHT));
+		set_command_for_extra_actions("animate-spin-on-z-left", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_SPIN_ON_Z_LEFT));
+		set_command_for_extra_actions("animate-spin-on-z-right", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_SPIN_ON_Z_RIGHT));
 		set_command_for_extra_actions("export-view", operators::ExportView());
 		set_command_for_extra_actions("import-view", operators::ImportView());
 		set_command_for_extra_actions("hint-render-area-size", operators::HintRenderAreaSize());
@@ -275,6 +277,14 @@ public:
 				else if(GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_SPIN_RIGHT)
 				{
 					uv::ViewerApplication::instance().rotate(glm::vec3(0, 1, 0), -0.01);
+				}
+				else if(GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_SPIN_ON_Z_LEFT)
+				{
+					uv::ViewerApplication::instance().rotate(glm::vec3(0, 0, 1), 0.01);
+				}
+				else if(GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_SPIN_ON_Z_RIGHT)
+				{
+					uv::ViewerApplication::instance().rotate(glm::vec3(0, 0, 1), -0.01);
 				}
 				animation_timer.reset();
 			}
