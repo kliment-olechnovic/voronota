@@ -60,14 +60,5 @@ find "${SUBDIR}/augmented_input" -type f | grep 'model1.pdb' | awk '{print $1 " 
   --processors 4 \
   --output-table-file "$SUBDIR/global_scores_submatrix_parallel"
 
-{
-find "${SUBDIR}/augmented_input" -type f | grep 'target.pdb' | awk '{print $1 " a"}'
-find "${SUBDIR}/augmented_input" -type f | grep 'model1.pdb' | awk '{print $1}'
-} \
-| $VORONOTAJSDIR/voronota-js-fast-iface-cadscore-matrix \
-  --remap-chains \
-  --processors 4 \
-  --output-table-file "$SUBDIR/global_scores_submatrix_parallel_alt"
-
 rm -r "${SUBDIR}/augmented_input"
 
