@@ -397,6 +397,10 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
     Examples:
     
         ls *.pdb | voronota-js-fast-iface-cadscore-matrix | column -t
+        
+        find ./complexes/ -type f -name '*.pdb' | voronota-js-fast-iface-cadscore-matrix > "full_matrix.txt"
+        
+        (find ./group1/ -type f | awk '{print $1 " a"}' ; find ./group2/ -type f | awk '{print $1 " b"}') | voronota-js-fast-iface-cadscore-matrix > "itergroup_matrix.txt"
     
 
 ## Fast inter-chain interface contacts

@@ -387,7 +387,11 @@ Standard output:
     
 Examples:
 
-    ls *.pdb | voronota-js-fast-iface-cadscore-matrix | column -t</code></pre>
+    ls *.pdb | voronota-js-fast-iface-cadscore-matrix | column -t
+    
+    find ./complexes/ -type f -name &#39;*.pdb&#39; | voronota-js-fast-iface-cadscore-matrix &gt; &quot;full_matrix.txt&quot;
+    
+    (find ./group1/ -type f | awk &#39;{print $1 &quot; a&quot;}&#39; ; find ./group2/ -type f | awk &#39;{print $1 &quot; b&quot;}&#39;) | voronota-js-fast-iface-cadscore-matrix &gt; &quot;itergroup_matrix.txt&quot;</code></pre>
 <h2 id="fast-inter-chain-interface-contacts">Fast inter-chain interface contacts</h2>
 <p>'voronota-js-fast-iface-contacts' script rapidly computes contacts of inter-chain interface in a molecular complex.</p>
 <h3 id="script-interface-7">Script interface</h3>
