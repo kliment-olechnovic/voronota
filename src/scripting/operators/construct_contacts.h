@@ -94,7 +94,15 @@ public:
 			std::map<std::string, int> chain_numbers;
 			for(std::size_t i=0;i<data_manager.atoms().size();i++)
 			{
-				chain_numbers[data_manager.atoms()[i].crad.chainID]=chain_numbers.size();
+				chain_numbers[data_manager.atoms()[i].crad.chainID]=0;
+			}
+			{
+				int group=0;
+				for(std::map<std::string, int>::iterator it=chain_numbers.begin();it!=chain_numbers.end();++it)
+				{
+					it->second=group;
+					group++;
+				}
 			}
 			for(std::size_t i=0;i<data_manager.atoms().size();i++)
 			{
