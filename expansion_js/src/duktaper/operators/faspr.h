@@ -112,9 +112,25 @@ public:
 						const scripting::Atom& atom=data_manager.atoms()[residue.atom_ids[j]];
 						if(atom.crad.name=="CA" || atom.crad.name=="C" || atom.crad.name=="N" || atom.crad.name=="O")
 						{
-							atoms_to_export.push_back(atom);
+							if(allowed_residue_names().count(atom.crad.resName)>0)
+							{
+								atoms_to_export.push_back(atom);
+							}
 						}
 					}
+				}
+			}
+
+			for(std::size_t i=0;i<atoms_to_export.size();i++)
+			{
+				scripting::Atom& atom=atoms_to_export[i];
+				if(atom.crad.resName=="MSE")
+				{
+					atom.crad.resName="MET";
+				}
+				else if(atom.crad.resName=="SEC")
+				{
+					atom.crad.resName="CYS";
 				}
 			}
 
@@ -135,6 +151,38 @@ public:
 		result.import_result=scripting::operators::Import().init(CMDIN().set("file", rebuilt_pdb_file.filename()).set("format", "pdb")).run(data_manager);
 
 		return result;
+	}
+
+private:
+	static const std::set<std::string>& allowed_residue_names()
+	{
+		static std::set<std::string> names;
+		if(names.empty())
+		{
+			names.insert("SEC");
+			names.insert("MSE");
+			names.insert("CYS");
+			names.insert("TRP");
+			names.insert("MET");
+			names.insert("HIS");
+			names.insert("TYR");
+			names.insert("GLN");
+			names.insert("PHE");
+			names.insert("ASN");
+			names.insert("PRO");
+			names.insert("ARG");
+			names.insert("THR");
+			names.insert("ASP");
+			names.insert("ILE");
+			names.insert("LYS");
+			names.insert("SER");
+			names.insert("GLU");
+			names.insert("VAL");
+			names.insert("GLY");
+			names.insert("ALA");
+			names.insert("LEU");
+		}
+		return names;
 	}
 };
 
