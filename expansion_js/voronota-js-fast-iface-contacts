@@ -592,10 +592,7 @@ process_object=function(title, output_file, output_bsite_file, output_drawing_sc
 		voronota_set_adjunct_of_atoms_by_contact_areas("-use", "[bsite_contacts]", "-name", "bsite_area");
 		voronota_assert_full_success("Failed to summarize bounding site contact areas per atom");
 		
-		voronota_set_adjunct_of_atoms_by_residue_pooling("-source-atoms-use", "[-v bsite_area]", "-destination-atoms-use", "[-v bsite_area]", "-source-name", "bsite_area", "-destination-name", "bsite_area_for_residue", "-pooling-mode", "sum");
-		voronota_assert_full_success("Failed to summarize bounding site areas per residue");
-		
-		var bsite_adjuncts_to_export=["bsite_area", "bsite_area_for_residue"];
+		var bsite_adjuncts_to_export=["bsite_area"];
 		
 		if(common_params.use_hbplus=="true")
 		{
