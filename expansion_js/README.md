@@ -415,6 +415,7 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         --restrict-input          string     query to restrict input atoms, default is '[]'
         --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
         --output-contacts-file    string     output table file path, default is '_stdout' to print to stdout
+        --output-bsite-file       string     output binding site table file path, default is ''
         --output-drawing-script   string     output PyMol drawing script file path, default is ''
         --processors              number     maximum number of processors to run in parallel, default is 1
         --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
@@ -422,7 +423,7 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         --run-faspr               string     path to FASPR binary to rebuild side-chains
         --custom-radii-file       string     path to file with van der Waals radii assignment rules
         --with-sas-areas                     flag to also compute and output solvent-accessible areas of interface residue atoms
-        --coarse-grained                     flag to output a inter-residue contacts
+        --coarse-grained                     flag to output inter-residue contacts
         --input-is-script                    flag to treat input file as vs script
         --as-assembly                        flag to treat input file as biological assembly
         --use-hbplus                         flag to run 'hbplus' to tag H-bonds

@@ -12,6 +12,7 @@ do
 	  --subselect-contacts "[]" \
 	  --expand-ids \
 	  --output-drawing-script "${SUBDIR}/draw_aa_sas_-BASENAME-.py" \
+	  --output-bsite-file "${SUBDIR}/bsite_aa_nosas_-BASENAME-.tsv" \
 	| column -t \
 	> "${SUBDIR}/aa_nosas_$(basename ${INFILE}).tsv"
 	
@@ -20,6 +21,7 @@ do
 	  --with-sas-areas \
 	  --og-pipeable \
 	  --use-hbplus \
+	  --output-bsite-file "${SUBDIR}/bsite_hbonds_aa_-BASENAME-.tsv" \
 	| grep hb \
 	| column -t \
 	> "${SUBDIR}/hbonds_aa_$(basename ${INFILE}).txt"

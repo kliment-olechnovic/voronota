@@ -11,6 +11,7 @@ Options:
     --restrict-input          string     query to restrict input atoms, default is '[]'
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
     --output-contacts-file    string     output table file path, default is '_stdout' to print to stdout
+    --output-bsite-file       string     output binding site table file path, default is ''
     --output-drawing-script   string     output PyMol drawing script file path, default is ''
     --processors              number     maximum number of processors to run in parallel, default is 1
     --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
@@ -18,7 +19,7 @@ Options:
     --run-faspr               string     path to FASPR binary to rebuild side-chains
     --custom-radii-file       string     path to file with van der Waals radii assignment rules
     --with-sas-areas                     flag to also compute and output solvent-accessible areas of interface residue atoms
-    --coarse-grained                     flag to output a inter-residue contacts
+    --coarse-grained                     flag to output inter-residue contacts
     --input-is-script                    flag to treat input file as vs script
     --as-assembly                        flag to treat input file as biological assembly
     --use-hbplus                         flag to run 'hbplus' to tag H-bonds
@@ -92,6 +93,7 @@ INFILE=""
 RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
 OUTPUT_CONTACTS_FILE="_stdout"
+OUTPUT_BSITE_FILE=""
 OUTPUT_DRAWING_SCRIPT=""
 MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
@@ -127,6 +129,10 @@ do
 		;;
 	--output-contacts-file)
 		OUTPUT_CONTACTS_FILE="$OPTARG"
+		shift
+		;;
+	--output-bsite-file)
+		OUTPUT_BSITE_FILE="$OPTARG"
 		shift
 		;;
 	--output-drawing-script)
@@ -261,6 +267,15 @@ then
 	fi
 fi
 
+if [ "$INFILE" == "_list" ] && [ -n "$OUTPUT_BSITE_FILE" ]
+then
+	if [[ "$OUTPUT_BSITE_FILE" != *"-BASENAME-"* ]]
+	then
+		echo >&2 "Error: invalid output binding site file path for multi-file processing, must contain '-BASENAME-'"
+		exit 1
+	fi
+fi
+
 if [ "$INFILE" != "_list" ] && [ "$INFILE" != "_stream" ] && [ ! -s "$INFILE" ]
 then
 	echo >&2 "Error: input file '$INFILE' does not exist"
@@ -378,6 +393,7 @@ common_params.coarse_grained='$COARSE_GRAINED';
 common_params.expand_ids='$EXPAND_IDS';
 common_params.og_pipeable='$OG_PIPEABLE';
 common_params.output_contacts_file='$OUTPUT_CONTACTS_FILE';
+common_params.output_bsite_file='$OUTPUT_BSITE_FILE';
 common_params.output_drawing_script='$OUTPUT_DRAWING_SCRIPT';
 var input_info_array=[];
 EOF
@@ -472,7 +488,7 @@ use_hbplus_if_needed=function(title)
 	}
 }
 
-process_object=function(title, output_file, output_drawing_script_file)
+process_object=function(title, output_file, output_bsite_file, output_drawing_script_file)
 {
 	if(title===undefined || title==="")
 	{
@@ -541,7 +557,8 @@ process_object=function(title, output_file, output_drawing_script_file)
 		voronota_assert_full_success("Failed to select inter-chain contacts and related SAS contacts");
 	}
 	
-	var adjuncts_to_export=["area", "distance"];	
+	var adjuncts_to_export=["area", "distance"];
+	
 	if(common_params.use_hbplus=="true")
 	{
 		adjuncts_to_export.push("hbond");
@@ -563,6 +580,33 @@ process_object=function(title, output_file, output_drawing_script_file)
 	{
 		voronota_cat_files("_virtual/contacts_table", output_file);
 		voronota_assert_full_success("Failed to write output contacts file");
+	}
+	
+	if(!(output_bsite_file===undefined || output_bsite_file===""))
+	{
+		shell('mkdir -p "$(dirname '+output_bsite_file+')"');
+		
+		voronota_select_contacts("-use", "([-inter-chain] and "+common_params.contacts_subselection+")", "-name", "bsite_contacts");
+		voronota_assert_full_success("Failed to select bounding site contacts");
+		
+		voronota_set_adjunct_of_atoms_by_contact_areas("-use", "[bsite_contacts]", "-name", "bsite_area");
+		voronota_assert_full_success("Failed to summarize bounding site contact areas per atom");
+		
+		voronota_set_adjunct_of_atoms_by_residue_pooling("-source-atoms-use", "[-v bsite_area]", "-destination-atoms-use", "[-v bsite_area]", "-source-name", "bsite_area", "-destination-name", "bsite_area_for_residue", "-pooling-mode", "sum");
+		voronota_assert_full_success("Failed to summarize bounding site areas per residue");
+		
+		var bsite_adjuncts_to_export=["bsite_area", "bsite_area_for_residue"];
+		
+		if(common_params.use_hbplus=="true")
+		{
+			voronota_set_adjunct_of_atoms_by_contact_adjuncts("-use", "[bsite_contacts]", "-pooling-mode", "max", "-source-name", "hbond", "-destination-name", "bsite_hbond");
+			voronota_assert_full_success("Failed to summarize bounding site contact hbonds per atom");
+			
+			bsite_adjuncts_to_export.push("bsite_hbond");
+		}
+		
+		voronota_export_adjuncts_of_atoms("-use", "[-v bsite_area]", "-adjuncts", bsite_adjuncts_to_export, "-file", output_bsite_file, "-expand-ids", common_params.expand_ids, "-no-serial", common_params.expand_ids!=="true", "-sep", '\t');
+		voronota_assert_full_success("Failed to export bounding site data");
 	}
 	
 	if(!(output_drawing_script_file===undefined || output_drawing_script_file===""))
@@ -630,7 +674,7 @@ for(var i=0;i<input_info_array.length;i++)
 	try
 	{
 		prepare_object(subinput.input_file, "model");
-		process_object("model", common_params.output_contacts_file.replace("-BASENAME-", subinput.input_file_name), common_params.output_drawing_script.replace("-BASENAME-", subinput.input_file_name));
+		process_object("model", common_params.output_contacts_file.replace("-BASENAME-", subinput.input_file_name), common_params.output_bsite_file.replace("-BASENAME-", subinput.input_file_name), common_params.output_drawing_script.replace("-BASENAME-", subinput.input_file_name));
 	}
 	catch(error)
 	{
