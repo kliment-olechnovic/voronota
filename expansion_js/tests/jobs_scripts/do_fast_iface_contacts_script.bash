@@ -11,7 +11,7 @@ do
 	  --restrict-input "[]" \
 	  --subselect-contacts "[]" \
 	  --expand-ids \
-	  --output-drawing-script "${SUBDIR}/draw_aa_sas_-BASENAME-.py" \
+	  --output-drawing-script "${SUBDIR}/draw_aa_nosas_-BASENAME-.py" \
 	  --output-bsite-file "${SUBDIR}/bsite_aa_nosas_-BASENAME-.tsv" \
 	| column -t \
 	> "${SUBDIR}/aa_nosas_$(basename ${INFILE}).tsv"
