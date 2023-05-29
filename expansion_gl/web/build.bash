@@ -26,7 +26,7 @@ fi
 emcc --std=c++14 \
 -s "EXPORTED_FUNCTIONS=['_main','_voronota_viewer_enqueue_script','_voronota_viewer_execute_native_script','_voronota_viewer_get_last_script_output','_voronota_viewer_upload_file']" \
 -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
-../src/voronota_gl.cpp ../src/dependencies/imgui/*.cpp ../../expansion_js/src/dependencies/lodepng/*.cpp ../../expansion_js/src/dependencies/duktape/duktape.cpp ../../expansion_js/src/dependencies/tmalign/TMalign.cpp ../../expansion_js/src/dependencies/faspr/*.cpp ../../expansion_js/src/dependencies/tinf/*.cpp ../../expansion_js/src/dependencies/utilities/congruence_coefficient.cpp ../../expansion_gl/src/dependencies/ImGuiColorTextEdit/TextEditor.cpp \
+../src/voronota_gl.cpp ../src/dependencies/imgui/*.cpp ../../expansion_gl/src/dependencies/imgui/addons/*.cpp ../../expansion_js/src/dependencies/lodepng/*.cpp ../../expansion_js/src/dependencies/duktape/duktape.cpp ../../expansion_js/src/dependencies/tmalign/TMalign.cpp ../../expansion_js/src/dependencies/faspr/*.cpp ../../expansion_js/src/dependencies/tinf/*.cpp ../../expansion_js/src/dependencies/utilities/*.cpp ../../expansion_gl/src/dependencies/ImGuiColorTextEdit/TextEditor.cpp \
 -DFOR_WEB \
 -DUSE_LINENOISE=0 \
 -I "../../expansion_js/src/dependencies/" \
