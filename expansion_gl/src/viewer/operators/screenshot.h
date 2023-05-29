@@ -86,8 +86,8 @@ public:
 			throw std::runtime_error(std::string("Invalid scale value, must be positive."));
 		}
 
-		int W=static_cast<int>(static_cast<double>(size.empty() ? uv::ViewerApplication::instance().effective_rendering_window_width() : size[0])*scale);
-		int H=static_cast<int>(static_cast<double>(size.empty() ? uv::ViewerApplication::instance().effective_rendering_window_height() : size[1])*scale);
+		int W=static_cast<int>(static_cast<double>(size.empty() ? uv::ViewerApplication::instance().effective_rendering_framebuffer_width() : size[0])*scale);
+		int H=static_cast<int>(static_cast<double>(size.empty() ? uv::ViewerApplication::instance().effective_rendering_framebuffer_height() : size[1])*scale);
 
 		if(!(W>10 && H>10))
 		{
