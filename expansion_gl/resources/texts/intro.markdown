@@ -28,7 +28,7 @@ Download the latest archive from the official downloads page:
 The archive contains the Voronota-GL software in the 'expansion_gl' subdirectory.
 The 'voronota-gl' executable can be built from the provided source code.
 
-# Building from source code
+# Building from source code on Linux
 
 ## Requirements
 
@@ -57,4 +57,11 @@ For example, "voronota-gl" executable can be built from
 the sources in "src" directory using GNU C++ compiler:
 
     g++ -std=c++14 -I"../expansion_js/src/dependencies" -I"./src/dependencies" -O3 -o "./voronota-gl" $(find ../expansion_js/src/dependencies/ -name '*.cpp') $(find ./src/ -name '*.cpp' ) -lm -lGL -lGLEW -lglfw
+
+# Building from source code on Mac OS
+
+On Mac OS, "voronota-gl" executable can be built from
+the sources in "src" directory using the following command:
+
+    g++ -framework OpenGL -std=c++14 -I"../expansion_js/src/dependencies" -I"./src/dependencies" -O3 -o "./voronota-gl" $(find ../expansion_js/src/dependencies/ -name '*.cpp') $(find ./src/ -name '*.cpp' ) -lm -lGLEW -lglfw
 

@@ -21,11 +21,12 @@
 <li><a href="#usage-of-externally-developed-software">Usage of externally developed software</a></li>
 </ul></li>
 <li><a href="#getting-the-latest-version">Getting the latest version</a></li>
-<li><a href="#building-from-source-code">Building from source code</a><ul>
+<li><a href="#building-from-source-code-on-linux">Building from source code on Linux</a><ul>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#using-cmake">Using CMake</a></li>
 <li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
 </ul></li>
+<li><a href="#building-from-source-code-on-mac-os">Building from source code on Mac OS</a></li>
 </ul>
 </div>
 <h1 id="about-voronota-gl-expansion">About Voronota-GL expansion</h1>
@@ -46,7 +47,7 @@
 <h1 id="getting-the-latest-version">Getting the latest version</h1>
 <p>Download the latest archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases" class="uri">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
 <p>The archive contains the Voronota-GL software in the 'expansion_gl' subdirectory. The 'voronota-gl' executable can be built from the provided source code.</p>
-<h1 id="building-from-source-code">Building from source code</h1>
+<h1 id="building-from-source-code-on-linux">Building from source code on Linux</h1>
 <h2 id="requirements">Requirements</h2>
 <p>Voronota-GL requires the following dynamic libraries to link with: m GL GLEW glfw</p>
 <h2 id="using-cmake">Using CMake</h2>
@@ -62,5 +63,8 @@ cp ./voronota-gl ../voronota-gl</code></pre>
 <h2 id="using-c-compiler-directly">Using C++ compiler directly</h2>
 <p>For example, &quot;voronota-gl&quot; executable can be built from the sources in &quot;src&quot; directory using GNU C++ compiler:</p>
 <pre><code>g++ -std=c++14 -I&quot;../expansion_js/src/dependencies&quot; -I&quot;./src/dependencies&quot; -O3 -o &quot;./voronota-gl&quot; $(find ../expansion_js/src/dependencies/ -name &#39;*.cpp&#39;) $(find ./src/ -name &#39;*.cpp&#39; ) -lm -lGL -lGLEW -lglfw</code></pre>
+<h1 id="building-from-source-code-on-mac-os">Building from source code on Mac OS</h1>
+<p>On Mac OS, &quot;voronota-gl&quot; executable can be built from the sources in &quot;src&quot; directory using the following command:</p>
+<pre><code>g++ -framework OpenGL -std=c++14 -I&quot;../expansion_js/src/dependencies&quot; -I&quot;./src/dependencies&quot; -O3 -o &quot;./voronota-gl&quot; $(find ../expansion_js/src/dependencies/ -name &#39;*.cpp&#39;) $(find ./src/ -name &#39;*.cpp&#39; ) -lm -lGLEW -lglfw</code></pre>
 </body>
 </html>
