@@ -175,7 +175,7 @@ div#TOC > ul > li > ul > li ul { display: none; }
 </style>
 EOF
 
-echo "<h1>$(../voronota | head -1 | sed 's/Voronota/Voronota-JS/')</h1>" > $TMPLDIR/include_before_body.html
+echo "<h1>$(./voronota-js --version | head -1)</h1>" > $TMPLDIR/include_before_body.html
 
 pandoc $TMPLDIR/documentation.markdown -f markdown -t html --toc -H $TMPLDIR/include_in_header.html -B $TMPLDIR/include_before_body.html -s -o ./index.html
 

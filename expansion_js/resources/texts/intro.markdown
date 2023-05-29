@@ -77,4 +77,3 @@ the sources in "src" directory using GNU C++ compiler:
 
     g++ -std=c++14 -I"./src/dependencies" -O3 -o "./voronota-js" $(find ./src/ -name '*.cpp')
 
-    

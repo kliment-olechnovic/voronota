@@ -2,7 +2,7 @@
 
 cd $(dirname "$0")
 
-CORETESTSDIR="../../tests"
+export CORETESTSDIR="../../tests"
 
 ${CORETESTSDIR}/prepare_package_for_testing.bash
 

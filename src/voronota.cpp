@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 
+#include "voronota_version.h"
 #include "auxiliaries/program_options_handler.h"
 
 void get_balls_from_atoms_file(const voronota::auxiliaries::ProgramOptionsHandler&);
@@ -126,15 +127,9 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	return list_of_modes;
 }
 
-std::string version()
-{
-	static const std::string str="Voronota version 1.26";
-	return str;
-}
-
 void print_error_message(const std::string& mode, const std::string& message)
 {
-	std::cerr << version();
+	std::cerr << "Voronota version " << voronota::version();
 	if(!mode.empty())
 	{
 		std::cerr << " command '" << mode << "'";
@@ -181,7 +176,7 @@ int main(const int argc, const char** argv)
 			else
 			{
 				std::ostream& output=std::cout;
-				output << version() << "\n\n";
+				output << "Voronota version " << voronota::version() << "\n\n";
 				output << "Commands:\n\n";
 				for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
 				{

@@ -1,5 +1,7 @@
 #include "duktaper/standalone_run.h"
 
+#include "../../src/voronota_version.h"
+
 namespace
 {
 
@@ -19,7 +21,12 @@ int main(const int argc, const char** argv)
 		for(int i=1;i<argc;i++)
 		{
 			const std::string arg_str(argv[i]);
-			if(command_args.empty() && check_option_name(arg_str, "no-setup-defaults"))
+			if(check_option_name(arg_str, "version"))
+			{
+				std::cout << "Voronota-JS version " << voronota::version() << std::endl;
+				return 0;
+			}
+			else if(check_option_name(arg_str, "no-setup-defaults"))
 			{
 				no_setup_defaults=true;
 			}
