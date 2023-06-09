@@ -530,14 +530,24 @@ process_object=function(title, output_file, output_bsite_file, output_drawing_sc
 		voronota_set_tag_of_atoms("-use", "[actiicore]", "-tag", "probifaceres");
 		voronota_assert_full_success("Failed to tag probable interface residues atoms");
 		
-		voronota_select_atoms_close_to_interchain_interface("-atoms-first", "[actiicore]", "-atoms-second", "(not [actiicore])", "-name", "actiibuf");
-		voronota_assert_full_success("Failed to select interface residues buffer atoms");
+		voronota_select_atoms("-use", "(not [actiicore])", "-name", "notactiicore");
 		
-		voronota_select_atoms("-use", "(([actiibuf]) and (not [actiicore]))", "-name", "actiirim");
-		voronota_assert_full_success("Failed to select interface residues zone rim atoms");
-		
-		voronota_select_atoms("-use", "(([actiirim]) or ([actiicore]))", "-name", "actii");
-		voronota_assert_full_success("Failed to select interface zone atoms");
+		if(voronota_last_output().results_summary.full_success!==true)
+		{
+			voronota_select_atoms("-use", "[actiicore]", "-name", "actii");
+			voronota_assert_full_success("Failed to select interface zone atoms");
+		}
+		else
+		{
+			voronota_select_atoms_close_to_interchain_interface("-atoms-first", "[actiicore]", "-atoms-second", "[notactiicore]", "-name", "actiibuf");
+			voronota_assert_full_success("Failed to select interface residues buffer atoms");
+			
+			voronota_select_atoms("-use", "(([actiibuf]) and ([notactiicore]))", "-name", "actiirim");
+			voronota_assert_full_success("Failed to select interface residues zone rim atoms");
+			
+			voronota_select_atoms("-use", "(([actiirim]) or ([actiicore]))", "-name", "actii");
+			voronota_assert_full_success("Failed to select interface zone atoms");
+		}
 		
 		voronota_restrict_atoms("-use", "[actii]");
 		voronota_assert_full_success("Failed to restrict input atoms to interface zone atoms");
