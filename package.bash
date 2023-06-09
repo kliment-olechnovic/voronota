@@ -28,7 +28,6 @@ cp -r src "${PACKAGE_NAME}/src"
 cp -r support "${PACKAGE_NAME}/support"
 
 cp \
-  "voronota" \
   "voronota-resources" \
   "voronota-cadscore" \
   "voronota-voromqa" \
@@ -56,7 +55,6 @@ cp -r "./expansion_js/src" "${PACKAGE_NAME}/expansion_js/src"
 cp -r "./expansion_js/voroif" "${PACKAGE_NAME}/expansion_js/voroif"
 
 cp \
-  "./expansion_js/voronota-js" \
   "./expansion_js/voronota-js-voromqa" \
   "./expansion_js/voronota-js-only-global-voromqa" \
   "./expansion_js/voronota-js-membrane-voromqa" \
@@ -95,6 +93,26 @@ cp \
   "./expansion_gl/README.md" \
   "./expansion_gl/index.html" \
   "${PACKAGE_NAME}/expansion_gl/"
+
+################################################################################
+
+if [ "$PACKAGE_NAME" == "voronota_package" ]
+then
+	cp "./voronota" "${PACKAGE_NAME}/"
+	cp "./expansion_js/voronota-js" "${PACKAGE_NAME}/expansion_js/"
+else
+	cat ./src/voronota_version.h \
+	| sed "s|version_str=\".*\";|version_str=\"${VERSIONID}\";|" \
+	> "${PACKAGE_NAME}/src/voronota_version.h"
+
+	cd "${PACKAGE_NAME}"
+	g++ -O3 -static-libgcc -static-libstdc++ -static -o "./voronota" $(find ./src/ -name '*.cpp')
+	cd - &> /dev/null
+
+	cd "${PACKAGE_NAME}/expansion_js"
+	g++ -O3 -std=c++14 -I"./src/dependencies" -static-libgcc -static-libstdc++ -static -o "./voronota-js" $(find ./src/ -name '*.cpp')
+	cd - &> /dev/null
+fi
 
 ################################################################################
 
