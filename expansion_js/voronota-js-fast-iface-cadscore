@@ -18,6 +18,7 @@ Options:
     --run-faspr               string     path to FASPR binary to rebuild side-chains
     --as-assembly                        flag to treat input files as biological assemblies
     --remap-chains                       flag to calculate and use optimal chains remapping
+    --remap-chains-logging               flag to print log of chains remapping to stderr
     --ignore-residue-names               flag to ignore residue names in residue identifiers
     --test-common-ids                    flag to fail quickly if there are no common residues
     --crude                              flag to enable very crude faster mode
