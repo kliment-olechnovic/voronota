@@ -10,3 +10,11 @@ add_executable(voronota ${VORONOTA_SRC})
 
 install(TARGETS voronota RUNTIME DESTINATION bin)
 install(PROGRAMS voronota-cadscore voronota-contacts voronota-resources voronota-voromqa voronota-volumes voronota-pocket voronota-membrane DESTINATION bin)
+
+if(EXPANSION_GL)
+    add_subdirectory(expansion_gl)
+endif(EXPANSION_GL)
+
+if(EXPANSION_JS)
+    add_subdirectory(expansion_js)
+endif(EXPANSION_JS)
