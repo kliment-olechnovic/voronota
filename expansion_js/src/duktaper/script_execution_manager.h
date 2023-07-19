@@ -18,6 +18,7 @@
 #include "operators/music_background.h"
 #include "operators/nnport_predict.h"
 #include "operators/plot_contacts_map.h"
+#include "operators/qcprot.h"
 #include "operators/run_bff.h"
 #include "operators/run_hbplus.h"
 #include "operators/run_nolb.h"
@@ -65,6 +66,7 @@ public:
 		set_command_for_congregation_of_data_managers("fetch-afdb", operators::FetchAFDB(RemoteImportDownloaderSimple::instance()));
 		set_command_for_congregation_of_data_managers("import-cod-cif", operators::ImportCODCIF());
 		set_command_for_congregation_of_data_managers("import-url", operators::ImportUrl(RemoteImportDownloaderSimple::instance()));
+		set_command_for_congregation_of_data_managers("qcprot", operators::QCProt());
 		set_command_for_congregation_of_data_managers("run-nolb", operators::RunNolb());
 		set_command_for_congregation_of_data_managers("summarize-two-state-motion", operators::SummarizeTwoStateMotion());
 		set_command_for_congregation_of_data_managers("tmalign-many", operators::TMalignMany());

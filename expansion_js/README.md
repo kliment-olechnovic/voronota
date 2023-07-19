@@ -27,6 +27,7 @@ Voronota-JS relies on several externally developed software projects (big thanks
 * PStreams - [https://github.com/jwakely/pstreams](https://github.com/jwakely/pstreams)
 * TM-align - [https://zhanggroup.org/TM-align/](https://zhanggroup.org/TM-align/)
 * FASPR - [https://zhanggroup.org/FASPR/](https://zhanggroup.org/FASPR/)
+* QCP - [https://theobald.brandeis.edu/qcp/](https://theobald.brandeis.edu/qcp/)
 * linenoise - [https://github.com/antirez/linenoise](https://github.com/antirez/linenoise)
 * PicoSHA2 - [https://github.com/okdshin/PicoSHA2](https://github.com/okdshin/PicoSHA2)
 * frugally-deep - [https://github.com/Dobiasd/frugally-deep](https://github.com/Dobiasd/frugally-deep)
