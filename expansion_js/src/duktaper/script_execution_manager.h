@@ -23,6 +23,7 @@
 #include "operators/run_nolb.h"
 #include "operators/set_adjuncts_of_atoms_by_pca.h"
 #include "operators/setup_defaults.h"
+#include "operators/summarize_two_state_motion.h"
 #include "operators/tmalign_many.h"
 #include "operators/tmalign.h"
 #include "operators/voromqa_dark_global.h"
@@ -65,6 +66,7 @@ public:
 		set_command_for_congregation_of_data_managers("import-cod-cif", operators::ImportCODCIF());
 		set_command_for_congregation_of_data_managers("import-url", operators::ImportUrl(RemoteImportDownloaderSimple::instance()));
 		set_command_for_congregation_of_data_managers("run-nolb", operators::RunNolb());
+		set_command_for_congregation_of_data_managers("summarize-two-state-motion", operators::SummarizeTwoStateMotion());
 		set_command_for_congregation_of_data_managers("tmalign-many", operators::TMalignMany());
 		set_command_for_congregation_of_data_managers("tmalign", operators::TMalign());
 	}
