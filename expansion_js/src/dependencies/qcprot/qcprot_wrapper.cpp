@@ -37,7 +37,7 @@ bool run_qcprot(std::vector< std::vector<double> >& xyz_3xN_coords_a, std::vecto
 		for(std::size_t j=0;j<N;j++)
 		{
 			qcprot_result.translation_vector_a[i]+=xyz_3xN_coords_a[i][j];
-			qcprot_result.translation_vector_b[i]+=xyz_3xN_coords_b[i][j];
+			qcprot_result.translation_vector_b[i]-=xyz_3xN_coords_b[i][j];
 		}
 		qcprot_result.translation_vector_a[i]/=static_cast<double>(N);
 		qcprot_result.translation_vector_b[i]/=static_cast<double>(N);

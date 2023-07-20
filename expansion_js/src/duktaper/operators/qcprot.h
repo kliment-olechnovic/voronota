@@ -163,19 +163,12 @@ public:
 			throw std::runtime_error(std::string("Failed to run QCProt."));
 		}
 
-		{
-			std::vector<double> translation_before(qcprot_result.translation_vector_b, qcprot_result.translation_vector_b+3);
-			translation_before[0]*=(-1.0);
-			translation_before[1]*=(-1.0);
-			translation_before[2]*=(-1.0);
-			std::vector<double> translation_after(qcprot_result.translation_vector_a, qcprot_result.translation_vector_a+3);
-			std::vector<double> rotation(qcprot_result.rotation_matrix, qcprot_result.rotation_matrix+9);
+		scripting::DataManager::TransformationOfCoordinates transformation;
+		transformation.pre_translation_vector=std::vector<double>(qcprot_result.translation_vector_b, qcprot_result.translation_vector_b+3);
+		transformation.rotation_matrix=std::vector<double>(qcprot_result.rotation_matrix, qcprot_result.rotation_matrix+9);
+		transformation.post_translation_vector=std::vector<double>(qcprot_result.translation_vector_a, qcprot_result.translation_vector_a+3);
 
-			scripting::operators::MoveAtoms().init(CMDIN()
-					.setv("translate-before", translation_before)
-					.setv("rotate-by-matrix", rotation)
-					.setv("translate", translation_after)).run(model_dm);
-		}
+		model_dm.transform_coordinates_of_atoms(model_dm.selection_manager().select_atoms(scripting::SelectionManager::Query()), transformation);
 
 		Result result;
 		result.target_name=target_name;
