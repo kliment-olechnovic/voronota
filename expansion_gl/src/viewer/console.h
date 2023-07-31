@@ -1483,6 +1483,19 @@ private:
 									ImGui::CloseCurrentPopup();
 								}
 							}
+							if(!atoms_selection_string_previous().empty())
+							{
+								ImGui::SameLine();
+								std::string button_id="Restore ";
+								button_id+=atoms_selection_string_previous();
+								button_id+="##button_atoms_selection_change_previous";
+								if(ImGui::Button(button_id.c_str()))
+								{
+									set_atoms_selection_string_and_save_suggestion(atoms_selection_string_previous());
+									atoms_selection_buffer.clear();
+									ImGui::CloseCurrentPopup();
+								}
+							}
 
 							if(!atoms_selection_string_suggestions().first.empty())
 							{
@@ -1559,6 +1572,19 @@ private:
 									ImGui::CloseCurrentPopup();
 								}
 							}
+							if(!contacts_selection_string_previous().empty())
+							{
+								ImGui::SameLine();
+								std::string button_id="Restore ";
+								button_id+=contacts_selection_string_previous();
+								button_id+="##button_contacts_selection_change_previous";
+								if(ImGui::Button(button_id.c_str()))
+								{
+									set_contacts_selection_string_and_save_suggestion(contacts_selection_string_previous());
+									contacts_selection_buffer.clear();
+									ImGui::CloseCurrentPopup();
+								}
+							}
 
 							if(!contacts_selection_string_suggestions().first.empty())
 							{
@@ -1590,72 +1616,6 @@ private:
 						}
 
 						ImGui::EndPopup();
-					}
-
-					{
-						ImGui::TextUnformatted("Switch selection:");
-						ImGui::SameLine();
-
-						{
-							std::string button_id="default##button_"+concept_mode()+"_selection_change_default";
-							if(ImGui::Button(button_id.c_str()))
-							{
-								if(concept_mode()=="contacts")
-								{
-									set_contacts_selection_string_and_save_suggestion(default_contacts_selection_string());
-									contacts_selection_buffer.clear();
-								}
-								else
-								{
-									set_atoms_selection_string_and_save_suggestion(default_atoms_selection_string());
-									atoms_selection_buffer.clear();
-								}
-							}
-						}
-
-						ImGui::SameLine();
-
-						{
-							std::string button_id="previous##button_"+concept_mode()+"_selection_change_previous";
-							if(ImGui::Button(button_id.c_str()))
-							{
-								if(concept_mode()=="contacts")
-								{
-									if(!contacts_selection_string_previous().empty())
-									{
-										set_contacts_selection_string_and_save_suggestion(contacts_selection_string_previous());
-										contacts_selection_buffer.clear();
-									}
-								}
-								else
-								{
-									if(!atoms_selection_string_previous().empty())
-									{
-										set_atoms_selection_string_and_save_suggestion(atoms_selection_string_previous());
-										atoms_selection_buffer.clear();
-									}
-								}
-							}
-						}
-
-						ImGui::SameLine();
-
-						{
-							std::string button_id="marked##button_"+concept_mode()+"_selection_change_marked";
-							if(ImGui::Button(button_id.c_str()))
-							{
-								if(concept_mode()=="contacts")
-								{
-									set_contacts_selection_string_and_save_suggestion(marked_contacts_selection_string());
-									contacts_selection_buffer.clear();
-								}
-								else
-								{
-									set_atoms_selection_string_and_save_suggestion(marked_atoms_selection_string());
-									atoms_selection_buffer.clear();
-								}
-							}
-						}
 					}
 				}
 
