@@ -2039,7 +2039,155 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						if(ImGui::BeginMenu("Color atoms##submenu_atoms_color"))
+						if(ImGui::BeginMenu("Color contacts##submenu_contacts_color"))
+						{
+							static bool rep_faces=true;
+							static bool rep_edges=true;
+							static bool rep_sas_mesh=true;
+
+							ImGui::TextUnformatted("Representations of contacts:");
+
+							{
+								const std::string checkbox_id=std::string("faces##faces_checkbox_rep");
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_faces);
+							}
+							{
+								const std::string checkbox_id=std::string("edges##edges_checkbox_rep");
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_edges);
+							}
+							{
+								const std::string checkbox_id=std::string("sas-mesh##sas_mesh_checkbox_rep");
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_sas_mesh);
+							}
+
+							const std::string rep_string=std::string(" -rep")
+								+(rep_faces ? " faces" : "")
+								+(rep_edges ? " edges" : "")
+								+(rep_sas_mesh ? " sas-mesh" : "");
+
+							ImGui::Separator();
+
+							ImGui::TextUnformatted("Spectrum contacts:");
+
+							if(ImGui::Selectable("  by inter-residue ID randomly"))
+							{
+								result=std::string("spectrum-contacts -by residue-ids -scheme random -use (")+contacts_selection_string()+")"+rep_string;
+							}
+
+							if(ImGui::Selectable("  by inter-residue area, 0-45"))
+							{
+								result=std::string("spectrum-contacts -by residue-area -min-val 0 -max-val 45 -use (")+contacts_selection_string()+")"+rep_string;
+							}
+
+							if(ImGui::Selectable("  by inter-atom area, 0-15"))
+							{
+								result=std::string("spectrum-contacts -by area -min-val 0 -max-val 15 -use (")+contacts_selection_string()+")"+rep_string;
+							}
+
+							ImGui::Separator();
+
+							ImGui::TextUnformatted("Color contacts:");
+
+							if(ImGui::Selectable("  random"))
+							{
+								result=std::string("color-contacts -next-random-color -use (")+contacts_selection_string()+")"+rep_string;
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  red"))
+								{
+									result=std::string("color-contacts -col 0xFF0000 -use (")+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  yellow"))
+								{
+									result=std::string("color-contacts -col 0xFFFF00 -use (")+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+							{
+								ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  green"))
+								{
+									result=std::string("color-contacts -col 0x00FF00 -use (")+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  cyan"))
+								{
+									result=std::string("color-contacts -col 0x00FFFF -use (")+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  blue"))
+								{
+									result=std::string("color-contacts -col 0x0000FF -use (")+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  magenta"))
+								{
+									result=std::string("color-contacts -col 0xFF00FF -use (")+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  white"))
+								{
+									result=std::string("color-contacts -col white -use (")+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  light gray"))
+								{
+									result=std::string("color-contacts -col 0xAAAAAA -use (")+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  dark gray"))
+								{
+									result=std::string("color-contacts -col 0x555555 -use (")+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							ImGui::EndMenu();
+						}
+
+						ImGui::Separator();
+						ImGui::Separator();
+
 						{
 							static bool rep_cartoon=true;
 							static bool rep_trace=true;
@@ -2048,6 +2196,8 @@ private:
 							static bool rep_points=true;
 							static bool rep_molsurf=true;
 							static bool rep_molsurf_mesh=true;
+
+							ImGui::TextUnformatted("Representations of atoms:");
 
 							{
 								const std::string checkbox_id=std::string("cartoon##cartoon_checkbox_rep");
@@ -2273,152 +2423,6 @@ private:
 								}
 								ImGui::PopStyleColor();
 							}
-
-							ImGui::EndMenu();
-						}
-
-						if(ImGui::BeginMenu("Color contacts##submenu_contacts_color"))
-						{
-							static bool rep_faces=true;
-							static bool rep_edges=true;
-							static bool rep_sas_mesh=true;
-
-							{
-								const std::string checkbox_id=std::string("faces##faces_checkbox_rep");
-								ImGui::Checkbox(checkbox_id.c_str(), &rep_faces);
-							}
-							{
-								const std::string checkbox_id=std::string("edges##edges_checkbox_rep");
-								ImGui::Checkbox(checkbox_id.c_str(), &rep_edges);
-							}
-							{
-								const std::string checkbox_id=std::string("sas-mesh##sas_mesh_checkbox_rep");
-								ImGui::Checkbox(checkbox_id.c_str(), &rep_sas_mesh);
-							}
-
-							const std::string rep_string=std::string(" -rep")
-								+(rep_faces ? " faces" : "")
-								+(rep_edges ? " edges" : "")
-								+(rep_sas_mesh ? " sas-mesh" : "");
-
-							ImGui::Separator();
-
-							ImGui::TextUnformatted("Spectrum contacts:");
-
-							if(ImGui::Selectable("  by inter-residue ID randomly"))
-							{
-								result=std::string("spectrum-contacts -by residue-ids -scheme random -use (")+contacts_selection_string()+")"+rep_string;
-							}
-
-							if(ImGui::Selectable("  by inter-residue area, 0-45"))
-							{
-								result=std::string("spectrum-contacts -by residue-area -min-val 0 -max-val 45 -use (")+contacts_selection_string()+")"+rep_string;
-							}
-
-							if(ImGui::Selectable("  by inter-atom area, 0-15"))
-							{
-								result=std::string("spectrum-contacts -by area -min-val 0 -max-val 15 -use (")+contacts_selection_string()+")"+rep_string;
-							}
-
-							ImGui::Separator();
-
-							ImGui::TextUnformatted("Color contacts:");
-
-							if(ImGui::Selectable("  random"))
-							{
-								result=std::string("color-contacts -next-random-color -use (")+contacts_selection_string()+")"+rep_string;
-							}
-
-							{
-								ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  red"))
-								{
-									result=std::string("color-contacts -col 0xFF0000 -use (")+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  yellow"))
-								{
-									result=std::string("color-contacts -col 0xFFFF00 -use (")+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-							{
-								ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  green"))
-								{
-									result=std::string("color-contacts -col 0x00FF00 -use (")+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  cyan"))
-								{
-									result=std::string("color-contacts -col 0x00FFFF -use (")+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  blue"))
-								{
-									result=std::string("color-contacts -col 0x0000FF -use (")+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  magenta"))
-								{
-									result=std::string("color-contacts -col 0xFF00FF -use (")+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  white"))
-								{
-									result=std::string("color-contacts -col white -use (")+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  light gray"))
-								{
-									result=std::string("color-contacts -col 0xAAAAAA -use (")+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  dark gray"))
-								{
-									result=std::string("color-contacts -col 0x555555 -use (")+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							ImGui::EndMenu();
 						}
 
 						ImGui::EndPopup();
@@ -2989,8 +2993,156 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(19*GUIStyleWrapper::scale_factor(),0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						const std::string submenu_atoms_color_id=std::string("Color atoms##submenu_atoms_color")+os.name;
-						if(ImGui::BeginMenu(submenu_atoms_color_id.c_str()))
+						const std::string submenu_contacts_color_id=std::string("Color contacts##submenu_contacts_color")+os.name;
+						if(ImGui::BeginMenu(submenu_contacts_color_id.c_str()))
+						{
+							static bool rep_faces=true;
+							static bool rep_edges=true;
+							static bool rep_sas_mesh=true;
+
+							ImGui::TextUnformatted("Representations of contacts:");
+
+							{
+								const std::string checkbox_id=std::string("faces##faces_checkbox_rep_")+os.name;
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_faces);
+							}
+							{
+								const std::string checkbox_id=std::string("edges##edges_checkbox_rep_")+os.name;
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_edges);
+							}
+							{
+								const std::string checkbox_id=std::string("sas-mesh##sas_mesh_checkbox_rep_")+os.name;
+								ImGui::Checkbox(checkbox_id.c_str(), &rep_sas_mesh);
+							}
+
+							const std::string rep_string=std::string(" -rep")
+								+(rep_faces ? " faces" : "")
+								+(rep_edges ? " edges" : "")
+								+(rep_sas_mesh ? " sas-mesh" : "");
+
+							ImGui::Separator();
+
+							ImGui::TextUnformatted("Spectrum contacts:");
+
+							if(ImGui::Selectable("  by inter-residue ID randomly"))
+							{
+								result=std::string("spectrum-contacts -by residue-ids -scheme random -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+							}
+
+							if(ImGui::Selectable("  by inter-residue area, 0-45"))
+							{
+								result=std::string("spectrum-contacts -by residue-area -min-val 0 -max-val 45 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+							}
+
+							if(ImGui::Selectable("  by inter-atom area, 0-15"))
+							{
+								result=std::string("spectrum-contacts -by area -min-val 0 -max-val 15 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+							}
+
+							ImGui::Separator();
+
+							ImGui::TextUnformatted("Color contacts:");
+
+							if(ImGui::Selectable("  random"))
+							{
+								result=std::string("color-contacts -next-random-color -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  red"))
+								{
+									result=std::string("color-contacts -col 0xFF0000 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  yellow"))
+								{
+									result=std::string("color-contacts -col 0xFFFF00 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+							{
+								ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  green"))
+								{
+									result=std::string("color-contacts -col 0x00FF00 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  cyan"))
+								{
+									result=std::string("color-contacts -col 0x00FFFF -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  blue"))
+								{
+									result=std::string("color-contacts -col 0x0000FF -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  magenta"))
+								{
+									result=std::string("color-contacts -col 0xFF00FF -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  white"))
+								{
+									result=std::string("color-contacts -col white -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  light gray"))
+								{
+									result=std::string("color-contacts -col 0xAAAAAA -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							{
+								ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
+								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+								if(ImGui::Selectable("  dark gray"))
+								{
+									result=std::string("color-contacts -col 0x555555 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
+								}
+								ImGui::PopStyleColor();
+							}
+
+							ImGui::EndMenu();
+						}
+
+						ImGui::Separator();
+						ImGui::Separator();
+
 						{
 							static bool rep_cartoon=true;
 							static bool rep_trace=true;
@@ -2999,6 +3151,8 @@ private:
 							static bool rep_points=true;
 							static bool rep_molsurf=true;
 							static bool rep_molsurf_mesh=true;
+
+							ImGui::TextUnformatted("Representations of atoms:");
 
 							{
 								const std::string checkbox_id=std::string("cartoon##cartoon_checkbox_rep_")+os.name;
@@ -3226,152 +3380,6 @@ private:
 								ImGui::PopStyleColor();
 							}
 
-							ImGui::EndMenu();
-						}
-
-						const std::string submenu_contacts_color_id=std::string("Color contacts##submenu_contacts_color")+os.name;
-						if(ImGui::BeginMenu(submenu_contacts_color_id.c_str()))
-						{
-							static bool rep_faces=true;
-							static bool rep_edges=true;
-							static bool rep_sas_mesh=true;
-
-							{
-								const std::string checkbox_id=std::string("faces##faces_checkbox_rep_")+os.name;
-								ImGui::Checkbox(checkbox_id.c_str(), &rep_faces);
-							}
-							{
-								const std::string checkbox_id=std::string("edges##edges_checkbox_rep_")+os.name;
-								ImGui::Checkbox(checkbox_id.c_str(), &rep_edges);
-							}
-							{
-								const std::string checkbox_id=std::string("sas-mesh##sas_mesh_checkbox_rep_")+os.name;
-								ImGui::Checkbox(checkbox_id.c_str(), &rep_sas_mesh);
-							}
-
-							const std::string rep_string=std::string(" -rep")
-								+(rep_faces ? " faces" : "")
-								+(rep_edges ? " edges" : "")
-								+(rep_sas_mesh ? " sas-mesh" : "");
-
-							ImGui::Separator();
-
-							ImGui::TextUnformatted("Spectrum contacts:");
-
-							if(ImGui::Selectable("  by inter-residue ID randomly"))
-							{
-								result=std::string("spectrum-contacts -by residue-ids -scheme random -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-							}
-
-							if(ImGui::Selectable("  by inter-residue area, 0-45"))
-							{
-								result=std::string("spectrum-contacts -by residue-area -min-val 0 -max-val 45 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-							}
-
-							if(ImGui::Selectable("  by inter-atom area, 0-15"))
-							{
-								result=std::string("spectrum-contacts -by area -min-val 0 -max-val 15 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-							}
-
-							ImGui::Separator();
-
-							ImGui::TextUnformatted("Color contacts:");
-
-							if(ImGui::Selectable("  random"))
-							{
-								result=std::string("color-contacts -next-random-color -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-							}
-
-							{
-								ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  red"))
-								{
-									result=std::string("color-contacts -col 0xFF0000 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  yellow"))
-								{
-									result=std::string("color-contacts -col 0xFFFF00 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-							{
-								ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  green"))
-								{
-									result=std::string("color-contacts -col 0x00FF00 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  cyan"))
-								{
-									result=std::string("color-contacts -col 0x00FFFF -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  blue"))
-								{
-									result=std::string("color-contacts -col 0x0000FF -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  magenta"))
-								{
-									result=std::string("color-contacts -col 0xFF00FF -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  white"))
-								{
-									result=std::string("color-contacts -col white -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  light gray"))
-								{
-									result=std::string("color-contacts -col 0xAAAAAA -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							{
-								ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
-								ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-								if(ImGui::Selectable("  dark gray"))
-								{
-									result=std::string("color-contacts -col 0x555555 -on-objects '")+os.name+"' -use ("+contacts_selection_string()+")"+rep_string;
-								}
-								ImGui::PopStyleColor();
-							}
-
-							ImGui::EndMenu();
 						}
 
 						ImGui::EndPopup();
