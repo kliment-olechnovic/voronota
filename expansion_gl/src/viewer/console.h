@@ -365,6 +365,30 @@ public:
 		}
 	}
 
+	static bool& atoms_marking_updated()
+	{
+		static bool status=false;
+		return status;
+	}
+
+	static bool& atoms_marking_present()
+	{
+		static bool status=false;
+		return status;
+	}
+
+	static bool& contacts_marking_updated()
+	{
+		static bool status=false;
+		return status;
+	}
+
+	static bool& contacts_marking_present()
+	{
+		static bool status=false;
+		return status;
+	}
+
 	std::string execute(
 			const int x_pos, const int y_pos,
 			const int recommended_width,
@@ -1396,6 +1420,50 @@ private:
 			}
 
 			{
+				if(atoms_marking_updated())
+				{
+					if(atoms_marking_present())
+					{
+						if(atoms_selection_string().find("_marked")==std::string::npos)
+						{
+							set_atoms_selection_string_and_save_suggestion(marked_atoms_selection_string());
+						}
+					}
+					else
+					{
+						if(atoms_selection_string().find("_marked")!=std::string::npos)
+						{
+							set_atoms_selection_string_and_save_suggestion(default_atoms_selection_string());
+						}
+					}
+				}
+				atoms_marking_updated()=false;
+				atoms_marking_present()=false;
+			}
+
+			{
+				if(contacts_marking_updated())
+				{
+					if(contacts_marking_present())
+					{
+						if(contacts_selection_string().find("_marked")==std::string::npos)
+						{
+							set_contacts_selection_string_and_save_suggestion(marked_contacts_selection_string());
+						}
+					}
+					else
+					{
+						if(contacts_selection_string().find("_marked")!=std::string::npos)
+						{
+							set_contacts_selection_string_and_save_suggestion(default_contacts_selection_string());
+						}
+					}
+				}
+				contacts_marking_updated()=false;
+				contacts_marking_present()=false;
+			}
+
+			{
 				{
 					{
 						static std::vector<char> atoms_selection_buffer;
@@ -1448,7 +1516,7 @@ private:
 							}
 							ImGui::SameLine();
 							{
-								const std::string button_id=std::string("Reset##button_atoms_selection_reset");
+								const std::string button_id=std::string("Default##button_atoms_selection_reset");
 								if(ImGui::Button(button_id.c_str()))
 								{
 									set_atoms_selection_string_and_save_suggestion(default_atoms_selection_string());
@@ -1553,7 +1621,7 @@ private:
 							}
 							ImGui::SameLine();
 							{
-								const std::string button_id=std::string("Reset##button_contacts_selection_reset");
+								const std::string button_id=std::string("Default##button_contacts_selection_reset");
 								if(ImGui::Button(button_id.c_str()))
 								{
 									set_contacts_selection_string_and_save_suggestion(default_contacts_selection_string());

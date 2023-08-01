@@ -426,6 +426,16 @@ protected:
 				need_to_refresh_frame=true;
 			}
 
+			if(ci.changed_atoms_display_states_marking())
+			{
+				Console::instance().atoms_marking_updated()=true;
+			}
+
+			if(ci.changed_contacts_display_states_marking())
+			{
+				Console::instance().contacts_marking_updated()=true;
+			}
+
 			if(ci.changed_atoms_display_states())
 			{
 				update_console_object_sequence_info(data_manager);
@@ -447,6 +457,28 @@ protected:
 
 	void on_after_script_with_output(const scripting::VariantObject&)
 	{
+		if(Console::instance().atoms_marking_updated() || Console::instance().contacts_marking_updated())
+		{
+			scripting::CongregationOfDataManagers::ObjectQuery objects_query;
+			objects_query.picked=true;
+			const std::vector<scripting::DataManager*> data_managers=congregation_of_data_managers().get_objects(objects_query);
+			for(std::size_t i=0;i<data_managers.size();i++)
+			{
+				scripting::DataManager* data_manager=data_managers[i];
+				if(data_manager!=0)
+				{
+					if(Console::instance().atoms_marking_updated() && !Console::instance().atoms_marking_present() && data_manager->is_any_atom_marked())
+					{
+						Console::instance().atoms_marking_present()=true;
+					}
+					if(Console::instance().contacts_marking_updated() && !Console::instance().contacts_marking_present() && data_manager->is_any_contact_marked())
+					{
+						Console::instance().contacts_marking_present()=true;
+					}
+				}
+			}
+		}
+
 		Console::instance().add_output_separator();
 		scripting::JSONWriter::Configuration json_writing_configuration(GUIConfiguration::instance().json_writing_level);
 		json_writing_configuration.value_string_length_limit=5000;
