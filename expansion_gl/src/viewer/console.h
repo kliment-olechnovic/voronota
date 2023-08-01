@@ -1916,6 +1916,7 @@ private:
 						}
 
 						ImGui::Separator();
+						ImGui::Separator();
 
 						{
 							ImGui::TextUnformatted("Show contacts:");
@@ -2007,6 +2008,7 @@ private:
 							}
 						}
 
+						ImGui::Separator();
 						ImGui::Separator();
 
 						{
@@ -2870,6 +2872,7 @@ private:
 						}
 
 						ImGui::Separator();
+						ImGui::Separator();
 
 						{
 							ImGui::TextUnformatted("Show contacts:");
@@ -2961,6 +2964,7 @@ private:
 							}
 						}
 
+						ImGui::Separator();
 						ImGui::Separator();
 
 						{
@@ -3438,12 +3442,14 @@ private:
 			{
 				suggestions.first.push_back("[]");
 				suggestions.first.push_back("[_marked]");
+				suggestions.first.push_back("[_visible]");
 				suggestions.first.push_back("[-protein]");
 				suggestions.first.push_back("[-nucleic]");
-				suggestions.first.push_back("[-chain A]");
-				suggestions.first.push_back("[-chain A -rnum 1:200]");
-				suggestions.first.push_back("(not [-aname C,N,O,CA])");
 				suggestions.first.push_back("[-sel-of-contacts _visible]");
+				suggestions.first.push_back("[-sel-of-contacts _marked]");
+				suggestions.first.push_back("(not [-aname C,N,O,CA])");
+				suggestions.second.push_back("[-chain A]");
+				suggestions.second.push_back("[-chain A -rnum 1:200]");
 			}
 			return suggestions;
 		}
@@ -3509,16 +3515,15 @@ private:
 			if(suggestions.first.empty())
 			{
 				suggestions.first.push_back("[]");
-				suggestions.first.push_back("[-no-solvent]");
-				suggestions.first.push_back("[-min-seq-sep 1]");
-				suggestions.first.push_back("[-no-solvent -min-seq-sep 1]");
-				suggestions.first.push_back("[-inter-chain]");
-				suggestions.first.push_back("[-solvent]");
 				suggestions.first.push_back("[_marked]");
 				suggestions.first.push_back("[_visible]");
+				suggestions.first.push_back("[-no-solvent]");
+				suggestions.first.push_back("[-no-solvent -min-seq-sep 1]");
+				suggestions.first.push_back("[-solvent]");
+				suggestions.first.push_back("[-inter-chain]");
 				suggestions.first.push_back("[-a1 [_marked] -a2! [_marked]]");
-				suggestions.first.push_back("[-a1 [-protein] -a2 [-nucleic]]");
-				suggestions.first.push_back("[-a1 [-chain A] -a2 [-chain B]]");
+				suggestions.second.push_back("[-a1 [-protein] -a2 [-nucleic]]");
+				suggestions.second.push_back("[-a1 [-chain A] -a2 [-chain B]]");
 			}
 			return suggestions;
 		}
