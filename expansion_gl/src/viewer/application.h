@@ -167,7 +167,7 @@ protected:
 			{
 				if(hovered())
 				{
-					Console::instance().text_interface_info().set_need_keyboard_focus_in_command_input(true);
+					console::Console::instance().text_interface_info().set_need_keyboard_focus_in_command_input(true);
 				}
 			}
 			else if(key==GLFW_KEY_ESCAPE && mods==0)
@@ -176,7 +176,7 @@ protected:
 			}
 			else if(key==GLFW_KEY_ESCAPE && mods==GLFW_MOD_SHIFT)
 			{
-				Console::instance().shrink_to_minimal_view();
+				console::Console::instance().shrink_to_minimal_view();
 			}
 		}
 
@@ -205,14 +205,14 @@ protected:
 		}
 
 		{
-			const std::string console_result=Console::instance().execute(0, 0, window_width()/5*3, 200, window_width()/4, window_width(), 40, window_height());
+			const std::string console_result=console::Console::instance().execute(0, 0, window_width()/5*3, 200, window_width()/4, window_width(), 40, window_height());
 			if(!console_result.empty())
 			{
 				const ScriptPrefixParsing::Bundle task=ScriptPrefixParsing::parse(console_result);
 				enqueue_script(task);
 				if(!task.prefix.empty() && task.mode!=ScriptPrefixParsing::MODE_NATIVE_BRIEF)
 				{
-					Console::instance().text_interface_info().set_next_prefix(task.prefix+" ");
+					console::Console::instance().text_interface_info().set_next_prefix(task.prefix+" ");
 				}
 			}
 		}
@@ -239,18 +239,18 @@ protected:
 
 	void on_before_rendered_frame()
 	{
-		if(Console::instance().current_heigth()>0 && Console::instance().current_heigth()<(window_height()-1))
+		if(console::Console::instance().current_heigth()>0 && console::Console::instance().current_heigth()<(window_height()-1))
 		{
-			set_margin_top_fixed(Console::instance().current_heigth());
+			set_margin_top_fixed(console::Console::instance().current_heigth());
 		}
 		else
 		{
 			set_margin_top_fixed(0);
 		}
 
-		if(Console::instance().current_width()>0 && Console::instance().current_width()<(window_width()-1))
+		if(console::Console::instance().current_width()>0 && console::Console::instance().current_width()<(window_width()-1))
 		{
-			set_margin_right_fixed(window_width()-Console::instance().current_width());
+			set_margin_right_fixed(window_width()-console::Console::instance().current_width());
 		}
 		else
 		{
@@ -465,17 +465,17 @@ private:
 
 		void write_text(const std::string& str) const
 		{
-			Console::instance().text_interface_info().add_output(str, 1.0f, 1.0f, 1.0f);
+			console::Console::instance().text_interface_info().add_output(str, 1.0f, 1.0f, 1.0f);
 		}
 
 		void write_error(const std::string& str) const
 		{
-			Console::instance().text_interface_info().add_output(str, 1.0f, 0.5f, 0.5f);
+			console::Console::instance().text_interface_info().add_output(str, 1.0f, 0.5f, 0.5f);
 		}
 
 		void write_log(const std::string& str) const
 		{
-			Console::instance().text_interface_info().add_output(str, 1.0f, 1.0f, 0.5f);
+			console::Console::instance().text_interface_info().add_output(str, 1.0f, 1.0f, 0.5f);
 		}
 	};
 
