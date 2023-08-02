@@ -1424,16 +1424,16 @@ private:
 				{
 					if(atoms_marking_present())
 					{
-						if(atoms_selection_string().find("_marked")==std::string::npos)
+						if(atoms_selection_string().find(marked_atoms_selection_string())==std::string::npos)
 						{
 							set_atoms_selection_string_and_save_suggestion(marked_atoms_selection_string());
 						}
 					}
 					else
 					{
-						if(atoms_selection_string().find("_marked")!=std::string::npos)
+						if(atoms_selection_string().find(marked_atoms_selection_string())!=std::string::npos)
 						{
-							set_atoms_selection_string_and_save_suggestion(default_atoms_selection_string());
+							set_atoms_selection_string_and_save_suggestion(atoms_selection_string_previous().empty() ? default_atoms_selection_string() : atoms_selection_string_previous());
 						}
 					}
 				}
@@ -1446,16 +1446,16 @@ private:
 				{
 					if(contacts_marking_present())
 					{
-						if(contacts_selection_string().find("_marked")==std::string::npos)
+						if(contacts_selection_string().find(marked_contacts_selection_string())==std::string::npos)
 						{
 							set_contacts_selection_string_and_save_suggestion(marked_contacts_selection_string());
 						}
 					}
 					else
 					{
-						if(contacts_selection_string().find("_marked")!=std::string::npos)
+						if(contacts_selection_string().find(marked_contacts_selection_string())!=std::string::npos)
 						{
-							set_contacts_selection_string_and_save_suggestion(default_contacts_selection_string());
+							set_contacts_selection_string_and_save_suggestion(contacts_selection_string_previous().empty() ? default_contacts_selection_string() : contacts_selection_string_previous());
 						}
 					}
 				}
