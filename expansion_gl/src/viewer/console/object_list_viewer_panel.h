@@ -15,14 +15,14 @@ namespace viewer
 namespace console
 {
 
-class ObjectListViewerState
+class ObjectListViewerPanel
 {
 public:
 	const ObjectsInfo& objects_info;
 	MarkingInfo& marking_info;
 	bool visible;
 
-	ObjectListViewerState(const ObjectsInfo& objects_info, MarkingInfo& marking_info) :
+	ObjectListViewerPanel(const ObjectsInfo& objects_info, MarkingInfo& marking_info) :
 		objects_info(objects_info),
 		marking_info(marking_info),
 		visible(true)

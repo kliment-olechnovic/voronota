@@ -14,13 +14,13 @@ namespace viewer
 namespace console
 {
 
-class DocumentationViewerState
+class DocumentationViewerPanel
 {
 public:
 	bool visible;
 	const DocumentationInfo& documentation_info;
 
-	DocumentationViewerState(const DocumentationInfo& documentation_info) :
+	DocumentationViewerPanel(const DocumentationInfo& documentation_info) :
 		visible(true),
 		documentation_info(documentation_info)
 	{

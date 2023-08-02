@@ -12,12 +12,12 @@ namespace viewer
 namespace console
 {
 
-class DisplayControlToolbarState
+class DisplayControlToolbarPanel
 {
 public:
 	bool visible;
 
-	DisplayControlToolbarState() :
+	DisplayControlToolbarPanel() :
 		visible(true)
 	{
 	}

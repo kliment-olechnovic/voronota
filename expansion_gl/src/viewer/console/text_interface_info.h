@@ -16,7 +16,7 @@ namespace viewer
 namespace console
 {
 
-class CommandLineInterfaceState;
+class CommandLineInterfacePanel;
 
 class TextInterfaceInfo
 {
@@ -213,7 +213,7 @@ private:
 	bool scroll_output;
 	bool script_editor_focused;
 
-	friend class CommandLineInterfaceState;
+	friend class CommandLineInterfacePanel;
 };
 
 }

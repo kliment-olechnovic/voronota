@@ -1,13 +1,13 @@
 #ifndef VIEWER_CONSOLE_CONSOLE_H_
 #define VIEWER_CONSOLE_CONSOLE_H_
 
-#include "command_line_interface_state.h"
-#include "script_editor_state.h"
-#include "documentation_viewer_state.h"
-#include "display_control_toolbar_state.h"
-#include "shading_control_toolbar_state.h"
-#include "object_list_viewer_state.h"
-#include "sequence_viewer_state.h"
+#include "command_line_interface_panel.h"
+#include "script_editor_panel.h"
+#include "documentation_viewer_panel.h"
+#include "display_control_toolbar_panel.h"
+#include "shading_control_toolbar_panel.h"
+#include "object_list_viewer_panel.h"
+#include "sequence_viewer_panel.h"
 
 namespace voronota
 {
@@ -266,7 +266,7 @@ public:
 #endif
 
 		{
-			const float actual_min_height=std::max(static_cast<float>(min_height), (command_line_interface_state_.height_for_command_line+15.0f)*GUIStyleWrapper::scale_factor()+sequence_viewer_state_.calc_total_container_height());
+			const float actual_min_height=std::max(static_cast<float>(min_height), (command_line_interface_panel_.height_for_command_line+15.0f)*GUIStyleWrapper::scale_factor()+sequence_viewer_panel_.calc_total_container_height());
 			const float actual_max_height=std::max(0.0f, static_cast<float>(max_height)-current_menu_bar_height_);
 
 			ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos+current_menu_bar_height_));
@@ -327,9 +327,9 @@ public:
 				return result;
 			}
 
-			command_line_interface_state_.execute(result, sequence_viewer_state_.calc_total_container_height());
+			command_line_interface_panel_.execute(result, sequence_viewer_panel_.calc_total_container_height());
 
-			sequence_viewer_state_.execute(result);
+			sequence_viewer_panel_.execute(result);
 
 			current_width_=ImGui::GetWindowWidth();
 			current_heigth_=ImGui::GetWindowHeight();
@@ -353,33 +353,33 @@ public:
 				return result;
 			}
 
-			if(script_editor_state_.visible && ImGui::CollapsingHeader("Script editor##header_for_script_editor"))
+			if(script_editor_panel_.visible && ImGui::CollapsingHeader("Script editor##header_for_script_editor"))
 			{
-				script_editor_state_.execute(result);
+				script_editor_panel_.execute(result);
 			}
 			else
 			{
 				text_interface_info().set_script_editor_focused(false);
 			}
 
-			if(documentation_viewer_state_.visible && ImGui::CollapsingHeader("Commands reference##header_for_list_of_documentation"))
+			if(documentation_viewer_panel_.visible && ImGui::CollapsingHeader("Commands reference##header_for_list_of_documentation"))
 			{
-				documentation_viewer_state_.execute();
+				documentation_viewer_panel_.execute();
 			}
 
-			if(shading_control_toolbar_state_.visible && ImGui::CollapsingHeader("Shading controls##header_for_shading_controls"))
+			if(shading_control_toolbar_panel_.visible && ImGui::CollapsingHeader("Shading controls##header_for_shading_controls"))
 			{
-				shading_control_toolbar_state_.execute(result);
+				shading_control_toolbar_panel_.execute(result);
 			}
 
-			if(display_control_toolbar_state_.visible && ImGui::CollapsingHeader("Display controls##header_for_display_controls", ImGuiTreeNodeFlags_DefaultOpen))
+			if(display_control_toolbar_panel_.visible && ImGui::CollapsingHeader("Display controls##header_for_display_controls", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				display_control_toolbar_state_.execute(result);
+				display_control_toolbar_panel_.execute(result);
 			}
 
-			if(object_list_viewer_state_.visible && ImGui::CollapsingHeader("Objects##header_for_list_of_objects", ImGuiTreeNodeFlags_DefaultOpen))
+			if(object_list_viewer_panel_.visible && ImGui::CollapsingHeader("Objects##header_for_list_of_objects", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				object_list_viewer_state_.execute(result);
+				object_list_viewer_panel_.execute(result);
 			}
 
 			ImGui::End();
@@ -397,11 +397,11 @@ private:
 		current_menu_bar_height_(0.0f),
 		shrink_to_minimal_view_(false),
 		file_search_root_dir_("."),
-		command_line_interface_state_(text_interface_info()),
-		script_editor_state_(text_interface_info()),
-		documentation_viewer_state_(documentation_info()),
-		object_list_viewer_state_(objects_info(), marking_info()),
-		sequence_viewer_state_(objects_info())
+		command_line_interface_panel_(text_interface_info()),
+		script_editor_panel_(text_interface_info()),
+		documentation_viewer_panel_(documentation_info()),
+		object_list_viewer_panel_(objects_info(), marking_info()),
+		sequence_viewer_panel_(objects_info())
 	{
 	}
 
@@ -413,13 +413,13 @@ private:
 	bool shrink_to_minimal_view_;
 	std::string file_search_root_dir_;
 
-	CommandLineInterfaceState command_line_interface_state_;
-	ScriptEditorState script_editor_state_;
-	DocumentationViewerState documentation_viewer_state_;
-	DisplayControlToolbarState display_control_toolbar_state_;
-	ShadingControlToolbarState shading_control_toolbar_state_;
-	ObjectListViewerState object_list_viewer_state_;
-	SequenceViewerState sequence_viewer_state_;
+	CommandLineInterfacePanel command_line_interface_panel_;
+	ScriptEditorPanel script_editor_panel_;
+	DocumentationViewerPanel documentation_viewer_panel_;
+	DisplayControlToolbarPanel display_control_toolbar_panel_;
+	ShadingControlToolbarPanel shading_control_toolbar_panel_;
+	ObjectListViewerPanel object_list_viewer_panel_;
+	SequenceViewerPanel sequence_viewer_panel_;
 };
 
 }

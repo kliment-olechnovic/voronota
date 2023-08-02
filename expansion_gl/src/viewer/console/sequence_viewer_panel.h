@@ -14,7 +14,7 @@ namespace viewer
 namespace console
 {
 
-class SequenceViewerState
+class SequenceViewerPanel
 {
 public:
 	const ObjectsInfo& objects_info;
@@ -24,7 +24,7 @@ public:
 	float sequence_frame_height;
 	float button_width_unit;
 
-	SequenceViewerState(const ObjectsInfo& objects_info) :
+	SequenceViewerPanel(const ObjectsInfo& objects_info) :
 		objects_info(objects_info),
 		visible(GUIConfiguration::instance().enabled_sequence_view),
 		max_slots(100),

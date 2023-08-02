@@ -12,12 +12,12 @@ namespace viewer
 namespace console
 {
 
-class ShadingControlToolbarState
+class ShadingControlToolbarPanel
 {
 public:
 	bool visible;
 
-	ShadingControlToolbarState() :
+	ShadingControlToolbarPanel() :
 		visible(true)
 	{
 	}

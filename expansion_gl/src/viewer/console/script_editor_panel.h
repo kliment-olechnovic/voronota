@@ -14,13 +14,13 @@ namespace viewer
 namespace console
 {
 
-class ScriptEditorState
+class ScriptEditorPanel
 {
 public:
 	bool visible;
 	TextInterfaceInfo& text_interface_info;
 
-	ScriptEditorState(TextInterfaceInfo& text_interface_info) :
+	ScriptEditorPanel(TextInterfaceInfo& text_interface_info) :
 		visible(true),
 		text_interface_info(text_interface_info),
 		script_editor_colors_black_on_white_(false)

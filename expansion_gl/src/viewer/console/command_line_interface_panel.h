@@ -14,13 +14,13 @@ namespace viewer
 namespace console
 {
 
-class CommandLineInterfaceState
+class CommandLineInterfacePanel
 {
 public:
 	TextInterfaceInfo& text_interface_info;
 	float height_for_command_line;
 
-	CommandLineInterfaceState(TextInterfaceInfo& text_interface_info) :
+	CommandLineInterfacePanel(TextInterfaceInfo& text_interface_info) :
 		text_interface_info(text_interface_info),
 		height_for_command_line(20.0f),
 		command_buffer_(1024, 0),
@@ -109,7 +109,7 @@ private:
 
 	static int on_command_input_data_request(ImGuiInputTextCallbackData* data)
 	{
-		CommandLineInterfaceState* obj=static_cast<CommandLineInterfaceState*>(data->UserData);
+		CommandLineInterfacePanel* obj=static_cast<CommandLineInterfacePanel*>(data->UserData);
 		return obj->handle_command_input_data_request(data);
 	}
 
