@@ -479,7 +479,7 @@ protected:
 			}
 		}
 
-		Console::instance().add_output_separator();
+		Console::instance().text_interface_info().add_output_separator();
 		scripting::JSONWriter::Configuration json_writing_configuration(GUIConfiguration::instance().json_writing_level);
 		json_writing_configuration.value_string_length_limit=5000;
 		if(last_output().objects_arrays().count("results")>0)
@@ -493,19 +493,19 @@ protected:
 					const std::string command_name=result.value("command_name").value_as_string();
 					if(command_name=="clear")
 					{
-						Console::instance().clear_outputs();
+						Console::instance().text_interface_info().clear_outputs();
 					}
 					else if(command_name=="clear-last")
 					{
-						Console::instance().clear_last_output();
+						Console::instance().text_interface_info().clear_last_output();
 					}
 					else if(command_name=="history")
 					{
-						Console::instance().add_history_output(20);
+						Console::instance().text_interface_info().add_history_output(20);
 					}
 					else if(command_name=="history-all")
 					{
-						Console::instance().add_history_output(0);
+						Console::instance().text_interface_info().add_history_output(0);
 					}
 					else
 					{
@@ -514,23 +514,23 @@ protected:
 						result.erase("success");
 						if(success)
 						{
-							Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 0.5f, 1.0f, 1.0f);
+							Console::instance().text_interface_info().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 0.5f, 1.0f, 1.0f);
 						}
 						else
 						{
-							Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 1.0f, 0.5f, 0.5f);
+							Console::instance().text_interface_info().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 1.0f, 0.5f, 0.5f);
 						}
 					}
 				}
 				else
 				{
-					Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, results[i]), 1.0f, 1.0f, 0.0f);
+					Console::instance().text_interface_info().add_output(scripting::JSONWriter::write(json_writing_configuration, results[i]), 1.0f, 1.0f, 0.0f);
 				}
 			}
 		}
 		else
 		{
-			Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, last_output()), 1.0f, 1.0f, 1.0f);
+			Console::instance().text_interface_info().add_output(scripting::JSONWriter::write(json_writing_configuration, last_output()), 1.0f, 1.0f, 1.0f);
 		}
 	}
 
@@ -779,7 +779,7 @@ private:
 			reference[names[i]]=output.str();
 		}
 
-		Console::instance().set_documentation(reference);
+		Console::instance().documentation_info().documentation=reference;
 	}
 
 	void update_console_object_states()

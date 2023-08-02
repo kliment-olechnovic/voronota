@@ -167,7 +167,7 @@ protected:
 			{
 				if(hovered())
 				{
-					Console::instance().set_need_keyboard_focus_in_command_input(true);
+					Console::instance().text_interface_info().set_need_keyboard_focus_in_command_input(true);
 				}
 			}
 			else if(key==GLFW_KEY_ESCAPE && mods==0)
@@ -212,7 +212,7 @@ protected:
 				enqueue_script(task);
 				if(!task.prefix.empty() && task.mode!=ScriptPrefixParsing::MODE_NATIVE_BRIEF)
 				{
-					Console::instance().set_next_prefix(task.prefix+" ");
+					Console::instance().text_interface_info().set_next_prefix(task.prefix+" ");
 				}
 			}
 		}
@@ -465,17 +465,17 @@ private:
 
 		void write_text(const std::string& str) const
 		{
-			Console::instance().add_output(str, 1.0f, 1.0f, 1.0f);
+			Console::instance().text_interface_info().add_output(str, 1.0f, 1.0f, 1.0f);
 		}
 
 		void write_error(const std::string& str) const
 		{
-			Console::instance().add_output(str, 1.0f, 0.5f, 0.5f);
+			Console::instance().text_interface_info().add_output(str, 1.0f, 0.5f, 0.5f);
 		}
 
 		void write_log(const std::string& str) const
 		{
-			Console::instance().add_output(str, 1.0f, 1.0f, 0.5f);
+			Console::instance().text_interface_info().add_output(str, 1.0f, 1.0f, 0.5f);
 		}
 	};
 

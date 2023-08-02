@@ -29,110 +29,206 @@ namespace viewer
 
 class Console
 {
+private:
+	class CommandLineInterfaceState;
+
 public:
-	struct OutputToken
+	class TextInterfaceInfo
 	{
-		float r;
-		float g;
-		float b;
-		std::string content;
-		std::vector<unsigned int> char_colors;
-
-		OutputToken(const std::string& content, const float r, const float g, const float b) : r(r), g(g), b(b), content(content)
+	public:
+		struct OutputToken
 		{
-			const ImU32 cui_default=0xFFAAAAAA;
-			const ImU32 cui_string=ImGui::ColorConvertFloat4ToU32(ImVec4(r, g, b, 1.0f));
-			const ImU32 cui_number=0xFF55EE55;
-			const ImU32 cui_key=0xFF55EEEE;
-			const ImU32 cui_punctuation=0xFFCCCCCC;
+			float r;
+			float g;
+			float b;
+			std::string content;
+			std::vector<unsigned int> char_colors;
 
-			char_colors.resize(content.size(), cui_default);
-
+			OutputToken(const std::string& content, const float r, const float g, const float b) : r(r), g(g), b(b), content(content)
 			{
-				int i=0;
-				while(i<static_cast<int>(content.size()))
+				const ImU32 cui_default=0xFFAAAAAA;
+				const ImU32 cui_string=ImGui::ColorConvertFloat4ToU32(ImVec4(r, g, b, 1.0f));
+				const ImU32 cui_number=0xFF55EE55;
+				const ImU32 cui_key=0xFF55EEEE;
+				const ImU32 cui_punctuation=0xFFCCCCCC;
+
+				char_colors.resize(content.size(), cui_default);
+
 				{
-					if(content[i]=='"')
+					int i=0;
+					while(i<static_cast<int>(content.size()))
 					{
-						char_colors[i]=cui_string;
-						i++;
-						bool ended=false;
-						while(i<static_cast<int>(content.size()) && !ended)
+						if(content[i]=='"')
 						{
-							if(content[i]=='"' && content[i-1]!='\\')
-							{
-								ended=true;
-							}
 							char_colors[i]=cui_string;
 							i++;
+							bool ended=false;
+							while(i<static_cast<int>(content.size()) && !ended)
+							{
+								if(content[i]=='"' && content[i-1]!='\\')
+								{
+									ended=true;
+								}
+								char_colors[i]=cui_string;
+								i++;
+							}
 						}
-					}
-					else
-					{
-						i++;
-					}
-				}
-			}
-
-			{
-				int i=0;
-				while(i<static_cast<int>(content.size()))
-				{
-					if(char_colors[i]==cui_default && ((content[i]>='0' && content[i]<='9') || (content[i]=='-' && (i+1)<static_cast<int>(content.size()) && char_colors[i+1]==cui_default && content[i+1]>='0' && content[i+1]<='9')))
-					{
-						char_colors[i]=cui_number;
-						i++;
-						bool ended=false;
-						while(i<static_cast<int>(content.size()) && !ended)
+						else
 						{
-							if(char_colors[i]==cui_default && ((content[i]>='0' && content[i]<='9') || content[i]=='.'))
-							{
-								char_colors[i]=cui_number;
-							}
-							else
-							{
-								ended=true;
-							}
 							i++;
 						}
 					}
-					else
+				}
+
+				{
+					int i=0;
+					while(i<static_cast<int>(content.size()))
 					{
-						i++;
+						if(char_colors[i]==cui_default && ((content[i]>='0' && content[i]<='9') || (content[i]=='-' && (i+1)<static_cast<int>(content.size()) && char_colors[i+1]==cui_default && content[i+1]>='0' && content[i+1]<='9')))
+						{
+							char_colors[i]=cui_number;
+							i++;
+							bool ended=false;
+							while(i<static_cast<int>(content.size()) && !ended)
+							{
+								if(char_colors[i]==cui_default && ((content[i]>='0' && content[i]<='9') || content[i]=='.'))
+								{
+									char_colors[i]=cui_number;
+								}
+								else
+								{
+									ended=true;
+								}
+								i++;
+							}
+						}
+						else
+						{
+							i++;
+						}
 					}
 				}
-			}
 
-			for(int i=0;i<static_cast<int>(content.size());i++)
-			{
-				if(i>=2 && content[i]==':' && i>0 && content[i-1]=='"')
+				for(int i=0;i<static_cast<int>(content.size());i++)
 				{
-					char_colors[i]=cui_punctuation;
-					char_colors[i-1]=cui_key;
-					int j=(i-2);
-					for(;j>=0;j--)
+					if(i>=2 && content[i]==':' && i>0 && content[i-1]=='"')
 					{
-						char_colors[j]=cui_key;
-						if(content[j]=='"')
+						char_colors[i]=cui_punctuation;
+						char_colors[i-1]=cui_key;
+						int j=(i-2);
+						for(;j>=0;j--)
 						{
-							j=-1;
+							char_colors[j]=cui_key;
+							if(content[j]=='"')
+							{
+								j=-1;
+							}
+						}
+					}
+				}
+
+				for(int i=0;i<static_cast<int>(content.size());i++)
+				{
+					if(char_colors[i]==cui_default)
+					{
+						const char c=content[i];
+						if(c=='{' || c=='}' || c=='[' || c==']' || c==',')
+						{
+							char_colors[i]=cui_punctuation;
 						}
 					}
 				}
 			}
+		};
 
-			for(int i=0;i<static_cast<int>(content.size());i++)
+		TextInterfaceInfo() :
+			need_keyboard_focus_in_command_input(false),
+			scroll_output(false),
+			script_editor_focused(false)
+		{
+		}
+
+		static const std::string& separator_string()
+		{
+			static std::string str="---";
+			return str;
+		}
+
+		void set_need_keyboard_focus_in_command_input(const bool status)
+		{
+			need_keyboard_focus_in_command_input=(status && !script_editor_focused);
+		}
+
+		void set_script_editor_focused(const bool status)
+		{
+			script_editor_focused=status;
+		}
+
+		void set_next_prefix(const std::string& prefix)
+		{
+			next_prefix=prefix;
+		}
+
+		void add_output(const std::string& content, const float r, const float g, const float b)
+		{
+			outputs.push_back(OutputToken(content, r, g, b));
+			if(outputs.size()>50)
 			{
-				if(char_colors[i]==cui_default)
-				{
-					const char c=content[i];
-					if(c=='{' || c=='}' || c=='[' || c==']' || c==',')
-					{
-						char_colors[i]=cui_punctuation;
-					}
-				}
+				outputs.pop_front();
+			}
+			scroll_output=true;
+		}
+
+		void add_output_separator()
+		{
+			if(!outputs.empty() && outputs.back().content!=separator_string())
+			{
+				add_output(separator_string(), 0.0f, 0.0f, 0.0f);
 			}
 		}
+
+		void add_history_output(const std::size_t n)
+		{
+			if(!history_of_commands.empty())
+			{
+				const std::size_t first_i=((n>0 && n<history_of_commands.size()) ? (history_of_commands.size()-n) : 0);
+				std::ostringstream output;
+				for(std::size_t i=first_i;i<history_of_commands.size();i++)
+				{
+					output << history_of_commands[i] << "\n";
+				}
+				add_output(output.str(), 0.75f, 0.50f, 0.0f);
+			}
+		}
+
+		void clear_outputs()
+		{
+			outputs.clear();
+			scroll_output=true;
+		}
+
+		void clear_last_output()
+		{
+			if(!outputs.empty() && outputs.back().content==separator_string())
+			{
+				outputs.pop_back();
+			}
+			if(!outputs.empty())
+			{
+				outputs.pop_back();
+			}
+			scroll_output=true;
+		}
+
+	private:
+		std::deque<OutputToken> outputs;
+		std::vector<std::string> history_of_commands;
+		std::string next_prefix;
+		bool need_keyboard_focus_in_command_input;
+		bool scroll_output;
+		bool script_editor_focused;
+
+		friend class CommandLineInterfaceState;
 	};
 
 	class ObjectsInfo
@@ -301,10 +397,22 @@ public:
 		}
 	};
 
+	class DocumentationInfo
+	{
+	public:
+		std::map<std::string, std::string> documentation;
+	};
+
 	static Console& instance()
 	{
 		static Console console;
 		return console;
+	}
+
+	TextInterfaceInfo& text_interface_info()
+	{
+		static TextInterfaceInfo info;
+		return info;
 	}
 
 	ObjectsInfo& objects_info()
@@ -319,70 +427,10 @@ public:
 		return info;
 	}
 
-	void set_need_keyboard_focus_in_command_input(const bool status)
+	DocumentationInfo& documentation_info()
 	{
-		command_line_interface_state_.need_keyboard_focus_in_command_input=(status && !script_editor_state_.focused);
-	}
-
-	void set_next_prefix(const std::string& prefix)
-	{
-		command_line_interface_state_.next_prefix=prefix;
-	}
-
-	void add_output(const std::string& content, const float r, const float g, const float b)
-	{
-		command_line_interface_state_.outputs.push_back(OutputToken(content, r, g, b));
-		if(command_line_interface_state_.outputs.size()>50)
-		{
-			command_line_interface_state_.outputs.pop_front();
-		}
-		command_line_interface_state_.scroll_output=true;
-	}
-
-	void add_output_separator()
-	{
-		if(!command_line_interface_state_.outputs.empty() && command_line_interface_state_.outputs.back().content!=separator_string())
-		{
-			add_output(separator_string(), 0.0f, 0.0f, 0.0f);
-		}
-	}
-
-	void add_history_output(const std::size_t n)
-	{
-		if(!command_line_interface_state_.history_of_commands.empty())
-		{
-			const std::size_t first_i=((n>0 && n<command_line_interface_state_.history_of_commands.size()) ? (command_line_interface_state_.history_of_commands.size()-n) : 0);
-			std::ostringstream output;
-			for(std::size_t i=first_i;i<command_line_interface_state_.history_of_commands.size();i++)
-			{
-				output << command_line_interface_state_.history_of_commands[i] << "\n";
-			}
-			add_output(output.str(), 0.75f, 0.50f, 0.0f);
-		}
-	}
-
-	void clear_outputs()
-	{
-		command_line_interface_state_.outputs.clear();
-		command_line_interface_state_.scroll_output=true;
-	}
-
-	void clear_last_output()
-	{
-		if(!command_line_interface_state_.outputs.empty() && command_line_interface_state_.outputs.back().content==separator_string())
-		{
-			command_line_interface_state_.outputs.pop_back();
-		}
-		if(!command_line_interface_state_.outputs.empty())
-		{
-			command_line_interface_state_.outputs.pop_back();
-		}
-		command_line_interface_state_.scroll_output=true;
-	}
-
-	void set_documentation(const std::map<std::string, std::string>& documentation)
-	{
-		documentation_viewer_state_.documentation=documentation;
+		static DocumentationInfo info;
+		return info;
 	}
 
 	void shrink_to_minimal_view()
@@ -675,7 +723,7 @@ public:
 			}
 			else
 			{
-				script_editor_state_.focused=false;
+				text_interface_info().set_script_editor_focused(false);
 			}
 
 			if(documentation_viewer_state_.visible && ImGui::CollapsingHeader("Commands reference##header_for_list_of_documentation"))
@@ -726,16 +774,11 @@ private:
 	class CommandLineInterfaceState
 	{
 	public:
-		std::deque<OutputToken> outputs;
-		std::vector<std::string> history_of_commands;
-		std::string next_prefix;
-		bool need_keyboard_focus_in_command_input;
-		bool scroll_output;
+		TextInterfaceInfo& text_interface_info;
 		float height_for_command_line;
 
-		CommandLineInterfaceState() :
-			need_keyboard_focus_in_command_input(false),
-			scroll_output(false),
+		CommandLineInterfaceState(TextInterfaceInfo& text_interface_info) :
+			text_interface_info(text_interface_info),
 			height_for_command_line(20.0f),
 			command_buffer_(1024, 0),
 			index_of_history_of_commands_(0)
@@ -752,10 +795,10 @@ private:
 				ImGui::BeginChild("##console_scrolling_region", ImVec2(0, 0-height_for_command_line_and_end), true);
 				ImGui::PushItemWidth(-1);
 				ImGui::PushTextWrapPos();
-				for(std::size_t i=0;i<outputs.size();i++)
+				for(std::size_t i=0;i<text_interface_info.outputs.size();i++)
 				{
-					const OutputToken& ot=outputs[i];
-					if(ot.content==separator_string())
+					const TextInterfaceInfo::OutputToken& ot=text_interface_info.outputs[i];
+					if(ot.content==TextInterfaceInfo::separator_string())
 					{
 						ImGui::Separator();
 					}
@@ -773,11 +816,11 @@ private:
 				}
 				ImGui::PopTextWrapPos();
 				ImGui::PopItemWidth();
-				if(scroll_output)
+				if(text_interface_info.scroll_output)
 				{
 					ImGui::SetScrollHereY();
 				}
-				scroll_output=false;
+				text_interface_info.scroll_output=false;
 				ImGui::EndChild();
 			}
 
@@ -792,12 +835,12 @@ private:
 					result=(std::string(command_buffer_.data()));
 					update_history_of_commands(result);
 					command_buffer_.assign(command_buffer_.size(), 0);
-					need_keyboard_focus_in_command_input=true;
+					text_interface_info.need_keyboard_focus_in_command_input=true;
 				}
-				if(need_keyboard_focus_in_command_input || ((ImGui::IsWindowFocused() || !ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow)) && !ImGui::IsAnyItemActive()))
+				if(text_interface_info.need_keyboard_focus_in_command_input || ((ImGui::IsWindowFocused() || !ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow)) && !ImGui::IsAnyItemActive()))
 				{
 					ImGui::SetKeyboardFocusHere(-1);
-					need_keyboard_focus_in_command_input=false;
+					text_interface_info.need_keyboard_focus_in_command_input=false;
 				}
 				ImGui::PopItemWidth();
 				ImGui::PopStyleColor();
@@ -830,7 +873,7 @@ private:
 		int handle_command_input_data_request(ImGuiInputTextCallbackData* data)
 		{
 			if(
-					!history_of_commands.empty() &&
+					!text_interface_info.history_of_commands.empty() &&
 					data->EventFlag==ImGuiInputTextFlags_CallbackHistory &&
 					(data->EventKey==ImGuiKey_UpArrow || data->EventKey==ImGuiKey_DownArrow) &&
 					data->BufSize>0
@@ -840,7 +883,7 @@ private:
 				{
 					index_of_history_of_commands_=0;
 					dynamic_history_of_commands_.push_back(std::string(data->Buf));
-					dynamic_history_of_commands_.insert(dynamic_history_of_commands_.end(), history_of_commands.rbegin(), history_of_commands.rend());
+					dynamic_history_of_commands_.insert(dynamic_history_of_commands_.end(), text_interface_info.history_of_commands.rbegin(), text_interface_info.history_of_commands.rend());
 				}
 				else
 				{
@@ -889,29 +932,29 @@ private:
 			else if(
 					data->EventFlag==ImGuiInputTextFlags_CallbackAlways &&
 					data->BufTextLen==0 &&
-					!next_prefix.empty() &&
-					(next_prefix.size()+2)<static_cast<std::size_t>(data->BufSize)
+					!text_interface_info.next_prefix.empty() &&
+					(text_interface_info.next_prefix.size()+2)<static_cast<std::size_t>(data->BufSize)
 				)
 			{
-				for(size_t i=0;i<=next_prefix.size();i++)
+				for(size_t i=0;i<=text_interface_info.next_prefix.size();i++)
 				{
-					data->Buf[i]=next_prefix.c_str()[i];
+					data->Buf[i]=text_interface_info.next_prefix.c_str()[i];
 				}
 				data->BufDirty=true;
-				data->BufTextLen=static_cast<int>(next_prefix.size());
+				data->BufTextLen=static_cast<int>(text_interface_info.next_prefix.size());
 				data->CursorPos=data->BufTextLen;
 				data->SelectionStart=data->BufTextLen;
 				data->SelectionEnd=data->BufTextLen;
-				next_prefix.clear();
+				text_interface_info.next_prefix.clear();
 			}
 			return 0;
 		}
 
 		void update_history_of_commands(const std::string& command)
 		{
-			if(!command.empty() && (history_of_commands.empty() || command!=history_of_commands.back()))
+			if(!command.empty() && (text_interface_info.history_of_commands.empty() || command!=text_interface_info.history_of_commands.back()))
 			{
-				history_of_commands.push_back(command);
+				text_interface_info.history_of_commands.push_back(command);
 			}
 			dynamic_history_of_commands_.clear();
 		}
@@ -925,11 +968,11 @@ private:
 	{
 	public:
 		bool visible;
-		bool focused;
+		TextInterfaceInfo& text_interface_info;
 
-		ScriptEditorState() :
+		ScriptEditorState(TextInterfaceInfo& text_interface_info) :
 			visible(true),
-			focused(false),
+			text_interface_info(text_interface_info),
 			script_editor_colors_black_on_white_(false)
 		{
 			if(script_editor_colors_black_on_white_)
@@ -1012,7 +1055,7 @@ private:
 
 				ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0, (flexible_region_size-4.0f*GUIStyleWrapper::scale_factor())));
 				editor_.Render("ScriptEditor");
-				focused=editor_.IsFocused();
+				text_interface_info.set_script_editor_focused(editor_.IsFocused());
 				ImGui::EndChild();
 
 				ImGui::Dummy(ImVec2(0.0f, 4.0f*GUIStyleWrapper::scale_factor()));
@@ -1062,10 +1105,11 @@ private:
 	{
 	public:
 		bool visible;
-		std::map<std::string, std::string> documentation;
+		const DocumentationInfo& documentation_info;
 
-		DocumentationViewerState() :
-			visible(true)
+		DocumentationViewerState(const DocumentationInfo& documentation_info) :
+			visible(true),
+			documentation_info(documentation_info)
 		{
 		}
 
@@ -1125,7 +1169,7 @@ private:
 
 				ImGui::BeginChild("##area_for_list_of_documentation", ImVec2(0, (flexible_region_size-4.0f*GUIStyleWrapper::scale_factor())));
 
-				for(std::map<std::string, std::string>::const_iterator it=documentation.begin();it!=documentation.end();++it)
+				for(std::map<std::string, std::string>::const_iterator it=documentation_info.documentation.begin();it!=documentation_info.documentation.end();++it)
 				{
 					const std::string& title=it->first;
 					const std::string& content=it->second;
@@ -3970,15 +4014,12 @@ private:
 		current_menu_bar_height_(0.0f),
 		shrink_to_minimal_view_(false),
 		file_search_root_dir_("."),
+		command_line_interface_state_(text_interface_info()),
+		script_editor_state_(text_interface_info()),
+		documentation_viewer_state_(documentation_info()),
 		object_list_viewer_state_(objects_info(), marking_info()),
 		sequence_viewer_state_(objects_info())
 	{
-	}
-
-	static const std::string& separator_string()
-	{
-		static std::string str="---";
-		return str;
 	}
 
 	float current_width_;
