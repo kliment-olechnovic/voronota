@@ -428,12 +428,12 @@ protected:
 
 			if(ci.changed_atoms_display_states_marking())
 			{
-				Console::instance().atoms_marking_updated()=true;
+				Console::instance().marking_info().atoms_marking_updated=true;
 			}
 
 			if(ci.changed_contacts_display_states_marking())
 			{
-				Console::instance().contacts_marking_updated()=true;
+				Console::instance().marking_info().contacts_marking_updated=true;
 			}
 
 			if(ci.changed_atoms_display_states())
@@ -457,7 +457,7 @@ protected:
 
 	void on_after_script_with_output(const scripting::VariantObject&)
 	{
-		if(Console::instance().atoms_marking_updated() || Console::instance().contacts_marking_updated())
+		if(Console::instance().marking_info().atoms_marking_updated || Console::instance().marking_info().contacts_marking_updated)
 		{
 			scripting::CongregationOfDataManagers::ObjectQuery objects_query;
 			objects_query.picked=true;
@@ -467,13 +467,13 @@ protected:
 				scripting::DataManager* data_manager=data_managers[i];
 				if(data_manager!=0)
 				{
-					if(Console::instance().atoms_marking_updated() && !Console::instance().atoms_marking_present() && data_manager->is_any_atom_marked())
+					if(Console::instance().marking_info().atoms_marking_updated && !Console::instance().marking_info().atoms_marking_present && data_manager->is_any_atom_marked())
 					{
-						Console::instance().atoms_marking_present()=true;
+						Console::instance().marking_info().atoms_marking_present=true;
 					}
-					if(Console::instance().contacts_marking_updated() && !Console::instance().contacts_marking_present() && data_manager->is_any_contact_marked())
+					if(Console::instance().marking_info().contacts_marking_updated && !Console::instance().marking_info().contacts_marking_present && data_manager->is_any_contact_marked())
 					{
-						Console::instance().contacts_marking_present()=true;
+						Console::instance().marking_info().contacts_marking_present=true;
 					}
 				}
 			}

@@ -280,6 +280,27 @@ public:
 		int num_of_visible_objects_;
 	};
 
+	class MarkingInfo
+	{
+	public:
+		bool atoms_marking_updated;
+		bool atoms_marking_present;
+		bool contacts_marking_updated;
+		bool contacts_marking_present;
+
+		MarkingInfo() : atoms_marking_updated(false), atoms_marking_present(false), contacts_marking_updated(false), contacts_marking_present(false)
+		{
+		}
+
+		void reset()
+		{
+			atoms_marking_updated=false;
+			atoms_marking_present=false;
+			contacts_marking_updated=false;
+			contacts_marking_present=false;
+		}
+	};
+
 	static Console& instance()
 	{
 		static Console console;
@@ -288,7 +309,14 @@ public:
 
 	ObjectsInfo& objects_info()
 	{
-		return objects_info_;
+		static ObjectsInfo info;
+		return info;
+	}
+
+	MarkingInfo& marking_info()
+	{
+		static MarkingInfo info;
+		return info;
 	}
 
 	void set_need_keyboard_focus_in_command_input(const bool status)
@@ -363,30 +391,6 @@ public:
 		{
 			shrink_to_minimal_view_=true;
 		}
-	}
-
-	static bool& atoms_marking_updated()
-	{
-		static bool status=false;
-		return status;
-	}
-
-	static bool& atoms_marking_present()
-	{
-		static bool status=false;
-		return status;
-	}
-
-	static bool& contacts_marking_updated()
-	{
-		static bool status=false;
-		return status;
-	}
-
-	static bool& contacts_marking_present()
-	{
-		static bool status=false;
-		return status;
 	}
 
 	std::string execute(
@@ -1398,10 +1402,12 @@ private:
 	{
 	public:
 		const ObjectsInfo& objects_info;
+		MarkingInfo& marking_info;
 		bool visible;
 
-		ObjectListViewerState(const ObjectsInfo& objects_info) :
+		ObjectListViewerState(const ObjectsInfo& objects_info, MarkingInfo& marking_info) :
 			objects_info(objects_info),
+			marking_info(marking_info),
 			visible(true)
 		{
 		}
@@ -1419,49 +1425,43 @@ private:
 				return;
 			}
 
+			if(marking_info.atoms_marking_updated)
 			{
-				if(atoms_marking_updated())
+				if(marking_info.atoms_marking_present)
 				{
-					if(atoms_marking_present())
+					if(atoms_selection_string()!=marked_atoms_selection_string())
 					{
-						if(atoms_selection_string().find(marked_atoms_selection_string())==std::string::npos)
-						{
-							set_atoms_selection_string_and_save_suggestion(marked_atoms_selection_string());
-						}
-					}
-					else
-					{
-						if(atoms_selection_string().find(marked_atoms_selection_string())!=std::string::npos)
-						{
-							set_atoms_selection_string_and_save_suggestion(atoms_selection_string_previous().empty() ? default_atoms_selection_string() : atoms_selection_string_previous());
-						}
+						set_atoms_selection_string_and_save_suggestion(marked_atoms_selection_string());
 					}
 				}
-				atoms_marking_updated()=false;
-				atoms_marking_present()=false;
+				else
+				{
+					if(atoms_selection_string()==marked_atoms_selection_string())
+					{
+						set_atoms_selection_string_and_save_suggestion(atoms_selection_string_previous().empty() ? default_atoms_selection_string() : atoms_selection_string_previous());
+					}
+				}
 			}
 
+			if(marking_info.contacts_marking_updated)
 			{
-				if(contacts_marking_updated())
+				if(marking_info.contacts_marking_present)
 				{
-					if(contacts_marking_present())
+					if(contacts_selection_string()!=marked_contacts_selection_string())
 					{
-						if(contacts_selection_string().find(marked_contacts_selection_string())==std::string::npos)
-						{
-							set_contacts_selection_string_and_save_suggestion(marked_contacts_selection_string());
-						}
-					}
-					else
-					{
-						if(contacts_selection_string().find(marked_contacts_selection_string())!=std::string::npos)
-						{
-							set_contacts_selection_string_and_save_suggestion(contacts_selection_string_previous().empty() ? default_contacts_selection_string() : contacts_selection_string_previous());
-						}
+						set_contacts_selection_string_and_save_suggestion(marked_contacts_selection_string());
 					}
 				}
-				contacts_marking_updated()=false;
-				contacts_marking_present()=false;
+				else
+				{
+					if(contacts_selection_string()==marked_contacts_selection_string())
+					{
+						set_contacts_selection_string_and_save_suggestion(contacts_selection_string_previous().empty() ? default_contacts_selection_string() : contacts_selection_string_previous());
+					}
+				}
 			}
+
+			marking_info.reset();
 
 			{
 				{
@@ -3589,7 +3589,8 @@ private:
 				suggestions.first.push_back("[-no-solvent -min-seq-sep 1]");
 				suggestions.first.push_back("[-solvent]");
 				suggestions.first.push_back("[-inter-chain]");
-				suggestions.first.push_back("[-a1 [_marked] -a2! [_marked]]");
+				suggestions.first.push_back("[-a1 [_marked] -a2! [_marked] -no-solvent]");
+				suggestions.first.push_back("[-a1 [_marked] -a2 [_marked] -min-seq-sep 1]");
 				suggestions.second.push_back("[-a1 [-protein] -a2 [-nucleic]]");
 				suggestions.second.push_back("[-a1 [-chain A] -a2 [-chain B]]");
 			}
@@ -3969,8 +3970,8 @@ private:
 		current_menu_bar_height_(0.0f),
 		shrink_to_minimal_view_(false),
 		file_search_root_dir_("."),
-		object_list_viewer_state_(objects_info_),
-		sequence_viewer_state_(objects_info_)
+		object_list_viewer_state_(objects_info(), marking_info()),
+		sequence_viewer_state_(objects_info())
 	{
 	}
 
@@ -3988,7 +3989,6 @@ private:
 	bool shrink_to_minimal_view_;
 	std::string file_search_root_dir_;
 
-	ObjectsInfo objects_info_;
 	CommandLineInterfaceState command_line_interface_state_;
 	ScriptEditorState script_editor_state_;
 	DocumentationViewerState documentation_viewer_state_;
