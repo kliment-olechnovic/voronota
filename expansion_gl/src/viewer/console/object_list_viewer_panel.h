@@ -25,11 +25,13 @@ public:
 	ObjectListViewerPanel(const ObjectsInfo& objects_info, MarkingInfo& marking_info) :
 		objects_info(objects_info),
 		marking_info(marking_info),
-		visible(true)
+		visible(true),
+		need_atoms_unmark_button_(false),
+		need_contacts_unmark_button_(false)
 	{
 	}
 
-	void execute(std::string& result) const
+	void execute(std::string& result)
 	{
 		const std::vector<ObjectsInfo::ObjectState>& object_states=objects_info.get_object_states();
 
@@ -62,6 +64,7 @@ public:
 					atoms_selection_string_previous().clear();
 				}
 			}
+			need_atoms_unmark_button_=marking_info.atoms_marking_present;
 		}
 
 		if(marking_info.contacts_marking_updated)
@@ -84,6 +87,7 @@ public:
 					contacts_selection_string_previous().clear();
 				}
 			}
+			need_contacts_unmark_button_=marking_info.contacts_marking_present;
 		}
 
 		marking_info.reset();
@@ -193,6 +197,16 @@ public:
 
 						ImGui::EndPopup();
 					}
+
+					if(need_atoms_unmark_button_)
+					{
+						ImGui::SameLine();
+						const std::string button_id=std::string("unmark all##button_atoms_selection_unmark_all");
+						if(ImGui::Button(button_id.c_str()))
+						{
+							result=std::string("unmark-atoms");
+						}
+					}
 				}
 
 				{
@@ -297,6 +311,16 @@ public:
 						}
 
 						ImGui::EndPopup();
+					}
+
+					if(need_contacts_unmark_button_)
+					{
+						ImGui::SameLine();
+						const std::string button_id=std::string("unmark all##button_contacts_selection_unmark_all");
+						if(ImGui::Button(button_id.c_str()))
+						{
+							result=std::string("unmark-contacts");
+						}
 					}
 				}
 			}
@@ -2248,6 +2272,9 @@ private:
 			contacts_selection_string_previous()=future_previous_string;
 		}
 	}
+
+	bool need_atoms_unmark_button_;
+	bool need_contacts_unmark_button_;
 };
 
 }
