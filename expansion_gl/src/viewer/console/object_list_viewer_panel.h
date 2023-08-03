@@ -57,6 +57,10 @@ public:
 				{
 					set_atoms_selection_string_and_save_suggestion(atoms_selection_string_previous().empty() ? default_atoms_selection_string() : atoms_selection_string_previous());
 				}
+				if(atoms_selection_string_previous()==marked_atoms_selection_string())
+				{
+					atoms_selection_string_previous().clear();
+				}
 			}
 		}
 
@@ -74,6 +78,10 @@ public:
 				if(contacts_selection_string()==marked_contacts_selection_string())
 				{
 					set_contacts_selection_string_and_save_suggestion(contacts_selection_string_previous().empty() ? default_contacts_selection_string() : contacts_selection_string_previous());
+				}
+				if(contacts_selection_string_previous()==marked_contacts_selection_string())
+				{
+					contacts_selection_string_previous().clear();
 				}
 			}
 		}
