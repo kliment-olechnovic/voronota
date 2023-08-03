@@ -494,6 +494,13 @@ public:
 
 						ImGui::Separator();
 
+						if(ImGui::Selectable("  Summarize atoms"))
+						{
+							result=std::string("select-atoms -use (")+atoms_selection_string_safe()+")";
+						}
+
+						ImGui::Separator();
+
 						if(ImGui::Selectable("  Mark atoms"))
 						{
 							result=std::string("mark-atoms -use (")+atoms_selection_string_safe()+")";
@@ -535,6 +542,13 @@ public:
 
 					{
 						ImGui::TextUnformatted("Contacts actions:");
+
+						ImGui::Separator();
+
+						if(ImGui::Selectable("  Summarize contacts"))
+						{
+							result=std::string("select-contacts -use (")+contacts_selection_string_safe()+")";
+						}
 
 						ImGui::Separator();
 
@@ -1402,6 +1416,13 @@ public:
 
 						ImGui::Separator();
 
+						if(ImGui::Selectable("  Summarize atoms"))
+						{
+							result=std::string("select-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string_safe()+")";
+						}
+
+						ImGui::Separator();
+
 						if(ImGui::Selectable("  Mark atoms"))
 						{
 							result=std::string("mark-atoms -on-objects '")+os.name+"' -use ("+atoms_selection_string_safe()+")";
@@ -1492,6 +1513,13 @@ public:
 
 					{
 						ImGui::TextUnformatted("Contacts actions:");
+
+						ImGui::Separator();
+
+						if(ImGui::Selectable("  Summarize contacts"))
+						{
+							result=std::string("select-contacts -on-objects '")+os.name+"' -use ("+contacts_selection_string_safe()+")";
+						}
 
 						ImGui::Separator();
 
