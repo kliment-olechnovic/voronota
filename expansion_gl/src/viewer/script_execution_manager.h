@@ -407,6 +407,12 @@ protected:
 		{
 			update_console_object_states();
 		}
+
+		if(ci.changed_objects_picks())
+		{
+			console::Console::instance().marking_info().atoms_marking_updated=true;
+			console::Console::instance().marking_info().contacts_marking_updated=true;
+		}
 	}
 
 	void on_after_command_for_data_manager(const GenericCommandRecord& cr, scripting::DataManager& data_manager)
