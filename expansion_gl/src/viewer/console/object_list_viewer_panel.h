@@ -908,6 +908,43 @@ private:
 					result=std::string("select-atoms ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
 
+				if(ImGui::BeginMenu("  Record named selection of atoms##atoms_record_named_selection"))
+				{
+					static std::map< std::string, std::vector<char> > naming_buffers;
+					std::vector<char>& naming_buffer=naming_buffers[os_name];
+					if(naming_buffer.empty())
+					{
+						const std::string default_atoms_selection_name="sel_atoms";
+						naming_buffer=std::vector<char>(default_atoms_selection_name.begin(), default_atoms_selection_name.end());
+						naming_buffer.resize(default_atoms_selection_name.size()+128, 0);
+					}
+
+					{
+						const std::string textbox_id=std::string("##atoms_selection_record_name_")+os_name;
+						ImGui::InputText(textbox_id.c_str(), naming_buffer.data(), 128);
+					}
+
+					if(naming_buffer.data()[0]!=0)
+					{
+						const std::string newname(naming_buffer.data());
+						const std::string button_id=std::string("record##atoms_selection_button_record_ok_")+os_name;
+						if(ImGui::Button(button_id.c_str()))
+						{
+							if(!newname.empty())
+							{
+								result=std::string("select-atoms ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+") -name '"+newname+"'";
+								ImGui::CloseCurrentPopup();
+							}
+						}
+					}
+					else
+					{
+						ImGui::TextUnformatted("please enter a selection name");
+					}
+
+					ImGui::EndMenu();
+				}
+
 				ImGui::Separator();
 
 				if(ImGui::Selectable("  Mark atoms"))
@@ -1024,6 +1061,43 @@ private:
 				if(ImGui::Selectable("  Summarize contacts"))
 				{
 					result=std::string("select-contacts ")+objects_selection_option(os_name)+" -use ("+contacts_selection_string_safe()+")";
+				}
+
+				if(ImGui::BeginMenu("  Record named selection of contacts##contacts_record_named_selection"))
+				{
+					static std::map< std::string, std::vector<char> > naming_buffers;
+					std::vector<char>& naming_buffer=naming_buffers[os_name];
+					if(naming_buffer.empty())
+					{
+						const std::string default_contacts_selection_name="sel_contacts";
+						naming_buffer=std::vector<char>(default_contacts_selection_name.begin(), default_contacts_selection_name.end());
+						naming_buffer.resize(default_contacts_selection_name.size()+128, 0);
+					}
+
+					{
+						const std::string textbox_id=std::string("##contacts_selection_record_name_")+os_name;
+						ImGui::InputText(textbox_id.c_str(), naming_buffer.data(), 128);
+					}
+
+					if(naming_buffer.data()[0]!=0)
+					{
+						const std::string newname(naming_buffer.data());
+						const std::string button_id=std::string("record##contacts_selection_button_record_ok_")+os_name;
+						if(ImGui::Button(button_id.c_str()))
+						{
+							if(!newname.empty())
+							{
+								result=std::string("select-contacts ")+objects_selection_option(os_name)+" -use ("+contacts_selection_string_safe()+") -name '"+newname+"'";
+								ImGui::CloseCurrentPopup();
+							}
+						}
+					}
+					else
+					{
+						ImGui::TextUnformatted("please enter a selection name");
+					}
+
+					ImGui::EndMenu();
 				}
 
 				ImGui::Separator();
