@@ -60,7 +60,12 @@ public:
 
 	struct ObjectDetails
 	{
+		bool has_contacts;
 		ObjectSequenceInfo sequence;
+
+		ObjectDetails() : has_contacts(false)
+		{
+		}
 	};
 
 	ObjectsInfo() : num_of_picked_objects_(0), num_of_visible_objects_(0)
@@ -90,6 +95,24 @@ public:
 	bool object_has_details(const std::string& name) const
 	{
 		return (object_details_.count(name)>0);
+	}
+
+	bool object_has_contacts(const std::string& name) const
+	{
+		std::map<std::string, ObjectDetails>::const_iterator it=object_details_.find(name);
+		return (it!=object_details_.end() && it->second.has_contacts);
+	}
+
+	bool any_object_has_contacts() const
+	{
+		for(std::map<std::string, ObjectDetails>::const_iterator it=object_details_.begin();it!=object_details_.end();++it)
+		{
+			if(it->second.has_contacts)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void set_object_states(const std::vector<ObjectState>& object_states, const bool preserve_details_if_all_names_match)
@@ -124,17 +147,31 @@ public:
 
 	void set_object_sequence_info(const std::string& name, const ObjectSequenceInfo& sequence)
 	{
+		if(found_object_name(name))
+		{
+			object_details_[name].sequence=sequence;
+		}
+	}
+
+	void set_object_contacts_status(const std::string& name, const bool status)
+	{
+		if(found_object_name(name))
+		{
+			object_details_[name].has_contacts=status;
+		}
+	}
+
+private:
+	bool found_object_name(const std::string& name) const
+	{
 		bool found_name=false;
 		for(std::size_t i=0;!found_name && i<object_states_.size();i++)
 		{
 			found_name=(found_name || name==object_states_[i].name);
 		}
-		if(found_name)
-		{
-			object_details_[name].sequence=sequence;
-		}
+		return found_name;
 	}
-private:
+
 	void count_objects()
 	{
 		num_of_picked_objects_=0;

@@ -339,7 +339,7 @@ public:
 
 			ImGui::Separator();
 
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(small_buttons_spacing, ImGui::GetStyle().ItemSpacing.x));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(small_buttons_spacing, ImGui::GetStyle().ItemSpacing.y));
 
 			{
 				const std::string button_id=std::string("P##button_picking_all");
@@ -503,8 +503,20 @@ public:
 			ImGui::SameLine();
 			process_button_Ca(std::string(), result);
 
+			const bool present_contacts=objects_info.any_object_has_contacts();
+
+			if(!present_contacts)
+			{
+				ImGui::BeginDisabled();
+			}
+
 			ImGui::SameLine();
 			process_button_Cc(std::string(), result);
+
+			if(!present_contacts)
+			{
+				ImGui::EndDisabled();
+			}
 
 			ImGui::PopStyleVar();
 		}
@@ -517,7 +529,7 @@ public:
 		{
 			const ObjectsInfo::ObjectState& os=object_states[i];
 
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(small_buttons_spacing, ImGui::GetStyle().ItemSpacing.x));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(small_buttons_spacing, ImGui::GetStyle().ItemSpacing.y));
 
 			{
 				const std::string checkbox_id=std::string("##checkbox_pick_")+os.name;
@@ -760,8 +772,20 @@ public:
 			ImGui::SameLine();
 			process_button_Ca(os.name, result);
 
+			const bool present_contacts=objects_info.object_has_contacts(os.name);
+
+			if(!present_contacts)
+			{
+				ImGui::BeginDisabled();
+			}
+
 			ImGui::SameLine();
 			process_button_Cc(os.name, result);
+
+			if(!present_contacts)
+			{
+				ImGui::EndDisabled();
+			}
 
 			ImGui::PopStyleVar();
 
@@ -990,6 +1014,13 @@ private:
 
 				ImGui::Separator();
 
+				const bool present_contacts=(os_name.empty() ? objects_info.any_object_has_contacts() : objects_info.object_has_contacts(os_name));
+
+				if(!present_contacts)
+				{
+					ImGui::BeginDisabled();
+				}
+
 				if(ImGui::Selectable("  Summarize contacts"))
 				{
 					result=std::string("select-contacts ")+objects_selection_option(os_name)+" -use ("+contacts_selection_string_safe()+")";
@@ -1008,6 +1039,11 @@ private:
 				if(ImGui::Selectable("  Unmark all contacts"))
 				{
 					result=std::string("unmark-contacts ")+objects_selection_option(os_name)+"";
+				}
+
+				if(!present_contacts)
+				{
+					ImGui::EndDisabled();
 				}
 			}
 			ImGui::EndPopup();
@@ -1192,6 +1228,13 @@ private:
 			ImGui::Separator();
 			ImGui::Separator();
 
+			const bool present_contacts=(os_name.empty() ? objects_info.any_object_has_contacts() : objects_info.object_has_contacts(os_name));
+
+			if(!present_contacts)
+			{
+				ImGui::BeginDisabled();
+			}
+
 			{
 				ImGui::TextUnformatted("Hide contacts:");
 				if(ImGui::Selectable("  all##contacts_hide"))
@@ -1210,6 +1253,11 @@ private:
 				{
 					result=std::string("hide-contacts -rep sas-mesh ")+objects_selection_option(os_name)+" -use ("+contacts_selection_string_safe()+")";
 				}
+			}
+
+			if(!present_contacts)
+			{
+				ImGui::EndDisabled();
 			}
 
 			ImGui::EndPopup();

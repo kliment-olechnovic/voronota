@@ -446,6 +446,11 @@ protected:
 			{
 				update_console_object_sequence_info(data_manager);
 			}
+
+			if(ci.changed_contacts())
+			{
+				update_console_object_contacts_info(data_manager);
+			}
 		}
 
 		if(zoom_if_requested(cr))
@@ -788,6 +793,11 @@ private:
 		console::Console::instance().documentation_info().documentation=reference;
 	}
 
+	bool is_object_to_be_updated_regardless_of_change_indicator(const std::string& object_name)
+	{
+		return (!congregation_of_data_managers().change_indicator().only_changed_objects_picks_or_visibilities() || !console::Console::instance().objects_info().object_has_details(object_name));
+	}
+
 	void update_console_object_states()
 	{
 		std::vector<console::ObjectsInfo::ObjectState> object_states;
@@ -811,10 +821,14 @@ private:
 			const scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(data_managers[i]);
 			if(object_attributes.valid)
 			{
-				if(data_managers[i]->change_indicator().changed_atoms_display_states()
-						|| (!congregation_of_data_managers().change_indicator().only_changed_objects_picks_or_visibilities() || !console::Console::instance().objects_info().object_has_details(object_attributes.name)))
+				if(data_managers[i]->change_indicator().changed_atoms_display_states() || is_object_to_be_updated_regardless_of_change_indicator(object_attributes.name))
 				{
 					update_console_object_sequence_info(*data_managers[i]);
+				}
+
+				if(data_managers[i]->change_indicator().changed_contacts() || is_object_to_be_updated_regardless_of_change_indicator(object_attributes.name))
+				{
+					update_console_object_contacts_info(*data_managers[i]);
 				}
 			}
 		}
@@ -904,6 +918,15 @@ private:
 				sequence_info.chains.push_back(chain);
 			}
 			console::Console::instance().objects_info().set_object_sequence_info(object_attributes.name, sequence_info);
+		}
+	}
+
+	void update_console_object_contacts_info(scripting::DataManager& data_manager)
+	{
+		const scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(&data_manager);
+		if(object_attributes.valid)
+		{
+			console::Console::instance().objects_info().set_object_contacts_status(object_attributes.name, !data_manager.contacts().empty());
 		}
 	}
 
