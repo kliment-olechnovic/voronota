@@ -45,6 +45,12 @@ public:
 		return info;
 	}
 
+	NamedSelectionsInfo& named_selections_info()
+	{
+		static NamedSelectionsInfo info;
+		return info;
+	}
+
 	DocumentationInfo& documentation_info()
 	{
 		static DocumentationInfo info;
@@ -400,7 +406,7 @@ private:
 		command_line_interface_panel_(text_interface_info()),
 		script_editor_panel_(text_interface_info()),
 		documentation_viewer_panel_(documentation_info()),
-		object_list_viewer_panel_(objects_info(), marking_info()),
+		object_list_viewer_panel_(objects_info(), named_selections_info(), marking_info()),
 		sequence_viewer_panel_(objects_info())
 	{
 	}

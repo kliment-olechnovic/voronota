@@ -453,6 +453,11 @@ protected:
 			}
 		}
 
+		if(data_manager.selection_manager().change_indicator().changed())
+		{
+			update_console_named_selections_info(data_manager, data_manager.selection_manager().change_indicator().changed_atoms_selections(), data_manager.selection_manager().change_indicator().changed_contacts_selections());
+		}
+
 		if(zoom_if_requested(cr))
 		{
 			need_to_refresh_frame=true;
@@ -793,11 +798,6 @@ private:
 		console::Console::instance().documentation_info().documentation=reference;
 	}
 
-	bool is_object_to_be_updated_regardless_of_change_indicator(const std::string& object_name)
-	{
-		return (!congregation_of_data_managers().change_indicator().only_changed_objects_picks_or_visibilities() || !console::Console::instance().objects_info().object_has_details(object_name));
-	}
-
 	void update_console_object_states()
 	{
 		std::vector<console::ObjectsInfo::ObjectState> object_states;
@@ -821,15 +821,23 @@ private:
 			const scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(data_managers[i]);
 			if(object_attributes.valid)
 			{
-				if(data_managers[i]->change_indicator().changed_atoms_display_states() || is_object_to_be_updated_regardless_of_change_indicator(object_attributes.name))
+				if(data_managers[i]->change_indicator().changed_atoms_display_states() || (!congregation_of_data_managers().change_indicator().only_changed_objects_picks_or_visibilities() || !console::Console::instance().objects_info().object_has_details(object_attributes.name)))
 				{
 					update_console_object_sequence_info(*data_managers[i]);
 				}
 
-				if(data_managers[i]->change_indicator().changed_contacts() || is_object_to_be_updated_regardless_of_change_indicator(object_attributes.name))
+				if(data_managers[i]->change_indicator().changed_contacts() || (!congregation_of_data_managers().change_indicator().only_changed_objects_picks_or_visibilities() || !console::Console::instance().objects_info().object_has_details(object_attributes.name)))
 				{
 					update_console_object_contacts_info(*data_managers[i]);
 				}
+			}
+		}
+		if(!congregation_of_data_managers().change_indicator().only_changed_objects_picks_or_visibilities())
+		{
+			console::Console::instance().named_selections_info().reset();
+			for(std::size_t i=0;i<data_managers.size();i++)
+			{
+				update_console_named_selections_info(*data_managers[i], true, true);
 			}
 		}
 	}
@@ -927,6 +935,26 @@ private:
 		if(object_attributes.valid)
 		{
 			console::Console::instance().objects_info().set_object_contacts_status(object_attributes.name, !data_manager.contacts().empty());
+		}
+	}
+
+	void update_console_named_selections_info(scripting::DataManager& data_manager, const bool for_atoms, const bool for_contacts)
+	{
+		if(!(for_atoms || for_contacts))
+		{
+			return;
+		}
+		const scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(&data_manager);
+		if(object_attributes.valid)
+		{
+			if(for_atoms)
+			{
+				console::Console::instance().named_selections_info().atoms_mapping_of_names.set_mapping(object_attributes.name, data_manager.selection_manager().get_names_of_atoms_selections_excluding_underscored());
+			}
+			if(for_contacts)
+			{
+				console::Console::instance().named_selections_info().contacts_mapping_of_names.set_mapping(object_attributes.name, data_manager.selection_manager().get_names_of_contacts_selections_excluding_underscored());
+			}
 		}
 	}
 

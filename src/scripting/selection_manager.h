@@ -14,6 +14,31 @@ namespace scripting
 class SelectionManager
 {
 public:
+	class ChangeIndicator
+	{
+	public:
+		ChangeIndicator() :
+			changed_atoms_selections_(false),
+			changed_contacts_selections_(false)
+		{
+		}
+
+		bool changed_atoms_selections() const { return changed_atoms_selections_; }
+		bool changed_contacts_selections() const { return changed_contacts_selections_; }
+
+		void set_changed_atoms_selections(const bool value) { changed_atoms_selections_=value; }
+		void set_changed_contacts_selections(const bool value) { changed_contacts_selections_=value; }
+
+		bool changed() const
+		{
+			return (changed_atoms_selections_ || changed_contacts_selections_);
+		}
+
+	private:
+		bool changed_atoms_selections_;
+		bool changed_contacts_selections_;
+	};
+
 	struct Query
 	{
 		std::set<std::size_t> from_ids;
@@ -152,10 +177,16 @@ public:
 		}
 	}
 
+	const ChangeIndicator& change_indicator() const
+	{
+		return change_indicator_;
+	}
+
 	void set_atoms(const std::vector<Atom>* atoms_ptr)
 	{
 		atoms_ptr_=atoms_ptr;
 		map_of_atoms_selections_.clear();
+		change_indicator_.set_changed_atoms_selections(true);
 		construct_atoms_residues_definition_and_reference();
 		construct_atoms_chains_definition_and_reference();
 		set_contacts(0);
@@ -167,6 +198,7 @@ public:
 		{
 			contacts_ptr_=contacts_ptr;
 			map_of_contacts_selections_.clear();
+			change_indicator_.set_changed_contacts_selections(true);
 			construct_contacts_residues_definition_and_reference();
 			construct_contacts_chains_definition_and_reference();
 		}
@@ -174,6 +206,11 @@ public:
 		{
 			throw std::runtime_error(std::string("Contacts do not accord to atoms."));
 		}
+	}
+
+	void reset_change_indicator()
+	{
+		change_indicator_=ChangeIndicator();
 	}
 
 	SelectionManager make_adjusted_copy(const std::vector<Atom>& copy_of_atoms, const std::vector<Contact>& copy_of_contacts) const
@@ -306,17 +343,20 @@ public:
 		else
 		{
 			set_selection(name, ids, atoms().size(), map_of_atoms_selections_);
+			change_indicator_.set_changed_atoms_selections(true);
 		}
 	}
 
 	void delete_atoms_selection(const std::string& name)
 	{
 		map_of_atoms_selections_.erase(name);
+		change_indicator_.set_changed_atoms_selections(true);
 	}
 
 	void delete_atoms_selections()
 	{
 		map_of_atoms_selections_.clear();
+		change_indicator_.set_changed_atoms_selections(true);
 	}
 
 	std::set<std::size_t> get_contacts_selection(const std::string& name) const
@@ -429,17 +469,20 @@ public:
 		else
 		{
 			set_selection(name, ids, contacts().size(), map_of_contacts_selections_);
+			change_indicator_.set_changed_contacts_selections(true);
 		}
 	}
 
 	void delete_contacts_selection(const std::string& name)
 	{
 		map_of_contacts_selections_.erase(name);
+		change_indicator_.set_changed_contacts_selections(true);
 	}
 
 	void delete_contacts_selections()
 	{
 		map_of_contacts_selections_.clear();
+		change_indicator_.set_changed_contacts_selections(true);
 	}
 
 	const std::map< std::string, std::set<std::size_t> >& map_of_atoms_selections() const
@@ -454,12 +497,22 @@ public:
 
 	std::vector<std::string> get_names_of_atoms_selections() const
 	{
-		return collect_names_from_map(map_of_atoms_selections_);
+		return collect_names_from_map(map_of_atoms_selections_, false);
 	}
 
 	std::vector<std::string> get_names_of_contacts_selections() const
 	{
-		return collect_names_from_map(map_of_contacts_selections_);
+		return collect_names_from_map(map_of_contacts_selections_, false);
+	}
+
+	std::vector<std::string> get_names_of_atoms_selections_excluding_underscored() const
+	{
+		return collect_names_from_map(map_of_atoms_selections_, true);
+	}
+
+	std::vector<std::string> get_names_of_contacts_selections_excluding_underscored() const
+	{
+		return collect_names_from_map(map_of_contacts_selections_, true);
 	}
 
 private:
@@ -603,13 +656,16 @@ private:
 	}
 
 	template<class T>
-	static std::vector<std::string> collect_names_from_map(const T& map)
+	static std::vector<std::string> collect_names_from_map(const T& map, const bool exclude_underscored)
 	{
 		std::vector<std::string> names;
 		names.reserve(map.size());
 		for(typename T::const_iterator it=map.begin();it!=map.end();++it)
 		{
-			names.push_back(it->first);
+			if(!exclude_underscored || (!it->first.empty() && it->first[0]!='_'))
+			{
+				names.push_back(it->first);
+			}
 		}
 		return names;
 	}
@@ -978,6 +1034,7 @@ private:
 	std::vector<std::size_t> contacts_chains_reference_;
 	std::map< std::string, std::set<std::size_t> > map_of_atoms_selections_;
 	std::map< std::string, std::set<std::size_t> > map_of_contacts_selections_;
+	ChangeIndicator change_indicator_;
 };
 
 }

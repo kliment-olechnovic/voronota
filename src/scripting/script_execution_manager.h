@@ -618,6 +618,7 @@ private:
 		{
 			data_manager.reset_change_indicator();
 			data_manager.sync_selections_with_display_states_if_requested_in_string(input.get_canonical_input_command_string());
+			data_manager.selection_manager().reset_change_indicator();
 		}
 	};
 
