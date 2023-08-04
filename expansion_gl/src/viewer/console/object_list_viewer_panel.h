@@ -59,6 +59,8 @@ public:
 
 	void execute(std::string& result)
 	{
+		const float small_buttons_spacing=5.0f*GUIStyleWrapper::scale_factor();
+
 		const std::vector<ObjectsInfo::ObjectState>& object_states=objects_info.get_object_states();
 
 		if(object_states.empty())
@@ -337,6 +339,8 @@ public:
 
 			ImGui::Separator();
 
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(small_buttons_spacing, ImGui::GetStyle().ItemSpacing.x));
+
 			{
 				const std::string button_id=std::string("P##button_picking_all");
 				const std::string menu_id=std::string("Picking##menu_picking");
@@ -366,7 +370,9 @@ public:
 					ImGui::EndPopup();
 				}
 			}
+
 			ImGui::SameLine();
+
 			{
 				const std::string button_id=std::string("V##button_visibility_all");
 				const std::string menu_id=std::string("Visibility##menu_visibility");
@@ -446,7 +452,9 @@ public:
 					ImGui::EndPopup();
 				}
 			}
+
 			ImGui::SameLine();
+
 			{
 				const std::string button_id=std::string("O##button_objects");
 				const std::string menu_id=std::string("Objects##menu_objects");
@@ -482,16 +490,23 @@ public:
 					ImGui::EndPopup();
 				}
 			}
+
 			ImGui::SameLine();
 			process_button_A(std::string(), result);
+
 			ImGui::SameLine();
 			process_button_S(std::string(), result);
+
 			ImGui::SameLine();
 			process_button_H(std::string(), result);
+
 			ImGui::SameLine();
 			process_button_Ca(std::string(), result);
+
 			ImGui::SameLine();
 			process_button_Cc(std::string(), result);
+
+			ImGui::PopStyleVar();
 		}
 
 		ImGui::Separator();
@@ -501,6 +516,9 @@ public:
 		for(std::size_t i=0;i<object_states.size();i++)
 		{
 			const ObjectsInfo::ObjectState& os=object_states[i];
+
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(small_buttons_spacing, ImGui::GetStyle().ItemSpacing.x));
+
 			{
 				const std::string checkbox_id=std::string("##checkbox_pick_")+os.name;
 				bool picked=os.picked;
@@ -516,7 +534,9 @@ public:
 					}
 				}
 			}
+
 			ImGui::SameLine();
+
 			{
 				const std::string checkbox_id=std::string("##checkbox_show_")+os.name;
 				bool visible=os.visible;
@@ -532,7 +552,9 @@ public:
 					}
 				}
 			}
+
 			ImGui::SameLine();
+
 			{
 				const std::string button_id=std::string("O##button_object_")+os.name;
 				const std::string menu_id=std::string("Object##menu_object_")+os.name;
@@ -725,17 +747,26 @@ public:
 					ImGui::EndPopup();
 				}
 			}
+
 			ImGui::SameLine();
 			process_button_A(os.name, result);
+
 			ImGui::SameLine();
 			process_button_S(os.name, result);
+
 			ImGui::SameLine();
 			process_button_H(os.name, result);
+
 			ImGui::SameLine();
 			process_button_Ca(os.name, result);
+
 			ImGui::SameLine();
 			process_button_Cc(os.name, result);
+
+			ImGui::PopStyleVar();
+
 			ImGui::SameLine();
+
 			{
 				float lightness=1.0f;
 				if(!os.picked)
