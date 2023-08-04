@@ -952,17 +952,18 @@ private:
 
 				ImGui::Separator();
 
+				if(ImGui::Selectable("  Construct contacts"))
+				{
+					result=std::string("construct-contacts ")+objects_selection_option(os_name)+"";
+				}
+
+				ImGui::Separator();
+
 				if(ImGui::Selectable("  Summarize contacts"))
 				{
 					result=std::string("select-contacts ")+objects_selection_option(os_name)+" -use ("+contacts_selection_string_safe()+")";
 				}
 
-				ImGui::Separator();
-
-				if(ImGui::Selectable("  Construct contacts"))
-				{
-					result=std::string("construct-contacts ")+objects_selection_option(os_name)+"";
-				}
 				ImGui::Separator();
 				if(ImGui::Selectable("  Mark contacts"))
 				{
