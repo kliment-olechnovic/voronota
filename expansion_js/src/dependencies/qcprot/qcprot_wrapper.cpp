@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <string>
 
 #include "qcprot_wrapper.h"
 #include "qcprot.h"
