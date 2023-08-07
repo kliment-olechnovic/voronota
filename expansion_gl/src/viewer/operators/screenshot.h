@@ -4,6 +4,10 @@
 #include "../operators_common.h"
 #include "../gui_configuration.h"
 
+#ifdef FOR_WEB
+#include "../emscripten_utilities.h"
+#endif
+
 #include "../../../expansion_js/src/dependencies/lodepng/lodepng.h"
 
 namespace voronota
@@ -234,6 +238,10 @@ public:
 		{
 			throw std::runtime_error(std::string("File extension '")+format_to_use+"' not supported.");
 		}
+
+#ifdef FOR_WEB
+		EnscriptenUtilities::execute_javascript(std::string("download_file('")+filename+"');");
+#endif
 
 		Result result;
 

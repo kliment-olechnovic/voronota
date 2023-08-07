@@ -240,6 +240,30 @@
 				}
 				voronota_viewer_enqueue_script(command_str);
 			}
+			
+			function download_file(filename)
+			{
+				if(!filename)
+				{
+					alert("No file name provided for download.");
+					return;
+				}
+				var path='/'+filename;
+				if(!FS.analyzePath(path).exists)
+				{
+					alert("File '"+path+"' does not exist.");
+					return;
+				}
+				var data=FS.readFile(path, {encoding: 'binary'});
+				var blob=new Blob([data], {type: 'application/octet-stream'});
+				var url=URL.createObjectURL(blob);
+				var a=document.createElement('a');
+				a.href=url;
+				a.download=filename;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+			}
 		</script>
 
 	</body>
