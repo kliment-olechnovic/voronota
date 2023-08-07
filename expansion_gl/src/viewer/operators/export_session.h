@@ -19,8 +19,11 @@ class ExportSession : public scripting::OperatorBase<ExportSession>
 public:
 	struct Result : public scripting::OperatorResultBase<Result>
 	{
-		void store(scripting::HeterogeneousStorage&) const
+		std::string file;
+
+		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
+			heterostorage.forwarding_strings["download"].push_back(file);
 		}
 	};
 
@@ -81,6 +84,7 @@ public:
 		foutput.write(reinterpret_cast<const char*>(&compressed_data[0]), compressed_data.size());
 
 		Result result;
+		result.file=file;
 
 		return result;
 	}

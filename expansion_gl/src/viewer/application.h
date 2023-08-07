@@ -64,6 +64,13 @@ public:
 		enqueue_script(std::string("import --file ")+virtual_file_name+" "+parameters+" ; delete-virtual-files "+virtual_file_name);
 	}
 
+	void upload_session(const std::string& data)
+	{
+		std::string virtual_file_name=std::string("_virtual/session.vses");
+		scripting::VirtualFileStorage::set_file(virtual_file_name, data);
+		enqueue_script(std::string("import-session --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
+	}
+
 protected:
 	void on_after_init_success()
 	{

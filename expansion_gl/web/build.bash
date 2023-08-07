@@ -24,7 +24,7 @@ then
 fi
 
 emcc --std=c++14 \
--s "EXPORTED_FUNCTIONS=['_main','_voronota_viewer_enqueue_script','_voronota_viewer_execute_native_script','_voronota_viewer_get_last_script_output','_voronota_viewer_upload_file']" \
+-s "EXPORTED_FUNCTIONS=['_main','_voronota_viewer_enqueue_script','_voronota_viewer_execute_native_script','_voronota_viewer_get_last_script_output','_voronota_viewer_upload_file','_voronota_viewer_upload_session']" \
 -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
   ../src/voronota_gl.cpp \
   ../src/dependencies/imgui/*.cpp \

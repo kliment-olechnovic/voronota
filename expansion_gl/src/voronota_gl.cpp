@@ -167,6 +167,11 @@ EMSCRIPTEN_KEEPALIVE void voronota_viewer_upload_file(const char* name, const ch
 	voronota::viewer::Application::instance().upload_file(name, data, parameters);
 }
 
+EMSCRIPTEN_KEEPALIVE void voronota_viewer_upload_session(const char* data, const int length)
+{
+	voronota::viewer::Application::instance().upload_session(std::string(data, static_cast<std::size_t>(length)));
+}
+
 EMSCRIPTEN_KEEPALIVE void voronota_viewer_resize_window(const int width, const int height)
 {
 	voronota::viewer::Application::instance().set_window_size(width, height);
