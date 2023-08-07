@@ -273,6 +273,7 @@ public:
 						const std::string button_id=std::string("unmark all##button_atoms_selection_unmark_all");
 						if(ImGui::Button(button_id.c_str()))
 						{
+							need_atoms_unmark_button_=false;
 							result=std::string("unmark-atoms");
 						}
 					}
@@ -425,6 +426,7 @@ public:
 						const std::string button_id=std::string("unmark all##button_contacts_selection_unmark_all");
 						if(ImGui::Button(button_id.c_str()))
 						{
+							need_contacts_unmark_button_=false;
 							result=std::string("unmark-contacts");
 						}
 					}
