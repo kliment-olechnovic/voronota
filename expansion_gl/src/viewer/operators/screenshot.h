@@ -4,10 +4,6 @@
 #include "../operators_common.h"
 #include "../gui_configuration.h"
 
-#ifdef FOR_WEB
-#include "../emscripten_utilities.h"
-#endif
-
 #include "../../../expansion_js/src/dependencies/lodepng/lodepng.h"
 
 namespace voronota
@@ -24,8 +20,11 @@ class Screenshot : public scripting::OperatorBase<Screenshot>
 public:
 	struct Result : public scripting::OperatorResultBase<Result>
 	{
-		void store(scripting::HeterogeneousStorage&) const
+		std::string file;
+
+		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
+			heterostorage.forwarding_strings["download"].push_back(file);
 		}
 	};
 
@@ -239,11 +238,8 @@ public:
 			throw std::runtime_error(std::string("File extension '")+format_to_use+"' not supported.");
 		}
 
-#ifdef FOR_WEB
-		EnscriptenUtilities::execute_javascript(std::string("download_file('")+filename+"');");
-#endif
-
 		Result result;
+		result.file=filename;
 
 		return result;
 	}

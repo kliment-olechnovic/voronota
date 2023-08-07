@@ -6,6 +6,10 @@
 #include "congregations_of_drawers_for_data_managers.h"
 #include "console/console.h"
 
+#ifdef FOR_WEB
+#include "emscripten_utilities.h"
+#endif
+
 #include "operators/animate.h"
 #include "operators/antialiasing.h"
 #include "operators/background.h"
@@ -403,6 +407,8 @@ protected:
 
 		insert_additional_script_if_requested(cr, congregation_of_data_managers);
 
+		initiate_files_forwarding_if_requested(cr);
+
 		if(ci.changed())
 		{
 			update_console_object_states();
@@ -469,6 +475,15 @@ protected:
 		}
 
 		insert_additional_script_if_requested(cr, data_manager);
+
+		initiate_files_forwarding_if_requested(cr);
+	}
+
+	void on_after_command_for_extra_actions(const GenericCommandRecord& cr)
+	{
+		scripting::ScriptExecutionManagerWithVariantOutput::on_after_command_for_extra_actions(cr);
+
+		initiate_files_forwarding_if_requested(cr);
 	}
 
 	void on_after_script_with_output(const scripting::VariantObject&)
@@ -731,8 +746,29 @@ private:
 		}
 	}
 
-	template<typename CommandRecord>
-	bool zoom_if_requested(const CommandRecord& cr)
+	void initiate_files_forwarding_if_requested(const GenericCommandRecord& cr)
+	{
+#ifdef FOR_WEB
+		if(cr.successful)
+		{
+			std::map< std::string, std::vector<std::string> >::const_iterator it=cr.heterostorage.forwarding_strings.find("download");
+			if(it!=cr.heterostorage.forwarding_strings.end())
+			{
+				const std::vector<std::string>& filenames=it->second;
+				for(std::size_t i=0;i<filenames.size();i++)
+				{
+					const std::string& filename=filenames[i];
+					if(!filename.empty() && filename[0]!='_')
+					{
+						EnscriptenUtilities::execute_javascript(std::string("download_file('")+filename+"');");
+					}
+				}
+			}
+		}
+#endif
+	}
+
+	bool zoom_if_requested(const GenericCommandRecord& cr)
 	{
 		if(cr.successful && cr.heterostorage.summaries_of_atoms.count("zoomed")==1)
 		{

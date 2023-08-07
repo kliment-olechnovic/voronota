@@ -28,6 +28,10 @@ public:
 			{
 				heterostorage.variant_object.value("dump")=dump;
 			}
+			else
+			{
+				heterostorage.forwarding_strings["download"].push_back(file);
+			}
 			VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
 		}
 	};
