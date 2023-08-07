@@ -22,6 +22,7 @@ Voronota is developed by Kliment Olechnovic (kliment.olechnovic@bti.vu.lt).
 Currently there are two expansions of Voronota: Voronota-JS and Voronota-GL.
 
 The expansions need to be built separately in their subdirectories.
+Alternatively, they can be built by appending `-DEXPANSION_JS=ON` and `-DEXPANSION_GL=ON` to the CMake command call.
 
 The expansions have separate separate dedicated documentation pages.
 
