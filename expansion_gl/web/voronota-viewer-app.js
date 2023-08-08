@@ -39,7 +39,10 @@ function voronota_viewer_resize_window(width, height)
 
 function voronota_viewer_enqueue_script(str)
 {
-	Module.ccall('voronota_viewer_enqueue_script', null, ['string'], [str]);
+	if(str)
+	{
+		Module.ccall('voronota_viewer_enqueue_script', null, ['string'], [str]);
+	}
 }
 
 function voronota_viewer_execute_native_script(str)
@@ -98,7 +101,7 @@ function voronota_viewer_download_file(filename)
 	document.body.removeChild(a);
 }
 
-function voronota_viewer_init(width, height, canvas_container_id)
+function voronota_viewer_init(width, height, canvas_container_id, post_init_function)
 {
 	var canvas = document.createElement('canvas');
 	canvas.className = "emscripten";
@@ -133,7 +136,14 @@ function voronota_viewer_init(width, height, canvas_container_id)
 	
 	Module = {
 		preRun: [],
-		postRun: [(function(){voronota_viewer_resize_window(width, height);})],
+		postRun: [(function()
+		{
+			voronota_viewer_resize_window(width, height);
+			if(typeof post_init_function === "function")
+			{
+				post_init_function();
+			}
+		})],
 		arguments: ['--window-width', '500', '--window-height', '500', '--gui-scaling', ''+voronota_viewer_screen_pixel_ratio(), '--custom-font-file', 'font.ttf'],
 		print: (function()
 		{
