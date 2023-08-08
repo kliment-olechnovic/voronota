@@ -23,6 +23,9 @@ then
 	exit 1
 fi
 
+rm -f "./voronota_viewer_app/voronota_viewer.js" "./voronota_viewer_app/voronota_viewer.wasm"
+mkdir -p "./voronota_viewer_app"
+
 emcc --std=c++14 \
 -s "EXPORTED_FUNCTIONS=['_main','_voronota_viewer_enqueue_script','_voronota_viewer_execute_native_script','_voronota_viewer_get_last_script_output','_voronota_viewer_upload_file','_voronota_viewer_upload_session']" \
 -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
@@ -50,9 +53,9 @@ emcc --std=c++14 \
 -s WASM=1 \
 -s FORCE_FILESYSTEM=1 \
 -O3 \
--o voronota_viewer.js
+-o ./voronota_viewer_app/voronota_viewer.js
 
-if [ ! -s "voronota_viewer.js" ]
+if [ ! -s "./voronota_viewer_app/voronota_viewer.js" ] || [ ! -s "./voronota_viewer_app/voronota_viewer.wasm" ]
 then
 	echo "Error: build failed."
 	exit 1
