@@ -760,7 +760,7 @@ private:
 					const std::string& filename=filenames[i];
 					if(!filename.empty() && filename[0]!='_')
 					{
-						EnscriptenUtilities::execute_javascript(std::string("download_file('")+filename+"');");
+						EnscriptenUtilities::execute_javascript(std::string("voronota_viewer_download_file('")+filename+"');");
 					}
 				}
 			}
