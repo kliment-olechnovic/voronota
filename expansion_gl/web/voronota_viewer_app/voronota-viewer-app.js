@@ -1,12 +1,17 @@
-var voronota_viewer_app_subdirectory = document.currentScript.getAttribute('src');
-if(!voronota_viewer_app_subdirectory)
+function voronota_viewer_get_app_subdirectory_from_script_src()
 {
-	voronota_viewer_app_subdirectory="";
+	var path_str = document.currentScript.getAttribute('src');
+	if(!path_str)
+	{
+		return "";
+	}
+    var url = new URL(path_str, window.location.href);
+    var parts = url.pathname.split('/');
+    parts.pop();
+    return (parts.join('/')+'/');
 }
-else
-{
-	voronota_viewer_app_subdirectory=voronota_viewer_app_subdirectory.replace(/\/[^/]+$/, '/');
-}
+
+var voronota_viewer_app_subdirectory=voronota_viewer_get_app_subdirectory_from_script_src();
 
 function voronota_viewer_is_retina_display()
 {
