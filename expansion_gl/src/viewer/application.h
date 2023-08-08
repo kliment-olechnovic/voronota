@@ -146,19 +146,19 @@ protected:
 	bool check_window_scroll_intercepted(double xoffset, double yoffset)
 	{
 		ImGui_ImplGlfw_ScrollCallback(window(), xoffset, yoffset);
-		return (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow));
+		return (ImGui::GetIO().WantCaptureMouse || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow));
 	}
 
 	bool check_mouse_button_use_intercepted(int button, int action, int mods)
 	{
 		ImGui_ImplGlfw_MouseButtonCallback(window(), button, action, mods);
-		return (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow));
+		return (ImGui::GetIO().WantCaptureMouse || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow));
 	}
 
 	bool check_mouse_cursor_move_intercepted(double xpos, double ypos)
 	{
 		ImGui_ImplGlfw_CursorPosCallback(window(), xpos, ypos);
-		return (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow));
+		return (ImGui::GetIO().WantCaptureMouse || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow));
 	}
 
 	void on_mouse_cursor_moved(double xpos, double ypos)
