@@ -14,7 +14,7 @@ namespace duktaper
 class BindingJavascript
 {
 public:
-	static std::string generate_setup_script(const scripting::CollectionOfCommandDocumentations& cds)
+	static std::string generate_setup_script(const scripting::CollectionOfCommandDocumentations& cds, const bool restrictive)
 	{
 		std::ostringstream script;
 
@@ -91,9 +91,16 @@ public:
 				"  }"
 				"  return raw_voronota(full_str);"
 				"}"
-				"\n"
-				"exit=function(){return raw_voronota('exit');}"
-				"\n"
+				"\n";
+
+		if(!restrictive)
+		{
+			script << ""
+					"exit=function(){return raw_voronota('exit');}"
+					"\n";
+		}
+
+		script << ""
 				"Voronota={}"
 				"\n"
 				"voronota_do=function(str){return raw_voronota(str);}"

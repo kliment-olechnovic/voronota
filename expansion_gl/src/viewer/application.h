@@ -71,6 +71,17 @@ public:
 		enqueue_script(std::string("import-session --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
 	}
 
+#ifdef FOR_WEB
+	void setup_js_bindings_to_all_api_functions()
+	{
+		std::string script;
+		script+="raw_voronota=voronota_viewer_execute_native_script;\n";
+		script+="raw_voronota_last_output=voronota_viewer_get_last_script_output;\n";
+		script+=duktaper::BindingJavascript::generate_setup_script(script_execution_manager_.collection_of_command_documentations(), true);
+		EnscriptenUtilities::execute_javascript(script);
+	}
+#endif
+
 protected:
 	void on_after_init_success()
 	{
@@ -138,7 +149,7 @@ protected:
 			duktaper::DuktapeManager::set_output_director(DuktaperOutputDirector::instance());
 			duktaper::DuktapeManager::set_script_execution_manager(script_execution_manager_);
 			duktaper::DuktapeManager::flag_to_print_result_on_eval()=false;
-			duktaper::DuktapeManager::eval(duktaper::BindingJavascript::generate_setup_script(script_execution_manager_.collection_of_command_documentations()));
+			duktaper::DuktapeManager::eval(duktaper::BindingJavascript::generate_setup_script(script_execution_manager_.collection_of_command_documentations(), false));
 			duktaper::DuktapeManager::flag_to_print_result_on_eval()=true;
 		}
 	}

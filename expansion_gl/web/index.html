@@ -57,7 +57,7 @@
 		</p>
 		
 		<script>
-			voronota_viewer_init(window.innerWidth, window.innerHeight-30, "canvas_container", function(){voronota_viewer_execute_native_script("echo 'Hello!'");});
+			voronota_viewer_init(window.innerWidth, window.innerHeight-30, "canvas_container", function(){Voronota.echo("Hello!");});
 			window.addEventListener('resize', function(event){voronota_viewer_resize_window(window.innerWidth, window.innerHeight-30)});
 			voronota_viewer_add_button_for_file_input(null, "buttons_panel", "simple-button");
 			voronota_viewer_add_button_for_session_input(null, "buttons_panel", "simple-button");

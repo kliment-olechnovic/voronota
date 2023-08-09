@@ -82,6 +82,11 @@ function voronota_viewer_upload_session(data, length)
 	Module.ccall('voronota_viewer_upload_session', null, ['number', 'number'], [data, length]);
 }
 
+function voronota_viewer_setup_js_bindings_to_all_api_functions()
+{
+	Module.ccall('voronota_viewer_setup_js_bindings_to_all_api_functions', 'string');
+}
+
 function voronota_viewer_paste_and_run_command()
 {
 	var command_str=prompt('Paste or enter command', '');
@@ -154,6 +159,7 @@ function voronota_viewer_init(width, height, canvas_container_id, post_init_func
 		postRun: [(function()
 		{
 			voronota_viewer_resize_window(width, height);
+			voronota_viewer_setup_js_bindings_to_all_api_functions();
 			if(typeof post_init_function === "function")
 			{
 				post_init_function();

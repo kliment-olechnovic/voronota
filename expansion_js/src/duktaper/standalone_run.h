@@ -33,7 +33,7 @@ public:
 
 		ScriptExecutionManager execution_manager;
 		DuktapeManager::set_script_execution_manager(execution_manager);
-		DuktapeManager::eval(BindingJavascript::generate_setup_script(execution_manager.collection_of_command_documentations()));
+		DuktapeManager::eval(BindingJavascript::generate_setup_script(execution_manager.collection_of_command_documentations(), false));
 		DuktapeManager::eval(generate_command_args_init_script(command_args));
 
 		const std::string file_name=command_args[0];

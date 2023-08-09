@@ -177,6 +177,11 @@ EMSCRIPTEN_KEEPALIVE void voronota_viewer_resize_window(const int width, const i
 	voronota::viewer::Application::instance().set_window_size(width, height);
 }
 
+EMSCRIPTEN_KEEPALIVE void voronota_viewer_setup_js_bindings_to_all_api_functions()
+{
+	voronota::viewer::Application::instance().setup_js_bindings_to_all_api_functions();
+}
+
 }
 
 #endif
