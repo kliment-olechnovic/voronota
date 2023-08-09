@@ -56,11 +56,15 @@
 		<script src="voronota_viewer_app/voronota-viewer-app.js"></script>
 		
 		<script>
-			voronota_viewer_init(window.innerWidth, window.innerHeight-30, "canvas_container", function(){Voronota.echo("Hello!");});
+			voronota_viewer_init(window.innerWidth, window.innerHeight-30, "canvas_container", function(){voronota_viewer_enqueue_script("background 0xCCCCCC ; configure-gui-enable-sequence-view");});
 			window.addEventListener('resize', function(event){voronota_viewer_resize_window(window.innerWidth, window.innerHeight-30)});
+			voronota_viewer_add_button_for_native_script("configure-gui-toggle-console", "Toggle console", "buttons_panel");
 			voronota_viewer_add_button_for_file_input(null, "buttons_panel");
-			voronota_viewer_add_button_for_session_input(null, "buttons_panel");
+			voronota_viewer_add_button_for_session_input(null, "buttons_panel");-
 			voronota_viewer_add_button_for_custom_action(voronota_viewer_paste_and_run_command, "Paste and run command", "buttons_panel");
+			voronota_viewer_add_button_for_native_script("snap Voronota-GL-screenshot.png -opaque", "Save image", "buttons_panel");
+			voronota_viewer_add_button_for_native_script("hint-render-area-size -width 9999", "Maximize view width", "buttons_panel");
+			voronota_viewer_add_button_for_native_script("hint-render-area-size -height 9999", "Maximize view height", "buttons_panel");
 		</script>
 
 	</body>

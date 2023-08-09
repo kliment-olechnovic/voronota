@@ -28,8 +28,10 @@ public:
 		ACTION_SET_JSON_WRITING_LEVEL,
 		ACTION_DISABLE_SEQUENCE_VIEW,
 		ACTION_ENABLE_SEQUENCE_VIEW,
+		ACTION_TOGGLE_SEQUENCE_VIEW,
 		ACTION_DISABLE_CONSOLE,
 		ACTION_ENABLE_CONSOLE,
+		ACTION_TOGGLE_CONSOLE,
 		ACTION_SET_INITIAL_MAIN_REPRESENTATION
 	};
 
@@ -108,6 +110,10 @@ public:
 		{
 			GUIConfiguration::instance().enabled_sequence_view=true;
 		}
+		else if(action_==ACTION_TOGGLE_SEQUENCE_VIEW)
+		{
+			GUIConfiguration::instance().enabled_sequence_view=!GUIConfiguration::instance().enabled_sequence_view;
+		}
 		else if(action_==ACTION_DISABLE_CONSOLE)
 		{
 			GUIConfiguration::instance().enabled_console=false;
@@ -115,6 +121,10 @@ public:
 		else if(action_==ACTION_ENABLE_CONSOLE)
 		{
 			GUIConfiguration::instance().enabled_console=true;
+		}
+		else if(action_==ACTION_TOGGLE_CONSOLE)
+		{
+			GUIConfiguration::instance().enabled_console=!GUIConfiguration::instance().enabled_console;
 		}
 		else if(action_==ACTION_SET_INITIAL_MAIN_REPRESENTATION)
 		{

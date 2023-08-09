@@ -82,8 +82,10 @@ public:
 		set_command_for_extra_actions("configure-gui-json-write-level-6", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(6));
 		set_command_for_extra_actions("configure-gui-disable-sequence-view", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_DISABLE_SEQUENCE_VIEW));
 		set_command_for_extra_actions("configure-gui-enable-sequence-view", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_ENABLE_SEQUENCE_VIEW));
+		set_command_for_extra_actions("configure-gui-toggle-sequence-view", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_TOGGLE_SEQUENCE_VIEW));
 		set_command_for_extra_actions("configure-gui-disable-console", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_DISABLE_CONSOLE));
 		set_command_for_extra_actions("configure-gui-enable-console", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_ENABLE_CONSOLE));
+		set_command_for_extra_actions("configure-gui-toggle-console", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_TOGGLE_CONSOLE));
 		set_command_for_extra_actions("set-initial-atom-representation-to-cartoon", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_INITIAL_MAIN_REPRESENTATION).set_value_of_initial_main_represenation(GUIConfiguration::INITIAL_REPRESENTATION_VARIANT_CARTOON));
 		set_command_for_extra_actions("set-initial-atom-representation-to-trace", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_INITIAL_MAIN_REPRESENTATION).set_value_of_initial_main_represenation(GUIConfiguration::INITIAL_REPRESENTATION_VARIANT_TRACE));
 		set_command_for_extra_actions("clear", scripting::operators::Mock());

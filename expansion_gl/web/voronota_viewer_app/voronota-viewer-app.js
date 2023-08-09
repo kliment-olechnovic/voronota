@@ -228,6 +228,12 @@ function voronota_viewer_add_button_for_custom_action(action_function, label, bu
 	}
 }
 
+function voronota_viewer_add_button_for_native_script(native_script, label, button_container_id, style_class)
+{
+	var native_script_call=function(){voronota_viewer_enqueue_script(native_script);}
+	voronota_viewer_add_button_for_custom_action(native_script_call, label, button_container_id, style_class);
+}
+
 function voronota_viewer_add_button_for_file_input(label, button_container_id, style_class)
 {
 	if(document.getElementById('voronota_viewer_file_input'))
