@@ -146,7 +146,7 @@ function voronota_viewer_init(width, height, canvas_container_id, post_init_func
 		document.body.appendChild(canvas);
 	}
 	
-	var scripts = ["dun2010bbdep.js", "font.js", "4ung.js", "voronota_viewer.js"];
+	var scripts = ["4ung.js", "dun2010bbdep.js", "font.js", "voronota_viewer.js"];
 	for (var i = 0; i < scripts.length; i++)
 	{
 		var script = document.createElement('script');
@@ -186,9 +186,10 @@ function voronota_viewer_init(width, height, canvas_container_id, post_init_func
 	};
 }
 
-function voronota_viewer_add_button_for_pasting_and_running_command(label, button_container_id, style_class)
+function voronota_viewer_add_button_for_custom_action(action_function, label, button_container_id, style_class)
 {
 	var button = document.createElement("button");
+	
 	if(style_class)
 	{
 		button.className = style_class;
@@ -204,9 +205,10 @@ function voronota_viewer_add_button_for_pasting_and_running_command(label, butto
 	}
 	else
 	{
-		button.innerHTML = "Paste command";
+		button.innerHTML = action_function.name;
 	}
-	button.onclick = function() {voronota_viewer_paste_and_run_command();};
+	
+	button.onclick = function() {action_function();};
 	
 	if(button_container_id)
 	{

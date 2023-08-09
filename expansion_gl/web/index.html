@@ -24,7 +24,7 @@
 				height: 30px;
 			}
 			
-			.simple-button
+			.voronota-viewer-added-button
 			{
 				background-color: #777777;
 				border: none;
@@ -59,9 +59,9 @@
 		<script>
 			voronota_viewer_init(window.innerWidth, window.innerHeight-30, "canvas_container", function(){Voronota.echo("Hello!");});
 			window.addEventListener('resize', function(event){voronota_viewer_resize_window(window.innerWidth, window.innerHeight-30)});
-			voronota_viewer_add_button_for_file_input(null, "buttons_panel", "simple-button");
-			voronota_viewer_add_button_for_session_input(null, "buttons_panel", "simple-button");
-			voronota_viewer_add_button_for_pasting_and_running_command(null, "buttons_panel", "simple-button");
+			voronota_viewer_add_button_for_file_input(null, "buttons_panel");
+			voronota_viewer_add_button_for_session_input(null, "buttons_panel");
+			voronota_viewer_add_button_for_custom_action(voronota_viewer_paste_and_run_command, "Paste and run command", "buttons_panel");
 		</script>
 
 	</body>
