@@ -1,4 +1,4 @@
-function voronota_viewer_get_app_subdirectory_from_script_src()
+const voronota_viewer_app_subdirectory=(() =>
 {
 	var path_str = document.currentScript.getAttribute('src');
 	if(!path_str)
@@ -9,15 +9,24 @@ function voronota_viewer_get_app_subdirectory_from_script_src()
     var parts = url.pathname.split('/');
     parts.pop();
     return (parts.join('/')+'/');
-}
+})();
 
-var voronota_viewer_app_subdirectory=voronota_viewer_get_app_subdirectory_from_script_src();
+(function()
+{
+	const scripts = ["4ung.js", "dun2010bbdep.js", "font.js", "voronota_viewer.js"];
+	for (var i = 0; i < scripts.length; i++)
+	{
+		var script = document.createElement('script');
+		script.src = voronota_viewer_app_subdirectory+scripts[i];
+		document.body.appendChild(script);
+	}
+})();
 
 function voronota_viewer_is_retina_display()
 {
 	if(window.matchMedia)
 	{
-		var mq=window.matchMedia("only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen  and (min-device-pixel-ratio: 1.3), only screen and (min-resolution: 1.3dppx)");
+		const mq=window.matchMedia("only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen  and (min-device-pixel-ratio: 1.3), only screen and (min-resolution: 1.3dppx)");
 		return (mq && mq.matches || (window.devicePixelRatio>1));
     }
     return false;
@@ -34,22 +43,14 @@ function voronota_viewer_screen_pixel_ratio()
 
 function voronota_viewer_resize_window(width, height)
 {
-	var pixel_ratio=voronota_viewer_screen_pixel_ratio();
-	var new_width=width;
-	if(new_width<500)
-	{
-		new_width=500;
-	}
-	var new_heigth=height;
-	if(new_heigth<500)
-	{
-		new_heigth=500;
-	}
-	Module.ccall('voronota_viewer_resize_window', null, ['int','int'], [new_width*pixel_ratio,new_heigth*pixel_ratio]);
+	const pixel_ratio=voronota_viewer_screen_pixel_ratio();
+	const new_width=((width<500) ? 500 : width);
+	const new_height=((height<500) ? 500 : height);
+	Module.ccall('voronota_viewer_resize_window', null, ['int','int'], [new_width*pixel_ratio,new_height*pixel_ratio]);
 	Module.canvas.style.setProperty("width", new_width + "px", "important");
-	Module.canvas.style.setProperty("height", new_heigth + "px", "important");
+	Module.canvas.style.setProperty("height", new_height + "px", "important");
 	Module.canvas.width=new_width*pixel_ratio;
-	Module.canvas.height=new_heigth*pixel_ratio;
+	Module.canvas.height=new_height*pixel_ratio;
 }
 
 function voronota_viewer_enqueue_script(str)
@@ -62,14 +63,12 @@ function voronota_viewer_enqueue_script(str)
 
 function voronota_viewer_execute_native_script(str)
 {
-	var result=JSON.parse(Module.ccall('voronota_viewer_execute_native_script', 'string', ['string'], [str]));
-	return result;
+	return JSON.parse(Module.ccall('voronota_viewer_execute_native_script', 'string', ['string'], [str]));
 }
 
 function voronota_viewer_get_last_script_output()
 {
-	var result=JSON.parse(Module.ccall('voronota_viewer_get_last_script_output', 'string'));
-	return result;
+	return JSON.parse(Module.ccall('voronota_viewer_get_last_script_output', 'string'));;
 }
 
 function voronota_viewer_upload_file(name, data, parameters)
@@ -90,7 +89,7 @@ function voronota_viewer_setup_js_bindings_to_all_api_functions()
 function voronota_viewer_paste_and_run_command()
 {
 	var command_str=prompt('Paste or enter command', '');
-	if(command_str===null || command_str=='')
+	if(!command_str)
 	{
 		return;
 	}
@@ -104,15 +103,15 @@ function voronota_viewer_download_file(filename)
 		alert("No file name provided for download.");
 		return;
 	}
-	var path='/'+filename;
+	const path='/'+filename;
 	if(!FS.analyzePath(path).exists)
 	{
 		alert("File '"+path+"' does not exist.");
 		return;
 	}
-	var data=FS.readFile(path, {encoding: 'binary'});
-	var blob=new Blob([data], {type: 'application/octet-stream'});
-	var url=URL.createObjectURL(blob);
+	const data=FS.readFile(path, {encoding: 'binary'});
+	const blob=new Blob([data], {type: 'application/octet-stream'});
+	const url=URL.createObjectURL(blob);
 	var a=document.createElement('a');
 	a.href=url;
 	a.download=filename;
@@ -123,40 +122,26 @@ function voronota_viewer_download_file(filename)
 
 function voronota_viewer_init(width, height, canvas_container_id, post_init_function)
 {
+	const canvas_id=((canvas_container_id) ? ("voronota_viewer_canvas_in_"+canvas_container_id) : "voronota_viewer_canvas");
+	
+	var canvas_container=((canvas_container_id) ? document.getElementById(canvas_container_id) : document.body);
+	if(!canvas_container)
+	{
+		throw new Error("The canvas container '"+canvas_container_id+"' was not found in the DOM.");
+	}
+	
 	var canvas = document.createElement('canvas');
 	canvas.className = "emscripten";
-	canvas.id = "canvas";
+	canvas.id = canvas_id;
 	canvas.oncontextmenu=function(event){event.preventDefault();};
 	canvas.style.border = "0px none";
 	canvas.style.backgroundColor = "black";
-	if(canvas_container_id)
-	{
-		var canvas_container=document.getElementById(canvas_container_id);
-		if(canvas_container)
-		{
-			canvas_container.appendChild(canvas);
-		}
-		else
-		{
-			throw new Error("The canvas container '"+canvas_container_id+"' was not found in the DOM.");
-		}
-	}
-	else
-	{
-		document.body.appendChild(canvas);
-	}
-	
-	var scripts = ["4ung.js", "dun2010bbdep.js", "font.js", "voronota_viewer.js"];
-	for (var i = 0; i < scripts.length; i++)
-	{
-		var script = document.createElement('script');
-		script.src = voronota_viewer_app_subdirectory+scripts[i];
-		document.body.appendChild(script);
-	}
+	canvas_container.appendChild(canvas);
+	canvas.addEventListener("webglcontextlost", (e) => { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
 	
 	Module = {
 		preRun: [],
-		postRun: [(function()
+		postRun: [(() =>
 		{
 			voronota_viewer_resize_window(width, height);
 			voronota_viewer_setup_js_bindings_to_all_api_functions();
@@ -166,88 +151,56 @@ function voronota_viewer_init(width, height, canvas_container_id, post_init_func
 			}
 		})],
 		arguments: ['--window-width', '500', '--window-height', '500', '--gui-scaling', ''+voronota_viewer_screen_pixel_ratio(), '--custom-font-file', 'font.ttf'],
-		print: (function()
-		{
-			return function(text)
-			{
-				console.log(text);
-			};
-		})(),
-		locateFile: (function(s)
-		{
-			return (voronota_viewer_app_subdirectory + s);
-		}),
-		canvas: (function()
-		{
-			var canvas = document.getElementById('canvas');
-			canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
-			return canvas;
-		})()
+		print: ((text) => {	console.log(text);}),
+		locateFile: ((s) =>	{return (voronota_viewer_app_subdirectory + s);}),
+		canvas: canvas
 	};
 }
 
 function voronota_viewer_add_button_for_custom_action(action_function, label, button_container_id, style_class)
 {
+	var button_container=((button_container_id) ? document.getElementById(button_container_id) : document.body);
+	if(!button_container)
+	{
+		throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
+	}
+	
 	var button = document.createElement("button");
-	
-	if(style_class)
-	{
-		button.className = style_class;
-	}
-	else
-	{
-		button.className = "voronota-viewer-added-button";
-	}
-	
-	if(label)
-	{
-		button.innerHTML = label;
-	}
-	else
-	{
-		button.innerHTML = action_function.name;
-	}
-	
+	button.className = ((style_class) ? style_class : "voronota-viewer-added-button");
+	button.innerHTML = ((label) ? label : action_function.name);
 	button.onclick = function() {action_function();};
 	
-	if(button_container_id)
-	{
-		var button_container=document.getElementById(button_container_id);
-		if(button_container)
-		{
-			button_container.appendChild(button);
-		}
-		else
-		{
-			throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
-		}
-	}
-	else
-	{
-		document.body.appendChild(button);
-	}
+	button_container.appendChild(button);
 }
 
 function voronota_viewer_add_button_for_native_script(native_script, label, button_container_id, style_class)
 {
-	var native_script_call=function(){voronota_viewer_enqueue_script(native_script);}
+	const native_script_call=function(){voronota_viewer_enqueue_script(native_script);}
 	voronota_viewer_add_button_for_custom_action(native_script_call, label, button_container_id, style_class);
 }
 
 function voronota_viewer_add_button_for_file_input(label, button_container_id, style_class)
 {
-	if(document.getElementById('voronota_viewer_file_input'))
+	const file_input_id=((button_container_id) ? ("voronota_viewer_file_input_in_"+button_container_id) : "voronota_viewer_file_input");
+	
+	if(document.getElementById(file_input_id))
 	{
-		throw new Error("The function 'voronota_viewer_add_button_for_file_input' can be called only once.");
+		throw new Error("The the generated file input ID is already present in DOM.");
+	}
+	
+	var button_container=((button_container_id) ? document.getElementById(button_container_id) : document.body);
+	if(!button_container)
+	{
+		throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
 	}
 	
 	var file_input = document.createElement("input");
 	file_input.type = "file";
-	file_input.id = "voronota_viewer_file_input";
+	file_input.id = file_input_id;
 	file_input.style.display = "none";
 	file_input.multiple = true;
 	
-	setup_file_reader=function(file)
+	const setup_file_reader=function(file)
 	{
 		var file_reader=new FileReader();
 		file_reader.onloadend=function(e){voronota_viewer_upload_file(file.name, file_reader.result, '--include-heteroatoms');}
@@ -263,59 +216,36 @@ function voronota_viewer_add_button_for_file_input(label, button_container_id, s
 	});
 	
 	var button = document.createElement("button");
-	if(style_class)
-	{
-		button.className = style_class;
-	}
-	else
-	{
-		button.className = "voronota-viewer-added-button";
-	}
+	button.className = ((style_class) ? style_class : "voronota-viewer-added-button");
+	button.innerHTML = ((label) ? label : "Import local structures");
+	button.onclick = function() {document.getElementById(file_input_id).click();};
 	
-	if(label)
-	{
-		button.innerHTML = label;
-	}
-	else
-	{
-		button.innerHTML = "Import local structures";
-	}
-	button.onclick = function() {document.getElementById('voronota_viewer_file_input').click();};
-	
-	if(button_container_id)
-	{
-		var button_container=document.getElementById(button_container_id);
-		if(button_container)
-		{
-			button_container.appendChild(file_input);
-			button_container.appendChild(button);
-		}
-		else
-		{
-			throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
-		}
-	}
-	else
-	{
-		document.body.appendChild(file_input);
-		document.body.appendChild(button);
-	}
+	button_container.appendChild(file_input);
+	button_container.appendChild(button);
 }
 
 function voronota_viewer_add_button_for_session_input(label, button_container_id, style_class)
 {
-	if(document.getElementById('voronota_viewer_session_input'))
+	const session_input_id=((button_container_id) ? ("voronota_viewer_session_input_in_"+button_container_id) : "voronota_viewer_session_input");
+	
+	if(document.getElementById(session_input_id))
 	{
-		throw new Error("The function 'voronota_viewer_add_button_for_session_input' can be called only once.");
+		throw new Error("The the generated session input ID is already present in DOM.");
+	}
+	
+	var button_container=((button_container_id) ? document.getElementById(button_container_id) : document.body);
+	if(!button_container)
+	{
+		throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
 	}
 	
 	var session_input = document.createElement("input");
 	session_input.type = "file";
-	session_input.id = "voronota_viewer_session_input";
+	session_input.id = session_input_id;
 	session_input.style.display = "none";
 	session_input.multiple = false;
 	
-	setup_session_reader=function(file)
+	const setup_session_reader=function(file)
 	{
 		var session_reader=new FileReader();
 		session_reader.onloadend=function(e){
@@ -338,41 +268,11 @@ function voronota_viewer_add_button_for_session_input(label, button_container_id
 	});
 	
 	var button = document.createElement("button");
-	if(style_class)
-	{
-		button.className = style_class;
-	}
-	else
-	{
-		button.className = "voronota-viewer-added-button";
-	}
-	if(label)
-	{
-		button.innerHTML = label;
-	}
-	else
-	{
-		button.innerHTML = "Import local session";
-	}
-	button.onclick = function() {document.getElementById('voronota_viewer_session_input').click();};
+	button.className = ((style_class) ? style_class : "voronota-viewer-added-button");
+	button.innerHTML = ((label) ? label : "Import local session");
+	button.onclick = function() {document.getElementById(session_input_id).click();};
 	
-	if(button_container_id)
-	{
-		var button_container=document.getElementById(button_container_id);
-		if(button_container)
-		{
-			button_container.appendChild(session_input);
-			button_container.appendChild(button);
-		}
-		else
-		{
-			throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
-		}
-	}
-	else
-	{
-		document.body.appendChild(session_input);
-		document.body.appendChild(button);
-	}
+	button_container.appendChild(session_input);
+	button_container.appendChild(button);
 }
 
