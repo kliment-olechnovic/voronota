@@ -41,11 +41,23 @@ function voronota_viewer_screen_pixel_ratio()
 	return 1.0;
 }
 
-function voronota_viewer_resize_window(width, height)
+var voronota_viewer_default_width=function()
 {
-	const pixel_ratio=voronota_viewer_screen_pixel_ratio();
+	return null;
+}
+
+var voronota_viewer_default_height=function()
+{
+	return null;
+}
+
+function voronota_viewer_resize_window(width_arg, height_arg)
+{
+	const width=(width_arg) ? ((typeof width_arg === "function") ? width_arg() : width_arg) : 500;
+	const height=(height_arg) ? ((typeof height_arg === "function") ? height_arg() : height_arg) : 500;
 	const new_width=((width<500) ? 500 : width);
 	const new_height=((height<500) ? 500 : height);
+	const pixel_ratio=voronota_viewer_screen_pixel_ratio();
 	Module.ccall('voronota_viewer_resize_window', null, ['int','int'], [new_width*pixel_ratio,new_height*pixel_ratio]);
 	Module.canvas.style.setProperty("width", new_width + "px", "important");
 	Module.canvas.style.setProperty("height", new_height + "px", "important");
@@ -120,7 +132,7 @@ function voronota_viewer_download_file(filename)
 	document.body.removeChild(a);
 }
 
-function voronota_viewer_init(width, height, canvas_container_id, post_init_function)
+function voronota_viewer_init(width, height, canvas_container_id, post_init_function_or_script)
 {
 	const canvas_id=((canvas_container_id) ? ("voronota_viewer_canvas_in_"+canvas_container_id) : "voronota_viewer_canvas");
 	
@@ -143,11 +155,18 @@ function voronota_viewer_init(width, height, canvas_container_id, post_init_func
 		preRun: [],
 		postRun: [(() =>
 		{
-			voronota_viewer_resize_window(width, height);
 			voronota_viewer_setup_js_bindings_to_all_api_functions();
-			if(typeof post_init_function === "function")
+			voronota_viewer_default_width=width;
+			voronota_viewer_default_height=height;
+			voronota_viewer_resize_window(width, height);
+			window.addEventListener('resize', function(event){voronota_viewer_resize_window(voronota_viewer_default_width, voronota_viewer_default_height);});
+			if(typeof post_init_function_or_script === "function")
 			{
-				post_init_function();
+				post_init_function_or_script();
+			}
+			else if(typeof post_init_function_or_script === "string")
+			{
+				voronota_viewer_enqueue_script(post_init_function_or_script);
 			}
 		})],
 		arguments: ['--window-width', '500', '--window-height', '500', '--gui-scaling', ''+voronota_viewer_screen_pixel_ratio(), '--custom-font-file', 'font.ttf'],

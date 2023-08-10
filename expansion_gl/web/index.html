@@ -56,10 +56,11 @@
 		<script src="voronota_viewer_app/voronota-viewer-app.js"></script>
 		
 		<script>
-			voronota_viewer_init(window.innerWidth, window.innerHeight-30, "canvas_container", function(){
-					voronota_viewer_enqueue_script("background 0xCCCCCC ; configure-gui-enable-sequence-view");
-					window.addEventListener('resize', function(event){voronota_viewer_resize_window(window.innerWidth, window.innerHeight-30)});
-				});
+			voronota_viewer_init(
+				function(){return window.innerWidth;},
+				function(){return (window.innerHeight-30);},
+				"canvas_container",
+				"background 0xCCCCCC ; configure-gui-enable-sequence-view ; fetch 1ctf");
 			voronota_viewer_add_button_for_native_script("configure-gui-toggle-console", "Toggle console", "buttons_panel");
 			voronota_viewer_add_button_for_file_input(null, "buttons_panel");
 			voronota_viewer_add_button_for_session_input(null, "buttons_panel");-
