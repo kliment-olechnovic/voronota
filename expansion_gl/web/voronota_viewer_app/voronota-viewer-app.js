@@ -51,10 +51,12 @@ var voronota_viewer_default_height=function()
 	return null;
 }
 
+var voronota_viewer_bottom_margin=0;
+
 function voronota_viewer_resize_window(width_arg, height_arg)
 {
-	const width=(width_arg) ? ((typeof width_arg === "function") ? width_arg() : width_arg) : 500;
-	const height=(height_arg) ? ((typeof height_arg === "function") ? height_arg() : height_arg) : 500;
+	const width=((width_arg) ? ((typeof width_arg === "function") ? width_arg() : width_arg) : 500);
+	const height=((height_arg) ? ((typeof height_arg === "function") ? height_arg() : height_arg) : 500)-voronota_viewer_bottom_margin;
 	const new_width=((width<500) ? 500 : width);
 	const new_height=((height<500) ? 500 : height);
 	const pixel_ratio=voronota_viewer_screen_pixel_ratio();
