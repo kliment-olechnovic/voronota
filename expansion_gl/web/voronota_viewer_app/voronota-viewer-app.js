@@ -139,9 +139,9 @@ function voronota_viewer_download_file(filename)
 	document.body.removeChild(a);
 }
 
-function voronota_viewer_init(width, height, canvas_container_id, post_init_operations)
+function voronota_viewer_init(width, height, post_init_operations, canvas_container_id)
 {
-	const canvas_id=((canvas_container_id) ? ("voronota_viewer_canvas_in_"+canvas_container_id) : "voronota_viewer_canvas");
+	const canvas_id="voronota_viewer_canvas";
 	
 	var canvas_container=((canvas_container_id) ? document.getElementById(canvas_container_id) : document.body);
 	if(!canvas_container)
@@ -154,6 +154,8 @@ function voronota_viewer_init(width, height, canvas_container_id, post_init_oper
 	canvas.id = canvas_id;
 	canvas.oncontextmenu=function(event){event.preventDefault();};
 	canvas.style.border = "0px none";
+	canvas.style.padding = "0px";
+	canvas.style.margin = "0px";
 	canvas.style.backgroundColor = "black";
 	canvas_container.appendChild(canvas);
 	canvas.addEventListener("webglcontextlost", (e) => { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);

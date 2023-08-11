@@ -6,11 +6,24 @@
 		<title>Voronota-GL</title>
 		
 		<style>
+			html
+			{
+				width: 100%;
+				height: 100%;
+				margin: 0px;
+				padding: 0px;
+			}
+			
 			body
 			{
 				font-family: arial;
-				margin: 0;
-				padding: none;
+				width: 100%;
+				height: 100%;
+				margin: 0px;
+				padding: 0px;
+				border: 0px none;
+				display: block;
+				overflow: hidden;
 				background-color: #AAAAAA;
 			}
 			
@@ -59,14 +72,14 @@
 			voronota_viewer_init(
 				function(){return window.innerWidth;},
 				function(){return window.innerHeight;},
-				"canvas_container",
 				[
 					"background 0xCCCCCC ; configure-gui-enable-sequence-view",
 					"fetch 1ctf",
 					"import-url https://files.rcsb.org/download/1CTF.pdb",
 					function(){voronota_viewer_enqueue_script("pick-objects ; spectrum-atoms");},
 					"grid-by-object"
-				]);
+				],
+				"canvas_container");
 
 			voronota_viewer_bottom_margin=30;
 			voronota_viewer_add_button_for_native_script("configure-gui-toggle-console", "Toggle console", "buttons_panel");
