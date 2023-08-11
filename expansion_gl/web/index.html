@@ -60,7 +60,13 @@
 				function(){return window.innerWidth;},
 				function(){return window.innerHeight;},
 				"canvas_container",
-				"background 0xCCCCCC ; configure-gui-enable-sequence-view ; fetch 1ctf");
+				function()
+				{
+					voronota_viewer_enqueue_script("background 0xCCCCCC ; configure-gui-enable-sequence-view");
+					voronota_viewer_enqueue_script("fetch 1ctf");
+					voronota_viewer_enqueue_script("spectrum-atoms");
+				});
+
 			voronota_viewer_bottom_margin=30;
 			voronota_viewer_add_button_for_native_script("configure-gui-toggle-console", "Toggle console", "buttons_panel");
 			voronota_viewer_add_button_for_file_input(null, "buttons_panel");

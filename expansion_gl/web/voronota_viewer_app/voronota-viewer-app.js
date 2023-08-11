@@ -77,7 +77,12 @@ function voronota_viewer_enqueue_script(str)
 
 function voronota_viewer_execute_native_script(str)
 {
-	return JSON.parse(Module.ccall('voronota_viewer_execute_native_script', 'string', ['string'], [str]));
+	const result=Module.ccall('voronota_viewer_execute_native_script', 'string', ['string'], [str]);
+	if(result=="rejected")
+	{
+		throw new Error("Immediate execution call rejected because some asynchronous downloads are not finished.");
+	}
+	return JSON.parse(result);
 }
 
 function voronota_viewer_get_last_script_output()

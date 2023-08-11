@@ -102,6 +102,18 @@ public:
 		return requests_.back();
 	}
 
+	bool check_if_any_request_not_downloaded() const
+	{
+		for(std::list<RemoteImportRequest>::const_iterator it=requests_.begin();it!=requests_.end();++it)
+		{
+			if(!it->download_finished)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool check_if_any_request_downloaded_and_not_fully_processed() const
 	{
 		for(std::list<RemoteImportRequest>::const_iterator it=requests_.begin();it!=requests_.end();++it)

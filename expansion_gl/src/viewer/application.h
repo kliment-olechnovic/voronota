@@ -41,6 +41,13 @@ public:
 
 	const std::string& execute_native_script(const std::string& script)
 	{
+		static std::string rejection_message("rejected");
+
+		if(need_to_wait_for_asynchronous_downloads_to_finish())
+		{
+			return rejection_message;
+		}
+
 		while(dequeue_job())
 		{
 		}
@@ -595,8 +602,18 @@ private:
 		return ((!job_queue_.empty() && (including_brief_jobs || !job_queue_.front().brief)) || RemoteImportDownloaderAdaptive::instance().check_if_any_request_downloaded_and_not_fully_processed());
 	}
 
+	bool need_to_wait_for_asynchronous_downloads_to_finish() const
+	{
+		return (!RemoteImportDownloaderAdaptive::instance().is_synchronous() && RemoteImportDownloaderAdaptive::instance().check_if_any_request_not_downloaded());
+	}
+
 	bool dequeue_job()
 	{
+		if(need_to_wait_for_asynchronous_downloads_to_finish())
+		{
+			return (!job_queue_.empty());
+		}
+
 		if(RemoteImportDownloaderAdaptive::instance().check_if_any_request_downloaded_and_not_fully_processed())
 		{
 			enqueue_job(Job("import-downloaded", Job::TYPE_NATIVE), true);
