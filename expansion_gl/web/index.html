@@ -24,48 +24,11 @@
 				border: 0px none;
 				display: block;
 				overflow: hidden;
-				background-color: #AAAAAA;
-			}
-			
-			#buttons_panel
-			{
-				bottom: 0;
-				left: 0;
-				position: absolute;
-				margin: 0;
-				padding: none;
-				height: 30px;
-			}
-			
-			.voronota-viewer-added-button
-			{
-				background-color: #777777;
-				border: none;
-				color: white;
-				text-align: center;
-				text-decoration: none;
-				display: inline-block;
-				padding-top: 5px;
-				padding-bottom: 5px;
-				padding-left: 10px;
-				padding-right: 10px;
-				margin-top: 0px;
-				margin-bottom: 0px;
-				margin-left: 0px;
-				margin-right: 5px;
-				height: 30px;
-				font-size: 12px;
 			}
 		</style>
 	</head>
 	
 	<body>
-		<div id="canvas_container">
-		</div>
-		
-		<p id="buttons_panel">
-		</p>
-		
 		<script src="voronota_viewer_app/voronota-viewer-app.js"></script>
 		
 		<script>
@@ -78,17 +41,17 @@
 					"import-url https://files.rcsb.org/download/1CTF.pdb",
 					function(){voronota_viewer_enqueue_script("pick-objects ; spectrum-atoms");},
 					"grid-by-object"
-				],
-				"canvas_container");
+				]);
 
 			voronota_viewer_bottom_margin=30;
-			voronota_viewer_add_button_for_native_script("configure-gui-toggle-console", "Toggle console", "buttons_panel");
-			voronota_viewer_add_button_for_file_input(null, "buttons_panel");
-			voronota_viewer_add_button_for_session_input(null, "buttons_panel");-
-			voronota_viewer_add_button_for_custom_action(voronota_viewer_paste_and_run_command, "Paste and run command", "buttons_panel");
-			voronota_viewer_add_button_for_native_script("snap Voronota-GL-screenshot.png -opaque", "Save image", "buttons_panel");
-			voronota_viewer_add_button_for_native_script("hint-render-area-size -width 9999", "Maximize view width", "buttons_panel");
-			voronota_viewer_add_button_for_native_script("hint-render-area-size -height 9999", "Maximize view height", "buttons_panel");
+			
+			voronota_viewer_add_button_for_native_script("configure-gui-toggle-console", "Toggle console");
+			voronota_viewer_add_button_for_file_input();
+			voronota_viewer_add_button_for_session_input();
+			voronota_viewer_add_button_for_custom_action(voronota_viewer_paste_and_run_command, "Paste and run command");
+			voronota_viewer_add_button_for_native_script("snap Voronota-GL-screenshot.png -opaque", "Save image");
+			voronota_viewer_add_button_for_native_script("hint-render-area-size -width 9999", "Maximize view width");
+			voronota_viewer_add_button_for_native_script("hint-render-area-size -height 9999", "Maximize view height");
 		</script>
 
 	</body>

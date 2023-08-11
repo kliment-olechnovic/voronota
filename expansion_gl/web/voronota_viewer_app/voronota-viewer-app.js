@@ -212,7 +212,10 @@ function voronota_viewer_add_button_for_custom_action(action_function, label, bu
 	}
 	
 	var button = document.createElement("button");
-	button.className = ((style_class) ? style_class : "voronota-viewer-added-button");
+	if(style_class)
+	{
+		button.className=style_class;
+	}
 	button.innerHTML = ((label) ? label : action_function.name);
 	button.onclick = function() {action_function();};
 	
@@ -262,7 +265,10 @@ function voronota_viewer_add_button_for_file_input(label, button_container_id, s
 	});
 	
 	var button = document.createElement("button");
-	button.className = ((style_class) ? style_class : "voronota-viewer-added-button");
+	if(style_class)
+	{
+		button.className=style_class;
+	}
 	button.innerHTML = ((label) ? label : "Import local structures");
 	button.onclick = function() {document.getElementById(file_input_id).click();};
 	
@@ -314,7 +320,10 @@ function voronota_viewer_add_button_for_session_input(label, button_container_id
 	});
 	
 	var button = document.createElement("button");
-	button.className = ((style_class) ? style_class : "voronota-viewer-added-button");
+	if(style_class)
+	{
+		button.className=style_class;
+	}
 	button.innerHTML = ((label) ? label : "Import local session");
 	button.onclick = function() {document.getElementById(session_input_id).click();};
 	
