@@ -11,17 +11,6 @@ const voronota_viewer_app_subdirectory=(() =>
     return (parts.join('/')+'/');
 })();
 
-(function()
-{
-	const scripts = ["4ung.js", "dun2010bbdep.js", "font.js", "voronota_viewer.js"];
-	for (var i = 0; i < scripts.length; i++)
-	{
-		var script = document.createElement('script');
-		script.src = voronota_viewer_app_subdirectory+scripts[i];
-		document.body.appendChild(script);
-	}
-})();
-
 function voronota_viewer_is_retina_display()
 {
 	if(window.matchMedia)
@@ -143,11 +132,27 @@ function voronota_viewer_init(width, height, post_init_operations, canvas_contai
 {
 	const canvas_id="voronota_viewer_canvas";
 	
+	if(document.getElementById(canvas_id))
+	{
+		throw new Error("The canvas '"+canvas_id+"' is already in the DOM.");
+	}
+	
 	var canvas_container=((canvas_container_id) ? document.getElementById(canvas_container_id) : document.body);
 	if(!canvas_container)
 	{
 		throw new Error("The canvas container '"+canvas_container_id+"' was not found in the DOM.");
 	}
+	
+	(function()
+	{
+		const scripts = ["4ung.js", "dun2010bbdep.js", "font.js", "voronota_viewer.js"];
+		for (var i = 0; i < scripts.length; i++)
+		{
+			var script = document.createElement('script');
+			script.src = voronota_viewer_app_subdirectory+scripts[i];
+			document.body.appendChild(script);
+		}
+	})();
 	
 	var canvas = document.createElement('canvas');
 	canvas.className = "emscripten";

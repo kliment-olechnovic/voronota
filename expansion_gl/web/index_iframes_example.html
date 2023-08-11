@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Voronota-GL</title>
+	</head>
+	
+	<body>
+		<script src="voronota_viewer_app/voronota-viewer-app-as-iframe.js"></script>
+		
+		<script>
+			voronota_viewer_init_as_iframe(
+				800,
+				600,
+				[
+					"background 0xCCCCCC ; configure-gui-enable-sequence-view",
+					"fetch 1ctf",
+					"import-url 'https://files.rcsb.org/download/1CTF.pdb'",
+					"grid-by-object"
+				],
+				null,
+				"iframe1");
+
+			voronota_viewer_init_as_iframe(
+				800,
+				600,
+				[
+					"background 0xCCCCCC ; configure-gui-enable-sequence-view",
+					"fetch 1ctf"
+				],
+				null,
+				"iframe2");
+		</script>
+	</body>
+</html>
+
