@@ -29,7 +29,7 @@ struct RemoteImportRequest
 	{
 	}
 
-	RemoteImportRequest(const std::string& url, const scripting::operators::ImportMany& import_many_operator) : url(url), import_many_operator(import_many_operator), download_started(false), download_finished(false), download_successful(false)
+	RemoteImportRequest(const std::string& url, const scripting::operators::ImportMany& import_many_operator) : url(url), import_many_operator(import_many_operator), download_started(false), download_finished(false), download_successful(false), fully_processed(false)
 	{
 	}
 
