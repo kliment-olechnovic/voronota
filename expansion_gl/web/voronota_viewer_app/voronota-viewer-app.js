@@ -139,7 +139,7 @@ function voronota_viewer_download_file(filename)
 	document.body.removeChild(a);
 }
 
-function voronota_viewer_init(width, height, canvas_container_id, post_init_function_or_script)
+function voronota_viewer_init(width, height, canvas_container_id, post_init_operations)
 {
 	const canvas_id=((canvas_container_id) ? ("voronota_viewer_canvas_in_"+canvas_container_id) : "voronota_viewer_canvas");
 	
@@ -167,13 +167,31 @@ function voronota_viewer_init(width, height, canvas_container_id, post_init_func
 			voronota_viewer_default_height=height;
 			voronota_viewer_resize_window(width, height);
 			window.addEventListener('resize', function(event){voronota_viewer_resize_window(voronota_viewer_default_width, voronota_viewer_default_height);});
-			if(typeof post_init_function_or_script === "function")
+			if(Array.isArray(post_init_operations))
 			{
-				post_init_function_or_script();
+				for(var i=0;i<post_init_operations.length;i++)
+				{
+					var single_post_init_operation=post_init_operations[i];
+					if(typeof single_post_init_operation === "function")
+					{
+						single_post_init_operation();
+					}
+					else if(typeof single_post_init_operation === "string")
+					{
+						voronota_viewer_enqueue_script(single_post_init_operation);
+					}
+				}
 			}
-			else if(typeof post_init_function_or_script === "string")
+			else
 			{
-				voronota_viewer_enqueue_script(post_init_function_or_script);
+				if(typeof post_init_operations === "function")
+				{
+					post_init_operations();
+				}
+				else if(typeof post_init_operations === "string")
+				{
+					voronota_viewer_enqueue_script(post_init_operations);
+				}
 			}
 		})],
 		arguments: ['--window-width', '500', '--window-height', '500', '--gui-scaling', ''+voronota_viewer_screen_pixel_ratio(), '--custom-font-file', 'font.ttf'],
