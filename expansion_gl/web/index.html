@@ -32,16 +32,16 @@
 		<script src="voronota_viewer_app/voronota-viewer-app.js"></script>
 		
 		<script>
-			voronota_viewer_init(
-				function(){return window.innerWidth;},
-				function(){return window.innerHeight;},
-				[
+			voronota_viewer_init({
+				width: function(){return window.innerWidth;},
+				height: function(){return window.innerHeight;},
+				post_init_operations: [
 					"background 0xCCCCCC ; configure-gui-enable-sequence-view",
 					"fetch 1ctf",
 					"import-url https://files.rcsb.org/download/1CTF.pdb",
 					function(){voronota_viewer_enqueue_script("pick-objects ; spectrum-atoms");},
-					"grid-by-object"
-				]);
+					"grid-by-object"]
+			});
 
 			voronota_viewer_bottom_margin=30;
 			

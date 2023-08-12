@@ -128,7 +128,7 @@ function voronota_viewer_download_file(filename)
 	document.body.removeChild(a);
 }
 
-function voronota_viewer_init(width, height, post_init_operations, canvas_container_id)
+function voronota_viewer_init(config)
 {
 	const canvas_id="voronota_viewer_canvas";
 	
@@ -137,10 +137,10 @@ function voronota_viewer_init(width, height, post_init_operations, canvas_contai
 		throw new Error("The canvas '"+canvas_id+"' is already in the DOM.");
 	}
 	
-	var canvas_container=((canvas_container_id) ? document.getElementById(canvas_container_id) : document.body);
+	var canvas_container=((config.canvas_container_id) ? document.getElementById(config.canvas_container_id) : document.body);
 	if(!canvas_container)
 	{
-		throw new Error("The canvas container '"+canvas_container_id+"' was not found in the DOM.");
+		throw new Error("The canvas container '"+config.canvas_container_id+"' was not found in the DOM.");
 	}
 	
 	(function()
@@ -170,15 +170,15 @@ function voronota_viewer_init(width, height, post_init_operations, canvas_contai
 		postRun: [(() =>
 		{
 			voronota_viewer_setup_js_bindings_to_all_api_functions();
-			voronota_viewer_default_width=width;
-			voronota_viewer_default_height=height;
-			voronota_viewer_resize_window(width, height);
+			voronota_viewer_default_width=config.width;
+			voronota_viewer_default_height=config.height;
+			voronota_viewer_resize_window(config.width, config.height);
 			window.addEventListener('resize', function(event){voronota_viewer_resize_window(voronota_viewer_default_width, voronota_viewer_default_height);});
-			if(Array.isArray(post_init_operations))
+			if(Array.isArray(config.post_init_operations))
 			{
-				for(var i=0;i<post_init_operations.length;i++)
+				for(var i=0;i<config.post_init_operations.length;i++)
 				{
-					var single_post_init_operation=post_init_operations[i];
+					var single_post_init_operation=config.post_init_operations[i];
 					if(typeof single_post_init_operation === "function")
 					{
 						single_post_init_operation();
@@ -191,13 +191,13 @@ function voronota_viewer_init(width, height, post_init_operations, canvas_contai
 			}
 			else
 			{
-				if(typeof post_init_operations === "function")
+				if(typeof config.post_init_operations === "function")
 				{
-					post_init_operations();
+					config.post_init_operations();
 				}
-				else if(typeof post_init_operations === "string")
+				else if(typeof config.post_init_operations === "string")
 				{
-					voronota_viewer_enqueue_script(post_init_operations);
+					voronota_viewer_enqueue_script(config.post_init_operations);
 				}
 			}
 		})],

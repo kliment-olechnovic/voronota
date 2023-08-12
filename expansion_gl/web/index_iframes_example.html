@@ -9,28 +9,27 @@
 	<body>
 		<script src="voronota_viewer_app/voronota-viewer-app-as-iframe.js"></script>
 		
+		<iframe id="iframe1" width="700px" height="500"></iframe>
+		
 		<script>
-			voronota_viewer_init_as_iframe(
-				800,
-				600,
-				[
+			voronota_viewer_init_in_iframe({
+				iframe_id: "iframe1",
+				post_init_operations: [
 					"background 0xCCCCCC ; configure-gui-enable-sequence-view",
 					"fetch 1ctf",
 					"import-url 'https://files.rcsb.org/download/1CTF.pdb'",
-					"grid-by-object"
-				],
-				null,
-				"iframe1");
+					"grid-by-object"]
+			});
 
-			voronota_viewer_init_as_iframe(
-				800,
-				600,
-				[
+			voronota_viewer_init_in_iframe({
+				iframe_id: "iframe2",
+				width: 800,
+				height: 600,
+				post_init_operations: [
 					"background 0xCCCCCC ; configure-gui-enable-sequence-view",
-					"fetch 1ctf"
-				],
-				null,
-				"iframe2");
+					"import-url 'https://files.rcsb.org/download/1CTF.pdb'",
+					"grid-by-object"]
+			});
 		</script>
 	</body>
 </html>

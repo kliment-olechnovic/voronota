@@ -11,27 +11,49 @@ const voronota_viewer_app_as_iframe_subdirectory=(() =>
     return (parts.join('/')+'/');
 })();
 
-function voronota_viewer_init_as_iframe(width, height, post_init_operations, iframe_container_id, new_iframe_id)
+function voronota_viewer_init_in_iframe(config)
 {
-	var iframe_container=((iframe_container_id) ? document.getElementById(iframe_container_id) : document.body);
-	if(!iframe_container)
+	var iframe=((config.iframe_id) ? document.getElementById(config.iframe_id) : null);
+	
+	var iframe_is_new=false;
+	
+	if(!iframe)
 	{
-		throw new Error("The iframe container '"+iframe_container_id+"' was not found in the DOM.");
+		iframe_is_new=true;
+		var iframe_container=((config.iframe_container_id) ? document.getElementById(config.iframe_container_id) : document.body);
+		if(!iframe_container)
+		{
+			throw new Error("The iframe container '"+config.iframe_container_id+"' was not found in the DOM.");
+		}
+		iframe = document.createElement('iframe');
+		if(config.iframe_id)
+		{
+			iframe.id=config.iframe_id;
+		}
+		document.body.appendChild(iframe);
 	}
 	
-	var iframe = document.createElement('iframe');
-	if(new_iframe_id)
+	if(config.width)
 	{
-		iframe.id=new_iframe_id;
+		iframe.width = config.width+'px';
 	}
-	iframe.width = width+'px';
-	iframe.height = height+'px';
-	iframe.style.border = 'none';
 	
-	document.body.appendChild(iframe);
+	if(config.height)
+	{
+		iframe.height = config.height+'px';
+	}
 	
+	if(config.border_style)
+	{
+		iframe.style.border = config.border_style;
+	}
+	else if(iframe_is_new)
+	{
+		iframe.style.border = 'none';
+	}
+		
 	const main_script_path_string=JSON.stringify(voronota_viewer_app_as_iframe_subdirectory+"voronota-viewer-app.js");
-	const post_init_operations_string=JSON.stringify(post_init_operations);
+	const post_init_operations_string=JSON.stringify(config.post_init_operations);
 
 	var srcdoc = 
 		`<!doctype html>
@@ -46,10 +68,11 @@ function voronota_viewer_init_as_iframe(width, height, post_init_operations, ifr
 			<body>
 				<script src=${main_script_path_string}><\/script>
 				<script>
-					voronota_viewer_init(
-						function(){return window.innerWidth;},
-						function(){return window.innerHeight;},
-						${post_init_operations_string});
+					voronota_viewer_init({
+						width: function(){return window.innerWidth;},
+						height: function(){return window.innerHeight;},
+						post_init_operations: ${post_init_operations_string}
+					});
 				<\/script>
 			</body>
 		</html>`;
@@ -58,6 +81,6 @@ function voronota_viewer_init_as_iframe(width, height, post_init_operations, ifr
 	iframe.contentWindow.document.write(srcdoc);
 	iframe.contentWindow.document.close();
 	
-	return iframe.contentWindow;
+	return iframe;
 }
 
