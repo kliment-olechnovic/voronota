@@ -30,7 +30,7 @@ function voronota_viewer_init_as_iframe(config)
 		{
 			iframe.id=config.iframe_id;
 		}
-		document.body.appendChild(iframe);
+		iframe_container.appendChild(iframe);
 	}
 	
 	if(config.width)
@@ -66,25 +66,18 @@ function voronota_viewer_init_as_iframe(config)
 	
 	if(config.prettify_buttons_panel)
 	{
-		bottom_margin_to_use=(config.bottom_margin) ? config.bottom_margin : 33;
+		bottom_margin_to_use=(config.bottom_margin) ? config.bottom_margin : 30;
 		
 		additional_head_content_string=`
 			<style>
-				.voronota-viewer-added-button { background-color: #555555; border: none; color: white; text-align: center; text-decoration: none; display: inline-block; padding-top: 5px; padding-bottom: 5px; padding-left: 10px; padding-right: 10px; margin-top: 5px; margin-bottom: 5px; margin-left: 5px; margin-right: 5px; height: 22px; font-size: 12px; }
+				.voronota-viewer-added-button { background-color: #555555; border: none; color: white; text-align: center; text-decoration: none; display: inline-block; padding-top: 5px; padding-bottom: 5px; padding-left: 10px; padding-right: 10px; margin-top: 0px; margin-bottom: 0px; margin-left: 5px; margin-right: 5px; height: 22px; font-size: 12px; }
 				.voronota-viewer-added-button:hover { background-color: #777777; }
-				#buttons_panel { bottom: 0; left: 0; position: absolute; margin: 0; padding: 0; height: ${bottom_margin_to_use}px; }
 			</style>
 			`+additional_head_content_string;
 		
-		additional_body_content_string=`
-			<div id="canvas_container"></div>
-			
-			<div id="buttons_panel"></div>
-			`+additional_body_content_string;
-		
 		bottom_margin_string=JSON.stringify(bottom_margin_to_use);
-		canvas_container_id_string=JSON.stringify("canvas_container");
-		buttons_container_id_string=JSON.stringify("buttons_panel");
+		canvas_container_id_string="null";
+		buttons_container_id_string="null";
 		buttons_style_class_string=JSON.stringify("voronota-viewer-added-button");
 	}
 

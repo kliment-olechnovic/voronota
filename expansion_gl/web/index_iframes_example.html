@@ -9,26 +9,21 @@
 	<body>
 		<script src="voronota_viewer_app/voronota-viewer-app-as-iframe.js"></script>
 		
-		<iframe id="iframe1" width="700px" height="500"></iframe>
+		<div id="container1" style="display: inline-block; margin-right: 20px;"><h1>First</h1></div>
+		<div id="container2" style="display: inline-block;"><h1>Second</h1></div>
+		
 		
 		<script>
-			voronota_viewer_init_as_iframe({
+			var iframe1_handle=voronota_viewer_init_as_iframe({
+				iframe_container_id: "container1",
 				iframe_id: "iframe1",
-				post_init_operations: [
-					"background 0xCCCCCC ; configure-gui-enable-sequence-view",
-					"fetch 1ctf",
-					"import-url 'https://files.rcsb.org/download/1CTF.pdb'",
-					"grid-by-object"]
-			});
-
-			voronota_viewer_init_as_iframe({
-				iframe_id: "iframe2",
-				width: 800,
+				width: 700,
 				height: 600,
 				post_init_operations: [
-					"background 0xCCCCCC ; configure-gui-enable-sequence-view",
-					"import-url 'https://files.rcsb.org/download/1CTF.pdb'",
-					"grid-by-object"],
+					"background 0x000000",
+					"configure-gui-disable-console",
+					"import-url 'https://files.rcsb.org/download/1CTF.pdb' -include-heteroatoms",
+					"spectrum-atoms"],
 				add_buttons: [
 					{action: "configure-gui-toggle-console", label: "Toggle console"},
 					{action: "_hspace", size: 15},
@@ -36,6 +31,26 @@
 					{action: "_input_session"},
 					{action: "_hspace", size: 15},
 					{action: "_paste_and_run", label: "Paste and run command"},
+					{action: "_hspace", size: 15},
+					{action: "snap Voronota-GL-screenshot.png -opaque", label: "Save image"}],
+				prettify_buttons_panel: true
+			});
+			
+			var iframe2_handle=voronota_viewer_init_as_iframe({
+				iframe_container_id: "container2",
+				iframe_id: "iframe2",
+				width: 700,
+				height: 600,
+				post_init_operations: [
+					"background 0x000000",
+					"configure-gui-disable-console",
+					"fetch 1ctf",
+					"spectrum-atoms -by chain -scheme cy"],
+				add_buttons: [
+					{action: "configure-gui-toggle-console", label: "Toggle console"},
+					{action: "_hspace", size: 15},
+					{action: "spectrum-atoms", label: "Color by sequence"},
+					{action: "spectrum-atoms -by chain -scheme cy", label: "Color by chain"},
 					{action: "_hspace", size: 15},
 					{action: "snap Voronota-GL-screenshot.png -opaque", label: "Save image"}],
 				prettify_buttons_panel: true
