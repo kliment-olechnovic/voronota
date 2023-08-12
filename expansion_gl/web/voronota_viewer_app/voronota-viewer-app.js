@@ -154,6 +154,10 @@ function voronota_viewer_init(config)
 	canvas.className = "emscripten";
 	canvas.id = canvas_id;
 	canvas.oncontextmenu=function(event){event.preventDefault();};
+	canvas.ontouchstart=function(event){event.preventDefault();};
+	canvas.ontouchmove=function(event){event.preventDefault();};
+	canvas.ontouchend=function(event){event.preventDefault();};
+	canvas.ontouchcancel=function(event){event.preventDefault();};
 	canvas.style.border = "0px none";
 	canvas.style.padding = "0px";
 	canvas.style.margin = "0px";
