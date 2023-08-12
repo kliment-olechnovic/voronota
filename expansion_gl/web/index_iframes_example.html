@@ -25,7 +25,6 @@
 				iframe_id: "iframe2",
 				width: 800,
 				height: 600,
-				bottom_margin: 30,
 				post_init_operations: [
 					"background 0xCCCCCC ; configure-gui-enable-sequence-view",
 					"import-url 'https://files.rcsb.org/download/1CTF.pdb'",
@@ -39,7 +38,7 @@
 					{action: "_paste_and_run", label: "Paste and run command"},
 					{action: "_hspace", size: 15},
 					{action: "snap Voronota-GL-screenshot.png -opaque", label: "Save image"}],
-				additional_head_content: "<style>body { background-color: #777777; } </style>"
+				prettify_buttons_panel: true
 			});
 		</script>
 	</body>
