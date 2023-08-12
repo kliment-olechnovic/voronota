@@ -12,7 +12,7 @@
 		<iframe id="iframe1" width="700px" height="500"></iframe>
 		
 		<script>
-			voronota_viewer_init_in_iframe({
+			voronota_viewer_init_as_iframe({
 				iframe_id: "iframe1",
 				post_init_operations: [
 					"background 0xCCCCCC ; configure-gui-enable-sequence-view",
@@ -21,14 +21,25 @@
 					"grid-by-object"]
 			});
 
-			voronota_viewer_init_in_iframe({
+			voronota_viewer_init_as_iframe({
 				iframe_id: "iframe2",
 				width: 800,
 				height: 600,
+				bottom_margin: 30,
 				post_init_operations: [
 					"background 0xCCCCCC ; configure-gui-enable-sequence-view",
 					"import-url 'https://files.rcsb.org/download/1CTF.pdb'",
-					"grid-by-object"]
+					"grid-by-object"],
+				add_buttons: [
+					{action: "configure-gui-toggle-console", label: "Toggle console"},
+					{action: "_hspace", size: 15},
+					{action: "_input_file"},
+					{action: "_input_session"},
+					{action: "_hspace", size: 15},
+					{action: "_paste_and_run", label: "Paste and run command"},
+					{action: "_hspace", size: 15},
+					{action: "snap Voronota-GL-screenshot.png -opaque", label: "Save image"}],
+				additional_head_content: "<style>body { background-color: #777777; } </style>"
 			});
 		</script>
 	</body>
