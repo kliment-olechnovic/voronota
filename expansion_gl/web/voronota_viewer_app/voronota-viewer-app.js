@@ -206,6 +206,55 @@ function voronota_viewer_init(config)
 		locateFile: ((s) =>	{return (voronota_viewer_app_subdirectory + s);}),
 		canvas: canvas
 	};
+	
+	if(config.bottom_margin)
+	{
+		voronota_viewer_bottom_margin=config.bottom_margin;
+	}
+	
+	if(config.add_buttons)
+	{
+		if(!Array.isArray(config.add_buttons))
+		{
+			throw new Error("Button descriptions not in array.");
+		}
+		
+		for (var i = 0; i < config.add_buttons.length; i++)
+		{
+			const button_info=config.add_buttons[i];
+			if(!button_info.action)
+			{
+				throw new Error("Missing action in button descriptor "+"JSON.stringify(button_info)"+".");
+			}
+			if(typeof button_info.action === "function")
+			{
+				voronota_viewer_add_button_for_custom_action(button_info.action, button_info.label, config.buttons_container_id, config.buttons_style_class);
+			}
+			else if(typeof button_info.action === "string")
+			{
+				if(button_info.action=="_input_file")
+				{
+					voronota_viewer_add_button_for_file_input(button_info.label, config.buttons_container_id, config.buttons_style_class);
+				}
+				else if(button_info.action=="_input_session")
+				{
+					voronota_viewer_add_button_for_session_input(button_info.label, config.buttons_container_id, config.buttons_style_class);
+				}
+				else if(button_info.action=="_paste_and_run")
+				{
+					voronota_viewer_add_button_for_custom_action(voronota_viewer_paste_and_run_command, button_info.label, config.buttons_container_id, config.buttons_style_class);
+				}
+				else
+				{
+					voronota_viewer_add_button_for_native_script(button_info.action, button_info.label, config.buttons_container_id, config.buttons_style_class);
+				}
+			}
+			else
+			{
+				throw new Error("Invalid action in button descriptor "+"JSON.stringify(button_info)"+".");
+			}
+		}
+	}
 }
 
 function voronota_viewer_add_button_for_custom_action(action_function, label, button_container_id, style_class)

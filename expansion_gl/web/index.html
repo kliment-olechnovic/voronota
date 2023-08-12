@@ -35,23 +35,23 @@
 			voronota_viewer_init({
 				width: function(){return window.innerWidth;},
 				height: function(){return window.innerHeight;},
+				bottom_margin: 30,
 				post_init_operations: [
-					"background 0xCCCCCC ; configure-gui-enable-sequence-view",
-					"fetch 1ctf",
-					"import-url https://files.rcsb.org/download/1CTF.pdb",
-					function(){voronota_viewer_enqueue_script("pick-objects ; spectrum-atoms");},
-					"grid-by-object"]
+					"background 0xCCCCCC",
+					"configure-gui-enable-sequence-view",
+					"configure-gui-enable-console"],
+				add_buttons: [
+					{action: "configure-gui-toggle-console", label: "Toggle console"},
+					{action: "_input_file"},
+					{action: "_input_session"},
+					{action: "_paste_and_run", label: "Paste and run command"},
+					{action: "snap Voronota-GL-screenshot.png -opaque", label: "Save image"},
+					{action: "hint-render-area-size -width 9999", label: "Maximize view width"},
+					{action: "hint-render-area-size -height 9999", label: "Maximize view height"}],
+				canvas_container_id: null,
+				buttons_container_id: null,
+				buttons_style_class: null
 			});
-
-			voronota_viewer_bottom_margin=30;
-			
-			voronota_viewer_add_button_for_native_script("configure-gui-toggle-console", "Toggle console");
-			voronota_viewer_add_button_for_file_input();
-			voronota_viewer_add_button_for_session_input();
-			voronota_viewer_add_button_for_custom_action(voronota_viewer_paste_and_run_command, "Paste and run command");
-			voronota_viewer_add_button_for_native_script("snap Voronota-GL-screenshot.png -opaque", "Save image");
-			voronota_viewer_add_button_for_native_script("hint-render-area-size -width 9999", "Maximize view width");
-			voronota_viewer_add_button_for_native_script("hint-render-area-size -height 9999", "Maximize view height");
 		</script>
 
 	</body>
