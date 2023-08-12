@@ -244,6 +244,14 @@ function voronota_viewer_init(config)
 				{
 					voronota_viewer_add_button_for_custom_action(voronota_viewer_paste_and_run_command, button_info.label, config.buttons_container_id, config.buttons_style_class);
 				}
+				else if(button_info.action=="_hspace")
+				{
+					voronota_viewer_add_horizontal_spacer(button_info.size, config.buttons_container_id);
+				}
+				else if(button_info.action=="_vspace")
+				{
+					voronota_viewer_add_vertical_spacer(button_info.size, config.buttons_container_id);
+				}
 				else
 				{
 					voronota_viewer_add_button_for_native_script(button_info.action, button_info.label, config.buttons_container_id, config.buttons_style_class);
@@ -385,3 +393,31 @@ function voronota_viewer_add_button_for_session_input(label, button_container_id
 	button_container.appendChild(button);
 }
 
+function voronota_viewer_add_horizontal_spacer(width, button_container_id)
+{
+	var button_container=((button_container_id) ? document.getElementById(button_container_id) : document.body);
+	if(!button_container)
+	{
+		throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
+	}
+	
+	var spacer = document.createElement("div");
+	spacer.style.width = ((width) ? width : 10)+"px";
+	spacer.style.display = "inline-block";
+
+	button_container.appendChild(spacer);
+}
+
+function voronota_viewer_add_vertical_spacer(height, button_container_id)
+{
+	var button_container=((button_container_id) ? document.getElementById(button_container_id) : document.body);
+	if(!button_container)
+	{
+		throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
+	}
+	
+	var spacer = document.createElement("div");
+	spacer.style.height = ((height) ? height : 10)+"px";
+
+	button_container.appendChild(spacer);
+}
