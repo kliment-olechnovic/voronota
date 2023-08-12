@@ -137,11 +137,7 @@ function voronota_viewer_init(config)
 		throw new Error("The canvas '"+canvas_id+"' is already in the DOM.");
 	}
 	
-	var canvas_container=((config.canvas_container_id) ? document.getElementById(config.canvas_container_id) : document.body);
-	if(!canvas_container)
-	{
-		throw new Error("The canvas container '"+config.canvas_container_id+"' was not found in the DOM.");
-	}
+	var canvas_container=voronota_viewer_return_document_element_or_body(config.canvas_container_id);
 	
 	(function()
 	{
@@ -265,13 +261,19 @@ function voronota_viewer_init(config)
 	}
 }
 
+function voronota_viewer_return_document_element_or_body(element_id)
+{
+	var element=((element_id) ? document.getElementById(element_id) : document.body);
+	if(!element)
+	{
+		throw new Error("The element '"+element_id+"' was not found in the DOM.");
+	}
+	return element;
+}
+
 function voronota_viewer_add_button_for_custom_action(action_function, label, button_container_id, style_class)
 {
-	var button_container=((button_container_id) ? document.getElementById(button_container_id) : document.body);
-	if(!button_container)
-	{
-		throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
-	}
+	var button_container=voronota_viewer_return_document_element_or_body(button_container_id);
 	
 	var button = document.createElement("button");
 	if(style_class)
@@ -299,11 +301,7 @@ function voronota_viewer_add_button_for_file_input(label, button_container_id, s
 		throw new Error("The the generated file input ID is already present in DOM.");
 	}
 	
-	var button_container=((button_container_id) ? document.getElementById(button_container_id) : document.body);
-	if(!button_container)
-	{
-		throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
-	}
+	var button_container=voronota_viewer_return_document_element_or_body(button_container_id);
 	
 	var file_input = document.createElement("input");
 	file_input.type = "file";
@@ -347,11 +345,7 @@ function voronota_viewer_add_button_for_session_input(label, button_container_id
 		throw new Error("The the generated session input ID is already present in DOM.");
 	}
 	
-	var button_container=((button_container_id) ? document.getElementById(button_container_id) : document.body);
-	if(!button_container)
-	{
-		throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
-	}
+	var button_container=voronota_viewer_return_document_element_or_body(button_container_id);
 	
 	var session_input = document.createElement("input");
 	session_input.type = "file";
@@ -395,11 +389,7 @@ function voronota_viewer_add_button_for_session_input(label, button_container_id
 
 function voronota_viewer_add_horizontal_spacer(width, button_container_id)
 {
-	var button_container=((button_container_id) ? document.getElementById(button_container_id) : document.body);
-	if(!button_container)
-	{
-		throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
-	}
+	var button_container=voronota_viewer_return_document_element_or_body(button_container_id);
 	
 	var spacer = document.createElement("div");
 	spacer.style.width = ((width) ? width : 10)+"px";
@@ -410,11 +400,7 @@ function voronota_viewer_add_horizontal_spacer(width, button_container_id)
 
 function voronota_viewer_add_vertical_spacer(height, button_container_id)
 {
-	var button_container=((button_container_id) ? document.getElementById(button_container_id) : document.body);
-	if(!button_container)
-	{
-		throw new Error("The button container '"+button_container_id+"' was not found in the DOM.");
-	}
+	var button_container=voronota_viewer_return_document_element_or_body(button_container_id);
 	
 	var spacer = document.createElement("div");
 	spacer.style.height = ((height) ? height : 10)+"px";
