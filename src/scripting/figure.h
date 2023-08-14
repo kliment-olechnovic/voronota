@@ -19,8 +19,10 @@ public:
 	std::vector<float> normals;
 	std::vector<unsigned int> indices;
 	common::PropertiesValue props;
+	bool normals_store_origin;
+	double z_shift;
 
-	Figure()
+	Figure() : normals_store_origin(true), z_shift(0.0)
 	{
 	}
 

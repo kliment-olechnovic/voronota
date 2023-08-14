@@ -30,8 +30,9 @@ public:
 	std::vector<std::string> figure_name;
 	std::string text;
 	double scale;
+	double z_shift;
 
-	AddFigureOfText() : scale(0.25)
+	AddFigureOfText() : scale(1.0), z_shift(3.0)
 	{
 	}
 
@@ -40,7 +41,8 @@ public:
 		parameters_for_selecting_atoms=OperatorsUtilities::read_generic_selecting_query(input);
 		figure_name=input.get_value_vector<std::string>("figure-name");
 		text=input.get_value<std::string>("text");
-		scale=input.get_value_or_default<double>("scale", 0.25);
+		scale=input.get_value_or_default<double>("scale", 1.0);
+		z_shift=input.get_value_or_default<double>("z-shift", 3.0);
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -48,7 +50,7 @@ public:
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("figure-name", CDOD::DATATYPE_STRING_ARRAY, "figure name"));
 		doc.set_option_decription(CDOD("text", CDOD::DATATYPE_STRING, "text to draw"));
-		doc.set_option_decription(CDOD("scale", CDOD::DATATYPE_FLOAT, "scaling factor", 0.25));
+		doc.set_option_decription(CDOD("scale", CDOD::DATATYPE_FLOAT, "scaling factor", 1.0));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -75,7 +77,7 @@ public:
 		origin.push_back(static_cast<float>(center.z));
 
 		TextGraphicsGenerator::TextGraphicsResultBundle text_graphics;
-		if(!TextGraphicsGenerator::generate_text_graphics(text, origin, static_cast<float>(scale), text_graphics))
+		if(!TextGraphicsGenerator::generate_text_graphics(text, origin, static_cast<float>(scale*0.125), text_graphics))
 		{
 			throw std::runtime_error(std::string("Failed to generate text graphics."));
 		}
@@ -87,10 +89,12 @@ public:
 		figure.normals.resize(figure.vertices.size(), 0.0f);
 		for(std::size_t i=0;i<(figure.vertices.size()/3);i++)
 		{
-			figure.normals[i*3+0]=0.0f;
-			figure.normals[i*3+1]=0.0f;
-			figure.normals[i*3+2]=1.0f;
+			figure.normals[i*3+0]=static_cast<float>(center.x);
+			figure.normals[i*3+1]=static_cast<float>(center.y);
+			figure.normals[i*3+2]=static_cast<float>(center.z);
 		}
+		figure.normals_store_origin=true;
+		figure.z_shift=z_shift;
 		data_manager.add_figure(figure);
 
 		Result result;

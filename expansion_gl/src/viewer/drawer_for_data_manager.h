@@ -1263,6 +1263,8 @@ private:
 		if(i<data_manager_.figures_display_states().size())
 		{
 			const scripting::DataManager::DisplayState& ds=data_manager_.figures_display_states()[i];
+			const bool special_case=data_manager_.figures()[i].normals_store_origin;
+			const double adjunct_z=data_manager_.figures()[i].z_shift;
 			if(ds.implemented())
 			{
 				if(dc_figures_solid_.valid() && ds.visuals[dc_figures_solid_.representation_id].implemented)
@@ -1273,7 +1275,7 @@ private:
 						const std::size_t rep_id=dc_figures_solid_.representation_id;
 						dc_figures_solid_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
 						dc_figures_solid_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
-						dc_figures_solid_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						dc_figures_solid_.controller_ptr->object_set_adjunct(drawing_id, (ds.marked ? 1.0 : 0.0), (special_case ? 1.0 : 0.0), (special_case ? adjunct_z : 0.0));
 					}
 				}
 				if(dc_figures_mesh_.valid() && ds.visuals[dc_figures_mesh_.representation_id].implemented)
@@ -1284,7 +1286,7 @@ private:
 						const std::size_t rep_id=dc_figures_mesh_.representation_id;
 						dc_figures_mesh_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
 						dc_figures_mesh_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
-						dc_figures_mesh_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						dc_figures_mesh_.controller_ptr->object_set_adjunct(drawing_id, (ds.marked ? 1.0 : 0.0), (special_case ? 1.0 : 0.0), (special_case ? adjunct_z : 0.0));
 					}
 				}
 			}
