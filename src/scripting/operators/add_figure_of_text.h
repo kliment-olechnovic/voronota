@@ -29,10 +29,13 @@ public:
 	SelectionManager::Query parameters_for_selecting_atoms;
 	std::vector<std::string> figure_name;
 	std::string text;
+	std::vector<double> fixed_pos;
+	std::vector<double> offset_pos;
 	double scale;
 	double z_shift;
+	bool centered;
 
-	AddFigureOfText() : scale(1.0), z_shift(3.0)
+	AddFigureOfText() : scale(1.0), z_shift(3.0), centered(false)
 	{
 	}
 
@@ -41,8 +44,11 @@ public:
 		parameters_for_selecting_atoms=OperatorsUtilities::read_generic_selecting_query(input);
 		figure_name=input.get_value_vector<std::string>("figure-name");
 		text=input.get_value<std::string>("text");
+		fixed_pos=input.get_value_vector_or_default<double>("fixed-pos", std::vector<double>());
+		offset_pos=input.get_value_vector_or_default<double>("offset-pos", std::vector<double>());
 		scale=input.get_value_or_default<double>("scale", 1.0);
 		z_shift=input.get_value_or_default<double>("z-shift", 3.0);
+		centered=input.get_flag("centered");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -50,26 +56,57 @@ public:
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("figure-name", CDOD::DATATYPE_STRING_ARRAY, "figure name"));
 		doc.set_option_decription(CDOD("text", CDOD::DATATYPE_STRING, "text to draw"));
+		doc.set_option_decription(CDOD("fixed-pos", CDOD::DATATYPE_FLOAT_ARRAY, "fixed position, overrides atoms selection"));
+		doc.set_option_decription(CDOD("offset-pos", CDOD::DATATYPE_FLOAT_ARRAY, "offset from computed or provided position"));
 		doc.set_option_decription(CDOD("scale", CDOD::DATATYPE_FLOAT, "scaling factor", 1.0));
+		doc.set_option_decription(CDOD("centered", CDOD::DATATYPE_BOOL, "flag to center the text"));
 	}
 
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_availability();
 
-		const std::set<std::size_t> atom_ids=data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
-
-		if(atom_ids.empty())
-		{
-			throw std::runtime_error(std::string("No atoms selected."));
-		}
-
 		apollota::SimplePoint center;
-		for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
+
+		if(fixed_pos.empty())
 		{
-			center=center+apollota::SimplePoint(data_manager.atoms()[*it].value);
+			const std::set<std::size_t> atom_ids=data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
+
+			if(atom_ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+
+			for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
+			{
+				center=center+apollota::SimplePoint(data_manager.atoms()[*it].value);
+			}
+			center=center*(1.0/static_cast<double>(atom_ids.size()));
 		}
-		center=center*(1.0/static_cast<double>(atom_ids.size()));
+		else
+		{
+			if(fixed_pos.size()!=3)
+			{
+				throw std::runtime_error(std::string("Invalid fixed position."));
+			}
+
+			center.x=fixed_pos[0];
+			center.y=fixed_pos[1];
+			center.z=fixed_pos[2];
+		}
+
+		if(!offset_pos.empty())
+		{
+			if(offset_pos.size()!=3 && offset_pos.size()!=2)
+			{
+				throw std::runtime_error(std::string("Invalid offset position."));
+			}
+
+			center.x+=offset_pos[0];
+			center.y+=offset_pos[1];
+			center.z+=(offset_pos.size()>2 ? offset_pos[2] : 0.0);
+		}
 
 		std::vector<float> origin;
 		origin.push_back(static_cast<float>(center.x));
@@ -77,7 +114,7 @@ public:
 		origin.push_back(static_cast<float>(center.z));
 
 		TextGraphicsGenerator::TextGraphicsResultBundle text_graphics;
-		if(!TextGraphicsGenerator::generate_text_graphics(text, origin, static_cast<float>(scale*0.125), text_graphics))
+		if(!TextGraphicsGenerator::generate_text_graphics(text, origin, static_cast<float>(scale*0.125), centered, text_graphics))
 		{
 			throw std::runtime_error(std::string("Failed to generate text graphics."));
 		}
@@ -112,7 +149,7 @@ private:
 			std::vector<unsigned int> indices;
 		};
 
-		static bool generate_text_graphics(const std::string& text, const std::vector<float>& origin, const float scaling_factor, TextGraphicsResultBundle& result)
+		static bool generate_text_graphics(const std::string& text, const std::vector<float>& origin, const float scaling_factor, const bool centered, TextGraphicsResultBundle& result)
 		{
 			result=TextGraphicsResultBundle();
 
@@ -163,6 +200,27 @@ private:
 				result.indices.push_back(grid_points_to_ids[GridPoint(gp.x, gp.y+1)]);
 				result.indices.push_back(grid_points_to_ids[GridPoint(gp.x+1, gp.y+1)]);
 				result.indices.push_back(grid_points_to_ids[GridPoint(gp.x+1, gp.y)]);
+			}
+
+			if(centered)
+			{
+				float mins[2]={result.vertices[0], result.vertices[1]};
+				float maxs[2]={result.vertices[0], result.vertices[1]};
+				for(std::size_t i=0;i<result.vertices.size();i+=3)
+				{
+					for(int j=0;j<2;j++)
+					{
+						mins[j]=std::min(mins[j], result.vertices[i+j]);
+						maxs[j]=std::max(maxs[j], result.vertices[i+j]);
+					}
+				}
+				for(std::size_t i=0;i<result.vertices.size();i+=3)
+				{
+					for(int j=0;j<2;j++)
+					{
+						result.vertices[i+j]-=(maxs[j]-mins[j])/2.0;
+					}
+				}
 			}
 
 			return true;
