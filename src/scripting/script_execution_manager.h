@@ -2,6 +2,7 @@
 #define SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
 
 #include "operators/add_figure.h"
+#include "operators/add_figures_of_labels.h"
 #include "operators/add_figure_of_convex_hull.h"
 #include "operators/add_figure_of_nth_order_cell.h"
 #include "operators/add_figure_of_2nd_order_cells_for_contacts.h"
@@ -227,6 +228,7 @@ public:
 		set_command_for_congregation_of_data_managers("import-objects", operators::ImportObjects());
 
 		set_command_for_data_manager("add-figure", operators::AddFigure(), true);
+		set_command_for_data_manager("add-figures-of-labels", operators::AddFiguresOfLabels(), true);
 		set_command_for_data_manager("add-figure-of-convex-hull", operators::AddFigureOfConvexHull(), true);
 		set_command_for_data_manager("add-figure-of-nth-order-cell", operators::AddFigureOfNthOrderCell(), true);
 		set_command_for_data_manager("add-figure-of-2nd-order-cells-for-contacts", operators::AddFigureOf2ndOrderCellsForContacts(), true);

@@ -34,10 +34,10 @@ public:
 	std::vector<double> fixed_pos;
 	std::vector<double> offset_pos;
 	double scale;
-	double z_shift;
+	double depth_shift;
 	bool centered;
 
-	AddFigureOfText() : scale(1.0), z_shift(3.0), centered(false)
+	AddFigureOfText() : scale(1.0), depth_shift(3.0), centered(false)
 	{
 	}
 
@@ -49,7 +49,7 @@ public:
 		fixed_pos=input.get_value_vector_or_default<double>("fixed-pos", std::vector<double>());
 		offset_pos=input.get_value_vector_or_default<double>("offset-pos", std::vector<double>());
 		scale=input.get_value_or_default<double>("scale", 1.0);
-		z_shift=input.get_value_or_default<double>("z-shift", 3.0);
+		depth_shift=input.get_value_or_default<double>("z-shift", 3.0);
 		centered=input.get_flag("centered");
 	}
 
@@ -61,6 +61,7 @@ public:
 		doc.set_option_decription(CDOD("fixed-pos", CDOD::DATATYPE_FLOAT_ARRAY, "fixed position, overrides atoms selection"));
 		doc.set_option_decription(CDOD("offset-pos", CDOD::DATATYPE_FLOAT_ARRAY, "offset from computed or provided position"));
 		doc.set_option_decription(CDOD("scale", CDOD::DATATYPE_FLOAT, "scaling factor", 1.0));
+		doc.set_option_decription(CDOD("depth-shift", CDOD::DATATYPE_FLOAT, "depth shift", 3.0));
 		doc.set_option_decription(CDOD("centered", CDOD::DATATYPE_BOOL, "flag to center the text"));
 	}
 
@@ -127,7 +128,7 @@ public:
 		}
 
 		figure.name=LongName(figure_name);
-		figure.z_shift=z_shift;
+		figure.z_shift=depth_shift;
 
 		data_manager.add_figure(figure);
 
