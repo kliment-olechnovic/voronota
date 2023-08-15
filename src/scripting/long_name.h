@@ -46,6 +46,11 @@ public:
 	{
 	}
 
+	LongName(const std::vector<std::string>& subnames, const std::string& subname) : subnames_(subnames)
+	{
+		subnames_.push_back(subname);
+	}
+
 	bool valid() const
 	{
 		if(subnames_.empty())

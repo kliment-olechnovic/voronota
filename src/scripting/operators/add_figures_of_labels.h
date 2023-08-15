@@ -59,7 +59,7 @@ public:
 	{
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("figure-name", CDOD::DATATYPE_STRING_ARRAY, "figure name", "'label' 'mode value'"));
-		doc.set_option_decription(CDOD("text", CDOD::DATATYPE_STRING, "labeling mode, atom or residue", "atom"));
+		doc.set_option_decription(CDOD("mode", CDOD::DATATYPE_STRING, "labeling mode, atom or residue", "atom"));
 		doc.set_option_decription(CDOD("text", CDOD::DATATYPE_STRING, "text template to draw", "${chain} ${rnum}${icode} ${rname} ${aname}"));
 		doc.set_option_decription(CDOD("scale", CDOD::DATATYPE_FLOAT, "scaling factor", 1.0));
 		doc.set_option_decription(CDOD("depth-shift", CDOD::DATATYPE_FLOAT, "depth shift", 3.0));
@@ -92,29 +92,14 @@ public:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		std::map< std::string, std::vector<std::size_t> > map_of_ids;
-
-		for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
-		{
-			const Atom& atom=data_manager.atoms()[*it];
-			std::ostringstream idstream;
-			idstream << atom.crad.chainID << "." << atom.crad.resSeq << atom.crad.iCode;
-			if(mode=="atom")
-			{
-				idstream << "." << atom.crad.name;
-			}
-			map_of_ids[idstream.str()].push_back(*it);
-		}
+		const std::map< std::string, std::vector<std::size_t> > map_of_ids=data_manager.generate_ids_for_of_labels(atom_ids, true, (mode=="atom"));
 
 		for(std::map< std::string, std::vector<std::size_t> >::const_iterator it=map_of_ids.begin();it!=map_of_ids.end();++it)
 		{
-			const std::string& label_id=it->first;
 			const std::vector<std::size_t>& atom_ids=it->second;
 			if(!atom_ids.empty())
 			{
-				std::vector<std::string> figure_name_vector=figure_name_start;
-				figure_name_vector.push_back(label_id);
-				LongName figure_name(figure_name_vector);
+				LongName figure_name(figure_name_start, it->first);
 
 				{
 					const std::set<std::size_t> figure_ids=LongName::match(data_manager.figures(), figure_name);

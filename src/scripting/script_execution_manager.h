@@ -26,6 +26,7 @@
 #include "operators/delete_adjuncts_of_atoms.h"
 #include "operators/delete_adjuncts_of_contacts.h"
 #include "operators/delete_figures.h"
+#include "operators/delete_figures_of_labels.h"
 #include "operators/delete_global_adjuncts.h"
 #include "operators/delete_objects.h"
 #include "operators/delete_selections_of_atoms.h"
@@ -248,6 +249,7 @@ public:
 		set_command_for_data_manager("delete-adjuncts-of-atoms", operators::DeleteAdjunctsOfAtoms(), true);
 		set_command_for_data_manager("delete-adjuncts-of-contacts", operators::DeleteAdjunctsOfContacts(), true);
 		set_command_for_data_manager("delete-figures", operators::DeleteFigures(), true);
+		set_command_for_data_manager("delete-figures-of-labels", operators::DeleteFiguresOfLabels(), true);
 		set_command_for_data_manager("delete-global-adjuncts", operators::DeleteGlobalAdjuncts(), true);
 		set_command_for_data_manager("delete-selections-of-atoms", operators::DeleteSelectionsOfAtoms(), true);
 		set_command_for_data_manager("delete-selections-of-contacts", operators::DeleteSelectionsOfContacts(), true);

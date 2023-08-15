@@ -1157,6 +1157,30 @@ public:
 		return result;
 	}
 
+	std::map< std::string, std::vector<std::size_t> > generate_ids_for_of_labels(const std::set<std::size_t>& atom_ids, const bool with_residue_info, const bool with_atom_info) const
+	{
+		std::map< std::string, std::vector<std::size_t> > map_of_ids;
+
+		for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
+		{
+			const std::size_t atom_id=(*it);
+			const Atom& atom=atoms()[atom_id];
+			std::ostringstream idstream;
+			idstream << atom.crad.chainID;
+			if(with_residue_info)
+			{
+				idstream << "." << atom.crad.resSeq << atom.crad.iCode;
+			}
+			if(with_atom_info)
+			{
+				idstream << "." << atom.crad.name;
+			}
+			map_of_ids[idstream.str()].push_back(atom_id);
+		}
+
+		return map_of_ids;
+	}
+
 	SelectionManager& selection_manager()
 	{
 		return selection_manager_;
