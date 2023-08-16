@@ -92,6 +92,9 @@ private:
 
 			std::vector<float> offset=origin;
 
+			std::vector<float> min_offset=offset;
+			std::vector<float> max_offset=offset;
+
 			for(std::size_t i=0;i<text.size();i++)
 			{
 				const char character=text[i];
@@ -117,25 +120,19 @@ private:
 					}
 					offset[0]+=horizotal_addition;
 				}
+				min_offset[0]=std::min(min_offset[0], offset[0]);
+				min_offset[1]=std::min(min_offset[1], offset[1]);
+				max_offset[0]=std::max(max_offset[0], offset[0]);
+				max_offset[1]=std::max(max_offset[1], offset[1]);
 			}
 
-			if(centered && !result.empty())
+			if(centered)
 			{
-				float mins[2]={result.vertices[0], result.vertices[1]};
-				float maxs[2]={result.vertices[0], result.vertices[1]};
 				for(std::size_t i=0;i<result.vertices.size();i+=3)
 				{
 					for(int j=0;j<2;j++)
 					{
-						mins[j]=std::min(mins[j], result.vertices[i+j]);
-						maxs[j]=std::max(maxs[j], result.vertices[i+j]);
-					}
-				}
-				for(std::size_t i=0;i<result.vertices.size();i+=3)
-				{
-					for(int j=0;j<2;j++)
-					{
-						result.vertices[i+j]-=(maxs[j]-mins[j])/2.0;
+						result.vertices[i+j]-=(max_offset[j]-min_offset[j])/2.0;
 					}
 				}
 			}

@@ -36,8 +36,11 @@ public:
 	double depth_shift;
 	bool centered;
 	bool no_outline;
+	auxiliaries::ColorUtilities::ColorInteger color_for_text;
+	auxiliaries::ColorUtilities::ColorInteger color_for_outline;
 
-	AddFiguresOfLabels() : scale(1.0), depth_shift(3.0), centered(false), no_outline(false)
+
+	AddFiguresOfLabels() : scale(1.0), depth_shift(3.0), centered(false), no_outline(false), color_for_text(auxiliaries::ColorUtilities::null_color()), color_for_outline(auxiliaries::ColorUtilities::null_color())
 	{
 	}
 
@@ -50,6 +53,8 @@ public:
 		depth_shift=input.get_value_or_default<double>("depth-shift", 3.0);
 		centered=input.get_flag("centered");
 		no_outline=input.get_flag("no-outline");
+		color_for_text=auxiliaries::ColorUtilities::color_from_name(input.get_value_or_default<std::string>("color-for-text", "null"));
+		color_for_outline=auxiliaries::ColorUtilities::color_from_name(input.get_value_or_default<std::string>("color-for-outline", "null"));
 
 		std::vector<std::string> default_figure_name_start;
 		default_figure_name_start.push_back("label");
@@ -67,6 +72,8 @@ public:
 		doc.set_option_decription(CDOD("depth-shift", CDOD::DATATYPE_FLOAT, "depth shift", 3.0));
 		doc.set_option_decription(CDOD("centered", CDOD::DATATYPE_BOOL, "flag to center the text"));
 		doc.set_option_decription(CDOD("no-outline", CDOD::DATATYPE_BOOL, "flag to not add text outline"));
+		doc.set_option_decription(CDOD("color-for-text", CDOD::DATATYPE_STRING, "color for text", "null, to take color of atoms"));
+		doc.set_option_decription(CDOD("color-for-outline", CDOD::DATATYPE_STRING, "color for text outline", "null, to use dark color"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -155,7 +162,7 @@ public:
 						const std::set<std::size_t> figure_ids=LongName::match(data_manager.figures(), figure_name);
 						if(!figure_ids.empty())
 						{
-							const unsigned int figure_color=data_manager.atoms_display_states()[atom_ids.front()].visuals.front().color;
+							const unsigned int figure_color=(color_for_text!=auxiliaries::ColorUtilities::null_color()) ? color_for_text : data_manager.atoms_display_states()[atom_ids.front()].visuals.front().color;
 							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_color(figure_color), figure_ids);
 							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_show(true), figure_ids);
 						}
@@ -174,7 +181,8 @@ public:
 						const std::set<std::size_t> figure_ids=LongName::match(data_manager.figures(), figure_name_for_outline);
 						if(!figure_ids.empty())
 						{
-							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_color(0x777777), figure_ids);
+							const unsigned int figure_color=(color_for_outline!=auxiliaries::ColorUtilities::null_color()) ? color_for_outline : 0x333333;
+							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_color(figure_color), figure_ids);
 							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_show(true), figure_ids);
 						}
 					}

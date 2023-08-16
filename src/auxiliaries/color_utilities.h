@@ -126,7 +126,11 @@ public:
 
 	static ColorInteger color_from_name(const std::string& name)
 	{
-		if(name.size()==1)
+		if(name=="null")
+		{
+			return null_color();
+		}
+		else if(name.size()==1)
 		{
 			return color_from_name(name[0]);
 		}
