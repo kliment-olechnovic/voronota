@@ -35,8 +35,9 @@ public:
 	double scale;
 	double depth_shift;
 	bool centered;
+	bool no_outline;
 
-	AddFiguresOfLabels() : scale(1.0), depth_shift(3.0), centered(false)
+	AddFiguresOfLabels() : scale(1.0), depth_shift(3.0), centered(false), no_outline(false)
 	{
 	}
 
@@ -48,6 +49,7 @@ public:
 		scale=input.get_value_or_default<double>("scale", 1.0);
 		depth_shift=input.get_value_or_default<double>("depth-shift", 3.0);
 		centered=input.get_flag("centered");
+		no_outline=input.get_flag("no-outline");
 
 		std::vector<std::string> default_figure_name_start;
 		default_figure_name_start.push_back("label");
@@ -64,6 +66,7 @@ public:
 		doc.set_option_decription(CDOD("scale", CDOD::DATATYPE_FLOAT, "scaling factor", 1.0));
 		doc.set_option_decription(CDOD("depth-shift", CDOD::DATATYPE_FLOAT, "depth shift", 3.0));
 		doc.set_option_decription(CDOD("centered", CDOD::DATATYPE_BOOL, "flag to center the text"));
+		doc.set_option_decription(CDOD("no-outline", CDOD::DATATYPE_BOOL, "flag to not add text outline"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -99,10 +102,19 @@ public:
 			const std::vector<std::size_t>& atom_ids=it->second;
 			if(!atom_ids.empty())
 			{
-				LongName figure_name(figure_name_start, it->first);
+				LongName figure_name(figure_name_start, it->first, "text");
+				LongName figure_name_for_outline(figure_name_start, it->first, "outline");
 
 				{
 					const std::set<std::size_t> figure_ids=LongName::match(data_manager.figures(), figure_name);
+					if(!figure_ids.empty())
+					{
+						data_manager.remove_figures(figure_ids);
+					}
+				}
+
+				{
+					const std::set<std::size_t> figure_ids=LongName::match(data_manager.figures(), figure_name_for_outline);
 					if(!figure_ids.empty())
 					{
 						data_manager.remove_figures(figure_ids);
@@ -132,19 +144,39 @@ public:
 					replace_all(text_to_use, "aname", (mode=="atom") ? atom.crad.name : std::string());
 				}
 
-				Figure figure;
-				if(FigureOfText::init_figure_of_text(text_to_use, false, origin, static_cast<float>(scale), centered, figure))
 				{
-					figure.name=figure_name;
-					figure.z_shift=depth_shift;
-					data_manager.add_figure(figure);
-
-					const std::set<std::size_t> figure_ids=LongName::match(data_manager.figures(), figure_name);
-					if(!figure_ids.empty())
+					Figure figure;
+					if(FigureOfText::init_figure_of_text(text_to_use, false, origin, static_cast<float>(scale), centered, figure))
 					{
-						const unsigned int figure_color=data_manager.atoms_display_states()[atom_ids.front()].visuals.front().color;
-						data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_color(figure_color), figure_ids);
-						data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_show(true), figure_ids);
+						figure.name=figure_name;
+						figure.z_shift=depth_shift;
+						data_manager.add_figure(figure);
+
+						const std::set<std::size_t> figure_ids=LongName::match(data_manager.figures(), figure_name);
+						if(!figure_ids.empty())
+						{
+							const unsigned int figure_color=data_manager.atoms_display_states()[atom_ids.front()].visuals.front().color;
+							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_color(figure_color), figure_ids);
+							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_show(true), figure_ids);
+						}
+					}
+				}
+
+				if(!no_outline)
+				{
+					Figure figure;
+					if(FigureOfText::init_figure_of_text(text_to_use, true, origin, static_cast<float>(scale), centered, figure))
+					{
+						figure.name=figure_name_for_outline;
+						figure.z_shift=depth_shift;
+						data_manager.add_figure(figure);
+
+						const std::set<std::size_t> figure_ids=LongName::match(data_manager.figures(), figure_name_for_outline);
+						if(!figure_ids.empty())
+						{
+							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_color(0x777777), figure_ids);
+							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_show(true), figure_ids);
+						}
 					}
 				}
 			}

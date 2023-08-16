@@ -36,8 +36,9 @@ public:
 	double scale;
 	double depth_shift;
 	bool centered;
+	bool as_outline;
 
-	AddFigureOfText() : scale(1.0), depth_shift(3.0), centered(false)
+	AddFigureOfText() : scale(1.0), depth_shift(3.0), centered(false), as_outline(false)
 	{
 	}
 
@@ -51,6 +52,7 @@ public:
 		scale=input.get_value_or_default<double>("scale", 1.0);
 		depth_shift=input.get_value_or_default<double>("z-shift", 3.0);
 		centered=input.get_flag("centered");
+		as_outline=input.get_flag("as-outline");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -63,6 +65,7 @@ public:
 		doc.set_option_decription(CDOD("scale", CDOD::DATATYPE_FLOAT, "scaling factor", 1.0));
 		doc.set_option_decription(CDOD("depth-shift", CDOD::DATATYPE_FLOAT, "depth shift", 3.0));
 		doc.set_option_decription(CDOD("centered", CDOD::DATATYPE_BOOL, "flag to center the text"));
+		doc.set_option_decription(CDOD("as-outline", CDOD::DATATYPE_BOOL, "flag to generate text graphics as outline"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -122,7 +125,7 @@ public:
 
 		Figure figure;
 
-		if(!FigureOfText::init_figure_of_text(text, false, origin, static_cast<float>(scale), centered, figure))
+		if(!FigureOfText::init_figure_of_text(text, as_outline, origin, static_cast<float>(scale), centered, figure))
 		{
 			throw std::runtime_error(std::string("Failed to generate text graphics."));
 		}

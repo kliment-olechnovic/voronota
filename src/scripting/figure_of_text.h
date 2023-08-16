@@ -20,7 +20,7 @@ public:
 		}
 
 		TextGraphicsGenerator::TextGraphicsResultBundle text_graphics;
-		if(!TextGraphicsGenerator::generate_text_graphics(text, outline, 1.0f, 1.0f, origin, scale*(1.0f/static_cast<float>(TextGraphicsGenerator::letter_size())), 0.6, centered, text_graphics))
+		if(!TextGraphicsGenerator::generate_text_graphics(text, outline, 1.0f, 1.0f, origin, scale*(1.5f/static_cast<float>(TextGraphicsGenerator::letter_size())), 0.7, centered, text_graphics))
 		{
 			return false;
 		}
