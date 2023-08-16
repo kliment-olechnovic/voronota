@@ -50,8 +50,26 @@ public:
 					ImVec4 color_text=ImVec4(ot.r, ot.g, ot.b, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					{
-						ImGuiAddonGlobalTextColorVector gtcv(ot.char_colors.size(), ot.char_colors.data());
-						ImGui::TextUnformatted(ot.content.c_str());
+						const std::size_t max_text_chunk_size=5000;
+						if(ot.content.size()<=(max_text_chunk_size*2+100))
+						{
+							ImGuiAddonGlobalTextColorVector gtcv(ot.char_colors.size(), ot.char_colors.data());
+							ImGui::TextUnformatted(ot.content.c_str());
+						}
+						else
+						{
+							{
+								ImGuiAddonGlobalTextColorVector gtcv(max_text_chunk_size, ot.char_colors.data());
+								ImGui::TextUnformatted(ot.content.c_str(), ot.content.c_str()+max_text_chunk_size);
+							}
+							ImGui::TextUnformatted("-------------------------------------------\n");
+							ImGui::TextUnformatted("-------- middle part not displayed --------\n");
+							ImGui::TextUnformatted("-------------------------------------------\n");
+							{
+								ImGuiAddonGlobalTextColorVector gtcv(max_text_chunk_size, ot.char_colors.data()+(ot.content.size()-max_text_chunk_size));
+								ImGui::TextUnformatted(ot.content.c_str()+(ot.content.size()-max_text_chunk_size), ot.content.c_str()+ot.content.size());
+							}
+						}
 					}
 					ImGui::PopStyleColor();
 					execute_copy_menu(i, ot.content);
@@ -61,7 +79,7 @@ public:
 			ImGui::PopItemWidth();
 			if(text_interface_info.scroll_output)
 			{
-				ImGui::SetScrollHereY();
+				ImGui::SetScrollHereY(1.0);
 			}
 			text_interface_info.scroll_output=false;
 			ImGui::EndChild();
