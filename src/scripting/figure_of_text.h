@@ -12,7 +12,7 @@ namespace scripting
 class FigureOfText
 {
 public:
-	static bool init_figure_of_text(const std::string& text, const std::vector<float>& origin, const float scale, const bool centered, Figure& figure)
+	static bool init_figure_of_text(const std::string& text, const bool outline, const std::vector<float>& origin, const float scale, const bool centered, Figure& figure)
 	{
 		if(text.empty())
 		{
@@ -20,7 +20,7 @@ public:
 		}
 
 		TextGraphicsGenerator::TextGraphicsResultBundle text_graphics;
-		if(!TextGraphicsGenerator::generate_text_graphics(text, origin, scale*(1.0f/8.0f), centered, text_graphics))
+		if(!TextGraphicsGenerator::generate_text_graphics(text, outline, 1.0f, 1.0f, origin, scale*(1.0f/static_cast<float>(TextGraphicsGenerator::letter_size())), 0.6, centered, text_graphics))
 		{
 			return false;
 		}
@@ -48,62 +48,78 @@ private:
 		{
 			std::vector<float> vertices;
 			std::vector<unsigned int> indices;
+
+			bool empty() const
+			{
+				return indices.empty();
+			}
 		};
 
-		static bool generate_text_graphics(const std::string& text, const std::vector<float>& origin, const float scaling_factor, const bool centered, TextGraphicsResultBundle& result)
+		static int letter_size()
+		{
+			return msize();
+		}
+
+		static bool generate_text_graphics(
+				const std::string& text,
+				const bool outline,
+				const float horizontal_spacing,
+				const float vertical_spacing,
+				const std::vector<float>& raw_origin,
+				const float scaling_factor,
+				const float width_to_height_ratio,
+				const bool centered,
+				TextGraphicsResultBundle& result)
 		{
 			result=TextGraphicsResultBundle();
 
-			const std::vector<GridPoint> text_grid_points=render_text(text, 1, 1);
-
-			if(text_grid_points.empty())
+			if(text.empty())
 			{
 				return false;
 			}
 
-			std::map<GridPoint, unsigned int> grid_points_to_ids;
+			result.vertices.reserve(text.size()*150);
+			result.indices.reserve(text.size()*300);
 
-			for(std::size_t i=0;i<text_grid_points.size();i++)
+			const float horizotal_addition=((static_cast<float>(msize())+horizontal_spacing)*scaling_factor*width_to_height_ratio);
+			const float vertical_addition=0.0f-((static_cast<float>(msize())+vertical_spacing)*scaling_factor);
+
+			std::vector<float> origin=raw_origin;
+			if(origin.size()!=3)
 			{
-				const GridPoint& gp=text_grid_points[i];
-				grid_points_to_ids[gp]=0;
-				grid_points_to_ids[GridPoint(gp.x+1, gp.y)]=0;
-				grid_points_to_ids[GridPoint(gp.x, gp.y+1)]=0;
-				grid_points_to_ids[GridPoint(gp.x+1, gp.y+1)]=0;
+				origin.resize(3, 0.0f);
 			}
 
+			std::vector<float> offset=origin;
+
+			for(std::size_t i=0;i<text.size();i++)
 			{
-				unsigned int i=0;
-				for(std::map<GridPoint, unsigned int>::iterator it=grid_points_to_ids.begin();it!=grid_points_to_ids.end();++it)
+				const char character=text[i];
+				if(character=='\n')
 				{
-					it->second=i++;
+					offset[0]=origin[0];
+					offset[1]+=vertical_addition;
+				}
+				else if(character>=' ')
+				{
+					const TextGraphicsResultBundle& charbundle=render_character_to_graphics_bundle(character, outline);
+					if(!charbundle.empty())
+					{
+						unsigned int index_shift=result.vertices.size()/3;
+						for(std::size_t j=0;j<charbundle.vertices.size();j++)
+						{
+							result.vertices.push_back(charbundle.vertices[j]*(j%3==0 ? scaling_factor*width_to_height_ratio : (j%3==1 ? scaling_factor : 1.0f))+offset[j%3]);
+						}
+						for(std::size_t j=0;j<charbundle.indices.size();j++)
+						{
+							result.indices.push_back(charbundle.indices[j]+index_shift);
+						}
+					}
+					offset[0]+=horizotal_addition;
 				}
 			}
 
-			const float shift[3]={(origin.size()>0 ? origin[0] : 0.0f), (origin.size()>1 ? origin[1] : 0.0f), (origin.size()>2 ? origin[2] : 0.0f)};
-
-			result.vertices.reserve(grid_points_to_ids.size()*3);
-			for(std::map<GridPoint, unsigned int>::const_iterator it=grid_points_to_ids.begin();it!=grid_points_to_ids.end();++it)
-			{
-				const GridPoint& gp=it->first;
-				result.vertices.push_back(static_cast<float>(gp.x)*scaling_factor+shift[0]);
-				result.vertices.push_back(static_cast<float>(gp.y)*scaling_factor+shift[1]);
-				result.vertices.push_back(shift[2]);
-			}
-
-			result.indices.reserve(grid_points_to_ids.size()*6);
-			for(std::size_t i=0;i<text_grid_points.size();i++)
-			{
-				const GridPoint& gp=text_grid_points[i];
-				result.indices.push_back(grid_points_to_ids[gp]);
-				result.indices.push_back(grid_points_to_ids[GridPoint(gp.x+1, gp.y)]);
-				result.indices.push_back(grid_points_to_ids[GridPoint(gp.x, gp.y+1)]);
-				result.indices.push_back(grid_points_to_ids[GridPoint(gp.x, gp.y+1)]);
-				result.indices.push_back(grid_points_to_ids[GridPoint(gp.x+1, gp.y+1)]);
-				result.indices.push_back(grid_points_to_ids[GridPoint(gp.x+1, gp.y)]);
-			}
-
-			if(centered)
+			if(centered && !result.empty())
 			{
 				float mins[2]={result.vertices[0], result.vertices[1]};
 				float maxs[2]={result.vertices[0], result.vertices[1]};
@@ -124,70 +140,214 @@ private:
 				}
 			}
 
-			return true;
+			return (!result.empty());
 		}
 
 	private:
-		struct GridPoint
-		{
-			int x;
-			int y;
+		typedef std::vector< std::vector<unsigned int> > Matrix;
 
-			GridPoint(const int x, const int y) : x(x), y(y)
+		static inline int msize()
+		{
+			static int msize_value=19;
+			return msize_value;
+		}
+
+		static const TextGraphicsResultBundle& render_character_to_graphics_bundle(const char character, const bool outline)
+		{
+			static const TextGraphicsResultBundle blank_bundle;
+			static std::vector<TextGraphicsResultBundle> bundles(128);
+			static std::vector<TextGraphicsResultBundle> outline_bundles(128);
+
+			const int character_id=static_cast<int>(character);
+			if(character_id<33 || character_id>=128)
 			{
+				return blank_bundle;
 			}
 
-			bool operator<(const GridPoint& gp) const
-			{
-				return (x<gp.x || (x==gp.x && y<gp.y));
-			}
-		};
+			TextGraphicsResultBundle& bundle=outline ? outline_bundles[character_id] : bundles[character_id];
 
-		static bool render_character(const char character, const GridPoint& offset, std::vector<GridPoint>& text_points)
+			if(bundle.empty())
+			{
+				const Matrix& matrix=render_character_to_matrix(character, outline);
+				{
+					std::map< unsigned int, std::pair<int, int> > map_of_present_points;
+					for(int row=0;row<msize();row++)
+					{
+						for (int col=0;col<msize();col++)
+						{
+							if(matrix[row][col]>0)
+							{
+								map_of_present_points[matrix[row][col]-1]=std::pair<int, int>(col, row);
+							}
+						}
+					}
+					for(std::map< unsigned int, std::pair<int, int> >::const_iterator it=map_of_present_points.begin();it!=map_of_present_points.end();++it)
+					{
+						const std::pair<int, int>& gp=it->second;
+						bundle.vertices.push_back(static_cast<float>(gp.first));
+						bundle.vertices.push_back(static_cast<float>(gp.second));
+						bundle.vertices.push_back(0.0f);
+					}
+				}
+
+				for(int row=0;row<(msize()-1);row++)
+				{
+					for (int col=0;col<(msize()-1);col++)
+					{
+						const int hits=(matrix[row][col]>0 ? 1 : 0)+(matrix[row][col+1]>0 ? 1 : 0)+(matrix[row+1][col]>0 ? 1 : 0)+(matrix[row+1][col+1]>0 ? 1 : 0);
+						if(hits==4)
+						{
+							bundle.indices.push_back(matrix[row][col]-1);
+							bundle.indices.push_back(matrix[row][col+1]-1);
+							bundle.indices.push_back(matrix[row+1][col]-1);
+
+							bundle.indices.push_back(matrix[row+1][col]-1);
+							bundle.indices.push_back(matrix[row+1][col+1]-1);
+							bundle.indices.push_back(matrix[row][col+1]-1);
+						}
+						else if(hits==3)
+						{
+							if(matrix[row][col]>0)
+							{
+								bundle.indices.push_back(matrix[row][col]-1);
+							}
+							if(matrix[row][col+1]>0)
+							{
+								bundle.indices.push_back(matrix[row][col+1]-1);
+							}
+							if(matrix[row+1][col]>0)
+							{
+								bundle.indices.push_back(matrix[row+1][col]-1);
+							}
+							if(matrix[row+1][col+1]>0)
+							{
+								bundle.indices.push_back(matrix[row+1][col+1]-1);
+							}
+						}
+					}
+				}
+			}
+
+			return bundle;
+		}
+
+		static const Matrix& render_character_to_matrix(const char character, const bool outline)
 		{
+			static const Matrix blank_matrix(msize(), std::vector<unsigned int>(msize(), 0));
+			static std::vector<Matrix> matrices(128);
+			static std::vector<Matrix> outline_matrices(128);
+
+			const int character_id=static_cast<int>(character);
+			if(character_id<33 || character_id>=128)
+			{
+				return blank_matrix;
+			}
+
 			const unsigned char* bitmap=get_character_bitmap(character);
 			if(bitmap==0)
 			{
-				return false;
+				return blank_matrix;
 			}
 
-			if(character<=' ')
+			Matrix& matrix=outline ? outline_matrices[character_id] : matrices[character_id];
+
+			if(matrix.empty())
 			{
-				return true;
+				matrix=blank_matrix;
+
+				for(int row=0;row<8;row++)
+				{
+					for (int col=0;col<8;col++)
+					{
+						if(bitmap[7-row] & 1 << col)
+						{
+							matrix[2+row*2][2+col*2]++;
+							matrix[2+row*2-1][2+col*2]++;
+							matrix[2+row*2][2+col*2-1]++;
+							matrix[2+row*2+1][2+col*2]++;
+							matrix[2+row*2][2+col*2+1]++;
+						}
+					}
+				}
+
+				for(int row=0;row<8;row++)
+				{
+					for (int col=0;col<8;col++)
+					{
+						if(matrix[2+row*2][2+col*2])
+						{
+							if(row<7 && matrix[2+row*2+2][2+col*2]>0)
+							{
+								matrix[2+row*2+1][2+col*2-1]++;
+								matrix[2+row*2+1][2+col*2+1]++;
+							}
+							if(col<7 && matrix[2+row*2][2+col*2+2]>0)
+							{
+								matrix[2+row*2-1][2+col*2+1]++;
+								matrix[2+row*2+1][2+col*2+1]++;
+							}
+							if(row<7 && col<7 && matrix[2+row*2+2][2+col*2+2]>0)
+							{
+								matrix[2+row*2+1][2+col*2+1]++;
+							}
+							if(row<7 && col>0 && matrix[2+row*2+2][2+col*2-2]>0)
+							{
+								matrix[2+row*2+1][2+col*2-1]++;
+							}
+							if(row>0 && col<7 && matrix[2+row*2-2][2+col*2+2]>0)
+							{
+								matrix[2+row*2-1][2+col*2+1]++;
+							}
+						}
+					}
+				}
+
+				if(outline)
+				{
+					Matrix omatrix=blank_matrix;
+					for(int row=1;row<(msize()-1);row++)
+					{
+						for (int col=1;col<(msize()-1);col++)
+						{
+							if(matrix[row][col]>0 && (matrix[row-1][col]==0 || matrix[row+1][col]==0 || matrix[row][col-1]==0 || matrix[row][col+1]==0))
+							{
+								omatrix[row][col]=1;
+								if(matrix[row-1][col]==0)
+								{
+									omatrix[row-1][col]=1;
+								}
+								if(matrix[row+1][col]==0)
+								{
+									omatrix[row+1][col]=1;
+								}
+								if(matrix[row][col-1]==0)
+								{
+									omatrix[row][col-1]=1;
+								}
+								if(matrix[row][col+1]==0)
+								{
+									omatrix[row][col+1]=1;
+								}
+							}
+						}
+					}
+					matrix=omatrix;
+				}
+
+				unsigned int i=1;
+				for(int row=0;row<msize();row++)
+				{
+					for (int col=0;col<msize();col++)
+					{
+						if(matrix[row][col]>0)
+						{
+							matrix[row][col]=i++;
+						}
+					}
+				}
 			}
 
-		    for(int row=0;row<8;row++)
-		    {
-		        for (int col=0;col<8;col++)
-		        {
-		            if(bitmap[row] & 1 << col)
-		            {
-		            	text_points.push_back(GridPoint(offset.x+col, offset.y+(7-row)));
-		            }
-		        }
-		    }
-		    return true;
-		}
-
-		static std::vector<GridPoint> render_text(const std::string& text, const int horizontal_spacing, const int vertical_spacing)
-		{
-			std::vector<GridPoint> text_points;
-			GridPoint offset(0, 0);
-			for(std::size_t i=0;i<text.size();i++)
-			{
-				const char character=text[i];
-				if(character=='\n')
-				{
-					offset.x=0;
-					offset.y-=(8+vertical_spacing);
-				}
-				else if(character>=' ')
-				{
-					render_character(character, offset, text_points);
-					offset.x+=(8+horizontal_spacing);
-				}
-			}
-			return text_points;
+		    return matrix;
 		}
 
 		static const unsigned char* get_character_bitmap(const char character)

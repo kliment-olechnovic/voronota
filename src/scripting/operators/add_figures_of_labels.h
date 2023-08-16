@@ -133,7 +133,7 @@ public:
 				}
 
 				Figure figure;
-				if(FigureOfText::init_figure_of_text(text_to_use, origin, static_cast<float>(scale), centered, figure))
+				if(FigureOfText::init_figure_of_text(text_to_use, false, origin, static_cast<float>(scale), centered, figure))
 				{
 					figure.name=figure_name;
 					figure.z_shift=depth_shift;

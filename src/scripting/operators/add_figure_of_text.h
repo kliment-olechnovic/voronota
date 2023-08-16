@@ -122,7 +122,7 @@ public:
 
 		Figure figure;
 
-		if(!FigureOfText::init_figure_of_text(text, origin, static_cast<float>(scale), centered, figure))
+		if(!FigureOfText::init_figure_of_text(text, false, origin, static_cast<float>(scale), centered, figure))
 		{
 			throw std::runtime_error(std::string("Failed to generate text graphics."));
 		}
