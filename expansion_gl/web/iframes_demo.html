@@ -12,7 +12,6 @@
 		<div id="container1" style="display: inline-block; margin-right: 20px;"><h1>First</h1></div>
 		<div id="container2" style="display: inline-block;"><h1>Second</h1></div>
 		
-		
 		<script>
 			var iframe1_handle=voronota_viewer_init_as_iframe({
 				iframe_container_id: "container1",
@@ -54,6 +53,35 @@
 					{action: "_hspace", size: 15},
 					{action: "snap Voronota-GL-screenshot.png -opaque", label: "Save image"}],
 				prettify_buttons_panel: true
+			});
+		</script>
+		
+		<div id="container3">
+			<h2>Common actions</h2>
+			
+			Ser background color:
+			<button id="button_set_background_white">white</button>
+			<button id="button_set_background_gray">gray</button>
+			<button id="button_set_background_black">black</button>
+		</div>
+		
+		<script>
+			document.getElementById('button_set_background_white').addEventListener('click', function()
+			{
+				iframe1_handle.contentWindow.voronota_background("white");
+				iframe2_handle.contentWindow.voronota_background("white");
+			});
+			
+			document.getElementById('button_set_background_gray').addEventListener('click', function()
+			{
+				iframe1_handle.contentWindow.voronota_background("0xCCCCCC");
+				iframe2_handle.contentWindow.voronota_background("0xCCCCCC");
+			});
+			
+			document.getElementById('button_set_background_black').addEventListener('click', function()
+			{
+				iframe1_handle.contentWindow.voronota_background("black");
+				iframe2_handle.contentWindow.voronota_background("black");
 			});
 		</script>
 	</body>
