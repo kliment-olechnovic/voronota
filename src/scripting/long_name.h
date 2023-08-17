@@ -88,6 +88,34 @@ public:
 		return match(longname.subnames());
 	}
 
+	friend std::ostream& operator<<(std::ostream& output, const LongName& ln)
+	{
+		output << ln.subnames().size();
+		for(std::size_t i=0;i<ln.subnames().size();i++)
+		{
+			output << " " << ln.subnames()[i];
+		}
+		output << "\n";
+		return output;
+	}
+
+	friend std::istream& operator>>(std::istream& input, LongName& ln)
+	{
+		std::vector<std::string> subnames;
+		int n=0;
+		input >> n;
+		if(n>0)
+		{
+			subnames.resize(n);
+			for(std::size_t i=0;i<subnames.size();i++)
+			{
+				input >> subnames[i];
+			}
+		}
+		ln=LongName(subnames);
+		return input;
+	}
+
 private:
 	bool match(const std::vector<std::string>& ref_subnames) const
 	{
