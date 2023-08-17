@@ -232,7 +232,7 @@ public:
 						{
 							if(named_selections_info.atoms_mapping_of_names.empty())
 							{
-								ImGui::TextUnformatted("No named selections of atoms currently");
+								ImGui::TextUnformatted("No named selections of atoms currently.");
 							}
 							else
 							{
@@ -243,17 +243,21 @@ public:
 									const std::string displayname=std::string("  ")+selname+"##for_atoms_named_selection";
 									if(ImGui::BeginMenu(displayname.c_str()))
 									{
-										if(ImGui::Selectable("set as atoms selection string##for_atoms_named_selection"))
+										if(ImGui::Selectable("Set as atoms selection string##for_atoms_named_selection"))
 										{
 											set_atoms_selection_string_and_save_suggestion(std::string("[")+selname+"]");
 										}
 
-										if(ImGui::Selectable("mark atoms in picked objects##for_atoms_named_selection"))
+										ImGui::Separator();
+
+										ImGui::TextUnformatted("Actions on picked objects:");
+
+										if(ImGui::Selectable("  mark atoms of named selection##for_atoms_named_selection"))
 										{
 											result=std::string("mark-atoms -use [")+selname+"]";
 										}
 
-										if(ImGui::Selectable("remove for picked objects##for_atoms_named_selection"))
+										if(ImGui::Selectable("  remove named selection##for_atoms_named_selection"))
 										{
 											result=std::string("delete-selections-of-atoms -names ")+selname;
 										}
@@ -385,7 +389,7 @@ public:
 						{
 							if(named_selections_info.contacts_mapping_of_names.empty())
 							{
-								ImGui::TextUnformatted("No named selections of contacts currently");
+								ImGui::TextUnformatted("No named selections of contacts currently.");
 							}
 							else
 							{
@@ -396,17 +400,21 @@ public:
 									const std::string displayname=std::string("  ")+selname+"##for_contacts_named_selection";
 									if(ImGui::BeginMenu(displayname.c_str()))
 									{
-										if(ImGui::Selectable("set as contacts selection string##for_contacts_named_selection"))
+										if(ImGui::Selectable("Set as contacts selection string##for_contacts_named_selection"))
 										{
 											set_contacts_selection_string_and_save_suggestion(std::string("[")+selname+"]");
 										}
 
-										if(ImGui::Selectable("mark contacts in picked objects##for_contacts_named_selection"))
+										ImGui::Separator();
+
+										ImGui::TextUnformatted("Actions on picked objects:");
+
+										if(ImGui::Selectable("  mark contacts of named selection##for_contacts_named_selection"))
 										{
 											result=std::string("mark-contacts -use [")+selname+"]";
 										}
 
-										if(ImGui::Selectable("remove for picked objects##for_contacts_named_selection"))
+										if(ImGui::Selectable("  remove named selection##for_contacts_named_selection"))
 										{
 											result=std::string("delete-selections-of-contacts -names ")+selname;
 										}
