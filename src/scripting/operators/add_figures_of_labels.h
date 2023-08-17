@@ -32,15 +32,14 @@ public:
 	std::string mode;
 	std::string text;
 	std::vector<std::string> figure_name_start;
+	std::string color_for_text;
+	std::string color_for_outline;
 	double scale;
 	double depth_shift;
 	bool centered;
 	bool no_outline;
-	auxiliaries::ColorUtilities::ColorInteger color_for_text;
-	auxiliaries::ColorUtilities::ColorInteger color_for_outline;
 
-
-	AddFiguresOfLabels() : scale(1.0), depth_shift(3.0), centered(false), no_outline(false), color_for_text(auxiliaries::ColorUtilities::null_color()), color_for_outline(auxiliaries::ColorUtilities::null_color())
+	AddFiguresOfLabels() : scale(1.0), depth_shift(3.0), centered(false), no_outline(false)
 	{
 	}
 
@@ -53,8 +52,8 @@ public:
 		depth_shift=input.get_value_or_default<double>("depth-shift", 3.0);
 		centered=input.get_flag("centered");
 		no_outline=input.get_flag("no-outline");
-		color_for_text=auxiliaries::ColorUtilities::color_from_name(input.get_value_or_default<std::string>("color-for-text", "null"));
-		color_for_outline=auxiliaries::ColorUtilities::color_from_name(input.get_value_or_default<std::string>("color-for-outline", "null"));
+		color_for_text=input.get_value_or_default<std::string>("color-for-text", "_of_atom");
+		color_for_outline=input.get_value_or_default<std::string>("color-for-outline", "black");
 
 		std::vector<std::string> default_figure_name_start;
 		default_figure_name_start.push_back("label");
@@ -72,8 +71,8 @@ public:
 		doc.set_option_decription(CDOD("depth-shift", CDOD::DATATYPE_FLOAT, "depth shift", 3.0));
 		doc.set_option_decription(CDOD("centered", CDOD::DATATYPE_BOOL, "flag to center the text"));
 		doc.set_option_decription(CDOD("no-outline", CDOD::DATATYPE_BOOL, "flag to not add text outline"));
-		doc.set_option_decription(CDOD("color-for-text", CDOD::DATATYPE_STRING, "color for text", "null, to take color of atoms"));
-		doc.set_option_decription(CDOD("color-for-outline", CDOD::DATATYPE_STRING, "color for text outline", "null, to use dark color"));
+		doc.set_option_decription(CDOD("color-for-text", CDOD::DATATYPE_STRING, "color for text", "_of_atom, to take color of atoms"));
+		doc.set_option_decription(CDOD("color-for-outline", CDOD::DATATYPE_STRING, "color for text outline", "black"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -93,6 +92,16 @@ public:
 		if(figure_name_start.empty())
 		{
 			throw std::runtime_error(std::string("No figure name start provided."));
+		}
+
+		if(color_for_text!="_of_atom" && !auxiliaries::ColorUtilities::color_valid(auxiliaries::ColorUtilities::color_from_name(color_for_text)))
+		{
+			throw std::runtime_error(std::string("Invalid text color."));
+		}
+
+		if(color_for_outline!="_of_atom" && !auxiliaries::ColorUtilities::color_valid(auxiliaries::ColorUtilities::color_from_name(color_for_outline)))
+		{
+			throw std::runtime_error(std::string("Invalid text outline color."));
 		}
 
 		const std::set<std::size_t> atom_ids=data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
@@ -162,7 +171,7 @@ public:
 						const std::set<std::size_t> figure_ids=LongName::match(data_manager.figures(), figure_name);
 						if(!figure_ids.empty())
 						{
-							const unsigned int figure_color=(color_for_text!=auxiliaries::ColorUtilities::null_color()) ? color_for_text : data_manager.atoms_display_states()[atom_ids.front()].visuals.front().color;
+							const unsigned int figure_color=(color_for_text=="_of_atom") ? data_manager.atoms_display_states()[atom_ids.front()].visuals.front().color : auxiliaries::ColorUtilities::color_from_name(color_for_text);
 							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_color(figure_color), figure_ids);
 							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_show(true), figure_ids);
 						}
@@ -181,7 +190,7 @@ public:
 						const std::set<std::size_t> figure_ids=LongName::match(data_manager.figures(), figure_name_for_outline);
 						if(!figure_ids.empty())
 						{
-							const unsigned int figure_color=(color_for_outline!=auxiliaries::ColorUtilities::null_color()) ? color_for_outline : 0x333333;
+							const unsigned int figure_color=(color_for_outline=="_of_atom") ? data_manager.atoms_display_states()[atom_ids.front()].visuals.front().color : auxiliaries::ColorUtilities::color_from_name(color_for_outline);
 							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_color(figure_color), figure_ids);
 							data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_show(true), figure_ids);
 						}
