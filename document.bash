@@ -87,7 +87,21 @@ div#TOC > ul > li > ul > li ul { display: none; }
 </style>
 EOF
 
-echo "<h1>$(./voronota | head -1)</h1>" > $TMPLDIR/include_before_body.html
+{
+echo "<h1>$(./voronota | head -1)</h1>"
+
+cat << 'EOF'
+<h2>Quick links</h2>
+<ul>
+<li><a href="./expansion_js/index.html">Voronota-JS</a> (for advanced scripting using JavaScript)</li>
+<li><a href="./expansion_gl/index.html">Voronota-GL</a> (for advanced scripting and visualization)</li>
+<li><a href="./expansion_gl/web/index.html">Web Voronota-GL</a> (online version of Voronota-GL)</li>
+</ul>
+
+<h2>Table of contents</h2>
+EOF
+} \
+> $TMPLDIR/include_before_body.html
 
 pandoc $TMPLDIR/documentation.markdown -f markdown -t html --toc -H $TMPLDIR/include_in_header.html -B $TMPLDIR/include_before_body.html -s -o ./index.html
 
