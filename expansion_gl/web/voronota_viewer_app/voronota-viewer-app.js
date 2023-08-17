@@ -196,6 +196,14 @@ function voronota_viewer_init(config)
 					voronota_viewer_enqueue_script(config.post_init_operations);
 				}
 			}
+			if(config.loadscreen_id)
+			{
+				loadscreen=document.getElementById(config.loadscreen_id);
+				if(loadscreen)
+				{
+					loadscreen.style.display='none';
+				}
+			}
 		})],
 		arguments: ['--window-width', '500', '--window-height', '500', '--gui-scaling', ''+voronota_viewer_screen_pixel_ratio(), '--custom-font-file', 'font.ttf'],
 		print: ((text) => {	console.log(text);}),

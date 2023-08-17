@@ -93,6 +93,9 @@ function voronota_viewer_init_as_iframe(config)
 				${additional_head_content_string}
 			</head>
 			<body>
+				<div id="loadscreen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #CCCCCC; z-index: 9999;">
+					<h2 style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">Loading Voronota-GL ...</h2>
+				</div>
 				${additional_body_content_string}
 				<script src=${main_script_path_string}><\/script>
 				<script>
@@ -105,6 +108,7 @@ function voronota_viewer_init_as_iframe(config)
 						canvas_container_id: ${canvas_container_id_string},
 						buttons_container_id: ${buttons_container_id_string},
 						buttons_style_class: ${buttons_style_class_string},
+						loadscreen_id: "loadscreen"
 					});
 				<\/script>
 			</body>
