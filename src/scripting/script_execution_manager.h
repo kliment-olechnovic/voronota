@@ -20,6 +20,7 @@
 #include "operators/color_atoms.h"
 #include "operators/color_contacts.h"
 #include "operators/color_figures.h"
+#include "operators/color_figures_of_labels.h"
 #include "operators/construct_contacts.h"
 #include "operators/construct_triangulation.h"
 #include "operators/copy_object.h"
@@ -140,6 +141,7 @@
 #include "operators/show_atoms.h"
 #include "operators/show_contacts.h"
 #include "operators/show_figures.h"
+#include "operators/show_figures_of_labels.h"
 #include "operators/show_next_picked_object.h"
 #include "operators/show_objects.h"
 #include "operators/smooth_adjacent_contact_adjunct_values.h"
@@ -244,6 +246,7 @@ public:
 		set_command_for_data_manager("color-atoms", operators::ColorAtoms(), true);
 		set_command_for_data_manager("color-contacts", operators::ColorContacts(), true);
 		set_command_for_data_manager("color-figures", operators::ColorFigures(), true);
+		set_command_for_data_manager("color-figures-of-labels", operators::ColorFiguresOfLabels(), true);
 		set_command_for_data_manager("construct-contacts", operators::ConstructContacts(), true);
 		set_command_for_data_manager("construct-triangulation", operators::ConstructTriangulation(), true);
 		set_command_for_data_manager("delete-adjuncts-of-atoms", operators::DeleteAdjunctsOfAtoms(), true);
@@ -280,6 +283,7 @@ public:
 		set_command_for_data_manager("hide-atoms", operators::HideAtoms(), true);
 		set_command_for_data_manager("hide-contacts", operators::HideContacts(), true);
 		set_command_for_data_manager("hide-figures", operators::HideFigures(), true);
+		set_command_for_data_manager("hide-figures-of-labels", operators::HideFiguresOfLabels(), true);
 		set_command_for_data_manager("import-adjuncts-of-atoms", operators::ImportAdjunctsOfAtoms(), true);
 		set_command_for_data_manager("import-contacts", operators::ImportContacts(), false);
 		set_command_for_data_manager("import-figure-voxels", operators::ImportFigureVoxels(), false);
@@ -335,6 +339,7 @@ public:
 		set_command_for_data_manager("show-atoms", operators::ShowAtoms(), true);
 		set_command_for_data_manager("show-contacts", operators::ShowContacts(), true);
 		set_command_for_data_manager("show-figures", operators::ShowFigures(), true);
+		set_command_for_data_manager("show-figures-of-labels", operators::ShowFiguresOfLabels(), true);
 		set_command_for_data_manager("smooth-adjacent-contact-adjunct-values", operators::SmoothAdjacentContactAdjunctValues(), true);
 		set_command_for_data_manager("sort-atoms-by-residue-id", operators::SortAtomsByResidueID(), true);
 		set_command_for_data_manager("spectrum-atoms", operators::SpectrumAtoms(), true);
