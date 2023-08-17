@@ -1072,7 +1072,41 @@ private:
 				if(ImGui::BeginMenu("  Add or replace standard labels##add_labels"))
 				{
 					static bool labels_centered=false;
+
+					static int label_scale_option_id=1;
+					static std::vector<std::string> label_scale_options;
+					if(label_scale_options.empty())
+					{
+						label_scale_options.push_back(" ");
+						label_scale_options.push_back(" -scale 1.0 ");
+						label_scale_options.push_back(" -scale 2.0 ");
+						label_scale_options.push_back(" -scale 3.0 ");
+						label_scale_options.push_back(" -scale 4.0 ");
+						label_scale_options.push_back(" -scale 5.0 ");
+					}
+
+					static int label_depth_shift_option_id=3;
+					static std::vector<std::string> label_depth_shift_options;
+					if(label_depth_shift_options.empty())
+					{
+						label_depth_shift_options.push_back(" ");
+						label_depth_shift_options.push_back(" -depth-shift 1.0 ");
+						label_depth_shift_options.push_back(" -depth-shift 2.0 ");
+						label_depth_shift_options.push_back(" -depth-shift 3.0 ");
+						label_depth_shift_options.push_back(" -depth-shift 4.0 ");
+						label_depth_shift_options.push_back(" -depth-shift 5.0 ");
+						label_depth_shift_options.push_back(" -depth-shift 6.0 ");
+						label_depth_shift_options.push_back(" -depth-shift 7.0 ");
+						label_depth_shift_options.push_back(" -depth-shift 8.0 ");
+						label_depth_shift_options.push_back(" -depth-shift 9.0 ");
+						label_depth_shift_options.push_back(" -depth-shift 10.0 ");
+					}
+
 					ImGui::Checkbox("centered##labels_centered_checkbox", &labels_centered);
+
+					ImGui::SliderInt("scaling factor", &label_scale_option_id, 1, 5);
+
+					ImGui::SliderInt("depth shift", &label_depth_shift_option_id, 1, 10);
 
 					ImGui::Separator();
 
@@ -1080,32 +1114,32 @@ private:
 
 					if(ImGui::MenuItem("  chain.rnum.rname"))
 					{
-						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}.${rname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}.${rname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
 					}
 
 					if(ImGui::MenuItem("  chain.rnum.rnameshort"))
 					{
-						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}.${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}.${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
 					}
 
 					if(ImGui::MenuItem("  chain.rnum"))
 					{
-						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
 					}
 
 					if(ImGui::MenuItem("  rnum.rnameshort"))
 					{
-						result=std::string("add-figures-of-labels -mode residue -text '${rnum}${icode}.${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+						result=std::string("add-figures-of-labels -mode residue -text '${rnum}${icode}.${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
 					}
 
 					if(ImGui::MenuItem("  rname"))
 					{
-						result=std::string("add-figures-of-labels -mode residue -text '${rname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+						result=std::string("add-figures-of-labels -mode residue -text '${rname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
 					}
 
 					if(ImGui::MenuItem("  rnameshort"))
 					{
-						result=std::string("add-figures-of-labels -mode residue -text '${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+						result=std::string("add-figures-of-labels -mode residue -text '${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
 					}
 
 					ImGui::Separator();
@@ -1114,27 +1148,27 @@ private:
 
 					if(ImGui::MenuItem("  chain.rnum.rname.aname"))
 					{
-						result=std::string("add-figures-of-labels -mode atom -text '${chain}.${rnum}${icode}.${rname}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+						result=std::string("add-figures-of-labels -mode atom -text '${chain}.${rnum}${icode}.${rname}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
 					}
 
 					if(ImGui::MenuItem("  rname.aname"))
 					{
-						result=std::string("add-figures-of-labels -mode atom -text '${rname}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+						result=std::string("add-figures-of-labels -mode atom -text '${rname}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
 					}
 
 					if(ImGui::MenuItem("  rnum.rnameshort.aname"))
 					{
-						result=std::string("add-figures-of-labels -mode atom -text '${rnum}${icode}.${rnameshort}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+						result=std::string("add-figures-of-labels -mode atom -text '${rnum}${icode}.${rnameshort}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
 					}
 
 					if(ImGui::MenuItem("  rnum.aname"))
 					{
-						result=std::string("add-figures-of-labels -mode atom -text '${rnum}${icode}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+						result=std::string("add-figures-of-labels -mode atom -text '${rnum}${icode}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
 					}
 
 					if(ImGui::MenuItem("  aname"))
 					{
-						result=std::string("add-figures-of-labels -mode atom -text '${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+						result=std::string("add-figures-of-labels -mode atom -text '${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
 					}
 
 					ImGui::EndMenu();
