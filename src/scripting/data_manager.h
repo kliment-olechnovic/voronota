@@ -2468,70 +2468,68 @@ public:
 			selection_manager_.set_atoms_selection(it->first, std::set<std::size_t>(it->second.begin(), it->second.end()));
 		}
 
-		if(contacts_params_constructing.empty())
+		if(!contacts_params_constructing.empty())
 		{
-			return;
-		}
+			reset_contacts_by_creating(contacts_params_constructing.back(), contacts_params_enhancing.back());
 
-		reset_contacts_by_creating(contacts_params_constructing.back(), contacts_params_enhancing.back());
-
-		std::map<std::pair<std::size_t, std::size_t>, std::size_t> map_of_pairs_to_contact_ids;
-		for(std::size_t i=0;i<contacts_.size();i++)
-		{
-			map_of_pairs_to_contact_ids[std::pair<std::size_t, std::size_t>(contacts_[i].ids[0], contacts_[i].ids[1])]=i;
-		}
-
-		for(std::map< common::ConstructionOfContacts::ParametersToDrawContacts, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_graphics_creating_parameters.begin();it!=map_of_contacts_graphics_creating_parameters.end();++it)
-		{
-			std::set<std::size_t> ids_for_params;
-			for(std::size_t i=0;i<(it->second.size());i++)
+			std::map<std::pair<std::size_t, std::size_t>, std::size_t> map_of_pairs_to_contact_ids;
+			for(std::size_t i=0;i<contacts_.size();i++)
 			{
-				std::map<std::pair<std::size_t, std::size_t>, std::size_t>::const_iterator id_it=map_of_pairs_to_contact_ids.find(it->second[i]);
-				if(id_it!=map_of_pairs_to_contact_ids.end())
+				map_of_pairs_to_contact_ids[std::pair<std::size_t, std::size_t>(contacts_[i].ids[0], contacts_[i].ids[1])]=i;
+			}
+
+			for(std::map< common::ConstructionOfContacts::ParametersToDrawContacts, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_graphics_creating_parameters.begin();it!=map_of_contacts_graphics_creating_parameters.end();++it)
+			{
+				std::set<std::size_t> ids_for_params;
+				for(std::size_t i=0;i<(it->second.size());i++)
 				{
-					ids_for_params.insert(id_it->second);
+					std::map<std::pair<std::size_t, std::size_t>, std::size_t>::const_iterator id_it=map_of_pairs_to_contact_ids.find(it->second[i]);
+					if(id_it!=map_of_pairs_to_contact_ids.end())
+					{
+						ids_for_params.insert(id_it->second);
+					}
+				}
+				reset_contacts_graphics_by_creating(it->first, ids_for_params, false);
+			}
+
+			for(std::map< common::PropertiesValue, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_properties.begin();it!=map_of_contacts_properties.end();++it)
+			{
+				for(std::size_t i=0;i<(it->second.size());i++)
+				{
+					std::map<std::pair<std::size_t, std::size_t>, std::size_t>::const_iterator id_it=map_of_pairs_to_contact_ids.find(it->second[i]);
+					if(id_it!=map_of_pairs_to_contact_ids.end())
+					{
+						contacts_[id_it->second].value.props=it->first;
+					}
 				}
 			}
-			reset_contacts_graphics_by_creating(it->first, ids_for_params, false);
-		}
 
-		for(std::map< common::PropertiesValue, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_properties.begin();it!=map_of_contacts_properties.end();++it)
-		{
-			for(std::size_t i=0;i<(it->second.size());i++)
+			for(std::map< DisplayState, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_display_states.begin();it!=map_of_contacts_display_states.end();++it)
 			{
-				std::map<std::pair<std::size_t, std::size_t>, std::size_t>::const_iterator id_it=map_of_pairs_to_contact_ids.find(it->second[i]);
-				if(id_it!=map_of_pairs_to_contact_ids.end())
+				for(std::size_t i=0;i<(it->second.size());i++)
 				{
-					contacts_[id_it->second].value.props=it->first;
+					std::map<std::pair<std::size_t, std::size_t>, std::size_t>::const_iterator id_it=map_of_pairs_to_contact_ids.find(it->second[i]);
+					if(id_it!=map_of_pairs_to_contact_ids.end())
+					{
+						contacts_display_states_[id_it->second]=it->first;
+					}
 				}
 			}
-		}
 
-		for(std::map< DisplayState, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_display_states.begin();it!=map_of_contacts_display_states.end();++it)
-		{
-			for(std::size_t i=0;i<(it->second.size());i++)
+			for(std::map< std::string, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_selections.begin();it!=map_of_contacts_selections.end();++it)
 			{
-				std::map<std::pair<std::size_t, std::size_t>, std::size_t>::const_iterator id_it=map_of_pairs_to_contact_ids.find(it->second[i]);
-				if(id_it!=map_of_pairs_to_contact_ids.end())
+				std::vector<std::size_t> ids_vector;
+				ids_vector.reserve(it->second.size());
+				for(std::size_t i=0;i<(it->second.size());i++)
 				{
-					contacts_display_states_[id_it->second]=it->first;
+					std::map<std::pair<std::size_t, std::size_t>, std::size_t>::const_iterator id_it=map_of_pairs_to_contact_ids.find(it->second[i]);
+					if(id_it!=map_of_pairs_to_contact_ids.end())
+					{
+						ids_vector.push_back(id_it->second);
+					}
 				}
+				selection_manager_.set_contacts_selection(it->first, std::set<std::size_t>(ids_vector.begin(), ids_vector.end()));
 			}
-		}
-
-		for(std::map< std::string, std::vector< std::pair<std::size_t, std::size_t> > >::const_iterator it=map_of_contacts_selections.begin();it!=map_of_contacts_selections.end();++it)
-		{
-			std::vector<std::size_t> ids_vector;
-			ids_vector.reserve(it->second.size());
-			for(std::size_t i=0;i<(it->second.size());i++)
-			{
-				std::map<std::pair<std::size_t, std::size_t>, std::size_t>::const_iterator id_it=map_of_pairs_to_contact_ids.find(it->second[i]);
-				if(id_it!=map_of_pairs_to_contact_ids.end())
-				{
-					ids_vector.push_back(id_it->second);
-				}
-			}
-			selection_manager_.set_contacts_selection(it->first, std::set<std::size_t>(ids_vector.begin(), ids_vector.end()));
 		}
 
 		if(!figures.empty())
