@@ -157,6 +157,10 @@ public:
 					replace_all(text_to_use, "rnum", atom.crad.resSeq);
 					replace_all(text_to_use, "icode", atom.crad.iCode);
 					replace_all(text_to_use, "rname", atom.crad.resName);
+					{
+						const std::string rnameshort=auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(atom.crad.resName);
+						replace_all(text_to_use, "rnameshort", (rnameshort!="X" ? rnameshort : atom.crad.resName));
+					}
 					replace_all(text_to_use, "aname", (mode=="atom") ? atom.crad.name : std::string());
 				}
 
