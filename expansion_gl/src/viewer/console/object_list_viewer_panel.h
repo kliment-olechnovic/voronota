@@ -1067,6 +1067,100 @@ private:
 					result=std::string("unmark-atoms ")+objects_selection_option(os_name)+"";
 				}
 
+				ImGui::Separator();
+
+				if(ImGui::BeginMenu("  Add or replace standard labels##add_labels"))
+				{
+					static bool labels_centered=false;
+					ImGui::Checkbox("centered##labels_centered_checkbox", &labels_centered);
+
+					ImGui::Separator();
+
+					ImGui::TextUnformatted("per residue:");
+
+					if(ImGui::MenuItem("  chain.rnum.rname"))
+					{
+						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}.${rname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+					}
+
+					if(ImGui::MenuItem("  chain.rnum.rnameshort"))
+					{
+						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}.${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+					}
+
+					if(ImGui::MenuItem("  chain.rnum"))
+					{
+						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+					}
+
+					if(ImGui::MenuItem("  rnum.rnameshort"))
+					{
+						result=std::string("add-figures-of-labels -mode residue -text '${rnum}${icode}.${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+					}
+
+					if(ImGui::MenuItem("  rname"))
+					{
+						result=std::string("add-figures-of-labels -mode residue -text '${rname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+					}
+
+					if(ImGui::MenuItem("  rnameshort"))
+					{
+						result=std::string("add-figures-of-labels -mode residue -text '${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+					}
+
+					ImGui::Separator();
+
+					ImGui::TextUnformatted("per atom:");
+
+					if(ImGui::MenuItem("  chain.rnum.rname.aname"))
+					{
+						result=std::string("add-figures-of-labels -mode atom -text '${chain}.${rnum}${icode}.${rname}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+					}
+
+					if(ImGui::MenuItem("  rname.aname"))
+					{
+						result=std::string("add-figures-of-labels -mode atom -text '${rname}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+					}
+
+					if(ImGui::MenuItem("  rnum.rnameshort.aname"))
+					{
+						result=std::string("add-figures-of-labels -mode atom -text '${rnum}${icode}.${rnameshort}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+					}
+
+					if(ImGui::MenuItem("  rnum.aname"))
+					{
+						result=std::string("add-figures-of-labels -mode atom -text '${rnum}${icode}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+					}
+
+					if(ImGui::MenuItem("  aname"))
+					{
+						result=std::string("add-figures-of-labels -mode atom -text '${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "");
+					}
+
+					ImGui::EndMenu();
+				}
+
+				if(ImGui::BeginMenu("  Remove standard labels##remove_labels"))
+				{
+					if(ImGui::MenuItem("per residue"))
+					{
+						result=std::string("delete-figures-of-labels -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					}
+
+					if(ImGui::MenuItem("per atom"))
+					{
+						result=std::string("delete-figures-of-labels -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					}
+
+					if(ImGui::MenuItem("all"))
+					{
+						result=std::string("delete-figures-of-labels -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result+=std::string(" ; delete-figures-of-labels -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					}
+
+					ImGui::EndMenu();
+				}
+
 				if(!os_name.empty())
 				{
 					const std::vector<ObjectsInfo::ObjectState>& object_states=objects_info.get_object_states();
@@ -1310,6 +1404,28 @@ private:
 			}
 
 			ImGui::Separator();
+
+			{
+				ImGui::TextUnformatted("Show available standard labels:");
+
+				if(ImGui::Selectable("  all##labels_hide"))
+				{
+					result=std::string("show-figures-of-labels -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					result+=std::string(" ; show-figures-of-labels -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
+
+				if(ImGui::Selectable("  per residue##labels_hide"))
+				{
+					result=std::string("show-figures-of-labels -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
+
+				if(ImGui::Selectable("  per atom##labels_hide"))
+				{
+					result=std::string("show-figures-of-labels -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
+			}
+
+			ImGui::Separator();
 			ImGui::Separator();
 
 			{
@@ -1400,6 +1516,28 @@ private:
 				if(ImGui::Selectable("  molsurf-mesh##atoms_hide"))
 				{
 					result=std::string("hide-atoms -rep molsurf-mesh ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
+			}
+
+			ImGui::Separator();
+
+			{
+				ImGui::TextUnformatted("Hide standard labels:");
+
+				if(ImGui::Selectable("  all##labels_hide"))
+				{
+					result=std::string("hide-figures-of-labels -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					result+=std::string(" ; hide-figures-of-labels -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
+
+				if(ImGui::Selectable("  per residue##labels_hide"))
+				{
+					result=std::string("hide-figures-of-labels -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
+
+				if(ImGui::Selectable("  per atom##labels_hide"))
+				{
+					result=std::string("hide-figures-of-labels -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
 			}
 
