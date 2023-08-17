@@ -18,11 +18,12 @@ public:
 	{
 		std::string label_text;
 		std::vector<float> label_origin;
+		bool label_outline;
 		float label_scale;
 		bool label_centered;
 		bool is_label;
 
-		SpecialDescriptionForLabel() : label_scale(1.0f), label_centered(false), is_label(false)
+		SpecialDescriptionForLabel() : label_outline(false), label_scale(1.0f), label_centered(false), is_label(false)
 		{
 		}
 
@@ -45,7 +46,7 @@ public:
 				{
 					output << " " << sd.label_origin[i];
 				}
-				output << " " << sd.label_scale << " " << sd.label_centered;
+				output << " " << sd.label_outline << " " << sd.label_scale << " " << sd.label_centered;
 			}
 			output << "\n";
 			return output;
@@ -77,7 +78,7 @@ public:
 						}
 					}
 				}
-				input >> sd.label_scale >> sd.label_centered;
+				input >> sd.label_outline >> sd.label_scale >> sd.label_centered;
 			}
 			return input;
 		}

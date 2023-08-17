@@ -2175,6 +2175,31 @@ public:
 				}
 			}
 		}
+
+		output << figures_.size() << "\n";
+		for(std::size_t i=0;i<figures_.size();i++)
+		{
+			output << figures_[i] << "\n";
+		}
+
+		{
+			std::map< DisplayState, std::vector<std::size_t> > map_of_figures_display_states;
+			for(std::size_t i=0;i<figures_display_states_.size();i++)
+			{
+				map_of_figures_display_states[figures_display_states_[i]].push_back(i);
+			}
+
+			output << map_of_figures_display_states.size() << "\n";
+			for(std::map< DisplayState, std::vector<std::size_t> >::const_iterator it=map_of_figures_display_states.begin();it!=map_of_figures_display_states.end();++it)
+			{
+				output << it->first << "\n";
+				output << it->second.size() << "\n";
+				for(std::size_t i=0;i<(it->second.size());i++)
+				{
+					output << it->second[i] << "\n";
+				}
+			}
+		}
 	}
 
 	void load_from_stream(std::istream& input)
@@ -2368,6 +2393,42 @@ public:
 			}
 		}
 
+		std::vector<Figure> figures;
+		{
+			int count=0;
+			input >> count;
+			for(int i=0;i<count;i++)
+			{
+				Figure figure;
+				input >> figure;
+				figures.push_back(figure);
+			}
+		}
+
+		std::map< DisplayState, std::vector<std::size_t> > map_of_figures_display_states;
+		{
+			int count=0;
+			input >> count;
+			for(int i=0;i<count;i++)
+			{
+				DisplayState ds;
+				input >> ds;
+				int ids_count=0;
+				input >> ids_count;
+				if(ids_count>0)
+				{
+					std::vector<std::size_t>& ids_vector=map_of_figures_display_states[ds];
+					ids_vector.reserve(ids_count);
+					for(int i=0;i<ids_count;i++)
+					{
+						std::size_t id_value=0;
+						input >> id_value;
+						ids_vector.push_back(id_value);
+					}
+				}
+			}
+		}
+
 		if(atoms.empty())
 		{
 			throw std::runtime_error(std::string("No atoms when loading from stream."));
@@ -2471,6 +2532,38 @@ public:
 				}
 			}
 			selection_manager_.set_contacts_selection(it->first, std::set<std::size_t>(ids_vector.begin(), ids_vector.end()));
+		}
+
+		if(!figures.empty())
+		{
+			for(std::size_t i=0;i<figures.size();i++)
+			{
+				Figure& figure=figures[i];
+				if(figure.special_description_for_label.is_label)
+				{
+					FigureOfText::init_figure_of_text(
+							figure.special_description_for_label.label_text,
+							figure.special_description_for_label.label_outline,
+							figure.special_description_for_label.label_origin,
+							figure.special_description_for_label.label_scale,
+							figure.special_description_for_label.label_centered,
+							figure);
+				}
+			}
+
+			add_figures(figures);
+
+			for(std::map< DisplayState, std::vector<std::size_t> >::const_iterator it=map_of_figures_display_states.begin();it!=map_of_figures_display_states.end();++it)
+			{
+				for(std::size_t i=0;i<(it->second.size());i++)
+				{
+					const std::size_t id=it->second[i];
+					if(id<figures_display_states_.size())
+					{
+						figures_display_states_[id]=it->first;
+					}
+				}
+			}
 		}
 	}
 

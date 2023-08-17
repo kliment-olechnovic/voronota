@@ -5,6 +5,7 @@
 #include "../common/construction_of_contacts.h"
 
 #include "figure.h"
+#include "figure_of_text.h"
 
 namespace voronota
 {

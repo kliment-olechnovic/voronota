@@ -39,6 +39,7 @@ public:
 
 		figure.special_description_for_label.label_text=text;
 		figure.special_description_for_label.label_origin=origin;
+		figure.special_description_for_label.label_outline=outline;
 		figure.special_description_for_label.label_scale=scale;
 		figure.special_description_for_label.label_centered=centered;
 		figure.special_description_for_label.is_label=true;
