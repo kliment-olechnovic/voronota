@@ -1128,6 +1128,43 @@ private:
 						result=std::string("add-figures-of-labels -mode residue -text '${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
 					}
 
+					if(ImGui::BeginMenu("  custom text##residue"))
+					{
+						static std::map< std::string, std::vector<char> > text_buffers;
+						std::vector<char>& text_buffer=text_buffers[os_name];
+						if(text_buffer.empty())
+						{
+							const std::string default_text="text";
+							text_buffer=std::vector<char>(default_text.begin(), default_text.end());
+							text_buffer.resize(default_text.size()+128, 0);
+						}
+
+						{
+							const std::string textbox_id=std::string("##residue_label_custom_text_")+os_name;
+							ImGui::InputText(textbox_id.c_str(), text_buffer.data(), 128);
+						}
+
+						if(text_buffer.data()[0]!=0)
+						{
+							const std::string newtext(text_buffer.data());
+							const std::string button_id=std::string("OK##residue_label_custom_text_ok_")+os_name;
+							if(ImGui::Button(button_id.c_str()))
+							{
+								if(!newtext.empty())
+								{
+									result=std::string("add-figures-of-labels -mode residue -text '")+newtext+"' "+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
+									ImGui::CloseCurrentPopup();
+								}
+							}
+						}
+						else
+						{
+							ImGui::TextUnformatted("please enter text");
+						}
+
+						ImGui::EndMenu();
+					}
+
 					ImGui::Separator();
 
 					ImGui::TextUnformatted("atom-level:");
@@ -1155,6 +1192,43 @@ private:
 					if(ImGui::MenuItem("  aname"))
 					{
 						result=std::string("add-figures-of-labels -mode atom -text '${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
+					}
+
+					if(ImGui::BeginMenu("  custom text##atom"))
+					{
+						static std::map< std::string, std::vector<char> > text_buffers;
+						std::vector<char>& text_buffer=text_buffers[os_name];
+						if(text_buffer.empty())
+						{
+							const std::string default_text="text";
+							text_buffer=std::vector<char>(default_text.begin(), default_text.end());
+							text_buffer.resize(default_text.size()+128, 0);
+						}
+
+						{
+							const std::string textbox_id=std::string("##atom_label_custom_text_")+os_name;
+							ImGui::InputText(textbox_id.c_str(), text_buffer.data(), 128);
+						}
+
+						if(text_buffer.data()[0]!=0)
+						{
+							const std::string newtext(text_buffer.data());
+							const std::string button_id=std::string("OK##atom_label_custom_text_ok_")+os_name;
+							if(ImGui::Button(button_id.c_str()))
+							{
+								if(!newtext.empty())
+								{
+									result=std::string("add-figures-of-labels -mode atom -text '")+newtext+"' "+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
+									ImGui::CloseCurrentPopup();
+								}
+							}
+						}
+						else
+						{
+							ImGui::TextUnformatted("please enter text");
+						}
+
+						ImGui::EndMenu();
 					}
 
 					ImGui::EndMenu();
