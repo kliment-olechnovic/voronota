@@ -1222,7 +1222,7 @@ private:
 						const std::size_t rep_id=dc_contacts_edges_.representation_id;
 						dc_contacts_edges_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
 						dc_contacts_edges_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
-						dc_contacts_edges_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 1.0, 0.0);
+						dc_contacts_edges_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
 					}
 				}
 

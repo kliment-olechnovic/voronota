@@ -21,7 +21,7 @@ public:
 	const DocumentationInfo& documentation_info;
 
 	DocumentationViewerPanel(const DocumentationInfo& documentation_info) :
-		visible(true),
+		visible(false),
 		documentation_info(documentation_info)
 	{
 	}

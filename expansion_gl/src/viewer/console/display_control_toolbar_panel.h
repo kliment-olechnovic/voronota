@@ -115,24 +115,27 @@ public:
 		}
 
 		{
-			const std::string button_id=std::string("Set background##background_color_button");
-			const std::string menu_id=std::string("Background##background_color_button_menu");
-			ImGui::Button(button_id.c_str(), ImVec2(130*GUIStyleWrapper::scale_factor(),0));
-			if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
+			ImGui::TextUnformatted("Background:");
+
+			ImGui::SameLine();
+
+			if(ImGui::Button("white##display_control_background"))
 			{
-				if(ImGui::Selectable("white"))
-				{
-					result="background white";
-				}
-				if(ImGui::Selectable("black"))
-				{
-					result="background black";
-				}
-				if(ImGui::Selectable("gray"))
-				{
-					result="background 0xCCCCCC";
-				}
-				ImGui::EndPopup();
+				result="background white";
+			}
+
+			ImGui::SameLine();
+
+			if(ImGui::Button("gray##display_control_background"))
+			{
+				result="background 0xCCCCCC";
+			}
+
+			ImGui::SameLine();
+
+			if(ImGui::Button("black##display_control_background"))
+			{
+				result="background black";
 			}
 		}
 	}

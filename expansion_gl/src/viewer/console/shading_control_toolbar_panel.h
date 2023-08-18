@@ -18,7 +18,7 @@ public:
 	bool visible;
 
 	ShadingControlToolbarPanel() :
-		visible(true)
+		visible(false)
 	{
 	}
 

@@ -194,6 +194,40 @@ public:
 					ImGui::EndMenu();
 				}
 #endif
+				if(ImGui::BeginMenu("Window"))
+				{
+					ImGui::TextUnformatted("Maximize viewport:");
+
+					if(ImGui::MenuItem("  fully"))
+					{
+						result="vsb: hint-render-area-size -width 9999 -height 9999";
+					}
+					if(ImGui::MenuItem("  vertically"))
+					{
+						result="vsb: hint-render-area-size -height 9999";
+					}
+					if(ImGui::MenuItem("  horizontally"))
+					{
+						result="vsb: hint-render-area-size -width 9999";
+					}
+
+					ImGui::Separator();
+
+					ImGui::Checkbox("Script editor##main_menu_checkbox", &script_editor_panel_.visible);
+					ImGui::Checkbox("Commands reference##main_menu_checkbox", &documentation_viewer_panel_.visible);
+					ImGui::Checkbox("Shading controls##main_menu_checkbox", &shading_control_toolbar_panel_.visible);
+					ImGui::Checkbox("Display controls##main_menu_checkbox", &display_control_toolbar_panel_.visible);
+
+					ImGui::Separator();
+
+					if(ImGui::MenuItem("Hide all GUI (reversible with ESC key)"))
+					{
+						result="vsb: configure-gui-disable-console";
+					}
+
+					ImGui::EndMenu();
+				}
+
 				if(ImGui::BeginMenu("Help"))
 				{
 					if(ImGui::MenuItem("About"))
