@@ -97,103 +97,162 @@ public:
 			return result;
 		}
 
-#ifndef FOR_WEB
 		static bool menu_open_include_heteroatoms=true;
 		static bool menu_open_as_assembly=false;
 		static bool menu_open_split_pdb_files=false;
-#endif
+
+		static bool menu_screenshot_opaque=true;
+		static bool menu_screenshot_autocrop=false;
+		static bool menu_screenshot_scaled_x2=false;
+
 		{
 			current_menu_bar_height_=0.0f;
 			if(ImGui::BeginMainMenuBar())
 			{
-#ifndef FOR_WEB
 				if(ImGui::BeginMenu("File"))
 				{
-					if(ImGui::BeginMenu("Structures"))
+					if(ImGui::BeginMenu("Fetch from PDB"))
 					{
-						if(ImGui::MenuItem("Open ..."))
+						static std::vector<char> pdbid_buffer;
+						if(pdbid_buffer.empty())
 						{
-							ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_OpenFiles", "Open files", ".*,.pdb,.cif", file_search_root_dir_, 0, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
+							const std::string example("2zsk");
+							pdbid_buffer=std::vector<char>(example.begin(), example.end());
+							pdbid_buffer.resize(128, 0);
 						}
-						if(ImGui::BeginMenu("Fetch"))
+						const std::string textbox_id=std::string("##pdbid");
+						bool requested=false;
+						ImGui::PushItemWidth(70*GUIStyleWrapper::scale_factor());
+						if(ImGui::InputText(textbox_id.c_str(), pdbid_buffer.data(), pdbid_buffer.size()-1, ImGuiInputTextFlags_EnterReturnsTrue))
 						{
-							static std::vector<char> pdbid_buffer;
-							if(pdbid_buffer.empty())
-							{
-								const std::string example("2zsk");
-								pdbid_buffer=std::vector<char>(example.begin(), example.end());
-								pdbid_buffer.resize(128, 0);
-							}
-							const std::string textbox_id=std::string("##pdbid");
-							bool requested=false;
-							ImGui::PushItemWidth(70*GUIStyleWrapper::scale_factor());
-							if(ImGui::InputText(textbox_id.c_str(), pdbid_buffer.data(), pdbid_buffer.size()-1, ImGuiInputTextFlags_EnterReturnsTrue))
+							requested=true;
+						}
+						ImGui::PopItemWidth();
+						ImGui::SameLine();
+						{
+							const std::string button_id=std::string("fetch");
+							if(ImGui::Button(button_id.c_str()))
 							{
 								requested=true;
 							}
-							ImGui::PopItemWidth();
-							ImGui::SameLine();
-							{
-								const std::string button_id=std::string("fetch");
-								if(ImGui::Button(button_id.c_str()))
-								{
-									requested=true;
-								}
-							}
-							if(requested && pdbid_buffer.data()[0]!=0)
-							{
-								const std::string pdbid_str(pdbid_buffer.data());
-								result="fetch ";
-								result+=pdbid_str;
-								if(!menu_open_include_heteroatoms)
-								{
-									result+=" -no-heteroatoms ";
-								}
-								if(menu_open_split_pdb_files)
-								{
-									result+=" -all-states ";
-								}
-							}
-							ImGui::EndMenu();
 						}
+						if(requested && pdbid_buffer.data()[0]!=0)
+						{
+							const std::string pdbid_str(pdbid_buffer.data());
+							result="fetch ";
+							result+=pdbid_str;
+							if(!menu_open_include_heteroatoms)
+							{
+								result+=" -no-heteroatoms ";
+							}
+							if(menu_open_split_pdb_files)
+							{
+								result+=" -all-states ";
+							}
+						}
+
 						ImGui::Separator();
+
 						{
-							const std::string checkbox_id=std::string("include heteroatoms");
-							ImGui::Checkbox(checkbox_id.c_str(), &menu_open_include_heteroatoms);
+							ImGui::Checkbox("include heteroatoms##for_fetch", &menu_open_include_heteroatoms);
 						}
+
 						{
-							const std::string checkbox_id=std::string("load assemblies from PDB files");
-							ImGui::Checkbox(checkbox_id.c_str(), &menu_open_as_assembly);
-							menu_open_split_pdb_files=(menu_open_split_pdb_files && !menu_open_as_assembly);
-						}
-						{
-							const std::string checkbox_id=std::string("split PDB files by models");
-							ImGui::Checkbox(checkbox_id.c_str(), &menu_open_split_pdb_files);
+							ImGui::Checkbox("split PDB files by models##for_fetch", &menu_open_split_pdb_files);
 							menu_open_as_assembly=(menu_open_as_assembly && !menu_open_split_pdb_files);
 						}
+
 						ImGui::EndMenu();
 					}
+#ifndef FOR_WEB
 					ImGui::Separator();
-					if(ImGui::BeginMenu("Session"))
+
+					if(ImGui::BeginMenu("Open structures"))
 					{
-						if(ImGui::MenuItem("Open ..."))
+						if(ImGui::MenuItem("Open local files ..."))
 						{
-							ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ImportSession", "Import session file", ".vses", file_search_root_dir_, 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
+							ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_OpenFiles", "Open files", ".*,.pdb,.cif", file_search_root_dir_, 0, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
 						}
-						if(ImGui::MenuItem("Save ..."))
+
+						ImGui::Separator();
+
 						{
-							ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ExportSession", "Export session file", ".vses", file_search_root_dir_, 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_ConfirmOverwrite);
+							ImGui::Checkbox("include heteroatoms##for_open", &menu_open_include_heteroatoms);
 						}
+
+						{
+							ImGui::Checkbox("load assemblies from PDB files##for_open", &menu_open_as_assembly);
+							menu_open_split_pdb_files=(menu_open_split_pdb_files && !menu_open_as_assembly);
+						}
+
+						{
+							ImGui::Checkbox("split PDB files by models##for_open", &menu_open_split_pdb_files);
+							menu_open_as_assembly=(menu_open_as_assembly && !menu_open_split_pdb_files);
+						}
+
 						ImGui::EndMenu();
 					}
+
 					ImGui::Separator();
+
+					if(ImGui::MenuItem("Open session ..."))
+					{
+						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ImportSession", "Import session file", ".vses", file_search_root_dir_, 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_DisableCreateDirectoryButton);
+					}
+
+					if(ImGui::MenuItem("Save session ..."))
+					{
+						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_ExportSession", "Export session file", ".vses", file_search_root_dir_, 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_ConfirmOverwrite);
+					}
+
+					ImGui::Separator();
+
 					if(ImGui::MenuItem("Exit"))
 					{
 						result="exit";
 					}
+#elif
+					ImGui::Separator();
+
+					if(ImGui::MenuItem("Download session"))
+					{
+						result="export-session Voronota-GL-session.vses";
+					}
+#endif
+
 					ImGui::EndMenu();
 				}
+
+				if(ImGui::BeginMenu("Screenshot"))
+				{
+#ifndef FOR_WEB
+					if(ImGui::MenuItem("Save image ..."))
+					{
+						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_SaveScreenshot", "Save screenshot file", ".png", file_search_root_dir_, 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_ConfirmOverwrite);
+					}
+#elif
+					if(ImGui::MenuItem("Download image ..."))
+					{
+						result=std::string("snap Voronota-GL-screenshot.png"+(menu_screenshot_opaque ? " -opaque" : "")+(menu_screenshot_scaled_x2 ? " -scale 2" : "")+(menu_screenshot_autocrop ? " -autocrop" : "");
+					}
 #endif
+					ImGui::Separator();
+
+					{
+						ImGui::Checkbox("opaque##for_snap", &menu_screenshot_opaque);
+					}
+
+					{
+						ImGui::Checkbox("autocrop##for_snap", &menu_screenshot_autocrop);
+					}
+
+					{
+						ImGui::Checkbox("scale x2##for_snap", &menu_screenshot_scaled_x2);
+					}
+
+					ImGui::EndMenu();
+				}
+
 				if(ImGui::BeginMenu("Window"))
 				{
 					ImGui::TextUnformatted("Maximize viewport:");
@@ -225,15 +284,6 @@ public:
 						result="vsb: configure-gui-disable-console";
 					}
 
-					ImGui::EndMenu();
-				}
-
-				if(ImGui::BeginMenu("Help"))
-				{
-					if(ImGui::MenuItem("About"))
-					{
-						result="about";
-					}
 					ImGui::EndMenu();
 				}
 
@@ -299,6 +349,17 @@ public:
 					file_search_root_dir_=ImGuiFileDialog::Instance()->GetCurrentPath()+"/";
 					const std::string file_path=ImGuiFileDialog::Instance()->GetFilePathName();
 					result=std::string("export-session '")+file_path+"'";
+				}
+				ImGuiFileDialog::Instance()->Close();
+			}
+
+			if(ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey_SaveScreenshot", ImGuiWindowFlags_NoCollapse, file_dialog_min_size, file_dialog_max_size))
+			{
+				if(ImGuiFileDialog::Instance()->IsOk())
+				{
+					file_search_root_dir_=ImGuiFileDialog::Instance()->GetCurrentPath()+"/";
+					const std::string file_path=ImGuiFileDialog::Instance()->GetFilePathName();
+					result=std::string("snap '")+file_path+"'"+(menu_screenshot_opaque ? " -opaque" : "")+(menu_screenshot_scaled_x2 ? " -scale 2" : "")+(menu_screenshot_autocrop ? " -autocrop" : "");
 				}
 				ImGuiFileDialog::Instance()->Close();
 			}
