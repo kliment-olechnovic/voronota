@@ -84,7 +84,7 @@ public:
 
 		if(all_figure_ids.empty())
 		{
-			throw std::runtime_error(std::string("No figures selected."));
+			throw std::runtime_error(std::string("No figures of labels selected."));
 		}
 
 		data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_show(positive()).set_hide(!positive()), all_figure_ids);

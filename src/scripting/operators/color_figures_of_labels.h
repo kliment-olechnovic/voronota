@@ -96,6 +96,8 @@ public:
 
 		const std::map< std::string, std::vector<std::size_t> > map_of_ids=data_manager.generate_ids_for_of_labels(atom_ids, true, (mode=="atom"));
 
+		bool something_done=false;
+
 		for(std::map< std::string, std::vector<std::size_t> >::const_iterator it=map_of_ids.begin();it!=map_of_ids.end();++it)
 		{
 			const std::vector<std::size_t>& atom_ids=it->second;
@@ -108,6 +110,7 @@ public:
 					{
 						const unsigned int figure_color=(color_for_text=="_of_atom") ? data_manager.atoms_display_states()[atom_ids.front()].visuals.front().color : auxiliaries::ColorUtilities::color_from_name(color_for_text);
 						data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_color(figure_color), figure_ids);
+						something_done=true;
 					}
 				}
 
@@ -118,9 +121,15 @@ public:
 					{
 						const unsigned int figure_color=(color_for_outline=="_of_atom") ? data_manager.atoms_display_states()[atom_ids.front()].visuals.front().color : auxiliaries::ColorUtilities::color_from_name(color_for_outline);
 						data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_color(figure_color), figure_ids);
+						something_done=true;
 					}
 				}
 			}
+		}
+
+		if(!something_done)
+		{
+			throw std::runtime_error(std::string("No figures of labels selected."));
 		}
 
 		Result result;

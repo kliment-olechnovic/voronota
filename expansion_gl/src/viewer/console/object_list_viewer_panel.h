@@ -995,6 +995,19 @@ private:
 		return (std::string(" -on-objects '")+name+"' ");
 	}
 
+	static std::string flag_option(const std::string& name, const bool value)
+	{
+		return (value ? (std::string(" ")+name) : std::string());
+	}
+
+	template<typename A, typename B>
+	static std::string multipart_option(const A& a, const B& b)
+	{
+		std::ostringstream output;
+		output << " " << a << " " << b;
+		return output.str();
+	}
+
 	void process_button_A(const std::string& os_name, std::string& result)
 	{
 		const std::string button_id=std::string("A##button_actions_")+os_name;
@@ -1071,104 +1084,77 @@ private:
 
 				if(ImGui::BeginMenu("  Add or replace standard labels##add_labels"))
 				{
-					static bool labels_centered=false;
-
-					static int label_scale_option_id=1;
-					static std::vector<std::string> label_scale_options;
-					if(label_scale_options.empty())
-					{
-						label_scale_options.push_back(" ");
-						label_scale_options.push_back(" -scale 1.0 ");
-						label_scale_options.push_back(" -scale 2.0 ");
-						label_scale_options.push_back(" -scale 3.0 ");
-						label_scale_options.push_back(" -scale 4.0 ");
-						label_scale_options.push_back(" -scale 5.0 ");
-					}
-
-					static int label_depth_shift_option_id=3;
-					static std::vector<std::string> label_depth_shift_options;
-					if(label_depth_shift_options.empty())
-					{
-						label_depth_shift_options.push_back(" ");
-						label_depth_shift_options.push_back(" -depth-shift 1.0 ");
-						label_depth_shift_options.push_back(" -depth-shift 2.0 ");
-						label_depth_shift_options.push_back(" -depth-shift 3.0 ");
-						label_depth_shift_options.push_back(" -depth-shift 4.0 ");
-						label_depth_shift_options.push_back(" -depth-shift 5.0 ");
-						label_depth_shift_options.push_back(" -depth-shift 6.0 ");
-						label_depth_shift_options.push_back(" -depth-shift 7.0 ");
-						label_depth_shift_options.push_back(" -depth-shift 8.0 ");
-						label_depth_shift_options.push_back(" -depth-shift 9.0 ");
-						label_depth_shift_options.push_back(" -depth-shift 10.0 ");
-					}
+					static bool labels_centered=true;
+					static float label_scale_value=1.0f;
+					static float label_depth_shift_value=3.0f;
 
 					ImGui::Checkbox("centered##labels_centered_checkbox", &labels_centered);
 
-					ImGui::SliderInt("scaling factor", &label_scale_option_id, 1, 5);
+					ImGui::SliderFloat("scaling factor", &label_scale_value, 0.3f, 5.0f, "%.1f", 0);
 
-					ImGui::SliderInt("depth shift", &label_depth_shift_option_id, 1, 10);
+					ImGui::SliderFloat("depth shift", &label_depth_shift_value, 2.0f, 30.0f, "%.1f", 0);
 
 					ImGui::Separator();
 
-					ImGui::TextUnformatted("per residue:");
+					ImGui::TextUnformatted("residue-level:");
 
 					if(ImGui::MenuItem("  chain.rnum.rname"))
 					{
-						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}.${rname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
+						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}.${rname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
 					}
 
 					if(ImGui::MenuItem("  chain.rnum.rnameshort"))
 					{
-						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}.${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
+						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}.${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
 					}
 
 					if(ImGui::MenuItem("  chain.rnum"))
 					{
-						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
+						result=std::string("add-figures-of-labels -mode residue -text '${chain}.${rnum}${icode}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
 					}
 
 					if(ImGui::MenuItem("  rnum.rnameshort"))
 					{
-						result=std::string("add-figures-of-labels -mode residue -text '${rnum}${icode}.${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
+						result=std::string("add-figures-of-labels -mode residue -text '${rnum}${icode}.${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
 					}
 
 					if(ImGui::MenuItem("  rname"))
 					{
-						result=std::string("add-figures-of-labels -mode residue -text '${rname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
+						result=std::string("add-figures-of-labels -mode residue -text '${rname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
 					}
 
 					if(ImGui::MenuItem("  rnameshort"))
 					{
-						result=std::string("add-figures-of-labels -mode residue -text '${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
+						result=std::string("add-figures-of-labels -mode residue -text '${rnameshort}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
 					}
 
 					ImGui::Separator();
 
-					ImGui::TextUnformatted("per atom:");
+					ImGui::TextUnformatted("atom-level:");
 
 					if(ImGui::MenuItem("  chain.rnum.rname.aname"))
 					{
-						result=std::string("add-figures-of-labels -mode atom -text '${chain}.${rnum}${icode}.${rname}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
+						result=std::string("add-figures-of-labels -mode atom -text '${chain}.${rnum}${icode}.${rname}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
 					}
 
 					if(ImGui::MenuItem("  rname.aname"))
 					{
-						result=std::string("add-figures-of-labels -mode atom -text '${rname}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
+						result=std::string("add-figures-of-labels -mode atom -text '${rname}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
 					}
 
 					if(ImGui::MenuItem("  rnum.rnameshort.aname"))
 					{
-						result=std::string("add-figures-of-labels -mode atom -text '${rnum}${icode}.${rnameshort}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
+						result=std::string("add-figures-of-labels -mode atom -text '${rnum}${icode}.${rnameshort}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
 					}
 
 					if(ImGui::MenuItem("  rnum.aname"))
 					{
-						result=std::string("add-figures-of-labels -mode atom -text '${rnum}${icode}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
+						result=std::string("add-figures-of-labels -mode atom -text '${rnum}${icode}.${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
 					}
 
 					if(ImGui::MenuItem("  aname"))
 					{
-						result=std::string("add-figures-of-labels -mode atom -text '${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+(labels_centered ? " -centered" : "")+(label_scale_option_id>0 && label_scale_option_id<=5 ? label_scale_options[label_scale_option_id] : label_scale_options[0])+(label_depth_shift_option_id>0 && label_depth_shift_option_id<=10 ? label_depth_shift_options[label_depth_shift_option_id] : label_depth_shift_options[0]);
+						result=std::string("add-figures-of-labels -mode atom -text '${aname}' ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")"+flag_option("-centered", labels_centered)+multipart_option("-scale", label_scale_value)+multipart_option("-depth-shift", label_depth_shift_value);
 					}
 
 					ImGui::EndMenu();
@@ -1176,12 +1162,12 @@ private:
 
 				if(ImGui::BeginMenu("  Remove standard labels##remove_labels"))
 				{
-					if(ImGui::MenuItem("per residue"))
+					if(ImGui::MenuItem("residue-level"))
 					{
 						result=std::string("delete-figures-of-labels -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
 
-					if(ImGui::MenuItem("per atom"))
+					if(ImGui::MenuItem("atom-level"))
 					{
 						result=std::string("delete-figures-of-labels -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -1440,7 +1426,7 @@ private:
 			ImGui::Separator();
 
 			{
-				ImGui::TextUnformatted("Show available standard labels:");
+				ImGui::TextUnformatted("Show added standard labels:");
 
 				if(ImGui::Selectable("  all##labels_show"))
 				{
@@ -1448,12 +1434,12 @@ private:
 					result+=std::string(" ; show-figures-of-labels -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
 
-				if(ImGui::Selectable("  per residue##labels_show"))
+				if(ImGui::Selectable("  residue-level##labels_show"))
 				{
 					result=std::string("show-figures-of-labels -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
 
-				if(ImGui::Selectable("  per atom##labels_show"))
+				if(ImGui::Selectable("  atom-level##labels_show"))
 				{
 					result=std::string("show-figures-of-labels -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
@@ -1556,7 +1542,7 @@ private:
 			ImGui::Separator();
 
 			{
-				ImGui::TextUnformatted("Hide standard labels:");
+				ImGui::TextUnformatted("Hide added standard labels:");
 
 				if(ImGui::Selectable("  all##labels_hide"))
 				{
@@ -1564,12 +1550,12 @@ private:
 					result+=std::string(" ; hide-figures-of-labels -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
 
-				if(ImGui::Selectable("  per residue##labels_hide"))
+				if(ImGui::Selectable("  residue-level##labels_hide"))
 				{
 					result=std::string("hide-figures-of-labels -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
 
-				if(ImGui::Selectable("  per atom##labels_hide"))
+				if(ImGui::Selectable("  atom-level##labels_hide"))
 				{
 					result=std::string("hide-figures-of-labels -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
@@ -1859,21 +1845,21 @@ private:
 
 			ImGui::Separator();
 
-			ImGui::TextUnformatted("Color standard labels:");
+			ImGui::TextUnformatted("Color added standard labels:");
 
-			if(ImGui::BeginMenu("  per residue##labels_color"))
+			if(ImGui::BeginMenu("  residue-level##labels_color"))
 			{
-				if(ImGui::MenuItem("same as atoms"))
+				ImGui::TextUnformatted("Main color:");
+
+				if(ImGui::MenuItem("  same as atoms"))
 				{
 					result=std::string("color-figures-of-labels -color-for-text _of_atom -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
 
-				ImGui::Separator();
-
 				{
 					ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("red"))
+					if(ImGui::Selectable("  red"))
 					{
 						result=std::string("color-figures-of-labels -color-for-text 0xFF0000 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -1883,7 +1869,7 @@ private:
 				{
 					ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("yellow"))
+					if(ImGui::Selectable("  yellow"))
 					{
 						result=std::string("color-figures-of-labels -color-for-text 0xFFFF00 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -1893,7 +1879,7 @@ private:
 				{
 					ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("green"))
+					if(ImGui::Selectable("  green"))
 					{
 						result=std::string("color-figures-of-labels -color-for-text 0x00FF00 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -1903,7 +1889,7 @@ private:
 				{
 					ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("cyan"))
+					if(ImGui::Selectable("  cyan"))
 					{
 						result=std::string("color-figures-of-labels -color-for-text 0x00FFFF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -1913,7 +1899,7 @@ private:
 				{
 					ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("blue"))
+					if(ImGui::Selectable("  blue"))
 					{
 						result=std::string("color-figures-of-labels -color-for-text 0x0000FF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -1921,9 +1907,19 @@ private:
 				}
 
 				{
+					ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+					if(ImGui::Selectable("  magenta"))
+					{
+						result=std::string("color-figures-of-labels -color-for-text 0xFF00FF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					}
+					ImGui::PopStyleColor();
+				}
+
+				{
 					ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("white"))
+					if(ImGui::Selectable("  white"))
 					{
 						result=std::string("color-figures-of-labels -color-for-text 0xFFFFFF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -1932,54 +1928,49 @@ private:
 
 				ImGui::Separator();
 
-				if(ImGui::BeginMenu("for outline##labels_residue_color_outline"))
+				ImGui::TextUnformatted("Outline color:");
+
+				if(ImGui::MenuItem("  same as atoms "))
 				{
-					if(ImGui::MenuItem("same as atoms"))
-					{
-						result=std::string("color-figures-of-labels -color-for-outline _of_atom -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
+					result=std::string("color-figures-of-labels -color-for-outline _of_atom -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
 
-					ImGui::Separator();
+				if(ImGui::Selectable("  black "))
+				{
+					result=std::string("color-figures-of-labels -color-for-outline 0x000000 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
 
-					if(ImGui::Selectable("black"))
-					{
-						result=std::string("color-figures-of-labels -color-for-outline 0x000000 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
+				if(ImGui::Selectable("  dark gray "))
+				{
+					result=std::string("color-figures-of-labels -color-for-outline 0x555555 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
 
-					if(ImGui::Selectable("dark gray"))
-					{
-						result=std::string("color-figures-of-labels -color-for-outline 0x555555 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
+				if(ImGui::Selectable("  light gray "))
+				{
+					result=std::string("color-figures-of-labels -color-for-outline 0xAAAAAA -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
 
-					if(ImGui::Selectable("light gray"))
-					{
-						result=std::string("color-figures-of-labels -color-for-outline 0xAAAAAA -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
-
-					if(ImGui::Selectable("white"))
-					{
-						result=std::string("color-figures-of-labels -color-for-outline 0xFFFFFF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
-
-					ImGui::EndMenu();
+				if(ImGui::Selectable("  white "))
+				{
+					result=std::string("color-figures-of-labels -color-for-outline 0xFFFFFF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
 
 				ImGui::EndMenu();
 			}
 
-			if(ImGui::BeginMenu("  per atom##labels_color"))
+			if(ImGui::BeginMenu("  atom-level##labels_color"))
 			{
-				if(ImGui::MenuItem("same as atoms"))
+				ImGui::TextUnformatted("Main color:");
+
+				if(ImGui::MenuItem("  same as atoms"))
 				{
 					result=std::string("color-figures-of-labels -color-for-text _of_atom -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
 
-				ImGui::Separator();
-
 				{
 					ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("red"))
+					if(ImGui::Selectable("  red"))
 					{
 						result=std::string("color-figures-of-labels -color-for-text 0xFF0000 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -1989,7 +1980,7 @@ private:
 				{
 					ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("yellow"))
+					if(ImGui::Selectable("  yellow"))
 					{
 						result=std::string("color-figures-of-labels -color-for-text 0xFFFF00 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -1999,7 +1990,7 @@ private:
 				{
 					ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("green"))
+					if(ImGui::Selectable("  green"))
 					{
 						result=std::string("color-figures-of-labels -color-for-text 0x00FF00 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -2009,7 +2000,7 @@ private:
 				{
 					ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("cyan"))
+					if(ImGui::Selectable("  cyan"))
 					{
 						result=std::string("color-figures-of-labels -color-for-text 0x00FFFF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -2019,7 +2010,7 @@ private:
 				{
 					ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("blue"))
+					if(ImGui::Selectable("  blue"))
 					{
 						result=std::string("color-figures-of-labels -color-for-text 0x0000FF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -2027,9 +2018,19 @@ private:
 				}
 
 				{
+					ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+					if(ImGui::Selectable("  magenta"))
+					{
+						result=std::string("color-figures-of-labels -color-for-text 0xFF00FF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					}
+					ImGui::PopStyleColor();
+				}
+
+				{
 					ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("white"))
+					if(ImGui::Selectable("  white"))
 					{
 						result=std::string("color-figures-of-labels -color-for-text 0xFFFFFF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
@@ -2038,36 +2039,31 @@ private:
 
 				ImGui::Separator();
 
-				if(ImGui::BeginMenu("for outline##labels_atom_color_outline"))
+				ImGui::TextUnformatted("Outline color:");
+
+				if(ImGui::MenuItem("  same as atoms "))
 				{
-					if(ImGui::MenuItem("same as atoms"))
-					{
-						result=std::string("color-figures-of-labels -color-for-outline _of_atom -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
+					result=std::string("color-figures-of-labels -color-for-outline _of_atom -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
 
-					ImGui::Separator();
+				if(ImGui::Selectable("  black "))
+				{
+					result=std::string("color-figures-of-labels -color-for-outline 0x000000 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
 
-					if(ImGui::Selectable("black"))
-					{
-						result=std::string("color-figures-of-labels -color-for-outline 0x000000 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
+				if(ImGui::Selectable("  dark gray "))
+				{
+					result=std::string("color-figures-of-labels -color-for-outline 0x555555 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
 
-					if(ImGui::Selectable("dark gray"))
-					{
-						result=std::string("color-figures-of-labels -color-for-outline 0x555555 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
+				if(ImGui::Selectable("  light gray "))
+				{
+					result=std::string("color-figures-of-labels -color-for-outline 0xAAAAAA -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+				}
 
-					if(ImGui::Selectable("light gray"))
-					{
-						result=std::string("color-figures-of-labels -color-for-outline 0xAAAAAA -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
-
-					if(ImGui::Selectable("white"))
-					{
-						result=std::string("color-figures-of-labels -color-for-outline 0xFFFFFF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
-
-					ImGui::EndMenu();
+				if(ImGui::Selectable("  white "))
+				{
+					result=std::string("color-figures-of-labels -color-for-outline 0xFFFFFF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
 
 				ImGui::EndMenu();

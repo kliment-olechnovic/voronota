@@ -1860,7 +1860,7 @@ public:
 		{
 			throw std::runtime_error(std::string("No ids provided to remove figures."));
 		}
-		if(*ids.rbegin()>=atoms_.size())
+		if(*ids.rbegin()>=figures_.size())
 		{
 			throw std::runtime_error(std::string("Invalid ids provided to remove atoms."));
 		}
