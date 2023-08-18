@@ -211,7 +211,7 @@ public:
 					{
 						result="exit";
 					}
-#elif
+#else
 					ImGui::Separator();
 
 					if(ImGui::MenuItem("Download session"))
@@ -230,10 +230,10 @@ public:
 					{
 						ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey_SaveScreenshot", "Save screenshot file", ".png", file_search_root_dir_, 1, 0, ImGuiFileDialogFlags_Modal|ImGuiFileDialogFlags_DontShowHiddenFiles|ImGuiFileDialogFlags_ConfirmOverwrite);
 					}
-#elif
+#else
 					if(ImGui::MenuItem("Download image ..."))
 					{
-						result=std::string("snap Voronota-GL-screenshot.png"+(menu_screenshot_opaque ? " -opaque" : "")+(menu_screenshot_scaled_x2 ? " -scale 2" : "")+(menu_screenshot_autocrop ? " -autocrop" : "");
+						result=std::string("snap Voronota-GL-screenshot.png")+(menu_screenshot_opaque ? " -opaque" : "")+(menu_screenshot_scaled_x2 ? " -scale 2" : "")+(menu_screenshot_autocrop ? " -autocrop" : "");
 					}
 #endif
 					ImGui::Separator();
