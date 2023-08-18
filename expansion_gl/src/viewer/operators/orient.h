@@ -82,15 +82,26 @@ public:
 		for(std::size_t i=0;i<objects.size();i++)
 		{
 			scripting::DataManager& data_manager=*(objects[i]);
-			const std::set<std::size_t> atom_ids=data_manager.selection_manager().select_atoms(scripting::SelectionManager::Query(selection_expresion_for_atoms, false));
-			for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
+			std::set<std::size_t> atom_ids;
+			try
 			{
-				const scripting::Atom& atom=data_manager.atoms()[*it];
-				std::vector<double> v(3, 0.0);
-				v[0]=atom.value.x;
-				v[1]=atom.value.y;
-				v[2]=atom.value.z;
-				atom_coordinates.push_back(v);
+				atom_ids=data_manager.selection_manager().select_atoms(scripting::SelectionManager::Query(selection_expresion_for_atoms, false));
+			}
+			catch(const std::exception& e)
+			{
+				atom_ids=std::set<std::size_t>();
+			}
+			if(!atom_ids.empty())
+			{
+				for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
+				{
+					const scripting::Atom& atom=data_manager.atoms()[*it];
+					std::vector<double> v(3, 0.0);
+					v[0]=atom.value.x;
+					v[1]=atom.value.y;
+					v[2]=atom.value.z;
+					atom_coordinates.push_back(v);
+				}
 			}
 		}
 
