@@ -1759,6 +1759,36 @@ private:
 			ImGui::TextUnformatted("Representations of atoms:");
 
 			{
+				const std::string utility_id=std::string("check all##atoms_rep_utility1_")+os_name;
+				if(ImGui::Button(utility_id.c_str()))
+				{
+					rep_cartoon=true;
+					rep_trace=true;
+					rep_sticks=true;
+					rep_balls=true;
+					rep_points=true;
+					rep_molsurf=true;
+					rep_molsurf_mesh=true;
+				}
+			}
+
+			ImGui::SameLine();
+
+			{
+				const std::string utility_id=std::string("uncheck all##atoms_rep_utility2_")+os_name;
+				if(ImGui::Button(utility_id.c_str()))
+				{
+					rep_cartoon=false;
+					rep_trace=false;
+					rep_sticks=false;
+					rep_balls=false;
+					rep_points=false;
+					rep_molsurf=false;
+					rep_molsurf_mesh=false;
+				}
+			}
+
+			{
 				const std::string checkbox_id=std::string("cartoon##cartoon_checkbox_rep_")+os_name;
 				ImGui::Checkbox(checkbox_id.c_str(), &rep_cartoon);
 			}
@@ -2226,6 +2256,28 @@ private:
 			static bool rep_sas_mesh=true;
 
 			ImGui::TextUnformatted("Representations of contacts:");
+
+			{
+				const std::string utility_id=std::string("check all##contacts_rep_utility1_")+os_name;
+				if(ImGui::Button(utility_id.c_str()))
+				{
+					rep_faces=true;
+					rep_edges=true;
+					rep_sas_mesh=true;
+				}
+			}
+
+			ImGui::SameLine();
+
+			{
+				const std::string utility_id=std::string("uncheck all##contacts_rep_utility2_")+os_name;
+				if(ImGui::Button(utility_id.c_str()))
+				{
+					rep_faces=false;
+					rep_edges=false;
+					rep_sas_mesh=false;
+				}
+			}
 
 			{
 				const std::string checkbox_id=std::string("faces##faces_checkbox_rep_")+os_name;
