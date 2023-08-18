@@ -86,6 +86,11 @@ public:
 	{
 	}
 
+	const bool empty() const
+	{
+		return (atoms_mapping_of_names.empty() && contacts_mapping_of_names.empty());
+	}
+
 	void reset()
 	{
 		atoms_mapping_of_names.reset();
