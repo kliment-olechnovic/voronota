@@ -2016,15 +2016,34 @@ private:
 
 			ImGui::Separator();
 
-			ImGui::TextUnformatted("Color added standard labels:");
-
-			if(ImGui::BeginMenu("  residue-level##labels_color"))
+			if(ImGui::BeginMenu("Color added standard labels##labels_color"))
 			{
-				ImGui::TextUnformatted("Main color:");
+				static bool mode_residue=true;
+				static bool mode_atom=true;
+
+				{
+					const std::string checkbox_id=std::string("residue-level##labels_color_checkbox_residue_")+os_name;
+					ImGui::Checkbox(checkbox_id.c_str(), &mode_residue);
+				}
+				{
+					const std::string checkbox_id=std::string("atom-level##labels_color_checkbox_atom_")+os_name;
+					ImGui::Checkbox(checkbox_id.c_str(), &mode_atom);
+				}
+
+				ImGui::Separator();
 
 				if(ImGui::MenuItem("  same as atoms"))
 				{
-					result=std::string("color-figures-of-labels -color-for-text _of_atom -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					result="";
+					if(mode_residue)
+					{
+						result+=std::string("color-figures-of-labels -color-for-text _of_atom -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result+=(mode_atom ? "\n" : "");
+					}
+					if(mode_atom)
+					{
+						result+=std::string("color-figures-of-labels -color-for-text _of_atom -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					}
 				}
 
 				{
@@ -2032,7 +2051,16 @@ private:
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					if(ImGui::Selectable("  red"))
 					{
-						result=std::string("color-figures-of-labels -color-for-text 0xFF0000 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result="";
+						if(mode_residue)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0xFF0000 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+							result+=(mode_atom ? "\n" : "");
+						}
+						if(mode_atom)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0xFF0000 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						}
 					}
 					ImGui::PopStyleColor();
 				}
@@ -2042,7 +2070,16 @@ private:
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					if(ImGui::Selectable("  yellow"))
 					{
-						result=std::string("color-figures-of-labels -color-for-text 0xFFFF00 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result="";
+						if(mode_residue)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0xFFFF00 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+							result+=(mode_atom ? "\n" : "");
+						}
+						if(mode_atom)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0xFFFF00 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						}
 					}
 					ImGui::PopStyleColor();
 				}
@@ -2052,7 +2089,16 @@ private:
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					if(ImGui::Selectable("  green"))
 					{
-						result=std::string("color-figures-of-labels -color-for-text 0x00FF00 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result="";
+						if(mode_residue)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0x00FF00 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+							result+=(mode_atom ? "\n" : "");
+						}
+						if(mode_atom)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0x00FF00 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						}
 					}
 					ImGui::PopStyleColor();
 				}
@@ -2062,7 +2108,16 @@ private:
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					if(ImGui::Selectable("  cyan"))
 					{
-						result=std::string("color-figures-of-labels -color-for-text 0x00FFFF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result="";
+						if(mode_residue)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0x00FFFF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+							result+=(mode_atom ? "\n" : "");
+						}
+						if(mode_atom)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0x00FFFF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						}
 					}
 					ImGui::PopStyleColor();
 				}
@@ -2072,7 +2127,16 @@ private:
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					if(ImGui::Selectable("  blue"))
 					{
-						result=std::string("color-figures-of-labels -color-for-text 0x0000FF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result="";
+						if(mode_residue)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0x0000FF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+							result+=(mode_atom ? "\n" : "");
+						}
+						if(mode_atom)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0x0000FF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						}
 					}
 					ImGui::PopStyleColor();
 				}
@@ -2082,7 +2146,16 @@ private:
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					if(ImGui::Selectable("  magenta"))
 					{
-						result=std::string("color-figures-of-labels -color-for-text 0xFF00FF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result="";
+						if(mode_residue)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0xFF00FF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+							result+=(mode_atom ? "\n" : "");
+						}
+						if(mode_atom)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0xFF00FF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						}
 					}
 					ImGui::PopStyleColor();
 				}
@@ -2092,7 +2165,16 @@ private:
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					if(ImGui::Selectable("  white"))
 					{
-						result=std::string("color-figures-of-labels -color-for-text 0xFFFFFF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result="";
+						if(mode_residue)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0xFFFFFF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+							result+=(mode_atom ? "\n" : "");
+						}
+						if(mode_atom)
+						{
+							result+=std::string("color-figures-of-labels -color-for-text 0xFFFFFF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						}
 					}
 					ImGui::PopStyleColor();
 				}
@@ -2103,138 +2185,58 @@ private:
 
 				if(ImGui::MenuItem("  same as atoms "))
 				{
-					result=std::string("color-figures-of-labels -color-for-outline _of_atom -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					result="";
+					if(mode_residue)
+					{
+						result+=std::string("color-figures-of-labels -color-for-outline _of_atom -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result+=(mode_atom ? "\n" : "");
+					}
+					if(mode_atom)
+					{
+						result+=std::string("color-figures-of-labels -color-for-outline _of_atom -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					}
 				}
 
 				if(ImGui::Selectable("  black "))
 				{
-					result=std::string("color-figures-of-labels -color-for-outline 0x000000 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					result="";
+					if(mode_residue)
+					{
+						result+=std::string("color-figures-of-labels -color-for-outline 0x000000 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result+=(mode_atom ? "\n" : "");
+					}
+					if(mode_atom)
+					{
+						result+=std::string("color-figures-of-labels -color-for-outline 0x000000 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					}
 				}
 
-				if(ImGui::Selectable("  dark gray "))
+				if(ImGui::Selectable("  gray "))
 				{
-					result=std::string("color-figures-of-labels -color-for-outline 0x555555 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-				}
-
-				if(ImGui::Selectable("  light gray "))
-				{
-					result=std::string("color-figures-of-labels -color-for-outline 0xAAAAAA -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					result="";
+					if(mode_residue)
+					{
+						result+=std::string("color-figures-of-labels -color-for-outline 0x555555 -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result+=(mode_atom ? "\n" : "");
+					}
+					if(mode_atom)
+					{
+						result+=std::string("color-figures-of-labels -color-for-outline 0x555555 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+					}
 				}
 
 				if(ImGui::Selectable("  white "))
 				{
-					result=std::string("color-figures-of-labels -color-for-outline 0xFFFFFF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-				}
-
-				ImGui::EndMenu();
-			}
-
-			if(ImGui::BeginMenu("  atom-level##labels_color"))
-			{
-				ImGui::TextUnformatted("Main color:");
-
-				if(ImGui::MenuItem("  same as atoms"))
-				{
-					result=std::string("color-figures-of-labels -color-for-text _of_atom -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-				}
-
-				{
-					ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("  red"))
+					result="";
+					if(mode_residue)
 					{
-						result=std::string("color-figures-of-labels -color-for-text 0xFF0000 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result+=std::string("color-figures-of-labels -color-for-outline 0xFFFFFF -mode residue ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result+=(mode_atom ? "\n" : "");
 					}
-					ImGui::PopStyleColor();
-				}
-
-				{
-					ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
-					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("  yellow"))
+					if(mode_atom)
 					{
-						result=std::string("color-figures-of-labels -color-for-text 0xFFFF00 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
+						result+=std::string("color-figures-of-labels -color-for-outline 0xFFFFFF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 					}
-					ImGui::PopStyleColor();
-				}
-
-				{
-					ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
-					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("  green"))
-					{
-						result=std::string("color-figures-of-labels -color-for-text 0x00FF00 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
-					ImGui::PopStyleColor();
-				}
-
-				{
-					ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
-					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("  cyan"))
-					{
-						result=std::string("color-figures-of-labels -color-for-text 0x00FFFF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
-					ImGui::PopStyleColor();
-				}
-
-				{
-					ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
-					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("  blue"))
-					{
-						result=std::string("color-figures-of-labels -color-for-text 0x0000FF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
-					ImGui::PopStyleColor();
-				}
-
-				{
-					ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
-					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("  magenta"))
-					{
-						result=std::string("color-figures-of-labels -color-for-text 0xFF00FF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
-					ImGui::PopStyleColor();
-				}
-
-				{
-					ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(ImGui::Selectable("  white"))
-					{
-						result=std::string("color-figures-of-labels -color-for-text 0xFFFFFF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-					}
-					ImGui::PopStyleColor();
-				}
-
-				ImGui::Separator();
-
-				ImGui::TextUnformatted("Outline color:");
-
-				if(ImGui::MenuItem("  same as atoms "))
-				{
-					result=std::string("color-figures-of-labels -color-for-outline _of_atom -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-				}
-
-				if(ImGui::Selectable("  black "))
-				{
-					result=std::string("color-figures-of-labels -color-for-outline 0x000000 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-				}
-
-				if(ImGui::Selectable("  dark gray "))
-				{
-					result=std::string("color-figures-of-labels -color-for-outline 0x555555 -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-				}
-
-				if(ImGui::Selectable("  light gray "))
-				{
-					result=std::string("color-figures-of-labels -color-for-outline 0xAAAAAA -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
-				}
-
-				if(ImGui::Selectable("  white "))
-				{
-					result=std::string("color-figures-of-labels -color-for-outline 0xFFFFFF -mode atom ")+objects_selection_option(os_name)+" -use ("+atoms_selection_string_safe()+")";
 				}
 
 				ImGui::EndMenu();
