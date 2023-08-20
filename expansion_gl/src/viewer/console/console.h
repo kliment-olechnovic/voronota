@@ -104,6 +104,7 @@ public:
 		static bool menu_screenshot_opaque=true;
 		static bool menu_screenshot_autocrop=false;
 		static bool menu_screenshot_scaled_x2=false;
+		static bool menu_screenshot_scaled_x4=false;
 
 		{
 			current_menu_bar_height_=0.0f;
@@ -233,7 +234,7 @@ public:
 #else
 					if(ImGui::MenuItem("Download image ..."))
 					{
-						result=std::string("snap Voronota-GL-screenshot.png")+(menu_screenshot_opaque ? " -opaque" : "")+(menu_screenshot_scaled_x2 ? " -scale 2" : "")+(menu_screenshot_autocrop ? " -autocrop" : "");
+						result=std::string("snap Voronota-GL-screenshot.png")+(menu_screenshot_opaque ? " -opaque" : "")+(menu_screenshot_scaled_x2 ? " -scale 2" : "")+(menu_screenshot_scaled_x4 ? " -scale 4" : "")+(menu_screenshot_autocrop ? " -autocrop" : "");
 					}
 #endif
 					ImGui::Separator();
@@ -248,6 +249,12 @@ public:
 
 					{
 						ImGui::Checkbox("scale x2##for_snap", &menu_screenshot_scaled_x2);
+						menu_screenshot_scaled_x4=(menu_screenshot_scaled_x4 && !menu_screenshot_scaled_x2);
+					}
+
+					{
+						ImGui::Checkbox("scale x4##for_snap", &menu_screenshot_scaled_x4);
+						menu_screenshot_scaled_x2=(menu_screenshot_scaled_x2 && !menu_screenshot_scaled_x4);
 					}
 
 					ImGui::EndMenu();
@@ -272,10 +279,35 @@ public:
 
 					ImGui::Separator();
 
-					ImGui::Checkbox("Script editor##main_menu_checkbox", &script_editor_panel_.visible);
-					ImGui::Checkbox("Commands reference##main_menu_checkbox", &documentation_viewer_panel_.visible);
-					ImGui::Checkbox("Shading controls##main_menu_checkbox", &shading_control_toolbar_panel_.visible);
-					ImGui::Checkbox("Display controls##main_menu_checkbox", &display_control_toolbar_panel_.visible);
+					ImGui::TextUnformatted("Resize viewport:");
+
+					if(ImGui::MenuItem("  to 75% width and 75% height of available space"))
+					{
+						std::ostringstream result_output;
+						result_output << "vsb: hint-render-area-size -width " << (max_width/4*3) << " -height " << (max_height/4*3);
+						result=result_output.str();
+					}
+
+					if(ImGui::MenuItem("  to 60% width and 75% height of available space"))
+					{
+						std::ostringstream result_output;
+						result_output << "vsb: hint-render-area-size -width " << (max_width/5*3) << " -height " << (max_height/4*3);
+						result=result_output.str();
+					}
+
+					if(ImGui::MenuItem("  to 50% width and 75% height of available space"))
+					{
+						std::ostringstream result_output;
+						result_output << "vsb: hint-render-area-size -width " << (max_width/2) << " -height " << (max_height/4*3);
+						result=result_output.str();
+					}
+
+					if(ImGui::MenuItem("  to 50% width and 50% height of available space"))
+					{
+						std::ostringstream result_output;
+						result_output << "vsb: hint-render-area-size -width " << (max_width/2) << " -height " << (max_height/2);
+						result=result_output.str();
+					}
 
 					ImGui::Separator();
 
@@ -283,6 +315,13 @@ public:
 					{
 						result="vsb: configure-gui-disable-console";
 					}
+
+					ImGui::Separator();
+
+					ImGui::Checkbox("Script editor##main_menu_checkbox", &script_editor_panel_.visible);
+					ImGui::Checkbox("Commands reference##main_menu_checkbox", &documentation_viewer_panel_.visible);
+					ImGui::Checkbox("Shading controls##main_menu_checkbox", &shading_control_toolbar_panel_.visible);
+					ImGui::Checkbox("Display controls##main_menu_checkbox", &display_control_toolbar_panel_.visible);
 
 					ImGui::EndMenu();
 				}
@@ -359,7 +398,7 @@ public:
 				{
 					file_search_root_dir_=ImGuiFileDialog::Instance()->GetCurrentPath()+"/";
 					const std::string file_path=ImGuiFileDialog::Instance()->GetFilePathName();
-					result=std::string("snap '")+file_path+"'"+(menu_screenshot_opaque ? " -opaque" : "")+(menu_screenshot_scaled_x2 ? " -scale 2" : "")+(menu_screenshot_autocrop ? " -autocrop" : "");
+					result=std::string("snap '")+file_path+"'"+(menu_screenshot_opaque ? " -opaque" : "")+(menu_screenshot_scaled_x2 ? " -scale 2" : "")+(menu_screenshot_scaled_x4 ? " -scale 4" : "")+(menu_screenshot_autocrop ? " -autocrop" : "");
 				}
 				ImGuiFileDialog::Instance()->Close();
 			}
