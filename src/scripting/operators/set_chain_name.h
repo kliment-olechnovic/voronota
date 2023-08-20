@@ -3,6 +3,10 @@
 
 #include "../operators_common.h"
 
+#if __cplusplus >= 201402L
+#include <random>
+#endif
+
 namespace voronota
 {
 
@@ -65,7 +69,15 @@ public:
 			}
 			std::vector<std::string> list_of_chain_names_original(set_of_chain_names.begin(), set_of_chain_names.end());
 			std::vector<std::string> list_of_chain_names_shuffled=list_of_chain_names_original;
+
+#if __cplusplus >= 201402L
+			std::random_device rd;
+			std::mt19937 rng(rd());
+			std::shuffle(list_of_chain_names_shuffled.begin(), list_of_chain_names_shuffled.end(), rng);
+#else
 			std::random_shuffle(list_of_chain_names_shuffled.begin(), list_of_chain_names_shuffled.end());
+#endif
+
 			for(std::size_t i=0;i<list_of_chain_names_original.size();i++)
 			{
 				renaming_map[list_of_chain_names_original[i]]=list_of_chain_names_shuffled[i];
