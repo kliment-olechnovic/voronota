@@ -149,15 +149,15 @@ public:
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
-		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+		wrapped_glEnable_GL_VERTEX_PROGRAM_POINT_SIZE();
 
 		if(multisampling_mode_!=MultisamplingMode::none)
 		{
-			glEnable(GL_MULTISAMPLE);
+			wrapped_glEnable_GL_MULTISAMPLE();
 		}
 		else
 		{
-			glDisable(GL_MULTISAMPLE);
+			wrapped_glDisable_GL_MULTISAMPLE();
 		}
 
 		if(!shading_screen_.init(parameters.shader_vertex_screen, parameters.shader_fragment_screen, DrawingForScreenController::ordered_used_shader_attribute_names()))
@@ -1027,6 +1027,27 @@ private:
 		app->callback_on_character_used(codepoint);
 	}
 
+	static void wrapped_glEnable_GL_VERTEX_PROGRAM_POINT_SIZE()
+	{
+#ifndef FOR_WEB
+		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+#endif
+	}
+
+	static void wrapped_glEnable_GL_MULTISAMPLE()
+	{
+#ifndef FOR_WEB
+		glEnable(GL_MULTISAMPLE);
+#endif
+	}
+
+	static void wrapped_glDisable_GL_MULTISAMPLE()
+	{
+#ifndef FOR_WEB
+		glDisable(GL_MULTISAMPLE);
+#endif
+	}
+
 	void callback_on_window_resized(int width, int height)
 	{
 		window_width_=width;
@@ -1194,11 +1215,11 @@ private:
 		{
 			if(multisampling_mode_!=MultisamplingMode::none)
 			{
-				glEnable(GL_MULTISAMPLE);
+				wrapped_glEnable_GL_MULTISAMPLE();
 			}
 			else
 			{
-				glDisable(GL_MULTISAMPLE);
+				wrapped_glDisable_GL_MULTISAMPLE();
 			}
 		}
 
@@ -1234,7 +1255,7 @@ private:
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			{
-				glDisable(GL_MULTISAMPLE);
+				wrapped_glDisable_GL_MULTISAMPLE();
 
 				shading_simple_.set_selection_mode_enabled(true);
 				render_scene(ShadingMode::simple);
@@ -1250,7 +1271,7 @@ private:
 
 				if(multisampling_mode_!=MultisamplingMode::none)
 				{
-					glEnable(GL_MULTISAMPLE);
+					wrapped_glEnable_GL_MULTISAMPLE();
 				}
 			}
 
