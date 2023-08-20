@@ -27,8 +27,8 @@ rm -f "./voronota_viewer_app/voronota_viewer.js" "./voronota_viewer_app/voronota
 mkdir -p "./voronota_viewer_app"
 
 emcc --std=c++14 \
--s "EXPORTED_FUNCTIONS=['_main','_voronota_viewer_enqueue_script','_voronota_viewer_execute_native_script','_voronota_viewer_get_last_script_output','_voronota_viewer_upload_file','_voronota_viewer_upload_session','_voronota_viewer_setup_js_bindings_to_all_api_functions']" \
--s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
+-s "EXPORTED_FUNCTIONS=['_main','_malloc','_free','_voronota_viewer_enqueue_script','_voronota_viewer_execute_native_script','_voronota_viewer_get_last_script_output','_voronota_viewer_upload_file','_voronota_viewer_upload_session','_voronota_viewer_setup_js_bindings_to_all_api_functions']" \
+-s "EXPORTED_RUNTIME_METHODS=['ccall']" \
   ../src/voronota_gl.cpp \
   ../src/dependencies/imgui/*.cpp \
   ../../expansion_gl/src/dependencies/imgui/addons/*.cpp \
@@ -45,7 +45,6 @@ emcc --std=c++14 \
 -I "../../expansion_js/src/dependencies/" \
 -I "../src/dependencies/" \
 -I "/usr/include/glm/" \
--I "${EMSDK}/upstream/emscripten/system/include/emscripten/" \
 -s USE_GLFW=3 \
 -s ALLOW_MEMORY_GROWTH=1 \
 -s DISABLE_EXCEPTION_CATCHING=0 \

@@ -24,7 +24,7 @@ fi
 BASENAME="$(basename "$INFILE" | cut -f 1 -d '.')"
 
 rm -f "${BASENAME}.data" "${BASENAME}.js"
-python "${EMSDK}/upstream/emscripten/tools/file_packager.py" \
+python3 "${EMSDK}/upstream/emscripten/tools/file_packager.py" \
   ./${BASENAME}.data \
   --preload ${INFILE}@/ \
   --lz4 \

@@ -79,9 +79,9 @@ function voronota_viewer_get_last_script_output()
 	return JSON.parse(Module.ccall('voronota_viewer_get_last_script_output', 'string'));;
 }
 
-function voronota_viewer_upload_file(name, data, parameters)
+function voronota_viewer_upload_file(name, data, length, parameters)
 {
-	Module.ccall('voronota_viewer_upload_file', null, ['string','string','string'], [name,data,parameters]);
+	Module.ccall('voronota_viewer_upload_file', null, ['string', 'number', 'number', 'string'], [name, data, length, parameters]);
 }
 
 function voronota_viewer_upload_session(data, length)
@@ -320,8 +320,15 @@ function voronota_viewer_add_button_for_file_input(label, button_container_id, s
 	const setup_file_reader=function(file)
 	{
 		var file_reader=new FileReader();
-		file_reader.onloadend=function(e){voronota_viewer_upload_file(file.name, file_reader.result, '--include-heteroatoms');}
-		file_reader.readAsText(file);	
+		file_reader.onloadend=function(e){
+			var array_buffer=file_reader.result;
+			var byte_array=new Uint8Array(array_buffer);
+			var buffer=Module._malloc(byte_array.length);
+			Module.HEAPU8.set(byte_array, buffer); 
+			voronota_viewer_upload_file(file.name, buffer, byte_array.length, '--include-heteroatoms');
+			Module._free(buffer);
+		}
+		file_reader.readAsArrayBuffer(file);
 	}
 	
 	file_input.addEventListener('change', function(e)
