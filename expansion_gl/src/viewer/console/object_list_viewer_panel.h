@@ -474,6 +474,11 @@ public:
 						result="zoom-by-objects";
 					}
 
+					if(ImGui::Selectable("Orient"))
+					{
+						result="orient";
+					}
+
 					ImGui::Separator();
 
 					{
@@ -824,6 +829,11 @@ public:
 					if(ImGui::Selectable("Zoom"))
 					{
 						result=std::string("zoom-by-objects -names '")+os.name+"'";
+					}
+
+					if(ImGui::Selectable("Orient"))
+					{
+						result=std::string("orient -names '")+os.name+"'";
 					}
 
 					if(object_states.size()>1)
