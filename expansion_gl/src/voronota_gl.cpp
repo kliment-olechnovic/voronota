@@ -57,7 +57,7 @@ int main(const int argc, const char** argv)
 		}
 
 		voronota::viewer::GUIStyleWrapper::initialized()=true;
-		voronota::viewer::GUIStyleWrapper::set_scale_factor(gui_scaling, custom_font_file.empty());
+		voronota::viewer::GUIStyleWrapper::set_scale_factor(gui_scaling, false);
 
 		voronota::viewer::Application::instance().enqueue_script("clear");
 		voronota::viewer::Application::instance().enqueue_script("setup-defaults");
