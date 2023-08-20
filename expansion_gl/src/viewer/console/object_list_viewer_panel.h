@@ -32,13 +32,15 @@ public:
 		visible(true),
 		need_atoms_unmark_button_(false),
 		need_contacts_unmark_button_(false),
+		current_atoms_selection_not_default_(false),
+		current_contacts_selection_not_default_(false),
 		default_atoms_selection_string_("[]"),
 		marked_atoms_selection_string_("[_marked]"),
 		default_contacts_selection_string_("[-no-solvent]"),
 		marked_contacts_selection_string_("[_marked]")
 	{
-		atoms_selection_string_suggestions_.first.push_back("[]");
-		atoms_selection_string_suggestions_.first.push_back("[_marked]");
+		atoms_selection_string_suggestions_.first.push_back(default_atoms_selection_string_);
+		atoms_selection_string_suggestions_.first.push_back(marked_atoms_selection_string_);
 		atoms_selection_string_suggestions_.first.push_back("[_visible]");
 		atoms_selection_string_suggestions_.first.push_back("[-protein]");
 		atoms_selection_string_suggestions_.first.push_back("[-nucleic]");
@@ -48,10 +50,10 @@ public:
 		atoms_selection_string_suggestions_.second.push_back("[-chain A]");
 		atoms_selection_string_suggestions_.second.push_back("[-chain A -rnum 1:200]");
 
+		contacts_selection_string_suggestions_.first.push_back(default_contacts_selection_string_);
+		contacts_selection_string_suggestions_.first.push_back(marked_contacts_selection_string_);
 		contacts_selection_string_suggestions_.first.push_back("[]");
-		contacts_selection_string_suggestions_.first.push_back("[_marked]");
 		contacts_selection_string_suggestions_.first.push_back("[_visible]");
-		contacts_selection_string_suggestions_.first.push_back("[-no-solvent]");
 		contacts_selection_string_suggestions_.first.push_back("[-no-solvent -min-seq-sep 1]");
 		contacts_selection_string_suggestions_.first.push_back("[-solvent]");
 		contacts_selection_string_suggestions_.first.push_back("[-inter-chain]");
@@ -124,16 +126,32 @@ public:
 
 		marking_info.reset();
 
+		current_atoms_selection_not_default_=(atoms_selection_string_safe()!=default_atoms_selection_string_);
+		current_contacts_selection_not_default_=(contacts_selection_string_safe()!=default_contacts_selection_string_);
+
 		{
 			{
 				{
 					ImGui::TextUnformatted("Atoms scope:");
+
 					ImGui::SameLine();
 
 					{
 						{
+							if(current_atoms_selection_not_default_)
+							{
+								ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.1f, 0.4f, 1.0f));
+								ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.2f, 0.5f, 1.0f));
+								ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.4f, 1.0f));
+							}
+
 							std::string button_id=atoms_selection_string_safe()+"##button_atoms_selection_change";
 							ImGui::Button(button_id.c_str());
+
+							if(current_atoms_selection_not_default_)
+							{
+								ImGui::PopStyleColor(3);
+							}
 						}
 						const std::string submenu_id=std::string("Change##submenu_atoms_selection");
 						if(ImGui::BeginPopupContextItem(submenu_id.c_str(), 0))
@@ -237,12 +255,25 @@ public:
 
 				{
 					ImGui::TextUnformatted("Contacts scope:");
+
 					ImGui::SameLine();
 
 					{
 						{
+							if(current_contacts_selection_not_default_)
+							{
+								ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.1f, 0.4f, 1.0f));
+								ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.2f, 0.5f, 1.0f));
+								ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.4f, 1.0f));
+							}
+
 							std::string button_id=contacts_selection_string_safe()+"##button_contacts_selection_change";
 							ImGui::Button(button_id.c_str());
+
+							if(current_contacts_selection_not_default_)
+							{
+								ImGui::PopStyleColor(3);
+							}
 						}
 						const std::string submenu_id=std::string("Change##submenu_contacts_selection");
 						if(ImGui::BeginPopupContextItem(submenu_id.c_str(), 0))
@@ -2432,6 +2463,9 @@ private:
 
 	bool need_atoms_unmark_button_;
 	bool need_contacts_unmark_button_;
+
+	bool current_atoms_selection_not_default_;
+	bool current_contacts_selection_not_default_;
 
 	std::vector<char> atoms_selection_buffer_;
 	std::vector<char> contacts_selection_buffer_;
