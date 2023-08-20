@@ -5,6 +5,8 @@
 
 #include "../../src/voronota_version.h"
 
+#include "uv/stocked_default_fonts.h"
+
 int main(const int argc, const char** argv)
 {
 	int return_status=1;
@@ -45,6 +47,13 @@ int main(const int argc, const char** argv)
 		{
 			ImGuiIO& io=ImGui::GetIO();
 			io.Fonts->AddFontFromFileTTF(custom_font_file.c_str(), 13.0f*gui_scaling);
+		}
+		else
+		{
+			ImGuiIO& io=ImGui::GetIO();
+			static ImFontConfig font_config=ImFontConfig();
+			font_config.FontDataOwnedByAtlas=false;
+			io.Fonts->AddFontFromMemoryTTF(reinterpret_cast<void*>(voronota::uv::default_font_mono_regular_data()), voronota::uv::default_font_mono_regular_data_size(), 13.0f*gui_scaling, &font_config);
 		}
 
 		voronota::viewer::GUIStyleWrapper::initialized()=true;

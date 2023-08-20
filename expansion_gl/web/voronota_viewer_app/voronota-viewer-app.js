@@ -141,7 +141,7 @@ function voronota_viewer_init(config)
 	
 	(function()
 	{
-		const scripts = ["4ung.js", "dun2010bbdep.js", "font.js", "voronota_viewer.js"];
+		const scripts = ["4ung.js", "dun2010bbdep.js", "voronota_viewer.js"];
 		for (var i = 0; i < scripts.length; i++)
 		{
 			var script = document.createElement('script');
@@ -205,7 +205,7 @@ function voronota_viewer_init(config)
 				}
 			}
 		})],
-		arguments: ['--window-width', '500', '--window-height', '500', '--gui-scaling', ''+voronota_viewer_screen_pixel_ratio(), '--custom-font-file', 'font.ttf'],
+		arguments: ['--window-width', '500', '--window-height', '500', '--gui-scaling', ''+voronota_viewer_screen_pixel_ratio()],
 		print: ((text) => {	console.log(text);}),
 		locateFile: ((s) =>	{return (voronota_viewer_app_subdirectory + s);}),
 		canvas: canvas
