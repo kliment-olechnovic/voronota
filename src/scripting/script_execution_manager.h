@@ -98,6 +98,7 @@
 #include "operators/print_triangulation.h"
 #include "operators/print_virtual_file.h"
 #include "operators/ranks_jury_score.h"
+#include "operators/reduce_table_redundancy_by_bucketing.h"
 #include "operators/redundancy_score.h"
 #include "operators/rename_global_adjunct.h"
 #include "operators/rename_object.h"
@@ -376,6 +377,7 @@ public:
 		set_command_for_extra_actions("split-pdb-file", operators::SplitPDBFile());
 		set_command_for_extra_actions("cat-files", operators::CatFiles());
 		set_command_for_extra_actions("ranks-jury-score", operators::RanksJuryScore());
+		set_command_for_extra_actions("reduce-table-redundancy-by-bucketing", operators::ReduceTableRedundancyByBucketing());
 		set_command_for_extra_actions("redundancy-score", operators::RedundancyScore());
 		set_command_for_extra_actions("detect-any-contact-between-structures", operators::DetectAnyContactBetweenStructures());
 	}
