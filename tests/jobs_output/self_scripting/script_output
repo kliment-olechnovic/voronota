@@ -1229,6 +1229,9 @@
             "name":"ranks-jury-score",
             "short_description":""},
           {
+            "name":"reduce-table-redundancy-by-bucketing",
+            "short_description":""},
+          {
             "name":"redundancy-score",
             "short_description":""},
           {
