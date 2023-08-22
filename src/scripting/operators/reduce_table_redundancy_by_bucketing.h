@@ -27,7 +27,7 @@ public:
 	std::string input_file;
 	std::string output_file;
 	std::vector<std::string> columns;
-	std::vector<int> bucket_sizes;
+	std::vector<int> bucket_counts;
 
 	ReduceTableRedundancyByBucketing()
 	{
@@ -38,7 +38,7 @@ public:
 		input_file=input.get_value<std::string>("input-file");
 		output_file=input.get_value<std::string>("output-file");
 		columns=input.get_value_vector<std::string>("bucket-columns");
-		bucket_sizes=input.get_value_vector<int>("bucket-sizes");
+		bucket_counts=input.get_value_vector<int>("bucket-counts");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -46,7 +46,7 @@ public:
 		doc.set_option_decription(CDOD("input-file", CDOD::DATATYPE_STRING, "path to input file"));
 		doc.set_option_decription(CDOD("output-file", CDOD::DATATYPE_STRING, "path to output file"));
 		doc.set_option_decription(CDOD("bucket-columns", CDOD::DATATYPE_STRING_ARRAY, "names of columns to use for bucketing"));
-		doc.set_option_decription(CDOD("bucket-sizes", CDOD::DATATYPE_INT_ARRAY, "bucket sizes for columns"));
+		doc.set_option_decription(CDOD("bucket-counts", CDOD::DATATYPE_INT_ARRAY, "bucket counts for columns"));
 	}
 
 	Result run(void*) const
@@ -59,14 +59,22 @@ public:
 			throw std::runtime_error(std::string("No column names specified."));
 		}
 
-		if(bucket_sizes.empty())
+		if(bucket_counts.empty())
 		{
-			throw std::runtime_error(std::string("No bucket size specified."));
+			throw std::runtime_error(std::string("No bucket counts specified."));
 		}
 
-		if(bucket_sizes.size()!=columns.size())
+		if(bucket_counts.size()!=columns.size())
 		{
-			throw std::runtime_error(std::string("Number of bucket sizes is not the same as number of columns for bucketing."));
+			throw std::runtime_error(std::string("Number of bucket counts is not the same as number of columns for bucketing."));
+		}
+
+		for(std::size_t i=0;i<bucket_counts.size();i++)
+		{
+			if(bucket_counts[i]<1)
+			{
+				throw std::runtime_error(std::string("Not all bucket counts are positive."));
+			}
 		}
 
 		InputSelector finput_selector(input_file);
@@ -166,22 +174,15 @@ public:
 			throw std::runtime_error(std::string("No value rows in table."));
 		}
 
-		std::vector< std::map<double, int> > maps_of_columns_values_to_buckets(columns.size());
+		std::vector< std::pair<double, double> > columns_values_ranges(columns.size());
+		std::vector<double> columns_values_bucket_size(columns.size());
 		for(std::size_t c=0;c<columns.size();c++)
 		{
 			const std::vector<double>& values=columns_values[c];
-			std::map<double, int>& maps_of_values_to_buckets=maps_of_columns_values_to_buckets[c];
-			for(std::size_t r=0;r<values.size();r++)
-			{
-				maps_of_values_to_buckets[values[r]]=0;
-			}
-			const int bucket_size=bucket_sizes[c];
-			int value_id=0;
-			for(std::map<double, int>::iterator it=maps_of_values_to_buckets.begin();it!=maps_of_values_to_buckets.end();++it)
-			{
-				it->second=value_id/bucket_size;
-				value_id++;
-			}
+			std::pair<double, double>& range=columns_values_ranges[c];
+			range.first=(*(std::min_element(values.begin(), values.end())));
+			range.second=(*(std::max_element(values.begin(), values.end())));
+			columns_values_bucket_size[c]=(range.second-range.first)/static_cast<double>(bucket_counts[c]);
 		}
 
 		std::vector<std::size_t> selected_row_ids;
@@ -193,7 +194,8 @@ public:
 				std::vector<int> multibucket(columns.size());
 				for(std::size_t c=0;c<columns.size();c++)
 				{
-					multibucket[c]=maps_of_columns_values_to_buckets[c][columns_values[c][r]];
+					const int bucket_id=(columns_values_bucket_size[c]>0.0 ? static_cast<int>((columns_values[c][r]-columns_values_ranges[c].first)/columns_values_bucket_size[c]) : 0);
+					multibucket[c]=std::max(0, std::min(bucket_id, bucket_counts[c]-1));
 				}
 				int& presence=map_of_multibucket_presence[multibucket];
 				if(presence==0)
