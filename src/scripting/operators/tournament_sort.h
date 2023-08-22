@@ -195,98 +195,135 @@ public:
 			throw std::runtime_error(std::string("No value rows in table."));
 		}
 
-		typedef std::pair< std::pair<std::size_t, std::size_t>, std::size_t > SortableID;
-		std::vector<SortableID> sortable_ids(N);
+		const bool possible_to_sort_simply=(column_values.size()==1 && add_win_score_column.empty());
 
-		for(std::size_t a=0;a<N;a++)
+		if(possible_to_sort_simply)
 		{
-			SortableID& sid=sortable_ids[a];
-			sid.first.first=0;
-			sid.first.second=0;
-			sid.second=a;
-		}
+			typedef std::pair<double, std::size_t> SortableID;
+			std::vector<SortableID> sortable_ids(N);
 
-		for(std::size_t a=0;a<N;a++)
-		{
-			for(std::size_t b=(a+1);b<N;b++)
-			{
-				bool win_a=true;
-				bool win_b=true;
-
-				if(!no_tournament)
-				{
-					for(std::size_t i=0;i<column_values.size() && win_a;i++)
-					{
-						win_a=(win_a && ((column_values[i][a]+usable_tolerances[i])>column_values[i][b]));
-					}
-
-					for(std::size_t i=0;i<column_values.size() && win_b;i++)
-					{
-						win_b=(win_b && ((column_values[i][b]+usable_tolerances[i])>column_values[i][a]));
-					}
-				}
-				else
-				{
-					bool finished=false;
-					for(std::size_t i=0;i<column_values.size() && !finished;i++)
-					{
-						if(column_values[i][a]>column_values[i][b])
-						{
-							win_a=true;
-							win_b=false;
-							finished=true;
-						}
-						else if(column_values[i][a]<column_values[i][b])
-						{
-							win_a=false;
-							win_b=true;
-							finished=true;
-						}
-					}
-				}
-
-				if(win_a==win_b)
-				{
-					sortable_ids[a].first.second++;
-					sortable_ids[b].first.second++;
-				}
-				else if(win_a)
-				{
-					sortable_ids[a].first.first++;
-				}
-				else if(win_b)
-				{
-					sortable_ids[b].first.first++;
-				}
-			}
-		}
-
-		std::sort(sortable_ids.begin(), sortable_ids.end());
-		std::reverse(sortable_ids.begin(), sortable_ids.end());
-
-		{
-			foutput << table_header_line;
-			if(!add_win_score_column.empty())
-			{
-				foutput << " " << add_win_score_column;
-			}
-			if(!add_rank_column.empty())
-			{
-				foutput << " " << add_rank_column;
-			}
-			foutput << "\n";
 			for(std::size_t a=0;a<N;a++)
 			{
-				foutput << table_row_lines[sortable_ids[a].second];
+				SortableID& sid=sortable_ids[a];
+				sid.first=(0.0-column_values[0][a]);
+				sid.second=a;
+			}
+
+			std::sort(sortable_ids.begin(), sortable_ids.end());
+
+			{
+				foutput << table_header_line;
+				if(!add_rank_column.empty())
+				{
+					foutput << " " << add_rank_column;
+				}
+				foutput << "\n";
+				for(std::size_t a=0;a<N;a++)
+				{
+					foutput << table_row_lines[sortable_ids[a].second];
+					if(!add_rank_column.empty())
+					{
+						foutput << " " << (a+1);
+					}
+					foutput << "\n";
+				}
+			}
+		}
+		else
+		{
+			typedef std::pair< std::pair<std::size_t, std::size_t>, std::size_t > SortableID;
+			std::vector<SortableID> sortable_ids(N);
+
+			for(std::size_t a=0;a<N;a++)
+			{
+				SortableID& sid=sortable_ids[a];
+				sid.first.first=0;
+				sid.first.second=0;
+				sid.second=a;
+			}
+
+			for(std::size_t a=0;a<N;a++)
+			{
+				for(std::size_t b=(a+1);b<N;b++)
+				{
+					bool win_a=true;
+					bool win_b=true;
+
+					if(!no_tournament)
+					{
+						for(std::size_t i=0;i<column_values.size() && win_a;i++)
+						{
+							win_a=(win_a && ((column_values[i][a]+usable_tolerances[i])>column_values[i][b]));
+						}
+
+						for(std::size_t i=0;i<column_values.size() && win_b;i++)
+						{
+							win_b=(win_b && ((column_values[i][b]+usable_tolerances[i])>column_values[i][a]));
+						}
+					}
+					else
+					{
+						bool finished=false;
+						for(std::size_t i=0;i<column_values.size() && !finished;i++)
+						{
+							if(column_values[i][a]>column_values[i][b])
+							{
+								win_a=true;
+								win_b=false;
+								finished=true;
+							}
+							else if(column_values[i][a]<column_values[i][b])
+							{
+								win_a=false;
+								win_b=true;
+								finished=true;
+							}
+						}
+					}
+
+					if(win_a==win_b)
+					{
+						sortable_ids[a].first.second++;
+						sortable_ids[b].first.second++;
+					}
+					else if(win_a)
+					{
+						sortable_ids[a].first.first++;
+					}
+					else if(win_b)
+					{
+						sortable_ids[b].first.first++;
+					}
+				}
+			}
+
+			std::sort(sortable_ids.begin(), sortable_ids.end());
+			std::reverse(sortable_ids.begin(), sortable_ids.end());
+
+			{
+				foutput << table_header_line;
 				if(!add_win_score_column.empty())
 				{
-					foutput << " " << sortable_ids[a].first.first << "." << sortable_ids[a].first.second;
+					foutput << " " << add_win_score_column;
 				}
 				if(!add_rank_column.empty())
 				{
-					foutput << " " << (a+1);
+					foutput << " " << add_rank_column;
 				}
 				foutput << "\n";
+				for(std::size_t a=0;a<N;a++)
+				{
+					foutput << table_row_lines[sortable_ids[a].second];
+					if(!add_win_score_column.empty())
+					{
+						foutput << " " << sortable_ids[a].first.first << "." << sortable_ids[a].first.second;
+					}
+					if(!add_rank_column.empty())
+					{
+						foutput << " " << (a+1);
+					}
+					foutput << "\n";
+				}
 			}
 		}
 
