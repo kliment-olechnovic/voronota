@@ -28,8 +28,9 @@ public:
 	std::string output_file;
 	std::vector<std::string> columns;
 	std::vector<int> bucket_counts;
+	int max_presence;
 
-	ReduceTableRedundancyByBucketing()
+	ReduceTableRedundancyByBucketing() : max_presence(1)
 	{
 	}
 
@@ -39,6 +40,7 @@ public:
 		output_file=input.get_value<std::string>("output-file");
 		columns=input.get_value_vector<std::string>("bucket-columns");
 		bucket_counts=input.get_value_vector<int>("bucket-counts");
+		max_presence=input.get_value_or_default<int>("max-presence", 1);
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -47,6 +49,7 @@ public:
 		doc.set_option_decription(CDOD("output-file", CDOD::DATATYPE_STRING, "path to output file"));
 		doc.set_option_decription(CDOD("bucket-columns", CDOD::DATATYPE_STRING_ARRAY, "names of columns to use for bucketing"));
 		doc.set_option_decription(CDOD("bucket-counts", CDOD::DATATYPE_INT_ARRAY, "bucket counts for columns"));
+		doc.set_option_decription(CDOD("max-presence", CDOD::DATATYPE_INT, "max number of occurrences for a bucketed vector", 1));
 	}
 
 	Result run(void*) const
@@ -75,6 +78,11 @@ public:
 			{
 				throw std::runtime_error(std::string("Not all bucket counts are positive."));
 			}
+		}
+
+		if(max_presence<1)
+		{
+			throw std::runtime_error(std::string("Max presence value is not positive."));
 		}
 
 		InputSelector finput_selector(input_file);
@@ -198,7 +206,7 @@ public:
 					multibucket[c]=std::max(0, std::min(bucket_id, bucket_counts[c]-1));
 				}
 				int& presence=map_of_multibucket_presence[multibucket];
-				if(presence==0)
+				if(presence<max_presence)
 				{
 					selected_row_ids.push_back(r);
 				}
