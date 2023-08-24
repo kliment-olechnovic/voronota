@@ -18,6 +18,32 @@ rm -r -f "$PACKAGE_NAME"
 
 ################################################################################
 
+if [ ! -f "./voronota" ]
+then
+	g++ -O3 -static-libgcc -static-libstdc++ -static -o "./voronota" $(find ./src/ -name '*.cpp')
+fi
+
+if [ ! -f "./voronota" ]
+then
+	echo >&2 "Error: could not build './voronota'"
+	exit 1
+fi
+
+if [ ! -f "./expansion_js/voronota-js" ]
+then
+	cd "./expansion_js"
+	g++ -O3 -std=c++14 -I"./src/dependencies" -static-libgcc -static-libstdc++ -static -o "./voronota-js" $(find ./src/ -name '*.cpp')
+	cd - &> /dev/null
+fi
+
+if [ ! -f "./expansion_js/voronota-js" ]
+then
+	echo >&2 "Error: could not build './expansion_js/voronota-js'"
+	exit 1
+fi
+
+################################################################################
+
 ./stock.bash
 
 ./document.bash
