@@ -3,6 +3,8 @@
 
 #include "../dependencies/imgui/imgui_impl_glfw.h"
 
+#include "../uv/stocked_default_fonts.h"
+
 namespace voronota
 {
 
@@ -12,27 +14,45 @@ namespace viewer
 class GUIStyleWrapper
 {
 public:
-	static bool& initialized()
+	static GUIStyleWrapper& instance()
 	{
-		static bool value=false;
-		return value;
+		static GUIStyleWrapper wrapper;
+		return wrapper;
+	}
+
+	void init(const std::string& custom_font_file, const float base_gui_scaling)
+	{
+		if(!custom_font_file.empty())
+		{
+			ImGuiIO& io=ImGui::GetIO();
+			io.Fonts->AddFontFromFileTTF(custom_font_file.c_str(), 13.0f*base_gui_scaling);
+		}
+		else
+		{
+			ImGuiIO& io=ImGui::GetIO();
+			static ImFontConfig font_config=ImFontConfig();
+			font_config.FontDataOwnedByAtlas=false;
+			io.Fonts->AddFontFromMemoryTTF(reinterpret_cast<void*>(voronota::uv::default_font_mono_regular_data()), voronota::uv::default_font_mono_regular_data_size(), 13.0f*base_gui_scaling, &font_config);
+		}
+		initialized_=true;
+		scale(base_gui_scaling, false);
 	}
 
 	static float scale_factor()
 	{
-		return mutable_scale_factor();
+		return instance().scale_factor_;
 	}
 
-	static bool set_scale_factor(const float value, const bool scale_font)
+	bool scale(const float value, const bool scale_font)
 	{
-		if(initialized() && value>0.2f && value<=5.0f)
+		if(initialized_ && value>=0.2f && value<=5.0f)
 		{
-			mutable_scale_factor()=value;
+			scale_factor_*=value;
 
 			if(scale_font)
 			{
 				ImGuiIO& io=ImGui::GetIO();
-				io.FontGlobalScale=value;
+				io.FontGlobalScale=scale_factor_;
 			}
 
 			{
@@ -46,11 +66,13 @@ public:
 	}
 
 private:
-	static float& mutable_scale_factor()
+	GUIStyleWrapper() : initialized_(false), scale_factor_(1.0f)
 	{
-		static float value=1.0f;
-		return value;
+
 	}
+
+	bool initialized_;
+	float scale_factor_;
 };
 
 
