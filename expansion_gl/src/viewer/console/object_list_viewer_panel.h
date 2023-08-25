@@ -34,6 +34,8 @@ public:
 		need_contacts_unmark_button_(false),
 		current_atoms_selection_not_default_(false),
 		current_contacts_selection_not_default_(false),
+		current_atoms_selection_marked_(false),
+		current_contacts_selection_marked_(false),
 		default_atoms_selection_string_("[]"),
 		marked_atoms_selection_string_("[_marked]"),
 		default_contacts_selection_string_("[-no-solvent]"),
@@ -128,6 +130,8 @@ public:
 
 		current_atoms_selection_not_default_=(atoms_selection_string_safe()!=default_atoms_selection_string_);
 		current_contacts_selection_not_default_=(contacts_selection_string_safe()!=default_contacts_selection_string_);
+		current_atoms_selection_marked_=current_atoms_selection_not_default_ && (atoms_selection_string_safe()==marked_atoms_selection_string_);
+		current_contacts_selection_marked_=current_contacts_selection_not_default_ && (contacts_selection_string_safe()==marked_contacts_selection_string_);
 
 		{
 			{
@@ -140,18 +144,30 @@ public:
 						{
 							if(current_atoms_selection_not_default_)
 							{
-								ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.1f, 0.4f, 1.0f));
-								ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.2f, 0.5f, 1.0f));
-								ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.4f, 1.0f));
+								if(current_atoms_selection_marked_)
+								{
+									ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.1f, 0.4f, 1.0f));
+									ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.2f, 0.5f, 1.0f));
+									ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.4f, 1.0f));
+								}
+								else
+								{
+									ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.4f, 0.1f, 1.0f));
+									ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.5f, 0.2f, 1.0f));
+									ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.8f, 0.4f, 0.1f, 1.0f));
+								}
+							}
+							else
+							{
+								ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.7f, 0.7f, 1.0f));
+								ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.8f, 0.8f, 1.0f));
+								ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.7f, 0.7f, 1.0f));
 							}
 
 							std::string button_id=atoms_selection_string_safe()+"##button_atoms_selection_change";
 							ImGui::Button(button_id.c_str());
 
-							if(current_atoms_selection_not_default_)
-							{
-								ImGui::PopStyleColor(3);
-							}
+							ImGui::PopStyleColor(3);
 						}
 						const std::string submenu_id=std::string("Change##submenu_atoms_selection");
 						if(ImGui::BeginPopupContextItem(submenu_id.c_str(), 0))
@@ -262,18 +278,30 @@ public:
 						{
 							if(current_contacts_selection_not_default_)
 							{
-								ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.1f, 0.4f, 1.0f));
-								ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.2f, 0.5f, 1.0f));
-								ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.4f, 1.0f));
+								if(current_contacts_selection_marked_)
+								{
+									ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.1f, 0.4f, 1.0f));
+									ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.2f, 0.5f, 1.0f));
+									ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.4f, 1.0f));
+								}
+								else
+								{
+									ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.4f, 0.1f, 1.0f));
+									ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.5f, 0.2f, 1.0f));
+									ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.8f, 0.4f, 0.1f, 1.0f));
+								}
+							}
+							else
+							{
+								ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.7f, 0.7f, 1.0f));
+								ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.8f, 0.8f, 1.0f));
+								ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.7f, 0.7f, 1.0f));
 							}
 
 							std::string button_id=contacts_selection_string_safe()+"##button_contacts_selection_change";
 							ImGui::Button(button_id.c_str());
 
-							if(current_contacts_selection_not_default_)
-							{
-								ImGui::PopStyleColor(3);
-							}
+							ImGui::PopStyleColor(3);
 						}
 						const std::string submenu_id=std::string("Change##submenu_contacts_selection");
 						if(ImGui::BeginPopupContextItem(submenu_id.c_str(), 0))
@@ -2466,6 +2494,8 @@ private:
 
 	bool current_atoms_selection_not_default_;
 	bool current_contacts_selection_not_default_;
+	bool current_atoms_selection_marked_;
+	bool current_contacts_selection_marked_;
 
 	std::vector<char> atoms_selection_buffer_;
 	std::vector<char> contacts_selection_buffer_;
