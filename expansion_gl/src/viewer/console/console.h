@@ -311,6 +311,25 @@ public:
 
 					ImGui::Separator();
 
+					ImGui::TextUnformatted("Scale gui:");
+
+					if(ImGui::MenuItem("  x1"))
+					{
+						result="configure-gui-scale-x1";
+					}
+
+					if(ImGui::MenuItem("  x2"))
+					{
+						result="configure-gui-scale-x2";
+					}
+
+					if(ImGui::MenuItem("  x3"))
+					{
+						result="configure-gui-scale-x3";
+					}
+
+					ImGui::Separator();
+
 					if(ImGui::MenuItem("Hide all GUI (reversible with ESC key)"))
 					{
 						result="vsb: configure-gui-disable-console";

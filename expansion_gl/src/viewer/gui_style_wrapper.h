@@ -78,14 +78,18 @@ public:
 		if(!custom_font_file.empty())
 		{
 			ImGuiIO& io=ImGui::GetIO();
-			io.Fonts->AddFontFromFileTTF(custom_font_file.c_str(), 13.0f*base_gui_scaling);
+			font_x1=io.Fonts->AddFontFromFileTTF(custom_font_file.c_str(), 13.0f*base_gui_scaling);
+			font_x2=io.Fonts->AddFontFromFileTTF(custom_font_file.c_str(), 13.0f*base_gui_scaling*2.0f);
+			font_x3=io.Fonts->AddFontFromFileTTF(custom_font_file.c_str(), 13.0f*base_gui_scaling*3.0f);
 		}
 		else
 		{
 			ImGuiIO& io=ImGui::GetIO();
 			static ImFontConfig font_config=ImFontConfig();
 			font_config.FontDataOwnedByAtlas=false;
-			io.Fonts->AddFontFromMemoryTTF(reinterpret_cast<void*>(voronota::uv::default_font_mono_regular_data()), voronota::uv::default_font_mono_regular_data_size(), 13.0f*base_gui_scaling, &font_config);
+			font_x1=io.Fonts->AddFontFromMemoryTTF(reinterpret_cast<void*>(voronota::uv::default_font_mono_regular_data()), voronota::uv::default_font_mono_regular_data_size(), 13.0f*base_gui_scaling, &font_config);
+			font_x2=io.Fonts->AddFontFromMemoryTTF(reinterpret_cast<void*>(voronota::uv::default_font_mono_regular_data()), voronota::uv::default_font_mono_regular_data_size(), 13.0f*base_gui_scaling*2.0f, &font_config);
+			font_x3=io.Fonts->AddFontFromMemoryTTF(reinterpret_cast<void*>(voronota::uv::default_font_mono_regular_data()), voronota::uv::default_font_mono_regular_data_size(), 13.0f*base_gui_scaling*3.0f, &font_config);
 		}
 		initialized_=true;
 		base_font_scale_factor_=base_gui_scaling;
@@ -94,11 +98,35 @@ public:
 
 	bool scale(const float times)
 	{
+		if(times==1.0f)
+		{
+			ImGuiIO& io=ImGui::GetIO();
+			io.FontDefault=font_x1;
+			io.FontGlobalScale=1.0f;
+		}
+		else if(times==2.0f)
+		{
+			ImGuiIO& io=ImGui::GetIO();
+			io.FontDefault=font_x2;
+			io.FontGlobalScale=1.0f;
+		}
+		else if(times==3.0f)
+		{
+			ImGuiIO& io=ImGui::GetIO();
+			io.FontDefault=font_x3;
+			io.FontGlobalScale=1.0f;
+		}
+		else
+		{
+			ImGuiIO& io=ImGui::GetIO();
+			io.FontDefault=font_x3;
+			io.FontGlobalScale=times/3.0f;
+		}
 		return (set_scale_factor(base_font_scale_factor_*times));
 	}
 
 private:
-	GUIStyleWrapper() : initialized_(false), base_font_scale_factor_(1.0), scale_factor_(1.0f)
+	GUIStyleWrapper() : initialized_(false), base_font_scale_factor_(1.0), scale_factor_(1.0f), font_x1(0), font_x2(0), font_x3(0)
 	{
 
 	}
@@ -108,11 +136,6 @@ private:
 		if(initialized_)
 		{
 			scale_factor_=std::min(std::max(0.5f, new_scale_factor), 6.0f);
-
-			{
-				ImGuiIO& io=ImGui::GetIO();
-				io.FontGlobalScale=scale_factor_/base_font_scale_factor_;
-			}
 
 			{
 				ImGuiStyle& style=ImGui::GetStyle();
@@ -128,6 +151,9 @@ private:
 	bool initialized_;
 	float base_font_scale_factor_;
 	float scale_factor_;
+	ImFont* font_x1;
+	ImFont* font_x2;
+	ImFont* font_x3;
 };
 
 
