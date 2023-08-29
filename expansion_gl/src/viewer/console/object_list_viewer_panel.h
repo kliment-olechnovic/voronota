@@ -38,7 +38,7 @@ public:
 		current_contacts_selection_marked_(false),
 		default_atoms_selection_string_("[]"),
 		marked_atoms_selection_string_("[_marked]"),
-		default_contacts_selection_string_("[-no-solvent]"),
+		default_contacts_selection_string_("[]"),
 		marked_contacts_selection_string_("[_marked]")
 	{
 		atoms_selection_string_suggestions_.first.push_back(default_atoms_selection_string_);
@@ -54,8 +54,8 @@ public:
 
 		contacts_selection_string_suggestions_.first.push_back(default_contacts_selection_string_);
 		contacts_selection_string_suggestions_.first.push_back(marked_contacts_selection_string_);
-		contacts_selection_string_suggestions_.first.push_back("[]");
 		contacts_selection_string_suggestions_.first.push_back("[_visible]");
+		contacts_selection_string_suggestions_.first.push_back("[-no-solvent]");
 		contacts_selection_string_suggestions_.first.push_back("[-no-solvent -min-seq-sep 1]");
 		contacts_selection_string_suggestions_.first.push_back("[-solvent]");
 		contacts_selection_string_suggestions_.first.push_back("[-inter-chain]");
