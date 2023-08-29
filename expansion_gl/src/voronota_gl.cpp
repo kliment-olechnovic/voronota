@@ -32,7 +32,6 @@ int main(const int argc, const char** argv)
 		const std::string custom_font_file=command_args_input.get_value_or_default<std::string>("custom-font-file", "");
 		const std::vector<std::string> files=command_args_input.get_value_vector_or_all_unused_unnamed_values("files");
 		const std::vector<std::string> scripts=command_args_input.get_value_vector_or_default<std::string>("scripts", std::vector<std::string>());
-		const bool musical=command_args_input.get_flag("musical");
 
 		command_args_input.assert_nothing_unusable();
 
@@ -54,17 +53,6 @@ int main(const int argc, const char** argv)
 
 		const bool faster_loading=(files.size()>5);
 		const bool show_cartoons_after_faster_loading=(faster_loading && files.size()<=30);
-		const bool with_music_background_for_loading=(musical && files.size()>10);
-
-		if(musical)
-		{
-			voronota::viewer::Application::instance().enqueue_script("music-background enable");
-		}
-
-		if(with_music_background_for_loading)
-		{
-			voronota::viewer::Application::instance().enqueue_script("music-background waiting");
-		}
 
 		if(faster_loading)
 		{
@@ -97,11 +85,6 @@ int main(const int argc, const char** argv)
 			voronota::viewer::Application::instance().enqueue_script(scripts[i]);
 		}
 
-		if(with_music_background_for_loading)
-		{
-			voronota::viewer::Application::instance().enqueue_script("music-background stop");
-		}
-
 #ifdef FOR_WEB
 		emscripten_set_main_loop(voronota::viewer::Application::instance_render_frame, 0, 1);
 #else
@@ -117,19 +100,6 @@ int main(const int argc, const char** argv)
 	catch(...)
 	{
 		std::cerr << "Unknown exception caught." << std::endl;
-	}
-
-	try
-	{
-		voronota::duktaper::operators::MusicBackground::stop_if_was_used();
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << "Exception caught when finalizing: " << e.what() << std::endl;
-	}
-	catch(...)
-	{
-		std::cerr << "Unknown exception caught when finalizing." << std::endl;
 	}
 
 	return return_status;

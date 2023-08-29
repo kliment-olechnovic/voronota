@@ -1403,17 +1403,7 @@ private:
 
 						if(ImGui::Selectable("  Align all"))
 						{
-							const bool with_music_background=(object_states.size()>10);
-							result="";
-							if(with_music_background)
-							{
-								result+="music-background waiting\n";
-							}
-							result+=std::string("tmalign-many -target '")+os_name+"' -target-sel '("+atoms_selection_string_safe()+")' -model-sel '("+atoms_selection_string_safe()+")'";
-							if(with_music_background)
-							{
-								result+="\nmusic-background stop\n";
-							}
+							result=std::string("tmalign-many -target '")+os_name+"' -target-sel '("+atoms_selection_string_safe()+")' -model-sel '("+atoms_selection_string_safe()+")'";
 						}
 
 						int num_of_other_picked_objects=0;
@@ -1427,17 +1417,7 @@ private:
 
 						if(num_of_other_picked_objects>0 && ImGui::Selectable("  Align picked"))
 						{
-							const bool with_music_background=(num_of_other_picked_objects>10);
-							result="";
-							if(with_music_background)
-							{
-								result+="music-background waiting\n";
-							}
-							result+=std::string("tmalign-many -picked -target '")+os_name+"' -target-sel '("+atoms_selection_string_safe()+")' -model-sel '("+atoms_selection_string_safe()+")'";
-							if(with_music_background)
-							{
-								result+="\nmusic-background stop\n";
-							}
+							result=std::string("tmalign-many -picked -target '")+os_name+"' -target-sel '("+atoms_selection_string_safe()+")' -model-sel '("+atoms_selection_string_safe()+")'";
 						}
 
 						ImGui::PopStyleColor();
