@@ -2,6 +2,7 @@
 #define VIEWER_OPERATORS_CONFIGURE_GUI_H_
 
 #include "../gui_configuration.h"
+#include "../gui_style_wrapper.h"
 #include "../operators_common.h"
 
 namespace voronota
@@ -32,6 +33,9 @@ public:
 		ACTION_DISABLE_CONSOLE,
 		ACTION_ENABLE_CONSOLE,
 		ACTION_TOGGLE_CONSOLE,
+		ACTION_SCALE_X1,
+		ACTION_SCALE_X2,
+		ACTION_SCALE_X3,
 		ACTION_SET_INITIAL_MAIN_REPRESENTATION
 	};
 
@@ -125,6 +129,18 @@ public:
 		else if(action_==ACTION_TOGGLE_CONSOLE)
 		{
 			GUIConfiguration::instance().enabled_console=!GUIConfiguration::instance().enabled_console;
+		}
+		else if(action_==ACTION_SCALE_X1)
+		{
+			GUIStyleWrapper::instance().scale(1.0f);
+		}
+		else if(action_==ACTION_SCALE_X2)
+		{
+			GUIStyleWrapper::instance().scale(2.0f);
+		}
+		else if(action_==ACTION_SCALE_X3)
+		{
+			GUIStyleWrapper::instance().scale(3.0f);
 		}
 		else if(action_==ACTION_SET_INITIAL_MAIN_REPRESENTATION)
 		{

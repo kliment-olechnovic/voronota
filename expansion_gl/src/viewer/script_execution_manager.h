@@ -86,6 +86,9 @@ public:
 		set_command_for_extra_actions("configure-gui-disable-console", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_DISABLE_CONSOLE));
 		set_command_for_extra_actions("configure-gui-enable-console", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_ENABLE_CONSOLE));
 		set_command_for_extra_actions("configure-gui-toggle-console", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_TOGGLE_CONSOLE));
+		set_command_for_extra_actions("configure-gui-scale-x1", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SCALE_X1));
+		set_command_for_extra_actions("configure-gui-scale-x2", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SCALE_X2));
+		set_command_for_extra_actions("configure-gui-scale-x3", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SCALE_X3));
 		set_command_for_extra_actions("set-initial-atom-representation-to-cartoon", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_INITIAL_MAIN_REPRESENTATION).set_value_of_initial_main_represenation(GUIConfiguration::INITIAL_REPRESENTATION_VARIANT_CARTOON));
 		set_command_for_extra_actions("set-initial-atom-representation-to-trace", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_INITIAL_MAIN_REPRESENTATION).set_value_of_initial_main_represenation(GUIConfiguration::INITIAL_REPRESENTATION_VARIANT_TRACE));
 		set_command_for_extra_actions("clear", scripting::operators::Mock());

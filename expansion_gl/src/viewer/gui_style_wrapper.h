@@ -89,35 +89,40 @@ public:
 		}
 		initialized_=true;
 		base_font_scale_factor_=base_gui_scaling;
-		scale(base_gui_scaling);
+		set_scale_factor(base_gui_scaling);
 	}
 
-	bool scale(const float new_scale_factor)
+	bool scale(const float times)
 	{
-		if(initialized_ && new_scale_factor>=0.2f && new_scale_factor<=5.0f)
-		{
-			{
-				ImGuiIO& io=ImGui::GetIO();
-				io.FontGlobalScale=new_scale_factor/base_font_scale_factor_;
-			}
-
-			{
-				ImGuiStyle& style=ImGui::GetStyle();
-				style=default_style();
-				style.ScaleAllSizes(new_scale_factor);
-			}
-
-			scale_factor_=new_scale_factor;
-
-			return true;
-		}
-		return false;
+		return (set_scale_factor(base_font_scale_factor_*times));
 	}
 
 private:
 	GUIStyleWrapper() : initialized_(false), base_font_scale_factor_(1.0), scale_factor_(1.0f)
 	{
 
+	}
+
+	bool set_scale_factor(const float new_scale_factor)
+	{
+		if(initialized_)
+		{
+			scale_factor_=std::min(std::max(0.5f, new_scale_factor), 6.0f);
+
+			{
+				ImGuiIO& io=ImGui::GetIO();
+				io.FontGlobalScale=scale_factor_/base_font_scale_factor_;
+			}
+
+			{
+				ImGuiStyle& style=ImGui::GetStyle();
+				style=default_style();
+				style.ScaleAllSizes(scale_factor_);
+			}
+
+			return true;
+		}
+		return false;
 	}
 
 	bool initialized_;
