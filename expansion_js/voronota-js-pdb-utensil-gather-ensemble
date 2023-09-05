@@ -217,7 +217,7 @@ cat "./entities" \
 | while read -r EID
 do
 	paste -d '\t' \
-	  <(cat "./msa.fasta" | egrep "^>${EID}" | sed 's/^.\(....\).\+Chai\S\+\s\+\(.\).*$/\1\t\2/') \
+	  <(cat "./msa.fasta" | egrep "^>${EID}" | sed 's/^.\(....\).\+Chai\S\+\s\+\([^|]\+\)|.*$/\1\t\2/' | tr '[' ' ' | tr ']' ' ' | tr ',' ' ' | awk '{if($3=="auth"){print $1 " " $4 " " $2}else{print $1 " " $2}}' | awk '{print $1 "\t" $2}') \
 	  <(cat "./msa.fasta" | egrep "^>${EID}" -A 1 | tail -1)
 done \
 > "./pdbid_chain_sequence_table.tsv"
@@ -242,6 +242,10 @@ voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types
 voronota_assert_full_success("Failed to setup defaults");
 
 voronota_fetch("-pdb-id", params.pdb_id, "-assembly", 0, "-all-states");
+if(!voronota_last_output().results_summary.full_success)
+{
+	voronota_import_url("-url", "https://files.rcsb.org/download/"+params.pdb_id+".cif", "-title", params.pdb_id);
+}
 voronota_assert_full_success("Failed to fetch structure");
 
 var selection="[-chain "+params.chain_id+"]";
