@@ -1,0 +1,270 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-pdb-utensil-gather-ensemble' script prepares an ensemble of structures in PDB format.
+
+Options:
+    --entity-id               string  *  PDB entity ID to start with
+    --seq-identity            number  *  sequence identity percents, allowed values are 100, 95, 90 or 70
+    --cache-dir               string  *  path to support directory to cache big reference files from PDB
+    --output-dir              string  *  path to root output directory to store ensemble info and structures
+    --help | -h                          flag to display help message and exit
+    
+Standard output:
+    path to ensemble output directory
+    
+Examples:
+    
+    voronota-js-pdb-utensil-gather-ensemble --cache-dir ./cache --entity-id 2XI9_1 --seq-identity 90 --output-dir ./output
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+
+if [ -z "$1" ]
+then
+	print_help_and_exit
+fi
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd "$(dirname ${ZEROARG})"
+	export PATH="$(pwd):${PATH}"
+	cd - &> /dev/null
+fi
+
+export LC_ALL=C
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+command -v clustalo &> /dev/null || { echo >&2 "Error: 'clustalo' executable not in binaries path"; exit 1; }
+
+ENTITYID=""
+SEQIDENTITY=""
+CACHEDIR=""
+OUTPUTDIR=""
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	--entity-id)
+		ENTITYID="$OPTARG"
+		shift
+		;;
+	--seq-identity)
+		SEQIDENTITY="$OPTARG"
+		shift
+		;;
+	--cache-dir)
+		CACHEDIR="$OPTARG"
+		shift
+		;;
+	--output-dir)
+		OUTPUTDIR="$OPTARG"
+		shift
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ -z "$ENTITYID" ]
+then
+	echo >&2 "Error: no entity ID provided"
+	exit 1
+fi
+
+if [ -z "$SEQIDENTITY" ]
+then
+	echo >&2 "Error: no sequence identity provided"
+	exit 1
+fi
+
+if [ -z "$CACHEDIR" ]
+then
+	echo >&2 "Error: no cache directory provided"
+	exit 1
+fi
+
+if [ -z "$OUTPUTDIR" ]
+then
+	echo >&2 "Error: no output directory provided"
+	exit 1
+fi
+
+ENTITYID="$(echo ${ENTITYID} | tr '[:lower:]' '[:upper:]')"
+
+if [[ ! $ENTITYID =~ ^[0-9][A-Z0-9]{3}_[0-9]+$ ]]
+then
+	echo >&2 "Error: invalid entity ID, must be '{PDB ID}_{entity number}'"
+	exit 1
+fi
+
+if [ "$SEQIDENTITY" != "100" ] && [ "$SEQIDENTITY" != "95" ] && [ "$SEQIDENTITY" != "90" ] && [ "$SEQIDENTITY" != "70" ]
+then
+	echo >&2 "Error: invalid sequence identity, must be 100, 95, 90 or 70"
+	exit 1
+fi
+
+mkdir -p "$CACHEDIR"
+
+if [ ! -d "$CACHEDIR" ]
+then
+	echo >&2 "Error: could not create cache directory '${CACHEDIR}'"
+	exit 1
+fi
+
+CLUSTERSFILE="${CACHEDIR}/clusters-by-entity-${SEQIDENTITY}-$(date '+%Y-%m-%d').txt"
+
+if [ ! -s "$CLUSTERSFILE" ]
+then
+	CLUSTERSURL="https://cdn.rcsb.org/resources/sequence/clusters/clusters-by-entity-${SEQIDENTITY}.txt"
+	
+	curl -s "$CLUSTERSURL" > "$CLUSTERSFILE"
+	
+	if [ ! -s "$CLUSTERSFILE" ]
+	then
+		echo >&2 "Error: could not download clusters file from '${CLUSTERSURL}'"
+		exit 1
+	fi
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+cat "$CLUSTERSFILE" | egrep "^${ENTITYID}|\s${ENTITYID}" | head -1 | sed 's/\s\+/\n/g' | egrep '\S+' \
+| while read -r ANENTITYID
+do
+	if [[ $ANENTITYID =~ ^[0-9][A-Z0-9]{3}_[0-9]+$ ]]
+	then
+		echo "$ANENTITYID"
+	fi
+done \
+| sort > "${TMPLDIR}/entities"
+
+if [ ! -s "${TMPLDIR}/entities" ]
+then
+	echo >&2 "Error: no cluster found for entity '${ENTITYID}'"
+	exit 1
+fi
+
+NUMOFENTITIES="$(cat ${TMPLDIR}/entities | wc -l)"
+
+LISTOFENTITIES="$(cat ${TMPLDIR}/entities | tr '\n' ',' | sed 's/,$//')"
+
+JOBID="$(echo ${LISTOFENTITIES} | sha256sum | awk '{print $1}')"
+
+OUTPUTDIR="${OUTPUTDIR}/${JOBID}"
+
+if [ -f "${OUTPUTDIR}/finished" ]
+then
+	echo "$OUTPUTDIR"
+	exit 0
+fi
+
+curl -s "https://www.rcsb.org/fasta/entity/${LISTOFENTITIES}/download" > "${TMPLDIR}/sequences.fasta"
+
+if [ ! -s "${TMPLDIR}/sequences.fasta" ]
+then
+	echo >&2 "Error: could not download sequences of entities ${LISTOFENTITIES}"
+	exit 1
+fi
+
+if [ "$NUMOFENTITIES" -gt "1" ]
+then
+	clustalo -i "${TMPLDIR}/sequences.fasta" --wrap 9999999 > "${TMPLDIR}/msa.fasta"
+	
+	if [ ! -s "${TMPLDIR}/msa.fasta" ]
+	then
+		echo >&2 "Error: failed to generate MSA with clustalo"
+		exit 1
+	fi
+else
+	cp "${TMPLDIR}/sequences.fasta" "${TMPLDIR}/msa.fasta"
+fi
+
+mkdir -p "$OUTPUTDIR"
+
+if [ ! -d "$OUTPUTDIR" ]
+then
+	echo >&2 "Error: could not create output directory '${OUTPUTDIR}'"
+	exit 1
+fi
+
+mv "${TMPLDIR}/entities" "${TMPLDIR}/sequences.fasta" "${TMPLDIR}/msa.fasta" "${OUTPUTDIR}/"
+
+cd "$OUTPUTDIR"
+
+cat "./entities" \
+| while read -r EID
+do
+	paste -d '\t' \
+	  <(cat "./msa.fasta" | egrep "^>${EID}" | sed 's/^.\(....\).\+Chai\S\+\s\+\(.\).*$/\1\t\2/') \
+	  <(cat "./msa.fasta" | egrep "^>${EID}" -A 1 | tail -1)
+done \
+> "./pdbid_chain_sequence_table.tsv"
+
+mkdir -p "./struct_to_seq_alignments"
+mkdir -p "./structures"
+
+cat "./pdbid_chain_sequence_table.tsv" \
+| while read -r PDBID CHAINID MSASEQ
+do
+{
+cat << EOF
+var params={}
+params.pdb_id='$PDBID';
+params.chain_id='$CHAINID';
+params.sequence_str='$MSASEQ';
+params.strict='true';
+EOF
+
+cat << 'EOF'
+voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential -include-heteroatoms");
+voronota_assert_full_success("Failed to setup defaults");
+
+voronota_fetch("-pdb-id", params.pdb_id, "-assembly", 0, "-all-states");
+voronota_assert_full_success("Failed to fetch structure");
+
+var selection="[-chain "+params.chain_id+"]";
+
+voronota_restrict_atoms("-use", selection);
+voronota_assert_full_success("Failed to restrict atoms by chain ID");
+
+var alignment_file="./struct_to_seq_alignments/${objectname}";
+
+voronota_set_chain_residue_numbers_by_sequence("-use "+selection+" -sequence-string '"+params.sequence_str+"' -keep-dashes -alignment-file '"+alignment_file+"' -only-equal-pairs "+params.strict);
+voronota_assert_full_success("Failed to align sequences and renumber");
+
+voronota_export_atoms("-as-pdb", "-file", "./structures/${objectname}_"+params.chain_id+".pdb");
+voronota_assert_full_success("Failed to output structure");
+EOF
+
+} \
+| voronota-js --no-setup-defaults
+
+done
+
+echo "yes" > "./finished"
+
+echo "$OUTPUTDIR"
+exit 0
+

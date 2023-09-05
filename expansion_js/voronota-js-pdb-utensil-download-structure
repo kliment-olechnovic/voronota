@@ -7,7 +7,7 @@ cat >&2 << 'EOF'
 'voronota-js-pdb-utensil-download-structure' script downloads and outputs structure in PDB format.
 
 Options:
-    --id                      string  *  chain renaming rule
+    --id                      string  *  PDB entry ID
     --assembly                number     biological assembly number (0 for asymmetric unit), default is 1
     --help | -h                          flag to display help message and exit
     
@@ -29,7 +29,6 @@ exit 1
 }
 
 readonly ZEROARG=$0
-ALLARGS=("$@")
 
 if [ -z "$1" ]
 then
