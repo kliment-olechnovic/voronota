@@ -11,6 +11,7 @@ Options:
     --seq-identity            number  *  sequence identity percents, allowed values are 100, 95, 90 or 70
     --cache-dir               string  *  path to support directory to cache big reference files from PDB
     --output-dir              string  *  path to root output directory to store ensemble info and structures
+    --size-condition          number     max allowed number of residues to deviate from maximum size in cluster, default is 80
     --help | -h                          flag to display help message and exit
     
 Standard output:
@@ -47,6 +48,7 @@ ENTITYID=""
 SEQIDENTITY=""
 CACHEDIR=""
 OUTPUTDIR=""
+SIZECONDITION="80"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -69,6 +71,10 @@ do
 		;;
 	--output-dir)
 		OUTPUTDIR="$OPTARG"
+		shift
+		;;
+	--size-condition)
+		SIZECONDITION="$OPTARG"
 		shift
 		;;
 	-h|--help)
@@ -110,6 +116,12 @@ then
 	exit 1
 fi
 
+if [ -z "$SIZECONDITION" ]
+then
+	echo >&2 "Error: no size condition provided"
+	exit 1
+fi
+
 ENTITYID="$(echo ${ENTITYID} | tr '[:lower:]' '[:upper:]')"
 
 if [[ ! $ENTITYID =~ ^[0-9][A-Z0-9]{3}_[0-9]+$ ]]
@@ -121,6 +133,14 @@ fi
 if [ "$SEQIDENTITY" != "100" ] && [ "$SEQIDENTITY" != "95" ] && [ "$SEQIDENTITY" != "90" ] && [ "$SEQIDENTITY" != "70" ] && [ "$SEQIDENTITY" != "50" ] && [ "$SEQIDENTITY" != "30" ]
 then
 	echo >&2 "Error: invalid sequence identity, must be 100, 95, 90 or 70"
+	exit 1
+fi
+
+if [ "$SIZECONDITION" -gt "0" ]
+then
+	true 
+else
+	echo >&2 "Error: invalid size condition, must be greater than 0"
 	exit 1
 fi
 
@@ -170,15 +190,13 @@ NUMOFENTITIES="$(cat ${TMPLDIR}/entities | wc -l)"
 
 LISTOFENTITIES="$(cat ${TMPLDIR}/entities | tr '\n' ',' | sed 's/,$//')"
 
-JOBID="$(cat ${TMPLDIR}/entities | head -1)__$(cat ${TMPLDIR}/entities | tail -1)__$(echo ${LISTOFENTITIES} | sha256sum | awk '{print $1}')"
+RAW_JOBID="$(cat ${TMPLDIR}/entities | head -1)__$(cat ${TMPLDIR}/entities | tail -1)__raw__$(echo ${LISTOFENTITIES} | sha256sum | awk '{print $1}')"
 
-OUTPUTDIR="${OUTPUTDIR}/${JOBID}"
+RAW_OUTPUTDIR="${OUTPUTDIR}/${RAW_JOBID}"
 
-if [ -f "${OUTPUTDIR}/finished" ]
+### {
+if [ ! -f "${RAW_OUTPUTDIR}/finished" ]
 then
-	echo "$OUTPUTDIR"
-	exit 0
-fi
 
 curl -s "https://www.rcsb.org/fasta/entity/${LISTOFENTITIES}/download" > "${TMPLDIR}/sequences.fasta"
 
@@ -201,17 +219,19 @@ else
 	cp "${TMPLDIR}/sequences.fasta" "${TMPLDIR}/msa.fasta"
 fi
 
-mkdir -p "$OUTPUTDIR"
+mkdir -p "$RAW_OUTPUTDIR"
 
-if [ ! -d "$OUTPUTDIR" ]
+if [ ! -d "$RAW_OUTPUTDIR" ]
 then
-	echo >&2 "Error: could not create output directory '${OUTPUTDIR}'"
+	echo >&2 "Error: could not create output directory '${RAW_OUTPUTDIR}'"
 	exit 1
 fi
 
-mv "${TMPLDIR}/entities" "${TMPLDIR}/sequences.fasta" "${TMPLDIR}/msa.fasta" "${OUTPUTDIR}/"
+mv "${TMPLDIR}/entities" "${TMPLDIR}/sequences.fasta" "${TMPLDIR}/msa.fasta" "${RAW_OUTPUTDIR}/"
 
-cd "$OUTPUTDIR"
+cd "$RAW_OUTPUTDIR"
+
+RAW_OUTPUTDIR="$(pwd)"
 
 cat "./entities" \
 | while read -r EID
@@ -287,7 +307,44 @@ cat ./structure_sequence_table.tsv \
 
 mv "./structure_sequence_table_more.tsv" "./structure_sequence_table.tsv"
 
-cat ./structure_sequence_table.tsv \
+rm -r "./struct_to_seq_alignments"
+
+echo "yes" > "./finished"
+
+fi
+### }
+
+cd "$RAW_OUTPUTDIR"
+
+RAW_OUTPUTDIR="$(pwd)"
+
+REDUCED_JOBID="$(echo ${RAW_JOBID} | sed 's|__raw__.*$|__reduced_|')_$(cat ./structure_sequence_table.tsv | awk -v maxloss=${SIZECONDITION} '{if($4<=maxloss){print $1}}' | sort | sha256sum | awk '{print $1}')"
+
+cd ../
+
+REDUCED_OUTPUTDIR="$(pwd)/${REDUCED_JOBID}"
+
+### {
+if [ ! -f "${REDUCED_OUTPUTDIR}/finished" ]
+then
+
+mkdir -p "$REDUCED_OUTPUTDIR"
+
+if [ ! -d "$REDUCED_OUTPUTDIR" ]
+then
+	echo >&2 "Error: could not create output directory '${RAW_OUTPUTDIR}'"
+	exit 1
+fi
+
+cd "$REDUCED_OUTPUTDIR"
+
+echo "$SIZECONDITION" > "./conditions"
+
+cat "${RAW_OUTPUTDIR}/structure_sequence_table.tsv" \
+| awk -v maxloss=${SIZECONDITION} '{if($4<=maxloss){print $0}}' \
+> "./conditioned_structure_sequence_table.tsv"
+
+cat "./conditioned_structure_sequence_table.tsv" \
 | awk '{print $2}' | awk 'BEGIN {FS = ""} {for(i=1;i<=NF;i++){if($i=="-"){cols_with_dash[i]=1}}} END {for(col in cols_with_dash){printf col ","}}' \
 | tr ',' '\n' \
 > "./unstable_residue_numbers"
@@ -297,13 +354,14 @@ RESIDUESTOREMOVE="$(cat ./unstable_residue_numbers | tr '\n' ',' | sed 's/,$//')
 mkdir -p "./structures_reduced"
 mkdir -p "./sequences_reduced"
 
-cat "./structure_sequence_table.tsv" \
+cat "./conditioned_structure_sequence_table.tsv" \
 | awk '{print $1}' \
 | while read -r STRUCTNAME
 do
 {
 cat << EOF
 var params={}
+params.raw_data_dir='$RAW_OUTPUTDIR';
 params.struct_name='$STRUCTNAME';
 params.residues_to_remove='$RESIDUESTOREMOVE';
 EOF
@@ -312,7 +370,7 @@ cat << 'EOF'
 voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential -include-heteroatoms");
 voronota_assert_full_success("Failed to setup defaults");
 
-voronota_import("-file", "./structures/"+params.struct_name+".pdb");
+voronota_import("-file", params.raw_data_dir+"/structures/"+params.struct_name+".pdb");
 voronota_assert_full_success("Failed to import structure");
 
 if(params.residues_to_remove)
@@ -341,11 +399,14 @@ done \
 | awk '{print $1 "\t" $2 "\t" $3}' \
 > "./structure_reduced_sequence_table.tsv"
 
-rm -r "./struct_to_seq_alignments"
 rm -r "./sequences_reduced"
 
 echo "yes" > "./finished"
 
-echo "$OUTPUTDIR"
+fi
+### }
+
+echo "$REDUCED_OUTPUTDIR"
+
 exit 0
 
