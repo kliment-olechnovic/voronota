@@ -118,7 +118,7 @@ then
 	exit 1
 fi
 
-if [ "$SEQIDENTITY" != "100" ] && [ "$SEQIDENTITY" != "95" ] && [ "$SEQIDENTITY" != "90" ] && [ "$SEQIDENTITY" != "70" ]
+if [ "$SEQIDENTITY" != "100" ] && [ "$SEQIDENTITY" != "95" ] && [ "$SEQIDENTITY" != "90" ] && [ "$SEQIDENTITY" != "70" ] && [ "$SEQIDENTITY" != "50" ] && [ "$SEQIDENTITY" != "30" ]
 then
 	echo >&2 "Error: invalid sequence identity, must be 100, 95, 90 or 70"
 	exit 1
@@ -248,12 +248,15 @@ if(!voronota_last_output().results_summary.full_success)
 }
 voronota_assert_full_success("Failed to fetch structure");
 
+voronota_restrict_atoms("-use", "[-protein]");
+voronota_assert_full_success("Failed to restrict atoms to protein polymer residues");
+
 var selection="[-chain "+params.chain_id+"]";
 
 voronota_restrict_atoms("-use", selection);
 voronota_assert_full_success("Failed to restrict atoms by chain ID");
 
-var alignment_file="./struct_to_seq_alignments/${objectname}";
+var alignment_file="./struct_to_seq_alignments/${objectname}_"+params.chain_id;
 
 voronota_set_chain_residue_numbers_by_sequence("-use "+selection+" -sequence-string '"+params.sequence_str+"' -keep-dashes -alignment-file '"+alignment_file+"' -only-equal-pairs "+params.strict);
 voronota_assert_full_success("Failed to align sequences and renumber");
@@ -266,6 +269,57 @@ EOF
 | voronota-js --no-setup-defaults
 
 done
+
+find ./struct_to_seq_alignments/ -type f | sort \
+| while read -r AFILE
+do
+	echo "$(basename ${AFILE})" "$(tail -1 ${AFILE})"
+done \
+| awk '{print $1 "\t" $2}' \
+> "./pdbid_chain_struct_sequence_table.tsv"
+
+cat ./pdbid_chain_struct_sequence_table.tsv \
+| awk '{print $2}' | awk 'BEGIN {FS = ""} {for(i=1;i<=NF;i++){if($i=="-"){cols_with_dash[i]=1}}} END {for(col in cols_with_dash){printf col ","}}' \
+| tr ',' '\n' \
+> "./unstable_residue_numbers"
+
+RESIDUESTOREMOVE="$(cat ./unstable_residue_numbers | tr '\n' ',' | sed 's/,$//')"
+
+mkdir -p "./structures_reduced"
+
+cat "./pdbid_chain_struct_sequence_table.tsv" \
+| awk '{print $1}' \
+| while read -r STRUCTNAME
+do
+{
+cat << EOF
+var params={}
+params.struct_name='$STRUCTNAME';
+params.residues_to_remove='$RESIDUESTOREMOVE';
+EOF
+
+cat << 'EOF'
+voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential -include-heteroatoms");
+voronota_assert_full_success("Failed to setup defaults");
+
+voronota_import("-file", "./structures/"+params.struct_name+".pdb");
+voronota_assert_full_success("Failed to import structure");
+
+if(params.residues_to_remove)
+{
+	voronota_restrict_atoms("-use", "(not [-rnum "+params.residues_to_remove+"])");
+	voronota_assert_full_success("Failed to restrict atoms to stable residues");
+}
+
+voronota_export_atoms("-as-pdb", "-file", "./structures_reduced/"+params.struct_name+".pdb");
+voronota_assert_full_success("Failed to output structure");
+EOF
+
+} \
+| voronota-js --no-setup-defaults
+
+done
+
 
 echo "yes" > "./finished"
 
