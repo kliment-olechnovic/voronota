@@ -338,7 +338,7 @@ public:
 		return atom_ids;
 	}
 
-	static std::map<std::string, std::string> collect_chain_sequences_from_atom_ids(const BundleOfPrimaryStructure& bundle, const std::set<std::size_t>& atom_ids, const bool fill_middle_gaps, const bool fill_start_gaps)
+	static std::map<std::string, std::string> collect_chain_sequences_from_atom_ids(const BundleOfPrimaryStructure& bundle, const std::set<std::size_t>& atom_ids, const char gap_filler_letter, const bool fill_middle_gaps, const bool fill_start_gaps)
 	{
 		std::map< std::string, std::map<int, std::string> > needed_chains_and_residues_info;
 		for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
@@ -365,7 +365,7 @@ public:
 				const std::string& letter=jt->second;
 				if(jt==residues_info.begin() && fill_start_gaps && num>1)
 				{
-					sequence+=std::string(static_cast<std::size_t>(num-1), 'X');
+					sequence+=std::string(static_cast<std::size_t>(num-1), gap_filler_letter);
 				}
 				if(jt!=residues_info.begin() && fill_middle_gaps)
 				{
@@ -374,10 +374,10 @@ public:
 					const int prev_num=prev_jt->first;
 					if(num>(prev_num+1))
 					{
-						sequence+=std::string(static_cast<std::size_t>(num-(prev_num+1)), 'X');
+						sequence+=std::string(static_cast<std::size_t>(num-(prev_num+1)), gap_filler_letter);
 					}
 				}
-				sequence+=letter;
+				sequence+=(letter.size()==1 ? letter : std::string("X"));
 			}
 		}
 		return chain_sequences;

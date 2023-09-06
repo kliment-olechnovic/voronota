@@ -315,7 +315,7 @@ if(params.residues_to_remove)
 voronota_export_atoms("-as-pdb", "-file", "./structures_reduced/"+params.struct_name+".pdb");
 voronota_assert_full_success("Failed to output structure");
 
-voronota_export_sequence("-file", "./sequences_reduced/"+params.struct_name);
+voronota_export_sequence("-file", "./sequences_reduced/"+params.struct_name, "-gap-filler", "dash");
 voronota_assert_full_success("Failed to output sequence");
 EOF
 
@@ -327,7 +327,7 @@ done
 find ./sequences_reduced/ -type f | sort \
 | while read -r SFILE
 do
-	echo "$(basename ${SFILE})" "$(tail -1 ${SFILE} | tr 'X' '-')"
+	echo "$(basename ${SFILE})" "$(tail -1 ${SFILE})"
 done \
 | awk '{print $1 "\t" $2}' \
 > "./structure_reduced_sequence_table.tsv"
