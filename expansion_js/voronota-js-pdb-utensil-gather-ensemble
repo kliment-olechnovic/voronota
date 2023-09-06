@@ -170,7 +170,7 @@ NUMOFENTITIES="$(cat ${TMPLDIR}/entities | wc -l)"
 
 LISTOFENTITIES="$(cat ${TMPLDIR}/entities | tr '\n' ',' | sed 's/,$//')"
 
-JOBID="$(echo ${LISTOFENTITIES} | sha256sum | awk '{print $1}')"
+JOBID="$(cat ${TMPLDIR}/entities | head -1)__$(cat ${TMPLDIR}/entities | tail -1)__$(echo ${LISTOFENTITIES} | sha256sum | awk '{print $1}')"
 
 OUTPUTDIR="${OUTPUTDIR}/${JOBID}"
 
@@ -273,10 +273,19 @@ done
 find ./struct_to_seq_alignments/ -type f | sort \
 | while read -r AFILE
 do
-	echo "$(basename ${AFILE})" "$(tail -1 ${AFILE})"
+	echo "$(basename ${AFILE})" "$(tail -1 ${AFILE})" "$(tail -1 ${AFILE} | tr -d '\n' | tr -d '-' | wc -c)"
 done \
-| awk '{print $1 "\t" $2}' \
+| awk '{print $1 "\t" $2 "\t" $3}' \
 > "./structure_sequence_table.tsv"
+
+MAXSTRUCTURELENGTH="$(cat ./structure_sequence_table.tsv | awk 'NR == 1 || $3 > max { max = $3 } END { print max }')"
+
+cat ./structure_sequence_table.tsv \
+| awk -v maxlength="${MAXSTRUCTURELENGTH}" '{print $1 "\t" $2 "\t" $3 "\t" (maxlength-$3)}' \
+| sort -n -k4,4 \
+> "./structure_sequence_table_more.tsv"
+
+mv "./structure_sequence_table_more.tsv" "./structure_sequence_table.tsv"
 
 cat ./structure_sequence_table.tsv \
 | awk '{print $2}' | awk 'BEGIN {FS = ""} {for(i=1;i<=NF;i++){if($i=="-"){cols_with_dash[i]=1}}} END {for(col in cols_with_dash){printf col ","}}' \
@@ -327,9 +336,9 @@ done
 find ./sequences_reduced/ -type f | sort \
 | while read -r SFILE
 do
-	echo "$(basename ${SFILE})" "$(tail -1 ${SFILE})"
+	echo "$(basename ${SFILE})" "$(tail -1 ${SFILE})" "$(tail -1 ${SFILE} | tr -d '\n' | tr -d '-' | wc -c)"
 done \
-| awk '{print $1 "\t" $2}' \
+| awk '{print $1 "\t" $2 "\t" $3}' \
 > "./structure_reduced_sequence_table.tsv"
 
 rm -r "./struct_to_seq_alignments"
