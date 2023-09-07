@@ -144,7 +144,8 @@ public:
 
 			for(std::size_t i=0;i<result.qcprot_results.size();i++)
 			{
-				output << result.qcprot_results[i].target_name << " " << result.qcprot_results[i].model_name << " " << result.qcprot_results[i].rmsd << "\n";
+				output << result.qcprot_results[i].target_name << " " << result.qcprot_results[i].model_name
+						<< " " << result.qcprot_results[i].rmsd << " " << result.qcprot_results[i].number_of_atoms << "\n";
 			}
 		}
 

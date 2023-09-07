@@ -22,8 +22,9 @@ public:
 		std::string target_name;
 		std::string model_name;
 		double rmsd;
+		std::size_t number_of_atoms;
 
-		Result() : rmsd(0.0)
+		Result() : rmsd(0.0), number_of_atoms(0)
 		{
 		}
 
@@ -32,6 +33,7 @@ public:
 			variant_object.value("target_name")=target_name;
 			variant_object.value("model_name")=model_name;
 			variant_object.value("rmsd")=rmsd;
+			variant_object.value("number_of_atoms")=number_of_atoms;
 		}
 
 		void store(scripting::HeterogeneousStorage& heterostorage) const
@@ -41,7 +43,9 @@ public:
 
 		bool operator<(const Result& r) const
 		{
-			return ((rmsd<r.rmsd) || (rmsd==r.rmsd && target_name>r.target_name) || (rmsd==r.rmsd && target_name==r.target_name && model_name<r.model_name));
+			return ((rmsd<r.rmsd) || (rmsd==r.rmsd && number_of_atoms>r.number_of_atoms)
+					|| (rmsd==r.rmsd && number_of_atoms==r.number_of_atoms && target_name<r.target_name)
+					|| (rmsd==r.rmsd && number_of_atoms==r.number_of_atoms && target_name==r.target_name && model_name<r.model_name));
 		}
 	};
 
@@ -50,8 +54,9 @@ public:
 	std::string target_selection;
 	std::string model_selection;
 	bool no_move;
+	bool verify_atom_ids;
 
-	QCProt() : no_move(false)
+	QCProt() : no_move(false), verify_atom_ids(false)
 	{
 	}
 
@@ -69,6 +74,7 @@ public:
 		target_selection=input.get_value_or_default<std::string>("target-sel", "");
 		model_selection=input.get_value_or_default<std::string>("model-sel", "");
 		no_move=input.get_flag("no-move");
+		verify_atom_ids=input.get_flag("verify-atom-ids");
 	}
 
 	void initialize(scripting::CommandInput& input)
@@ -90,6 +96,7 @@ public:
 		doc.set_option_decription(CDOD("target-sel", CDOD::DATATYPE_STRING, "selection of atoms for target object", ""));
 		doc.set_option_decription(CDOD("model-sel", CDOD::DATATYPE_STRING, "selection of atoms for model object", ""));
 		doc.set_option_decription(CDOD("no-move", CDOD::DATATYPE_BOOL, "flag to not transform any coordinates"));
+		doc.set_option_decription(CDOD("verify-atom-ids", CDOD::DATATYPE_BOOL, "flag to verify matching of atom IDs using residue numbers and atom names"));
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -138,15 +145,51 @@ public:
 			throw std::runtime_error(std::string("No model atoms selected."));
 		}
 
-		if(target_atom_ids_set.size()!=model_atom_ids_set.size())
+		std::vector<std::size_t> target_atom_ids;
+		std::vector<std::size_t> model_atom_ids;
+
+		if(!verify_atom_ids)
+		{
+			target_atom_ids.insert(target_atom_ids.end(), target_atom_ids_set.begin(), target_atom_ids_set.end());
+			model_atom_ids.insert(model_atom_ids.end(), model_atom_ids_set.begin(), model_atom_ids_set.end());
+		}
+		else
+		{
+			std::map< common::ChainResidueAtomDescriptor, std::vector<std::size_t> > crads_map;
+			for(std::set<std::size_t>::const_iterator it=target_atom_ids_set.begin();it!=target_atom_ids_set.end();++it)
+			{
+				const scripting::Atom& atom=target_dm.atoms()[*it];
+				common::ChainResidueAtomDescriptor crad;
+				crad.resSeq=atom.crad.resSeq;
+				crad.name=atom.crad.name;
+				crads_map[crad].push_back(*it);
+			}
+			for(std::set<std::size_t>::const_iterator it=model_atom_ids_set.begin();it!=model_atom_ids_set.end();++it)
+			{
+				const scripting::Atom& atom=model_dm.atoms()[*it];
+				common::ChainResidueAtomDescriptor crad;
+				crad.resSeq=atom.crad.resSeq;
+				crad.name=atom.crad.name;
+				crads_map[crad].push_back(*it);
+			}
+			target_atom_ids.reserve(crads_map.size());
+			model_atom_ids.reserve(crads_map.size());
+			for(std::map< common::ChainResidueAtomDescriptor, std::vector<std::size_t> >::const_iterator it=crads_map.begin();it!=crads_map.end();++it)
+			{
+				if(it->second.size()==2)
+				{
+					target_atom_ids.push_back(it->second[0]);
+					model_atom_ids.push_back(it->second[1]);
+				}
+			}
+		}
+
+		if(target_atom_ids.size()!=model_atom_ids.size())
 		{
 			throw std::runtime_error(std::string("Mismatched numbers of selected target and model atoms."));
 		}
 
-		const std::size_t N=target_atom_ids_set.size();
-
-		std::vector<std::size_t> target_atom_ids(target_atom_ids_set.begin(), target_atom_ids_set.end());
-		std::vector<std::size_t> model_atom_ids(model_atom_ids_set.begin(), model_atom_ids_set.end());
+		const std::size_t N=target_atom_ids.size();
 
 		std::vector< std::vector<double> > xyz_coords_target(3, std::vector<double>(N, 0.0));
 		std::vector< std::vector<double> > xyz_coords_model(3, std::vector<double>(N, 0.0));
@@ -185,6 +228,7 @@ public:
 		result.target_name=target_name;
 		result.model_name=model_name;
 		result.rmsd=qcprot_result.rmsd;
+		result.number_of_atoms=N;
 
 		return result;
 	}
