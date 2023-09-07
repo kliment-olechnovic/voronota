@@ -401,6 +401,44 @@ done \
 
 rm -r "./sequences_reduced"
 
+mkdir -p "./structures_reduced_aligned"
+
+{
+cat << EOF
+var input_files_array=[];
+EOF
+
+find ./structures_reduced/ -type f | sort \
+| while read -r STRUCTFILE
+do
+cat << EOF
+input_files_array.push("$STRUCTFILE");
+EOF
+done
+
+cat << 'EOF'
+voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential -include-heteroatoms");
+voronota_assert_full_success("Failed to setup defaults");
+
+voronota_import_many("-files", input_files_array);
+voronota_assert_full_success("Failed to import multiple structures");
+
+voronota_pick_objects();
+
+voronota_qcprot_many("-target-sel", "[-aname CA]", "-model-sel", "[-aname CA]", "-output-rmsd-file", "./rmsd_for_all_pairs", "-all-to-all");
+voronota_assert_full_success("Failed to compute optimal RMSD using qcprot for all pairs");
+
+var representative_name=voronota_last_output().results[0].output.qcprot_results_summary.min_mean_rmsd_target;
+
+voronota_qcprot_many("-target", representative_name, "-target-sel", "[-aname CA]", "-model-sel", "[-aname CA]", "-output-rmsd-file", "./rmsd_for_pairs_with_representive");
+voronota_assert_full_success("Failed to compute optimal RMSD using qcprot for pairs with representive");
+
+voronota_export_atoms("-as-pdb", "-file", "./structures_reduced_aligned/${objectname}");
+voronota_assert_full_success("Failed to output structures");
+EOF
+} \
+| voronota-js --no-setup-defaults
+
 echo "yes" > "./finished"
 
 fi
