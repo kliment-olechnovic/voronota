@@ -38,14 +38,20 @@ public:
 		{
 			store(heterostorage.variant_object);
 		}
+
+		bool operator<(const Result& r) const
+		{
+			return ((rmsd<r.rmsd) || (rmsd==r.rmsd && target_name>r.target_name) || (rmsd==r.rmsd && target_name==r.target_name && model_name<r.model_name));
+		}
 	};
 
 	std::string target_name;
 	std::string model_name;
 	std::string target_selection;
 	std::string model_selection;
+	bool no_move;
 
-	QCProt()
+	QCProt() : no_move(false)
 	{
 	}
 
@@ -62,6 +68,7 @@ public:
 		}
 		target_selection=input.get_value_or_default<std::string>("target-sel", "");
 		model_selection=input.get_value_or_default<std::string>("model-sel", "");
+		no_move=input.get_flag("no-move");
 	}
 
 	void initialize(scripting::CommandInput& input)
@@ -82,6 +89,7 @@ public:
 		}
 		doc.set_option_decription(CDOD("target-sel", CDOD::DATATYPE_STRING, "selection of atoms for target object", ""));
 		doc.set_option_decription(CDOD("model-sel", CDOD::DATATYPE_STRING, "selection of atoms for model object", ""));
+		doc.set_option_decription(CDOD("no-move", CDOD::DATATYPE_BOOL, "flag to not transform any coordinates"));
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -163,12 +171,15 @@ public:
 			throw std::runtime_error(std::string("Failed to run QCProt."));
 		}
 
-		scripting::DataManager::TransformationOfCoordinates transformation;
-		transformation.pre_translation_vector=std::vector<double>(qcprot_result.translation_vector_b, qcprot_result.translation_vector_b+3);
-		transformation.rotation_matrix=std::vector<double>(qcprot_result.rotation_matrix, qcprot_result.rotation_matrix+9);
-		transformation.post_translation_vector=std::vector<double>(qcprot_result.translation_vector_a, qcprot_result.translation_vector_a+3);
+		if(!no_move)
+		{
+			scripting::DataManager::TransformationOfCoordinates transformation;
+			transformation.pre_translation_vector=std::vector<double>(qcprot_result.translation_vector_b, qcprot_result.translation_vector_b+3);
+			transformation.rotation_matrix=std::vector<double>(qcprot_result.rotation_matrix, qcprot_result.rotation_matrix+9);
+			transformation.post_translation_vector=std::vector<double>(qcprot_result.translation_vector_a, qcprot_result.translation_vector_a+3);
 
-		model_dm.transform_coordinates_of_atoms(model_dm.selection_manager().select_atoms(scripting::SelectionManager::Query()), transformation);
+			model_dm.transform_coordinates_of_atoms(model_dm.selection_manager().select_atoms(scripting::SelectionManager::Query()), transformation);
+		}
 
 		Result result;
 		result.target_name=target_name;

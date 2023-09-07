@@ -12,7 +12,7 @@ namespace duktaper
 namespace operators
 {
 
-class TMalignMany : public scripting::OperatorBase<TMalign>
+class TMalignMany : public scripting::OperatorBase<TMalignMany>
 {
 public:
 	struct Result : public scripting::OperatorResultBase<Result>
