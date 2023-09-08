@@ -94,7 +94,7 @@ public:
 
 		const std::set<std::size_t> representation_ids=data_manager.contacts_representation_descriptor().ids_by_names(representation_names);
 
-		if(by!="area" && by!="residue-area" && by!="adjunct" && by!="dist-centers" && by!="dist-balls" && by!="seq-sep" && by!="residue-ids" && by!="atom-ids")
+		if(by!="area" && by!="residue-area" && by!="adjunct" && by!="dist-centers" && by!="dist-balls" && by!="seq-sep" && by!="residue-ids" && by!="atom-ids" && by!="residue-ids-simplified" && by!="atom-ids-simplified")
 		{
 			throw std::runtime_error(std::string("Invalid 'by' value '")+by+"'.");
 		}
@@ -220,6 +220,26 @@ public:
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				const common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, false, false, false);
+				map_of_ids_values[*it]=static_cast<double>(crads.hash_value())/static_cast<double>(std::numeric_limits<uint32_t>::max());
+			}
+		}
+		else if(by=="residue-ids-simplified")
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, true, false, true);
+				crads.a.chainID.clear();
+				crads.b.chainID.clear();
+				map_of_ids_values[*it]=static_cast<double>(crads.hash_value())/static_cast<double>(std::numeric_limits<uint32_t>::max());
+			}
+		}
+		else if(by=="atom-ids-simplified")
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, false, false, true);
+				crads.a.chainID.clear();
+				crads.b.chainID.clear();
 				map_of_ids_values[*it]=static_cast<double>(crads.hash_value())/static_cast<double>(std::numeric_limits<uint32_t>::max());
 			}
 		}
