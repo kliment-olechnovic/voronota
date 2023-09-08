@@ -296,6 +296,7 @@ public:
 		if(no_serial)
 		{
 			v.serial=null_num();
+			v.altLoc.clear();
 		}
 		if(no_name)
 		{
@@ -408,6 +409,55 @@ public:
 		output << (resName.empty() ? std::string(".") : resName) << sep;
 		output << (name.empty() ? std::string(".") : name);
 		return output.str();
+	}
+
+	uint32_t hash_value() const
+	{
+		uint32_t h=0;
+		{
+			h += static_cast<uint32_t>(resSeq);
+			h += (h << 10);
+			h ^= (h >> 6);
+		}
+		{
+			h += static_cast<uint32_t>(serial);
+			h += (h << 10);
+			h ^= (h >> 6);
+		}
+		for(std::size_t i=0;i<chainID.size();i++)
+		{
+			h += static_cast<uint32_t>(chainID[i]);
+			h += (h << 10);
+			h ^= (h >> 6);
+		}
+		for(std::size_t i=0;i<iCode.size();i++)
+		{
+			h += static_cast<uint32_t>(iCode[i]);
+			h += (h << 10);
+			h ^= (h >> 6);
+		}
+		for(std::size_t i=0;i<altLoc.size();i++)
+		{
+			h += static_cast<uint32_t>(altLoc[i]);
+			h += (h << 10);
+			h ^= (h >> 6);
+		}
+		for(std::size_t i=0;i<resName.size();i++)
+		{
+			h += static_cast<uint32_t>(resName[i]);
+			h += (h << 10);
+			h ^= (h >> 6);
+		}
+		for(std::size_t i=0;i<name.size();i++)
+		{
+			h += static_cast<uint32_t>(name[i]);
+			h += (h << 10);
+			h ^= (h >> 6);
+		}
+		h += (h << 3);
+		h ^= (h >> 11);
+		h += (h << 15);
+		return h;
 	}
 
 private:
@@ -547,6 +597,25 @@ public:
 	ChainResidueAtomDescriptorsPair without_some_info(const bool no_serial, const bool no_name, const bool no_resSeq, const bool no_resName) const
 	{
 		return ChainResidueAtomDescriptorsPair(a.without_some_info(no_serial, no_name, no_resSeq, no_resName), b.without_some_info(no_serial, no_name, no_resSeq, no_resName));
+	}
+
+	uint32_t hash_value() const
+	{
+		uint32_t h=0;
+		{
+			h += a.hash_value();
+			h += (h << 10);
+			h ^= (h >> 6);
+		}
+		{
+			h += b.hash_value();
+			h += (h << 10);
+			h ^= (h >> 6);
+		}
+		h += (h << 3);
+		h ^= (h >> 11);
+		h += (h << 15);
+		return h;
 	}
 };
 

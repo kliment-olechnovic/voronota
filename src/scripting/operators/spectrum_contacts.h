@@ -94,7 +94,7 @@ public:
 
 		const std::set<std::size_t> representation_ids=data_manager.contacts_representation_descriptor().ids_by_names(representation_names);
 
-		if(by!="area" && by!="residue-area" && by!="adjunct" && by!="dist-centers" && by!="dist-balls" && by!="seq-sep" && by!="residue-ids")
+		if(by!="area" && by!="residue-area" && by!="adjunct" && by!="dist-centers" && by!="dist-balls" && by!="seq-sep" && by!="residue-ids" && by!="atom-ids")
 		{
 			throw std::runtime_error(std::string("Invalid 'by' value '")+by+"'.");
 		}
@@ -209,23 +209,18 @@ public:
 		}
 		else if(by=="residue-ids")
 		{
-			std::map<common::ChainResidueAtomDescriptorsPair, double> residue_ids_to_values;
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				residue_ids_to_values[common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, true, false, false)]=0.5;
+				const common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, true, false, false);
+				map_of_ids_values[*it]=static_cast<double>(crads.hash_value())/static_cast<double>(std::numeric_limits<uint32_t>::max());
 			}
-			if(residue_ids_to_values.size()>1)
-			{
-				int i=0;
-				for(std::map<common::ChainResidueAtomDescriptorsPair, double>::iterator it=residue_ids_to_values.begin();it!=residue_ids_to_values.end();++it)
-				{
-					it->second=static_cast<double>(i)/static_cast<double>(residue_ids_to_values.size()-1);
-					i++;
-				}
-			}
+		}
+		else if(by=="atom-ids")
+		{
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				map_of_ids_values[*it]=residue_ids_to_values[common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, true, false, false)];
+				const common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, false, false, false);
+				map_of_ids_values[*it]=static_cast<double>(crads.hash_value())/static_cast<double>(std::numeric_limits<uint32_t>::max());
 			}
 		}
 
