@@ -153,15 +153,15 @@ public:
 				std::string text_to_use=text;
 				{
 					const Atom& atom=data_manager.atoms()[atom_ids.front()];
-					replace_all(text_to_use, "chain", atom.crad.chainID);
-					replace_all(text_to_use, "rnum", atom.crad.resSeq);
-					replace_all(text_to_use, "icode", atom.crad.iCode);
-					replace_all(text_to_use, "rname", atom.crad.resName);
+					OperatorsUtilities::replace_all_marks_in_string(text_to_use, "chain", atom.crad.chainID);
+					OperatorsUtilities::replace_all_marks_in_string(text_to_use, "rnum", atom.crad.resSeq);
+					OperatorsUtilities::replace_all_marks_in_string(text_to_use, "icode", atom.crad.iCode);
+					OperatorsUtilities::replace_all_marks_in_string(text_to_use, "rname", atom.crad.resName);
 					{
 						const std::string rnameshort=auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(atom.crad.resName);
-						replace_all(text_to_use, "rnameshort", (rnameshort!="X" ? rnameshort : atom.crad.resName));
+						OperatorsUtilities::replace_all_marks_in_string(text_to_use, "rnameshort", (rnameshort!="X" ? rnameshort : atom.crad.resName));
 					}
-					replace_all(text_to_use, "aname", (mode=="atom") ? atom.crad.name : std::string());
+					OperatorsUtilities::replace_all_marks_in_string(text_to_use, "aname", (mode=="atom") ? atom.crad.name : std::string());
 				}
 
 				{
@@ -206,26 +206,6 @@ public:
 		Result result;
 
 		return result;
-	}
-
-private:
-	template<typename T>
-	static int replace_all(std::string& content, const std::string& str_mark_short, const T& replacement)
-	{
-		const std::string str_mark=std::string("${")+str_mark_short+"}";
-		std::ostringstream replacement_stream;
-		replacement_stream << replacement;
-		const std::string str_replacement=replacement_stream.str();
-		int replaced=0;
-		std::size_t pos=content.find(str_mark);
-		while(pos<content.size())
-		{
-			content.replace(pos, str_mark.size(), str_replacement);
-			replaced++;
-			pos+=str_replacement.size();
-			pos=content.find(str_mark, pos);
-		}
-		return replaced;
 	}
 };
 

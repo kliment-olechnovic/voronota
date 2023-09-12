@@ -14,6 +14,7 @@
 #include "operators/fetch.h"
 #include "operators/fetch_afdb.h"
 #include "operators/import_cod_cif.h"
+#include "operators/import_mmcif.h"
 #include "operators/import_url.h"
 #include "operators/nnport_predict.h"
 #include "operators/plot_contacts_map.h"
@@ -64,6 +65,7 @@ public:
 		set_command_for_congregation_of_data_managers("fetch", operators::Fetch(RemoteImportDownloaderSimple::instance()));
 		set_command_for_congregation_of_data_managers("fetch-afdb", operators::FetchAFDB(RemoteImportDownloaderSimple::instance()));
 		set_command_for_congregation_of_data_managers("import-cod-cif", operators::ImportCODCIF());
+		set_command_for_congregation_of_data_managers("import-mmcif", operators::ImportMMCIF());
 		set_command_for_congregation_of_data_managers("import-url", operators::ImportUrl(RemoteImportDownloaderSimple::instance()));
 		set_command_for_congregation_of_data_managers("qcprot-many", operators::QCProtMany());
 		set_command_for_congregation_of_data_managers("qcprot", operators::QCProt());

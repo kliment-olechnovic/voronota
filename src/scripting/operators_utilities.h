@@ -383,6 +383,25 @@ public:
 		}
 		return str;
 	}
+
+	template<typename T>
+	static int replace_all_marks_in_string(std::string& content, const std::string& str_mark_short, const T& replacement)
+	{
+		const std::string str_mark=std::string("${")+str_mark_short+"}";
+		std::ostringstream replacement_stream;
+		replacement_stream << replacement;
+		const std::string str_replacement=replacement_stream.str();
+		int replaced=0;
+		std::size_t pos=content.find(str_mark);
+		while(pos<content.size())
+		{
+			content.replace(pos, str_mark.size(), str_replacement);
+			replaced++;
+			pos+=str_replacement.size();
+			pos=content.find(str_mark, pos);
+		}
+		return replaced;
+	}
 };
 
 }
