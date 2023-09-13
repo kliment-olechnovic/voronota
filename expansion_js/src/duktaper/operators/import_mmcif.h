@@ -41,10 +41,19 @@ public:
 	bool include_hydrogens;
 	bool use_label_ids;
 	double same_radius_for_all;
+	int max_models_per_file;
 	std::vector<std::string> files;
 	std::string title;
 
-	ImportMMCIF()
+	ImportMMCIF() :
+		forced_include_heteroatoms(false),
+		forced_include_hydrogens(false),
+		forced_same_radius_for_all(false),
+		include_heteroatoms(false),
+		include_hydrogens(false),
+		use_label_ids(false),
+		same_radius_for_all(scripting::LoadingOfData::Configuration::recommended_default_radius()),
+		max_models_per_file(99999)
 	{
 	}
 
@@ -59,11 +68,17 @@ public:
 		include_hydrogens=input.get_flag("include-hydrogens");
 		use_label_ids=input.get_flag("use-label-ids");
 		same_radius_for_all=input.get_value_or_default<double>("same-radius-for-all", scripting::LoadingOfData::Configuration::recommended_default_radius());
+		max_models_per_file=input.get_value_or_default<int>("max-models-per-file", 99999);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("files", CDOD::DATATYPE_STRING_ARRAY, "paths to files"));
+		doc.set_option_decription(CDOD("include-heteroatoms", CDOD::DATATYPE_BOOL, "flag to include heteroatoms"));
+		doc.set_option_decription(CDOD("include-hydrogens", CDOD::DATATYPE_BOOL, "flag to include hydrogens"));
+		doc.set_option_decription(CDOD("use-label-ids", CDOD::DATATYPE_BOOL, "flag to use label_ IDs instead of auth_ IDs"));
+		doc.set_option_decription(CDOD("same-radius-for-all", CDOD::DATATYPE_FLOAT, "radius to use for all atoms", scripting::LoadingOfData::Configuration::recommended_default_radius()));
+		doc.set_option_decription(CDOD("max-models-per-file", CDOD::DATATYPE_INT, "maximum number of models per file", 99999));
 	}
 
 	Result run(scripting::CongregationOfDataManagers& congregation_of_data_managers) const
@@ -73,7 +88,12 @@ public:
 			throw std::runtime_error(std::string("Missing file paths."));
 		}
 
-		std::multimap< std::string, std::vector<scripting::Atom> > models_multimap;
+		if(max_models_per_file<0)
+		{
+			throw std::runtime_error(std::string("Invalid max number of models per file, must be positive."));
+		}
+
+		std::vector< std::pair<std::string, std::vector<scripting::Atom> > > collected_models;
 
 		for(std::size_t i=0;i<files.size();i++)
 		{
@@ -95,7 +115,7 @@ public:
 				throw std::runtime_error(std::string("Failed to read any structural models from file '")+main_file+"'.");
 			}
 
-			for(std::size_t j=0;j<model_records.size();j++)
+			for(std::size_t j=0;j<model_records.size() && j<static_cast<std::size_t>(max_models_per_file);j++)
 			{
 				gemmi_wrappers::ModelRecord& model_record=model_records[j];
 				if(model_record.atom_records.empty())
@@ -119,13 +139,13 @@ public:
 					scripting::OperatorsUtilities::replace_all_marks_in_string(title_to_use, "model", model_record.name);
 				}
 
-				models_multimap.insert(std::make_pair(title_to_use, atoms));
+				collected_models.push_back(std::make_pair(title_to_use, atoms));
 			}
 		}
 
 		Result result;
 
-		for(std::multimap< std::string, std::vector<scripting::Atom> >::iterator model_it=models_multimap.begin();model_it!=models_multimap.end();++model_it)
+		for(std::vector< std::pair<std::string, std::vector<scripting::Atom> > >::iterator model_it=collected_models.begin();model_it!=collected_models.end();++model_it)
 		{
 			scripting::DataManager* object_new=congregation_of_data_managers.add_object(scripting::DataManager(), model_it->first);
 			scripting::DataManager& data_manager=*object_new;

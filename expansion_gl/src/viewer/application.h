@@ -318,6 +318,7 @@ private:
 			TYPE_OBJECTS,
 			TYPE_VIEW,
 			TYPE_SESSION,
+			TYPE_MMCIF,
 			TYPE_DATA
 		};
 
@@ -362,6 +363,10 @@ private:
 			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_VIEW, ".VVIEW"));
 			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_SESSION, ".vses"));
 			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_SESSION, ".VSES"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_MMCIF, ".cif"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_MMCIF, ".CIF"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_MMCIF, ".mmcif"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_MMCIF, ".MMCIF"));
 			return map_of_format_extensions;
 		}
 	};
@@ -548,6 +553,10 @@ private:
 			else if(job_file.type==JobFile::TYPE_SESSION)
 			{
 				return enqueue_job(Job(std::string("import-session --file '")+job_file.filename+"'", Job::TYPE_NATIVE));
+			}
+			else if(job_file.type==JobFile::TYPE_MMCIF)
+			{
+				return enqueue_job(Job(std::string("import-mmcif --include-heteroatoms --files '")+job_file.filename+"'", Job::TYPE_NATIVE));
 			}
 			else
 			{
