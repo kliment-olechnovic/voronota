@@ -38,14 +38,17 @@ public:
 		}
 	};
 
-	RemoteImportDownloader* downloader_ptr;
+	typedef RemoteImportRequest<scripting::operators::ImportMany> RemoteImportRequestType;
+	typedef RemoteImportDownloader<RemoteImportRequestType> RemoteImportDownloaderType;
+
+	RemoteImportDownloaderType* downloader_ptr;
 	std::string pdb_id;
 	bool assembly_provided;
 	int assembly;
 	bool no_heteroatoms;
 	bool all_states;
 
-	Fetch(RemoteImportDownloader& downloader) : downloader_ptr(&downloader), assembly_provided(false), assembly(1), no_heteroatoms(false), all_states(false)
+	Fetch(RemoteImportDownloaderType& downloader) : downloader_ptr(&downloader), assembly_provided(false), assembly(1), no_heteroatoms(false), all_states(false)
 	{
 	}
 
@@ -106,8 +109,8 @@ public:
 		import_many_operator.import_operator.loading_parameters.format="pdb";
 		import_many_operator.import_operator.loading_parameters.format_fallback="pdb";
 
-		RemoteImportDownloader& downloader=(*downloader_ptr);
-		RemoteImportDownloader::ScopeCleaner scope_cleaner(downloader);
+		RemoteImportDownloaderType& downloader=(*downloader_ptr);
+		RemoteImportDownloaderType::ScopeCleaner scope_cleaner(downloader);
 
 		std::ostringstream url_output;
 		scripting::operators::ImportMany import_many_operator_to_use=import_many_operator;
@@ -125,7 +128,7 @@ public:
 			import_many_operator_to_use.import_operator.loading_parameters.multimodel_chains=false;
 		}
 
-		RemoteImportRequest& request=downloader.add_request_and_start_download(RemoteImportRequest(url_output.str(), import_many_operator_to_use));
+		RemoteImportRequestType& request=downloader.add_request_and_start_download(RemoteImportRequestType(url_output.str(), import_many_operator_to_use));
 
 		Result result;
 		result.asynchronous=!downloader.is_synchronous();

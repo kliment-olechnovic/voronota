@@ -12,14 +12,15 @@ namespace duktaper
 namespace operators
 {
 
-class ImportUrl : public scripting::OperatorBase<ImportUrl>
+template<class ImportManyOperatorType>
+class ImportUrl : public scripting::OperatorBase< ImportUrl<ImportManyOperatorType> >
 {
 public:
 	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		bool asynchronous;
 		std::string url;
-		scripting::operators::ImportMany::Result import_result;
+		typename ImportManyOperatorType::Result import_result;
 
 		Result() : asynchronous(false)
 		{
@@ -36,11 +37,14 @@ public:
 		}
 	};
 
-	RemoteImportDownloader* downloader_ptr;
-	std::string url;
-	scripting::operators::ImportMany import_many_operator;
+	typedef RemoteImportRequest<ImportManyOperatorType> RemoteImportRequestType;
+	typedef RemoteImportDownloader<RemoteImportRequestType> RemoteImportDownloaderType;
 
-	ImportUrl(RemoteImportDownloader& downloader) : downloader_ptr(&downloader)
+	RemoteImportDownloaderType* downloader_ptr;
+	std::string url;
+	ImportManyOperatorType import_many_operator;
+
+	ImportUrl(RemoteImportDownloaderType& downloader) : downloader_ptr(&downloader)
 	{
 	}
 
@@ -68,14 +72,14 @@ public:
 			throw std::runtime_error(std::string("Missing URL."));
 		}
 
-		RemoteImportDownloader& downloader=(*downloader_ptr);
-		RemoteImportDownloader::ScopeCleaner scope_cleaner(downloader);
+		RemoteImportDownloaderType& downloader=(*downloader_ptr);
+		typename RemoteImportDownloaderType::ScopeCleaner scope_cleaner(downloader);
 
 		Result result;
 		result.asynchronous=!downloader.is_synchronous();
 		result.url=url;
 
-		RemoteImportRequest& request=downloader.add_request_and_start_download(RemoteImportRequest(url, import_many_operator));
+		RemoteImportRequestType& request=downloader.add_request_and_start_download(RemoteImportRequestType(url, import_many_operator));
 
 		if(downloader.is_synchronous())
 		{

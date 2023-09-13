@@ -49,6 +49,7 @@ public:
 	bool split_pdb_files;
 	std::vector<std::string> files;
 	Import import_operator;
+	std::string title;
 
 	ImportMany() : split_pdb_files(false)
 	{
@@ -62,6 +63,7 @@ public:
 		}
 		split_pdb_files=input.get_flag("split-pdb-files");
 		import_operator.initialize(input, true);
+		title=import_operator.title;
 	}
 
 	void initialize(CommandInput& input)
@@ -96,7 +98,7 @@ public:
 		for(std::size_t i=0;i<files.size();i++)
 		{
 			const std::string& main_file=files[i];
-			const std::string main_file_basename=(import_operator.title.empty() ? OperatorsUtilities::get_basename_from_path(main_file) : import_operator.title);
+			const std::string main_file_basename=(title.empty() ? OperatorsUtilities::get_basename_from_path(main_file) : title);
 			bool unsplit_import=true;
 			if(split_pdb_files && (import_operator.loading_parameters.format=="pdb" || LoadingOfData::get_format_from_atoms_file_name(main_file)=="pdb"))
 			{
@@ -126,7 +128,7 @@ public:
 			{
 				Import import_operator_to_use=import_operator;
 				import_operator_to_use.loading_parameters.file=main_file;
-				import_operator_to_use.title=(import_operator.title.empty() ? OperatorsUtilities::get_basename_from_path(main_file) : import_operator.title);
+				import_operator_to_use.title=(title.empty() ? OperatorsUtilities::get_basename_from_path(main_file) : title);
 				result.add(import_operator_to_use.run(congregation_of_data_managers));
 			}
 		}

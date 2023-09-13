@@ -57,9 +57,12 @@ public:
 	{
 	}
 
-	void initialize(scripting::CommandInput& input)
+	void initialize(scripting::CommandInput& input, const bool managed)
 	{
-		files=input.get_value_vector_or_all_unused_unnamed_values("files");
+		if(!managed)
+		{
+			files=input.get_value_vector_or_all_unused_unnamed_values("files");
+		}
 		title=input.get_value_or_default<std::string>("title", "");
 		forced_include_heteroatoms=input.is_option("include-heteroatoms");
 		forced_include_hydrogens=input.is_option("include-hydrogens");
@@ -71,14 +74,27 @@ public:
 		max_models_per_file=input.get_value_or_default<int>("max-models-per-file", 99999);
 	}
 
-	void document(scripting::CommandDocumentation& doc) const
+	void initialize(scripting::CommandInput& input)
 	{
-		doc.set_option_decription(CDOD("files", CDOD::DATATYPE_STRING_ARRAY, "paths to files"));
+		initialize(input, false);
+	}
+
+	void document(scripting::CommandDocumentation& doc, const bool managed) const
+	{
+		if(!managed)
+		{
+			doc.set_option_decription(CDOD("files", CDOD::DATATYPE_STRING_ARRAY, "paths to files"));
+		}
 		doc.set_option_decription(CDOD("include-heteroatoms", CDOD::DATATYPE_BOOL, "flag to include heteroatoms"));
 		doc.set_option_decription(CDOD("include-hydrogens", CDOD::DATATYPE_BOOL, "flag to include hydrogens"));
 		doc.set_option_decription(CDOD("use-label-ids", CDOD::DATATYPE_BOOL, "flag to use label_ IDs instead of auth_ IDs"));
 		doc.set_option_decription(CDOD("same-radius-for-all", CDOD::DATATYPE_FLOAT, "radius to use for all atoms", scripting::LoadingOfData::Configuration::recommended_default_radius()));
 		doc.set_option_decription(CDOD("max-models-per-file", CDOD::DATATYPE_INT, "maximum number of models per file", 99999));
+	}
+
+	void document(scripting::CommandDocumentation& doc) const
+	{
+		document(doc, false);
 	}
 
 	Result run(scripting::CongregationOfDataManagers& congregation_of_data_managers) const

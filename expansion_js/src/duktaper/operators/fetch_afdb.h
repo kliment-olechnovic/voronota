@@ -38,10 +38,13 @@ public:
 		}
 	};
 
-	RemoteImportDownloader* downloader_ptr;
+	typedef RemoteImportRequest<scripting::operators::ImportMany> RemoteImportRequestType;
+	typedef RemoteImportDownloader<RemoteImportRequestType> RemoteImportDownloaderType;
+
+	RemoteImportDownloaderType* downloader_ptr;
 	std::string id;
 
-	FetchAFDB(RemoteImportDownloader& downloader) : downloader_ptr(&downloader)
+	FetchAFDB(RemoteImportDownloaderType& downloader) : downloader_ptr(&downloader)
 	{
 	}
 
@@ -75,8 +78,8 @@ public:
 			}
 		}
 
-		RemoteImportDownloader& downloader=(*downloader_ptr);
-		RemoteImportDownloader::ScopeCleaner scope_cleaner(downloader);
+		RemoteImportDownloaderType& downloader=(*downloader_ptr);
+		RemoteImportDownloaderType::ScopeCleaner scope_cleaner(downloader);
 
 		scripting::operators::ImportMany import_many_operator;
 		import_many_operator.import_operator.title=id;
@@ -86,7 +89,7 @@ public:
 		std::ostringstream url_output;
 		url_output << "https://alphafold.ebi.ac.uk/files/AF-" << id << "-F1-model_v4.cif";
 
-		RemoteImportRequest& request=downloader.add_request_and_start_download(RemoteImportRequest(url_output.str(), import_many_operator));
+		RemoteImportRequestType& request=downloader.add_request_and_start_download(RemoteImportRequestType(url_output.str(), import_many_operator));
 
 		Result result;
 		result.asynchronous=!downloader.is_synchronous();

@@ -568,12 +568,12 @@ private:
 
 	bool pending_jobs_in_queue(const bool including_brief_jobs) const
 	{
-		return ((!job_queue_.empty() && (including_brief_jobs || !job_queue_.front().brief)) || RemoteImportDownloaderAdaptive::instance().check_if_any_request_downloaded_and_not_fully_processed());
+		return ((!job_queue_.empty() && (including_brief_jobs || !job_queue_.front().brief)) || RemoteImportDownloaderAdaptiveForOLD::instance().check_if_any_request_downloaded_and_not_fully_processed() || RemoteImportDownloaderAdaptiveForMMCIF::instance().check_if_any_request_downloaded_and_not_fully_processed());
 	}
 
 	bool need_to_wait_for_asynchronous_downloads_to_finish() const
 	{
-		return (!RemoteImportDownloaderAdaptive::instance().is_synchronous() && RemoteImportDownloaderAdaptive::instance().check_if_any_request_not_downloaded());
+		return ((!RemoteImportDownloaderAdaptiveForOLD::instance().is_synchronous() && RemoteImportDownloaderAdaptiveForOLD::instance().check_if_any_request_not_downloaded()) || (!RemoteImportDownloaderAdaptiveForMMCIF::instance().is_synchronous() && RemoteImportDownloaderAdaptiveForMMCIF::instance().check_if_any_request_not_downloaded()));
 	}
 
 	bool dequeue_job()
@@ -583,9 +583,14 @@ private:
 			return (!job_queue_.empty());
 		}
 
-		if(RemoteImportDownloaderAdaptive::instance().check_if_any_request_downloaded_and_not_fully_processed())
+		if(RemoteImportDownloaderAdaptiveForOLD::instance().check_if_any_request_downloaded_and_not_fully_processed())
 		{
 			enqueue_job(Job("import-downloaded", Job::TYPE_NATIVE), true);
+		}
+
+		if(RemoteImportDownloaderAdaptiveForMMCIF::instance().check_if_any_request_downloaded_and_not_fully_processed())
+		{
+			enqueue_job(Job("import-downloaded-mmcif", Job::TYPE_NATIVE), true);
 		}
 
 		if(!job_queue_.empty())

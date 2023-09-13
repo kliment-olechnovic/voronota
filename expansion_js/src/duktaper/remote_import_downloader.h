@@ -3,8 +3,6 @@
 
 #include <list>
 
-#include "../../../src/scripting/operators/import_many.h"
-
 #include "../dependencies/tinf/tinf_wrapper.h"
 
 #include "call_shell_utilities.h"
@@ -15,10 +13,11 @@ namespace voronota
 namespace duktaper
 {
 
+template<class ImportManyOperator>
 struct RemoteImportRequest
 {
 	std::string url;
-	scripting::operators::ImportMany import_many_operator;
+	ImportManyOperator import_many_operator;
 	std::string downloaded_data;
 	bool download_started;
 	bool download_finished;
@@ -29,15 +28,15 @@ struct RemoteImportRequest
 	{
 	}
 
-	RemoteImportRequest(const std::string& url, const scripting::operators::ImportMany& import_many_operator) : url(url), import_many_operator(import_many_operator), download_started(false), download_finished(false), download_successful(false), fully_processed(false)
+	RemoteImportRequest(const std::string& url, const ImportManyOperator& import_many_operator) : url(url), import_many_operator(import_many_operator), download_started(false), download_finished(false), download_successful(false), fully_processed(false)
 	{
 	}
 
-	scripting::operators::ImportMany::Result import_downloaded_data(scripting::CongregationOfDataManagers& congregation_of_data_managers)
+	typename ImportManyOperator::Result import_downloaded_data(scripting::CongregationOfDataManagers& congregation_of_data_managers)
 	{
 		fully_processed=true;
 
-		scripting::operators::ImportMany::Result result;
+		typename ImportManyOperator::Result result;
 
 		if(download_successful && !downloaded_data.empty())
 		{
@@ -56,13 +55,13 @@ struct RemoteImportRequest
 			scripting::VirtualFileStorage::TemporaryFile tmpfile(url_basename);
 			scripting::VirtualFileStorage::set_file(tmpfile.filename(), downloaded_data);
 
-			scripting::operators::ImportMany import_many_operator_to_use=import_many_operator;
+			ImportManyOperator import_many_operator_to_use=import_many_operator;
 
 			import_many_operator_to_use.files.push_back(tmpfile.filename());
 
-			if(import_many_operator_to_use.import_operator.title.empty())
+			if(import_many_operator_to_use.title.empty())
 			{
-				import_many_operator_to_use.import_operator.title=url_basename;
+				import_many_operator_to_use.title=url_basename;
 			}
 
 			result=import_many_operator_to_use.run(congregation_of_data_managers);
@@ -72,6 +71,7 @@ struct RemoteImportRequest
 	}
 };
 
+template<class RemoteImportRequestType>
 class RemoteImportDownloader
 {
 public:
@@ -95,7 +95,7 @@ public:
 		return synchronous();
 	}
 
-	RemoteImportRequest& add_request_and_start_download(const RemoteImportRequest& request)
+	RemoteImportRequestType& add_request_and_start_download(const RemoteImportRequestType& request)
 	{
 		requests_.push_back(request);
 		start_download(requests_.back());
@@ -104,7 +104,7 @@ public:
 
 	bool check_if_any_request_not_downloaded() const
 	{
-		for(std::list<RemoteImportRequest>::const_iterator it=requests_.begin();it!=requests_.end();++it)
+		for(typename std::list<RemoteImportRequestType>::const_iterator it=requests_.begin();it!=requests_.end();++it)
 		{
 			if(!it->download_finished)
 			{
@@ -116,7 +116,7 @@ public:
 
 	bool check_if_any_request_downloaded_and_not_fully_processed() const
 	{
-		for(std::list<RemoteImportRequest>::const_iterator it=requests_.begin();it!=requests_.end();++it)
+		for(typename std::list<RemoteImportRequestType>::const_iterator it=requests_.begin();it!=requests_.end();++it)
 		{
 			if(it->download_finished && !(it->fully_processed))
 			{
@@ -126,9 +126,9 @@ public:
 		return false;
 	}
 
-	RemoteImportRequest* get_first_request_downloaded_and_not_fully_processed()
+	RemoteImportRequestType* get_first_request_downloaded_and_not_fully_processed()
 	{
-		for(std::list<RemoteImportRequest>::iterator it=requests_.begin();it!=requests_.end();++it)
+		for(typename std::list<RemoteImportRequestType>::iterator it=requests_.begin();it!=requests_.end();++it)
 		{
 			if(it->download_finished && !(it->fully_processed))
 			{
@@ -140,7 +140,7 @@ public:
 
 	void delete_inactive_requests()
 	{
-		for(std::list<RemoteImportRequest>::iterator it=requests_.begin();it!=requests_.end();)
+		for(typename std::list<RemoteImportRequestType>::iterator it=requests_.begin();it!=requests_.end();)
 		{
 			if(it->fully_processed || !(it->download_started))
 			{
@@ -164,13 +164,14 @@ protected:
 
 	virtual bool synchronous() const = 0;
 
-	virtual void start_download(RemoteImportRequest&) = 0;
+	virtual void start_download(RemoteImportRequestType&) = 0;
 
 private:
-	std::list<RemoteImportRequest> requests_;
+	std::list<RemoteImportRequestType> requests_;
 };
 
-class RemoteImportDownloaderSimple : public RemoteImportDownloader
+template<class RemoteImportRequestType>
+class RemoteImportDownloaderSimple : public RemoteImportDownloader<RemoteImportRequestType>
 {
 public:
 	static RemoteImportDownloaderSimple& instance()
@@ -193,7 +194,7 @@ private:
 		return true;
 	}
 
-	void start_download(RemoteImportRequest& request)
+	void start_download(RemoteImportRequestType& request)
 	{
 		const bool success=download_file(request.url, request.downloaded_data);
 		request.download_started=true;

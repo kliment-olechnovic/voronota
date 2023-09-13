@@ -105,10 +105,12 @@ public:
 		set_command_for_extra_actions("import-view", operators::ImportView());
 		set_command_for_extra_actions("hint-render-area-size", operators::HintRenderAreaSize());
 
-		set_command_for_congregation_of_data_managers("fetch", duktaper::operators::Fetch(RemoteImportDownloaderAdaptive::instance()));
-		set_command_for_congregation_of_data_managers("fetch-afdb", duktaper::operators::FetchAFDB(RemoteImportDownloaderAdaptive::instance()));
-		set_command_for_congregation_of_data_managers("import-url", duktaper::operators::ImportUrl(RemoteImportDownloaderAdaptive::instance()));
-		set_command_for_congregation_of_data_managers("import-downloaded", operators::ImportDownloaded());
+		set_command_for_congregation_of_data_managers("fetch", duktaper::operators::Fetch(RemoteImportDownloaderAdaptiveForOLD::instance()));
+		set_command_for_congregation_of_data_managers("fetch-afdb", duktaper::operators::FetchAFDB(RemoteImportDownloaderAdaptiveForOLD::instance()));
+		set_command_for_congregation_of_data_managers("import-url", duktaper::operators::ImportUrl<scripting::operators::ImportMany>(RemoteImportDownloaderAdaptiveForOLD::instance()));
+		set_command_for_congregation_of_data_managers("import-mmcif-url", duktaper::operators::ImportUrl<duktaper::operators::ImportMMCIF>(RemoteImportDownloaderAdaptiveForMMCIF::instance()));
+		set_command_for_congregation_of_data_managers("import-downloaded", operators::ImportDownloaded<scripting::operators::ImportMany, RemoteImportDownloaderAdaptiveForOLD>());
+		set_command_for_congregation_of_data_managers("import-downloaded-mmcif", operators::ImportDownloaded<duktaper::operators::ImportMMCIF, RemoteImportDownloaderAdaptiveForMMCIF>());
 		set_command_for_congregation_of_data_managers("export-session", operators::ExportSession());
 		set_command_for_congregation_of_data_managers("import-session", operators::ImportSession());
 		set_command_for_congregation_of_data_managers("orient", operators::Orient());

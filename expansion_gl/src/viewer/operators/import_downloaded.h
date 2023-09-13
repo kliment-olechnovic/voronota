@@ -13,14 +13,15 @@ namespace viewer
 namespace operators
 {
 
-class ImportDownloaded : public scripting::OperatorBase<ImportDownloaded>
+template<class ImportManyOperator, class RemoteImportDownloaderType>
+class ImportDownloaded : public scripting::OperatorBase<ImportDownloaded<ImportManyOperator, RemoteImportDownloaderType> >
 {
 public:
 	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		bool asynchronous;
 		std::string url;
-		scripting::operators::ImportMany::Result import_result;
+		typename ImportManyOperator::Result import_result;
 
 		Result() : asynchronous(false)
 		{
@@ -48,19 +49,19 @@ public:
 
 	Result run(scripting::CongregationOfDataManagers& congregation_of_data_managers) const
 	{
-		duktaper::RemoteImportDownloader& downloader=RemoteImportDownloaderAdaptive::instance();
+		RemoteImportDownloaderType& downloader=RemoteImportDownloaderType::instance();
 
-		RemoteImportRequest* request_ptr=downloader.get_first_request_downloaded_and_not_fully_processed();
+		duktaper::RemoteImportRequest<ImportManyOperator>* request_ptr=downloader.get_first_request_downloaded_and_not_fully_processed();
 
 		if(request_ptr==0)
 		{
 			throw std::runtime_error(std::string("No finished downloads to process."));
 		}
 
-		RemoteImportRequest& request=(*request_ptr);
+		duktaper::RemoteImportRequest<ImportManyOperator>& request=(*request_ptr);
 		request.fully_processed=true;
 
-		duktaper::RemoteImportDownloader::ScopeCleaner scope_cleaner(downloader);
+		typename RemoteImportDownloaderType::ScopeCleaner scope_cleaner(downloader);
 
 		if(!request.download_successful)
 		{

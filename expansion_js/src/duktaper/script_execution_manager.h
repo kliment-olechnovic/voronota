@@ -62,11 +62,12 @@ public:
 
 		set_command_for_congregation_of_data_managers("congruence-score", operators::CongruenceScore());
 		set_command_for_congregation_of_data_managers("congruence-score-many", operators::CongruenceScoreMany());
-		set_command_for_congregation_of_data_managers("fetch", operators::Fetch(RemoteImportDownloaderSimple::instance()));
-		set_command_for_congregation_of_data_managers("fetch-afdb", operators::FetchAFDB(RemoteImportDownloaderSimple::instance()));
+		set_command_for_congregation_of_data_managers("fetch", operators::Fetch(RemoteImportDownloaderSimple< RemoteImportRequest<scripting::operators::ImportMany> >::instance()));
+		set_command_for_congregation_of_data_managers("fetch-afdb", operators::FetchAFDB(RemoteImportDownloaderSimple< RemoteImportRequest<scripting::operators::ImportMany> >::instance()));
 		set_command_for_congregation_of_data_managers("import-cod-cif", operators::ImportCODCIF());
 		set_command_for_congregation_of_data_managers("import-mmcif", operators::ImportMMCIF());
-		set_command_for_congregation_of_data_managers("import-url", operators::ImportUrl(RemoteImportDownloaderSimple::instance()));
+		set_command_for_congregation_of_data_managers("import-mmcif-url", operators::ImportUrl<operators::ImportMMCIF>(RemoteImportDownloaderSimple< RemoteImportRequest<operators::ImportMMCIF> >::instance()));
+		set_command_for_congregation_of_data_managers("import-url", operators::ImportUrl<scripting::operators::ImportMany>(RemoteImportDownloaderSimple< RemoteImportRequest<scripting::operators::ImportMany> >::instance()));
 		set_command_for_congregation_of_data_managers("qcprot-many", operators::QCProtMany());
 		set_command_for_congregation_of_data_managers("qcprot", operators::QCProt());
 		set_command_for_congregation_of_data_managers("run-nolb", operators::RunNolb());
