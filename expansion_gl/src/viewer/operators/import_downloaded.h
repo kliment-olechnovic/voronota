@@ -13,15 +13,15 @@ namespace viewer
 namespace operators
 {
 
-template<class ImportManyOperator, class RemoteImportDownloaderType>
-class ImportDownloaded : public scripting::OperatorBase<ImportDownloaded<ImportManyOperator, RemoteImportDownloaderType> >
+template<class RemoteImportDownloaderType>
+class ImportDownloaded : public scripting::OperatorBase<ImportDownloaded<RemoteImportDownloaderType> >
 {
 public:
 	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		bool asynchronous;
 		std::string url;
-		typename ImportManyOperator::Result import_result;
+		typename RemoteImportDownloaderType::RemoteImportRequestTypeUsed::ImportManyOperatorTypeUsed::Result import_result;
 
 		Result() : asynchronous(false)
 		{
@@ -51,14 +51,14 @@ public:
 	{
 		RemoteImportDownloaderType& downloader=RemoteImportDownloaderType::instance();
 
-		duktaper::RemoteImportRequest<ImportManyOperator>* request_ptr=downloader.get_first_request_downloaded_and_not_fully_processed();
+		typename RemoteImportDownloaderType::RemoteImportRequestTypeUsed* request_ptr=downloader.get_first_request_downloaded_and_not_fully_processed();
 
 		if(request_ptr==0)
 		{
 			throw std::runtime_error(std::string("No finished downloads to process."));
 		}
 
-		duktaper::RemoteImportRequest<ImportManyOperator>& request=(*request_ptr);
+		typename RemoteImportDownloaderType::RemoteImportRequestTypeUsed& request=(*request_ptr);
 		request.fully_processed=true;
 
 		typename RemoteImportDownloaderType::ScopeCleaner scope_cleaner(downloader);

@@ -12,15 +12,15 @@ namespace duktaper
 namespace operators
 {
 
-template<class ImportManyOperatorType>
-class ImportUrl : public scripting::OperatorBase< ImportUrl<ImportManyOperatorType> >
+template<class RemoteImportDownloaderType>
+class ImportUrl : public scripting::OperatorBase< ImportUrl<RemoteImportDownloaderType> >
 {
 public:
 	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		bool asynchronous;
 		std::string url;
-		typename ImportManyOperatorType::Result import_result;
+		typename RemoteImportDownloaderType::RemoteImportRequestTypeUsed::ImportManyOperatorTypeUsed::Result import_result;
 
 		Result() : asynchronous(false)
 		{
@@ -37,14 +37,10 @@ public:
 		}
 	};
 
-	typedef RemoteImportRequest<ImportManyOperatorType> RemoteImportRequestType;
-	typedef RemoteImportDownloader<RemoteImportRequestType> RemoteImportDownloaderType;
-
-	RemoteImportDownloaderType* downloader_ptr;
 	std::string url;
-	ImportManyOperatorType import_many_operator;
+	typename RemoteImportDownloaderType::RemoteImportRequestTypeUsed::ImportManyOperatorTypeUsed import_many_operator;
 
-	ImportUrl(RemoteImportDownloaderType& downloader) : downloader_ptr(&downloader)
+	ImportUrl()
 	{
 	}
 
@@ -62,24 +58,19 @@ public:
 
 	Result run(scripting::CongregationOfDataManagers& congregation_of_data_managers) const
 	{
-		if(downloader_ptr==0)
-		{
-			throw std::runtime_error(std::string("Missing downloader."));
-		}
-
 		if(url.empty())
 		{
 			throw std::runtime_error(std::string("Missing URL."));
 		}
 
-		RemoteImportDownloaderType& downloader=(*downloader_ptr);
+		RemoteImportDownloaderType& downloader=RemoteImportDownloaderType::instance();
 		typename RemoteImportDownloaderType::ScopeCleaner scope_cleaner(downloader);
 
 		Result result;
 		result.asynchronous=!downloader.is_synchronous();
 		result.url=url;
 
-		RemoteImportRequestType& request=downloader.add_request_and_start_download(RemoteImportRequestType(url, import_many_operator));
+		typename RemoteImportDownloaderType::RemoteImportRequestTypeUsed& request=downloader.add_request_and_start_download(typename RemoteImportDownloaderType::RemoteImportRequestTypeUsed(url, import_many_operator));
 
 		if(downloader.is_synchronous())
 		{

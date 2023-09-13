@@ -13,11 +13,13 @@ namespace voronota
 namespace duktaper
 {
 
-template<class ImportManyOperator>
+template<class ImportManyOperatorType>
 struct RemoteImportRequest
 {
+	typedef ImportManyOperatorType ImportManyOperatorTypeUsed;
+
 	std::string url;
-	ImportManyOperator import_many_operator;
+	ImportManyOperatorType import_many_operator;
 	std::string downloaded_data;
 	bool download_started;
 	bool download_finished;
@@ -28,15 +30,15 @@ struct RemoteImportRequest
 	{
 	}
 
-	RemoteImportRequest(const std::string& url, const ImportManyOperator& import_many_operator) : url(url), import_many_operator(import_many_operator), download_started(false), download_finished(false), download_successful(false), fully_processed(false)
+	RemoteImportRequest(const std::string& url, const ImportManyOperatorType& import_many_operator) : url(url), import_many_operator(import_many_operator), download_started(false), download_finished(false), download_successful(false), fully_processed(false)
 	{
 	}
 
-	typename ImportManyOperator::Result import_downloaded_data(scripting::CongregationOfDataManagers& congregation_of_data_managers)
+	typename ImportManyOperatorType::Result import_downloaded_data(scripting::CongregationOfDataManagers& congregation_of_data_managers)
 	{
 		fully_processed=true;
 
-		typename ImportManyOperator::Result result;
+		typename ImportManyOperatorType::Result result;
 
 		if(download_successful && !downloaded_data.empty())
 		{
@@ -55,7 +57,7 @@ struct RemoteImportRequest
 			scripting::VirtualFileStorage::TemporaryFile tmpfile(url_basename);
 			scripting::VirtualFileStorage::set_file(tmpfile.filename(), downloaded_data);
 
-			ImportManyOperator import_many_operator_to_use=import_many_operator;
+			ImportManyOperatorType import_many_operator_to_use=import_many_operator;
 
 			import_many_operator_to_use.files.push_back(tmpfile.filename());
 
@@ -75,6 +77,8 @@ template<class RemoteImportRequestType>
 class RemoteImportDownloader
 {
 public:
+	typedef RemoteImportRequestType RemoteImportRequestTypeUsed;
+
 	class ScopeCleaner
 	{
 	public:
