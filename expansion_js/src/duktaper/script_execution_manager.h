@@ -13,6 +13,7 @@
 #include "operators/faspr.h"
 #include "operators/fetch.h"
 #include "operators/fetch_afdb.h"
+#include "operators/fetch_mmcif.h"
 #include "operators/import_cod_cif.h"
 #include "operators/import_mmcif.h"
 #include "operators/import_url.h"
@@ -64,6 +65,7 @@ public:
 		set_command_for_congregation_of_data_managers("congruence-score-many", operators::CongruenceScoreMany());
 		set_command_for_congregation_of_data_managers("fetch", operators::Fetch(RemoteImportDownloaderSimple< RemoteImportRequest<scripting::operators::ImportMany> >::instance()));
 		set_command_for_congregation_of_data_managers("fetch-afdb", operators::FetchAFDB(RemoteImportDownloaderSimple< RemoteImportRequest<scripting::operators::ImportMany> >::instance()));
+		set_command_for_congregation_of_data_managers("fetch-mmcif", operators::FetchMMCIF(RemoteImportDownloaderSimple< RemoteImportRequest<operators::ImportMMCIF> >::instance()));
 		set_command_for_congregation_of_data_managers("import-cod-cif", operators::ImportCODCIF());
 		set_command_for_congregation_of_data_managers("import-mmcif", operators::ImportMMCIF());
 		set_command_for_congregation_of_data_managers("import-mmcif-url", operators::ImportUrl< RemoteImportDownloaderSimple< RemoteImportRequest<operators::ImportMMCIF> > >());

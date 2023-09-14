@@ -107,6 +107,7 @@ public:
 
 		set_command_for_congregation_of_data_managers("fetch", duktaper::operators::Fetch(RemoteImportDownloaderAdaptiveForOLD::instance()));
 		set_command_for_congregation_of_data_managers("fetch-afdb", duktaper::operators::FetchAFDB(RemoteImportDownloaderAdaptiveForOLD::instance()));
+		set_command_for_congregation_of_data_managers("fetch-mmcif", duktaper::operators::FetchMMCIF(RemoteImportDownloaderAdaptiveForMMCIF::instance()));
 		set_command_for_congregation_of_data_managers("import-url", duktaper::operators::ImportUrl<RemoteImportDownloaderAdaptiveForOLD>());
 		set_command_for_congregation_of_data_managers("import-mmcif-url", duktaper::operators::ImportUrl<RemoteImportDownloaderAdaptiveForMMCIF>());
 		set_command_for_congregation_of_data_managers("import-downloaded", operators::ImportDownloaded<RemoteImportDownloaderAdaptiveForOLD>());

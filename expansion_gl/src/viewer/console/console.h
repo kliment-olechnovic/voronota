@@ -99,7 +99,8 @@ public:
 
 		static bool menu_open_include_heteroatoms=true;
 		static bool menu_open_as_assembly=false;
-		static bool menu_open_split_pdb_files=false;
+		static bool menu_open_split_by_models=false;
+		static bool menu_open_use_label_ids=false;
 
 		static bool menu_screenshot_opaque=true;
 		static bool menu_screenshot_autocrop=false;
@@ -140,15 +141,19 @@ public:
 						if(requested && pdbid_buffer.data()[0]!=0)
 						{
 							const std::string pdbid_str(pdbid_buffer.data());
-							result="fetch ";
+							result="fetch-mmcif ";
 							result+=pdbid_str;
 							if(!menu_open_include_heteroatoms)
 							{
 								result+=" -no-heteroatoms ";
 							}
-							if(menu_open_split_pdb_files)
+							if(menu_open_split_by_models)
 							{
 								result+=" -all-states ";
+							}
+							if(menu_open_use_label_ids)
+							{
+								result+=" -use-label-ids ";
 							}
 						}
 
@@ -159,8 +164,12 @@ public:
 						}
 
 						{
-							ImGui::Checkbox("split PDB files by models##for_fetch", &menu_open_split_pdb_files);
-							menu_open_as_assembly=(menu_open_as_assembly && !menu_open_split_pdb_files);
+							ImGui::Checkbox("split by models##for_fetch", &menu_open_split_by_models);
+							menu_open_as_assembly=(menu_open_as_assembly && !menu_open_split_by_models);
+						}
+
+						{
+							ImGui::Checkbox("use mmCIF label (entity) IDs##for_fetch", &menu_open_use_label_ids);
 						}
 
 						ImGui::EndMenu();
@@ -183,12 +192,12 @@ public:
 
 						{
 							ImGui::Checkbox("load assemblies from PDB files##for_open", &menu_open_as_assembly);
-							menu_open_split_pdb_files=(menu_open_split_pdb_files && !menu_open_as_assembly);
+							menu_open_split_by_models=(menu_open_split_by_models && !menu_open_as_assembly);
 						}
 
 						{
-							ImGui::Checkbox("split PDB files by models##for_open", &menu_open_split_pdb_files);
-							menu_open_as_assembly=(menu_open_as_assembly && !menu_open_split_pdb_files);
+							ImGui::Checkbox("split by models##for_open", &menu_open_split_by_models);
+							menu_open_as_assembly=(menu_open_as_assembly && !menu_open_split_by_models);
 						}
 
 						ImGui::EndMenu();
@@ -378,7 +387,7 @@ public:
 							{
 								result+=" -as-assembly ";
 							}
-							if(menu_open_split_pdb_files)
+							if(menu_open_split_by_models)
 							{
 								result+=" -split-pdb-files ";
 							}
