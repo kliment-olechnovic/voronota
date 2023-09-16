@@ -11,6 +11,7 @@
 #include "operators/construct_or_load_quality_scores.h"
 #include "operators/convert_bff_obj_to_svg.h"
 #include "operators/export_atoms_to_mmcif.h"
+#include "operators/export_atoms_to_mmcif_multimodel.h"
 #include "operators/faspr.h"
 #include "operators/fetch.h"
 #include "operators/fetch_afdb.h"
@@ -65,6 +66,7 @@ public:
 
 		set_command_for_congregation_of_data_managers("congruence-score", operators::CongruenceScore());
 		set_command_for_congregation_of_data_managers("congruence-score-many", operators::CongruenceScoreMany());
+		set_command_for_congregation_of_data_managers("export-atoms-to-mmcif-multimodel", operators::ExportAtomsToMMCIFMultimodel());
 		set_command_for_congregation_of_data_managers("fetch", operators::Fetch(RemoteImportDownloaderSimple< RemoteImportRequest<scripting::operators::ImportMany> >::instance()));
 		set_command_for_congregation_of_data_managers("fetch-afdb", operators::FetchAFDB(RemoteImportDownloaderSimple< RemoteImportRequest<scripting::operators::ImportMany> >::instance()));
 		set_command_for_congregation_of_data_managers("fetch-mmcif", operators::FetchMMCIF(RemoteImportDownloaderSimple< RemoteImportRequest<operators::ImportMMCIF> >::instance()));
