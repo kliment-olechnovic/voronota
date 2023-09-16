@@ -208,7 +208,7 @@ private:
 						atom_record.resName,
 						atom_record.name,
 						atom_record.altLoc,
-						atom_record.iCode);
+						(use_label_ids ? std::string() : atom_record.iCode));
 
 				if(crad.valid())
 				{
