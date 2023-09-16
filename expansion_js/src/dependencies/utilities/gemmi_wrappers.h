@@ -48,7 +48,7 @@ std::vector<ModelRecord> read(const std::string& input);
 
 std::vector<ModelRecord> read(std::istream& input);
 
-//bool write_to_stream(const std::vector<ModelRecord>& model_records, std::ostream& output);
+bool write_to_stream(const std::vector<ModelRecord>& model_records, std::ostream& output);
 
 }
 

@@ -10,6 +10,7 @@
 #include "operators/construct_or_load_contacts.h"
 #include "operators/construct_or_load_quality_scores.h"
 #include "operators/convert_bff_obj_to_svg.h"
+#include "operators/export_atoms_to_mmcif.h"
 #include "operators/faspr.h"
 #include "operators/fetch.h"
 #include "operators/fetch_afdb.h"
@@ -52,6 +53,7 @@ public:
 
 		set_command_for_data_manager("construct-or-load-contacts", operators::ConstructOrLoadContacts(), true);
 		set_command_for_data_manager("construct-or-load-quality-scores", operators::ConstructOrLoadQualityScores(), true);
+		set_command_for_data_manager("export-atoms-to-mmcif", operators::ExportAtomsToMMCIF(), false);
 		set_command_for_data_manager("faspr", operators::FASPR(), true);
 		set_command_for_data_manager("plot-contacts-map", operators::PlotContactsMap(), true);
 		set_command_for_data_manager("run-bff", operators::RunBFF(), true);
