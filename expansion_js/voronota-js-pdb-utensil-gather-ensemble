@@ -154,9 +154,15 @@ fi
 
 CLUSTERSFILE="${CACHEDIR}/clusters-by-entity-${SEQIDENTITY}-$(date '+%Y-%m-%d').txt"
 
+echo >&2 "... Preparing the sequence-based clustering info"
+
+echo >&2 "...... Checking for clusters file '${CLUSTERSFILE}'"
+
 if [ ! -s "$CLUSTERSFILE" ]
 then
 	CLUSTERSURL="https://cdn.rcsb.org/resources/sequence/clusters/clusters-by-entity-${SEQIDENTITY}.txt"
+	
+	echo >&2 "...... Downloading clusters file from '${CLUSTERSURL}'"
 	
 	curl -s "$CLUSTERSURL" > "$CLUSTERSFILE"
 	
@@ -169,6 +175,8 @@ fi
 
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
+
+echo >&2 "...... Getting a cluster of entities that contains entity '${ENTITYID}'"
 
 cat "$CLUSTERSFILE" | egrep "^${ENTITYID}|\s${ENTITYID}" | head -1 | sed 's/\s\+/\n/g' | egrep '\S+' \
 | while read -r ANENTITYID
@@ -194,9 +202,17 @@ RAW_JOBID="$(cat ${TMPLDIR}/entities | head -1)__$(cat ${TMPLDIR}/entities | tai
 
 RAW_OUTPUTDIR="${OUTPUTDIR}/${RAW_JOBID}"
 
+echo >&2 "... Preparing the raw structural data"
+
+echo >&2 "...... Checking if the raw structural data is already prepared"
+
 ### {
-if [ ! -f "${RAW_OUTPUTDIR}/finished" ]
+if [ -f "${RAW_OUTPUTDIR}/finished" ]
 then
+	echo >&2 "...... Skipping the raw structural data preparation"
+else
+
+echo >&2 "...... Downloading sequences of entities from 'https://www.rcsb.org/fasta/entity/' to 'sequences.fasta'"
 
 curl -s "https://www.rcsb.org/fasta/entity/${LISTOFENTITIES}/download" > "${TMPLDIR}/sequences.fasta"
 
@@ -208,6 +224,8 @@ fi
 
 if [ "$NUMOFENTITIES" -gt "1" ]
 then
+	echo >&2 "...... Generating MSA using Clustal Omega and saving it to 'msa.fasta'"
+
 	clustalo -i "${TMPLDIR}/sequences.fasta" --wrap 9999999 > "${TMPLDIR}/msa.fasta"
 	
 	if [ ! -s "${TMPLDIR}/msa.fasta" ]
@@ -216,6 +234,8 @@ then
 		exit 1
 	fi
 else
+	echo >&2 "...... No MSA needed, moving 'sequences.fasta' to 'msa.fasta'"
+	
 	cp "${TMPLDIR}/sequences.fasta" "${TMPLDIR}/msa.fasta"
 fi
 
@@ -233,6 +253,8 @@ cd "$RAW_OUTPUTDIR"
 
 RAW_OUTPUTDIR="$(pwd)"
 
+echo >&2 "...... Writing a table of PDB IDs, entity chain IDs and sequences to 'pdbid_chain_sequence_table.tsv'"
+
 cat "./entities" \
 | while read -r EID
 do
@@ -244,6 +266,8 @@ done \
 
 mkdir -p "./struct_to_seq_alignments"
 mkdir -p "./structures"
+
+echo >&2 "...... Fetching structure files from PDB, renumbering the entity chains by sequences, saving structures"
 
 cat "./pdbid_chain_sequence_table.tsv" \
 | while read -r PDBID CHAINID MSASEQ
@@ -277,7 +301,7 @@ var alignment_file="./struct_to_seq_alignments/${objectname}_"+params.chain_id;
 voronota_set_chain_residue_numbers_by_sequence("-use "+selection+" -sequence-string '"+params.sequence_str+"' -keep-dashes -alignment-file '"+alignment_file+"' -only-equal-pairs "+params.strict);
 voronota_assert_full_success("Failed to align sequences and renumber");
 
-voronota_export_atoms_to_mmcif("-file", "./structures/${objectname}_"+params.chain_id);
+voronota_export_atoms_to_mmcif("-file", "./structures/${objectname}_"+params.chain_id+".cif");
 voronota_assert_full_success("Failed to output structure");
 EOF
 
@@ -285,6 +309,8 @@ EOF
 | voronota-js --no-setup-defaults
 
 done
+
+echo >&2 "...... Writing table with structure-to-sequence alignments to 'structure_sequence_table.tsv'"
 
 find ./struct_to_seq_alignments/ -type f | sort \
 | while read -r AFILE
@@ -305,6 +331,8 @@ mv "./structure_sequence_table_more.tsv" "./structure_sequence_table.tsv"
 
 rm -r "./struct_to_seq_alignments"
 
+echo >&2 "...... Creating the cluster raw processing finish file 'finished'"
+
 echo "yes" > "./finished"
 
 fi
@@ -320,9 +348,15 @@ cd ../
 
 REDUCED_OUTPUTDIR="$(pwd)/${REDUCED_JOBID}"
 
+echo >&2 "... Preparing the reduced structural data"
+
+echo >&2 "...... Checking if the reduced structural data is already prepared"
+
 ### {
-if [ ! -f "${REDUCED_OUTPUTDIR}/finished" ]
+if [ -f "${REDUCED_OUTPUTDIR}/finished" ]
 then
+	echo >&2 "...... Skipping the reduced structural data preparation"
+else
 
 mkdir -p "$REDUCED_OUTPUTDIR"
 
@@ -334,11 +368,13 @@ fi
 
 cd "$REDUCED_OUTPUTDIR"
 
-echo "$SIZECONDITION" > "./conditions"
+echo >&2 "...... Preparing the length loss-conditioned table of structure sequence info table 'conditioned_structure_sequence_table.tsv'"
 
 cat "${RAW_OUTPUTDIR}/structure_sequence_table.tsv" \
 | awk -v maxloss=${SIZECONDITION} '{if($4<=maxloss){print $0}}' \
 > "./conditioned_structure_sequence_table.tsv"
+
+echo >&2 "...... Saving unstable residue occurrencies to 'unstable_residue_numbers'"
 
 cat "./conditioned_structure_sequence_table.tsv" \
 | awk '{print $2}' | awk 'BEGIN {FS = ""} {for(i=1;i<=NF;i++){if($i=="-"){cols_with_dash[i]=1}}} END {for(col in cols_with_dash){printf col ","}}' \
@@ -349,6 +385,8 @@ RESIDUESTOREMOVE="$(cat ./unstable_residue_numbers | tr '\n' ',' | sed 's/,$//')
 
 mkdir -p "./structures_reduced"
 mkdir -p "./sequences_reduced"
+
+echo >&2 "...... Reducing structures to exclude unstable residue numbers, exporting resulting sequences with gaps"
 
 cat "./conditioned_structure_sequence_table.tsv" \
 | awk '{print $1}' \
@@ -366,7 +404,7 @@ cat << 'EOF'
 voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential -include-heteroatoms");
 voronota_assert_full_success("Failed to setup defaults");
 
-voronota_import_mmcif("-files", params.raw_data_dir+"/structures/"+params.struct_name);
+voronota_import_mmcif("-files", params.raw_data_dir+"/structures/"+params.struct_name+".cif");
 voronota_assert_full_success("Failed to import structure");
 
 if(params.residues_to_remove)
@@ -375,7 +413,7 @@ if(params.residues_to_remove)
 	voronota_assert_full_success("Failed to restrict atoms to stable residues");
 }
 
-voronota_export_atoms_to_mmcif("-file", "./structures_reduced/"+params.struct_name);
+voronota_export_atoms_to_mmcif("-file", "./structures_reduced/"+params.struct_name+".cif");
 voronota_assert_full_success("Failed to output structure");
 
 voronota_export_sequence("-file", "./sequences_reduced/"+params.struct_name, "-gap-filler", "dash");
@@ -387,6 +425,8 @@ EOF
 
 done
 
+echo >&2 "...... Preparing the reduced structure sequence info table 'structure_reduced_sequence_table.tsv'"
+
 find ./sequences_reduced/ -type f | sort \
 | while read -r SFILE
 do
@@ -397,7 +437,9 @@ done \
 
 rm -r "./sequences_reduced"
 
-mkdir -p "./structures_reduced_aligned"
+echo >&2 "...... Superposing reduced structured using qcprot, saving RMSD info and superposed structures"
+
+mkdir -p "./structures_reduced_superposed"
 
 {
 cat << EOF
@@ -407,8 +449,9 @@ EOF
 find ./structures_reduced/ -type f | sort \
 | while read -r STRUCTFILE
 do
+STRUCTFILEBASENAME="$(basename ${STRUCTFILE} .cif)"
 cat << EOF
-input_files_array.push("$STRUCTFILE");
+input_files_array.push({"path":"$STRUCTFILE", "title":"$STRUCTFILEBASENAME"});
 EOF
 done
 
@@ -418,8 +461,8 @@ voronota_assert_full_success("Failed to setup defaults");
 
 for(var i=0;i<input_files_array.length;i++)
 {
-	voronota_import_mmcif("-files", [input_files_array[i]]);
-	voronota_assert_full_success("Failed to import structure '"+input_files_array[i]+"'");
+	voronota_import_mmcif("-files", [input_files_array[i].path], "-title", input_files_array[i].title);
+	voronota_assert_full_success("Failed to import structure '"+input_files_array[i].path+"'");
 }
 
 voronota_pick_objects();
@@ -432,11 +475,14 @@ var representative_name=voronota_last_output().results[0].output.qcprot_results_
 voronota_qcprot_many("-target", representative_name, "-target-sel", "[]", "-model-sel", "[]", "-output-rmsd-file", "./rmsd_for_pairs_with_representive", "-verify-atom-ids");
 voronota_assert_full_success("Failed to compute optimal RMSD using qcprot for pairs with representive");
 
-voronota_export_atoms_to_mmcif("-file", "./structures_reduced_aligned/${objectname}");
+voronota_export_atoms_to_mmcif("-file", "./structures_reduced_superposed/${objectname}");
 voronota_assert_full_success("Failed to output structures");
 
-voronota_export_atoms_to_mmcif_multimodel("-file", "./structures_reduced_aligned_multimodel.cif", "-model-numbers");
-voronota_assert_full_success("Failed to output structures to multimodel mmCIF");
+voronota_export_atoms_to_mmcif_multimodel("-file", "./structures_reduced_superposed_multimodel_numbered.cif", "-model-numbers");
+voronota_assert_full_success("Failed to output structures to multimodel numbered mmCIF");
+
+voronota_export_atoms_to_mmcif_multimodel("-file", "./structures_reduced_superposed_multimodel_named.cif");
+voronota_assert_full_success("Failed to output structures to multimodel named mmCIF");
 EOF
 } \
 | voronota-js --no-setup-defaults
