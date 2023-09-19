@@ -437,6 +437,13 @@ done \
 
 rm -r "./sequences_reduced"
 
+
+echo >&2 "...... Preparing the reduced structure MSA file 'structure_reduced_msa.fasta'"
+
+cat "./structure_reduced_sequence_table.tsv" \
+| awk '{print ">" $1 "\n" $2}' \
+> "./structure_reduced_msa.fasta"
+
 echo >&2 "...... Superposing reduced structured using qcprot, saving RMSD info and superposed structures"
 
 mkdir -p "./structures_reduced_superposed"
