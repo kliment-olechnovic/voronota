@@ -521,6 +521,17 @@ fi
 echo >&2 "... Summarizing output"
 
 echo
+echo "Stats:"
+{
+echo "$(cat ${RAW_OUTPUTDIR}/structure_sequence_table.tsv | wc -l) - number_of_raw_structures"
+echo "$(cat ${REDUCED_OUTPUTDIR}/structure_reduced_sequence_table.tsv | wc -l) - number_of_reduced_structures"
+if [ -f "${REDUCED_OUTPUTDIR}/rmsd_for_all_pairs" ]
+then
+echo "$(cat ${REDUCED_OUTPUTDIR}/rmsd_for_all_pairs | head -1 | awk '{print $3}') - max_RMSD"
+fi
+} | column -t | tr '_' ' '
+
+echo
 echo "Base directories:"
 {
 echo "$CACHEDIR/ - cache"
@@ -577,7 +588,7 @@ command -v MotionTree &> /dev/null || { echo >&2 "Error: 'MotionTree' executable
 
 cd "${REDUCED_OUTPUTDIR}"
 
-mkdir -p "./mt/marked_structures"
+mkdir -p "./mt"
 cd "./mt"
 
 NDOMAINS=10
@@ -604,6 +615,8 @@ done
 echo >&2 "...... Using MT output to generate marked structures"
 
 cd "${REDUCED_OUTPUTDIR}"
+
+mkdir -p "./mt/marked_structures"
 
 {
 cat << EOF
@@ -641,7 +654,53 @@ EOF
 } \
 | voronota-js --no-setup-defaults
 
-echo "yes" > "./mt/finished"
+echo >&2 "...... Using MT output to generate morphs"
+
+mkdir -p "./mt/morphs"
+
+cd "./mt/morphs"
+
+MotionTree ../../structures_reduced_superposed_multimodel_named.cif ../../structure_reduced_msa.fasta -s 10 --tree 1 --nDomains "$NDOMAINS" -o ./morph > ../morphs.log
+
+rm ./tmp*
+
+{
+cat << EOF
+var input_files_array=[];
+EOF
+
+find ./ -type f -name 'morph*.cif' | sort \
+| while read -r STRUCTFILE
+do
+STRUCTFILEBASENAME="$(basename ${STRUCTFILE} .cif)"
+cat << EOF
+input_files_array.push({"path":"$STRUCTFILE", "title":"$STRUCTFILEBASENAME"});
+EOF
+done
+
+cat << 'EOF'
+voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential -include-heteroatoms");
+voronota_assert_full_success("Failed to setup defaults");
+
+for(var i=0;i<input_files_array.length;i++)
+{
+	voronota_import_mmcif("-files", [input_files_array[i].path], "-title", input_files_array[i].title+"_${model}");
+	voronota_assert_full_success("Failed to import structure '"+input_files_array[i].path+"'");
+}
+
+voronota_pick_objects();
+
+voronota_export_atoms("-as-pdb", "-file", "./${objectname}.pdb");
+voronota_assert_full_success("Failed to output structures");
+EOF
+} \
+| voronota-js --no-setup-defaults
+
+rm ./morph*.cif
+
+cd ..
+
+echo "yes" > "./finished"
 
 fi
 
