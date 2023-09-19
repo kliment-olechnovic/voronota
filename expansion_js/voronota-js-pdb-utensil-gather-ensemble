@@ -49,6 +49,7 @@ SEQIDENTITY=""
 CACHEDIR=""
 OUTPUTDIR=""
 SIZECONDITION="80"
+RUNMT="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -76,6 +77,9 @@ do
 	--size-condition)
 		SIZECONDITION="$OPTARG"
 		shift
+		;;
+	--run-mt)
+		RUNMT="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -151,6 +155,10 @@ then
 	echo >&2 "Error: could not create cache directory '${CACHEDIR}'"
 	exit 1
 fi
+
+cd "$CACHEDIR"
+CACHEDIR="$(pwd)"
+cd - &> /dev/null
 
 CLUSTERSFILE="${CACHEDIR}/clusters-by-entity-${SEQIDENTITY}-$(date '+%Y-%m-%d').txt"
 
@@ -444,6 +452,12 @@ cat "./structure_reduced_sequence_table.tsv" \
 | awk '{print ">" $1 "\n" $2}' \
 > "./structure_reduced_msa.fasta"
 
+if [ "$(cat ./structure_reduced_sequence_table.tsv | wc -l)" -lt "2" ]
+then
+	echo >&2 "... Abandoning further operations because there is only one structure"
+	echo "yes" > "./finished"
+else
+
 echo >&2 "...... Superposing reduced structured using qcprot, saving RMSD info and superposed structures"
 
 mkdir -p "./structures_reduced_superposed"
@@ -474,6 +488,9 @@ for(var i=0;i<input_files_array.length;i++)
 
 voronota_pick_objects();
 
+voronota_set_chain_name("-chain-name", "A");
+voronota_assert_full_success("Failed to set chain name to 'A'");
+
 voronota_qcprot_many("-target-sel", "[]", "-model-sel", "[]", "-output-rmsd-file", "./rmsd_for_all_pairs", "-all-to-all", "-verify-atom-ids");
 voronota_assert_full_success("Failed to compute optimal RMSD using qcprot for all pairs");
 
@@ -497,9 +514,136 @@ EOF
 echo "yes" > "./finished"
 
 fi
+
+fi
 ### }
 
-echo "$REDUCED_OUTPUTDIR"
+echo >&2 "... Summarizing output"
+
+echo
+echo "Base directories:"
+{
+echo "$CACHEDIR/ - cache"
+echo "$(dirname ${RAW_OUTPUTDIR})/  - output"
+} | column -t
+
+echo
+echo "Raw structural data files:"
+echo "$(basename ${RAW_OUTPUTDIR})/                              -  root raw data directory"
+echo "$(basename ${RAW_OUTPUTDIR})/sequences.fasta               -  downloaded sequences"
+echo "$(basename ${RAW_OUTPUTDIR})/msa.fasta                     -  MSA from sequences"
+echo "$(basename ${RAW_OUTPUTDIR})/structure_sequence_table.tsv  -  summary table"
+echo "$(basename ${RAW_OUTPUTDIR})/structures/                   -  directory with renumbered structures"
+
+echo
+echo "Reduced structural data files:"
+echo "$(basename ${REDUCED_OUTPUTDIR})/                                                       -  root reduced data directory"
+echo "$(basename ${REDUCED_OUTPUTDIR})/unstable_residue_numbers                               -  removed unstable residue numbers"
+echo "$(basename ${REDUCED_OUTPUTDIR})/structure_reduced_sequence_table.tsv                   -  summary table"
+echo "$(basename ${REDUCED_OUTPUTDIR})/structure_reduced_msa.fasta                            -  MSA from sequences of reduced structures"
+
+if [ "$(cat ${REDUCED_OUTPUTDIR}/structure_reduced_sequence_table.tsv | wc -l)" -gt "1" ]
+then
+echo "$(basename ${REDUCED_OUTPUTDIR})/rmsd_for_all_pairs                                     -  RMSD for all pairs of reduced structures"
+echo "$(basename ${REDUCED_OUTPUTDIR})/structures_reduced_superposed/                         -  directory with reduced and superposed structures"
+echo "$(basename ${REDUCED_OUTPUTDIR})/structures_reduced_superposed_multimodel_named.cif     -  mmCIF file with string model IDs"
+echo "$(basename ${REDUCED_OUTPUTDIR})/structures_reduced_superposed_multimodel_numbered.cif  -  mmCIF file with integer model IDs"
+fi
+
+echo
+
+if [ "$RUNMT" == "true" ]
+then
+
+if [ "$(cat ${REDUCED_OUTPUTDIR}/structure_reduced_sequence_table.tsv | wc -l)" -lt "2" ]
+then
+	echo >&2 "... Not applying MT further operations because there is only one structure"
+	exit 0
+fi
+
+echo >&2 "... Applying MT"
+
+echo >&2 "...... Checking if MT was already applied"
+
+if [ -f "${REDUCED_OUTPUTDIR}/mt/finished" ]
+then
+	echo >&2 "...... Skipping MT application"
+	exit 0
+fi
+
+echo >&2 "...... Running MT"
+
+command -v MotionTree &> /dev/null || { echo >&2 "Error: 'MotionTree' executable not in binaries path"; exit 1; }
+
+cd "${REDUCED_OUTPUTDIR}"
+
+mkdir -p "./mt/marked_structures"
+cd "./mt"
+
+NDOMAINS=10
+for i in 1 2
+do
+	MotionTree ../structures_reduced_superposed_multimodel_named.cif ../structure_reduced_msa.fasta -s 0 --tree 1 --nDomains "$NDOMAINS" \
+	| egrep '^Rigid Block ' \
+	| sed 's/^Rigid\sBlock\s\(\S\+\)\s*\:\s*\(\S.\+\)Loss\s\(\S\+\)\s.*$/\2 \3/' \
+	| sed 's/\.\.\+//' \
+	| sed 's/^A//' \
+	| sed 's/ A/,/g' \
+	| awk '{print $1 " " $2}' \
+	| sort -n -k2,2 -r \
+	| awk -v iteration="$i" '{if(iteration==2 || $2>0.0){print substr("ABCDEFGHIJKLMNOPQRSTUVWXYZ",NR,1) " " $1 " " $2}}' \
+	> "./mt_domains.txt"
+	
+	NDOMAINS="$(cat ./mt_domains.txt | wc -l)"
+	if [ "$NDOMAINS" -lt "2" ]
+	then
+		NDOMAINS="2"
+	fi
+done
+
+echo >&2 "...... Using MT output to generate marked structures"
+
+cd "${REDUCED_OUTPUTDIR}"
+
+{
+cat << EOF
+var mt_results=[];
+EOF
+
+cat "./mt/mt_domains.txt" \
+| while read -r DNAME RNUMSEL LOSSVAL
+do
+cat << EOF
+mt_results.push({"dname":"$DNAME", "rnumsel":"$RNUMSEL"});
+EOF
+done
+
+cat << 'EOF'
+voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential -include-heteroatoms");
+voronota_assert_full_success("Failed to setup defaults");
+
+voronota_import_mmcif("-files", ["structures_reduced_superposed_multimodel_named.cif"], "-title", "${model}");
+
+voronota_pick_objects();
+
+voronota_set_chain_name("-chain-name", "A");
+voronota_assert_full_success("Failed to set chain name");
+
+for(var i=0;i<mt_results.length;i++)
+{
+	voronota_set_chain_name("-use", "[-rnum "+mt_results[i].rnumsel+"]", "-chain-name", mt_results[i].dname);
+	voronota_assert_full_success("Failed to set chain name");
+}
+
+voronota_export_atoms("-as-pdb", "-file", "./mt/marked_structures/${objectname}.pdb");
+voronota_assert_full_success("Failed to output structures");
+EOF
+} \
+| voronota-js --no-setup-defaults
+
+echo "yes" > "./mt/finished"
+
+fi
 
 exit 0
 
