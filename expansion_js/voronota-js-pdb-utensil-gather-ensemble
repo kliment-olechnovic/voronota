@@ -19,7 +19,7 @@ Standard output:
     
 Examples:
     
-    voronota-js-pdb-utensil-gather-ensemble --cache-dir ./cache --entity-id 2XI9_1 --seq-identity 90 --output-dir ./output
+    voronota-js-pdb-utensil-gather-ensemble --cache-dir ./cache --entity-id 5ITP_1 --seq-identity 90 --output-dir ./output
 
 EOF
 exit 1
@@ -571,6 +571,19 @@ echo "$(basename ${REDUCED_OUTPUTDIR})/structures_reduced_superposed_multimodel_
 fi
 
 echo
+echo "Commands to view raw structures:"
+echo "pymol ${RAW_OUTPUTDIR}/structures/*"
+echo "voronota-gl ${RAW_OUTPUTDIR}/structures/*"
+
+if [ -s "${REDUCED_OUTPUTDIR}/structures_reduced_superposed_multimodel_numbered.cif" ]
+then
+echo
+echo "Commands to view reduced superposed structures:"
+echo "pymol '${REDUCED_OUTPUTDIR}/structures_reduced_superposed_multimodel_numbered.cif'"
+echo "voronota-gl '${REDUCED_OUTPUTDIR}/structures_reduced_superposed_multimodel_numbered.cif'"
+fi
+
+echo
 
 if [ "$RUNMT" != "true" ]
 then
@@ -728,6 +741,8 @@ fi
 
 cd "${REDUCED_OUTPUTDIR}"
 
+echo >&2 "... Summarizing MT running results"
+
 echo
 echo "MT split summary:"
 cat "./mt/mt_domains.txt" | column -t
@@ -782,11 +797,63 @@ time -p (find ../marked_structures/ -type f | xargs -L 1 voronota-contacts --con
 time -p (find ../marked_structures/ -type f | xargs -L 1 voronota-js-fast-iface-contacts --input > /dev/null)
 } &> "./recorded_time_for_fast_mode"
 
+echo >&2 "...... Computing intra-domain CAD-score scores"
+
+{
+find ../marked_structures/ -type f | sort | while read -r TFILE
+do
+	find ../marked_structures/ -type f | sort | while read -r MFILE
+	do
+		if [ "$TFILE" != "$MFILE" ]
+		then
+			voronota-cadscore --cache-dir "./cachedir" -t "$TFILE" -m "$MFILE" --output-header --ignore-residue-names --contacts-query '--match-max-seq-sep 99999'
+		fi
+	done
+done
+} \
+| awk '{if(NR==1 || NR%2==0){print $0}}' \
+> "./cadscore_intra_domain"
+
+echo >&2 "...... Computing inter-domain CAD-score scores"
+
+{
+find ../marked_structures/ -type f | sort | while read -r TFILE
+do
+	find ../marked_structures/ -type f | sort | while read -r MFILE
+	do
+		if [ "$TFILE" != "$MFILE" ]
+		then
+			voronota-cadscore --cache-dir "./cachedir" -t "$TFILE" -m "$MFILE" --output-header --ignore-residue-names --contacts-query-inter-chain
+		fi
+	done
+done
+} \
+| awk '{if(NR==1 || NR%2==0){print $0}}' \
+> "./cadscore_inter_domain"
+
+rm -r "./cachedir"
+
+echo >&2 "...... Summarizing CAD-score scores"
+
+R --vanilla << 'EOF' &> /dev/null
+dt1=read.table("cadscore_intra_domain", header=TRUE, stringsAsFactors=FALSE);
+dt1$intra_domain_cadscore=dt1$score;
+dt2=read.table("cadscore_inter_domain", header=TRUE, stringsAsFactors=FALSE);
+dt2$inter_domain_cadscore=dt2$score;
+dt=merge(dt1, dt2, by=c("target_file", "model_file"));
+dt=dt[,c("target_file", "model_file", "intra_domain_cadscore", "inter_domain_cadscore")];
+png("intra_domain_vs_inter_domain_cadscore.png");
+plot(x=dt$intra_domain_cadscore, y=dt$inter_domain_cadscore, xlim=c(0,1), ylim=c(0,1), xlab="intra-domain CAD-score", ylab="inter-domain CAD-score", main="intra-domain vs inter-domain CAD-score");
+dev.off();
+EOF
+
 echo "yes" > "./finished"
 
 fi
 
 cd "${REDUCED_OUTPUTDIR}"
+
+echo >&2 "... Summarizing analysis after MT"
 
 echo
 echo "Slow mode time for inter-domain interface computation:"
@@ -795,6 +862,10 @@ cat "${REDUCED_OUTPUTDIR}/mt/analysis/recorded_time_for_slow_mode" | column -t
 echo
 echo "Fast mode time for inter-domain interface computation:"
 cat "${REDUCED_OUTPUTDIR}/mt/analysis/recorded_time_for_fast_mode" | column -t
+
+echo
+echo "Command to view intra-domain vs inter-domain CAD-score plot:"
+echo "display '${REDUCED_OUTPUTDIR}/mt/analysis/intra_domain_vs_inter_domain_cadscore.png'"
 
 echo
 
