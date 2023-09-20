@@ -131,6 +131,8 @@ public:
 				throw std::runtime_error(std::string("Failed to read any structural models from file '")+main_file+"'.");
 			}
 
+			int number_of_accepted_model_records=0;
+
 			for(std::size_t j=0;j<model_records.size() && j<static_cast<std::size_t>(max_models_per_file);j++)
 			{
 				gemmi_wrappers::ModelRecord& model_record=model_records[j];
@@ -139,23 +141,27 @@ public:
 					throw std::runtime_error(std::string("Failed to read structural model atom records from file '")+main_file+"'.");
 				}
 				const std::vector<scripting::Atom> atoms=collect_atoms_from_atom_records(model_record.atom_records);
-				if(atoms.empty())
+				if(!atoms.empty())
 				{
-					throw std::runtime_error(std::string("Failed to process atom records from file '")+main_file+"'.");
-				}
+					std::string title_to_use=title;
+					if(title_to_use.empty())
+					{
+						title_to_use=main_file_basename;
+					}
+					else
+					{
+						scripting::OperatorsUtilities::replace_all_marks_in_string(title_to_use, "file", main_file_basename);
+						scripting::OperatorsUtilities::replace_all_marks_in_string(title_to_use, "model", model_record.name);
+					}
 
-				std::string title_to_use=title;
-				if(title_to_use.empty())
-				{
-					title_to_use=main_file_basename;
+					collected_models.push_back(std::make_pair(title_to_use, atoms));
+					number_of_accepted_model_records++;
 				}
-				else
-				{
-					scripting::OperatorsUtilities::replace_all_marks_in_string(title_to_use, "file", main_file_basename);
-					scripting::OperatorsUtilities::replace_all_marks_in_string(title_to_use, "model", model_record.name);
-				}
+			}
 
-				collected_models.push_back(std::make_pair(title_to_use, atoms));
+			if(number_of_accepted_model_records==0)
+			{
+				throw std::runtime_error(std::string("Failed to accept any model records from file '")+main_file+"'.");
 			}
 		}
 
