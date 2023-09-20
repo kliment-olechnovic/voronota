@@ -50,6 +50,7 @@ CACHEDIR=""
 OUTPUTDIR=""
 SIZECONDITION="80"
 RUNMT="false"
+RUNANALYSISAFTERMT="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -80,6 +81,10 @@ do
 		;;
 	--run-mt)
 		RUNMT="true"
+		;;
+	--run-analysis-after-mt)
+		RUNMT="true"
+		RUNANALYSISAFTERMT="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -740,6 +745,56 @@ echo "$(basename ${REDUCED_OUTPUTDIR})/mt/                           -  root dat
 echo "$(basename ${REDUCED_OUTPUTDIR})/mt/mt_domains.txt             -  split info"
 echo "$(basename ${REDUCED_OUTPUTDIR})/mt/marked_structured/         -  directory with structures with domains marked by different chain IDs"
 echo "$(basename ${REDUCED_OUTPUTDIR})/mt/morphs/                    -  directory with structured of morph states"
+
+echo
+
+if [ "$RUNANALYSISAFTERMT" != "true" ]
+then
+	exit 0
+fi
+
+if [ "$(cat ${REDUCED_OUTPUTDIR}/structure_reduced_sequence_table.tsv | wc -l)" -lt "2" ]
+then
+	echo >&2 "... Not applying MT further operations because there is only one structure"
+	exit 0
+fi
+
+echo >&2 "... Running analysis after MT"
+
+echo >&2 "...... Checking if analysis after MT was already done"
+
+if [ -f "${REDUCED_OUTPUTDIR}/mt/analysis/finished" ]
+then
+	echo >&2 "...... Skipping analysis after MT"
+else
+
+echo >&2 "...... Recording inter-domain interface computation times"
+
+mkdir -p "${REDUCED_OUTPUTDIR}/mt/analysis"
+
+cd "${REDUCED_OUTPUTDIR}/mt/analysis"
+
+{
+time -p (find ../marked_structures/ -type f | xargs -L 1 voronota-contacts --contacts-query '--no-same-chain --no-solvent' --input > /dev/null)
+} &> "./recorded_time_for_slow_mode"
+
+{
+time -p (find ../marked_structures/ -type f | xargs -L 1 voronota-js-fast-iface-contacts --input > /dev/null)
+} &> "./recorded_time_for_fast_mode"
+
+echo "yes" > "./finished"
+
+fi
+
+cd "${REDUCED_OUTPUTDIR}"
+
+echo
+echo "Slow mode time for inter-domain interface computation:"
+cat "${REDUCED_OUTPUTDIR}/mt/analysis/recorded_time_for_slow_mode" | column -t
+
+echo
+echo "Fast mode time for inter-domain interface computation:"
+cat "${REDUCED_OUTPUTDIR}/mt/analysis/recorded_time_for_fast_mode" | column -t
 
 echo
 
