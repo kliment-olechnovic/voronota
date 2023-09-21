@@ -758,8 +758,13 @@ echo
 echo "MT output files:"
 echo "$(basename ${REDUCED_OUTPUTDIR})/mt/                           -  root data directory"
 echo "$(basename ${REDUCED_OUTPUTDIR})/mt/mt_domains.txt             -  split info"
-echo "$(basename ${REDUCED_OUTPUTDIR})/mt/marked_structured/         -  directory with structures with domains marked by different chain IDs"
+echo "$(basename ${REDUCED_OUTPUTDIR})/mt/marked_structures/         -  directory with structures with domains marked by different chain IDs"
 echo "$(basename ${REDUCED_OUTPUTDIR})/mt/morphs/                    -  directory with structured of morph states"
+
+echo
+echo "Commands to view raw structures:"
+echo "pymol ${REDUCED_OUTPUTDIR}/mt/marked_structures/*"
+echo "voronota-gl ${REDUCED_OUTPUTDIR}/mt/marked_structures/*"
 
 echo
 
