@@ -296,7 +296,6 @@ public:
 		if(no_serial)
 		{
 			v.serial=null_num();
-			v.altLoc.clear();
 		}
 		if(no_name)
 		{
@@ -330,6 +329,20 @@ public:
 			ChainResidueAtomDescriptor v;
 			v.resName=resName;
 			v.name=name;
+			return v;
+		}
+	}
+
+	ChainResidueAtomDescriptor without_alt_loc() const
+	{
+		if(altLoc.empty())
+		{
+			return (*this);
+		}
+		else
+		{
+			ChainResidueAtomDescriptor v=(*this);
+			v.altLoc.clear();
 			return v;
 		}
 	}

@@ -90,7 +90,7 @@ public:
 
 			for(std::size_t i=0;i<atoms.size();i++)
 			{
-				map_of_residues[atoms[i].crad.without_atom()].push_back(i);
+				map_of_residues[atoms[i].crad.without_atom().without_alt_loc()].push_back(i);
 			}
 
 			bundle.residues.reserve(map_of_residues.size());
