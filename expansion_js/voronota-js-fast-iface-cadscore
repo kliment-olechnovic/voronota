@@ -432,7 +432,7 @@ prepare_atoms=function(params, model_mod_params)
 			voronota_assert_full_success("Failed to set random seed");
 			voronota_set_chain_name("_shuffle");
 			voronota_assert_full_success("Failed to shuffle chains");
-			voronota_order_atoms_by_residue_id();
+			voronota_sort_atoms_by_residue_id();
 			voronota_assert_full_success("Failed reorder atoms by residue ids after shuffling chains");
 		}
 		

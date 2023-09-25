@@ -87,7 +87,6 @@
 #include "operators/mock.h"
 #include "operators/mock_voromqa_local_contacts.h"
 #include "operators/move_atoms.h"
-#include "operators/order_atoms_by_residue_id.h"
 #include "operators/pick_objects.h"
 #include "operators/print_atoms.h"
 #include "operators/print_contacts.h"
@@ -299,7 +298,6 @@ public:
 		set_command_for_data_manager("mark-contacts", operators::MarkContacts(), true);
 		set_command_for_data_manager("mock-voromqa-local-contacts", operators::MockVoroMQALocalContacts(), true);
 		set_command_for_data_manager("move-atoms", operators::MoveAtoms(), true);
-		set_command_for_data_manager("order-atoms-by-residue-id", operators::OrderAtomsByResidueID(), true);
 		set_command_for_data_manager("print-atoms", operators::PrintAtoms(), true);
 		set_command_for_data_manager("print-contacts", operators::PrintContacts(), true);
 		set_command_for_data_manager("print-figures", operators::PrintFigures(), true);

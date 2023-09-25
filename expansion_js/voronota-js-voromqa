@@ -435,7 +435,7 @@ if(params.guess_chain_names==="true")
 
 if(params.order_by_residue_id==="true")
 {
-	voronota_order_atoms_by_residue_id();
+	voronota_sort_atoms_by_residue_id();
 	voronota_assert_full_success("Failed to order atoms by residue ids");
 }
 
