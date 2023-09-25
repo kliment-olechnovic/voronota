@@ -23,8 +23,20 @@ public:
 		int triples_common;
 		int quadruples_total;
 		int quadruples_common;
+		int expanded_pairs_total;
+		int expanded_pairs_common;
+		int pairs_common_in_expanded_pairs_common;
 
-		Result() : pairs_total(0), pairs_common(0), triples_total(0), triples_common(0), quadruples_total(0), quadruples_common(0)
+		Result() :
+			pairs_total(0),
+			pairs_common(0),
+			triples_total(0),
+			triples_common(0),
+			quadruples_total(0),
+			quadruples_common(0),
+			expanded_pairs_total(0),
+			expanded_pairs_common(0),
+			pairs_common_in_expanded_pairs_common(0)
 		{
 		}
 
@@ -36,23 +48,29 @@ public:
 			heterostorage.variant_object.value("triples_common")=triples_common;
 			heterostorage.variant_object.value("quadruples_total")=quadruples_total;
 			heterostorage.variant_object.value("quadruples_common")=quadruples_common;
+			heterostorage.variant_object.value("expanded_pairs_total")=expanded_pairs_total;
+			heterostorage.variant_object.value("expanded_pairs_common")=expanded_pairs_common;
+			heterostorage.variant_object.value("pairs_common_in_expanded_pairs_common")=pairs_common_in_expanded_pairs_common;
 		}
 	};
 
 	CongregationOfDataManagers::ObjectQuery query;
+	double expansion;
 
-	CountCommonTessellationElements()
+	CountCommonTessellationElements() : expansion(1.0)
 	{
 	}
 
 	void initialize(CommandInput& input)
 	{
 		query=OperatorsUtilities::read_congregation_of_data_managers_object_query(input);
+		expansion=input.get_value_or_default<double>("expansion", 1.0);
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
 		OperatorsUtilities::document_read_congregation_of_data_managers_object_query(doc);
+		doc.set_option_decription(CDOD("expansion", CDOD::DATATYPE_FLOAT, "tangent sphere radius expansion", 1.0));
 	}
 
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
@@ -117,6 +135,39 @@ typedef std::unordered_map<apollota::Quadruple, std::set<int>, apollota::Quadrup
 			}
 		}
 
+
+		PairsMap expanded_pairs_map;
+
+		if(expansion>0.0)
+		{
+			for(std::size_t i=0;i<objects.size();i++)
+			{
+				const DataManager& data_manager=(*(objects[i]));
+				const std::vector<apollota::SimpleSphere>& balls=common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(data_manager.atoms());
+
+				const apollota::BoundingSpheresHierarchy bsh(balls, 3.5, 1);
+
+				const apollota::Triangulation::VerticesVector t_vertices=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(data_manager.triangulation_info().quadruples_map);
+
+				for(std::size_t j=0;j<t_vertices.size();j++)
+				{
+					const apollota::SimpleSphere& s=t_vertices[j].second;
+					const std::vector<std::size_t> near_ids=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, apollota::SimpleSphere(s, s.r+expansion));
+					for(std::size_t a=0;a<near_ids.size();a++)
+					{
+						for(std::size_t b=a+1;b<near_ids.size();b++)
+						{
+							const apollota::Pair p(near_ids[a], near_ids[b]);
+							if(p.get_min_max().second<data_manager.atoms().size())
+							{
+								expanded_pairs_map[p].insert(i);
+							}
+						}
+					}
+				}
+			}
+		}
+
 		Result result;
 
 		for(PairsMap::const_iterator it=pairs_map.begin();it!=pairs_map.end();++it)
@@ -143,6 +194,23 @@ typedef std::unordered_map<apollota::Quadruple, std::set<int>, apollota::Quadrup
 			if(it->second.size()==objects.size())
 			{
 				result.quadruples_common++;
+			}
+		}
+
+		for(PairsMap::const_iterator it=expanded_pairs_map.begin();it!=expanded_pairs_map.end();++it)
+		{
+			result.expanded_pairs_total++;
+			if(it->second.size()==objects.size())
+			{
+				result.expanded_pairs_common++;
+			}
+		}
+
+		for(PairsMap::const_iterator it=pairs_map.begin();it!=pairs_map.end();++it)
+		{
+			if(it->second.size()==objects.size() || expanded_pairs_map[it->first].size()==objects.size())
+			{
+				result.pairs_common_in_expanded_pairs_common++;
 			}
 		}
 
