@@ -24,6 +24,7 @@
 #include "operators/construct_contacts.h"
 #include "operators/construct_triangulation.h"
 #include "operators/copy_object.h"
+#include "operators/count_common_tessellation_elements.h"
 #include "operators/delete_adjuncts_of_atoms.h"
 #include "operators/delete_adjuncts_of_contacts.h"
 #include "operators/delete_figures.h"
@@ -231,6 +232,7 @@ public:
 		set_command_for_congregation_of_data_managers("export-objects", operators::ExportObjects());
 		set_command_for_congregation_of_data_managers("import-objects", operators::ImportObjects());
 		set_command_for_congregation_of_data_managers("ensure-exactly-matching-atom-ids-in-objects", operators::EnsureExactlyMatchingAtomIDsInObjects());
+		set_command_for_congregation_of_data_managers("count-common-tessellation-elements", operators::CountCommonTessellationElements());
 
 		set_command_for_data_manager("add-figure", operators::AddFigure(), true);
 		set_command_for_data_manager("add-figures-of-labels", operators::AddFiguresOfLabels(), true);
