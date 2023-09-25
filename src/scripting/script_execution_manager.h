@@ -40,6 +40,7 @@
 #include "operators/distance.h"
 #include "operators/download_virtual_file.h"
 #include "operators/echo.h"
+#include "operators/ensure_exactly_matching_atom_ids_in_objects.h"
 #include "operators/estimate_axis.h"
 #include "operators/exit.h"
 #include "operators/explain_command.h"
@@ -229,6 +230,7 @@ public:
 		set_command_for_congregation_of_data_managers("export-global-adjuncts", operators::ExportGlobalAdjuncts());
 		set_command_for_congregation_of_data_managers("export-objects", operators::ExportObjects());
 		set_command_for_congregation_of_data_managers("import-objects", operators::ImportObjects());
+		set_command_for_congregation_of_data_managers("ensure-exactly-matching-atom-ids-in-objects", operators::EnsureExactlyMatchingAtomIDsInObjects());
 
 		set_command_for_data_manager("add-figure", operators::AddFigure(), true);
 		set_command_for_data_manager("add-figures-of-labels", operators::AddFiguresOfLabels(), true);

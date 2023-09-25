@@ -213,7 +213,7 @@ private:
 						(use_label_ids ? atom_record.label_resSeq : atom_record.auth_resSeq),
 						atom_record.resName,
 						atom_record.name,
-						atom_record.altLoc,
+						std::string(),
 						(use_label_ids ? std::string() : atom_record.iCode));
 
 				if(crad.valid())
