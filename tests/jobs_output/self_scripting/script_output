@@ -1040,6 +1040,9 @@
             "name":"echo",
             "short_description":""},
           {
+            "name":"ensure-exactly-matching-atom-ids-in-objects",
+            "short_description":""},
+          {
             "name":"estimate-axis",
             "short_description":""},
           {
