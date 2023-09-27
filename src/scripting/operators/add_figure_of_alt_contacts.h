@@ -1,0 +1,127 @@
+#ifndef SCRIPTING_OPERATORS_ADD_FIGURE_OF_ALT_CONTACTS_H_
+#define SCRIPTING_OPERATORS_ADD_FIGURE_OF_ALT_CONTACTS_H_
+
+#include "../operators_common.h"
+
+namespace voronota
+{
+
+namespace scripting
+{
+
+namespace operators
+{
+
+class AddFigureOfAltContacts : public OperatorBase<AddFigureOfAltContacts>
+{
+public:
+	struct Result : public OperatorResultBase<Result>
+	{
+		double total_area;
+
+		Result() : total_area(0.0)
+		{
+		}
+
+		void store(HeterogeneousStorage& heterostorage) const
+		{
+			heterostorage.variant_object.value("total_area")=total_area;
+		}
+	};
+
+	std::vector<std::string> figure_name;
+
+	AddFigureOfAltContacts()
+	{
+	}
+
+	void initialize(CommandInput& input)
+	{
+		figure_name=input.get_value_vector<std::string>("figure-name");
+	}
+
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("figure-name", CDOD::DATATYPE_STRING_ARRAY, "figure name"));
+	}
+
+	Result run(DataManager& data_manager) const
+	{
+		data_manager.assert_atoms_availability();
+
+		std::vector<apollota::SimpleSphere> spheres;
+		spheres.reserve(data_manager.atoms().size());
+
+		for(std::size_t i=0;i<data_manager.atoms().size();i++)
+		{
+			const Atom& atom=data_manager.atoms()[i];
+			spheres.push_back(apollota::SimpleSphere(atom.value, atom.value.r+1.4));
+		}
+
+		apollota::BoundingSpheresHierarchy bsh(spheres, 3.0, 1);
+
+		std::vector< std::vector<std::size_t> > map_of_neighbors(spheres.size());
+
+		for(std::size_t i=0;i<spheres.size();i++)
+		{
+			const std::vector<std::size_t> collisions=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, spheres[i]);
+			for(std::size_t j=0;j<collisions.size();j++)
+			{
+				const std::size_t collision_id=collisions[j];
+				if(i!=collision_id)
+				{
+					map_of_neighbors[i].push_back(collision_id);
+				}
+			}
+		}
+
+		Result result;
+
+		Figure figure;
+		figure.name=LongName(figure_name);
+
+		for(std::size_t i=0;i<map_of_neighbors.size();i++)
+		{
+			for(std::size_t j=0;j<map_of_neighbors[i].size();j++)
+			{
+				const std::size_t a_id=i;
+				const std::size_t b_id=map_of_neighbors[i][j];
+				if(a_id<b_id)
+				{
+					const Atom& atom_a=data_manager.atoms()[a_id];
+					const Atom& atom_b=data_manager.atoms()[b_id];
+					if(atom_a.crad.chainID!=atom_b.crad.chainID)
+					{
+						const std::list<apollota::ConstrainedContactContour::Contour> contours=apollota::ConstrainedContactContour::construct_contact_contours_for_expanded_spheres_without_tessellation(spheres, a_id, b_id, map_of_neighbors[a_id], map_of_neighbors[b_id], 0.2, 5, false);
+						if(!contours.empty())
+						{
+							for(std::list<apollota::ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
+							{
+								const apollota::ConstrainedContactContour::ContourAreaDescriptor d=apollota::ConstrainedContactContour::construct_contour_area_descriptor(*contours_it, spheres[a_id], spheres[b_id], false);
+								const apollota::SimplePoint normal=apollota::sub_of_points<apollota::SimplePoint>(spheres[b_id], spheres[a_id]).unit();
+								for(std::size_t e=0;e<d.outline.size();e++)
+								{
+									const std::size_t e2=(((e+1)<d.outline.size()) ? (e+1) : 0);
+									result.total_area+=apollota::triangle_area(d.center, d.outline[e], d.outline[e2]);
+									figure.add_triangle(d.center, d.outline[e], d.outline[e2], normal);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		data_manager.add_figure(figure);
+
+		return result;
+	}
+};
+
+}
+
+}
+
+}
+
+#endif /* SCRIPTING_OPERATORS_ADD_FIGURE_OF_ALT_CONTACTS_H_ */

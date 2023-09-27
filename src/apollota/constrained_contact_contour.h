@@ -243,6 +243,173 @@ public:
 		return d;
 	}
 
+	static std::list<Contour> construct_contact_contours_for_expanded_spheres_without_tessellation(
+			const std::vector<SimpleSphere>& spheres,
+			const std::size_t a_id,
+			const std::size_t b_id,
+			const std::vector<std::size_t>& a_neighbor_ids,
+			const std::vector<std::size_t>& b_neighbor_ids,
+			const double step,
+			const int projections,
+			const bool simplify)
+	{
+		std::list<Contour> result;
+		if(a_id<spheres.size() && b_id<spheres.size())
+		{
+			const SimpleSphere& a=spheres[a_id];
+			const SimpleSphere& b=spheres[b_id];
+			if(sphere_intersects_sphere(a, b))
+			{
+				const SimpleSphere ic_sphere=intersection_circle_of_two_spheres<SimpleSphere>(a, b);
+				if(ic_sphere.r>0.0)
+				{
+					std::set< std::pair<double, std::size_t> > neighbor_ids;
+					for(int j=0;j<2;j++)
+					{
+						const std::vector<std::size_t>& j_neighbor_ids=(j==0 ? a_neighbor_ids : b_neighbor_ids);
+						for(std::size_t i=0;i<j_neighbor_ids.size();i++)
+						{
+							const std::size_t neighbor_id=j_neighbor_ids[i];
+							if(neighbor_id<spheres.size() && neighbor_id!=a_id && neighbor_id!=b_id)
+							{
+								const SimpleSphere& c=spheres[neighbor_id];
+								const double dist_to_ic_sphere=minimal_distance_from_sphere_to_sphere(c, ic_sphere);
+								if(dist_to_ic_sphere<0.0)
+								{
+									neighbor_ids.insert(std::make_pair(dist_to_ic_sphere, neighbor_id));
+								}
+							}
+						}
+					}
+					{
+						const SimplePoint axis=sub_of_points<SimplePoint>(b, a).unit();
+						Contour initial_contour;
+						construct_circular_contour_from_base_and_axis(a_id, ic_sphere, axis, step, initial_contour);
+						if(!initial_contour.empty())
+						{
+							result.push_back(initial_contour);
+						}
+					}
+					if(!result.empty() && !neighbor_ids.empty())
+					{
+						for(std::set< std::pair<double, std::size_t> >::const_iterator it=neighbor_ids.begin();it!=neighbor_ids.end();++it)
+						{
+							const std::size_t c_id=it->second;
+							if(c_id<spheres.size())
+							{
+								const SimpleSphere& c=spheres[c_id];
+								std::list<Contour>::iterator jt=result.begin();
+								while(jt!=result.end())
+								{
+									Contour& contour=(*jt);
+									std::list<Contour> segments;
+									if(cut_and_split_contour(a, c, c_id, contour, segments))
+									{
+										if(!contour.empty())
+										{
+											mend_contour(a, b, c, c_id, step, projections, contour);
+											if(check_contour_intersects_sphere(ic_sphere, contour))
+											{
+												++jt;
+											}
+											else
+											{
+												jt=result.erase(jt);
+											}
+										}
+										else
+										{
+											if(!segments.empty())
+											{
+												for(std::list<Contour>::iterator st=segments.begin();st!=segments.end();++st)
+												{
+													mend_contour(a, b, c, c_id, step, projections, (*st));
+												}
+												filter_contours_intersecting_sphere(ic_sphere, segments);
+												if(!segments.empty())
+												{
+													result.splice(jt, segments);
+												}
+											}
+											jt=result.erase(jt);
+										}
+									}
+									else
+									{
+										++jt;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		if(simplify)
+		{
+			std::list<Contour> simplified_result;
+			for(std::list<Contour>::const_iterator it=result.begin();it!=result.end();++it)
+			{
+				Contour simplified_contour;
+				const Contour& contour=(*it);
+				for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
+				{
+					const PointRecord& pr=(*jt);
+					if(pr.left_id!=pr.right_id || pr.left_id==a_id)
+					{
+						simplified_contour.push_back(pr);
+					}
+				}
+				if(simplified_contour.size()>2)
+				{
+					simplified_result.push_back(simplified_contour);
+				}
+				else
+				{
+					simplified_result.push_back(contour);
+				}
+			}
+			if(!simplified_result.empty())
+			{
+				result.swap(simplified_result);
+			}
+		}
+
+		if(!result.empty() && a_id<spheres.size() && b_id<spheres.size())
+		{
+			const double tolerated_deviation=0.5;
+			bool strangely_extended=false;
+			for(std::list<Contour>::const_iterator it=result.begin();it!=result.end() && !strangely_extended;++it)
+			{
+				const Contour& contour=(*it);
+				for(Contour::const_iterator jt=contour.begin();jt!=contour.end() && !strangely_extended;++jt)
+				{
+					strangely_extended=strangely_extended || (minimal_distance_from_point_to_sphere(jt->p, spheres[a_id])>tolerated_deviation);
+					strangely_extended=strangely_extended || (minimal_distance_from_point_to_sphere(jt->p, spheres[b_id])>tolerated_deviation);
+				}
+			}
+			if(strangely_extended)
+			{
+				SimplePoint safe_center=(SimplePoint(spheres[a_id])+SimplePoint(spheres[b_id]))*0.5;
+				std::list<Contour> forcibly_shrunk_result=result;
+				for(std::list<Contour>::iterator it=forcibly_shrunk_result.begin();it!=forcibly_shrunk_result.end();++it)
+				{
+					Contour& contour=(*it);
+					for(Contour::iterator jt=contour.begin();jt!=contour.end();++jt)
+					{
+						if((minimal_distance_from_point_to_sphere(jt->p, spheres[a_id])>tolerated_deviation) || (minimal_distance_from_point_to_sphere(jt->p, spheres[b_id])>tolerated_deviation))
+						{
+							jt->p=safe_center+(((jt->p)-safe_center).unit()*std::min(spheres[a_id].r, spheres[b_id].r));
+						}
+					}
+				}
+				result.swap(forcibly_shrunk_result);
+			}
+		}
+
+		return result;
+	}
+
 private:
 	static std::set<std::size_t> collect_pair_neighbors_from_pair_vertices(
 			const std::size_t a_id,
