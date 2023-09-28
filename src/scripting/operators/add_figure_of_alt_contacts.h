@@ -21,8 +21,9 @@ public:
 	{
 		int total_count;
 		double total_area;
+		int total_complexity;
 
-		Result() : total_count(0), total_area(0.0)
+		Result() : total_count(0), total_area(0.0), total_complexity(0)
 		{
 		}
 
@@ -30,13 +31,15 @@ public:
 		{
 			heterostorage.variant_object.value("total_count")=total_count;
 			heterostorage.variant_object.value("total_area")=total_area;
+			heterostorage.variant_object.value("total_complexity")=total_complexity;
 		}
 	};
 
 	std::vector<std::string> figure_name;
 	bool radicalized;
+	bool all_inter_residue;
 
-	AddFigureOfAltContacts() : radicalized(false)
+	AddFigureOfAltContacts() : radicalized(false), all_inter_residue(false)
 	{
 	}
 
@@ -44,12 +47,14 @@ public:
 	{
 		figure_name=input.get_value_vector<std::string>("figure-name");
 		radicalized=input.get_flag("radicalized");
+		all_inter_residue=input.get_flag("all-inter-residue");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("figure-name", CDOD::DATATYPE_STRING_ARRAY, "figure name"));
 		doc.set_option_decription(CDOD("force", CDOD::DATATYPE_BOOL, "flag to use radicalized procedure"));
+		doc.set_option_decription(CDOD("all-inter-residue", CDOD::DATATYPE_BOOL, "flag construct all inter-residue contacts"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -97,7 +102,7 @@ public:
 				{
 					const Atom& atom_a=data_manager.atoms()[a_id];
 					const Atom& atom_b=data_manager.atoms()[b_id];
-					if(atom_a.crad.chainID!=atom_b.crad.chainID)
+					if(atom_a.crad.chainID!=atom_b.crad.chainID || (all_inter_residue && atom_a.crad.resSeq!=atom_b.crad.resSeq))
 					{
 						if(radicalized)
 						{
@@ -115,6 +120,7 @@ public:
 										result.total_area+=apollota::triangle_area(d.center, d.outline[e], d.outline[e2]);
 										figure.add_triangle(d.center, d.outline[e], d.outline[e2], normal);
 									}
+									result.total_complexity+=static_cast<int>(d.outline.size());
 								}
 							}
 						}
@@ -134,6 +140,7 @@ public:
 										result.total_area+=apollota::triangle_area(d.center, d.outline[e], d.outline[e2]);
 										figure.add_triangle(d.center, d.outline[e], d.outline[e2], normal);
 									}
+									result.total_complexity+=static_cast<int>(d.outline.size());
 								}
 							}
 						}
