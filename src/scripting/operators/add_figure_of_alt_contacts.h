@@ -3,6 +3,8 @@
 
 #include "../operators_common.h"
 
+#include "../../apollota/constrained_contact_contour_radicalized.h"
+
 namespace voronota
 {
 
@@ -17,32 +19,37 @@ class AddFigureOfAltContacts : public OperatorBase<AddFigureOfAltContacts>
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
+		int total_count;
 		double total_area;
 
-		Result() : total_area(0.0)
+		Result() : total_count(0), total_area(0.0)
 		{
 		}
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
+			heterostorage.variant_object.value("total_count")=total_count;
 			heterostorage.variant_object.value("total_area")=total_area;
 		}
 	};
 
 	std::vector<std::string> figure_name;
+	bool radicalized;
 
-	AddFigureOfAltContacts()
+	AddFigureOfAltContacts() : radicalized(false)
 	{
 	}
 
 	void initialize(CommandInput& input)
 	{
 		figure_name=input.get_value_vector<std::string>("figure-name");
+		radicalized=input.get_flag("radicalized");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("figure-name", CDOD::DATATYPE_STRING_ARRAY, "figure name"));
+		doc.set_option_decription(CDOD("force", CDOD::DATATYPE_BOOL, "flag to use radicalized procedure"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -92,18 +99,41 @@ public:
 					const Atom& atom_b=data_manager.atoms()[b_id];
 					if(atom_a.crad.chainID!=atom_b.crad.chainID)
 					{
-						const std::list<apollota::ConstrainedContactContour::Contour> contours=apollota::ConstrainedContactContour::construct_contact_contours_for_expanded_spheres_without_tessellation(spheres, a_id, b_id, map_of_neighbors[a_id], map_of_neighbors[b_id], 0.2, 5, false);
-						if(!contours.empty())
+						if(radicalized)
 						{
-							for(std::list<apollota::ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
+							const std::list<apollota::ConstrainedContactContourRadicalized::Contour> contours=apollota::ConstrainedContactContourRadicalized::construct_contact_contours_for_expanded_spheres_without_tessellation(spheres, a_id, b_id, map_of_neighbors[a_id], map_of_neighbors[b_id], 0.2);
+							if(!contours.empty())
 							{
-								const apollota::ConstrainedContactContour::ContourAreaDescriptor d=apollota::ConstrainedContactContour::construct_contour_area_descriptor(*contours_it, spheres[a_id], spheres[b_id], false);
-								const apollota::SimplePoint normal=apollota::sub_of_points<apollota::SimplePoint>(spheres[b_id], spheres[a_id]).unit();
-								for(std::size_t e=0;e<d.outline.size();e++)
+								result.total_count++;
+								for(std::list<apollota::ConstrainedContactContourRadicalized::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
 								{
-									const std::size_t e2=(((e+1)<d.outline.size()) ? (e+1) : 0);
-									result.total_area+=apollota::triangle_area(d.center, d.outline[e], d.outline[e2]);
-									figure.add_triangle(d.center, d.outline[e], d.outline[e2], normal);
+									const apollota::ConstrainedContactContourRadicalized::ContourAreaDescriptor d=apollota::ConstrainedContactContourRadicalized::construct_contour_area_descriptor(*contours_it);
+									const apollota::SimplePoint normal=apollota::sub_of_points<apollota::SimplePoint>(spheres[b_id], spheres[a_id]).unit();
+									for(std::size_t e=0;e<d.outline.size();e++)
+									{
+										const std::size_t e2=(((e+1)<d.outline.size()) ? (e+1) : 0);
+										result.total_area+=apollota::triangle_area(d.center, d.outline[e], d.outline[e2]);
+										figure.add_triangle(d.center, d.outline[e], d.outline[e2], normal);
+									}
+								}
+							}
+						}
+						else
+						{
+							const std::list<apollota::ConstrainedContactContour::Contour> contours=apollota::ConstrainedContactContour::construct_contact_contours_for_expanded_spheres_without_tessellation(spheres, a_id, b_id, map_of_neighbors[a_id], map_of_neighbors[b_id], 0.2, 5, false);
+							if(!contours.empty())
+							{
+								result.total_count++;
+								for(std::list<apollota::ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
+								{
+									const apollota::ConstrainedContactContour::ContourAreaDescriptor d=apollota::ConstrainedContactContour::construct_contour_area_descriptor(*contours_it, spheres[a_id], spheres[b_id], false);
+									const apollota::SimplePoint normal=apollota::sub_of_points<apollota::SimplePoint>(spheres[b_id], spheres[a_id]).unit();
+									for(std::size_t e=0;e<d.outline.size();e++)
+									{
+										const std::size_t e2=(((e+1)<d.outline.size()) ? (e+1) : 0);
+										result.total_area+=apollota::triangle_area(d.center, d.outline[e], d.outline[e2]);
+										figure.add_triangle(d.center, d.outline[e], d.outline[e2], normal);
+									}
 								}
 							}
 						}
