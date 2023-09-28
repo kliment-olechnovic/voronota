@@ -68,10 +68,25 @@ double maximal_distance_from_point_to_sphere(const InputPointType& a, const Inpu
 	return (distance_from_point_to_point(a, b)+b.r);
 }
 
-template<typename InputSphereTypeA,typename InputSphereTypeB>
+template<typename InputSphereTypeA, typename InputSphereTypeB>
 double minimal_distance_from_sphere_to_sphere(const InputSphereTypeA& a, const InputSphereTypeB& b)
 {
 	return (distance_from_point_to_point(a, b)-a.r-b.r);
+}
+
+template<typename InputSphereTypeA, typename InputSphereTypeB, typename InputPointTypeA>
+double minimal_distance_from_sphere_to_oriented_circle(const InputSphereTypeA& sphere, const InputSphereTypeB& circle, const InputPointTypeA& circle_axis)
+{
+	const PODPoint circle_center_to_sphere_center=sub_of_points<PODPoint>(sphere, circle);
+	const PODPoint common_plane_vector=cross_product<PODPoint>(circle_center_to_sphere_center, circle_axis);
+	if(equal(squared_point_module(common_plane_vector), 0.0))
+	{
+		return (point_module(circle_center_to_sphere_center)-sphere.r);
+	}
+	const PODPoint circle_axis_ortho_vector=point_and_number_product<PODPoint>(unit_point<PODPoint>(cross_product<PODPoint>(common_plane_vector, circle_axis)), circle.r);
+	const double first_dist_from_circle_to_sphere_center=distance_from_point_to_point(sphere, sum_of_points<PODPoint>(circle, circle_axis_ortho_vector));
+	const double second_dist_from_circle_to_sphere_center=distance_from_point_to_point(sphere, sub_of_points<PODPoint>(circle, circle_axis_ortho_vector));
+	return (std::min(first_dist_from_circle_to_sphere_center, second_dist_from_circle_to_sphere_center)-sphere.r);
 }
 
 template<typename InputSphereTypeA, typename InputSphereTypeB>
