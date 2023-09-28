@@ -77,16 +77,15 @@ double minimal_distance_from_sphere_to_sphere(const InputSphereTypeA& a, const I
 template<typename InputSphereTypeA, typename InputSphereTypeB, typename InputPointTypeA>
 double minimal_distance_from_sphere_to_oriented_circle(const InputSphereTypeA& sphere, const InputSphereTypeB& circle, const InputPointTypeA& circle_axis)
 {
-	const PODPoint circle_center_to_sphere_center=sub_of_points<PODPoint>(sphere, circle);
-	const PODPoint common_plane_vector=cross_product<PODPoint>(circle_center_to_sphere_center, circle_axis);
-	if(equal(squared_point_module(common_plane_vector), 0.0))
+	const double signed_dist_from_sphere_center_to_circle_plane=signed_distance_from_point_to_plane(circle, circle_axis, sphere);
+	const PODPoint closest_point_on_circle_plane=sub_of_points<PODPoint>(sphere, point_and_number_product<PODPoint>(unit_point<PODPoint>(circle_axis), signed_dist_from_sphere_center_to_circle_plane));
+	const double distance_on_circle_plane=distance_from_point_to_point(circle, closest_point_on_circle_plane);
+	if(distance_on_circle_plane<circle.r)
 	{
-		return (point_module(circle_center_to_sphere_center)-sphere.r);
+		return (std::abs(signed_dist_from_sphere_center_to_circle_plane)-sphere.r);
 	}
-	const PODPoint circle_axis_ortho_vector=point_and_number_product<PODPoint>(unit_point<PODPoint>(cross_product<PODPoint>(common_plane_vector, circle_axis)), circle.r);
-	const double first_dist_from_circle_to_sphere_center=distance_from_point_to_point(sphere, sum_of_points<PODPoint>(circle, circle_axis_ortho_vector));
-	const double second_dist_from_circle_to_sphere_center=distance_from_point_to_point(sphere, sub_of_points<PODPoint>(circle, circle_axis_ortho_vector));
-	return (std::min(first_dist_from_circle_to_sphere_center, second_dist_from_circle_to_sphere_center)-sphere.r);
+	double distance_surplus=(circle.r-distance_on_circle_plane);
+	return (std::sqrt((signed_dist_from_sphere_center_to_circle_plane*signed_dist_from_sphere_center_to_circle_plane)+(distance_surplus*distance_surplus))-sphere.r);
 }
 
 template<typename InputSphereTypeA, typename InputSphereTypeB>
