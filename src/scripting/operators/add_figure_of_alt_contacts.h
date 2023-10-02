@@ -4,6 +4,7 @@
 #include "../operators_common.h"
 
 #include "../../apollota/constrained_contact_contour_radicalized.h"
+#include "../../apollota/constrained_contact_contour_radicalized_simplified.h"
 
 namespace voronota
 {
@@ -37,9 +38,10 @@ public:
 
 	std::vector<std::string> figure_name;
 	bool radicalized;
+	bool simplified;
 	bool all_inter_residue;
 
-	AddFigureOfAltContacts() : radicalized(false), all_inter_residue(false)
+	AddFigureOfAltContacts() : radicalized(false), simplified(false), all_inter_residue(false)
 	{
 	}
 
@@ -47,6 +49,7 @@ public:
 	{
 		figure_name=input.get_value_vector<std::string>("figure-name");
 		radicalized=input.get_flag("radicalized");
+		simplified=input.get_flag("simplified");
 		all_inter_residue=input.get_flag("all-inter-residue");
 	}
 
@@ -106,21 +109,41 @@ public:
 					{
 						if(radicalized)
 						{
-							const std::list<apollota::ConstrainedContactContourRadicalized::Contour> contours=apollota::ConstrainedContactContourRadicalized::construct_contact_contours_for_expanded_spheres_without_tessellation(spheres, a_id, b_id, map_of_neighbors[a_id], map_of_neighbors[b_id], 0.2);
-							if(!contours.empty())
+							if(simplified)
 							{
-								result.total_count++;
-								for(std::list<apollota::ConstrainedContactContourRadicalized::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
+								apollota::ConstrainedContactContourRadicalizedSimplified::Contour contour;
+								if(apollota::ConstrainedContactContourRadicalizedSimplified::construct_contact_contours_for_expanded_spheres_without_tessellation(spheres, a_id, b_id, map_of_neighbors[a_id], map_of_neighbors[b_id], 0.2, contour))
 								{
-									const apollota::ConstrainedContactContourRadicalized::ContourAreaDescriptor d=apollota::ConstrainedContactContourRadicalized::construct_contour_area_descriptor(*contours_it);
+									result.total_count++;
+									const apollota::SimplePoint center=apollota::ConstrainedContactContourRadicalizedSimplified::calc_contour_center(contour);
 									const apollota::SimplePoint normal=apollota::sub_of_points<apollota::SimplePoint>(spheres[b_id], spheres[a_id]).unit();
-									for(std::size_t e=0;e<d.outline.size();e++)
+									for(std::size_t e=0;e<contour.size();e++)
 									{
-										const std::size_t e2=(((e+1)<d.outline.size()) ? (e+1) : 0);
-										result.total_area+=apollota::triangle_area(d.center, d.outline[e], d.outline[e2]);
-										figure.add_triangle(d.center, d.outline[e], d.outline[e2], normal);
+										const std::size_t e2=(((e+1)<contour.size()) ? (e+1) : 0);
+										result.total_area+=apollota::triangle_area(center, contour[e].p, contour[e2].p);
+										figure.add_triangle(center, contour[e].p, contour[e2].p, normal);
 									}
-									result.total_complexity+=static_cast<int>(d.outline.size());
+									result.total_complexity+=static_cast<int>(contour.size());
+								}
+							}
+							else
+							{
+								const std::list<apollota::ConstrainedContactContourRadicalized::Contour> contours=apollota::ConstrainedContactContourRadicalized::construct_contact_contours_for_expanded_spheres_without_tessellation(spheres, a_id, b_id, map_of_neighbors[a_id], map_of_neighbors[b_id], 0.2);
+								if(!contours.empty())
+								{
+									result.total_count++;
+									for(std::list<apollota::ConstrainedContactContourRadicalized::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
+									{
+										const apollota::ConstrainedContactContourRadicalized::ContourAreaDescriptor d=apollota::ConstrainedContactContourRadicalized::construct_contour_area_descriptor(*contours_it);
+										const apollota::SimplePoint normal=apollota::sub_of_points<apollota::SimplePoint>(spheres[b_id], spheres[a_id]).unit();
+										for(std::size_t e=0;e<d.outline.size();e++)
+										{
+											const std::size_t e2=(((e+1)<d.outline.size()) ? (e+1) : 0);
+											result.total_area+=apollota::triangle_area(d.center, d.outline[e], d.outline[e2]);
+											figure.add_triangle(d.center, d.outline[e], d.outline[e2], normal);
+										}
+										result.total_complexity+=static_cast<int>(d.outline.size());
+									}
 								}
 							}
 						}
