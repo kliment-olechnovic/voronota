@@ -169,77 +169,86 @@ private:
 			const std::size_t c_id,
 			Contour& contour)
 	{
-		Contour::iterator it=contour.begin();
-		while(it!=contour.end())
+		if(contour.size()<3)
 		{
-			if(it->left_id==c_id && it->right_id==c_id)
+			return;
+		}
+
+		std::size_t i_start=0;
+		while(i_start<contour.size() && !(contour[i_start].left_id==c_id && contour[i_start].right_id==c_id))
+		{
+			i_start++;
+		}
+
+		if(i_start>=contour.size())
+		{
+			return;
+		}
+
+		std::size_t i_end=(contour.size()-1);
+		while(i_end>0 && !(contour[i_end].left_id==c_id && contour[i_end].right_id==c_id))
+		{
+			i_end--;
+		}
+
+		if(i_start==0 && i_end==(contour.size()-1))
+		{
+			i_end=0;
+			while((i_end+1)<contour.size() && contour[i_end+1].left_id==c_id && contour[i_end+1].right_id==c_id)
 			{
-				{
-					const Contour::iterator left_it=get_left_iterator(contour, it);
-					if(left_it->right_id!=c_id)
-					{
-						const SimplePoint& p0=it->p;
-						const SimplePoint& p1=left_it->p;
-						const double l=intersect_vector_with_radical_plane(p0, p1, a, c);
-						it=contour.insert(it, PointRecord(p0+((p1-p0).unit()*l), left_it->right_id, it->left_id));
-						++it;
-					}
-				}
-
-				{
-					const Contour::iterator right_it=get_right_iterator(contour, it);
-					if(right_it->left_id!=c_id)
-					{
-						const SimplePoint& p0=it->p;
-						const SimplePoint& p1=right_it->p;
-						const double l=intersect_vector_with_radical_plane(p0, p1, a, c);
-						it=contour.insert(right_it, PointRecord(p0+((p1-p0).unit()*l), it->right_id, right_it->left_id));
-						if(it==contour.begin())
-						{
-							contour.pop_back();
-							it=contour.end();
-						}
-						else
-						{
-							--it;
-						}
-					}
-				}
-
-				if(it!=contour.end())
-				{
-					it=contour.erase(it);
-				}
+				i_end++;
 			}
-			else
+
+			i_start=(contour.size()-1);
+			while(i_start>0 && contour[i_start-1].left_id==c_id && contour[i_start-1].right_id==c_id)
 			{
-				++it;
+				i_start--;
 			}
 		}
-	}
 
-	template<typename List, typename Iterator>
-	static Iterator get_left_iterator(List& container, const Iterator& iterator)
-	{
-		Iterator left_it=iterator;
-		if(left_it==container.begin())
+		if(i_start==i_end)
 		{
-			left_it=container.end();
+			contour.insert(contour.begin()+i_start, contour[i_start]);
+			i_end=i_start+1;
 		}
-		--left_it;
-		return left_it;
-	}
+		else if(i_start<i_end)
+		{
+			if(i_start+1<i_end)
+			{
+				contour.erase(contour.begin()+i_start+1, contour.begin()+i_end);
+			}
+			i_end=i_start+1;
+		}
+		else if(i_start>i_end)
+		{
+			if(i_start+1<contour.size())
+			{
+				contour.erase(contour.begin()+i_start+1, contour.end());
+			}
+			if(i_end>0)
+			{
+				contour.erase(contour.begin(), contour.begin()+i_end);
 
-	template<typename List, typename Iterator>
-	static Iterator get_right_iterator(List& container, const Iterator& iterator)
-	{
-		Iterator right_it=iterator;
-		++right_it;
-		if(right_it==container.end())
-		{
-			right_it=container.begin();
+			}
+			i_start=contour.size()-1;
+			i_end=0;
 		}
-		return right_it;
+
+		{
+			const std::size_t i_left=((i_start)>0 ? (i_start-1) : (contour.size()-1));
+			const SimplePoint& p0=contour[i_start].p;
+			const SimplePoint& p1=contour[i_left].p;
+			const double l=intersect_vector_with_radical_plane(p0, p1, a, c);
+			contour[i_start]=PointRecord(p0+((p1-p0).unit()*l), contour[i_left].right_id, contour[i_start].left_id);
+		}
+
+		{
+			const std::size_t i_right=((i_end+1)<contour.size() ? (i_end+1) : 0);
+			const SimplePoint& p0=contour[i_end].p;
+			const SimplePoint& p1=contour[i_right].p;
+			const double l=intersect_vector_with_radical_plane(p0, p1, a, c);
+			contour[i_end]=PointRecord(p0+((p1-p0).unit()*l), contour[i_end].right_id, contour[i_right].left_id);
+		}
 	}
 
 	static inline double intersect_vector_with_radical_plane(const SimplePoint& a, const SimplePoint& b, const SimpleSphere& s1, const SimpleSphere& s2)
