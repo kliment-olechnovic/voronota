@@ -615,35 +615,33 @@ mkdir -p "./mt"
 cd "./mt"
 
 NDOMAINS=10
-for i in 1 2
-do
-	MT ../structures_reduced_superposed_multimodel_named.cif ../structure_reduced_msa.fasta -s 0 --tree 1 --nDomains "$NDOMAINS" \
-	> "./split_${i}.log" \
-	2> "./split_${i}.err"
-	
-	cat "./split_${i}.log" \
-	| egrep '^Rigid Block ' \
-	| sed 's/^Rigid\sBlock\s\(\S\+\)\s*\:\s*\(\S.\+\)Loss\s\(\S\+\)\s.*$/\2 \3/' \
-	| sed 's/\.\.\+//' \
-	| sed 's/^A//' \
-	| sed 's/ A/,/g' \
-	| awk '{print $1 " " $2}' \
-	| sort -n -k2,2 -r \
-	| awk -v iteration="$i" '{if(iteration==2 || $2>0.0){print substr("ABCDEFGHIJKLMNOPQRSTUVWXYZ",NR,1) " " $1 " " $2}}' \
-	> "./mt_domains.txt"
-	
-	if [ ! -s "./mt_domains.txt" ]
-	then
-		echo >&2 "Error: MT did not produce domain splits in step ${i}, see $(pwd)/split_${i}.err"
-		exit 0
-	fi
-	
-	NDOMAINS="$(cat ./mt_domains.txt | wc -l)"
-	if [ "$NDOMAINS" -lt "2" ]
-	then
-		NDOMAINS="2"
-	fi
-done
+
+MT ../structures_reduced_superposed_multimodel_named.cif ../structure_reduced_msa.fasta -s 0 --tree 3 --nDomains \
+> "./split.log" \
+2> "./split.err"
+
+cat "./split.log" \
+| egrep '^Rigid Block ' \
+| sed 's/^Rigid\sBlock\s\(\S\+\)\s*\:\s*\(\S.\+\)Loss\s\(\S\+\)\s.*$/\2 \3/' \
+| sed 's/\.\.\+//' \
+| sed 's/^A//' \
+| sed 's/ A/,/g' \
+| awk '{print $1 " " $2}' \
+| sort -n -k2,2 -r \
+| awk -v iteration="$i" '{if(iteration==2 || $2>0.0){print substr("ABCDEFGHIJKLMNOPQRSTUVWXYZ",NR,1) " " $1 " " $2}}' \
+> "./mt_domains.txt"
+
+if [ ! -s "./mt_domains.txt" ]
+then
+	echo >&2 "Error: MT did not produce domain split, see $(pwd)/split.err"
+	exit 0
+fi
+
+NDOMAINS="$(cat ./mt_domains.txt | wc -l)"
+if [ "$NDOMAINS" -lt "2" ]
+then
+	NDOMAINS="2"
+fi
 
 echo >&2 "...... Using MT output to generate marked structures"
 
@@ -693,7 +691,7 @@ mkdir -p "./mt/morphs"
 
 cd "./mt/morphs"
 
-MT ../../structures_reduced_superposed_multimodel_named.cif ../../structure_reduced_msa.fasta -s 10 --tree 1 --nDomains "$NDOMAINS" -o ./morph \
+MT ../../structures_reduced_superposed_multimodel_named.cif ../../structure_reduced_msa.fasta -s 10 --tree 3 --nDomains "$NDOMAINS" -o ./morph \
 > ../morph.log \
 2> ../morph.err
 
@@ -750,7 +748,7 @@ cat "./mt/mt_domains.txt" | column -t
 echo
 echo "MT warnings summary:"
 {
-echo "$(cat ./mt/split_1.err ./mt/split_2.err | egrep . | wc -l) - lines_in_split.err"
+echo "$(cat ./mt/split.err | egrep . | wc -l) - lines_in_split.err"
 echo "$(cat ./mt/morph.err | egrep . | wc -l) - lines_in_morph.err"
 } | column -t | tr '_' ' '
 
