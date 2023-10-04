@@ -2,7 +2,7 @@
 #define APOLLOTA_CONSTRAINED_CONTACT_CONTOUR_RADICALIZED_SIMPLIFIED_H_
 
 #include <vector>
-#include <list>
+#include <algorithm>
 
 #include "basic_operations_on_spheres.h"
 #include "rotation.h"
@@ -62,7 +62,8 @@ public:
 				if(ic_sphere.r>0.0)
 				{
 					result_contour.clear();
-					std::set< std::pair<double, std::size_t> > neighbor_ids;
+					std::vector< std::pair<double, std::size_t> > neighbor_ids;
+					neighbor_ids.reserve(a_neighbor_ids.size()+b_neighbor_ids.size());
 					for(int j=0;j<2;j++)
 					{
 						const std::vector<std::size_t>& j_neighbor_ids=(j==0 ? a_neighbor_ids : b_neighbor_ids);
@@ -75,7 +76,7 @@ public:
 								const double dist_to_ic_sphere=minimal_distance_from_sphere_to_sphere(c, ic_sphere);
 								if(dist_to_ic_sphere<0.0)
 								{
-									neighbor_ids.insert(std::make_pair(dist_to_ic_sphere, neighbor_id));
+									neighbor_ids.push_back(std::make_pair(dist_to_ic_sphere, neighbor_id));
 								}
 							}
 						}
@@ -86,10 +87,11 @@ public:
 					}
 					if(!result_contour.empty() && !neighbor_ids.empty())
 					{
-						for(std::set< std::pair<double, std::size_t> >::const_iterator it=neighbor_ids.begin();it!=neighbor_ids.end() && !result_contour.empty();++it)
+						std::sort(neighbor_ids.begin(), neighbor_ids.end());
+						for(std::size_t i=0;i<neighbor_ids.size();i++)
 						{
-							const std::size_t c_id=it->second;
-							if(c_id<spheres.size())
+							const std::size_t c_id=neighbor_ids[i].second;
+							if((i==0 || c_id!=neighbor_ids[i-1].second) && c_id<spheres.size())
 							{
 								const SimpleSphere& c=spheres[c_id];
 								const SimplePoint ac_plane_center(intersection_circle_of_two_spheres<SimpleSphere>(a, c));
