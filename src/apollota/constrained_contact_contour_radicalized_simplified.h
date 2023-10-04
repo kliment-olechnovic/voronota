@@ -92,7 +92,9 @@ public:
 							if(c_id<spheres.size())
 							{
 								const SimpleSphere& c=spheres[c_id];
-								mark_and_cut_contour(a, c, c_id, result_contour);
+								const SimplePoint ac_plane_center(intersection_circle_of_two_spheres<SimpleSphere>(a, c));
+								const SimplePoint ac_plane_normal(sub_of_points<SimplePoint>(c, a).unit());
+								mark_and_cut_contour(ac_plane_center, ac_plane_normal, c_id, result_contour);
 							}
 						}
 					}
@@ -123,17 +125,17 @@ private:
 	}
 
 	static bool mark_and_cut_contour(
-			const SimpleSphere& a,
-			const SimpleSphere& c,
+			const SimplePoint& ac_plane_center,
+			const SimplePoint& ac_plane_normal,
 			const std::size_t c_id,
 			Contour& contour)
 	{
-		const std::size_t outsiders_count=mark_contour(a, c, c_id, contour);
+		const std::size_t outsiders_count=mark_contour(ac_plane_center, ac_plane_normal, c_id, contour);
 		if(outsiders_count>0)
 		{
 			if(outsiders_count<contour.size())
 			{
-				cut_contour(a, c, c_id, contour);
+				cut_contour(ac_plane_center, ac_plane_normal, c_id, contour);
 			}
 			else
 			{
@@ -145,15 +147,15 @@ private:
 	}
 
 	static std::size_t mark_contour(
-			const SimpleSphere& a,
-			const SimpleSphere& c,
+			const SimplePoint& ac_plane_center,
+			const SimplePoint& ac_plane_normal,
 			const std::size_t c_id,
 			Contour& contour)
 	{
 		std::size_t outsiders_count=0;
 		for(Contour::iterator it=contour.begin();it!=contour.end();++it)
 		{
-			if(halfspace_of_point_with_radical_plane(it->p, a, c)>0)
+			if(halfspace_of_point(ac_plane_center, ac_plane_normal, it->p)>0)
 			{
 				it->left_id=c_id;
 				it->right_id=c_id;
@@ -164,8 +166,8 @@ private:
 	}
 
 	static void cut_contour(
-			const SimpleSphere& a,
-			const SimpleSphere& c,
+			const SimplePoint& ac_plane_center,
+			const SimplePoint& ac_plane_normal,
 			const std::size_t c_id,
 			Contour& contour)
 	{
@@ -236,40 +238,13 @@ private:
 
 		{
 			const std::size_t i_left=((i_start)>0 ? (i_start-1) : (contour.size()-1));
-			const SimplePoint& p0=contour[i_start].p;
-			const SimplePoint& p1=contour[i_left].p;
-			const double l=intersect_vector_with_radical_plane(p0, p1, a, c);
-			contour[i_start]=PointRecord(p0+((p1-p0).unit()*l), contour[i_left].right_id, contour[i_start].left_id);
+			contour[i_start]=PointRecord(intersection_of_plane_and_segment<SimplePoint>(ac_plane_center, ac_plane_normal, contour[i_start].p, contour[i_left].p), contour[i_left].right_id, contour[i_start].left_id);
 		}
 
 		{
 			const std::size_t i_right=((i_end+1)<contour.size() ? (i_end+1) : 0);
-			const SimplePoint& p0=contour[i_end].p;
-			const SimplePoint& p1=contour[i_right].p;
-			const double l=intersect_vector_with_radical_plane(p0, p1, a, c);
-			contour[i_end]=PointRecord(p0+((p1-p0).unit()*l), contour[i_end].right_id, contour[i_right].left_id);
+			contour[i_end]=PointRecord(intersection_of_plane_and_segment<SimplePoint>(ac_plane_center, ac_plane_normal, contour[i_end].p, contour[i_right].p), contour[i_end].right_id, contour[i_right].left_id);
 		}
-	}
-
-	static inline double intersect_vector_with_radical_plane(const SimplePoint& a, const SimplePoint& b, const SimpleSphere& s1, const SimpleSphere& s2)
-	{
-		const SimpleSphere ic=intersection_circle_of_two_spheres<SimpleSphere>(s1, s2);
-		const SimplePoint plane_normal=sub_of_points<SimplePoint>(s2, s1).unit();
-		const double da=signed_distance_from_point_to_plane(ic, plane_normal, a);
-		const double db=signed_distance_from_point_to_plane(ic, plane_normal, b);
-		if(da*db>0.0)
-		{
-			return 0.0;
-		}
-		const double t=da/(da-db);
-		return (point_module(sub_of_points<PODPoint>(b, a))*t);
-	}
-
-	static int halfspace_of_point_with_radical_plane(const SimplePoint& x, const SimpleSphere& s1, const SimpleSphere& s2)
-	{
-		const SimpleSphere ic=intersection_circle_of_two_spheres<SimpleSphere>(s1, s2);
-		const PODPoint plane_normal=sub_of_points<PODPoint>(s2, s1);
-		return halfspace_of_point(ic, plane_normal, x);
 	}
 };
 
