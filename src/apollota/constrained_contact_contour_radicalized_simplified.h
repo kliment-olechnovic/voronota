@@ -63,21 +63,18 @@ public:
 				{
 					result_contour.clear();
 					std::vector< std::pair<double, std::size_t> > neighbor_ids;
-					neighbor_ids.reserve(a_neighbor_ids.size()+b_neighbor_ids.size());
-					for(int j=0;j<2;j++)
+					const std::vector<std::size_t>& j_neighbor_ids=(a_neighbor_ids.size()<b_neighbor_ids.size() ? a_neighbor_ids : b_neighbor_ids);
+					neighbor_ids.reserve(j_neighbor_ids.size());
+					for(std::size_t i=0;i<j_neighbor_ids.size();i++)
 					{
-						const std::vector<std::size_t>& j_neighbor_ids=(j==0 ? a_neighbor_ids : b_neighbor_ids);
-						for(std::size_t i=0;i<j_neighbor_ids.size();i++)
+						const std::size_t neighbor_id=j_neighbor_ids[i];
+						if(neighbor_id<spheres.size() && neighbor_id!=a_id && neighbor_id!=b_id)
 						{
-							const std::size_t neighbor_id=j_neighbor_ids[i];
-							if(neighbor_id<spheres.size() && neighbor_id!=a_id && neighbor_id!=b_id)
+							const SimpleSphere& c=spheres[neighbor_id];
+							const double dist_to_ic_sphere=minimal_distance_from_sphere_to_sphere(c, ic_sphere);
+							if(dist_to_ic_sphere<0.0)
 							{
-								const SimpleSphere& c=spheres[neighbor_id];
-								const double dist_to_ic_sphere=minimal_distance_from_sphere_to_sphere(c, ic_sphere);
-								if(dist_to_ic_sphere<0.0)
-								{
-									neighbor_ids.push_back(std::make_pair(dist_to_ic_sphere, neighbor_id));
-								}
+								neighbor_ids.push_back(std::make_pair(dist_to_ic_sphere, neighbor_id));
 							}
 						}
 					}
