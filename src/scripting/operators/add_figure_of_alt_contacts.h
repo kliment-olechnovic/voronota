@@ -23,8 +23,9 @@ public:
 		int total_count;
 		double total_area;
 		int total_complexity;
+		int total_collisions;
 
-		Result() : total_count(0), total_area(0.0), total_complexity(0)
+		Result() : total_count(0), total_area(0.0), total_complexity(0), total_collisions(0)
 		{
 		}
 
@@ -33,6 +34,7 @@ public:
 			heterostorage.variant_object.value("total_count")=total_count;
 			heterostorage.variant_object.value("total_area")=total_area;
 			heterostorage.variant_object.value("total_complexity")=total_complexity;
+			heterostorage.variant_object.value("total_collisions")=total_collisions;
 		}
 	};
 
@@ -40,8 +42,10 @@ public:
 	bool radicalized;
 	bool simplified;
 	bool all_inter_residue;
+	bool only_summarize;
+	bool only_count_collisions;
 
-	AddFigureOfAltContacts() : radicalized(false), simplified(false), all_inter_residue(false)
+	AddFigureOfAltContacts() : radicalized(false), simplified(false), all_inter_residue(false), only_summarize(false), only_count_collisions(false)
 	{
 	}
 
@@ -51,6 +55,8 @@ public:
 		radicalized=input.get_flag("radicalized");
 		simplified=input.get_flag("simplified");
 		all_inter_residue=input.get_flag("all-inter-residue");
+		only_summarize=input.get_flag("only-summarize");
+		only_count_collisions=input.get_flag("only-count-collisions");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -73,6 +79,8 @@ public:
 			spheres.push_back(apollota::SimpleSphere(atom.value, atom.value.r+1.4));
 		}
 
+		Result result;
+
 		apollota::BoundingSpheresHierarchy bsh(spheres, 3.0, 1);
 
 		std::vector< std::vector<std::size_t> > map_of_neighbors(spheres.size());
@@ -86,14 +94,21 @@ public:
 				if(i!=collision_id)
 				{
 					map_of_neighbors[i].push_back(collision_id);
+					result.total_collisions++;
 				}
 			}
 		}
 
-		Result result;
+		if(only_count_collisions)
+		{
+			return result;
+		}
 
 		Figure figure;
-		figure.name=LongName(figure_name);
+		if(!only_summarize)
+		{
+			figure.name=LongName(figure_name);
+		}
 
 		for(std::size_t i=0;i<map_of_neighbors.size();i++)
 		{
@@ -121,7 +136,10 @@ public:
 									{
 										const std::size_t e2=(((e+1)<contour.size()) ? (e+1) : 0);
 										result.total_area+=apollota::triangle_area(center, contour[e].p, contour[e2].p);
-										figure.add_triangle(center, contour[e].p, contour[e2].p, normal);
+										if(!only_summarize)
+										{
+											figure.add_triangle(center, contour[e].p, contour[e2].p, normal);
+										}
 									}
 									result.total_complexity+=static_cast<int>(contour.size());
 								}
@@ -140,7 +158,10 @@ public:
 										{
 											const std::size_t e2=(((e+1)<d.outline.size()) ? (e+1) : 0);
 											result.total_area+=apollota::triangle_area(d.center, d.outline[e], d.outline[e2]);
-											figure.add_triangle(d.center, d.outline[e], d.outline[e2], normal);
+											if(!only_summarize)
+											{
+												figure.add_triangle(d.center, d.outline[e], d.outline[e2], normal);
+											}
 										}
 										result.total_complexity+=static_cast<int>(d.outline.size());
 									}
@@ -161,7 +182,10 @@ public:
 									{
 										const std::size_t e2=(((e+1)<d.outline.size()) ? (e+1) : 0);
 										result.total_area+=apollota::triangle_area(d.center, d.outline[e], d.outline[e2]);
-										figure.add_triangle(d.center, d.outline[e], d.outline[e2], normal);
+										if(!only_summarize)
+										{
+											figure.add_triangle(d.center, d.outline[e], d.outline[e2], normal);
+										}
 									}
 									result.total_complexity+=static_cast<int>(d.outline.size());
 								}
@@ -172,7 +196,10 @@ public:
 			}
 		}
 
-		data_manager.add_figure(figure);
+		if(!only_summarize)
+		{
+			data_manager.add_figure(figure);
+		}
 
 		return result;
 	}
