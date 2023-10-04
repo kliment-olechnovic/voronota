@@ -64,6 +64,7 @@ public:
 					result_contour.clear();
 					std::vector< std::pair<double, std::size_t> > neighbor_ids;
 					const std::vector<std::size_t>& j_neighbor_ids=(a_neighbor_ids.size()<b_neighbor_ids.size() ? a_neighbor_ids : b_neighbor_ids);
+					const SimpleSphere& j_alt_sphere=(a_neighbor_ids.size()<b_neighbor_ids.size() ? b : a);
 					neighbor_ids.reserve(j_neighbor_ids.size());
 					for(std::size_t i=0;i<j_neighbor_ids.size();i++)
 					{
@@ -72,7 +73,7 @@ public:
 						{
 							const SimpleSphere& c=spheres[neighbor_id];
 							const double dist_to_ic_sphere=minimal_distance_from_sphere_to_sphere(c, ic_sphere);
-							if(dist_to_ic_sphere<0.0)
+							if(dist_to_ic_sphere<0.0 && sphere_intersects_sphere(j_alt_sphere, c))
 							{
 								neighbor_ids.push_back(std::make_pair(dist_to_ic_sphere, neighbor_id));
 							}
