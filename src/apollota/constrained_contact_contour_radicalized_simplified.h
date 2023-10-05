@@ -74,12 +74,9 @@ public:
 							if(neighbor_id<spheres.size() && neighbor_id!=a_id && neighbor_id!=b_id)
 							{
 								const SimpleSphere& c=spheres[neighbor_id];
-								const double dist_to_ic_sphere=minimal_distance_from_sphere_to_sphere(c, ic_sphere);
-								if(dist_to_ic_sphere<0.0 && sphere_intersects_sphere(j_alt_sphere, c))
+								if(sphere_intersects_sphere(ic_sphere, c) && sphere_intersects_sphere(j_alt_sphere, c))
 								{
-									NeighborDescriptor nd(dist_to_ic_sphere, neighbor_id);
-									nd.ac_plane_center=SimplePoint(intersection_circle_of_two_spheres<SimpleSphere>(a, c));
-									nd.ac_plane_normal=sub_of_points<SimplePoint>(c, a).unit();
+									NeighborDescriptor nd(neighbor_id, a, c);
 									const double cos_val=dot_product(unit_point<PODPoint>(sub_of_points<PODPoint>(ic_sphere, a)), unit_point<PODPoint>(sub_of_points<PODPoint>(nd.ac_plane_center, a)));
 									if(cos_val<1.0)
 									{
@@ -132,7 +129,7 @@ private:
 		SimplePoint ac_plane_center;
 		SimplePoint ac_plane_normal;
 
-		NeighborDescriptor(const double sort_value, const std::size_t c_id) : sort_value(sort_value), c_id(c_id)
+		NeighborDescriptor(const std::size_t c_id, const SimpleSphere& a, const SimpleSphere& c) : sort_value(0.0), c_id(c_id), ac_plane_center(intersection_circle_of_two_spheres<SimpleSphere>(a, c)), ac_plane_normal(sub_of_points<SimplePoint>(c, a).unit())
 		{
 		}
 
