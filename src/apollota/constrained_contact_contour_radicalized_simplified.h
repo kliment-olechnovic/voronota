@@ -61,40 +61,59 @@ public:
 				const SimpleSphere ic_sphere=intersection_circle_of_two_spheres<SimpleSphere>(a, b);
 				if(ic_sphere.r>0.0)
 				{
+					bool discarded=false;
 					result_contour.clear();
-					std::vector< std::pair<double, std::size_t> > neighbor_ids;
-					const std::vector<std::size_t>& j_neighbor_ids=(a_neighbor_ids.size()<b_neighbor_ids.size() ? a_neighbor_ids : b_neighbor_ids);
-					const SimpleSphere& j_alt_sphere=(a_neighbor_ids.size()<b_neighbor_ids.size() ? b : a);
-					neighbor_ids.reserve(j_neighbor_ids.size());
-					for(std::size_t i=0;i<j_neighbor_ids.size();i++)
+					std::vector<NeighborDescriptor> neighbor_descriptors;
 					{
-						const std::size_t neighbor_id=j_neighbor_ids[i];
-						if(neighbor_id<spheres.size() && neighbor_id!=a_id && neighbor_id!=b_id)
+						const std::vector<std::size_t>& j_neighbor_ids=(a_neighbor_ids.size()<b_neighbor_ids.size() ? a_neighbor_ids : b_neighbor_ids);
+						const SimpleSphere& j_alt_sphere=(a_neighbor_ids.size()<b_neighbor_ids.size() ? b : a);
+						neighbor_descriptors.reserve(j_neighbor_ids.size());
+						for(std::size_t i=0;i<j_neighbor_ids.size() && !discarded;i++)
 						{
-							const SimpleSphere& c=spheres[neighbor_id];
-							const double dist_to_ic_sphere=minimal_distance_from_sphere_to_sphere(c, ic_sphere);
-							if(dist_to_ic_sphere<0.0 && sphere_intersects_sphere(j_alt_sphere, c))
+							const std::size_t neighbor_id=j_neighbor_ids[i];
+							if(neighbor_id<spheres.size() && neighbor_id!=a_id && neighbor_id!=b_id)
 							{
-								neighbor_ids.push_back(std::make_pair(dist_to_ic_sphere, neighbor_id));
+								const SimpleSphere& c=spheres[neighbor_id];
+								const double dist_to_ic_sphere=minimal_distance_from_sphere_to_sphere(c, ic_sphere);
+								if(dist_to_ic_sphere<0.0 && sphere_intersects_sphere(j_alt_sphere, c))
+								{
+									NeighborDescriptor nd(dist_to_ic_sphere, neighbor_id);
+									nd.ac_plane_center=SimplePoint(intersection_circle_of_two_spheres<SimpleSphere>(a, c));
+									nd.ac_plane_normal=sub_of_points<SimplePoint>(c, a).unit();
+									const double cos_val=dot_product(unit_point<PODPoint>(sub_of_points<PODPoint>(ic_sphere, a)), unit_point<PODPoint>(sub_of_points<PODPoint>(nd.ac_plane_center, a)));
+									if(cos_val<1.0)
+									{
+										const double l=std::abs(signed_distance_from_point_to_plane(nd.ac_plane_center, nd.ac_plane_normal, ic_sphere));
+										const double xl=l/sqrt(1-(cos_val*cos_val));
+										const int hsi=halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, ic_sphere);
+										if(xl>=ic_sphere.r)
+										{
+											if(hsi>0)
+											{
+												discarded=true;
+											}
+										}
+										else
+										{
+											nd.sort_value=(hsi>0 ? (0.0-xl) : xl);
+											neighbor_descriptors.push_back(nd);
+										}
+									}
+								}
 							}
 						}
 					}
+					if(!discarded)
 					{
 						const SimplePoint axis=sub_of_points<SimplePoint>(b, a).unit();
 						construct_circular_contour_from_base_and_axis(a_id, ic_sphere, axis, step, result_contour);
-					}
-					if(!result_contour.empty() && !neighbor_ids.empty())
-					{
-						std::sort(neighbor_ids.begin(), neighbor_ids.end());
-						for(std::size_t i=0;i<neighbor_ids.size();i++)
+						if(!result_contour.empty() && !neighbor_descriptors.empty())
 						{
-							const std::size_t c_id=neighbor_ids[i].second;
-							if((i==0 || c_id!=neighbor_ids[i-1].second) && c_id<spheres.size())
+							std::sort(neighbor_descriptors.begin(), neighbor_descriptors.end());
+							for(std::size_t i=0;i<neighbor_descriptors.size();i++)
 							{
-								const SimpleSphere& c=spheres[c_id];
-								const SimplePoint ac_plane_center(intersection_circle_of_two_spheres<SimpleSphere>(a, c));
-								const SimplePoint ac_plane_normal(sub_of_points<SimplePoint>(c, a).unit());
-								mark_and_cut_contour(ac_plane_center, ac_plane_normal, c_id, result_contour);
+								const NeighborDescriptor& nd=neighbor_descriptors[i];
+								mark_and_cut_contour(nd.ac_plane_center, nd.ac_plane_normal, nd.c_id, result_contour);
 							}
 						}
 					}
@@ -106,6 +125,23 @@ public:
 	}
 
 private:
+	struct NeighborDescriptor
+	{
+		double sort_value;
+		std::size_t c_id;
+		SimplePoint ac_plane_center;
+		SimplePoint ac_plane_normal;
+
+		NeighborDescriptor(const double sort_value, const std::size_t c_id) : sort_value(sort_value), c_id(c_id)
+		{
+		}
+
+		bool operator<(const NeighborDescriptor& d) const
+		{
+			return (sort_value<d.sort_value || (sort_value==d.sort_value && c_id<d.c_id));
+		}
+	};
+
 	static void construct_circular_contour_from_base_and_axis(
 			const std::size_t a_id,
 			const SimpleSphere& base,
