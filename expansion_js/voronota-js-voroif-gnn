@@ -406,9 +406,9 @@ then
 	GNN_PACKAGE_FILES="${SCRIPTDIR}/voroif/gnn_packages/v1"
 fi
 
-if [ -z "$GNN_PACKAGE_FILES" ] || [ ! -d "$GNN_PACKAGE_FILES" ] || [ ! -s "$GNN_PACKAGE_FILES" ]
+if [ ! -e "$GNN_PACKAGE_FILES" ]
 then
-	echo >&2 "Error: no GNN package file or directory specified"
+	echo >&2 "Error: GNN package file or directory '${GNN_PACKAGE_FILES}' does not exist"
 	exit 1
 fi
 
