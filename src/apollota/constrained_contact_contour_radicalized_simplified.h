@@ -21,8 +21,9 @@ public:
 		SimplePoint p;
 		std::size_t left_id;
 		std::size_t right_id;
+		int indicator;
 
-		PointRecord(const SimplePoint& p, const std::size_t left_id, const std::size_t right_id) : p(p), left_id(left_id), right_id(right_id)
+		PointRecord(const SimplePoint& p, const std::size_t left_id, const std::size_t right_id) : p(p), left_id(left_id), right_id(right_id), indicator(0)
 		{
 		}
 	};
@@ -103,14 +104,28 @@ public:
 					if(!discarded)
 					{
 						const SimplePoint axis=sub_of_points<SimplePoint>(b, a).unit();
-						construct_circular_contour_from_base_and_axis(a_id, ic_sphere, axis, step, result_contour);
-						if(!result_contour.empty() && !neighbor_descriptors.empty())
+						if(neighbor_descriptors.empty())
 						{
-							std::sort(neighbor_descriptors.begin(), neighbor_descriptors.end());
-							for(std::size_t i=0;i<neighbor_descriptors.size();i++)
+							construct_circular_contour_from_base_and_axis(a_id, ic_sphere, axis, step, result_contour);
+						}
+						else
+						{
+							construct_fixed_circular_contour_from_base_and_axis(a_id, ic_sphere, axis, result_contour);
+							if(!result_contour.empty() && !neighbor_descriptors.empty())
 							{
-								const NeighborDescriptor& nd=neighbor_descriptors[i];
-								mark_and_cut_contour(nd.ac_plane_center, nd.ac_plane_normal, nd.c_id, result_contour);
+								std::sort(neighbor_descriptors.begin(), neighbor_descriptors.end());
+								for(std::size_t i=0;i<neighbor_descriptors.size();i++)
+								{
+									const NeighborDescriptor& nd=neighbor_descriptors[i];
+									mark_and_cut_contour(nd.ac_plane_center, nd.ac_plane_normal, nd.c_id, result_contour);
+								}
+							}
+							if(!result_contour.empty() && restrict_contour_to_circle(ic_sphere, a_id, result_contour))
+							{
+								if(!result_contour.empty())
+								{
+									add_circular_arc_points_to_contour_from_base_and_axis(a_id, ic_sphere, axis, step, result_contour);
+								}
 							}
 						}
 					}
@@ -149,6 +164,23 @@ private:
 		Rotation rotation(axis, 0);
 		const SimplePoint first_point=any_normal_of_vector<SimplePoint>(rotation.axis)*base.r;
 		const double angle_step=std::max(std::min(360*(step/(2*pi_value()*base.r)), 60.0), 5.0);
+		result.reserve(static_cast<int>(360.0/angle_step)+2);
+		result.push_back(PointRecord(sum_of_points<SimplePoint>(base, first_point), a_id, a_id));
+		for(rotation.angle=angle_step;rotation.angle<360;rotation.angle+=angle_step)
+		{
+			result.push_back(PointRecord(sum_of_points<SimplePoint>(base, rotation.rotate<SimplePoint>(first_point)), a_id, a_id));
+		}
+	}
+
+	static void construct_fixed_circular_contour_from_base_and_axis(
+			const std::size_t a_id,
+			const SimpleSphere& base,
+			const SimplePoint& axis,
+			Contour& result)
+	{
+		Rotation rotation(axis, 0);
+		const SimplePoint first_point=any_normal_of_vector<SimplePoint>(rotation.axis)*(base.r/cos(pi_value()/5.5));
+		const double angle_step=60.0;
 		result.reserve(static_cast<int>(360.0/angle_step)+2);
 		result.push_back(PointRecord(sum_of_points<SimplePoint>(base, first_point), a_id, a_id));
 		for(rotation.angle=angle_step;rotation.angle<360;rotation.angle+=angle_step)
@@ -278,6 +310,187 @@ private:
 			const std::size_t i_right=((i_end+1)<contour.size() ? (i_end+1) : 0);
 			contour[i_end]=PointRecord(intersection_of_plane_and_segment<SimplePoint>(ac_plane_center, ac_plane_normal, contour[i_end].p, contour[i_right].p), contour[i_end].right_id, contour[i_right].left_id);
 		}
+	}
+
+	static bool restrict_contour_to_circle(
+			const SimpleSphere& ic_sphere,
+			const std::size_t a_id,
+			Contour& contour)
+	{
+		std::size_t outsiders_count=0;
+		for(std::size_t i=0;i<contour.size();i++)
+		{
+			if(squared_distance_from_point_to_point(contour[i].p, ic_sphere)<=(ic_sphere.r*ic_sphere.r))
+			{
+				contour[i].indicator=0;
+			}
+			else
+			{
+				contour[i].indicator=1;
+				outsiders_count++;
+			}
+		}
+
+		if(outsiders_count>0)
+		{
+			std::size_t insertions_count=0;
+			std::size_t i=0;
+			while(i<contour.size())
+			{
+				PointRecord& pr1=contour[i];
+				PointRecord& pr2=contour[(i+1)<contour.size() ? (i+1) : 0];
+				if(pr1.indicator==1 || pr2.indicator==1)
+				{
+					if(pr1.indicator==1 && pr2.indicator==1)
+					{
+						SimplePoint mp;
+						if(project_point_inside_line(SimplePoint(ic_sphere), pr1.p, pr2.p, mp))
+						{
+							if(squared_distance_from_point_to_point(mp, ic_sphere)<=(ic_sphere.r*ic_sphere.r))
+							{
+								SimplePoint ip1;
+								SimplePoint ip2;
+								if(intersect_seqment_with_circle(ic_sphere, mp, pr1.p, ip1) && intersect_seqment_with_circle(ic_sphere, mp, pr2.p, ip2))
+								{
+									const std::size_t pr2_left_id=pr2.left_id;
+									contour.insert(((i+1)<contour.size() ? (contour.begin()+(i+1)) : contour.end()), 2, PointRecord(ip1, a_id, pr1.right_id));
+									contour[i+2]=PointRecord(ip2, pr2_left_id, a_id);
+									insertions_count+=2;
+									i+=2;
+								}
+							}
+						}
+					}
+					else
+					{
+						if(pr1.indicator==1 && pr2.indicator!=1)
+						{
+							SimplePoint ip;
+							if(intersect_seqment_with_circle(ic_sphere, pr2.p, pr1.p, ip))
+							{
+								contour.insert(((i+1)<contour.size() ? (contour.begin()+(i+1)) : contour.end()), PointRecord(ip, a_id, pr1.right_id));
+								insertions_count++;
+								i++;
+							}
+							else
+							{
+								pr2.left_id=a_id;
+								pr2.right_id=pr1.right_id;
+							}
+						}
+						else if(pr1.indicator!=1 && pr2.indicator==1)
+						{
+							SimplePoint ip;
+							if(intersect_seqment_with_circle(ic_sphere, pr1.p, pr2.p, ip))
+							{
+								contour.insert(((i+1)<contour.size() ? (contour.begin()+(i+1)) : contour.end()), PointRecord(ip, pr2.left_id, a_id));
+								insertions_count++;
+								i++;
+							}
+							else
+							{
+								pr1.left_id=pr2.left_id;
+								pr1.right_id=a_id;
+							}
+						}
+					}
+				}
+				i++;
+			}
+			if(insertions_count==0)
+			{
+				contour.clear();
+			}
+			else if(!contour.empty())
+			{
+				std::size_t i=(contour.size()-1);
+				while(i<contour.size())
+				{
+					if(contour[i].indicator==1)
+					{
+						contour.erase(contour.begin()+i);
+					}
+					i=(i>0 ? (i-1) : contour.size());
+				}
+				if(contour.size()<2)
+				{
+					contour.clear();
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+	static void add_circular_arc_points_to_contour_from_base_and_axis(
+			const std::size_t a_id,
+			const SimpleSphere& base,
+			const SimplePoint& axis,
+			const double step,
+			Contour& contour)
+	{
+		Rotation rotation(axis, 0);
+		const double angle_step=std::max(std::min(360*(step/(2*pi_value()*base.r)), 60.0), 5.0);
+		std::size_t i=0;
+		while(i<contour.size())
+		{
+			const PointRecord pr1=contour[i];
+			const PointRecord pr2=contour[(i+1)<contour.size() ? (i+1) : 0];
+			if(pr1.right_id==a_id && pr2.left_id==a_id)
+			{
+				const double angle_in_degrees=directed_angle(base, pr1.p, pr2.p, sum_of_points<SimplePoint>(base, axis))*(180.0/pi_value());
+				if(angle_in_degrees>angle_step)
+				{
+					std::size_t num_of_insertions=0;
+					for(rotation.angle=angle_step;rotation.angle<angle_in_degrees;rotation.angle+=angle_step)
+					{
+						num_of_insertions++;
+					}
+					SimplePoint first_v=sub_of_points<SimplePoint>(pr1.p, base);
+					contour.insert(((i+1)<contour.size() ? (contour.begin()+(i+1)) : contour.end()), num_of_insertions, pr1);
+					i++;
+					for(rotation.angle=angle_step;rotation.angle<angle_in_degrees;rotation.angle+=angle_step)
+					{
+						contour[i].p=sum_of_points<SimplePoint>(base, rotation.rotate<SimplePoint>(first_v));
+						contour[i].left_id=a_id;
+						contour[i].right_id=a_id;
+						i++;
+					}
+					i--;
+				}
+			}
+			i++;
+		}
+	}
+
+	static bool project_point_inside_line(const SimplePoint& o, const SimplePoint& a, const SimplePoint& b, SimplePoint& result)
+	{
+		const SimplePoint v=unit_point<SimplePoint>(sub_of_points<SimplePoint>(b, a));
+		const double l=dot_product(v, sub_of_points<SimplePoint>(o, a));
+		if(l>0.0 && (l*l)<=squared_distance_from_point_to_point(a, b))
+		{
+			result=sum_of_points<SimplePoint>(a, point_and_number_product<SimplePoint>(v, l));
+			return true;
+		}
+		return false;
+	}
+
+	static bool intersect_seqment_with_circle(const SimpleSphere& circle, const SimplePoint& p_in, const SimplePoint& p_out, SimplePoint& result)
+	{
+		const double dist_in_to_out=distance_from_point_to_point(p_in, p_out);
+		if(dist_in_to_out>0.0)
+		{
+			const SimplePoint v=point_and_number_product<SimplePoint>(sub_of_points<SimplePoint>(p_in, p_out), 1.0/dist_in_to_out);
+			const SimplePoint u=sub_of_points<SimplePoint>(circle, p_out);
+			const SimplePoint s=sum_of_points<SimplePoint>(p_out, point_and_number_product<SimplePoint>(v, dot_product(v, u)));
+			const double ll=(circle.r*circle.r)-squared_distance_from_point_to_point(circle, s);
+			if(ll>=0.0)
+			{
+				result=sum_of_points<SimplePoint>(s, point_and_number_product<SimplePoint>(v, 0.0-sqrt(ll)));
+				return true;
+			}
+		}
+		return false;
 	}
 };
 
