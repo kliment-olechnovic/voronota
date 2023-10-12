@@ -175,9 +175,9 @@ div#TOC > ul > li > ul > li ul { display: none; }
 </style>
 EOF
 
-echo "<h1>$(./voronota-js --version | head -1)</h1>" > $TMPLDIR/include_before_body.html
+DOCUMENTTITLE="$(./voronota-js --version | head -1)"
 
-pandoc $TMPLDIR/documentation.markdown -f markdown -t html --toc -H $TMPLDIR/include_in_header.html -B $TMPLDIR/include_before_body.html -s -o ./index.html
+pandoc $TMPLDIR/documentation.markdown -f markdown -t html --metadata title="$DOCUMENTTITLE" -M document-css=false --wrap=none --toc-depth 2 --toc -H $TMPLDIR/include_in_header.html -s -o ./index.html
 
 ################################################################################
 

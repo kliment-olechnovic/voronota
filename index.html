@@ -1,11 +1,19 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
-  <title></title>
-  <style type="text/css">code{white-space: pre;}</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Voronota version 1.27</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
   <style type="text/css">
   a { color: #0000CC; }
   td { padding-right: 1em; }
@@ -23,15 +31,17 @@
 </ul>
 
 <h2>Table of contents</h2>
-<div id="TOC">
+<nav id="TOC" role="doc-toc">
 <ul>
 <li><a href="#about-voronota">About Voronota</a></li>
-<li><a href="#about-voronota-expansions">About Voronota expansions</a><ul>
+<li><a href="#about-voronota-expansions">About Voronota expansions</a>
+<ul>
 <li><a href="#voronota-js">Voronota-JS</a></li>
 <li><a href="#voronota-gl">Voronota-GL</a></li>
 </ul></li>
 <li><a href="#getting-the-latest-version">Getting the latest version</a></li>
-<li><a href="#building-from-source-code">Building from source code</a><ul>
+<li><a href="#building-from-source-code">Building from source code</a>
+<ul>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#using-cmake">Using CMake</a></li>
 <li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
@@ -39,95 +49,36 @@
 <li><a href="#enabling-mpi">Enabling MPI</a></li>
 <li><a href="#tr1-usage-switch">TR1 usage switch</a></li>
 </ul></li>
-<li><a href="#basic-usage-example">Basic usage example</a><ul>
+<li><a href="#basic-usage-example">Basic usage example</a>
+<ul>
 <li><a href="#computing-voronoi-vertices">Computing Voronoi vertices</a></li>
 <li><a href="#computing-inter-atom-contacts">Computing inter-atom contacts</a></li>
 <li><a href="#computing-annotated-inter-atom-contacts">Computing annotated inter-atom contacts</a></li>
 <li><a href="#querying-annotated-inter-atom-contacts">Querying annotated inter-atom contacts</a></li>
 <li><a href="#getting-help-in-command-line">Getting help in command line</a></li>
 </ul></li>
-<li><a href="#command-reference">Command reference</a><ul>
+<li><a href="#command-reference">Command reference</a>
+<ul>
 <li><a href="#list-of-all-commands">List of all commands</a></li>
-<li><a href="#command-get-balls-from-atoms-file">Command 'get-balls-from-atoms-file'</a><ul>
-<li><a href="#command-line-arguments">Command line arguments:</a></li>
-<li><a href="#input-stream">Input stream:</a></li>
-<li><a href="#output-stream">Output stream:</a></li>
+<li><a href="#command-get-balls-from-atoms-file">Command ‘get-balls-from-atoms-file’</a></li>
+<li><a href="#command-calculate-vertices">Command ‘calculate-vertices’</a></li>
+<li><a href="#command-calculate-vertices-in-parallel">Command ‘calculate-vertices-in-parallel’</a></li>
+<li><a href="#command-calculate-contacts">Command ‘calculate-contacts’</a></li>
+<li><a href="#command-query-balls">Command ‘query-balls’</a></li>
+<li><a href="#command-query-contacts">Command ‘query-contacts’</a></li>
+<li><a href="#command-draw-contacts">Command ‘draw-contacts’</a></li>
+<li><a href="#command-score-contacts-energy">Command ‘score-contacts-energy’</a></li>
+<li><a href="#command-score-contacts-quality">Command ‘score-contacts-quality’</a></li>
+<li><a href="#command-score-contacts-potential">Command ‘score-contacts-potential’</a></li>
+<li><a href="#command-compare-contacts">Command ‘compare-contacts’</a></li>
+<li><a href="#command-write-balls-to-atoms-file">Command ‘write-balls-to-atoms-file’</a></li>
+<li><a href="#command-query-balls-clashes">Command ‘query-balls-clashes’</a></li>
+<li><a href="#command-run-script">Command ‘run-script’</a></li>
+<li><a href="#command-expand-descriptors">Command ‘expand-descriptors’</a></li>
 </ul></li>
-<li><a href="#command-calculate-vertices">Command 'calculate-vertices'</a><ul>
-<li><a href="#command-line-arguments-1">Command line arguments:</a></li>
-<li><a href="#input-stream-1">Input stream:</a></li>
-<li><a href="#output-stream-1">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-calculate-vertices-in-parallel">Command 'calculate-vertices-in-parallel'</a><ul>
-<li><a href="#command-line-arguments-2">Command line arguments:</a></li>
-<li><a href="#input-stream-2">Input stream:</a></li>
-<li><a href="#output-stream-2">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-calculate-contacts">Command 'calculate-contacts'</a><ul>
-<li><a href="#command-line-arguments-3">Command line arguments:</a></li>
-<li><a href="#input-stream-3">Input stream:</a></li>
-<li><a href="#output-stream-3">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-query-balls">Command 'query-balls'</a><ul>
-<li><a href="#command-line-arguments-4">Command line arguments:</a></li>
-<li><a href="#input-stream-4">Input stream:</a></li>
-<li><a href="#output-stream-4">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-query-contacts">Command 'query-contacts'</a><ul>
-<li><a href="#command-line-arguments-5">Command line arguments:</a></li>
-<li><a href="#input-stream-5">Input stream:</a></li>
-<li><a href="#output-stream-5">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-draw-contacts">Command 'draw-contacts'</a><ul>
-<li><a href="#command-line-arguments-6">Command line arguments:</a></li>
-<li><a href="#input-stream-6">Input stream:</a></li>
-<li><a href="#output-stream-6">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-score-contacts-energy">Command 'score-contacts-energy'</a><ul>
-<li><a href="#command-line-arguments-7">Command line arguments:</a></li>
-<li><a href="#input-stream-7">Input stream:</a></li>
-<li><a href="#output-stream-7">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-score-contacts-quality">Command 'score-contacts-quality'</a><ul>
-<li><a href="#command-line-arguments-8">Command line arguments:</a></li>
-<li><a href="#input-stream-8">Input stream:</a></li>
-<li><a href="#output-stream-8">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-score-contacts-potential">Command 'score-contacts-potential'</a><ul>
-<li><a href="#command-line-arguments-9">Command line arguments:</a></li>
-<li><a href="#input-stream-9">Input stream:</a></li>
-<li><a href="#output-stream-9">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-compare-contacts">Command 'compare-contacts'</a><ul>
-<li><a href="#command-line-arguments-10">Command line arguments:</a></li>
-<li><a href="#input-stream-10">Input stream:</a></li>
-<li><a href="#output-stream-10">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-write-balls-to-atoms-file">Command 'write-balls-to-atoms-file'</a><ul>
-<li><a href="#command-line-arguments-11">Command line arguments:</a></li>
-<li><a href="#input-stream-11">Input stream:</a></li>
-<li><a href="#output-stream-11">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-query-balls-clashes">Command 'query-balls-clashes'</a><ul>
-<li><a href="#command-line-arguments-12">Command line arguments:</a></li>
-<li><a href="#input-stream-12">Input stream:</a></li>
-<li><a href="#output-stream-12">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-run-script">Command 'run-script'</a><ul>
-<li><a href="#command-line-arguments-13">Command line arguments:</a></li>
-<li><a href="#input-stream-13">Input stream:</a></li>
-<li><a href="#output-stream-13">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-expand-descriptors">Command 'expand-descriptors'</a><ul>
-<li><a href="#command-line-arguments-14">Command line arguments:</a></li>
-<li><a href="#input-stream-14">Input stream:</a></li>
-<li><a href="#output-stream-14">Output stream:</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
-<li><a href="#voromqa-method-script">VoroMQA method script</a><ul>
-<li><a href="#full-list-of-options-for-the-voromqa-method-script">Full list of options for the VoroMQA method script</a></li>
-</ul></li>
+<li><a href="#wrapper-scripts">Wrapper scripts</a>
+<ul>
+<li><a href="#voromqa-method-script">VoroMQA method script</a></li>
 <li><a href="#cad-score-method-script">CAD-score method script</a></li>
 <li><a href="#contacts-calculation-convenience-script">Contacts calculation convenience script</a></li>
 <li><a href="#volumes-calculation-convenience-script">Volumes calculation convenience script</a></li>
@@ -135,7 +86,7 @@
 <li><a href="#membrane-fitting-script">Membrane fitting script</a></li>
 </ul></li>
 </ul>
-</div>
+</nav>
 <h1 id="about-voronota">About Voronota</h1>
 <p>The analysis of macromolecular structures often requires a comprehensive definition of atomic neighborhoods. Such a definition can be based on the Voronoi diagram of balls, where each ball represents an atom of some van der Waals radius. Voronota is a software tool for finding all the vertices of the Voronoi diagram of balls. Such vertices correspond to the centers of the empty tangent spheres defined by quadruples of balls. Voronota is especially suitable for processing three-dimensional structures of biological macromolecules such as proteins and RNA.</p>
 <p>Since version 1.2 Voronota also uses the Voronoi vertices to construct inter-atom contact surfaces and solvent accessible surfaces. Voronota provides tools to query contacts, generate contacts graphics, compare contacts and evaluate quality of protein structural models using contacts.</p>
@@ -145,58 +96,58 @@
 <p>The expansions need to be built separately in their subdirectories. Alternatively, they can be built by appending <code>-DEXPANSION_JS=ON</code> and <code>-DEXPANSION_GL=ON</code> to the CMake command call.</p>
 <p>The expansions have separate separate dedicated documentation pages.</p>
 <h2 id="voronota-js">Voronota-JS</h2>
-<p><a href="./expansion_js/index.html">Voronota-JS</a> expansion is located in the 'expansion_js' subdirectory of the Voronota package.</p>
+<p><a href="./expansion_js/index.html">Voronota-JS</a> expansion is located in the ‘expansion_js’ subdirectory of the Voronota package.</p>
 <p>Voronota-JS provides a way to write JavaScript scripts for the comprehensive analysis of macromolecular structures, including the Voronoi tesselation-based analysis. Currently, the Voronota-JS package contains several executables:</p>
 <ul>
-<li>&quot;voronota-js&quot; - core engine that executes JavaScript scripts.</li>
-<li>&quot;voronota-js-voromqa&quot; - wrapper to a voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).</li>
-<li>&quot;voronota-js-only-global-voromqa&quot; - wrapper to a voronota-js program for computing only global VoroMQA scores with fast caching.</li>
-<li>&quot;voronota-js-membrane-voromqa&quot; - wrapper to a voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.</li>
-<li>&quot;voronota-js-ifeatures-voromqa&quot; - wrapper to a voronota-js program for the computation of multiple VoroMQA-based features of protein-protein complexes.</li>
-<li>&quot;voronota-js-fast-iface-voromqa&quot; - wrapper to a voronota-js program for the very fast computation of the inter-chain interface VoroMQA energy.</li>
-<li>&quot;voronota-js-fast-iface-cadscore&quot; - wrapper to a voronota-js program for the very fast computation of the inter-chain interface CAD-score.</li>
-<li>&quot;voronota-js-fast-iface-cadscore-matrix&quot; - wrapper to a voronota-js program for the very fast computation of the inter-chain interface CAD-score matrix.</li>
-<li>&quot;voronota-js-fast-iface-data-graph&quot; - wrapper to a voronota-js program for the computation of interface graphs used by the VoroIF-GNN method.</li>
-<li>&quot;voronota-js-voroif-gnn&quot; - wrapper to a voronota-js program and GNN inference scripts that run the VoroIF-GNN method for scoring models of protein-protein complexes (developed for CASP15).</li>
-<li>&quot;voronota-js-ligand-cadscore&quot; - wrapper to a voronota-js program for the computation of protein-ligand variation of CAD-score (developed to analyze protein-ligand models from CASP15).</li>
+<li>“voronota-js” - core engine that executes JavaScript scripts.</li>
+<li>“voronota-js-voromqa” - wrapper to a voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).</li>
+<li>“voronota-js-only-global-voromqa” - wrapper to a voronota-js program for computing only global VoroMQA scores with fast caching.</li>
+<li>“voronota-js-membrane-voromqa” - wrapper to a voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.</li>
+<li>“voronota-js-ifeatures-voromqa” - wrapper to a voronota-js program for the computation of multiple VoroMQA-based features of protein-protein complexes.</li>
+<li>“voronota-js-fast-iface-voromqa” - wrapper to a voronota-js program for the very fast computation of the inter-chain interface VoroMQA energy.</li>
+<li>“voronota-js-fast-iface-cadscore” - wrapper to a voronota-js program for the very fast computation of the inter-chain interface CAD-score.</li>
+<li>“voronota-js-fast-iface-cadscore-matrix” - wrapper to a voronota-js program for the very fast computation of the inter-chain interface CAD-score matrix.</li>
+<li>“voronota-js-fast-iface-data-graph” - wrapper to a voronota-js program for the computation of interface graphs used by the VoroIF-GNN method.</li>
+<li>“voronota-js-voroif-gnn” - wrapper to a voronota-js program and GNN inference scripts that run the VoroIF-GNN method for scoring models of protein-protein complexes (developed for CASP15).</li>
+<li>“voronota-js-ligand-cadscore” - wrapper to a voronota-js program for the computation of protein-ligand variation of CAD-score (developed to analyze protein-ligand models from CASP15).</li>
 </ul>
 <h2 id="voronota-gl">Voronota-GL</h2>
-<p><a href="./expansion_gl/index.html">Voronota-GL</a> expansion is located in the 'expansion_gl' subdirectory of the Voronota package</p>
+<p><a href="./expansion_gl/index.html">Voronota-GL</a> expansion is located in the ‘expansion_gl’ subdirectory of the Voronota package</p>
 <p>Voronota-GL is a visual tool for the comprehensive interactive analysis of macromolecular structures, including the Voronoi tesselation-based analysis.</p>
 <h1 id="getting-the-latest-version">Getting the latest version</h1>
-<p>Download the latest archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases" class="uri">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
-<p>The archive contains ready-to-use statically compiled 'voronota' program for 64 bit Linux systems. This executable can be rebuilt from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>
-<p>On Ubuntu 18.04 and newer it is possible to install Voronota using 'apt' command:</p>
+<p>Download the latest archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
+<p>The archive contains ready-to-use statically compiled ‘voronota’ program for 64 bit Linux systems. This executable can be rebuilt from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>
+<p>On Ubuntu 18.04 and newer it is possible to install Voronota using ‘apt’ command:</p>
 <pre><code>sudo apt install voronota</code></pre>
 <p>On Windows 10 operating system the easiest way to run Voronota is to use Windows Subsystem for Linux (WSL).</p>
 <h1 id="building-from-source-code">Building from source code</h1>
 <h2 id="requirements">Requirements</h2>
 <p>Voronota has no required external dependencies, only a standard-compliant C++ compiler is needed to build it.</p>
 <h2 id="using-cmake">Using CMake</h2>
-<p>You can build using CMake for makefile generation. Starting in the directory containing &quot;CMakeLists.txt&quot; file, run the sequence of commands:</p>
+<p>You can build using CMake for makefile generation. Starting in the directory containing “CMakeLists.txt” file, run the sequence of commands:</p>
 <pre><code>cmake ./
 make</code></pre>
-<p>Alternatively, to keep files more organized, CMake can be run in a separate &quot;build&quot; directory:</p>
+<p>Alternatively, to keep files more organized, CMake can be run in a separate “build” directory:</p>
 <pre><code>mkdir build
 cd build
 cmake ../
 make
 cp ./voronota ../voronota</code></pre>
 <h2 id="using-c-compiler-directly">Using C++ compiler directly</h2>
-<p>For example, &quot;voronota&quot; executable can be built from the sources in &quot;src&quot; directory using GNU C++ compiler:</p>
+<p>For example, “voronota” executable can be built from the sources in “src” directory using GNU C++ compiler:</p>
 <pre><code>g++ -O3 -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <h2 id="enabling-openmp">Enabling OpenMP</h2>
-<p>To allow the usage of OpenMP when calling the &quot;calculate-vertices-in-parallel&quot; command, the &quot;-fopenmp&quot; flag needs to be set when building.</p>
-<p>When building using C++ compiler directly, just add &quot;-fopenmp&quot;:</p>
+<p>To allow the usage of OpenMP when calling the “calculate-vertices-in-parallel” command, the “-fopenmp” flag needs to be set when building.</p>
+<p>When building using C++ compiler directly, just add “-fopenmp”:</p>
 <pre><code>g++ -O3 -fopenmp -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <p>When using CMake, set the CMAKE_CXX_FLAGS variable:</p>
 <pre><code>cmake -DCMAKE_CXX_FLAGS=&quot;-fopenmp&quot; ./
 make</code></pre>
 <h2 id="enabling-mpi">Enabling MPI</h2>
-<p>To allow the usage of MPI when calling the &quot;calculate-vertices-in-parallel&quot; command, you can use mpic++ compiler wrapper and define &quot;ENABLE_MPI&quot; macro when buiding:</p>
+<p>To allow the usage of MPI when calling the “calculate-vertices-in-parallel” command, you can use mpic++ compiler wrapper and define “ENABLE_MPI” macro when buiding:</p>
 <pre><code>mpic++ -O3 -DENABLE_MPI -o voronota ./$(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <h2 id="tr1-usage-switch">TR1 usage switch</h2>
-<p>Voronota can be built with either modern C++ compilers or pre-C++11 compilers that support C++ Technical Report 1 (TR1) features. The voronota code has preprocessor-based checks to find out if C++ TR1 namespace is available and needs to be used. If compilation fails, it may mean that these checks failed. To troubleshoot this, try setting the value of the &quot;USE_TR1&quot; macro to 0 (to not use TR1 and to rely on C++11 standard) or 1 (to use TR1) when compiling, for example:</p>
+<p>Voronota can be built with either modern C++ compilers or pre-C++11 compilers that support C++ Technical Report 1 (TR1) features. The voronota code has preprocessor-based checks to find out if C++ TR1 namespace is available and needs to be used. If compilation fails, it may mean that these checks failed. To troubleshoot this, try setting the value of the “USE_TR1” macro to 0 (to not use TR1 and to rely on C++11 standard) or 1 (to use TR1) when compiling, for example:</p>
 <pre><code>g++ -O3 -DUSE_TR1=1 -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <p>or</p>
 <pre><code>g++ -O3 -std=c++11 -DUSE_TR1=0 -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
@@ -205,15 +156,15 @@ make</code></pre>
 <p>Here is a basic example of computing Voronoi vertices for a structure in a PDB file:</p>
 <pre><code>./voronota get-balls-from-atoms-file &lt; input.pdb &gt; balls.txt
 ./voronota calculate-vertices &lt; balls.txt &gt; vertices.txt</code></pre>
-<p>The first command reads a PDB file &quot;input.pdb&quot; and outputs a file &quot;balls.txt&quot; that contains balls corresponding to the atoms in &quot;input.pdb&quot; (by default, Voronota ignores all heteroatoms and all hydrogen atoms when reading PDB files: this behavior can be altered using command-line options). The second command reads &quot;balls.txt&quot; and outputs a file &quot;vertices.txt&quot; that contains a quadruples and empty tangent spheres that correspond to the vertices of the Voronoi diagram of the input balls. The formats of &quot;balls.txt&quot; and &quot;vertices.txt&quot; are described below.</p>
-<p>In &quot;balls.txt&quot; the line format is &quot;x y z r # comments&quot;. The first four values (x, y, z, r) are atomic ball coordinates and radius. Comments are not needed for further calculations, they are to assist human readers. For example, below is a part of some possible &quot;balls.txt&quot;:</p>
+<p>The first command reads a PDB file “input.pdb” and outputs a file “balls.txt” that contains balls corresponding to the atoms in “input.pdb” (by default, Voronota ignores all heteroatoms and all hydrogen atoms when reading PDB files: this behavior can be altered using command-line options). The second command reads “balls.txt” and outputs a file “vertices.txt” that contains a quadruples and empty tangent spheres that correspond to the vertices of the Voronoi diagram of the input balls. The formats of “balls.txt” and “vertices.txt” are described below.</p>
+<p>In “balls.txt” the line format is “x y z r # comments”. The first four values (x, y, z, r) are atomic ball coordinates and radius. Comments are not needed for further calculations, they are to assist human readers. For example, below is a part of some possible “balls.txt”:</p>
 <pre><code>28.888 9.409 52.301 1.7 # 1 A 2 SER N
 27.638 10.125 52.516 1.9 # 2 A 2 SER CA
 26.499 9.639 51.644 1.75 # 3 A 2 SER C
 26.606 8.656 50.915 1.49 # 4 A 2 SER O
 27.783 11.635 52.378 1.91 # 5 A 2 SER CB
 27.69 12.033 51.012 1.54 # 6 A 2 SER OG</code></pre>
-<p>In &quot;vertices.txt&quot; the line format is &quot;q1 q2 q3 q4 x y z r&quot;. The first four numbers (q1, q2, q3, q4) are numbers of atomic records in &quot;balls.txt&quot;, starting from 0. The remaining four values (x, y, z, r) are the coordinates and the radius of an empty tangent sphere of the quadruple of atoms. For example, below is a part of some possible &quot;vertices.txt&quot;:</p>
+<p>In “vertices.txt” the line format is “q1 q2 q3 q4 x y z r”. The first four numbers (q1, q2, q3, q4) are numbers of atomic records in “balls.txt”, starting from 0. The remaining four values (x, y, z, r) are the coordinates and the radius of an empty tangent sphere of the quadruple of atoms. For example, below is a part of some possible “vertices.txt”:</p>
 <pre><code>0 1 2 3 27.761 8.691 51.553 -0.169
 0 1 2 23 28.275 9.804 50.131 0.588
 0 1 3 1438 24.793 -3.225 60.761 14.047
@@ -221,9 +172,9 @@ make</code></pre>
 0 1 4 1453 30.018 10.901 55.386 1.908
 0 1 5 23 28.544 10.254 50.194 0.595</code></pre>
 <h2 id="computing-inter-atom-contacts">Computing inter-atom contacts</h2>
-<p>Taking the &quot;balls.txt&quot; file described in the previous section, here is a basic example of computing inter-atom contacts:</p>
+<p>Taking the “balls.txt” file described in the previous section, here is a basic example of computing inter-atom contacts:</p>
 <pre><code>./voronota calculate-contacts &lt; balls.txt &gt; contacts.txt</code></pre>
-<p>In &quot;contacts.txt&quot; file the line format is &quot;b1 b2 area&quot;. The first two numbers (b1 and b2) are numbers of atomic records in &quot;balls.txt&quot;, starting from 0. If b1 does not equal b2, then the 'area' value is the area of contact between atoms b1 and b2. If b1 equals b2, then the 'area' value is the solvent-accessible area of atom b1. For example, below is a part of some possible &quot;contacts.txt&quot;:</p>
+<p>In “contacts.txt” file the line format is “b1 b2 area”. The first two numbers (b1 and b2) are numbers of atomic records in “balls.txt”, starting from 0. If b1 does not equal b2, then the ‘area’ value is the area of contact between atoms b1 and b2. If b1 equals b2, then the ‘area’ value is the solvent-accessible area of atom b1. For example, below is a part of some possible “contacts.txt”:</p>
 <pre><code>0 0 35.440
 0 1 15.908
 0 2 0.167
@@ -249,7 +200,7 @@ make</code></pre>
 <p>Here is a basic example of computing annotated inter-atom contacts:</p>
 <pre><code>./voronota get-balls-from-atoms-file --annotated &lt; input.pdb &gt; annotated_balls.txt
 ./voronota calculate-contacts --annotated &lt; annotated_balls.txt &gt; annotated_contacts.txt</code></pre>
-<p>In &quot;annotated_contacts.txt&quot; the line format is &quot;annotation1 annotation2 area distance tags adjuncts [graphics]&quot;. The strings 'annotation1' and 'annotation2' describe contacting atoms, the 'area' value is the area of contact between the two atoms, the 'distance' value is the distance between the centers of the contacting atoms. If 'annotation2' contains string &quot;solvent&quot;, then the 'area' value is the solvent-accessible area of the atom described by 'annotation1'. The remaining part of the line is used by Voronota querying and drawing commands that are not covered in this section. Below is a part of some possible &quot;annotated_contacts.txt&quot; (with text fields aligned using &quot;column -t&quot; command):</p>
+<p>In “annotated_contacts.txt” the line format is “annotation1 annotation2 area distance tags adjuncts [graphics]”. The strings ‘annotation1’ and ‘annotation2’ describe contacting atoms, the ‘area’ value is the area of contact between the two atoms, the ‘distance’ value is the distance between the centers of the contacting atoms. If ‘annotation2’ contains string “solvent”, then the ‘area’ value is the solvent-accessible area of the atom described by ‘annotation1’. The remaining part of the line is used by Voronota querying and drawing commands that are not covered in this section. Below is a part of some possible “annotated_contacts.txt” (with text fields aligned using “column -t” command):</p>
 <pre><code>c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;        15.908  1.456  .  .
 c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;A&gt;r&lt;2&gt;a&lt;3&gt;R&lt;SER&gt;A&lt;C&gt;         0.167   2.488  .  .
 c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;A&gt;r&lt;2&gt;a&lt;4&gt;R&lt;SER&gt;A&lt;O&gt;         7.025   2.774  .  .
@@ -267,9 +218,9 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;  c&lt;A&gt;r&lt;2&gt;a&lt;
 c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;  c&lt;A&gt;r&lt;3&gt;a&lt;7&gt;R&lt;LYS&gt;A&lt;N&gt;         3.902   2.371  .  .
 c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;  c&lt;A&gt;r&lt;5&gt;a&lt;24&gt;R&lt;GLU&gt;A&lt;CB&gt;       0.081   4.954  .  .
 c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;  c&lt;solvent&gt;                     16.448  6.1    .  .</code></pre>
-<p>Each atomic descriptor in the above text can be transformed into a space-separated list (chainID resSeq iCode serial altLoc resName name) using &quot;voronota expand-descriptors&quot; command:</p>
+<p>Each atomic descriptor in the above text can be transformed into a space-separated list (chainID resSeq iCode serial altLoc resName name) using “voronota expand-descriptors” command:</p>
 <pre><code>cat annotated_contacts.txt | voronota expand-descriptors | column -t &gt; expanded_table_of_contacts.txt</code></pre>
-<p>Below is a part of some possible &quot;expanded_table_of_contacts.txt&quot;:</p>
+<p>Below is a part of some possible “expanded_table_of_contacts.txt”:</p>
 <pre><code>A  2  .  1  .  SER  N   A        2    .  2     .  SER  CA   15.908  1.456  .  .
 A  2  .  1  .  SER  N   A        2    .  3     .  SER  C    0.167   2.488  .  .
 A  2  .  1  .  SER  N   A        2    .  4     .  SER  O    7.025   2.774  .  .
@@ -288,14 +239,14 @@ A  2  .  2  .  SER  CA  A        3    .  7     .  LYS  N    3.902   2.371  .  .
 A  2  .  2  .  SER  CA  A        5    .  24    .  GLU  CB   0.081   4.954  .  .
 A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .</code></pre>
 <h2 id="querying-annotated-inter-atom-contacts">Querying annotated inter-atom contacts</h2>
-<p>The &quot;voronota query-contacts&quot; command can be used to query and manipulate computed annotated contacts. For example, below is the command that selects contacts that probably correspond to salt bridges:</p>
+<p>The “voronota query-contacts” command can be used to query and manipulate computed annotated contacts. For example, below is the command that selects contacts that probably correspond to salt bridges:</p>
 <pre><code>cat annotated_contacts.txt | voronota query-contacts --match-first &#39;R&lt;ASP,GLU&gt;&amp;A&lt;OD1,OD2,OE1,OE2,OXT&gt;&#39; --match-second &#39;R&lt;ARG,HIS,LYS&gt;&amp;A&lt;NH1,NH2,ND1,NE2,NZ&gt;&#39; --match-max-dist 4.0</code></pre>
-<p>The <a href="support/generate-arguments-for-query-contacts.html" class="uri">support/generate-arguments-for-query-contacts.html</a> file in the Voronota package provides a graphical interface for generating sets of arguments for the &quot;voronota query-contacts&quot; command: it serves as an interactive documentation. A similar interface for the &quot;voronota query-balls&quot; command is provided by the <a href="support/generate-arguments-for-query-balls.html" class="uri">support/generate-arguments-for-query-balls.html</a> file.</p>
+<p>The <a href="support/generate-arguments-for-query-contacts.html">support/generate-arguments-for-query-contacts.html</a> file in the Voronota package provides a graphical interface for generating sets of arguments for the “voronota query-contacts” command: it serves as an interactive documentation. A similar interface for the “voronota query-balls” command is provided by the <a href="support/generate-arguments-for-query-balls.html">support/generate-arguments-for-query-balls.html</a> file.</p>
 <h2 id="getting-help-in-command-line">Getting help in command line</h2>
 <p>The list of all available Voronota commands is displayed when executing Voronota without any parameters.</p>
-<p>Command help is shown when &quot;--help&quot; command line option is present, for example:</p>
+<p>Command help is shown when “–help” command line option is present, for example:</p>
 <pre><code>./voronota calculate-vertices --help</code></pre>
-<p>Using &quot;--help&quot; option without specific command results in printing help for all commands:</p>
+<p>Using “–help” option without specific command results in printing help for all commands:</p>
 <pre><code>./voronota --help</code></pre>
 <h1 id="command-reference">Command reference</h1>
 <h2 id="list-of-all-commands">List of all commands</h2>
@@ -316,7 +267,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <li>run-script</li>
 <li>expand-descriptors</li>
 </ul>
-<h2 id="command-get-balls-from-atoms-file">Command 'get-balls-from-atoms-file'</h2>
+<h2 id="command-get-balls-from-atoms-file">Command ‘get-balls-from-atoms-file’</h2>
 <h3 id="command-line-arguments">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -338,7 +289,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
     default mode line format: &#39;x y z r # atomSerial chainID resSeq resName atomName altLoc iCode&#39;
 
     annotated mode line format: &#39;annotation x y z r tags adjuncts&#39;</code></pre>
-<h2 id="command-calculate-vertices">Command 'calculate-vertices'</h2>
+<h2 id="command-calculate-vertices">Command ‘calculate-vertices’</h2>
 <h3 id="command-line-arguments-1">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -353,7 +304,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>list of balls (line format: &#39;x y z r&#39;)</code></pre>
 <h3 id="output-stream-1">Output stream:</h3>
 <pre><code>list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: &#39;q1 q2 q3 q4 x y z r&#39;)</code></pre>
-<h2 id="command-calculate-vertices-in-parallel">Command 'calculate-vertices-in-parallel'</h2>
+<h2 id="command-calculate-vertices-in-parallel">Command ‘calculate-vertices-in-parallel’</h2>
 <h3 id="command-line-arguments-2">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -368,7 +319,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>list of balls (line format: &#39;x y z r&#39;)</code></pre>
 <h3 id="output-stream-2">Output stream:</h3>
 <pre><code>list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: &#39;q1 q2 q3 q4 x y z r&#39;)</code></pre>
-<h2 id="command-calculate-contacts">Command 'calculate-contacts'</h2>
+<h2 id="command-calculate-contacts">Command ‘calculate-contacts’</h2>
 <h3 id="command-line-arguments-3">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -397,7 +348,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
     default mode line format: &#39;b1 b2 area&#39;
 
     annotated mode line format: &#39;annotation1 annotation2 area distance tags adjuncts [graphics]&#39;</code></pre>
-<h2 id="command-query-balls">Command 'query-balls'</h2>
+<h2 id="command-query-balls">Command ‘query-balls’</h2>
 <h3 id="command-line-arguments-4">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -435,7 +386,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>list of balls (line format: &#39;annotation x y z r tags adjuncts&#39;)</code></pre>
 <h3 id="output-stream-4">Output stream:</h3>
 <pre><code>list of balls (line format: &#39;annotation x y z r tags adjuncts&#39;)</code></pre>
-<h2 id="command-query-contacts">Command 'query-contacts'</h2>
+<h2 id="command-query-contacts">Command ‘query-contacts’</h2>
 <h3 id="command-line-arguments-5">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -485,7 +436,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>list of contacts (line format: &#39;annotation1 annotation2 area distance tags adjuncts [graphics]&#39;)</code></pre>
 <h3 id="output-stream-5">Output stream:</h3>
 <pre><code>list of contacts (line format: &#39;annotation1 annotation2 area distance tags adjuncts [graphics]&#39;)</code></pre>
-<h2 id="command-draw-contacts">Command 'draw-contacts'</h2>
+<h2 id="command-draw-contacts">Command ‘draw-contacts’</h2>
 <h3 id="command-line-arguments-6">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -507,7 +458,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>list of contacts (line format: &#39;annotation1 annotation2 area distance tags adjuncts graphics&#39;)</code></pre>
 <h3 id="output-stream-6">Output stream:</h3>
 <pre><code>list of contacts (line format: &#39;annotation1 annotation2 area distance tags adjuncts graphics&#39;)</code></pre>
-<h2 id="command-score-contacts-energy">Command 'score-contacts-energy'</h2>
+<h2 id="command-score-contacts-energy">Command ‘score-contacts-energy’</h2>
 <h3 id="command-line-arguments-7">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -521,7 +472,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>list of contacts (line format: &#39;annotation1 annotation2 conditions area&#39;)</code></pre>
 <h3 id="output-stream-7">Output stream:</h3>
 <pre><code>global scores</code></pre>
-<h2 id="command-score-contacts-quality">Command 'score-contacts-quality'</h2>
+<h2 id="command-score-contacts-quality">Command ‘score-contacts-quality’</h2>
 <h3 id="command-line-arguments-8">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -538,7 +489,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>list of atom energy descriptors</code></pre>
 <h3 id="output-stream-8">Output stream:</h3>
 <pre><code>weighted average local score</code></pre>
-<h2 id="command-score-contacts-potential">Command 'score-contacts-potential'</h2>
+<h2 id="command-score-contacts-potential">Command ‘score-contacts-potential’</h2>
 <h3 id="command-line-arguments-9">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -557,7 +508,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>list of contacts (line format: &#39;annotation1 annotation2 conditions area&#39;)</code></pre>
 <h3 id="output-stream-9">Output stream:</h3>
 <pre><code>line of contact type area summaries (line format: &#39;annotation1 annotation2 conditions area&#39;)</code></pre>
-<h2 id="command-compare-contacts">Command 'compare-contacts'</h2>
+<h2 id="command-compare-contacts">Command ‘compare-contacts’</h2>
 <h3 id="command-line-arguments-10">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -581,7 +532,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>list of model contacts (line format: &#39;annotation1 annotation2 area&#39;)</code></pre>
 <h3 id="output-stream-10">Output stream:</h3>
 <pre><code>global scores (atom-level and residue-level)</code></pre>
-<h2 id="command-write-balls-to-atoms-file">Command 'write-balls-to-atoms-file'</h2>
+<h2 id="command-write-balls-to-atoms-file">Command ‘write-balls-to-atoms-file’</h2>
 <h3 id="command-line-arguments-11">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -594,7 +545,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>list of balls (line format: &#39;annotation x y z r tags adjuncts&#39;)</code></pre>
 <h3 id="output-stream-11">Output stream:</h3>
 <pre><code>list of balls (line format: &#39;annotation x y z r tags adjuncts&#39;)</code></pre>
-<h2 id="command-query-balls-clashes">Command 'query-balls-clashes'</h2>
+<h2 id="command-query-balls-clashes">Command ‘query-balls-clashes’</h2>
 <h3 id="command-line-arguments-12">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -606,7 +557,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>list of balls (line format: &#39;annotation x y z r&#39;)</code></pre>
 <h3 id="output-stream-12">Output stream:</h3>
 <pre><code>list of clashes (line format: &#39;annotation1 annotation2 distance min-distance-between-balls&#39;)</code></pre>
-<h2 id="command-run-script">Command 'run-script'</h2>
+<h2 id="command-run-script">Command ‘run-script’</h2>
 <h3 id="command-line-arguments-13">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -618,7 +569,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>script as plain text</code></pre>
 <h3 id="output-stream-13">Output stream:</h3>
 <pre><code>output of script execution</code></pre>
-<h2 id="command-expand-descriptors">Command 'expand-descriptors'</h2>
+<h2 id="command-expand-descriptors">Command ‘expand-descriptors’</h2>
 <h3 id="command-line-arguments-14">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
@@ -629,7 +580,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>text with each atom descriptor expanded to &#39;chainID resSeq iCode serial altLoc resName name&#39;</code></pre>
 <h1 id="wrapper-scripts">Wrapper scripts</h1>
 <h2 id="voromqa-method-script">VoroMQA method script</h2>
-<p>'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota. The script interface is presented below:</p>
+<p>‘voronota-voromqa’ script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota. The script interface is presented below:</p>
 <pre><code>Basic options:
     --input | -i                   string      input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query parameters
@@ -656,7 +607,7 @@ Advanced options:
 Standard output (one line):
     {input file path} {global score} {number of residues} {number of atoms} [ {selection score} {number of selected atoms} ]</code></pre>
 <h3 id="full-list-of-options-for-the-voromqa-method-script">Full list of options for the VoroMQA method script</h3>
-<p>All options of 'voronota-voromqa' script, in alphabetical order:</p>
+<p>All options of ‘voronota-voromqa’ script, in alphabetical order:</p>
 <pre><code>    --add-hydrogens                            string      command to add hydrogens
     --atoms-query                              string      atoms query parameters to define selection
     --cache-dir                                string      path to cache directory
@@ -734,7 +685,7 @@ Standard output (one line):
     --unteaching-dir                           string      path to directory with potential-defining files
     --use-slurm                                string      path to directory to use for Slurm logs</code></pre>
 <h2 id="cad-score-method-script">CAD-score method script</h2>
-<p>'voronota-cadscore' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota. The script interface is presented below:</p>
+<p>‘voronota-cadscore’ script is an implementation of CAD-score (Contact Area Difference score) method using Voronota. The script interface is presented below:</p>
 <pre><code>Basic options:
     --input-target | -t             string   *  input target structure file in PDB or mmCIF format
     --input-model | -m              string   *  input model structure file in PDB format
@@ -766,7 +717,7 @@ Standard output (one line):
     {target file path} {model file path} {query code} {number of residues} {global score} {target total area} {corresponding model total area}
     [ {site-based number of residues} {site-based global score} {site-based target total area} {corresponding site-based model total area} ]</code></pre>
 <h2 id="contacts-calculation-convenience-script">Contacts calculation convenience script</h2>
-<p>'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls).</p>
+<p>‘voronota-contacts’ script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from ‘voronota’ calls).</p>
 <pre><code>Basic options:
     --input | -i                   string   *  input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query parameters
@@ -787,7 +738,7 @@ Advanced options:
 Standard output (multiple lines):
     {contacting atom} {contacting atom} {contact area} {distance between atoms centers} {tags} {adjunct values}</code></pre>
 <h2 id="volumes-calculation-convenience-script">Volumes calculation convenience script</h2>
-<p>'voronota-volumes' script provides a way for calculating and querying atomic volumes with just one command (without the need to construct a pipeline from 'voronota' calls).</p>
+<p>‘voronota-volumes’ script provides a way for calculating and querying atomic volumes with just one command (without the need to construct a pipeline from ‘voronota’ calls).</p>
 <pre><code>Basic options:
     --input | -i                   string   *  input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query parameters
@@ -803,7 +754,7 @@ Advanced options:
 Standard output (multiple lines):
     {name} {volume}</code></pre>
 <h2 id="pocket-analysis-script">Pocket analysis script</h2>
-<p>'voronota-pocket' script provides a way for identifying and describing pockets, cavities and channels using the Voronoi tessellation vertices.</p>
+<p>‘voronota-pocket’ script provides a way for identifying and describing pockets, cavities and channels using the Voronoi tessellation vertices.</p>
 <pre><code>Options:
     --input | -i                   string   *  input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query, default is &#39;--match-tags-not het&#39;
@@ -840,7 +791,7 @@ Other suggestions:
     For large pockets or channels the spheres drawing option may
     produce very large files (too large for PyMol).</code></pre>
 <h2 id="membrane-fitting-script">Membrane fitting script</h2>
-<p>'voronota-membrane' script provides a way for fitting a membrane for a protein struture using VoroMQA-based surface frustration analysis.</p>
+<p>‘voronota-membrane’ script provides a way for fitting a membrane for a protein struture using VoroMQA-based surface frustration analysis.</p>
 <pre><code>Options:
     --input | -i                   string   *  input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query, default is &#39;&#39;

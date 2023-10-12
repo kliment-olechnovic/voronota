@@ -929,6 +929,9 @@
             "name":"add-figure-of-2nd-order-cells-for-contacts",
             "short_description":""},
           {
+            "name":"add-figure-of-alt-contacts",
+            "short_description":""},
+          {
             "name":"add-figure-of-convex-hull",
             "short_description":""},
           {
@@ -990,6 +993,9 @@
             "short_description":""},
           {
             "name":"copy-object",
+            "short_description":""},
+          {
+            "name":"count-common-tessellation-elements",
             "short_description":""},
           {
             "name":"delete-adjuncts-of-atoms",

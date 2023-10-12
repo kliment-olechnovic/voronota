@@ -78,7 +78,10 @@ EOF
 
 ################################################################################
 
-cat > $TMPLDIR/include_in_header.html << 'EOF'
+DOCUMENTTITLE="$(./voronota | head -1)"
+
+{
+cat << 'EOF'
 <style type="text/css">
 a { color: #0000CC; }
 td { padding-right: 1em; }
@@ -86,9 +89,11 @@ pre { background-color: #DDDDDD; padding: 1em; }
 div#TOC > ul > li > ul > li ul { display: none; }
 </style>
 EOF
+} \
+> $TMPLDIR/include_in_header.html
 
 {
-echo "<h1>$(./voronota | head -1)</h1>"
+echo "<h1>$DOCUMENTTITLE</h1>"
 
 cat << 'EOF'
 <h2>Quick links</h2>
@@ -103,7 +108,7 @@ EOF
 } \
 > $TMPLDIR/include_before_body.html
 
-pandoc $TMPLDIR/documentation.markdown -f markdown -t html --toc -H $TMPLDIR/include_in_header.html -B $TMPLDIR/include_before_body.html -s -o ./index.html
+pandoc $TMPLDIR/documentation.markdown -f markdown -t html --metadata title="$DOCUMENTTITLE" --variable title="" -M document-css=false --wrap=none --toc-depth 2 --toc -H $TMPLDIR/include_in_header.html -B $TMPLDIR/include_before_body.html -s -o ./index.html
 
 ################################################################################
 
@@ -115,7 +120,7 @@ cat $TMPLDIR/documentation.markdown \
 
 ################################################################################
 
-pandoc -s -t man ./resources/texts/manpage.markdown -o "$TMPLDIR/manpage.troff"
+pandoc -s -t man --wrap=none ./resources/texts/manpage.markdown -o "$TMPLDIR/manpage.troff"
 mv "$TMPLDIR/manpage.troff" "./voronota.man"
 
 ################################################################################
