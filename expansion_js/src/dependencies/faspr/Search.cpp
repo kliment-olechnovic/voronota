@@ -300,7 +300,7 @@ bool Solution::DEESearch(IV1 &pos, voronota::scripting::StandardOutputMockup& so
   for(int i=0;i<static_cast<int>(pos.size());i++){
     int ip=pos[i];
     int n=0;
-    int rot;
+    int rot=0;
     for(int j=0;j<nrots[ip];j++){
       if(eTableSelf[ip][j]<999.){
         rot=j;
@@ -349,7 +349,7 @@ bool Solution::DEESearch(IV1 &pos, voronota::scripting::StandardOutputMockup& so
   for(int i=0;i<static_cast<int>(pos.size());i++){
     int ip=pos[i];
     int n=0;
-    int rot;
+    int rot=0;
     for(int j=0;j<nrots[ip];j++){
       if(eTableSelf[ip][j]<999.){
         rot=j;
@@ -398,7 +398,7 @@ bool Solution::DEESearch(IV1 &pos, voronota::scripting::StandardOutputMockup& so
   for(int i=0;i<static_cast<int>(pos.size());i++){
     int ip=pos[i];
     int n=0;
-    int rot;
+    int rot=0;
     for(int j=0;j<nrots[ip];j++){
       if(eTableSelf[ip][j]<999.){
         rot=j;
@@ -447,7 +447,7 @@ bool Solution::DEESearch(IV1 &pos, voronota::scripting::StandardOutputMockup& so
   for(int i=0;i<static_cast<int>(pos.size());i++){
     int ip=pos[i];
     int n=0;
-    int rot;
+    int rot=0;
     for(int j=0;j<nrots[ip];j++){
       if(eTableSelf[ip][j]<999.){
         rot=j;
