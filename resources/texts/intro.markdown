@@ -24,7 +24,7 @@ Currently there are two expansions of Voronota: Voronota-JS and Voronota-GL.
 The expansions need to be built separately in their subdirectories.
 Alternatively, they can be built by appending `-DEXPANSION_JS=ON` and `-DEXPANSION_GL=ON` to the CMake command call.
 
-The expansions have separate separate dedicated documentation pages.
+The expansions have separate dedicated documentation pages.
 
 ## Voronota-JS
 
@@ -98,7 +98,7 @@ Alternatively, to keep files more organized, CMake can be run in a separate "bui
 For example, "voronota" executable can be built from
 the sources in "src" directory using GNU C++ compiler:
 
-    g++ -O3 -o voronota $(find ./src/ -name '*.cpp')
+    g++ -O3 -std=c++11 -o voronota $(find ./src/ -name '*.cpp')
     
 ## Enabling OpenMP
 
@@ -107,7 +107,7 @@ the "-fopenmp" flag needs to be set when building.
 
 When building using C++ compiler directly, just add "-fopenmp":
 
-    g++ -O3 -fopenmp -o voronota $(find ./src/ -name '*.cpp')
+    g++ -O3 -std=c++11 -fopenmp -o voronota $(find ./src/ -name '*.cpp')
 
 When using CMake, set the CMAKE_CXX_FLAGS variable:
 
@@ -119,7 +119,7 @@ When using CMake, set the CMAKE_CXX_FLAGS variable:
 To allow the usage of MPI when calling the "calculate-vertices-in-parallel" command,
 you can use mpic++ compiler wrapper and define "ENABLE_MPI" macro when buiding:
 
-    mpic++ -O3 -DENABLE_MPI -o voronota ./$(find ./src/ -name '*.cpp')
+    mpic++ -O3 -std=c++11 -DENABLE_MPI -o voronota ./$(find ./src/ -name '*.cpp')
 
 ## TR1 usage switch
 

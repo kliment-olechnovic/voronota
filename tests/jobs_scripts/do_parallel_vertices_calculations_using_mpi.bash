@@ -6,7 +6,7 @@ trap "rm -r $TMPDIR" EXIT
 SUBDIR=$OUTPUTDIR/parallel_vertices_calculations_using_mpi
 mkdir -p $SUBDIR
 
-mpic++ -O3 -DENABLE_MPI -o $TMPDIR/voronota_mpi $VORONOTADIR/src/voronota.cpp $VORONOTADIR/src/modes/*.cpp
+mpic++ -O3 -std=c++11 -DENABLE_MPI -o $TMPDIR/voronota_mpi $VORONOTADIR/src/voronota.cpp $VORONOTADIR/src/modes/*.cpp &> /dev/null
 
 cat $INPUTDIR/single/structure.pdb \
 | $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/resources/radii --include-heteroatoms \

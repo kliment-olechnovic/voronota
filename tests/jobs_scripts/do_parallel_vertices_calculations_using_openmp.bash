@@ -6,7 +6,7 @@ trap "rm -r $TMPDIR" EXIT
 SUBDIR=$OUTPUTDIR/parallel_vertices_calculations_using_openmp
 mkdir -p $SUBDIR
 
-g++ -O3 -fopenmp -o $TMPDIR/voronota_openmp $VORONOTADIR/src/voronota.cpp $VORONOTADIR/src/modes/*.cpp
+g++ -O3 -std=c++11 -fopenmp -o $TMPDIR/voronota_openmp $VORONOTADIR/src/voronota.cpp $VORONOTADIR/src/modes/*.cpp &> /dev/null
 
 cat $INPUTDIR/single/structure.pdb \
 | $TMPDIR/voronota_openmp get-balls-from-atoms-file --radii-file $VORONOTADIR/resources/radii --include-heteroatoms \

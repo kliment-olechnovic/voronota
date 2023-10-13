@@ -20,7 +20,7 @@ rm -r -f "$PACKAGE_NAME"
 
 if [ ! -f "./voronota" ]
 then
-	g++ -O3 -static-libgcc -static-libstdc++ -static -o "./voronota" $(find ./src/ -name '*.cpp')
+	g++ -O3 -std=c++11 -static-libgcc -static-libstdc++ -static -o "./voronota" $(find ./src/ -name '*.cpp')
 fi
 
 if [ ! -f "./voronota" ]
@@ -132,7 +132,7 @@ else
 	> "${PACKAGE_NAME}/src/voronota_version.h"
 
 	cd "${PACKAGE_NAME}"
-	g++ -O3 -static-libgcc -static-libstdc++ -static -o "./voronota" $(find ./src/ -name '*.cpp')
+	g++ -O3 -std=c++11 -static-libgcc -static-libstdc++ -static -o "./voronota" $(find ./src/ -name '*.cpp')
 	cd - &> /dev/null
 
 	cd "${PACKAGE_NAME}/expansion_js"

@@ -94,7 +94,7 @@
 <h1 id="about-voronota-expansions">About Voronota expansions</h1>
 <p>Currently there are two expansions of Voronota: Voronota-JS and Voronota-GL.</p>
 <p>The expansions need to be built separately in their subdirectories. Alternatively, they can be built by appending <code>-DEXPANSION_JS=ON</code> and <code>-DEXPANSION_GL=ON</code> to the CMake command call.</p>
-<p>The expansions have separate separate dedicated documentation pages.</p>
+<p>The expansions have separate dedicated documentation pages.</p>
 <h2 id="voronota-js">Voronota-JS</h2>
 <p><a href="./expansion_js/index.html">Voronota-JS</a> expansion is located in the ‘expansion_js’ subdirectory of the Voronota package.</p>
 <p>Voronota-JS provides a way to write JavaScript scripts for the comprehensive analysis of macromolecular structures, including the Voronoi tesselation-based analysis. Currently, the Voronota-JS package contains several executables:</p>
@@ -135,17 +135,17 @@ make
 cp ./voronota ../voronota</code></pre>
 <h2 id="using-c-compiler-directly">Using C++ compiler directly</h2>
 <p>For example, “voronota” executable can be built from the sources in “src” directory using GNU C++ compiler:</p>
-<pre><code>g++ -O3 -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
+<pre><code>g++ -O3 -std=c++11 -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <h2 id="enabling-openmp">Enabling OpenMP</h2>
 <p>To allow the usage of OpenMP when calling the “calculate-vertices-in-parallel” command, the “-fopenmp” flag needs to be set when building.</p>
 <p>When building using C++ compiler directly, just add “-fopenmp”:</p>
-<pre><code>g++ -O3 -fopenmp -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
+<pre><code>g++ -O3 -std=c++11 -fopenmp -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <p>When using CMake, set the CMAKE_CXX_FLAGS variable:</p>
 <pre><code>cmake -DCMAKE_CXX_FLAGS=&quot;-fopenmp&quot; ./
 make</code></pre>
 <h2 id="enabling-mpi">Enabling MPI</h2>
 <p>To allow the usage of MPI when calling the “calculate-vertices-in-parallel” command, you can use mpic++ compiler wrapper and define “ENABLE_MPI” macro when buiding:</p>
-<pre><code>mpic++ -O3 -DENABLE_MPI -o voronota ./$(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
+<pre><code>mpic++ -O3 -std=c++11 -DENABLE_MPI -o voronota ./$(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <h2 id="tr1-usage-switch">TR1 usage switch</h2>
 <p>Voronota can be built with either modern C++ compilers or pre-C++11 compilers that support C++ Technical Report 1 (TR1) features. The voronota code has preprocessor-based checks to find out if C++ TR1 namespace is available and needs to be used. If compilation fails, it may mean that these checks failed. To troubleshoot this, try setting the value of the “USE_TR1” macro to 0 (to not use TR1 and to rely on C++11 standard) or 1 (to use TR1) when compiling, for example:</p>
 <pre><code>g++ -O3 -DUSE_TR1=1 -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>

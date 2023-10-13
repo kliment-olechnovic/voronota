@@ -4,6 +4,9 @@ project(Voronota)
 
 file(GLOB VORONOTA_SRC "${PROJECT_SOURCE_DIR}/src/voronota.cpp" "${PROJECT_SOURCE_DIR}/src/modes/*.cpp")
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(CMAKE_BUILD_TYPE Release)
 
 add_executable(voronota ${VORONOTA_SRC})

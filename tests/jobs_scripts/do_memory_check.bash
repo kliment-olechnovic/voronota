@@ -6,7 +6,7 @@ trap "rm -r $TMPDIR" EXIT
 SUBDIR=$OUTPUTDIR/memory_check
 mkdir -p $SUBDIR
 
-g++ -g -O1 -o $TMPDIR/voronota_raw $VORONOTADIR/src/voronota.cpp $VORONOTADIR/src/modes/*.cpp
+g++ -g -O1 -std=c++11 -o $TMPDIR/voronota_raw $VORONOTADIR/src/voronota.cpp $VORONOTADIR/src/modes/*.cpp &> /dev/null
 
 cat $INPUTDIR/single/structure.pdb \
 | $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/resources/radii --include-heteroatoms \

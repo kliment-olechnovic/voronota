@@ -9,7 +9,7 @@ mkdir -p $SUBDIR
 cp -r $VORONOTADIR $TMPDIR/package
 rm $TMPDIR/package/voronota
 cd $TMPDIR/package
-g++ -O3 -o voronota $(find ./src/ -name '*.cpp') &> /dev/null
+g++ -O3 -std=c++11 -o voronota $(find ./src/ -name '*.cpp') &> /dev/null
 cd - &> /dev/null
 
 $TMPDIR/package/voronota --help > $SUBDIR/full_help

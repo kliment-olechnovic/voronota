@@ -13,4 +13,4 @@ export OUTPUTDIR=./jobs_output
 rm -r -f $OUTPUTDIR
 mkdir $OUTPUTDIR
 
-find ./jobs_scripts/ -type f -name "*.bash" | xargs -L 1 -P 4 bash
+find ./jobs_scripts/ -type f -name "*.bash" | xargs -L 1 -P 10 bash
