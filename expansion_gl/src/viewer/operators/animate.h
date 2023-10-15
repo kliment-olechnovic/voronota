@@ -31,12 +31,12 @@ public:
 
 	void initialize(scripting::CommandInput& input)
 	{
-		time_step=input.get_value_or_default<double>("time-step", 25.0);
+		time_step=input.get_value_or_default<double>("time-step", GUIConfiguration::instance().animation_step_miliseconds);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(CDOD("time-step", CDOD::DATATYPE_FLOAT, "animation time step", 25.0));
+		doc.set_option_decription(CDOD("time-step", CDOD::DATATYPE_FLOAT, "animation time step", "current"));
 	}
 
 	Result run(void*) const

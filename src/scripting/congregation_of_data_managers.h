@@ -146,7 +146,7 @@ public:
 		}
 	};
 
-	CongregationOfDataManagers()
+	CongregationOfDataManagers() : next_reversable_(false), next_currently_reversed_(false)
 	{
 	}
 
@@ -394,50 +394,154 @@ public:
 		return set_object_visible(get_object(name), visible);
 	}
 
-	bool set_next_picked_object_visible()
+	bool set_next_picked_object_visible(const bool next_reversable)
 	{
+		if(!next_reversable || next_reversable!=next_reversable_)
+		{
+			next_currently_reversed_=false;
+		}
+		next_reversable_=next_reversable;
+
+		bool something_picked=false;
+		bool something_was_visible=false;
+		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
+		{
+			something_picked=something_picked || it->attributes.picked;
+			something_was_visible=something_was_visible ||it->attributes.visible;
+		}
+
+		if(!something_picked)
+		{
+			if(something_was_visible)
+			{
+				for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
+				{
+					it->attributes.visible=false;
+				}
+				change_indicator_.set_changed_objects_visibilities(something_was_visible);
+			}
+			return false;
+		}
+
 		std::list<ObjectDescriptor>::iterator it_first_picked=objects_.end();
+		std::list<ObjectDescriptor>::iterator it_second_picked=objects_.end();
 		std::list<ObjectDescriptor>::iterator it_first_picked_visible=objects_.end();
 		std::list<ObjectDescriptor>::iterator it_second_picked_after_first_picked_visible=objects_.end();
 
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			if(it_first_picked==objects_.end() && it->attributes.picked)
+			if(it->attributes.picked)
 			{
-				it_first_picked=it;
-			}
-
-			if(it_first_picked_visible==objects_.end())
-			{
-				if(it->attributes.picked && it->attributes.visible)
+				if(it_first_picked==objects_.end())
 				{
-					it_first_picked_visible=it;
+					it_first_picked=it;
 				}
-			}
-			else if(it_second_picked_after_first_picked_visible==objects_.end())
-			{
-				if(it->attributes.picked)
+
+				if(it_first_picked!=objects_.end() && it_second_picked==objects_.end())
+				{
+					it_second_picked=it;
+				}
+
+				if(it_first_picked_visible==objects_.end())
+				{
+					if(it->attributes.visible)
+					{
+						it_first_picked_visible=it;
+					}
+				}
+				else if(it_second_picked_after_first_picked_visible==objects_.end())
 				{
 					it_second_picked_after_first_picked_visible=it;
 				}
 			}
-
-			it->attributes.visible=false;
-			change_indicator_.set_changed_objects_visibilities(true);
 		}
 
-		if(it_first_picked!=objects_.end())
+		std::list<ObjectDescriptor>::reverse_iterator rev_it_first_picked=objects_.rend();
+		std::list<ObjectDescriptor>::reverse_iterator rev_it_second_picked=objects_.rend();
+		std::list<ObjectDescriptor>::reverse_iterator rev_it_first_picked_visible=objects_.rend();
+		std::list<ObjectDescriptor>::reverse_iterator rev_it_second_picked_after_first_picked_visible=objects_.rend();
+
+		for(std::list<ObjectDescriptor>::reverse_iterator it=objects_.rbegin();it!=objects_.rend();++it)
+		{
+			if(it->attributes.picked)
+			{
+				if(rev_it_first_picked==objects_.rend())
+				{
+					rev_it_first_picked=it;
+				}
+
+				if(rev_it_first_picked!=objects_.rend() && rev_it_second_picked==objects_.rend())
+				{
+					rev_it_second_picked=it;
+				}
+
+				if(rev_it_first_picked_visible==objects_.rend())
+				{
+					if(it->attributes.visible)
+					{
+						rev_it_first_picked_visible=it;
+					}
+				}
+				else if(rev_it_second_picked_after_first_picked_visible==objects_.rend())
+				{
+					rev_it_second_picked_after_first_picked_visible=it;
+				}
+			}
+		}
+
+		if(something_was_visible)
+		{
+			for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
+			{
+				it->attributes.visible=false;
+			}
+			change_indicator_.set_changed_objects_visibilities(something_was_visible);
+		}
+
+		if(next_currently_reversed_)
+		{
+			if(rev_it_first_picked_visible!=objects_.rend() && rev_it_second_picked_after_first_picked_visible!=objects_.rend())
+			{
+				rev_it_second_picked_after_first_picked_visible->attributes.visible=true;
+				return true;
+			}
+			else
+			{
+				next_currently_reversed_=false;
+				if(it_second_picked!=objects_.end())
+				{
+					it_second_picked->attributes.visible=true;
+					return true;
+				}
+			}
+		}
+		else
 		{
 			if(it_first_picked_visible!=objects_.end() && it_second_picked_after_first_picked_visible!=objects_.end())
 			{
 				it_second_picked_after_first_picked_visible->attributes.visible=true;
+				return true;
 			}
 			else
 			{
-				it_first_picked->attributes.visible=true;
+				if(next_reversable_)
+				{
+					if(rev_it_second_picked!=objects_.rend())
+					{
+						next_currently_reversed_=true;
+						rev_it_second_picked->attributes.visible=true;
+						return true;
+					}
+				}
+				else
+				{
+					if(it_first_picked!=objects_.end())
+					{
+						it_first_picked->attributes.visible=true;
+						return true;
+					}
+				}
 			}
-
-			return true;
 		}
 
 		return false;
@@ -567,6 +671,8 @@ private:
 
 	std::list<ObjectDescriptor> objects_;
 	ChangeIndicator change_indicator_;
+	bool next_reversable_;
+	bool next_currently_reversed_;
 };
 
 }

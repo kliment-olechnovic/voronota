@@ -38,7 +38,7 @@ public:
 	{
 		congregation_of_data_managers.assert_objects_availability();
 
-		congregation_of_data_managers.set_next_picked_object_visible();
+		congregation_of_data_managers.set_next_picked_object_visible(false);
 
 		Result result;
 		return result;

@@ -467,53 +467,76 @@ public:
 						result="hide-objects -not-picked";
 					}
 
+					ImGui::Separator();
+
+					if(GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_NONE)
 					{
-						bool separated=false;
-
-						if(GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_NONE)
+						if(ImGui::Selectable("Stop animation"))
 						{
-							if(!separated)
-							{
-								ImGui::Separator();
-								separated=true;
-							}
+							result="animate-none\n";
+						}
+					}
 
-							if(ImGui::Selectable("Stop animation"))
+					if(ImGui::BeginMenu("Set animation##set_animation"))
+					{
+						if(GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS && objects_info.num_of_picked_objects()>1)
+						{
+							if(ImGui::Selectable("Loop picked objects, only forward"))
 							{
-								result="animate-none\n";
+								result="animate-loop-picked-objects\n";
 							}
 						}
 
-						if(objects_info.num_of_picked_objects()>1)
+						if(GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS_BIDIRECTIONALLY && objects_info.num_of_picked_objects()>1)
 						{
-							if(GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_NONE || (GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS && GUIConfiguration::instance().animation_step_miliseconds>12.0))
+							if(ImGui::Selectable("Loop picked objects, forward and backward"))
 							{
-								if(!separated)
-								{
-									ImGui::Separator();
-									separated=true;
-								}
-
-								if(ImGui::Selectable("Loop picked objects, faster"))
-								{
-									result="animate-loop-picked-objects -time-step 5.0\n";
-								}
-							}
-
-							if(GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_NONE || (GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS && GUIConfiguration::instance().animation_step_miliseconds<12.0))
-							{
-								if(!separated)
-								{
-									ImGui::Separator();
-									separated=true;
-								}
-
-								if(ImGui::Selectable("Loop picked objects, slower"))
-								{
-									result="animate-loop-picked-objects -time-step 25.0\n";
-								}
+								result="animate-loop-picked-objects-bidirectionally\n";
 							}
 						}
+
+						if(GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_SPIN_LEFT)
+						{
+							if(ImGui::Selectable("Spin left"))
+							{
+								result="animate-spin-left\n";
+							}
+						}
+
+						if(GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_SPIN_RIGHT)
+						{
+							if(ImGui::Selectable("Spin right"))
+							{
+								result="animate-spin-right\n";
+							}
+						}
+
+						if(GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_SPIN_ON_Z_LEFT)
+						{
+							if(ImGui::Selectable("Spin clockwise"))
+							{
+								result="animate-spin-on-z-left\n";
+							}
+						}
+
+						if(GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_SPIN_ON_Z_RIGHT)
+						{
+							if(ImGui::Selectable("Spin counter-clockwise"))
+							{
+								result="animate-spin-on-z-right\n";
+							}
+						}
+
+						ImGui::Separator();
+
+						static float animation_time_step=15.0f;
+
+						if(ImGui::SliderFloat("milliseconds per frame", &animation_time_step, 1.0f, 40.0f, "%.1f", 0))
+						{
+							GUIConfiguration::instance().animation_step_miliseconds=static_cast<double>(animation_time_step);
+						}
+
+						ImGui::EndMenu();
 					}
 
 					ImGui::EndPopup();
