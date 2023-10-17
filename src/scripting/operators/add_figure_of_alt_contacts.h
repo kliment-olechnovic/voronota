@@ -126,22 +126,25 @@ public:
 						{
 							if(simplified)
 							{
-								apollota::ConstrainedContactContourRadicalizedSimplified::Contour contour;
-								if(apollota::ConstrainedContactContourRadicalizedSimplified::construct_contact_contours_for_expanded_spheres_without_tessellation(spheres, a_id, b_id, map_of_neighbors[a_id], map_of_neighbors[b_id], 0.2, contour))
+								apollota::ConstrainedContactContourRadicalizedSimplified::ContactDescriptor contact_descriptor;
+								if(apollota::ConstrainedContactContourRadicalizedSimplified::construct_contact_descriptor_for_expanded_spheres_without_tessellation(spheres, a_id, b_id, map_of_neighbors[a_id], map_of_neighbors[b_id], contact_descriptor))
 								{
 									result.total_count++;
-									const apollota::SimplePoint center=apollota::ConstrainedContactContourRadicalizedSimplified::calc_contour_center(contour);
-									const apollota::SimplePoint normal=apollota::sub_of_points<apollota::SimplePoint>(spheres[b_id], spheres[a_id]).unit();
-									for(std::size_t e=0;e<contour.size();e++)
+									result.total_area+=contact_descriptor.area;
+									result.total_complexity+=static_cast<int>(contact_descriptor.contour.size());
+									if(!only_summarize)
 									{
-										const std::size_t e2=(((e+1)<contour.size()) ? (e+1) : 0);
-										result.total_area+=apollota::triangle_area(center, contour[e].p, contour[e2].p);
-										if(!only_summarize)
+										std::vector<apollota::SimplePoint> contour_points;
+										apollota::SimplePoint contour_points_barycenter;
+										if(apollota::ConstrainedContactContourRadicalizedSimplified::discretize_contact_descriptor_contour(contact_descriptor, 0.2, contour_points, contour_points_barycenter))
 										{
-											figure.add_triangle(center, contour[e].p, contour[e2].p, normal);
+											for(std::size_t e=0;e<contour_points.size();e++)
+											{
+												const std::size_t e2=(((e+1)<contour_points.size()) ? (e+1) : 0);
+												figure.add_triangle(contour_points_barycenter, contour_points[e], contour_points[e2], contact_descriptor.intersection_circle_axis);
+											}
 										}
 									}
-									result.total_complexity+=static_cast<int>(contour.size());
 								}
 							}
 							else
