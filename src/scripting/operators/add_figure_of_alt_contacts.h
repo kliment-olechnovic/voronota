@@ -41,11 +41,11 @@ public:
 	std::vector<std::string> figure_name;
 	bool radicalized;
 	bool simplified;
-	bool all_inter_residue;
+	bool all_inter_atom;
 	bool only_summarize;
 	bool only_count_collisions;
 
-	AddFigureOfAltContacts() : radicalized(false), simplified(false), all_inter_residue(false), only_summarize(false), only_count_collisions(false)
+	AddFigureOfAltContacts() : radicalized(false), simplified(false), all_inter_atom(false), only_summarize(false), only_count_collisions(false)
 	{
 	}
 
@@ -54,7 +54,7 @@ public:
 		figure_name=input.get_value_vector<std::string>("figure-name");
 		radicalized=input.get_flag("radicalized");
 		simplified=input.get_flag("simplified");
-		all_inter_residue=input.get_flag("all-inter-residue");
+		all_inter_atom=input.get_flag("all-inter-atom");
 		only_summarize=input.get_flag("only-summarize");
 		only_count_collisions=input.get_flag("only-count-collisions");
 	}
@@ -63,7 +63,7 @@ public:
 	{
 		doc.set_option_decription(CDOD("figure-name", CDOD::DATATYPE_STRING_ARRAY, "figure name"));
 		doc.set_option_decription(CDOD("force", CDOD::DATATYPE_BOOL, "flag to use radicalized procedure"));
-		doc.set_option_decription(CDOD("all-inter-residue", CDOD::DATATYPE_BOOL, "flag construct all inter-residue contacts"));
+		doc.set_option_decription(CDOD("all-inter-atom", CDOD::DATATYPE_BOOL, "flag construct all inter-atom contacts"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -120,7 +120,7 @@ public:
 				{
 					const Atom& atom_a=data_manager.atoms()[a_id];
 					const Atom& atom_b=data_manager.atoms()[b_id];
-					if(atom_a.crad.chainID!=atom_b.crad.chainID || (all_inter_residue && atom_a.crad.resSeq!=atom_b.crad.resSeq))
+					if(all_inter_atom || atom_a.crad.chainID!=atom_b.crad.chainID)
 					{
 						if(radicalized)
 						{
