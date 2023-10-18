@@ -111,7 +111,7 @@ public:
 		{
 			operators::CallShell::Result process_result=operators::CallShell().init(CMDIN()
 					.set("input-file", tmpfile_cif.filename())
-					.set("command-string", "cif_fillcell --supercell --merge-special-positions | cif2xyz"))
+					.set("command-string", "cif_fillcell --supercell --merge-special-positions | cif2xyz --no-print-lattice --no-print-datablock-name --no-add-xyz-header"))
 					.run(0);
 			if(process_result.exit_status!=0 || process_result.stdout_str.empty())
 			{
