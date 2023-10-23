@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <map>
 
 #include "voronota_lt.h"
 
@@ -21,15 +20,41 @@ public:
 		for(std::size_t i=0;i<spheres_.size();i++)
 		{
 			const GridPoint gp(spheres_[i], box_size_);
-			std::map<GridPoint, std::size_t>::iterator it=map_of_boxes_.find(gp);
-			if(it==map_of_boxes_.end())
+			if(i==0)
 			{
-				map_of_boxes_.insert(std::pair<GridPoint, std::size_t>(gp, boxes_.size()));
+				grid_offset_=gp;
+				grid_size_=gp;
+			}
+			else
+			{
+				grid_offset_.x=std::min(grid_offset_.x, gp.x);
+				grid_offset_.y=std::min(grid_offset_.y, gp.y);
+				grid_offset_.z=std::min(grid_offset_.z, gp.z);
+				grid_size_.x=std::max(grid_size_.x, gp.x);
+				grid_size_.y=std::max(grid_size_.y, gp.y);
+				grid_size_.z=std::max(grid_size_.z, gp.z);
+			}
+		}
+
+		grid_size_.x=grid_size_.x-grid_offset_.x+1;
+		grid_size_.y=grid_size_.y-grid_offset_.y+1;
+		grid_size_.z=grid_size_.z-grid_offset_.z+1;
+
+		map_of_boxes_.resize(grid_size_.x*grid_size_.y*grid_size_.z, -1);
+
+		for(std::size_t i=0;i<spheres_.size();i++)
+		{
+			const GridPoint gp(spheres_[i], box_size_, grid_offset_);
+			const int index=gp.index(grid_size_);
+			const int box_id=map_of_boxes_[index];
+			if(box_id<0)
+			{
+				map_of_boxes_[index]=static_cast<int>(boxes_.size());
 				boxes_.push_back(std::vector<std::size_t>(1, i));
 			}
 			else
 			{
-				boxes_[it->second].push_back(i);
+				boxes_[box_id].push_back(i);
 			}
 		}
 	}
@@ -51,7 +76,7 @@ public:
 		{
 			const SimpleSphere& central_sphere=spheres_[central_id];
 			colliding_ids.reserve(10);
-			const GridPoint gp(central_sphere, box_size_);
+			const GridPoint gp(central_sphere, box_size_, grid_offset_);
 			GridPoint dgp=gp;
 			for(int dx=-1;dx<=1;dx++)
 			{
@@ -62,16 +87,20 @@ public:
 					for(int dz=-1;dz<=1;dz++)
 					{
 						dgp.z=gp.z+dz;
-						std::map<GridPoint, std::size_t>::const_iterator it=map_of_boxes_.find(dgp);
-						if(it!=map_of_boxes_.end())
+						const int index=dgp.index(grid_size_);
+						if(index>=0)
 						{
-							const std::vector<std::size_t>& ids=boxes_[it->second];
-							for(std::size_t i=0;i<ids.size();i++)
+							const int box_id=map_of_boxes_[index];
+							if(box_id>=0)
 							{
-								const std::size_t id=ids[i];
-								if(id!=central_id && sphere_intersects_sphere(central_sphere, spheres_[id]))
+								const std::vector<std::size_t>& ids=boxes_[box_id];
+								for(std::size_t i=0;i<ids.size();i++)
 								{
-									colliding_ids.push_back(id);
+									const std::size_t id=ids[i];
+									if(id!=central_id && sphere_intersects_sphere(central_sphere, spheres_[id]))
+									{
+										colliding_ids.push_back(id);
+									}
 								}
 							}
 						}
@@ -104,8 +133,44 @@ private:
 		int y;
 		int z;
 
-		GridPoint(const SimpleSphere& s, const double grid_step) : x(static_cast<int>(s.x/grid_step)), y(static_cast<int>(s.y/grid_step)), z(static_cast<int>(s.z/grid_step))
+		GridPoint() : x(0), y(0), z(0)
 		{
+		}
+
+		GridPoint(const SimpleSphere& s, const double grid_step)
+		{
+			init(s, grid_step);
+		}
+
+		GridPoint(const SimpleSphere& s, const double grid_step, const GridPoint& grid_offset)
+		{
+			init(s, grid_step, grid_offset);
+		}
+
+		void init(const SimpleSphere& s, const double grid_step)
+		{
+			x=static_cast<int>(s.x/grid_step);
+			y=static_cast<int>(s.y/grid_step);
+			z=static_cast<int>(s.z/grid_step);
+		}
+
+		void init(const SimpleSphere& s, const double grid_step, const GridPoint& grid_offset)
+		{
+			x=static_cast<int>(s.x/grid_step)-grid_offset.x;
+			y=static_cast<int>(s.y/grid_step)-grid_offset.y;
+			z=static_cast<int>(s.z/grid_step)-grid_offset.z;
+		}
+
+		void init(const int index, const GridPoint& grid_size)
+		{
+			z=index/(grid_size.x*grid_size.y);
+			y=(index-(z*grid_size.x*grid_size.y))/grid_size.x;
+			x=(index%grid_size.x);
+		}
+
+		int index(const GridPoint& grid_size) const
+		{
+			return ((x>=0 && y>=0 && z>=0 && x<grid_size.x && y<grid_size.y &&z<grid_size.z) ? (z*grid_size.x*grid_size.y+y*grid_size.x+x) : (-1));
 		}
 
 		bool operator<(const GridPoint& gp) const
@@ -115,7 +180,9 @@ private:
 	};
 
 	std::vector<SimpleSphere> spheres_;
-	std::map<GridPoint, std::size_t> map_of_boxes_;
+	GridPoint grid_offset_;
+	GridPoint grid_size_;
+	std::vector<int> map_of_boxes_;
 	std::vector< std::vector<std::size_t> > boxes_;
 	double box_size_;
 };
