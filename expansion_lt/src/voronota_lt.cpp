@@ -160,11 +160,15 @@ int main(const int /*argc*/, const char** /*argv*/)
 		}
 	}
 
+	std::cout << "total_balls: " << spheres.size() << "\n";
+
 	voronota_lt::SpheresSearcher spheres_searcher(spheres);
 
 	std::vector< std::vector<std::size_t> > all_colliding_ids;
 
-	int total_collisions=spheres_searcher.find_all_colliding_ids(all_colliding_ids);
+	const int total_collisions=spheres_searcher.find_all_colliding_ids(all_colliding_ids);
+
+	std::cout << "total_collisions: " << total_collisions << "\n";
 
 	int total_count=0;
 	double total_area=0.0;
@@ -189,7 +193,9 @@ int main(const int /*argc*/, const char** /*argv*/)
 	    }
 	}
 
-	std::cout << "total_count: " << total_count << " total_area: " << total_area << " total_complexity: " << total_complexity << " total_collisions: " << total_collisions << "\n";
+	std::cout << "total_contacts_count: " << total_count << "\n";
+	std::cout << "total_contacts_area: " << total_area << "\n";
+	std::cout << "total_contacts_complexity: " << total_complexity << "\n";
 
 	return 1;
 }
