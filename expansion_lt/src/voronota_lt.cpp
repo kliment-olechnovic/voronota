@@ -75,7 +75,7 @@ public:
 		if(central_id<spheres_.size())
 		{
 			const SimpleSphere& central_sphere=spheres_[central_id];
-			colliding_ids.reserve(10);
+			colliding_ids.reserve(20);
 			const GridPoint gp(central_sphere, box_size_, grid_offset_);
 			GridPoint dgp=gp;
 			for(int dx=-1;dx<=1;dx++)
@@ -109,21 +109,6 @@ public:
 			}
 		}
 		return (!colliding_ids.empty());
-	}
-
-	std::size_t find_all_colliding_ids(std::vector< std::vector<std::size_t> >& all_colliding_ids) const
-	{
-		std::size_t number_of_collisions=0;
-		all_colliding_ids.clear();
-		all_colliding_ids.resize(spheres_.size());
-		for(std::size_t i=0;i<spheres_.size();i++)
-		{
-			if(find_colliding_ids(i, all_colliding_ids[i]))
-			{
-				number_of_collisions+=all_colliding_ids[i].size();
-			}
-		}
-		return number_of_collisions;
 	}
 
 private:
@@ -231,16 +216,26 @@ int main(const int /*argc*/, const char** /*argv*/)
 
 	voronota_lt::SpheresSearcher spheres_searcher(spheres);
 
-	std::vector< std::vector<std::size_t> > all_colliding_ids;
+	std::vector< std::vector<std::size_t> > all_colliding_ids(spheres_searcher.all_spheres().size());
 
-	const int total_collisions=spheres_searcher.find_all_colliding_ids(all_colliding_ids);
+	{
+#pragma omp parallel for
+		for(std::size_t i=0;i<spheres_searcher.all_spheres().size();i++)
+		{
+			spheres_searcher.find_colliding_ids(i, all_colliding_ids[i]);
+		}
+	}
+
+	std::size_t total_collisions=0;
+	for(std::size_t i=0;i<all_colliding_ids.size();i++)
+	{
+		total_collisions+=all_colliding_ids[i].size();
+	}
 
 	std::cout << "total_collisions: " << total_collisions << "\n";
 
-	int total_count=0;
-	double total_area=0.0;
-	int total_complexity=0;
-
+	std::vector< std::pair<std::size_t, std::size_t> > possible_pairs;
+	possible_pairs.reserve(total_collisions/2);
 	for(std::size_t i=0;i<all_colliding_ids.size();i++)
 	{
 	    for(std::size_t j=0;j<all_colliding_ids[i].size();j++)
@@ -249,20 +244,32 @@ int main(const int /*argc*/, const char** /*argv*/)
 	        const std::size_t b_id=all_colliding_ids[i][j];
 	        if(a_id<b_id)
 	        {
-	            voronota_lt::ConstrainedContactsConstruction::ContactDescriptor contact_descriptor;
-	            if(voronota_lt::ConstrainedContactsConstruction::construct_contact_descriptor_for_expanded_spheres_without_tessellation(spheres_searcher.all_spheres(), a_id, b_id, all_colliding_ids[a_id], all_colliding_ids[b_id], contact_descriptor))
-	            {
-	                total_count++;
-	                total_area+=contact_descriptor.area;
-	                total_complexity+=static_cast<int>(contact_descriptor.contour.size());
-	            }
+	        	possible_pairs.push_back(std::pair<std::size_t, std::size_t>(a_id, b_id));
 	        }
 	    }
 	}
 
-	std::cout << "total_contacts_count: " << total_count << "\n";
-	std::cout << "total_contacts_area: " << total_area << "\n";
-	std::cout << "total_contacts_complexity: " << total_complexity << "\n";
+	std::vector<voronota_lt::ConstrainedContactsConstruction::ContactDescriptorSummary> possible_pair_summaries(possible_pairs.size());
+
+	{
+#pragma omp parallel for
+		for(std::size_t i=0;i<possible_pairs.size();i++)
+		{
+			const std::size_t a_id=possible_pairs[i].first;
+			const std::size_t b_id=possible_pairs[i].second;
+			voronota_lt::ConstrainedContactsConstruction::construct_contact_descriptor_summary(spheres_searcher.all_spheres(), a_id, b_id, all_colliding_ids[a_id], all_colliding_ids[b_id], possible_pair_summaries[i]);
+		}
+	}
+
+	voronota_lt::ConstrainedContactsConstruction::ContactDescriptorSummary total_summary;
+	for(std::size_t i=0;i<possible_pair_summaries.size();i++)
+	{
+		total_summary.add(possible_pair_summaries[i]);
+	}
+
+	std::cout << "total_contacts_count: " << total_summary.count << "\n";
+	std::cout << "total_contacts_area: " << total_summary.area << "\n";
+	std::cout << "total_contacts_complexity: " << total_summary.complexity << "\n";
 
 	return 1;
 }
