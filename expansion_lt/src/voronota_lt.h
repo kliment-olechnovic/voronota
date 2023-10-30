@@ -76,33 +76,6 @@ OutputPointType custom_point_from_object(const InputObjectType& o)
 }
 
 template<typename InputPointTypeA, typename InputPointTypeB>
-bool points_equal(const InputPointTypeA& a, const InputPointTypeB& b)
-{
-	return (equal(a.x, b.x) && equal(a.y, b.y) && equal(a.z, b.z));
-}
-
-template<typename InputPointTypeA, typename InputPointTypeB>
-bool points_less(const InputPointTypeA& a, const InputPointTypeB& b)
-{
-	if(less(a.x, b.x)) { return true; }
-	else if(greater(a.x, b.x)) { return false; }
-
-	if(less(a.y, b.y)) { return true; }
-	else if(greater(a.y, b.y)) { return false; }
-
-	if(less(a.z, b.z)) { return true; }
-	else if(greater(a.z, b.z)) { return false; }
-
-	return false;
-}
-
-template<typename OutputPointType, typename InputPointType>
-OutputPointType inverted_point(const InputPointType& a)
-{
-	return custom_point<OutputPointType>(0-a.x, 0-a.y, 0-a.z);
-}
-
-template<typename InputPointTypeA, typename InputPointTypeB>
 double squared_distance_from_point_to_point(const InputPointTypeA& a, const InputPointTypeB& b)
 {
 	const double dx=(a.x-b.x);
@@ -279,36 +252,16 @@ OutputSphereType custom_sphere(const double x, const double y, const double z, c
 	return result;
 }
 
-template<typename OutputSphereType, typename InputObjectType>
-OutputSphereType custom_sphere_from_object(const InputObjectType& o)
-{
-	return custom_sphere<OutputSphereType>(o.x, o.y, o.z, o.r);
-}
-
 template<typename OutputSphereType, typename InputPointType>
 OutputSphereType custom_sphere_from_point(const InputPointType& p, const double r)
 {
 	return custom_sphere<OutputSphereType>(p.x, p.y, p.z, r);
 }
 
-template<typename InputSphereTypeA, typename InputSphereTypeB, typename InputPointTypeA>
-double minimal_distance_from_sphere_to_oriented_circle(const InputSphereTypeA& sphere, const InputSphereTypeB& circle, const InputPointTypeA& circle_axis)
-{
-	const double signed_dist_from_sphere_center_to_circle_plane=signed_distance_from_point_to_plane(circle, circle_axis, sphere);
-	const SimplePoint closest_point_on_circle_plane=sub_of_points<SimplePoint>(sphere, point_and_number_product<SimplePoint>(unit_point<SimplePoint>(circle_axis), signed_dist_from_sphere_center_to_circle_plane));
-	const double distance_on_circle_plane=distance_from_point_to_point(circle, closest_point_on_circle_plane);
-	if(distance_on_circle_plane<circle.r)
-	{
-		return (std::abs(signed_dist_from_sphere_center_to_circle_plane)-sphere.r);
-	}
-	double distance_surplus=(circle.r-distance_on_circle_plane);
-	return (std::sqrt((signed_dist_from_sphere_center_to_circle_plane*signed_dist_from_sphere_center_to_circle_plane)+(distance_surplus*distance_surplus))-sphere.r);
-}
-
 template<typename InputSphereTypeA, typename InputSphereTypeB>
 bool sphere_intersects_sphere(const InputSphereTypeA& a, const InputSphereTypeB& b)
 {
-	return less(distance_from_point_to_point(a, b), (a.r+b.r));
+	return less(squared_distance_from_point_to_point(a, b), (a.r+b.r)*(a.r+b.r));
 }
 
 template<typename InputSphereTypeA, typename InputSphereTypeB>
