@@ -341,17 +341,12 @@ public:
 	{
 	}
 
-	template<typename InputPointType>
-	Rotation(const InputPointType& axis, const double angle, const bool angle_in_radians) : axis(axis), angle(angle), angle_in_radians(angle_in_radians)
-	{
-	}
-
 	template<typename OutputPointType, typename InputPointType>
 	OutputPointType rotate(const InputPointType& p) const
 	{
 		if(squared_point_module(axis)>0)
 		{
-			const double radians_angle_half=(angle_in_radians ? (angle*0.5) : (angle*pi_value()/360.0));
+			const double radians_angle_half=(angle*0.5);
 			const Quaternion q1=quaternion_from_value_and_point(std::cos(radians_angle_half), point_and_number_product<SimplePoint>(unit_point<SimplePoint>(axis), std::sin(radians_angle_half)));
 			const Quaternion q2=quaternion_from_value_and_point(0, p);
 			const Quaternion q3=((q1*q2)*(!q1));
@@ -623,14 +618,14 @@ public:
 		result_points.clear();
 		if(contact_descriptor.valid)
 		{
-			const double angle_step=std::max(std::min(360*(length_step/(2*pi_value()*contact_descriptor.intersection_circle_sphere.r)), 60.0), 5.0);
+			const double angle_step=std::max(std::min(length_step/contact_descriptor.intersection_circle_sphere.r, pi_value()/3.0), pi_value()/36.0);
 			Rotation rotation(contact_descriptor.intersection_circle_axis, 0);
 			if(contact_descriptor.contour.empty())
 			{
 				const SimplePoint first_point=point_and_number_product<SimplePoint>(any_normal_of_vector<SimplePoint>(rotation.axis), contact_descriptor.intersection_circle_sphere.r);
-				result_points.reserve(static_cast<int>(360.0/angle_step)+2);
+				result_points.reserve(static_cast<int>((2.0*pi_value())/angle_step)+2);
 				result_points.push_back(sum_of_points<SimplePoint>(contact_descriptor.intersection_circle_sphere, first_point));
-				for(rotation.angle=angle_step;rotation.angle<360.0;rotation.angle+=angle_step)
+				for(rotation.angle=angle_step;rotation.angle<(2.0*pi_value());rotation.angle+=angle_step)
 				{
 					result_points.push_back(sum_of_points<SimplePoint>(contact_descriptor.intersection_circle_sphere, rotation.rotate<SimplePoint>(first_point)));
 				}
@@ -640,8 +635,7 @@ public:
 			{
 				if(contact_descriptor.sum_of_arc_angles>0.0)
 				{
-					const double sum_of_arc_angles_in_degrees=std::max(0.0, contact_descriptor.sum_of_arc_angles*(180.0/pi_value()));
-					result_points.reserve(static_cast<std::size_t>(sum_of_arc_angles_in_degrees/angle_step)+contact_descriptor.contour.size()+4);
+					result_points.reserve(static_cast<std::size_t>(contact_descriptor.sum_of_arc_angles/angle_step)+contact_descriptor.contour.size()+4);
 				}
 				else
 				{
@@ -653,11 +647,10 @@ public:
 					result_points.push_back(pr.p);
 					if(pr.angle>0.0)
 					{
-						const double angle_in_degrees=pr.angle*(180.0/pi_value());
-						if(angle_in_degrees>angle_step)
+						if(pr.angle>angle_step)
 						{
 							const  SimplePoint first_v=sub_of_points<SimplePoint>(pr.p, contact_descriptor.intersection_circle_sphere);
-							for(rotation.angle=angle_step;rotation.angle<angle_in_degrees;rotation.angle+=angle_step)
+							for(rotation.angle=angle_step;rotation.angle<pr.angle;rotation.angle+=angle_step)
 							{
 								result_points.push_back(sum_of_points<SimplePoint>(contact_descriptor.intersection_circle_sphere, rotation.rotate<SimplePoint>(first_v)));
 							}
@@ -710,10 +703,10 @@ private:
 	{
 		Rotation rotation(axis, 0);
 		const SimplePoint first_point=point_and_number_product<SimplePoint>(any_normal_of_vector<SimplePoint>(rotation.axis), base.r*1.19);
-		const double angle_step=60.0;
+		const double angle_step=pi_value()/3.0;
 		result.reserve(12);
 		result.push_back(ContourPoint(sum_of_points<SimplePoint>(base, first_point), a_id, a_id));
-		for(rotation.angle=angle_step;rotation.angle<360.0;rotation.angle+=angle_step)
+		for(rotation.angle=angle_step;rotation.angle<(2.0*pi_value());rotation.angle+=angle_step)
 		{
 			result.push_back(ContourPoint(sum_of_points<SimplePoint>(base, rotation.rotate<SimplePoint>(first_point)), a_id, a_id));
 		}

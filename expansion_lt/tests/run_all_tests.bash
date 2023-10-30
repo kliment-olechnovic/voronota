@@ -11,3 +11,4 @@ mkdir -p "./output"
 
 ../voronota-lt < "./input/balls_7br8.xyzr" > "./output/contacts_7br8_summary.txt"
 
+git status -s ./output/
