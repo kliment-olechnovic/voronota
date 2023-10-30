@@ -10,19 +10,19 @@ int main(const int /*argc*/, const char** /*argv*/)
 		std::cin >> std::ws;
 		while(std::cin.good())
 		{
-			std::cin >> sphere.x;
+			std::cin >> sphere.p.x;
 			if(std::cin.fail())
 			{
 				std::cerr << "Error reading sphere.x at line " << spheres.size() << "\n";
 				return 1;
 			}
-			std::cin >> sphere.y;
+			std::cin >> sphere.p.y;
 			if(std::cin.fail())
 			{
 				std::cerr << "Error reading sphere.y at line " << spheres.size() << "\n";
 				return 1;
 			}
-			std::cin >> sphere.z;
+			std::cin >> sphere.p.z;
 			if(std::cin.fail())
 			{
 				std::cerr << "Error reading sphere.z at line " << spheres.size() << "\n";

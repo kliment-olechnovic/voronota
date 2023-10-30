@@ -49,34 +49,31 @@ struct SimplePoint
 	double x;
 	double y;
 	double z;
+
+	SimplePoint() : x(0.0), y(0.0), z(0.0)
+	{
+	}
+
+	SimplePoint(const double x, const double y, const double z) : x(x), y(y), z(z)
+	{
+	}
 };
 
 struct SimpleSphere
 {
-	double x;
-	double y;
-	double z;
+	SimplePoint p;
 	double r;
+
+	SimpleSphere() : r(0.0)
+	{
+	}
+
+	SimpleSphere(const SimplePoint& p, const double r) : p(p), r(r)
+	{
+	}
 };
 
-template<typename OutputPointType>
-OutputPointType custom_point(const double x, const double y, const double z)
-{
-	OutputPointType result;
-	result.x=x;
-	result.y=y;
-	result.z=z;
-	return result;
-}
-
-template<typename OutputPointType, typename InputObjectType>
-OutputPointType custom_point_from_object(const InputObjectType& o)
-{
-	return custom_point<OutputPointType>(o.x, o.y, o.z);
-}
-
-template<typename InputPointTypeA, typename InputPointTypeB>
-double squared_distance_from_point_to_point(const InputPointTypeA& a, const InputPointTypeB& b)
+inline double squared_distance_from_point_to_point(const SimplePoint& a, const SimplePoint& b)
 {
 	const double dx=(a.x-b.x);
 	const double dy=(a.y-b.y);
@@ -84,68 +81,57 @@ double squared_distance_from_point_to_point(const InputPointTypeA& a, const Inpu
 	return (dx*dx+dy*dy+dz*dz);
 }
 
-template<typename InputPointTypeA, typename InputPointTypeB>
-double distance_from_point_to_point(const InputPointTypeA& a, const InputPointTypeB& b)
+inline double distance_from_point_to_point(const SimplePoint& a, const SimplePoint& b)
 {
 	return sqrt(squared_distance_from_point_to_point(a, b));
 }
 
-template<typename InputPointType>
-double squared_point_module(const InputPointType& a)
+inline double squared_point_module(const SimplePoint& a)
 {
 	return (a.x*a.x+a.y*a.y+a.z*a.z);
 }
 
-template<typename InputPointType>
-double point_module(const InputPointType& a)
+inline double point_module(const SimplePoint& a)
 {
 	return sqrt(squared_point_module(a));
 }
 
-template<typename InputPointTypeA, typename InputPointTypeB>
-double dot_product(const InputPointTypeA& a, const InputPointTypeB& b)
+inline double dot_product(const SimplePoint& a, const SimplePoint& b)
 {
 	return (a.x*b.x+a.y*b.y+a.z*b.z);
 }
 
-template<typename OutputPointType, typename InputPointTypeA, typename InputPointTypeB>
-OutputPointType cross_product(const InputPointTypeA& a, const InputPointTypeB& b)
+inline SimplePoint cross_product(const SimplePoint& a, const SimplePoint& b)
 {
-	return custom_point<OutputPointType>(a.y*b.z-a.z*b.y, a.z*b.x-a.x*b.z, a.x*b.y-a.y*b.x);
+	return SimplePoint(a.y*b.z-a.z*b.y, a.z*b.x-a.x*b.z, a.x*b.y-a.y*b.x);
 }
 
-template<typename OutputPointType, typename InputPointType>
-OutputPointType point_and_number_product(const InputPointType& a, const double k)
+inline SimplePoint point_and_number_product(const SimplePoint& a, const double k)
 {
-	return custom_point<OutputPointType>(a.x*k, a.y*k, a.z*k);
+	return SimplePoint(a.x*k, a.y*k, a.z*k);
 }
 
-template<typename OutputPointType, typename InputPointType>
-OutputPointType unit_point(const InputPointType& a)
+inline SimplePoint unit_point(const SimplePoint& a)
 {
-	return point_and_number_product<OutputPointType>(a, 1/point_module(a));
+	return point_and_number_product(a, 1/point_module(a));
 }
 
-template<typename OutputPointType, typename InputPointTypeA, typename InputPointTypeB>
-OutputPointType sum_of_points(const InputPointTypeA& a, const InputPointTypeB& b)
+inline SimplePoint sum_of_points(const SimplePoint& a, const SimplePoint& b)
 {
-	return custom_point<OutputPointType>(a.x+b.x, a.y+b.y, a.z+b.z);
+	return SimplePoint(a.x+b.x, a.y+b.y, a.z+b.z);
 }
 
-template<typename OutputPointType, typename InputPointTypeA, typename InputPointTypeB>
-OutputPointType sub_of_points(const InputPointTypeA& a, const InputPointTypeB& b)
+inline SimplePoint sub_of_points(const SimplePoint& a, const SimplePoint& b)
 {
-	return custom_point<OutputPointType>(a.x-b.x, a.y-b.y, a.z-b.z);
+	return SimplePoint(a.x-b.x, a.y-b.y, a.z-b.z);
 }
 
-template<typename InputPointTypeA, typename InputPointTypeB, typename InputPointTypeC>
-double signed_distance_from_point_to_plane(const InputPointTypeA& plane_point, const InputPointTypeB& plane_normal, const InputPointTypeC& x)
+inline double signed_distance_from_point_to_plane(const SimplePoint& plane_point, const SimplePoint& plane_normal, const SimplePoint& x)
 {
-	return dot_product(unit_point<SimplePoint>(plane_normal), sub_of_points<SimplePoint>(x, plane_point));
+	return dot_product(unit_point(plane_normal), sub_of_points(x, plane_point));
 }
 
-template<typename InputPointTypeA, typename InputPointTypeB, typename InputPointTypeC>
-int halfspace_of_point(const InputPointTypeA& plane_point, const InputPointTypeB& plane_normal, const InputPointTypeC& x)
+inline int halfspace_of_point(const SimplePoint& plane_point, const SimplePoint& plane_normal, const SimplePoint& x)
 {
 	const double sd=signed_distance_from_point_to_plane(plane_point, plane_normal, x);
 	if(sd>0)
@@ -159,32 +145,29 @@ int halfspace_of_point(const InputPointTypeA& plane_point, const InputPointTypeB
 	return 0;
 }
 
-template<typename OutputPointType, typename InputPointTypeA, typename InputPointTypeB, typename InputPointTypeC, typename InputPointTypeD>
-OutputPointType intersection_of_plane_and_segment(const InputPointTypeA& plane_point, const InputPointTypeB& plane_normal, const InputPointTypeC& a, const InputPointTypeD& b)
+inline SimplePoint intersection_of_plane_and_segment(const SimplePoint& plane_point, const SimplePoint& plane_normal, const SimplePoint& a, const SimplePoint& b)
 {
 	const double da=signed_distance_from_point_to_plane(plane_point, plane_normal, a);
 	const double db=signed_distance_from_point_to_plane(plane_point, plane_normal, b);
 	if((da-db)==0)
 	{
-		return custom_point_from_object<OutputPointType>(a);
+		return a;
 	}
 	else
 	{
 		const double t=da/(da-db);
-		return sum_of_points<OutputPointType>(a, point_and_number_product<SimplePoint>(sub_of_points<SimplePoint>(b, a), t));
+		return sum_of_points(a, point_and_number_product(sub_of_points(b, a), t));
 	}
 }
 
-template<typename InputPointTypeA, typename InputPointTypeB, typename InputPointTypeC>
-double triangle_area(const InputPointTypeA& a, const InputPointTypeB& b, const InputPointTypeC& c)
+inline double triangle_area(const SimplePoint& a, const SimplePoint& b, const SimplePoint& c)
 {
-	return (point_module(cross_product<SimplePoint>(sub_of_points<SimplePoint>(b, a), sub_of_points<SimplePoint>(c, a)))/2.0);
+	return (point_module(cross_product(sub_of_points(b, a), sub_of_points(c, a)))/2.0);
 }
 
-template<typename InputPointO, typename InputPointA, typename InputPointB>
-static double min_angle(const InputPointO& o, const InputPointA& a, const InputPointB& b)
+inline static double min_angle(const SimplePoint& o, const SimplePoint& a, const SimplePoint& b)
 {
-	double cos_val=dot_product(unit_point<SimplePoint>(sub_of_points<SimplePoint>(a, o)), unit_point<SimplePoint>(sub_of_points<SimplePoint>(b, o)));
+	double cos_val=dot_product(unit_point(sub_of_points(a, o)), unit_point(sub_of_points(b, o)));
 	if(cos_val<-1.0)
 	{
 		cos_val=-1.0;
@@ -202,12 +185,11 @@ inline double pi_value()
 	return pi;
 }
 
-template<typename InputPointO, typename InputPointA, typename InputPointB, typename InputPointC>
-static double directed_angle(const InputPointO& o, const InputPointA& a, const InputPointB& b, const InputPointC& c)
+inline double directed_angle(const SimplePoint& o, const SimplePoint& a, const SimplePoint& b, const SimplePoint& c)
 {
 	const double angle=min_angle(o, a, b);
-	const SimplePoint n=cross_product<SimplePoint>(unit_point<SimplePoint>(sub_of_points<SimplePoint>(a, o)), unit_point<SimplePoint>(sub_of_points<SimplePoint>(b, o)));
-	if(dot_product(sub_of_points<SimplePoint>(c, o), n)>=0)
+	const SimplePoint n=cross_product(unit_point(sub_of_points(a, o)), unit_point(sub_of_points(b, o)));
+	if(dot_product(sub_of_points(c, o), n)>=0)
 	{
 		return angle;
 	}
@@ -217,69 +199,54 @@ static double directed_angle(const InputPointO& o, const InputPointA& a, const I
 	}
 }
 
-template<typename OutputPointType, typename InputPointType>
-OutputPointType any_normal_of_vector(const InputPointType& a)
+SimplePoint any_normal_of_vector(const SimplePoint& a)
 {
-	SimplePoint b=custom_point_from_object<SimplePoint>(a);
+	SimplePoint b=a;
 	if(!equal(b.x, 0.0) && (!equal(b.y, 0.0) || !equal(b.z, 0.0)))
 	{
 		b.x=0.0-b.x;
-		return unit_point<OutputPointType>(cross_product<OutputPointType>(a, b));
+		return unit_point(cross_product(a, b));
 	}
 	else if(!equal(b.y, 0.0) && (!equal(b.x, 0.0) || !equal(b.z, 0.0)))
 	{
 		b.y=0.0-b.y;
-		return unit_point<OutputPointType>(cross_product<OutputPointType>(a, b));
+		return unit_point(cross_product(a, b));
 	}
 	else if(!equal(b.x, 0.0))
 	{
-		return custom_point<OutputPointType>(0, 1, 0);
+		return SimplePoint(0.0, 1.0, 0.0);
 	}
 	else
 	{
-		return custom_point<OutputPointType>(1, 0, 0);
+		return SimplePoint(1.0, 0.0, 0.0);
 	}
 }
 
-template<typename OutputSphereType>
-OutputSphereType custom_sphere(const double x, const double y, const double z, const double r)
+inline bool sphere_intersects_sphere(const SimpleSphere& a, const SimpleSphere& b)
 {
-	OutputSphereType result;
-	result.x=x;
-	result.y=y;
-	result.z=z;
-	result.r=r;
-	return result;
+	return less(squared_distance_from_point_to_point(a.p, b.p), (a.r+b.r)*(a.r+b.r));
 }
 
-template<typename OutputSphereType, typename InputPointType>
-OutputSphereType custom_sphere_from_point(const InputPointType& p, const double r)
+inline bool sphere_contains_sphere(const SimpleSphere& a, const SimpleSphere& b)
 {
-	return custom_sphere<OutputSphereType>(p.x, p.y, p.z, r);
+	return (greater_or_equal(a.r, b.r) && less_or_equal(distance_from_point_to_point(a.p, b.p), (a.r-b.r)));
 }
 
-template<typename InputSphereTypeA, typename InputSphereTypeB>
-bool sphere_intersects_sphere(const InputSphereTypeA& a, const InputSphereTypeB& b)
+inline SimplePoint center_of_intersection_circle_of_two_spheres(const SimpleSphere& a, const SimpleSphere& b)
 {
-	return less(squared_distance_from_point_to_point(a, b), (a.r+b.r)*(a.r+b.r));
+	const SimplePoint cv=sub_of_points(b.p, a.p);
+	const double cm=point_module(cv);
+	const double cos_g=(a.r*a.r+cm*cm-b.r*b.r)/(2*a.r*cm);
+	return sum_of_points(a.p, point_and_number_product(cv, a.r*cos_g/cm));
 }
 
-template<typename InputSphereTypeA, typename InputSphereTypeB>
-bool sphere_contains_sphere(const InputSphereTypeA& a, const InputSphereTypeB& b)
+inline SimpleSphere intersection_circle_of_two_spheres(const SimpleSphere& a, const SimpleSphere& b)
 {
-	return (greater_or_equal(a.r, b.r) && less_or_equal(distance_from_point_to_point(a, b), (a.r-b.r)));
-}
-
-template<typename OutputSphereType, typename InputSphereTypeA, typename InputSphereTypeB>
-OutputSphereType intersection_circle_of_two_spheres(const InputSphereTypeA& a, const InputSphereTypeB& b)
-{
-	const SimplePoint ap=custom_point_from_object<SimplePoint>(a);
-	const SimplePoint bp=custom_point_from_object<SimplePoint>(b);
-	const SimplePoint cv=sub_of_points<SimplePoint>(bp, ap);
+	const SimplePoint cv=sub_of_points(b.p, a.p);
 	const double cm=point_module(cv);
 	const double cos_g=(a.r*a.r+cm*cm-b.r*b.r)/(2*a.r*cm);
 	const double sin_g=std::sqrt(1-cos_g*cos_g);
-	return custom_sphere_from_point<OutputSphereType>(sum_of_points<SimplePoint>(ap, point_and_number_product<SimplePoint>(cv, a.r*cos_g/cm)), a.r*sin_g);
+	return SimpleSphere(sum_of_points(a.p, point_and_number_product(cv, a.r*cos_g/cm)), a.r*sin_g);
 }
 
 class Rotation
@@ -289,25 +256,23 @@ public:
 	double angle;
 	bool angle_in_radians;
 
-	template<typename InputPointType>
-	Rotation(const InputPointType& axis, const double angle) : axis(axis), angle(angle), angle_in_radians(false)
+	Rotation(const SimplePoint& axis, const double angle) : axis(axis), angle(angle), angle_in_radians(false)
 	{
 	}
 
-	template<typename OutputPointType, typename InputPointType>
-	OutputPointType rotate(const InputPointType& p) const
+	inline SimplePoint rotate(const SimplePoint& p) const
 	{
 		if(squared_point_module(axis)>0)
 		{
 			const double radians_angle_half=(angle*0.5);
-			const Quaternion q1=Quaternion(std::cos(radians_angle_half), point_and_number_product<SimplePoint>(unit_point<SimplePoint>(axis), std::sin(radians_angle_half)));
+			const Quaternion q1=Quaternion(std::cos(radians_angle_half), point_and_number_product(unit_point(axis), std::sin(radians_angle_half)));
 			const Quaternion q2=Quaternion(0.0, p);
 			const Quaternion q3=Quaternion::product(Quaternion::product(q1, q2), Quaternion::invert(q1));
-			return custom_point<OutputPointType>(q3.b, q3.c, q3.d);
+			return SimplePoint(q3.b, q3.c, q3.d);
 		}
 		else
 		{
-			return custom_point_from_object<OutputPointType>(p);
+			return p;
 		}
 	}
 
@@ -323,12 +288,11 @@ private:
 		{
 		}
 
-		template<typename InputPointType>
-		Quaternion(const double a, const InputPointType& p) : a(a), b(p.x), c(p.y), d(p.z)
+		Quaternion(const double a, const SimplePoint& p) : a(a), b(p.x), c(p.y), d(p.z)
 		{
 		}
 
-		static Quaternion product(const Quaternion& q1, const Quaternion& q2)
+		static inline Quaternion product(const Quaternion& q1, const Quaternion& q2)
 		{
 			return Quaternion(
 					q1.a*q2.a - q1.b*q2.b - q1.c*q2.c - q1.d*q2.d,
@@ -337,7 +301,7 @@ private:
 					q1.a*q2.d + q1.b*q2.c - q1.c*q2.b + q1.d*q2.a);
 		}
 
-		static Quaternion invert(const Quaternion& q)
+		static inline Quaternion invert(const Quaternion& q)
 		{
 			return Quaternion(q.a, 0-q.b, 0-q.c, 0-q.d);
 		}
@@ -395,11 +359,6 @@ public:
 				boxes_[box_id].push_back(i);
 			}
 		}
-	}
-
-	void init()
-	{
-
 	}
 
 	const std::vector<SimpleSphere>& all_spheres() const
@@ -472,23 +431,16 @@ private:
 
 		void init(const SimpleSphere& s, const double grid_step)
 		{
-			x=static_cast<int>(s.x/grid_step);
-			y=static_cast<int>(s.y/grid_step);
-			z=static_cast<int>(s.z/grid_step);
+			x=static_cast<int>(s.p.x/grid_step);
+			y=static_cast<int>(s.p.y/grid_step);
+			z=static_cast<int>(s.p.z/grid_step);
 		}
 
 		void init(const SimpleSphere& s, const double grid_step, const GridPoint& grid_offset)
 		{
-			x=static_cast<int>(s.x/grid_step)-grid_offset.x;
-			y=static_cast<int>(s.y/grid_step)-grid_offset.y;
-			z=static_cast<int>(s.z/grid_step)-grid_offset.z;
-		}
-
-		void init(const int index, const GridPoint& grid_size)
-		{
-			z=index/(grid_size.x*grid_size.y);
-			y=(index-(z*grid_size.x*grid_size.y))/grid_size.x;
-			x=(index%grid_size.x);
+			x=static_cast<int>(s.p.x/grid_step)-grid_offset.x;
+			y=static_cast<int>(s.p.y/grid_step)-grid_offset.y;
+			z=static_cast<int>(s.p.z/grid_step)-grid_offset.z;
 		}
 
 		int index(const GridPoint& grid_size) const
@@ -629,7 +581,7 @@ public:
 			const SimpleSphere& b=spheres[b_id];
 			if(sphere_intersects_sphere(a, b))
 			{
-				result_contact_descriptor.intersection_circle_sphere=intersection_circle_of_two_spheres<SimpleSphere>(a, b);
+				result_contact_descriptor.intersection_circle_sphere=intersection_circle_of_two_spheres(a, b);
 				if(result_contact_descriptor.intersection_circle_sphere.r>0.0)
 				{
 					bool discarded=false;
@@ -647,12 +599,12 @@ public:
 								if(sphere_intersects_sphere(result_contact_descriptor.intersection_circle_sphere, c) && sphere_intersects_sphere(j_alt_sphere, c))
 								{
 									NeighborDescriptor nd(neighbor_id, a, c);
-									const double cos_val=dot_product(unit_point<SimplePoint>(sub_of_points<SimplePoint>(result_contact_descriptor.intersection_circle_sphere, a)), unit_point<SimplePoint>(sub_of_points<SimplePoint>(nd.ac_plane_center, a)));
+									const double cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(nd.ac_plane_center, a.p)));
 									if(cos_val<1.0)
 									{
-										const double l=std::abs(signed_distance_from_point_to_plane(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere));
+										const double l=std::abs(signed_distance_from_point_to_plane(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p));
 										const double xl=l/std::sqrt(1-(cos_val*cos_val));
-										const int hsi=halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere);
+										const int hsi=halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p);
 										if(xl>=result_contact_descriptor.intersection_circle_sphere.r)
 										{
 											if(hsi>0)
@@ -672,10 +624,10 @@ public:
 					}
 					if(!discarded)
 					{
-						result_contact_descriptor.intersection_circle_axis=unit_point<SimplePoint>(sub_of_points<SimplePoint>(b, a));
+						result_contact_descriptor.intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
 						if(neighbor_descriptors.empty())
 						{
-							result_contact_descriptor.contour_barycenter=custom_point_from_object<SimplePoint>(result_contact_descriptor.intersection_circle_sphere);
+							result_contact_descriptor.contour_barycenter=result_contact_descriptor.intersection_circle_sphere.p;
 							result_contact_descriptor.sum_of_arc_angles=2.0*pi_value();
 							result_contact_descriptor.area=result_contact_descriptor.intersection_circle_sphere.r*result_contact_descriptor.intersection_circle_sphere.r*pi_value();
 							result_contact_descriptor.valid=true;
@@ -740,14 +692,14 @@ public:
 			Rotation rotation(contact_descriptor.intersection_circle_axis, 0);
 			if(contact_descriptor.contour.empty())
 			{
-				const SimplePoint first_point=point_and_number_product<SimplePoint>(any_normal_of_vector<SimplePoint>(rotation.axis), contact_descriptor.intersection_circle_sphere.r);
+				const SimplePoint first_point=point_and_number_product(any_normal_of_vector(rotation.axis), contact_descriptor.intersection_circle_sphere.r);
 				result_points.reserve(static_cast<int>((2.0*pi_value())/angle_step)+2);
-				result_points.push_back(sum_of_points<SimplePoint>(contact_descriptor.intersection_circle_sphere, first_point));
+				result_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, first_point));
 				for(rotation.angle=angle_step;rotation.angle<(2.0*pi_value());rotation.angle+=angle_step)
 				{
-					result_points.push_back(sum_of_points<SimplePoint>(contact_descriptor.intersection_circle_sphere, rotation.rotate<SimplePoint>(first_point)));
+					result_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotation.rotate(first_point)));
 				}
-				result_barycenter=custom_point_from_object<SimplePoint>(contact_descriptor.intersection_circle_sphere);
+				result_barycenter=contact_descriptor.intersection_circle_sphere.p;
 			}
 			else
 			{
@@ -767,10 +719,10 @@ public:
 					{
 						if(pr.angle>angle_step)
 						{
-							const  SimplePoint first_v=sub_of_points<SimplePoint>(pr.p, contact_descriptor.intersection_circle_sphere);
+							const SimplePoint first_v=sub_of_points(pr.p, contact_descriptor.intersection_circle_sphere.p);
 							for(rotation.angle=angle_step;rotation.angle<pr.angle;rotation.angle+=angle_step)
 							{
-								result_points.push_back(sum_of_points<SimplePoint>(contact_descriptor.intersection_circle_sphere, rotation.rotate<SimplePoint>(first_v)));
+								result_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotation.rotate(first_v)));
 							}
 						}
 					}
@@ -803,7 +755,7 @@ private:
 		SimplePoint ac_plane_center;
 		SimplePoint ac_plane_normal;
 
-		NeighborDescriptor(const std::size_t c_id, const SimpleSphere& a, const SimpleSphere& c) : sort_value(0.0), c_id(c_id), ac_plane_center(custom_point_from_object<SimplePoint>(intersection_circle_of_two_spheres<SimpleSphere>(a, c))), ac_plane_normal(unit_point<SimplePoint>(sub_of_points<SimplePoint>(c, a)))
+		NeighborDescriptor(const std::size_t c_id, const SimpleSphere& a, const SimpleSphere& c) : sort_value(0.0), c_id(c_id), ac_plane_center(center_of_intersection_circle_of_two_spheres(a, c)), ac_plane_normal(unit_point(sub_of_points(c.p, a.p)))
 		{
 		}
 
@@ -820,13 +772,13 @@ private:
 			Contour& result)
 	{
 		Rotation rotation(axis, 0);
-		const SimplePoint first_point=point_and_number_product<SimplePoint>(any_normal_of_vector<SimplePoint>(rotation.axis), base.r*1.19);
+		const SimplePoint first_point=point_and_number_product(any_normal_of_vector(rotation.axis), base.r*1.19);
 		const double angle_step=pi_value()/3.0;
 		result.reserve(12);
-		result.push_back(ContourPoint(sum_of_points<SimplePoint>(base, first_point), a_id, a_id));
+		result.push_back(ContourPoint(sum_of_points(base.p, first_point), a_id, a_id));
 		for(rotation.angle=angle_step;rotation.angle<(2.0*pi_value());rotation.angle+=angle_step)
 		{
-			result.push_back(ContourPoint(sum_of_points<SimplePoint>(base, rotation.rotate<SimplePoint>(first_point)), a_id, a_id));
+			result.push_back(ContourPoint(sum_of_points(base.p, rotation.rotate(first_point)), a_id, a_id));
 		}
 	}
 
@@ -944,12 +896,12 @@ private:
 
 		{
 			const std::size_t i_left=((i_start)>0 ? (i_start-1) : (contour.size()-1));
-			contour[i_start]=ContourPoint(intersection_of_plane_and_segment<SimplePoint>(ac_plane_center, ac_plane_normal, contour[i_start].p, contour[i_left].p), contour[i_left].right_id, contour[i_start].left_id);
+			contour[i_start]=ContourPoint(intersection_of_plane_and_segment(ac_plane_center, ac_plane_normal, contour[i_start].p, contour[i_left].p), contour[i_left].right_id, contour[i_start].left_id);
 		}
 
 		{
 			const std::size_t i_right=((i_end+1)<contour.size() ? (i_end+1) : 0);
-			contour[i_end]=ContourPoint(intersection_of_plane_and_segment<SimplePoint>(ac_plane_center, ac_plane_normal, contour[i_end].p, contour[i_right].p), contour[i_end].right_id, contour[i_right].left_id);
+			contour[i_end]=ContourPoint(intersection_of_plane_and_segment(ac_plane_center, ac_plane_normal, contour[i_end].p, contour[i_right].p), contour[i_end].right_id, contour[i_right].left_id);
 		}
 	}
 
@@ -963,7 +915,7 @@ private:
 		std::size_t outsiders_count=0;
 		for(std::size_t i=0;i<contour.size();i++)
 		{
-			if(squared_distance_from_point_to_point(contour[i].p, ic_sphere)<=(ic_sphere.r*ic_sphere.r))
+			if(squared_distance_from_point_to_point(contour[i].p, ic_sphere.p)<=(ic_sphere.r*ic_sphere.r))
 			{
 				contour[i].indicator=0;
 			}
@@ -988,9 +940,9 @@ private:
 						if(pr1.indicator==1 && pr2.indicator==1)
 						{
 							SimplePoint mp;
-							if(project_point_inside_line(custom_point_from_object<SimplePoint>(ic_sphere), pr1.p, pr2.p, mp))
+							if(project_point_inside_line(ic_sphere.p, pr1.p, pr2.p, mp))
 							{
-								if(squared_distance_from_point_to_point(mp, ic_sphere)<=(ic_sphere.r*ic_sphere.r))
+								if(squared_distance_from_point_to_point(mp, ic_sphere.p)<=(ic_sphere.r*ic_sphere.r))
 								{
 									SimplePoint ip1;
 									SimplePoint ip2;
@@ -1071,7 +1023,7 @@ private:
 						ContourPoint& pr2=contour[(i+1)<contour.size() ? (i+1) : 0];
 						if(pr1.right_id==a_id && pr2.left_id==a_id)
 						{
-							pr1.angle=directed_angle(ic_sphere, pr1.p, pr2.p, sum_of_points<SimplePoint>(ic_sphere, ic_axis));
+							pr1.angle=directed_angle(ic_sphere.p, pr1.p, pr2.p, sum_of_points(ic_sphere.p, ic_axis));
 							sum_of_arc_angles+=pr1.angle;
 							pr1.indicator=2;
 							pr2.indicator=3;
@@ -1087,11 +1039,11 @@ private:
 
 	static bool project_point_inside_line(const SimplePoint& o, const SimplePoint& a, const SimplePoint& b, SimplePoint& result)
 	{
-		const SimplePoint v=unit_point<SimplePoint>(sub_of_points<SimplePoint>(b, a));
-		const double l=dot_product(v, sub_of_points<SimplePoint>(o, a));
+		const SimplePoint v=unit_point(sub_of_points(b, a));
+		const double l=dot_product(v, sub_of_points(o, a));
 		if(l>0.0 && (l*l)<=squared_distance_from_point_to_point(a, b))
 		{
-			result=sum_of_points<SimplePoint>(a, point_and_number_product<SimplePoint>(v, l));
+			result=sum_of_points(a, point_and_number_product(v, l));
 			return true;
 		}
 		return false;
@@ -1102,13 +1054,13 @@ private:
 		const double dist_in_to_out=distance_from_point_to_point(p_in, p_out);
 		if(dist_in_to_out>0.0)
 		{
-			const SimplePoint v=point_and_number_product<SimplePoint>(sub_of_points<SimplePoint>(p_in, p_out), 1.0/dist_in_to_out);
-			const SimplePoint u=sub_of_points<SimplePoint>(circle, p_out);
-			const SimplePoint s=sum_of_points<SimplePoint>(p_out, point_and_number_product<SimplePoint>(v, dot_product(v, u)));
-			const double ll=(circle.r*circle.r)-squared_distance_from_point_to_point(circle, s);
+			const SimplePoint v=point_and_number_product(sub_of_points(p_in, p_out), 1.0/dist_in_to_out);
+			const SimplePoint u=sub_of_points(circle.p, p_out);
+			const SimplePoint s=sum_of_points(p_out, point_and_number_product(v, dot_product(v, u)));
+			const double ll=(circle.r*circle.r)-squared_distance_from_point_to_point(circle.p, s);
 			if(ll>=0.0)
 			{
-				result=sum_of_points<SimplePoint>(s, point_and_number_product<SimplePoint>(v, 0.0-std::sqrt(ll)));
+				result=sum_of_points(s, point_and_number_product(v, 0.0-std::sqrt(ll)));
 				return true;
 			}
 		}
