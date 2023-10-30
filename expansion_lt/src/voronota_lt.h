@@ -73,6 +73,22 @@ struct SimpleSphere
 	}
 };
 
+struct SimpleQuaternion
+{
+	double a;
+	double b;
+	double c;
+	double d;
+
+	SimpleQuaternion(const double a, const double b, const double c, const double d) : a(a), b(b), c(c), d(d)
+	{
+	}
+
+	SimpleQuaternion(const double a, const SimplePoint& p) : a(a), b(p.x), c(p.y), d(p.z)
+	{
+	}
+};
+
 inline double squared_distance_from_point_to_point(const SimplePoint& a, const SimplePoint& b)
 {
 	const double dx=(a.x-b.x);
@@ -249,64 +265,65 @@ inline SimpleSphere intersection_circle_of_two_spheres(const SimpleSphere& a, co
 	return SimpleSphere(sum_of_points(a.p, point_and_number_product(cv, a.r*cos_g/cm)), a.r*sin_g);
 }
 
-class Rotation
+inline bool project_point_inside_line(const SimplePoint& o, const SimplePoint& a, const SimplePoint& b, SimplePoint& result)
 {
-public:
-	SimplePoint axis;
-	double angle;
-	bool angle_in_radians;
-
-	Rotation(const SimplePoint& axis, const double angle) : axis(axis), angle(angle), angle_in_radians(false)
+	const SimplePoint v=unit_point(sub_of_points(b, a));
+	const double l=dot_product(v, sub_of_points(o, a));
+	if(l>0.0 && (l*l)<=squared_distance_from_point_to_point(a, b))
 	{
+		result=sum_of_points(a, point_and_number_product(v, l));
+		return true;
 	}
+	return false;
+}
 
-	inline SimplePoint rotate(const SimplePoint& p) const
+inline bool intersect_segment_with_circle(const SimpleSphere& circle, const SimplePoint& p_in, const SimplePoint& p_out, SimplePoint& result)
+{
+	const double dist_in_to_out=distance_from_point_to_point(p_in, p_out);
+	if(dist_in_to_out>0.0)
 	{
-		if(squared_point_module(axis)>0)
+		const SimplePoint v=point_and_number_product(sub_of_points(p_in, p_out), 1.0/dist_in_to_out);
+		const SimplePoint u=sub_of_points(circle.p, p_out);
+		const SimplePoint s=sum_of_points(p_out, point_and_number_product(v, dot_product(v, u)));
+		const double ll=(circle.r*circle.r)-squared_distance_from_point_to_point(circle.p, s);
+		if(ll>=0.0)
 		{
-			const double radians_angle_half=(angle*0.5);
-			const Quaternion q1=Quaternion(std::cos(radians_angle_half), point_and_number_product(unit_point(axis), std::sin(radians_angle_half)));
-			const Quaternion q2=Quaternion(0.0, p);
-			const Quaternion q3=Quaternion::product(Quaternion::product(q1, q2), Quaternion::invert(q1));
-			return SimplePoint(q3.b, q3.c, q3.d);
-		}
-		else
-		{
-			return p;
+			result=sum_of_points(s, point_and_number_product(v, 0.0-std::sqrt(ll)));
+			return true;
 		}
 	}
+	return false;
+}
 
-private:
-	struct Quaternion
+inline SimpleQuaternion quaternion_product(const SimpleQuaternion& q1, const SimpleQuaternion& q2)
+{
+	return SimpleQuaternion(
+			q1.a*q2.a - q1.b*q2.b - q1.c*q2.c - q1.d*q2.d,
+			q1.a*q2.b + q1.b*q2.a + q1.c*q2.d - q1.d*q2.c,
+			q1.a*q2.c - q1.b*q2.d + q1.c*q2.a + q1.d*q2.b,
+			q1.a*q2.d + q1.b*q2.c - q1.c*q2.b + q1.d*q2.a);
+}
+
+inline SimpleQuaternion inverted_quaternion(const SimpleQuaternion& q)
+{
+	return SimpleQuaternion(q.a, 0-q.b, 0-q.c, 0-q.d);
+}
+
+inline SimplePoint rotate_point_around_axis(const SimplePoint axis, const double angle, const SimplePoint& p)
+{
+	if(squared_point_module(axis)>0)
 	{
-		double a;
-		double b;
-		double c;
-		double d;
-
-		Quaternion(const double a, const double b, const double c, const double d) : a(a), b(b), c(c), d(d)
-		{
-		}
-
-		Quaternion(const double a, const SimplePoint& p) : a(a), b(p.x), c(p.y), d(p.z)
-		{
-		}
-
-		static inline Quaternion product(const Quaternion& q1, const Quaternion& q2)
-		{
-			return Quaternion(
-					q1.a*q2.a - q1.b*q2.b - q1.c*q2.c - q1.d*q2.d,
-					q1.a*q2.b + q1.b*q2.a + q1.c*q2.d - q1.d*q2.c,
-					q1.a*q2.c - q1.b*q2.d + q1.c*q2.a + q1.d*q2.b,
-					q1.a*q2.d + q1.b*q2.c - q1.c*q2.b + q1.d*q2.a);
-		}
-
-		static inline Quaternion invert(const Quaternion& q)
-		{
-			return Quaternion(q.a, 0-q.b, 0-q.c, 0-q.d);
-		}
-	};
-};
+		const double radians_angle_half=(angle*0.5);
+		const SimpleQuaternion q1=SimpleQuaternion(std::cos(radians_angle_half), point_and_number_product(unit_point(axis), std::sin(radians_angle_half)));
+		const SimpleQuaternion q2=SimpleQuaternion(0.0, p);
+		const SimpleQuaternion q3=quaternion_product(quaternion_product(q1, q2), inverted_quaternion(q1));
+		return SimplePoint(q3.b, q3.c, q3.d);
+	}
+	else
+	{
+		return p;
+	}
+}
 
 class SpheresSearcher
 {
@@ -689,15 +706,14 @@ public:
 		if(contact_descriptor.valid)
 		{
 			const double angle_step=std::max(std::min(length_step/contact_descriptor.intersection_circle_sphere.r, pi_value()/3.0), pi_value()/36.0);
-			Rotation rotation(contact_descriptor.intersection_circle_axis, 0);
 			if(contact_descriptor.contour.empty())
 			{
-				const SimplePoint first_point=point_and_number_product(any_normal_of_vector(rotation.axis), contact_descriptor.intersection_circle_sphere.r);
+				const SimplePoint first_point=point_and_number_product(any_normal_of_vector(contact_descriptor.intersection_circle_axis), contact_descriptor.intersection_circle_sphere.r);
 				result_points.reserve(static_cast<int>((2.0*pi_value())/angle_step)+2);
 				result_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, first_point));
-				for(rotation.angle=angle_step;rotation.angle<(2.0*pi_value());rotation.angle+=angle_step)
+				for(double rotation_angle=angle_step;rotation_angle<(2.0*pi_value());rotation_angle+=angle_step)
 				{
-					result_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotation.rotate(first_point)));
+					result_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_point)));
 				}
 				result_barycenter=contact_descriptor.intersection_circle_sphere.p;
 			}
@@ -720,9 +736,9 @@ public:
 						if(pr.angle>angle_step)
 						{
 							const SimplePoint first_v=sub_of_points(pr.p, contact_descriptor.intersection_circle_sphere.p);
-							for(rotation.angle=angle_step;rotation.angle<pr.angle;rotation.angle+=angle_step)
+							for(double rotation_angle=angle_step;rotation_angle<pr.angle;rotation_angle+=angle_step)
 							{
-								result_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotation.rotate(first_v)));
+								result_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_v)));
 							}
 						}
 					}
@@ -771,14 +787,13 @@ private:
 			const SimplePoint& axis,
 			Contour& result)
 	{
-		Rotation rotation(axis, 0);
-		const SimplePoint first_point=point_and_number_product(any_normal_of_vector(rotation.axis), base.r*1.19);
+		const SimplePoint first_point=point_and_number_product(any_normal_of_vector(axis), base.r*1.19);
 		const double angle_step=pi_value()/3.0;
 		result.reserve(12);
 		result.push_back(ContourPoint(sum_of_points(base.p, first_point), a_id, a_id));
-		for(rotation.angle=angle_step;rotation.angle<(2.0*pi_value());rotation.angle+=angle_step)
+		for(double rotation_angle=angle_step;rotation_angle<(2.0*pi_value());rotation_angle+=angle_step)
 		{
-			result.push_back(ContourPoint(sum_of_points(base.p, rotation.rotate(first_point)), a_id, a_id));
+			result.push_back(ContourPoint(sum_of_points(base.p, rotate_point_around_axis(axis, rotation_angle, first_point)), a_id, a_id));
 		}
 	}
 
@@ -946,7 +961,7 @@ private:
 								{
 									SimplePoint ip1;
 									SimplePoint ip2;
-									if(intersect_seqment_with_circle(ic_sphere, mp, pr1.p, ip1) && intersect_seqment_with_circle(ic_sphere, mp, pr2.p, ip2))
+									if(intersect_segment_with_circle(ic_sphere, mp, pr1.p, ip1) && intersect_segment_with_circle(ic_sphere, mp, pr2.p, ip2))
 									{
 										const std::size_t pr2_left_id=pr2.left_id;
 										contour.insert(((i+1)<contour.size() ? (contour.begin()+(i+1)) : contour.end()), 2, ContourPoint(ip1, a_id, pr1.right_id));
@@ -962,7 +977,7 @@ private:
 							if(pr1.indicator==1 && pr2.indicator!=1)
 							{
 								SimplePoint ip;
-								if(intersect_seqment_with_circle(ic_sphere, pr2.p, pr1.p, ip))
+								if(intersect_segment_with_circle(ic_sphere, pr2.p, pr1.p, ip))
 								{
 									contour.insert(((i+1)<contour.size() ? (contour.begin()+(i+1)) : contour.end()), ContourPoint(ip, a_id, pr1.right_id));
 									insertions_count++;
@@ -977,7 +992,7 @@ private:
 							else if(pr1.indicator!=1 && pr2.indicator==1)
 							{
 								SimplePoint ip;
-								if(intersect_seqment_with_circle(ic_sphere, pr1.p, pr2.p, ip))
+								if(intersect_segment_with_circle(ic_sphere, pr1.p, pr2.p, ip))
 								{
 									contour.insert(((i+1)<contour.size() ? (contour.begin()+(i+1)) : contour.end()), ContourPoint(ip, pr2.left_id, a_id));
 									insertions_count++;
@@ -1035,36 +1050,6 @@ private:
 		}
 
 		return (outsiders_count>0);
-	}
-
-	static bool project_point_inside_line(const SimplePoint& o, const SimplePoint& a, const SimplePoint& b, SimplePoint& result)
-	{
-		const SimplePoint v=unit_point(sub_of_points(b, a));
-		const double l=dot_product(v, sub_of_points(o, a));
-		if(l>0.0 && (l*l)<=squared_distance_from_point_to_point(a, b))
-		{
-			result=sum_of_points(a, point_and_number_product(v, l));
-			return true;
-		}
-		return false;
-	}
-
-	static bool intersect_seqment_with_circle(const SimpleSphere& circle, const SimplePoint& p_in, const SimplePoint& p_out, SimplePoint& result)
-	{
-		const double dist_in_to_out=distance_from_point_to_point(p_in, p_out);
-		if(dist_in_to_out>0.0)
-		{
-			const SimplePoint v=point_and_number_product(sub_of_points(p_in, p_out), 1.0/dist_in_to_out);
-			const SimplePoint u=sub_of_points(circle.p, p_out);
-			const SimplePoint s=sum_of_points(p_out, point_and_number_product(v, dot_product(v, u)));
-			const double ll=(circle.r*circle.r)-squared_distance_from_point_to_point(circle.p, s);
-			if(ll>=0.0)
-			{
-				result=sum_of_points(s, point_and_number_product(v, 0.0-std::sqrt(ll)));
-				return true;
-			}
-		}
-		return false;
 	}
 };
 
