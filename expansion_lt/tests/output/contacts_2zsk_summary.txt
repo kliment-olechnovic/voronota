@@ -3,3 +3,4 @@ total_collisions: 164464
 total_contacts_count: 23855
 total_contacts_area: 75956.7
 total_contacts_complexity: 121968
+total_sasa: 18650.1

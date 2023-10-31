@@ -531,6 +531,8 @@ public:
 			contour.clear();
 			sum_of_arc_angles=0.0;
 			area=0.0;
+			solid_angle_a=0.0;
+			solid_angle_b=0.0;
 			valid=false;
 		}
 	};
@@ -538,21 +540,29 @@ public:
 	struct ContactDescriptorSummary
 	{
 		int count;
+		std::size_t id_a;
+		std::size_t id_b;
 		double area;
 		double arc_length;
 		int complexity;
+		double solid_angle_a;
+		double solid_angle_b;
 		bool valid;
 
-		ContactDescriptorSummary() : count(0), area(0.0), arc_length(0.0), complexity(0), valid(false)
+		ContactDescriptorSummary() : count(0), id_a(0), id_b(0), area(0.0), arc_length(0.0), complexity(0), valid(false)
 		{
 		}
 
 		void clear()
 		{
 			count=0;
+			id_a=0;
+			id_b=0;
 			area=0.0;
 			arc_length=0.0;
 			complexity=0;
+			solid_angle_a=0.0;
+			solid_angle_b=0.0;
 			valid=false;
 		}
 
@@ -561,9 +571,13 @@ public:
 			if(cd.valid)
 			{
 				count++;
+				id_a=cd.id_a;
+				id_b=cd.id_b;
 				area+=cd.area;
 				arc_length+=(cd.sum_of_arc_angles*cd.intersection_circle_sphere.r);
 				complexity+=cd.contour.size();
+				solid_angle_a=cd.solid_angle_a;
+				solid_angle_b=cd.solid_angle_b;
 				valid=true;
 			}
 		}
@@ -573,9 +587,13 @@ public:
 			if(cds.valid)
 			{
 				count+=cds.count;
+				id_a=0;
+				id_b=0;
 				area+=cds.area;
 				arc_length+=cds.arc_length;
 				complexity+=cds.complexity;
+				solid_angle_a=0.0;
+				solid_angle_b=0.0;
 				valid=true;
 			}
 		}

@@ -95,9 +95,30 @@ int main(const int /*argc*/, const char** /*argv*/)
 		total_summary.add(possible_pair_summaries[i]);
 	}
 
+	std::vector<double> spheres_sasa(spheres_searcher.all_spheres().size(), 0.0);
+
+	for(std::size_t i=0;i<possible_pair_summaries.size();i++)
+	{
+		const voronota_lt::ConstrainedContactsConstruction::ContactDescriptorSummary& pair_summary=possible_pair_summaries[i];
+		if(pair_summary.valid)
+		{
+			spheres_sasa[pair_summary.id_a]+=pair_summary.solid_angle_a;
+			spheres_sasa[pair_summary.id_b]+=pair_summary.solid_angle_b;
+		}
+	}
+
+	double total_sasa=0.0;
+	for(std::size_t i=0;i<spheres_sasa.size();i++)
+	{
+		const double r=spheres_searcher.all_spheres()[i].r;
+		spheres_sasa[i]=((4.0*voronota_lt::pi_value())-spheres_sasa[i])*(r*r);
+		total_sasa+=spheres_sasa[i];
+	}
+
 	std::cout << "total_contacts_count: " << total_summary.count << "\n";
 	std::cout << "total_contacts_area: " << total_summary.area << "\n";
 	std::cout << "total_contacts_complexity: " << total_summary.complexity << "\n";
+	std::cout << "total_sasa: " << total_sasa << "\n";
 
 	return 1;
 }
