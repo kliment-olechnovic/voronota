@@ -89,7 +89,7 @@ int main(const int /*argc*/, const char** /*argv*/)
 		}
 	}
 
-	voronota_lt::ConstrainedContactsConstruction::ContactDescriptorSummary total_summary;
+	voronota_lt::ConstrainedContactsConstruction::TotalContactDescriptorSummary total_summary;
 	for(std::size_t i=0;i<possible_pair_summaries.size();i++)
 	{
 		total_summary.add(possible_pair_summaries[i]);

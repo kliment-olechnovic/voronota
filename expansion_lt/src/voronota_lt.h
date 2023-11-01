@@ -539,7 +539,6 @@ public:
 
 	struct ContactDescriptorSummary
 	{
-		int count;
 		std::size_t id_a;
 		std::size_t id_b;
 		double area;
@@ -549,15 +548,14 @@ public:
 		double solid_angle_b;
 		bool valid;
 
-		ContactDescriptorSummary() : count(0), id_a(0), id_b(0), area(0.0), arc_length(0.0), complexity(0), valid(false)
+		ContactDescriptorSummary() : id_a(0), id_b(0), area(0.0), arc_length(0.0), complexity(0), solid_angle_a(0.0), solid_angle_b(0.0), valid(false)
 		{
 		}
 
 		void clear()
 		{
-			count=0;
-			id_a=0;
-			id_b=0;
+			id_a=0.0;
+			id_b=0.0;
 			area=0.0;
 			arc_length=0.0;
 			complexity=0;
@@ -566,11 +564,10 @@ public:
 			valid=false;
 		}
 
-		void add(const ContactDescriptor& cd)
+		void set(const ContactDescriptor& cd)
 		{
 			if(cd.valid)
 			{
-				count++;
 				id_a=cd.id_a;
 				id_b=cd.id_b;
 				area+=cd.area;
@@ -581,19 +578,37 @@ public:
 				valid=true;
 			}
 		}
+	};
+
+	struct TotalContactDescriptorSummary
+	{
+		int count;
+		double area;
+		double arc_length;
+		int complexity;
+		bool valid;
+
+		TotalContactDescriptorSummary() : count(0), area(0.0), arc_length(0.0), complexity(0), valid(false)
+		{
+		}
+
+		void clear()
+		{
+			count=0;
+			area=0.0;
+			arc_length=0.0;
+			complexity=0;
+			valid=false;
+		}
 
 		void add(const ContactDescriptorSummary& cds)
 		{
 			if(cds.valid)
 			{
-				count+=cds.count;
-				id_a=0;
-				id_b=0;
+				count++;
 				area+=cds.area;
 				arc_length+=cds.arc_length;
 				complexity+=cds.complexity;
-				solid_angle_a=0.0;
-				solid_angle_b=0.0;
 				valid=true;
 			}
 		}
@@ -611,7 +626,7 @@ public:
 		ContactDescriptor result_contact_descriptor;
 		if(construct_contact_descriptor(spheres, a_id, b_id, a_neighbor_ids, b_neighbor_ids, result_contact_descriptor))
 		{
-			result_contact_descriptor_summary.add(result_contact_descriptor);
+			result_contact_descriptor_summary.set(result_contact_descriptor);
 		}
 		return result_contact_descriptor_summary.valid;
 	}
