@@ -4,9 +4,9 @@
 
 int main(const int /*argc*/, const char** /*argv*/)
 {
-	std::vector<voronota_lt::SimpleSphere> spheres;
+	std::vector<voronotalt::SimpleSphere> spheres;
 	{
-		voronota_lt::SimpleSphere sphere;
+		voronotalt::SimpleSphere sphere;
 		std::cin >> std::ws;
 		while(std::cin.good())
 		{
@@ -42,7 +42,7 @@ int main(const int /*argc*/, const char** /*argv*/)
 
 	std::cout << "total_balls: " << spheres.size() << "\n";
 
-	voronota_lt::SpheresSearcher spheres_searcher(spheres);
+	voronotalt::SpheresSearcher spheres_searcher(spheres);
 
 	std::vector< std::vector<std::size_t> > all_colliding_ids(spheres_searcher.all_spheres().size());
 
@@ -77,7 +77,7 @@ int main(const int /*argc*/, const char** /*argv*/)
 	    }
 	}
 
-	std::vector<voronota_lt::ConstrainedContactsConstruction::ContactDescriptorSummary> possible_pair_summaries(possible_pairs.size());
+	std::vector<voronotalt::ConstrainedContactsConstruction::ContactDescriptorSummary> possible_pair_summaries(possible_pairs.size());
 
 	{
 #pragma omp parallel for
@@ -85,34 +85,32 @@ int main(const int /*argc*/, const char** /*argv*/)
 		{
 			const std::size_t a_id=possible_pairs[i].first;
 			const std::size_t b_id=possible_pairs[i].second;
-			voronota_lt::ConstrainedContactsConstruction::construct_contact_descriptor_summary(spheres_searcher.all_spheres(), a_id, b_id, all_colliding_ids[a_id], all_colliding_ids[b_id], possible_pair_summaries[i]);
+			voronotalt::ConstrainedContactsConstruction::construct_contact_descriptor_summary(spheres_searcher.all_spheres(), a_id, b_id, all_colliding_ids[a_id], all_colliding_ids[b_id], possible_pair_summaries[i]);
 		}
 	}
 
-	voronota_lt::ConstrainedContactsConstruction::TotalContactDescriptorSummary total_summary;
+	voronotalt::ConstrainedContactsConstruction::TotalContactDescriptorsSummary total_summary;
 	for(std::size_t i=0;i<possible_pair_summaries.size();i++)
 	{
 		total_summary.add(possible_pair_summaries[i]);
 	}
 
-	std::vector<double> spheres_sasa(spheres_searcher.all_spheres().size(), 0.0);
-
+	std::vector<voronotalt::ConstrainedContactsConstruction::CellContactDescriptorsSummary> cells_summaries(spheres_searcher.all_spheres().size());
 	for(std::size_t i=0;i<possible_pair_summaries.size();i++)
 	{
-		const voronota_lt::ConstrainedContactsConstruction::ContactDescriptorSummary& pair_summary=possible_pair_summaries[i];
+		const voronotalt::ConstrainedContactsConstruction::ContactDescriptorSummary& pair_summary=possible_pair_summaries[i];
 		if(pair_summary.valid)
 		{
-			spheres_sasa[pair_summary.id_a]+=pair_summary.solid_angle_a;
-			spheres_sasa[pair_summary.id_b]+=pair_summary.solid_angle_b;
+			cells_summaries[pair_summary.id_a].add(pair_summary.id_a, pair_summary);
+			cells_summaries[pair_summary.id_b].add(pair_summary.id_b, pair_summary);
 		}
 	}
 
 	double total_sasa=0.0;
-	for(std::size_t i=0;i<spheres_sasa.size();i++)
+	for(std::size_t i=0;i<cells_summaries.size();i++)
 	{
-		const double r=spheres_searcher.all_spheres()[i].r;
-		spheres_sasa[i]=((4.0*voronota_lt::pi_value())-spheres_sasa[i])*(r*r);
-		total_sasa+=spheres_sasa[i];
+		cells_summaries[i].compute_sas(spheres_searcher.all_spheres()[i].r);
+		total_sasa+=cells_summaries[i].sas_area;
 	}
 
 	std::cout << "total_contacts_count: " << total_summary.count << "\n";

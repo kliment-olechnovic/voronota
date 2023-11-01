@@ -5,7 +5,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace voronota_lt
+namespace voronotalt
 {
 
 inline double default_comparison_epsilon()
@@ -554,8 +554,8 @@ public:
 
 		void clear()
 		{
-			id_a=0.0;
-			id_b=0.0;
+			id_a=0;
+			id_b=0;
 			area=0.0;
 			arc_length=0.0;
 			complexity=0;
@@ -570,9 +570,9 @@ public:
 			{
 				id_a=cd.id_a;
 				id_b=cd.id_b;
-				area+=cd.area;
-				arc_length+=(cd.sum_of_arc_angles*cd.intersection_circle_sphere.r);
-				complexity+=cd.contour.size();
+				area=cd.area;
+				arc_length=(cd.sum_of_arc_angles*cd.intersection_circle_sphere.r);
+				complexity=cd.contour.size();
 				solid_angle_a=cd.solid_angle_a;
 				solid_angle_b=cd.solid_angle_b;
 				valid=true;
@@ -580,7 +580,74 @@ public:
 		}
 	};
 
-	struct TotalContactDescriptorSummary
+	struct CellContactDescriptorsSummary
+	{
+		std::size_t id;
+		int count;
+		double area;
+		double arc_length;
+		int complexity;
+		double explained_solid_angle;
+		bool valid;
+		double sas_r;
+		double sas_area;
+		bool sas_computed;
+
+		CellContactDescriptorsSummary() : id(0), count(0), area(0.0), arc_length(0.0), complexity(0), explained_solid_angle(0.0), valid(false), sas_r(0.0), sas_area(0.0), sas_computed(false)
+		{
+		}
+
+		void clear(const std::size_t new_id)
+		{
+			id=new_id;
+			count=0;
+			area=0.0;
+			arc_length=0.0;
+			complexity=0;
+			explained_solid_angle=0.0;
+			valid=false;
+			sas_r=0.0;
+			sas_area=0.0;
+			sas_computed=false;
+		}
+
+		void add(const ContactDescriptorSummary& cds)
+		{
+			if(cds.valid && (cds.id_a==id || cds.id_b==id))
+			{
+				count++;
+				area+=cds.area;
+				arc_length+=cds.arc_length;
+				complexity+=cds.complexity;
+				explained_solid_angle+=(cds.id_a==id ? cds.solid_angle_a : cds.solid_angle_b);
+				valid=true;
+			}
+		}
+
+		void add(const std::size_t new_id, const ContactDescriptorSummary& cds)
+		{
+			if(cds.valid)
+			{
+				if(!valid)
+				{
+					clear(new_id);
+				}
+				add(cds);
+			}
+		}
+
+		void compute_sas(const double r)
+		{
+			if(valid)
+			{
+				sas_r=r;
+				sas_area=((4.0*pi_value())-explained_solid_angle)*(r*r);
+				sas_computed=true;
+			}
+		}
+	};
+
+	struct TotalContactDescriptorsSummary
 	{
 		int count;
 		double area;
@@ -588,7 +655,7 @@ public:
 		int complexity;
 		bool valid;
 
-		TotalContactDescriptorSummary() : count(0), area(0.0), arc_length(0.0), complexity(0), valid(false)
+		TotalContactDescriptorsSummary() : count(0), area(0.0), arc_length(0.0), complexity(0), valid(false)
 		{
 		}
 
