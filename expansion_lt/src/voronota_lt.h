@@ -681,23 +681,6 @@ public:
 		}
 	};
 
-	static bool construct_contact_descriptor_summary(
-			const std::vector<SimpleSphere>& spheres,
-			const std::size_t a_id,
-			const std::size_t b_id,
-			const std::vector<std::size_t>& a_neighbor_ids,
-			const std::vector<std::size_t>& b_neighbor_ids,
-			ContactDescriptorSummary& result_contact_descriptor_summary)
-	{
-		result_contact_descriptor_summary.clear();
-		ContactDescriptor result_contact_descriptor;
-		if(construct_contact_descriptor(spheres, a_id, b_id, a_neighbor_ids, b_neighbor_ids, result_contact_descriptor))
-		{
-			result_contact_descriptor_summary.set(result_contact_descriptor);
-		}
-		return result_contact_descriptor_summary.valid;
-	}
-
 	static bool construct_contact_descriptor(
 			const std::vector<SimpleSphere>& spheres,
 			const std::size_t a_id,

@@ -4,6 +4,8 @@
 
 int main(const int /*argc*/, const char** /*argv*/)
 {
+	const unsigned int max_number_of_processors=40;
+
 	std::vector<voronotalt::SimpleSphere> spheres;
 	{
 		voronotalt::SimpleSphere sphere;
@@ -48,9 +50,12 @@ int main(const int /*argc*/, const char** /*argv*/)
 
 	{
 #pragma omp parallel for
-		for(std::size_t i=0;i<spheres_searcher.all_spheres().size();i++)
+		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
 		{
-			spheres_searcher.find_colliding_ids(i, all_colliding_ids[i]);
+			for(std::size_t i=proc;i<spheres_searcher.all_spheres().size();i+=max_number_of_processors)
+			{
+				spheres_searcher.find_colliding_ids(i, all_colliding_ids[i]);
+			}
 		}
 	}
 
@@ -80,12 +85,19 @@ int main(const int /*argc*/, const char** /*argv*/)
 	std::vector<voronotalt::ConstrainedContactsConstruction::ContactDescriptorSummary> possible_pair_summaries(possible_pairs.size());
 
 	{
+		std::vector<voronotalt::ConstrainedContactsConstruction::ContactDescriptor> allocated_contact_descriptors(max_number_of_processors);
 #pragma omp parallel for
-		for(std::size_t i=0;i<possible_pairs.size();i++)
+		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
 		{
-			const std::size_t a_id=possible_pairs[i].first;
-			const std::size_t b_id=possible_pairs[i].second;
-			voronotalt::ConstrainedContactsConstruction::construct_contact_descriptor_summary(spheres_searcher.all_spheres(), a_id, b_id, all_colliding_ids[a_id], all_colliding_ids[b_id], possible_pair_summaries[i]);
+			for(std::size_t i=proc;i<possible_pairs.size();i+=max_number_of_processors)
+			{
+				const std::size_t a_id=possible_pairs[i].first;
+				const std::size_t b_id=possible_pairs[i].second;
+				if(voronotalt::ConstrainedContactsConstruction::construct_contact_descriptor(spheres_searcher.all_spheres(), a_id, b_id, all_colliding_ids[a_id], all_colliding_ids[b_id], allocated_contact_descriptors[proc]))
+				{
+					possible_pair_summaries[i].set(allocated_contact_descriptors[proc]);
+				}
+			}
 		}
 	}
 
