@@ -1,10 +1,53 @@
 #include <iostream>
+#include <sstream>
 
 #include "voronota_lt.h"
 
-int main(const int /*argc*/, const char** /*argv*/)
+int main(const int argc, const char** argv)
 {
-	const unsigned int max_number_of_processors=40;
+	unsigned int max_number_of_processors=40;
+	bool output_csa=false;
+	bool output_sasa=false;
+
+	{
+		int i=1;
+		while(i<argc)
+		{
+			const std::string name(argv[i]);
+			if(name=="-processors")
+			{
+				bool success=false;
+				if(i+1<argc)
+				{
+					i++;
+					const std::string value(argv[i]);
+					if(!value.empty())
+					{
+						std::istringstream input(value);
+						input >> max_number_of_processors;
+						if(!input.fail() && max_number_of_processors>=1 && max_number_of_processors<=1000)
+						{
+							success=true;
+						}
+					}
+				}
+				if(!success)
+				{
+					std::cerr << "Error: invalid command line argument for the maximum number of processors (-P), must be an integer from 1 to 1000.\n";
+					return 1;
+				}
+			}
+			else if(name=="-output-csa")
+			{
+				output_csa=true;
+			}
+			else if(name=="-output-sasa")
+			{
+				output_sasa=true;
+			}
+			i++;
+		}
+	}
 
 	std::vector<voronotalt::SimpleSphere> spheres;
 	{
@@ -129,6 +172,30 @@ int main(const int /*argc*/, const char** /*argv*/)
 	std::cout << "total_contacts_area: " << total_summary.area << "\n";
 	std::cout << "total_contacts_complexity: " << total_summary.complexity << "\n";
 	std::cout << "total_sasa: " << total_sasa << "\n";
+
+	if(output_csa)
+	{
+		for(std::size_t i=0;i<possible_pair_summaries.size();i++)
+		{
+			const voronotalt::ConstrainedContactsConstruction::ContactDescriptorSummary& pair_summary=possible_pair_summaries[i];
+			if(pair_summary.valid)
+			{
+				std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area << "\n";
+			}
+		}
+	}
+
+	if(output_sasa)
+	{
+		for(std::size_t i=0;i<cells_summaries.size();i++)
+		{
+			const voronotalt::ConstrainedContactsConstruction::CellContactDescriptorsSummary& cell_summary=cells_summaries[i];
+			if(cell_summary.sas_area>0.0001)
+			{
+				std::cout << "sasa " << cell_summary.id << " " << cell_summary.sas_area << "\n";
+			}
+		}
+	}
 
 	return 1;
 }
