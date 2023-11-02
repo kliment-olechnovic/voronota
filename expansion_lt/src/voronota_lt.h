@@ -245,7 +245,7 @@ inline bool sphere_intersects_sphere(const SimpleSphere& a, const SimpleSphere& 
 
 inline bool sphere_contains_sphere(const SimpleSphere& a, const SimpleSphere& b)
 {
-	return (greater_or_equal(a.r, b.r) && less_or_equal(distance_from_point_to_point(a.p, b.p), (a.r-b.r)));
+	return (greater_or_equal(a.r, b.r) && less_or_equal(squared_distance_from_point_to_point(a.p, b.p), (a.r-b.r)*(a.r-b.r)));
 }
 
 inline SimplePoint center_of_intersection_circle_of_two_spheres(const SimpleSphere& a, const SimpleSphere& b)
@@ -712,7 +712,7 @@ public:
 		{
 			const SimpleSphere& a=spheres[a_id];
 			const SimpleSphere& b=spheres[b_id];
-			if(sphere_intersects_sphere(a, b))
+			if(sphere_intersects_sphere(a, b) && !sphere_contains_sphere(a, b) && !sphere_contains_sphere(b, a))
 			{
 				result_contact_descriptor.intersection_circle_sphere=intersection_circle_of_two_spheres(a, b);
 				if(result_contact_descriptor.intersection_circle_sphere.r>0.0)
@@ -731,31 +731,38 @@ public:
 								const SimpleSphere& c=spheres[neighbor_id];
 								if(sphere_intersects_sphere(result_contact_descriptor.intersection_circle_sphere, c) && sphere_intersects_sphere(j_alt_sphere, c))
 								{
-									NeighborDescriptor nd(neighbor_id, a, c);
-									const double cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(nd.ac_plane_center, a.p)));
-									const int hsi=halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p);
-									if(std::abs(cos_val)<1.0)
+									if(sphere_contains_sphere(c, a) || sphere_contains_sphere(c, b))
 									{
-										const double l=std::abs(signed_distance_from_point_to_plane(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p));
-										const double xl=l/std::sqrt(1-(cos_val*cos_val));
-										if(xl>=result_contact_descriptor.intersection_circle_sphere.r)
+										discarded=true;
+									}
+									else
+									{
+										NeighborDescriptor nd(neighbor_id, a, c);
+										const double cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(nd.ac_plane_center, a.p)));
+										const int hsi=halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p);
+										if(std::abs(cos_val)<1.0)
 										{
-											if(hsi>=0)
+											const double l=std::abs(signed_distance_from_point_to_plane(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p));
+											const double xl=l/std::sqrt(1-(cos_val*cos_val));
+											if(xl>=result_contact_descriptor.intersection_circle_sphere.r)
 											{
-												discarded=true;
+												if(hsi>=0)
+												{
+													discarded=true;
+												}
+											}
+											else
+											{
+												nd.sort_value=(hsi>0 ? (0.0-xl) : xl);
+												neighbor_descriptors.push_back(nd);
 											}
 										}
 										else
 										{
-											nd.sort_value=(hsi>0 ? (0.0-xl) : xl);
-											neighbor_descriptors.push_back(nd);
-										}
-									}
-									else
-									{
-										if(hsi>0)
-										{
-											discarded=true;
+											if(hsi>0)
+											{
+												discarded=true;
+											}
 										}
 									}
 								}

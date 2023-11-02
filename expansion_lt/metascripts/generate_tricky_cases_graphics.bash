@@ -110,3 +110,37 @@ EOF
 
 ####################################################################
 
+CASEID="4"
+
+{
+cat << 'EOF'
+from pymol.cgo import *
+from pymol import cmd
+caseCASEID  = [COLOR, 1.0, 1.0, 0.0,
+EOF
+
+{
+cat << 'EOF'
+0 0 0 1
+0 0 0 0.5
+1 0 0 1
+EOF
+} \
+| ./voronota-lt -output-csa-with-graphics -probe 0.5 \
+| egrep '^csa ' \
+| awk '{print $7}' \
+| sed 's/NORMAL/\nNORMAL/g' \
+| sed 's/END/\nEND,/g' \
+| sed 's/,/, /g'
+
+cat << 'EOF'
+]
+cmd.load_cgo(caseCASEID, 'caseCASEID')
+cmd.set('two_sided_lighting', 1)
+EOF
+} \
+| sed "s/CASEID/${CASEID}/g" \
+> "./tcd${CASEID}.py"
+
+####################################################################
+
