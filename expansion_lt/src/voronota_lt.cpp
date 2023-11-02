@@ -39,7 +39,7 @@ int main(const int argc, const char** argv)
 					return 1;
 				}
 			}
-			if(name=="-probe")
+			else if(name=="-probe")
 			{
 				bool success=false;
 				if(i+1<argc)
@@ -254,7 +254,7 @@ int main(const int argc, const char** argv)
 		for(std::size_t i=0;i<cells_summaries.size();i++)
 		{
 			const voronotalt::ConstrainedContactsConstruction::CellContactDescriptorsSummary& cell_summary=cells_summaries[i];
-			if(cell_summary.sas_area>0.0001)
+			if(cell_summary.valid)
 			{
 				std::cout << "sasa " << cell_summary.id << " " << cell_summary.sas_area << "\n";
 			}
