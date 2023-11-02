@@ -763,6 +763,8 @@ public:
 							result_contact_descriptor.contour_barycenter=result_contact_descriptor.intersection_circle_sphere.p;
 							result_contact_descriptor.sum_of_arc_angles=2.0*pi_value();
 							result_contact_descriptor.area=result_contact_descriptor.intersection_circle_sphere.r*result_contact_descriptor.intersection_circle_sphere.r*pi_value();
+							result_contact_descriptor.solid_angle_a=calculate_contour_solid_angle(a, b, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
+							result_contact_descriptor.solid_angle_b=calculate_contour_solid_angle(b, a, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
 							result_contact_descriptor.valid=true;
 						}
 						else
@@ -780,14 +782,14 @@ public:
 							if(!result_contact_descriptor.contour.empty())
 							{
 								restrict_contour_to_circle(result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, a_id, result_contact_descriptor.contour, result_contact_descriptor.sum_of_arc_angles);
+								if(!result_contact_descriptor.contour.empty())
+								{
+									result_contact_descriptor.area=calculate_contour_area(result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour, result_contact_descriptor.contour_barycenter);
+									result_contact_descriptor.solid_angle_a=calculate_contour_solid_angle(a, b, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
+									result_contact_descriptor.solid_angle_b=calculate_contour_solid_angle(b, a, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
+									result_contact_descriptor.valid=true;
+								}
 							}
-							if(!result_contact_descriptor.contour.empty())
-							{
-								result_contact_descriptor.area=calculate_contour_area(result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour, result_contact_descriptor.contour_barycenter);
-								result_contact_descriptor.solid_angle_a=calculate_contour_solid_angle(a, b, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
-								result_contact_descriptor.solid_angle_b=calculate_contour_solid_angle(b, a, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
-							}
-							result_contact_descriptor.valid=(!result_contact_descriptor.contour.empty());
 						}
 					}
 				}
@@ -1185,35 +1187,42 @@ private:
 	{
 		double turn_angle=0.0;
 
-		for(std::size_t i=0;i<contour.size();i++)
+		if(!contour.empty())
 		{
-			const ContourPoint& pr0=contour[(i>0) ? (i-1) : (contour.size()-1)];
-			const ContourPoint& pr1=contour[i];
-			const ContourPoint& pr2=contour[(i+1)<contour.size() ? (i+1) : 0];
+			for(std::size_t i=0;i<contour.size();i++)
+			{
+				const ContourPoint& pr0=contour[(i>0) ? (i-1) : (contour.size()-1)];
+				const ContourPoint& pr1=contour[i];
+				const ContourPoint& pr2=contour[(i+1)<contour.size() ? (i+1) : 0];
 
-			if(pr0.angle>0.0)
-			{
-				SimplePoint d=cross_product(sub_of_points(b.p, a.p), sub_of_points(pr1.p, ic_sphere.p));
-				if((pr0.angle<pi_value() && dot_product(d, sub_of_points(pr0.p, pr1.p))<0.0) || (pr0.angle>pi_value() && dot_product(d, sub_of_points(pr0.p, pr1.p))>0.0))
+				if(pr0.angle>0.0)
 				{
-					d=point_and_number_product(d, -1.0);
+					SimplePoint d=cross_product(sub_of_points(b.p, a.p), sub_of_points(pr1.p, ic_sphere.p));
+					if((pr0.angle<pi_value() && dot_product(d, sub_of_points(pr0.p, pr1.p))<0.0) || (pr0.angle>pi_value() && dot_product(d, sub_of_points(pr0.p, pr1.p))>0.0))
+					{
+						d=point_and_number_product(d, -1.0);
+					}
+					turn_angle+=(pi_value()-min_dihedral_angle(a.p, pr1.p, sum_of_points(pr1.p, d), pr2.p));
 				}
-				turn_angle+=(pi_value()-min_dihedral_angle(a.p, pr1.p, sum_of_points(pr1.p, d), pr2.p));
-			}
-			else if(pr1.angle>0.0)
-			{
-				SimplePoint d=cross_product(sub_of_points(b.p, a.p), sub_of_points(pr1.p, ic_sphere.p));
-				if((pr1.angle<pi_value() && dot_product(d, sub_of_points(pr2.p, pr1.p))<0.0) || (pr1.angle>pi_value() && dot_product(d, sub_of_points(pr2.p, pr1.p))>0.0))
+				else if(pr1.angle>0.0)
 				{
-					d=point_and_number_product(d, -1.0);
+					SimplePoint d=cross_product(sub_of_points(b.p, a.p), sub_of_points(pr1.p, ic_sphere.p));
+					if((pr1.angle<pi_value() && dot_product(d, sub_of_points(pr2.p, pr1.p))<0.0) || (pr1.angle>pi_value() && dot_product(d, sub_of_points(pr2.p, pr1.p))>0.0))
+					{
+						d=point_and_number_product(d, -1.0);
+					}
+					turn_angle+=(pi_value()-min_dihedral_angle(a.p, pr1.p, pr0.p, sum_of_points(pr1.p, d)));
+					turn_angle+=pr1.angle*(distance_from_point_to_point(a.p, ic_sphere.p)/a.r);
 				}
-				turn_angle+=(pi_value()-min_dihedral_angle(a.p, pr1.p, pr0.p, sum_of_points(pr1.p, d)));
-				turn_angle+=pr1.angle*(distance_from_point_to_point(a.p, ic_sphere.p)/a.r);
+				else
+				{
+					turn_angle+=(pi_value()-min_dihedral_angle(a.p, pr1.p, pr0.p, pr2.p));
+				}
 			}
-			else
-			{
-				turn_angle+=(pi_value()-min_dihedral_angle(a.p, pr1.p, pr0.p, pr2.p));
-			}
+		}
+		else
+		{
+			turn_angle=(2.0*pi_value())*(distance_from_point_to_point(a.p, ic_sphere.p)/a.r);
 		}
 
 		double solid_angle=((2.0*pi_value())-turn_angle);
