@@ -150,11 +150,11 @@ inline double signed_distance_from_point_to_plane(const SimplePoint& plane_point
 inline int halfspace_of_point(const SimplePoint& plane_point, const SimplePoint& plane_normal, const SimplePoint& x)
 {
 	const double sd=signed_distance_from_point_to_plane(plane_point, plane_normal, x);
-	if(sd>0)
+	if(greater(sd, 0.0))
 	{
 		return 1;
 	}
-	else if(sd<0)
+	else if(less(sd, 0.0))
 	{
 		return -1;
 	}
@@ -733,14 +733,14 @@ public:
 								{
 									NeighborDescriptor nd(neighbor_id, a, c);
 									const double cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(nd.ac_plane_center, a.p)));
-									if(cos_val<1.0)
+									const int hsi=halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p);
+									if(std::abs(cos_val)<1.0)
 									{
 										const double l=std::abs(signed_distance_from_point_to_plane(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p));
 										const double xl=l/std::sqrt(1-(cos_val*cos_val));
-										const int hsi=halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p);
 										if(xl>=result_contact_descriptor.intersection_circle_sphere.r)
 										{
-											if(hsi>0)
+											if(hsi>=0)
 											{
 												discarded=true;
 											}
@@ -749,6 +749,13 @@ public:
 										{
 											nd.sort_value=(hsi>0 ? (0.0-xl) : xl);
 											neighbor_descriptors.push_back(nd);
+										}
+									}
+									else
+									{
+										if(hsi>0)
+										{
+											discarded=true;
 										}
 									}
 								}
@@ -931,7 +938,7 @@ private:
 		std::size_t outsiders_count=0;
 		for(Contour::iterator it=contour.begin();it!=contour.end();++it)
 		{
-			if(halfspace_of_point(ac_plane_center, ac_plane_normal, it->p)>0)
+			if(halfspace_of_point(ac_plane_center, ac_plane_normal, it->p)>=0)
 			{
 				it->left_id=c_id;
 				it->right_id=c_id;
