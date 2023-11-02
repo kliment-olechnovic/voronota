@@ -6,6 +6,7 @@
 int main(const int argc, const char** argv)
 {
 	unsigned int max_number_of_processors=40;
+	double probe=1.4;
 	bool output_csa=false;
 	bool output_csa_with_graphics=false;
 	bool output_sasa=false;
@@ -35,6 +36,29 @@ int main(const int argc, const char** argv)
 				if(!success)
 				{
 					std::cerr << "Error: invalid command line argument for the maximum number of processors (-processors), must be an integer from 1 to 1000.\n";
+					return 1;
+				}
+			}
+			if(name=="-probe")
+			{
+				bool success=false;
+				if(i+1<argc)
+				{
+					i++;
+					const std::string value(argv[i]);
+					if(!value.empty())
+					{
+						std::istringstream input(value);
+						input >> probe;
+						if(!input.fail() && probe>0.01 && probe<=30.0)
+						{
+							success=true;
+						}
+					}
+				}
+				if(!success)
+				{
+					std::cerr << "Error: invalid command line argument for the rolling probe radius (-probe), must be a value from 0.01 to 30.0.\n";
 					return 1;
 				}
 			}
@@ -91,7 +115,7 @@ int main(const int argc, const char** argv)
 				return 1;
 			}
 			std::cin >> std::ws;
-			sphere.r+=1.4;
+			sphere.r+=probe;
 			spheres.push_back(sphere);
 		}
 	}
@@ -201,7 +225,7 @@ int main(const int argc, const char** argv)
 			const voronotalt::ConstrainedContactsConstruction::ContactDescriptorSummary& pair_summary=possible_pair_summaries[i];
 			if(pair_summary.valid)
 			{
-				std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area;
+				std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area << " " << pair_summary.solid_angle_a << " " << pair_summary.solid_angle_b;
 				if(output_csa_with_graphics)
 				{
 					const voronotalt::ConstrainedContactsConstruction::ContactDescriptorsGraphics& pair_graphics=possible_pair_graphics[i];

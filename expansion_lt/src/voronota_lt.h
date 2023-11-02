@@ -758,13 +758,12 @@ public:
 					if(!discarded)
 					{
 						result_contact_descriptor.intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
+
 						if(neighbor_descriptors.empty())
 						{
 							result_contact_descriptor.contour_barycenter=result_contact_descriptor.intersection_circle_sphere.p;
 							result_contact_descriptor.sum_of_arc_angles=2.0*pi_value();
 							result_contact_descriptor.area=result_contact_descriptor.intersection_circle_sphere.r*result_contact_descriptor.intersection_circle_sphere.r*pi_value();
-							result_contact_descriptor.solid_angle_a=calculate_contour_solid_angle(a, b, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
-							result_contact_descriptor.solid_angle_b=calculate_contour_solid_angle(b, a, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
 							result_contact_descriptor.valid=true;
 						}
 						else
@@ -785,11 +784,15 @@ public:
 								if(!result_contact_descriptor.contour.empty())
 								{
 									result_contact_descriptor.area=calculate_contour_area(result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour, result_contact_descriptor.contour_barycenter);
-									result_contact_descriptor.solid_angle_a=calculate_contour_solid_angle(a, b, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
-									result_contact_descriptor.solid_angle_b=calculate_contour_solid_angle(b, a, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
 									result_contact_descriptor.valid=true;
 								}
 							}
+						}
+
+						if(result_contact_descriptor.valid)
+						{
+							result_contact_descriptor.solid_angle_a=calculate_contour_solid_angle(a, b, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
+							result_contact_descriptor.solid_angle_b=calculate_contour_solid_angle(b, a, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
 						}
 					}
 				}
