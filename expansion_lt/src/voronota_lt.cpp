@@ -7,6 +7,7 @@ int main(const int argc, const char** argv)
 {
 	unsigned int max_number_of_processors=40;
 	bool output_csa=false;
+	bool output_csa_with_graphics=false;
 	bool output_sasa=false;
 
 	{
@@ -33,7 +34,7 @@ int main(const int argc, const char** argv)
 				}
 				if(!success)
 				{
-					std::cerr << "Error: invalid command line argument for the maximum number of processors (-P), must be an integer from 1 to 1000.\n";
+					std::cerr << "Error: invalid command line argument for the maximum number of processors (-processors), must be an integer from 1 to 1000.\n";
 					return 1;
 				}
 			}
@@ -41,9 +42,19 @@ int main(const int argc, const char** argv)
 			{
 				output_csa=true;
 			}
+			else if(name=="-output-csa-with-graphics")
+			{
+				output_csa=true;
+				output_csa_with_graphics=true;
+			}
 			else if(name=="-output-sasa")
 			{
 				output_sasa=true;
+			}
+			else
+			{
+				std::cerr << "Error: invalid command line argument '" << name << "'\n";
+				return 1;
 			}
 			i++;
 		}
@@ -127,6 +138,12 @@ int main(const int argc, const char** argv)
 
 	std::vector<voronotalt::ConstrainedContactsConstruction::ContactDescriptorSummary> possible_pair_summaries(possible_pairs.size());
 
+	std::vector<voronotalt::ConstrainedContactsConstruction::ContactDescriptorsGraphics> possible_pair_graphics;
+	if(output_csa_with_graphics)
+	{
+		possible_pair_graphics.resize(possible_pair_summaries.size());
+	}
+
 	{
 		std::vector<voronotalt::ConstrainedContactsConstruction::ContactDescriptor> allocated_contact_descriptors(max_number_of_processors);
 #pragma omp parallel for
@@ -139,6 +156,10 @@ int main(const int argc, const char** argv)
 				if(voronotalt::ConstrainedContactsConstruction::construct_contact_descriptor(spheres_searcher.all_spheres(), a_id, b_id, all_colliding_ids[a_id], all_colliding_ids[b_id], allocated_contact_descriptors[proc]))
 				{
 					possible_pair_summaries[i].set(allocated_contact_descriptors[proc]);
+					if(output_csa_with_graphics)
+					{
+						voronotalt::ConstrainedContactsConstruction::construct_contact_descriptor_graphics(allocated_contact_descriptors[proc], 0.2, possible_pair_graphics[i]);
+					}
 				}
 			}
 		}
@@ -180,7 +201,26 @@ int main(const int argc, const char** argv)
 			const voronotalt::ConstrainedContactsConstruction::ContactDescriptorSummary& pair_summary=possible_pair_summaries[i];
 			if(pair_summary.valid)
 			{
-				std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area << "\n";
+				std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area;
+				if(output_csa_with_graphics)
+				{
+					const voronotalt::ConstrainedContactsConstruction::ContactDescriptorsGraphics& pair_graphics=possible_pair_graphics[i];
+					std::cout << " BEGIN,TRIANGLE_FAN";
+					if(pair_graphics.valid && !pair_graphics.outer_points.empty())
+					{
+						std::cout << ",NORMAL," << pair_graphics.normal.x << "," << pair_graphics.normal.y << "," << pair_graphics.normal.z;
+						std::cout << ",VERTEX," << pair_graphics.barycenter.x << "," << pair_graphics.barycenter.y << "," << pair_graphics.barycenter.z;
+						for(std::size_t j=0;j<pair_graphics.outer_points.size();j++)
+						{
+							std::cout << ",NORMAL," << pair_graphics.normal.x << "," << pair_graphics.normal.y << "," << pair_graphics.normal.z;
+							std::cout << ",VERTEX," << pair_graphics.outer_points[j].x << "," << pair_graphics.outer_points[j].y << "," << pair_graphics.outer_points[j].z;
+						}
+						std::cout << ",NORMAL," << pair_graphics.normal.x << "," << pair_graphics.normal.y << "," << pair_graphics.normal.z;
+						std::cout << ",VERTEX," << pair_graphics.outer_points[0].x << "," << pair_graphics.outer_points[0].y << "," << pair_graphics.outer_points[0].z;
+					}
+					std::cout << ",END";
+				}
+				std::cout << "\n";
 			}
 		}
 	}

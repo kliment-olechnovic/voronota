@@ -580,6 +580,24 @@ public:
 		}
 	};
 
+	struct ContactDescriptorsGraphics
+	{
+		std::vector<SimplePoint> outer_points;
+		SimplePoint barycenter;
+		SimplePoint normal;
+		bool valid;
+
+		ContactDescriptorsGraphics() : valid(false)
+		{
+		}
+
+		void clear()
+		{
+			outer_points.clear();
+			valid=false;
+		}
+	};
+
 	struct CellContactDescriptorsSummary
 	{
 		std::size_t id;
@@ -778,37 +796,37 @@ public:
 		return result_contact_descriptor.valid;
 	}
 
-	static bool discretize_contact_descriptor_contour(const ContactDescriptor& contact_descriptor, const double length_step, std::vector<SimplePoint>& result_points, SimplePoint& result_barycenter)
+	static bool construct_contact_descriptor_graphics(const ContactDescriptor& contact_descriptor, const double length_step, ContactDescriptorsGraphics& result_contact_descriptor_graphics)
 	{
-		result_points.clear();
+		result_contact_descriptor_graphics.clear();
 		if(contact_descriptor.valid)
 		{
 			const double angle_step=std::max(std::min(length_step/contact_descriptor.intersection_circle_sphere.r, pi_value()/3.0), pi_value()/36.0);
 			if(contact_descriptor.contour.empty())
 			{
 				const SimplePoint first_point=point_and_number_product(any_normal_of_vector(contact_descriptor.intersection_circle_axis), contact_descriptor.intersection_circle_sphere.r);
-				result_points.reserve(static_cast<int>((2.0*pi_value())/angle_step)+2);
-				result_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, first_point));
+				result_contact_descriptor_graphics.outer_points.reserve(static_cast<int>((2.0*pi_value())/angle_step)+2);
+				result_contact_descriptor_graphics.outer_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, first_point));
 				for(double rotation_angle=angle_step;rotation_angle<(2.0*pi_value());rotation_angle+=angle_step)
 				{
-					result_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_point)));
+					result_contact_descriptor_graphics.outer_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_point)));
 				}
-				result_barycenter=contact_descriptor.intersection_circle_sphere.p;
+				result_contact_descriptor_graphics.barycenter=contact_descriptor.intersection_circle_sphere.p;
 			}
 			else
 			{
 				if(contact_descriptor.sum_of_arc_angles>0.0)
 				{
-					result_points.reserve(static_cast<std::size_t>(contact_descriptor.sum_of_arc_angles/angle_step)+contact_descriptor.contour.size()+4);
+					result_contact_descriptor_graphics.outer_points.reserve(static_cast<std::size_t>(contact_descriptor.sum_of_arc_angles/angle_step)+contact_descriptor.contour.size()+4);
 				}
 				else
 				{
-					result_points.reserve(contact_descriptor.contour.size());
+					result_contact_descriptor_graphics.outer_points.reserve(contact_descriptor.contour.size());
 				}
 				for(std::size_t i=0;i<contact_descriptor.contour.size();i++)
 				{
 					const ContourPoint& pr=contact_descriptor.contour[i];
-					result_points.push_back(pr.p);
+					result_contact_descriptor_graphics.outer_points.push_back(pr.p);
 					if(pr.angle>0.0)
 					{
 						if(pr.angle>angle_step)
@@ -816,29 +834,31 @@ public:
 							const SimplePoint first_v=sub_of_points(pr.p, contact_descriptor.intersection_circle_sphere.p);
 							for(double rotation_angle=angle_step;rotation_angle<pr.angle;rotation_angle+=angle_step)
 							{
-								result_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_v)));
+								result_contact_descriptor_graphics.outer_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_v)));
 							}
 						}
 					}
 				}
-				result_barycenter.x=0.0;
-				result_barycenter.y=0.0;
-				result_barycenter.z=0.0;
-				if(!result_points.empty())
+				result_contact_descriptor_graphics.barycenter.x=0.0;
+				result_contact_descriptor_graphics.barycenter.y=0.0;
+				result_contact_descriptor_graphics.barycenter.z=0.0;
+				if(!result_contact_descriptor_graphics.outer_points.empty())
 				{
-					for(std::size_t i=0;i<result_points.size();i++)
+					for(std::size_t i=0;i<result_contact_descriptor_graphics.outer_points.size();i++)
 					{
-						result_barycenter.x+=result_points[i].x;
-						result_barycenter.y+=result_points[i].y;
-						result_barycenter.z+=result_points[i].z;
+						result_contact_descriptor_graphics.barycenter.x+=result_contact_descriptor_graphics.outer_points[i].x;
+						result_contact_descriptor_graphics.barycenter.y+=result_contact_descriptor_graphics.outer_points[i].y;
+						result_contact_descriptor_graphics.barycenter.z+=result_contact_descriptor_graphics.outer_points[i].z;
 					}
-					result_barycenter.x/=static_cast<double>(result_points.size());
-					result_barycenter.y/=static_cast<double>(result_points.size());
-					result_barycenter.z/=static_cast<double>(result_points.size());
+					result_contact_descriptor_graphics.barycenter.x/=static_cast<double>(result_contact_descriptor_graphics.outer_points.size());
+					result_contact_descriptor_graphics.barycenter.y/=static_cast<double>(result_contact_descriptor_graphics.outer_points.size());
+					result_contact_descriptor_graphics.barycenter.z/=static_cast<double>(result_contact_descriptor_graphics.outer_points.size());
 				}
 			}
+			result_contact_descriptor_graphics.normal=contact_descriptor.intersection_circle_axis;
+			result_contact_descriptor_graphics.valid=!result_contact_descriptor_graphics.outer_points.empty();
 		}
-		return (contact_descriptor.valid && !result_points.empty());
+		return result_contact_descriptor_graphics.valid;
 	}
 
 private:
