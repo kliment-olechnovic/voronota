@@ -518,9 +518,11 @@ public:
 		double area;
 		double solid_angle_a;
 		double solid_angle_b;
+		double pyramid_volume_a;
+		double pyramid_volume_b;
 		bool valid;
 
-		ContactDescriptor() : id_a(0), id_b(0), sum_of_arc_angles(0.0), area(0.0), solid_angle_a(0.0), solid_angle_b(0.0), valid(false)
+		ContactDescriptor() : id_a(0), id_b(0), sum_of_arc_angles(0.0), area(0.0), solid_angle_a(0.0), solid_angle_b(0.0), pyramid_volume_a(0.0), pyramid_volume_b(0.0), valid(false)
 		{
 		}
 
@@ -533,6 +535,8 @@ public:
 			area=0.0;
 			solid_angle_a=0.0;
 			solid_angle_b=0.0;
+			pyramid_volume_a=0.0;
+			pyramid_volume_b=0.0;
 			valid=false;
 		}
 	};
@@ -546,9 +550,11 @@ public:
 		int complexity;
 		double solid_angle_a;
 		double solid_angle_b;
+		double pyramid_volume_a;
+		double pyramid_volume_b;
 		bool valid;
 
-		ContactDescriptorSummary() : id_a(0), id_b(0), area(0.0), arc_length(0.0), complexity(0), solid_angle_a(0.0), solid_angle_b(0.0), valid(false)
+		ContactDescriptorSummary() : id_a(0), id_b(0), area(0.0), arc_length(0.0), complexity(0), solid_angle_a(0.0), solid_angle_b(0.0), pyramid_volume_a(0.0), pyramid_volume_b(0.0), valid(false)
 		{
 		}
 
@@ -561,6 +567,8 @@ public:
 			complexity=0;
 			solid_angle_a=0.0;
 			solid_angle_b=0.0;
+			pyramid_volume_a=0.0;
+			pyramid_volume_b=0.0;
 			valid=false;
 		}
 
@@ -575,6 +583,8 @@ public:
 				complexity=cd.contour.size();
 				solid_angle_a=cd.solid_angle_a;
 				solid_angle_b=cd.solid_angle_b;
+				pyramid_volume_a=cd.pyramid_volume_a;
+				pyramid_volume_b=cd.pyramid_volume_b;
 				valid=true;
 			}
 		}
@@ -607,12 +617,15 @@ public:
 		int complexity;
 		double explained_solid_angle_positive;
 		double explained_solid_angle_negative;
+		double explained_pyramid_volume_positive;
+		double explained_pyramid_volume_negative;
 		bool valid;
 		double sas_r;
 		double sas_area;
+		double sas_inside_volume;
 		bool sas_computed;
 
-		CellContactDescriptorsSummary() : id(0), count(0), area(0.0), arc_length(0.0), complexity(0), explained_solid_angle_positive(0.0), explained_solid_angle_negative(0.0), valid(false), sas_r(0.0), sas_area(0.0), sas_computed(false)
+		CellContactDescriptorsSummary() : id(0), count(0), area(0.0), arc_length(0.0), complexity(0), explained_solid_angle_positive(0.0), explained_solid_angle_negative(0.0), explained_pyramid_volume_positive(0.0), explained_pyramid_volume_negative(0.0), valid(false), sas_r(0.0), sas_area(0.0), sas_inside_volume(0.0), sas_computed(false)
 		{
 		}
 
@@ -625,9 +638,12 @@ public:
 			complexity=0;
 			explained_solid_angle_positive=0.0;
 			explained_solid_angle_negative=0.0;
+			explained_pyramid_volume_positive=0.0;
+			explained_pyramid_volume_negative=0.0;
 			valid=false;
 			sas_r=0.0;
 			sas_area=0.0;
+			sas_inside_volume=0.0;
 			sas_computed=false;
 		}
 
@@ -641,6 +657,8 @@ public:
 				complexity+=cds.complexity;
 				explained_solid_angle_positive+=std::max(0.0, (cds.id_a==id ? cds.solid_angle_a : cds.solid_angle_b));
 				explained_solid_angle_negative+=0.0-std::min(0.0, (cds.id_a==id ? cds.solid_angle_a : cds.solid_angle_b));
+				explained_pyramid_volume_positive+=std::max(0.0, (cds.id_a==id ? cds.pyramid_volume_a : cds.pyramid_volume_b));
+				explained_pyramid_volume_negative+=0.0-std::min(0.0, (cds.id_a==id ? cds.pyramid_volume_a : cds.pyramid_volume_b));
 				valid=true;
 			}
 		}
@@ -663,6 +681,7 @@ public:
 			{
 				sas_r=r;
 				sas_area=0.0;
+				sas_inside_volume=0.0;
 				if(arc_length>0.0)
 				{
 					if(explained_solid_angle_positive>explained_solid_angle_negative)
@@ -673,6 +692,11 @@ public:
 					{
 						sas_area=(std::max(0.0, explained_solid_angle_negative-explained_solid_angle_positive))*(r*r);
 					}
+					sas_inside_volume=(sas_area*r/3.0)+explained_pyramid_volume_positive-explained_pyramid_volume_negative;
+				}
+				else
+				{
+					sas_inside_volume=explained_pyramid_volume_positive-explained_pyramid_volume_negative;
 				}
 				sas_computed=true;
 			}
@@ -821,6 +845,8 @@ public:
 						{
 							result_contact_descriptor.solid_angle_a=calculate_contour_solid_angle(a, b, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
 							result_contact_descriptor.solid_angle_b=calculate_contour_solid_angle(b, a, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
+							result_contact_descriptor.pyramid_volume_a=distance_from_point_to_point(a.p, result_contact_descriptor.intersection_circle_sphere.p)*result_contact_descriptor.area/3.0*(result_contact_descriptor.solid_angle_a<0.0 ? -1.0 : 1.0);
+							result_contact_descriptor.pyramid_volume_b=distance_from_point_to_point(b.p, result_contact_descriptor.intersection_circle_sphere.p)*result_contact_descriptor.area/3.0*(result_contact_descriptor.solid_angle_b<0.0 ? -1.0 : 1.0);
 						}
 					}
 				}

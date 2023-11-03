@@ -254,9 +254,9 @@ int main(const int argc, const char** argv)
 		for(std::size_t i=0;i<cells_summaries.size();i++)
 		{
 			const voronotalt::ConstrainedContactsConstruction::CellContactDescriptorsSummary& cell_summary=cells_summaries[i];
-			if(cell_summary.valid)
+			if(cell_summary.sas_computed)
 			{
-				std::cout << "sasa " << cell_summary.id << " " << cell_summary.sas_area << "\n";
+				std::cout << "sasa " << cell_summary.id << " " << cell_summary.sas_area << " " << cell_summary.sas_inside_volume << "\n";
 			}
 		}
 	}
