@@ -605,13 +605,14 @@ public:
 		double area;
 		double arc_length;
 		int complexity;
-		double explained_solid_angle;
+		double explained_solid_angle_positive;
+		double explained_solid_angle_negative;
 		bool valid;
 		double sas_r;
 		double sas_area;
 		bool sas_computed;
 
-		CellContactDescriptorsSummary() : id(0), count(0), area(0.0), arc_length(0.0), complexity(0), explained_solid_angle(0.0), valid(false), sas_r(0.0), sas_area(0.0), sas_computed(false)
+		CellContactDescriptorsSummary() : id(0), count(0), area(0.0), arc_length(0.0), complexity(0), explained_solid_angle_positive(0.0), explained_solid_angle_negative(0.0), valid(false), sas_r(0.0), sas_area(0.0), sas_computed(false)
 		{
 		}
 
@@ -622,7 +623,8 @@ public:
 			area=0.0;
 			arc_length=0.0;
 			complexity=0;
-			explained_solid_angle=0.0;
+			explained_solid_angle_positive=0.0;
+			explained_solid_angle_negative=0.0;
 			valid=false;
 			sas_r=0.0;
 			sas_area=0.0;
@@ -637,7 +639,8 @@ public:
 				area+=cds.area;
 				arc_length+=cds.arc_length;
 				complexity+=cds.complexity;
-				explained_solid_angle+=(cds.id_a==id ? cds.solid_angle_a : cds.solid_angle_b);
+				explained_solid_angle_positive+=std::max(0.0, (cds.id_a==id ? cds.solid_angle_a : cds.solid_angle_b));
+				explained_solid_angle_negative+=0.0-std::min(0.0, (cds.id_a==id ? cds.solid_angle_a : cds.solid_angle_b));
 				valid=true;
 			}
 		}
@@ -659,7 +662,18 @@ public:
 			if(valid)
 			{
 				sas_r=r;
-				sas_area=((4.0*pi_value())-explained_solid_angle)*(r*r);
+				sas_area=0.0;
+				if(arc_length>0.0)
+				{
+					if(explained_solid_angle_positive>explained_solid_angle_negative)
+					{
+						sas_area=((4.0*pi_value())-std::max(0.0, explained_solid_angle_positive-explained_solid_angle_negative))*(r*r);
+					}
+					else if(explained_solid_angle_negative>explained_solid_angle_positive)
+					{
+						sas_area=(std::max(0.0, explained_solid_angle_negative-explained_solid_angle_positive))*(r*r);
+					}
+				}
 				sas_computed=true;
 			}
 		}
@@ -1246,7 +1260,7 @@ private:
 
 		if(dot_product(sub_of_points(ic_sphere.p, a.p), sub_of_points(ic_sphere.p, b.p))>0.0 && squared_distance_from_point_to_point(ic_sphere.p, a.p)<squared_distance_from_point_to_point(ic_sphere.p, b.p))
 		{
-			solid_angle=((4.0*pi_value())-solid_angle);
+			solid_angle=(0.0-solid_angle);
 		}
 
 		return solid_angle;
