@@ -737,6 +737,37 @@ public:
 		}
 	};
 
+	struct TotalCellContactDescriptorsSummary
+	{
+		int count;
+		double sas_area;
+		double sas_inside_volume;
+		bool valid;
+
+		TotalCellContactDescriptorsSummary() : count(0), sas_area(0.0), sas_inside_volume(0.0), valid(false)
+		{
+		}
+
+		void clear()
+		{
+			count=0;
+			sas_area=0.0;
+			sas_inside_volume=0.0;
+			valid=false;
+		}
+
+		void add(const CellContactDescriptorsSummary& ccds)
+		{
+			if(ccds.sas_computed)
+			{
+				count++;
+				sas_area+=ccds.sas_area;
+				sas_inside_volume+=ccds.sas_inside_volume;
+				valid=true;
+			}
+		}
+	};
+
 	static bool construct_contact_descriptor(
 			const std::vector<SimpleSphere>& spheres,
 			const std::size_t a_id,

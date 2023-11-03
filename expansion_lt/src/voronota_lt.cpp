@@ -189,10 +189,10 @@ int main(const int argc, const char** argv)
 		}
 	}
 
-	voronotalt::ConstrainedContactsConstruction::TotalContactDescriptorsSummary total_summary;
+	voronotalt::ConstrainedContactsConstruction::TotalContactDescriptorsSummary total_contacts_summary;
 	for(std::size_t i=0;i<possible_pair_summaries.size();i++)
 	{
-		total_summary.add(possible_pair_summaries[i]);
+		total_contacts_summary.add(possible_pair_summaries[i]);
 	}
 
 	std::vector<voronotalt::ConstrainedContactsConstruction::CellContactDescriptorsSummary> cells_summaries(spheres_searcher.all_spheres().size());
@@ -206,17 +206,19 @@ int main(const int argc, const char** argv)
 		}
 	}
 
-	double total_sasa=0.0;
+	voronotalt::ConstrainedContactsConstruction::TotalCellContactDescriptorsSummary total_cells_summary;
 	for(std::size_t i=0;i<cells_summaries.size();i++)
 	{
 		cells_summaries[i].compute_sas(spheres_searcher.all_spheres()[i].r);
-		total_sasa+=cells_summaries[i].sas_area;
+		total_cells_summary.add(cells_summaries[i]);
 	}
 
-	std::cout << "total_contacts_count: " << total_summary.count << "\n";
-	std::cout << "total_contacts_area: " << total_summary.area << "\n";
-	std::cout << "total_contacts_complexity: " << total_summary.complexity << "\n";
-	std::cout << "total_sasa: " << total_sasa << "\n";
+	std::cout << "total_contacts_count: " << total_contacts_summary.count << "\n";
+	std::cout << "total_contacts_area: " << total_contacts_summary.area << "\n";
+	std::cout << "total_contacts_complexity: " << total_contacts_summary.complexity << "\n";
+	std::cout << "total_cells_count: " << total_cells_summary.count << "\n";
+	std::cout << "total_cells_sas_area: " << total_cells_summary.sas_area << "\n";
+	std::cout << "total_cells_sas_inside_volume: " << total_cells_summary.sas_inside_volume << "\n";
 
 	if(output_csa)
 	{
