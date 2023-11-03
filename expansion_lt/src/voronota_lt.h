@@ -129,7 +129,7 @@ inline SimplePoint point_and_number_product(const SimplePoint& a, const double k
 
 inline SimplePoint unit_point(const SimplePoint& a)
 {
-	return point_and_number_product(a, 1/point_module(a));
+	return ((equal(squared_point_module(a), 1.0)) ? a : point_and_number_product(a, 1.0/point_module(a)));
 }
 
 inline SimplePoint sum_of_points(const SimplePoint& a, const SimplePoint& b)
