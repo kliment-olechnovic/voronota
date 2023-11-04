@@ -124,38 +124,53 @@ int main(const int argc, const char** argv)
 
 	voronotalt::SpheresSearcher spheres_searcher(spheres);
 
-	std::vector< std::vector<std::size_t> > all_colliding_ids(spheres_searcher.all_spheres().size());
+	std::vector< std::vector<voronotalt::SpheresCollisionDescriptor> > all_collision_descriptors(spheres_searcher.all_spheres().size());
 
 	{
+		std::vector< std::vector<std::size_t> > allocated_colliding_ids(max_number_of_processors);
+		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
+		{
+			allocated_colliding_ids[proc].reserve(100);
+		}
+
 #pragma omp parallel for
 		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
 		{
 			for(std::size_t i=proc;i<spheres_searcher.all_spheres().size();i+=max_number_of_processors)
 			{
-				spheres_searcher.find_colliding_ids(i, all_colliding_ids[i]);
+				allocated_colliding_ids[proc].clear();
+				spheres_searcher.find_colliding_ids(i, allocated_colliding_ids[proc]);
+				all_collision_descriptors[i].reserve(allocated_colliding_ids[proc].size());
+				for(std::size_t j=0;j<allocated_colliding_ids[proc].size();j++)
+				{
+					voronotalt::SpheresCollisionDescriptor scd;
+					if(scd.set(spheres_searcher.all_spheres(), i, allocated_colliding_ids[proc][j]))
+					{
+						all_collision_descriptors[i].push_back(scd);
+					}
+				}
 			}
 		}
 	}
 
 	std::size_t total_collisions=0;
-	for(std::size_t i=0;i<all_colliding_ids.size();i++)
+	for(std::size_t i=0;i<all_collision_descriptors.size();i++)
 	{
-		total_collisions+=all_colliding_ids[i].size();
+		total_collisions+=all_collision_descriptors[i].size();
 	}
 
 	std::cout << "total_collisions: " << total_collisions << "\n";
 
 	std::vector< std::pair<std::size_t, std::size_t> > possible_pairs;
 	possible_pairs.reserve(total_collisions/2);
-	for(std::size_t i=0;i<all_colliding_ids.size();i++)
+	for(std::size_t i=0;i<all_collision_descriptors.size();i++)
 	{
-	    for(std::size_t j=0;j<all_colliding_ids[i].size();j++)
+	    for(std::size_t j=0;j<all_collision_descriptors[i].size();j++)
 	    {
-	        const std::size_t a_id=i;
-	        const std::size_t b_id=all_colliding_ids[i][j];
-	        if(a_id<b_id)
+	    	const voronotalt::SpheresCollisionDescriptor& scd=all_collision_descriptors[i][j];
+	        if(all_collision_descriptors[scd.id_a].size()<all_collision_descriptors[scd.id_b].size() || (all_collision_descriptors[scd.id_a].size()==all_collision_descriptors[scd.id_b].size() && scd.id_a<scd.id_b))
 	        {
-	        	possible_pairs.push_back(std::pair<std::size_t, std::size_t>(a_id, b_id));
+	        	possible_pairs.push_back(std::pair<std::size_t, std::size_t>(i, j));
 	        }
 	    }
 	}
@@ -181,9 +196,8 @@ int main(const int argc, const char** argv)
 		{
 			for(std::size_t i=proc;i<possible_pairs.size();i+=max_number_of_processors)
 			{
-				const std::size_t a_id=possible_pairs[i].first;
-				const std::size_t b_id=possible_pairs[i].second;
-				if(voronotalt::ConstrainedContactsConstruction::construct_contact_descriptor(spheres_searcher.all_spheres(), a_id, b_id, all_colliding_ids[a_id], all_colliding_ids[b_id], allocated_contact_descriptors[proc]))
+				const voronotalt::SpheresCollisionDescriptor& scd=all_collision_descriptors[possible_pairs[i].first][possible_pairs[i].second];
+				if(voronotalt::ConstrainedContactsConstruction::construct_contact_descriptor(spheres_searcher.all_spheres(), scd, all_collision_descriptors[scd.id_a], allocated_contact_descriptors[proc]))
 				{
 					possible_pair_summaries[i].set(allocated_contact_descriptors[proc]);
 					if(output_csa_with_graphics)

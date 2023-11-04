@@ -248,14 +248,6 @@ inline bool sphere_contains_sphere(const SimpleSphere& a, const SimpleSphere& b)
 	return (greater_or_equal(a.r, b.r) && less_or_equal(squared_distance_from_point_to_point(a.p, b.p), (a.r-b.r)*(a.r-b.r)));
 }
 
-inline SimplePoint center_of_intersection_circle_of_two_spheres(const SimpleSphere& a, const SimpleSphere& b)
-{
-	const SimplePoint cv=sub_of_points(b.p, a.p);
-	const double cm=point_module(cv);
-	const double cos_g=(a.r*a.r+cm*cm-b.r*b.r)/(2*a.r*cm);
-	return sum_of_points(a.p, point_and_number_product(cv, a.r*cos_g/cm));
-}
-
 inline SimpleSphere intersection_circle_of_two_spheres(const SimpleSphere& a, const SimpleSphere& b)
 {
 	const SimplePoint cv=sub_of_points(b.p, a.p);
@@ -488,6 +480,37 @@ private:
 	double box_size_;
 };
 
+struct SpheresCollisionDescriptor
+{
+	std::size_t id_a;
+	std::size_t id_b;
+	SimpleSphere intersection_circle_sphere;
+	SimplePoint intersection_circle_axis;
+	bool valid;
+
+	SpheresCollisionDescriptor() : id_a(0), id_b(0), valid(false)
+	{
+	}
+
+	bool set(const std::vector<SimpleSphere>& spheres, const std::size_t a_id, const std::size_t b_id)
+	{
+		if(a_id<spheres.size() && b_id<spheres.size() && a_id!=b_id)
+		{
+			const SimpleSphere& a=spheres[a_id];
+			const SimpleSphere& b=spheres[b_id];
+			if(sphere_intersects_sphere(a, b) && !sphere_contains_sphere(a, b) && !sphere_contains_sphere(b, a))
+			{
+				id_a=a_id;
+				id_b=b_id;
+				intersection_circle_sphere=intersection_circle_of_two_spheres(a, b);
+				intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
+				valid=true;
+			}
+		}
+		return valid;
+	}
+};
+
 class ConstrainedContactsConstruction
 {
 public:
@@ -509,17 +532,15 @@ public:
 	struct NeighborDescriptor
 	{
 		double sort_value;
-		std::size_t c_id;
-		SimplePoint ac_plane_center;
-		SimplePoint ac_plane_normal;
+		std::size_t neighbor_id;
 
-		NeighborDescriptor(const std::size_t c_id, const SimpleSphere& a, const SimpleSphere& c) : sort_value(0.0), c_id(c_id), ac_plane_center(center_of_intersection_circle_of_two_spheres(a, c)), ac_plane_normal(unit_point(sub_of_points(c.p, a.p)))
+		NeighborDescriptor() : sort_value(0.0), neighbor_id(0)
 		{
 		}
 
 		bool operator<(const NeighborDescriptor& d) const
 		{
-			return (sort_value<d.sort_value || (sort_value==d.sort_value && c_id<d.c_id));
+			return (sort_value<d.sort_value || (sort_value==d.sort_value && neighbor_id<d.neighbor_id));
 		}
 	};
 
@@ -544,10 +565,10 @@ public:
 		{
 		}
 
-		void clear(const std::size_t a_id, const std::size_t b_id)
+		void clear()
 		{
-			id_a=a_id;
-			id_b=b_id;
+			id_a=0;
+			id_b=0;
 			neighbor_descriptors.clear();
 			contour.clear();
 			sum_of_arc_angles=0.0;
@@ -775,34 +796,33 @@ public:
 
 	static bool construct_contact_descriptor(
 			const std::vector<SimpleSphere>& spheres,
-			const std::size_t a_id,
-			const std::size_t b_id,
-			const std::vector<std::size_t>& a_neighbor_ids,
-			const std::vector<std::size_t>& b_neighbor_ids,
+			const SpheresCollisionDescriptor& collision,
+			const std::vector<SpheresCollisionDescriptor>& a_neighbor_collisions,
 			ContactDescriptor& result_contact_descriptor)
 	{
-		result_contact_descriptor.clear(a_id, b_id);
-		if(a_id<spheres.size() && b_id<spheres.size())
+		result_contact_descriptor.clear();
+		if(collision.valid)
 		{
+			result_contact_descriptor.id_a=collision.id_a;
+			result_contact_descriptor.id_b=collision.id_b;
+			const std::size_t a_id=collision.id_a;
+			const std::size_t b_id=collision.id_b;
 			const SimpleSphere& a=spheres[a_id];
 			const SimpleSphere& b=spheres[b_id];
-			if(sphere_intersects_sphere(a, b) && !sphere_contains_sphere(a, b) && !sphere_contains_sphere(b, a))
 			{
-				result_contact_descriptor.intersection_circle_sphere=intersection_circle_of_two_spheres(a, b);
+				result_contact_descriptor.intersection_circle_sphere=collision.intersection_circle_sphere;
 				if(result_contact_descriptor.intersection_circle_sphere.r>0.0)
 				{
 					bool discarded=false;
 					{
-						const std::vector<std::size_t>& j_neighbor_ids=(a_neighbor_ids.size()<b_neighbor_ids.size() ? a_neighbor_ids : b_neighbor_ids);
-						const SimpleSphere& j_alt_sphere=(a_neighbor_ids.size()<b_neighbor_ids.size() ? b : a);
-						result_contact_descriptor.neighbor_descriptors.reserve(j_neighbor_ids.size());
-						for(std::size_t i=0;i<j_neighbor_ids.size() && !discarded;i++)
+						result_contact_descriptor.neighbor_descriptors.reserve(a_neighbor_collisions.size());
+						for(std::size_t i=0;i<a_neighbor_collisions.size() && !discarded;i++)
 						{
-							const std::size_t neighbor_id=j_neighbor_ids[i];
-							if(neighbor_id<spheres.size() && neighbor_id!=a_id && neighbor_id!=b_id)
+							const SpheresCollisionDescriptor& neighbor_collision=a_neighbor_collisions[i];
+							if(neighbor_collision.id_b!=b_id)
 							{
-								const SimpleSphere& c=spheres[neighbor_id];
-								if(sphere_intersects_sphere(result_contact_descriptor.intersection_circle_sphere, c) && sphere_intersects_sphere(j_alt_sphere, c))
+								const SimpleSphere& c=spheres[neighbor_collision.id_b];
+								if(sphere_intersects_sphere(result_contact_descriptor.intersection_circle_sphere, c) && sphere_intersects_sphere(b, c))
 								{
 									if(sphere_contains_sphere(c, a) || sphere_contains_sphere(c, b))
 									{
@@ -810,12 +830,11 @@ public:
 									}
 									else
 									{
-										NeighborDescriptor nd(neighbor_id, a, c);
-										const double cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(nd.ac_plane_center, a.p)));
-										const int hsi=halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p);
+										const double cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(neighbor_collision.intersection_circle_sphere.p, a.p)));
+										const int hsi=halfspace_of_point(neighbor_collision.intersection_circle_sphere.p, neighbor_collision.intersection_circle_axis, result_contact_descriptor.intersection_circle_sphere.p);
 										if(std::abs(cos_val)<1.0)
 										{
-											const double l=std::abs(signed_distance_from_point_to_plane(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p));
+											const double l=std::abs(signed_distance_from_point_to_plane(neighbor_collision.intersection_circle_sphere.p, neighbor_collision.intersection_circle_axis, result_contact_descriptor.intersection_circle_sphere.p));
 											const double xl=l/std::sqrt(1-(cos_val*cos_val));
 											if(xl>=result_contact_descriptor.intersection_circle_sphere.r)
 											{
@@ -826,6 +845,8 @@ public:
 											}
 											else
 											{
+												NeighborDescriptor nd;
+												nd.neighbor_id=i;
 												nd.sort_value=(hsi>0 ? (0.0-xl) : xl);
 												result_contact_descriptor.neighbor_descriptors.push_back(nd);
 											}
@@ -862,7 +883,8 @@ public:
 								for(std::size_t i=0;i<result_contact_descriptor.neighbor_descriptors.size();i++)
 								{
 									const NeighborDescriptor& nd=result_contact_descriptor.neighbor_descriptors[i];
-									mark_and_cut_contour(nd.ac_plane_center, nd.ac_plane_normal, nd.c_id, result_contact_descriptor.contour);
+									const SpheresCollisionDescriptor& neighbor_collision=a_neighbor_collisions[nd.neighbor_id];
+									mark_and_cut_contour(neighbor_collision.intersection_circle_sphere.p, neighbor_collision.intersection_circle_axis, neighbor_collision.id_b, result_contact_descriptor.contour);
 								}
 							}
 							if(!result_contact_descriptor.contour.empty())
