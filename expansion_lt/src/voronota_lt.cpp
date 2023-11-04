@@ -170,6 +170,12 @@ int main(const int argc, const char** argv)
 
 	{
 		std::vector<voronotalt::ConstrainedContactsConstruction::ContactDescriptor> allocated_contact_descriptors(max_number_of_processors);
+		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
+		{
+			allocated_contact_descriptors[proc].neighbor_descriptors.reserve(100);
+			allocated_contact_descriptors[proc].contour.reserve(50);
+		}
+
 #pragma omp parallel for
 		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
 		{

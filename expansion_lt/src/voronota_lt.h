@@ -506,10 +506,28 @@ public:
 
 	typedef std::vector<ContourPoint> Contour;
 
+	struct NeighborDescriptor
+	{
+		double sort_value;
+		std::size_t c_id;
+		SimplePoint ac_plane_center;
+		SimplePoint ac_plane_normal;
+
+		NeighborDescriptor(const std::size_t c_id, const SimpleSphere& a, const SimpleSphere& c) : sort_value(0.0), c_id(c_id), ac_plane_center(center_of_intersection_circle_of_two_spheres(a, c)), ac_plane_normal(unit_point(sub_of_points(c.p, a.p)))
+		{
+		}
+
+		bool operator<(const NeighborDescriptor& d) const
+		{
+			return (sort_value<d.sort_value || (sort_value==d.sort_value && c_id<d.c_id));
+		}
+	};
+
 	struct ContactDescriptor
 	{
 		SimpleSphere intersection_circle_sphere;
 		SimplePoint intersection_circle_axis;
+		std::vector<NeighborDescriptor> neighbor_descriptors;
 		Contour contour;
 		SimplePoint contour_barycenter;
 		std::size_t id_a;
@@ -530,6 +548,7 @@ public:
 		{
 			id_a=a_id;
 			id_b=b_id;
+			neighbor_descriptors.clear();
 			contour.clear();
 			sum_of_arc_angles=0.0;
 			area=0.0;
@@ -787,11 +806,10 @@ public:
 				if(result_contact_descriptor.intersection_circle_sphere.r>0.0)
 				{
 					bool discarded=false;
-					std::vector<NeighborDescriptor> neighbor_descriptors;
 					{
 						const std::vector<std::size_t>& j_neighbor_ids=(a_neighbor_ids.size()<b_neighbor_ids.size() ? a_neighbor_ids : b_neighbor_ids);
 						const SimpleSphere& j_alt_sphere=(a_neighbor_ids.size()<b_neighbor_ids.size() ? b : a);
-						neighbor_descriptors.reserve(j_neighbor_ids.size());
+						result_contact_descriptor.neighbor_descriptors.reserve(j_neighbor_ids.size());
 						for(std::size_t i=0;i<j_neighbor_ids.size() && !discarded;i++)
 						{
 							const std::size_t neighbor_id=j_neighbor_ids[i];
@@ -823,7 +841,7 @@ public:
 											else
 											{
 												nd.sort_value=(hsi>0 ? (0.0-xl) : xl);
-												neighbor_descriptors.push_back(nd);
+												result_contact_descriptor.neighbor_descriptors.push_back(nd);
 											}
 										}
 										else
@@ -842,7 +860,7 @@ public:
 					{
 						result_contact_descriptor.intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
 
-						if(neighbor_descriptors.empty())
+						if(result_contact_descriptor.neighbor_descriptors.empty())
 						{
 							result_contact_descriptor.contour_barycenter=result_contact_descriptor.intersection_circle_sphere.p;
 							result_contact_descriptor.sum_of_arc_angles=2.0*pi_value();
@@ -852,12 +870,12 @@ public:
 						else
 						{
 							init_contour_from_base_and_axis(a_id, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, result_contact_descriptor.contour);
-							if(!result_contact_descriptor.contour.empty() && !neighbor_descriptors.empty())
+							if(!result_contact_descriptor.contour.empty() && !result_contact_descriptor.neighbor_descriptors.empty())
 							{
-								std::sort(neighbor_descriptors.begin(), neighbor_descriptors.end());
-								for(std::size_t i=0;i<neighbor_descriptors.size();i++)
+								std::sort(result_contact_descriptor.neighbor_descriptors.begin(), result_contact_descriptor.neighbor_descriptors.end());
+								for(std::size_t i=0;i<result_contact_descriptor.neighbor_descriptors.size();i++)
 								{
-									const NeighborDescriptor& nd=neighbor_descriptors[i];
+									const NeighborDescriptor& nd=result_contact_descriptor.neighbor_descriptors[i];
 									mark_and_cut_contour(nd.ac_plane_center, nd.ac_plane_normal, nd.c_id, result_contact_descriptor.contour);
 								}
 							}
@@ -952,23 +970,6 @@ public:
 	}
 
 private:
-	struct NeighborDescriptor
-	{
-		double sort_value;
-		std::size_t c_id;
-		SimplePoint ac_plane_center;
-		SimplePoint ac_plane_normal;
-
-		NeighborDescriptor(const std::size_t c_id, const SimpleSphere& a, const SimpleSphere& c) : sort_value(0.0), c_id(c_id), ac_plane_center(center_of_intersection_circle_of_two_spheres(a, c)), ac_plane_normal(unit_point(sub_of_points(c.p, a.p)))
-		{
-		}
-
-		bool operator<(const NeighborDescriptor& d) const
-		{
-			return (sort_value<d.sort_value || (sort_value==d.sort_value && c_id<d.c_id));
-		}
-	};
-
 	static void init_contour_from_base_and_axis(
 			const std::size_t a_id,
 			const SimpleSphere& base,
