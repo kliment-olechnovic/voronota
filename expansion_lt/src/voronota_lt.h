@@ -577,20 +577,6 @@ public:
 		{
 		}
 
-		void clear()
-		{
-			id_a=0;
-			id_b=0;
-			area=0.0;
-			arc_length=0.0;
-			complexity=0;
-			solid_angle_a=0.0;
-			solid_angle_b=0.0;
-			pyramid_volume_a=0.0;
-			pyramid_volume_b=0.0;
-			valid=false;
-		}
-
 		void set(const ContactDescriptor& cd)
 		{
 			if(cd.valid)
