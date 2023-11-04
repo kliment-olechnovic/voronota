@@ -124,29 +124,51 @@ int main(const int argc, const char** argv)
 
 	voronotalt::SpheresSearcher spheres_searcher(spheres);
 
-	std::vector< std::vector<voronotalt::SpheresCollisionDescriptor> > all_collision_descriptors(spheres_searcher.all_spheres().size());
+	std::vector< std::vector<std::size_t> > all_colliding_ids(spheres_searcher.all_spheres().size());
+
+	std::vector<bool> hidden_statuses(spheres_searcher.all_spheres().size(), false);
 
 	{
-		std::vector< std::vector<std::size_t> > allocated_colliding_ids(max_number_of_processors);
-		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
-		{
-			allocated_colliding_ids[proc].reserve(100);
-		}
-
 #pragma omp parallel for
 		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
 		{
 			for(std::size_t i=proc;i<spheres_searcher.all_spheres().size();i+=max_number_of_processors)
 			{
-				allocated_colliding_ids[proc].clear();
-				spheres_searcher.find_colliding_ids(i, allocated_colliding_ids[proc]);
-				all_collision_descriptors[i].reserve(allocated_colliding_ids[proc].size());
-				for(std::size_t j=0;j<allocated_colliding_ids[proc].size();j++)
+				spheres_searcher.find_colliding_ids(i, all_colliding_ids[i]);
+				bool hidden=false;
+				for(std::size_t j=0;j<all_colliding_ids[i].size() && !hidden;j++)
 				{
-					voronotalt::SpheresCollisionDescriptor scd;
-					if(scd.set(spheres_searcher.all_spheres(), i, allocated_colliding_ids[proc][j]))
+					if(voronotalt::sphere_contains_sphere(spheres_searcher.all_spheres()[all_colliding_ids[i][j]], spheres_searcher.all_spheres()[i]))
 					{
-						all_collision_descriptors[i].push_back(scd);
+						hidden=true;
+					}
+				}
+				hidden_statuses[i]=hidden;
+			}
+		}
+	}
+
+	std::vector< std::vector<voronotalt::SpheresCollisionDescriptor> > all_collision_descriptors(spheres_searcher.all_spheres().size());
+
+	{
+#pragma omp parallel for
+		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
+		{
+			for(std::size_t i=proc;i<spheres_searcher.all_spheres().size();i+=max_number_of_processors)
+			{
+				if(!hidden_statuses[i])
+				{
+					all_collision_descriptors[i].reserve(all_colliding_ids[i].size());
+					for(std::size_t j=0;j<all_colliding_ids[i].size();j++)
+					{
+						if(!hidden_statuses[all_colliding_ids[i][j]])
+						{
+							voronotalt::SpheresCollisionDescriptor scd;
+							if(scd.set(spheres_searcher.all_spheres(), i, all_colliding_ids[i][j]))
+							{
+								all_collision_descriptors[i].push_back(scd);
+							}
+						}
 					}
 				}
 			}
