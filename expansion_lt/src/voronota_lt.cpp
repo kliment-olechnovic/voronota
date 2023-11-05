@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "voronota_lt.h"
+#include "voronotalt/tessellation_full_construction.h"
 
 int main(const int argc, const char** argv)
 {
@@ -120,184 +120,52 @@ int main(const int argc, const char** argv)
 		}
 	}
 
+	voronotalt::TessellationFullConstructionResult result;
+
+	voronotalt::construct_full_tessellation(max_number_of_processors, spheres, output_csa_with_graphics, result);
+
 	std::cout << "total_balls: " << spheres.size() << "\n";
-
-	voronotalt::SpheresSearcher spheres_searcher(spheres);
-
-	std::vector< std::vector<std::size_t> > all_colliding_ids(spheres_searcher.all_spheres().size());
-
-	std::vector<bool> hidden_statuses(spheres_searcher.all_spheres().size(), false);
-
-	{
-#pragma omp parallel for
-		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
-		{
-			for(std::size_t i=proc;i<spheres_searcher.all_spheres().size();i+=max_number_of_processors)
-			{
-				spheres_searcher.find_colliding_ids(i, all_colliding_ids[i]);
-				bool hidden=false;
-				for(std::size_t j=0;j<all_colliding_ids[i].size() && !hidden;j++)
-				{
-					if(voronotalt::sphere_contains_sphere(spheres_searcher.all_spheres()[all_colliding_ids[i][j]], spheres_searcher.all_spheres()[i]))
-					{
-						hidden=true;
-					}
-				}
-				hidden_statuses[i]=hidden;
-			}
-		}
-	}
-
-	std::vector< std::vector<voronotalt::SpheresCollisionDescriptor> > all_collision_descriptors(spheres_searcher.all_spheres().size());
-
-	{
-#pragma omp parallel for
-		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
-		{
-			for(std::size_t i=proc;i<spheres_searcher.all_spheres().size();i+=max_number_of_processors)
-			{
-				if(!hidden_statuses[i])
-				{
-					all_collision_descriptors[i].reserve(all_colliding_ids[i].size());
-					for(std::size_t j=0;j<all_colliding_ids[i].size();j++)
-					{
-						if(!hidden_statuses[all_colliding_ids[i][j]])
-						{
-							voronotalt::SpheresCollisionDescriptor scd;
-							if(scd.set(spheres_searcher.all_spheres(), i, all_colliding_ids[i][j]))
-							{
-								all_collision_descriptors[i].push_back(scd);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	std::size_t total_collisions=0;
-	for(std::size_t i=0;i<all_collision_descriptors.size();i++)
-	{
-		total_collisions+=all_collision_descriptors[i].size();
-	}
-
-	std::cout << "total_collisions: " << total_collisions << "\n";
-
-	std::vector< std::pair<std::size_t, std::size_t> > possible_pairs;
-	possible_pairs.reserve(total_collisions/2);
-	for(std::size_t i=0;i<all_collision_descriptors.size();i++)
-	{
-	    for(std::size_t j=0;j<all_collision_descriptors[i].size();j++)
-	    {
-	    	const voronotalt::SpheresCollisionDescriptor& scd=all_collision_descriptors[i][j];
-	        if(all_collision_descriptors[scd.id_a].size()<all_collision_descriptors[scd.id_b].size() || (all_collision_descriptors[scd.id_a].size()==all_collision_descriptors[scd.id_b].size() && scd.id_a<scd.id_b))
-	        {
-	        	possible_pairs.push_back(std::pair<std::size_t, std::size_t>(i, j));
-	        }
-	    }
-	}
-
-	std::vector<voronotalt::ConstrainedContactsConstruction::ContactDescriptorSummary> possible_pair_summaries(possible_pairs.size());
-
-	std::vector<voronotalt::ConstrainedContactsConstruction::ContactDescriptorsGraphics> possible_pair_graphics;
-	if(output_csa_with_graphics)
-	{
-		possible_pair_graphics.resize(possible_pair_summaries.size());
-	}
-
-	{
-		std::vector<voronotalt::ConstrainedContactsConstruction::ContactDescriptor> allocated_contact_descriptors(max_number_of_processors);
-		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
-		{
-			allocated_contact_descriptors[proc].neighbor_descriptors.reserve(100);
-			allocated_contact_descriptors[proc].contour.reserve(50);
-		}
-
-#pragma omp parallel for
-		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
-		{
-			for(std::size_t i=proc;i<possible_pairs.size();i+=max_number_of_processors)
-			{
-				const voronotalt::SpheresCollisionDescriptor& scd=all_collision_descriptors[possible_pairs[i].first][possible_pairs[i].second];
-				if(voronotalt::ConstrainedContactsConstruction::construct_contact_descriptor(spheres_searcher.all_spheres(), scd, all_collision_descriptors[scd.id_a], allocated_contact_descriptors[proc]))
-				{
-					possible_pair_summaries[i].set(allocated_contact_descriptors[proc]);
-					if(output_csa_with_graphics)
-					{
-						voronotalt::ConstrainedContactsConstruction::construct_contact_descriptor_graphics(allocated_contact_descriptors[proc], 0.2, possible_pair_graphics[i]);
-					}
-				}
-			}
-		}
-	}
-
-	voronotalt::ConstrainedContactsConstruction::TotalContactDescriptorsSummary total_contacts_summary;
-	for(std::size_t i=0;i<possible_pair_summaries.size();i++)
-	{
-		total_contacts_summary.add(possible_pair_summaries[i]);
-	}
-
-	std::vector<voronotalt::ConstrainedContactsConstruction::CellContactDescriptorsSummary> cells_summaries(spheres_searcher.all_spheres().size());
-	for(std::size_t i=0;i<possible_pair_summaries.size();i++)
-	{
-		const voronotalt::ConstrainedContactsConstruction::ContactDescriptorSummary& pair_summary=possible_pair_summaries[i];
-		if(pair_summary.valid)
-		{
-			cells_summaries[pair_summary.id_a].add(pair_summary.id_a, pair_summary);
-			cells_summaries[pair_summary.id_b].add(pair_summary.id_b, pair_summary);
-		}
-	}
-
-	voronotalt::ConstrainedContactsConstruction::TotalCellContactDescriptorsSummary total_cells_summary;
-	for(std::size_t i=0;i<cells_summaries.size();i++)
-	{
-		cells_summaries[i].compute_sas(spheres_searcher.all_spheres()[i].r);
-		total_cells_summary.add(cells_summaries[i]);
-	}
-
-	std::cout << "total_contacts_count: " << total_contacts_summary.count << "\n";
-	std::cout << "total_contacts_area: " << total_contacts_summary.area << "\n";
-	std::cout << "total_contacts_complexity: " << total_contacts_summary.complexity << "\n";
-	std::cout << "total_cells_count: " << total_cells_summary.count << "\n";
-	std::cout << "total_cells_sas_area: " << total_cells_summary.sas_area << "\n";
-	std::cout << "total_cells_sas_inside_volume: " << total_cells_summary.sas_inside_volume << "\n";
+	std::cout << "total_collisions: " << result.total_collisions << "\n";
+	std::cout << "total_contacts_count: " << result.total_contacts_summary.count << "\n";
+	std::cout << "total_contacts_area: " << result.total_contacts_summary.area << "\n";
+	std::cout << "total_contacts_complexity: " << result.total_contacts_summary.complexity << "\n";
+	std::cout << "total_cells_count: " << result.total_cells_summary.count << "\n";
+	std::cout << "total_cells_sas_area: " << result.total_cells_summary.sas_area << "\n";
+	std::cout << "total_cells_sas_inside_volume: " << result.total_cells_summary.sas_inside_volume << "\n";
 
 	if(output_csa)
 	{
-		for(std::size_t i=0;i<possible_pair_summaries.size();i++)
+		for(std::size_t i=0;i<result.contacts_descriptors_summaries.size();i++)
 		{
-			const voronotalt::ConstrainedContactsConstruction::ContactDescriptorSummary& pair_summary=possible_pair_summaries[i];
-			if(pair_summary.valid)
+			const voronotalt::ContactDescriptorSummary& pair_summary=result.contacts_descriptors_summaries[i];
+			std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area << " " << pair_summary.solid_angle_a << " " << pair_summary.solid_angle_b;
+			if(output_csa_with_graphics)
 			{
-				std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area << " " << pair_summary.solid_angle_a << " " << pair_summary.solid_angle_b;
-				if(output_csa_with_graphics)
+				const voronotalt::ContactDescriptorsGraphics& pair_graphics=result.contacts_descriptors_graphics[i];
+				std::cout << " BEGIN,TRIANGLE_FAN";
+				if(pair_graphics.valid && !pair_graphics.outer_points.empty())
 				{
-					const voronotalt::ConstrainedContactsConstruction::ContactDescriptorsGraphics& pair_graphics=possible_pair_graphics[i];
-					std::cout << " BEGIN,TRIANGLE_FAN";
-					if(pair_graphics.valid && !pair_graphics.outer_points.empty())
+					std::cout << ",NORMAL," << pair_graphics.normal.x << "," << pair_graphics.normal.y << "," << pair_graphics.normal.z;
+					std::cout << ",VERTEX," << pair_graphics.barycenter.x << "," << pair_graphics.barycenter.y << "," << pair_graphics.barycenter.z;
+					for(std::size_t j=0;j<pair_graphics.outer_points.size();j++)
 					{
 						std::cout << ",NORMAL," << pair_graphics.normal.x << "," << pair_graphics.normal.y << "," << pair_graphics.normal.z;
-						std::cout << ",VERTEX," << pair_graphics.barycenter.x << "," << pair_graphics.barycenter.y << "," << pair_graphics.barycenter.z;
-						for(std::size_t j=0;j<pair_graphics.outer_points.size();j++)
-						{
-							std::cout << ",NORMAL," << pair_graphics.normal.x << "," << pair_graphics.normal.y << "," << pair_graphics.normal.z;
-							std::cout << ",VERTEX," << pair_graphics.outer_points[j].x << "," << pair_graphics.outer_points[j].y << "," << pair_graphics.outer_points[j].z;
-						}
-						std::cout << ",NORMAL," << pair_graphics.normal.x << "," << pair_graphics.normal.y << "," << pair_graphics.normal.z;
-						std::cout << ",VERTEX," << pair_graphics.outer_points[0].x << "," << pair_graphics.outer_points[0].y << "," << pair_graphics.outer_points[0].z;
+						std::cout << ",VERTEX," << pair_graphics.outer_points[j].x << "," << pair_graphics.outer_points[j].y << "," << pair_graphics.outer_points[j].z;
 					}
-					std::cout << ",END";
+					std::cout << ",NORMAL," << pair_graphics.normal.x << "," << pair_graphics.normal.y << "," << pair_graphics.normal.z;
+					std::cout << ",VERTEX," << pair_graphics.outer_points[0].x << "," << pair_graphics.outer_points[0].y << "," << pair_graphics.outer_points[0].z;
 				}
-				std::cout << "\n";
+				std::cout << ",END";
 			}
+			std::cout << "\n";
 		}
 	}
 
 	if(output_sasa)
 	{
-		for(std::size_t i=0;i<cells_summaries.size();i++)
+		for(std::size_t i=0;i<result.cells_summaries.size();i++)
 		{
-			const voronotalt::ConstrainedContactsConstruction::CellContactDescriptorsSummary& cell_summary=cells_summaries[i];
+			const voronotalt::CellContactDescriptorsSummary& cell_summary=result.cells_summaries[i];
 			if(cell_summary.sas_computed)
 			{
 				std::cout << "sasa " << cell_summary.id << " " << cell_summary.sas_area << " " << cell_summary.sas_inside_volume << "\n";

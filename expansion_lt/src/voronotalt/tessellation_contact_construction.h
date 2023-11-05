@@ -1,484 +1,13 @@
-#ifndef VORONOTA_LT_H_
-#define VORONOTA_LT_H_
+#ifndef VORONOTALT_TESSELLATION_CONTACT_CONSTRUCTION_H_
+#define VORONOTALT_TESSELLATION_CONTACT_CONSTRUCTION_H_
 
 #include <vector>
-#include <cmath>
 #include <algorithm>
+
+#include "basic_types_and_functions.h"
 
 namespace voronotalt
 {
-
-inline double default_comparison_epsilon()
-{
-	static const double e=0.0000000001;
-	return e;
-}
-
-inline bool equal(const double a, const double b, const double e)
-{
-	return (((a-b)<=e) && ((b-a)<=e));
-}
-
-inline bool equal(const double a, const double b)
-{
-	return equal(a, b, default_comparison_epsilon());
-}
-
-inline bool less(const double a, const double b)
-{
-	return ((a+default_comparison_epsilon())<b);
-}
-
-inline bool greater(const double a, const double b)
-{
-	return ((a-default_comparison_epsilon())>b);
-}
-
-inline bool less_or_equal(const double a, const double b)
-{
-	return (less(a, b) || equal(a, b));
-}
-
-inline bool greater_or_equal(const double a, const double b)
-{
-	return (greater(a, b) || equal(a, b));
-}
-
-struct SimplePoint
-{
-	double x;
-	double y;
-	double z;
-
-	SimplePoint() : x(0.0), y(0.0), z(0.0)
-	{
-	}
-
-	SimplePoint(const double x, const double y, const double z) : x(x), y(y), z(z)
-	{
-	}
-};
-
-struct SimpleSphere
-{
-	SimplePoint p;
-	double r;
-
-	SimpleSphere() : r(0.0)
-	{
-	}
-
-	SimpleSphere(const SimplePoint& p, const double r) : p(p), r(r)
-	{
-	}
-};
-
-struct SimpleQuaternion
-{
-	double a;
-	double b;
-	double c;
-	double d;
-
-	SimpleQuaternion(const double a, const double b, const double c, const double d) : a(a), b(b), c(c), d(d)
-	{
-	}
-
-	SimpleQuaternion(const double a, const SimplePoint& p) : a(a), b(p.x), c(p.y), d(p.z)
-	{
-	}
-};
-
-inline double squared_distance_from_point_to_point(const SimplePoint& a, const SimplePoint& b)
-{
-	const double dx=(a.x-b.x);
-	const double dy=(a.y-b.y);
-	const double dz=(a.z-b.z);
-	return (dx*dx+dy*dy+dz*dz);
-}
-
-inline double distance_from_point_to_point(const SimplePoint& a, const SimplePoint& b)
-{
-	return sqrt(squared_distance_from_point_to_point(a, b));
-}
-
-inline double squared_point_module(const SimplePoint& a)
-{
-	return (a.x*a.x+a.y*a.y+a.z*a.z);
-}
-
-inline double point_module(const SimplePoint& a)
-{
-	return sqrt(squared_point_module(a));
-}
-
-inline double dot_product(const SimplePoint& a, const SimplePoint& b)
-{
-	return (a.x*b.x+a.y*b.y+a.z*b.z);
-}
-
-inline SimplePoint cross_product(const SimplePoint& a, const SimplePoint& b)
-{
-	return SimplePoint(a.y*b.z-a.z*b.y, a.z*b.x-a.x*b.z, a.x*b.y-a.y*b.x);
-}
-
-inline SimplePoint point_and_number_product(const SimplePoint& a, const double k)
-{
-	return SimplePoint(a.x*k, a.y*k, a.z*k);
-}
-
-inline SimplePoint unit_point(const SimplePoint& a)
-{
-	return ((equal(squared_point_module(a), 1.0)) ? a : point_and_number_product(a, 1.0/point_module(a)));
-}
-
-inline SimplePoint sum_of_points(const SimplePoint& a, const SimplePoint& b)
-{
-	return SimplePoint(a.x+b.x, a.y+b.y, a.z+b.z);
-}
-
-inline SimplePoint sub_of_points(const SimplePoint& a, const SimplePoint& b)
-{
-	return SimplePoint(a.x-b.x, a.y-b.y, a.z-b.z);
-}
-
-inline double signed_distance_from_point_to_plane(const SimplePoint& plane_point, const SimplePoint& plane_normal, const SimplePoint& x)
-{
-	return dot_product(unit_point(plane_normal), sub_of_points(x, plane_point));
-}
-
-inline int halfspace_of_point(const SimplePoint& plane_point, const SimplePoint& plane_normal, const SimplePoint& x)
-{
-	const double sd=signed_distance_from_point_to_plane(plane_point, plane_normal, x);
-	if(greater(sd, 0.0))
-	{
-		return 1;
-	}
-	else if(less(sd, 0.0))
-	{
-		return -1;
-	}
-	return 0;
-}
-
-inline SimplePoint intersection_of_plane_and_segment(const SimplePoint& plane_point, const SimplePoint& plane_normal, const SimplePoint& a, const SimplePoint& b)
-{
-	const double da=signed_distance_from_point_to_plane(plane_point, plane_normal, a);
-	const double db=signed_distance_from_point_to_plane(plane_point, plane_normal, b);
-	if((da-db)==0)
-	{
-		return a;
-	}
-	else
-	{
-		const double t=da/(da-db);
-		return sum_of_points(a, point_and_number_product(sub_of_points(b, a), t));
-	}
-}
-
-inline double triangle_area(const SimplePoint& a, const SimplePoint& b, const SimplePoint& c)
-{
-	return (point_module(cross_product(sub_of_points(b, a), sub_of_points(c, a)))/2.0);
-}
-
-inline double min_angle(const SimplePoint& o, const SimplePoint& a, const SimplePoint& b)
-{
-	double cos_val=dot_product(unit_point(sub_of_points(a, o)), unit_point(sub_of_points(b, o)));
-	if(cos_val<-1.0)
-	{
-		cos_val=-1.0;
-	}
-	else if(cos_val>1.0)
-	{
-		cos_val=1.0;
-	}
-	return std::acos(cos_val);
-}
-
-inline double pi_value()
-{
-	static const double pi=std::acos(-1.0);
-	return pi;
-}
-
-inline double directed_angle(const SimplePoint& o, const SimplePoint& a, const SimplePoint& b, const SimplePoint& c)
-{
-	const double angle=min_angle(o, a, b);
-	const SimplePoint n=cross_product(unit_point(sub_of_points(a, o)), unit_point(sub_of_points(b, o)));
-	if(dot_product(sub_of_points(c, o), n)>=0)
-	{
-		return angle;
-	}
-	else
-	{
-		return (pi_value()*2-angle);
-	}
-}
-
-SimplePoint any_normal_of_vector(const SimplePoint& a)
-{
-	SimplePoint b=a;
-	if(!equal(b.x, 0.0) && (!equal(b.y, 0.0) || !equal(b.z, 0.0)))
-	{
-		b.x=0.0-b.x;
-		return unit_point(cross_product(a, b));
-	}
-	else if(!equal(b.y, 0.0) && (!equal(b.x, 0.0) || !equal(b.z, 0.0)))
-	{
-		b.y=0.0-b.y;
-		return unit_point(cross_product(a, b));
-	}
-	else if(!equal(b.x, 0.0))
-	{
-		return SimplePoint(0.0, 1.0, 0.0);
-	}
-	else
-	{
-		return SimplePoint(1.0, 0.0, 0.0);
-	}
-}
-
-inline bool sphere_intersects_sphere(const SimpleSphere& a, const SimpleSphere& b)
-{
-	return less(squared_distance_from_point_to_point(a.p, b.p), (a.r+b.r)*(a.r+b.r));
-}
-
-inline bool sphere_contains_sphere(const SimpleSphere& a, const SimpleSphere& b)
-{
-	return (greater_or_equal(a.r, b.r) && less_or_equal(squared_distance_from_point_to_point(a.p, b.p), (a.r-b.r)*(a.r-b.r)));
-}
-
-inline SimpleSphere intersection_circle_of_two_spheres(const SimpleSphere& a, const SimpleSphere& b)
-{
-	const SimplePoint cv=sub_of_points(b.p, a.p);
-	const double cm=point_module(cv);
-	const double cos_g=(a.r*a.r+cm*cm-b.r*b.r)/(2*a.r*cm);
-	const double sin_g=std::sqrt(1-cos_g*cos_g);
-	return SimpleSphere(sum_of_points(a.p, point_and_number_product(cv, a.r*cos_g/cm)), a.r*sin_g);
-}
-
-inline bool project_point_inside_line(const SimplePoint& o, const SimplePoint& a, const SimplePoint& b, SimplePoint& result)
-{
-	const SimplePoint v=unit_point(sub_of_points(b, a));
-	const double l=dot_product(v, sub_of_points(o, a));
-	if(l>0.0 && (l*l)<=squared_distance_from_point_to_point(a, b))
-	{
-		result=sum_of_points(a, point_and_number_product(v, l));
-		return true;
-	}
-	return false;
-}
-
-inline bool intersect_segment_with_circle(const SimpleSphere& circle, const SimplePoint& p_in, const SimplePoint& p_out, SimplePoint& result)
-{
-	const double dist_in_to_out=distance_from_point_to_point(p_in, p_out);
-	if(dist_in_to_out>0.0)
-	{
-		const SimplePoint v=point_and_number_product(sub_of_points(p_in, p_out), 1.0/dist_in_to_out);
-		const SimplePoint u=sub_of_points(circle.p, p_out);
-		const SimplePoint s=sum_of_points(p_out, point_and_number_product(v, dot_product(v, u)));
-		const double ll=(circle.r*circle.r)-squared_distance_from_point_to_point(circle.p, s);
-		if(ll>=0.0)
-		{
-			result=sum_of_points(s, point_and_number_product(v, 0.0-std::sqrt(ll)));
-			return true;
-		}
-	}
-	return false;
-}
-
-inline double min_dihedral_angle(const SimplePoint& o, const SimplePoint& a, const SimplePoint& b1, const SimplePoint& b2)
-{
-	const SimplePoint oa=unit_point(sub_of_points(a, o));
-	const SimplePoint d1=sub_of_points(b1, sum_of_points(o, point_and_number_product(oa, dot_product(oa, sub_of_points(b1, o)))));
-	const SimplePoint d2=sub_of_points(b2, sum_of_points(o, point_and_number_product(oa, dot_product(oa, sub_of_points(b2, o)))));
-	const double cos_val=dot_product(unit_point(d1), unit_point(d2));
-	return std::acos(std::max(-1.0, std::min(cos_val, 1.0)));
-}
-
-inline SimpleQuaternion quaternion_product(const SimpleQuaternion& q1, const SimpleQuaternion& q2)
-{
-	return SimpleQuaternion(
-			q1.a*q2.a - q1.b*q2.b - q1.c*q2.c - q1.d*q2.d,
-			q1.a*q2.b + q1.b*q2.a + q1.c*q2.d - q1.d*q2.c,
-			q1.a*q2.c - q1.b*q2.d + q1.c*q2.a + q1.d*q2.b,
-			q1.a*q2.d + q1.b*q2.c - q1.c*q2.b + q1.d*q2.a);
-}
-
-inline SimpleQuaternion inverted_quaternion(const SimpleQuaternion& q)
-{
-	return SimpleQuaternion(q.a, 0-q.b, 0-q.c, 0-q.d);
-}
-
-inline SimplePoint rotate_point_around_axis(const SimplePoint axis, const double angle, const SimplePoint& p)
-{
-	if(squared_point_module(axis)>0)
-	{
-		const double radians_angle_half=(angle*0.5);
-		const SimpleQuaternion q1=SimpleQuaternion(std::cos(radians_angle_half), point_and_number_product(unit_point(axis), std::sin(radians_angle_half)));
-		const SimpleQuaternion q2=SimpleQuaternion(0.0, p);
-		const SimpleQuaternion q3=quaternion_product(quaternion_product(q1, q2), inverted_quaternion(q1));
-		return SimplePoint(q3.b, q3.c, q3.d);
-	}
-	else
-	{
-		return p;
-	}
-}
-
-class SpheresSearcher
-{
-public:
-	SpheresSearcher(const std::vector<SimpleSphere>& spheres) : spheres_(spheres), box_size_(1.0)
-	{
-		for(std::size_t i=0;i<spheres_.size();i++)
-		{
-			const SimpleSphere& s=spheres_[i];
-			box_size_=std::max(box_size_, s.r*2.0+0.25);
-		}
-
-		for(std::size_t i=0;i<spheres_.size();i++)
-		{
-			const GridPoint gp(spheres_[i], box_size_);
-			if(i==0)
-			{
-				grid_offset_=gp;
-				grid_size_=gp;
-			}
-			else
-			{
-				grid_offset_.x=std::min(grid_offset_.x, gp.x);
-				grid_offset_.y=std::min(grid_offset_.y, gp.y);
-				grid_offset_.z=std::min(grid_offset_.z, gp.z);
-				grid_size_.x=std::max(grid_size_.x, gp.x);
-				grid_size_.y=std::max(grid_size_.y, gp.y);
-				grid_size_.z=std::max(grid_size_.z, gp.z);
-			}
-		}
-
-		grid_size_.x=grid_size_.x-grid_offset_.x+1;
-		grid_size_.y=grid_size_.y-grid_offset_.y+1;
-		grid_size_.z=grid_size_.z-grid_offset_.z+1;
-
-		map_of_boxes_.resize(grid_size_.x*grid_size_.y*grid_size_.z, -1);
-
-		for(std::size_t i=0;i<spheres_.size();i++)
-		{
-			const GridPoint gp(spheres_[i], box_size_, grid_offset_);
-			const int index=gp.index(grid_size_);
-			const int box_id=map_of_boxes_[index];
-			if(box_id<0)
-			{
-				map_of_boxes_[index]=static_cast<int>(boxes_.size());
-				boxes_.push_back(std::vector<std::size_t>(1, i));
-			}
-			else
-			{
-				boxes_[box_id].push_back(i);
-			}
-		}
-	}
-
-	const std::vector<SimpleSphere>& all_spheres() const
-	{
-		return spheres_;
-	}
-
-	bool find_colliding_ids(const std::size_t& central_id, std::vector<std::size_t>& colliding_ids) const
-	{
-		colliding_ids.clear();
-		if(central_id<spheres_.size())
-		{
-			const SimpleSphere& central_sphere=spheres_[central_id];
-			colliding_ids.reserve(20);
-			const GridPoint gp(central_sphere, box_size_, grid_offset_);
-			GridPoint dgp=gp;
-			for(int dx=-1;dx<=1;dx++)
-			{
-				dgp.x=gp.x+dx;
-				for(int dy=-1;dy<=1;dy++)
-				{
-					dgp.y=gp.y+dy;
-					for(int dz=-1;dz<=1;dz++)
-					{
-						dgp.z=gp.z+dz;
-						const int index=dgp.index(grid_size_);
-						if(index>=0)
-						{
-							const int box_id=map_of_boxes_[index];
-							if(box_id>=0)
-							{
-								const std::vector<std::size_t>& ids=boxes_[box_id];
-								for(std::size_t i=0;i<ids.size();i++)
-								{
-									const std::size_t id=ids[i];
-									if(id!=central_id && sphere_intersects_sphere(central_sphere, spheres_[id]))
-									{
-										colliding_ids.push_back(id);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return (!colliding_ids.empty());
-	}
-
-private:
-	struct GridPoint
-	{
-		int x;
-		int y;
-		int z;
-
-		GridPoint() : x(0), y(0), z(0)
-		{
-		}
-
-		GridPoint(const SimpleSphere& s, const double grid_step)
-		{
-			init(s, grid_step);
-		}
-
-		GridPoint(const SimpleSphere& s, const double grid_step, const GridPoint& grid_offset)
-		{
-			init(s, grid_step, grid_offset);
-		}
-
-		void init(const SimpleSphere& s, const double grid_step)
-		{
-			x=static_cast<int>(s.p.x/grid_step);
-			y=static_cast<int>(s.p.y/grid_step);
-			z=static_cast<int>(s.p.z/grid_step);
-		}
-
-		void init(const SimpleSphere& s, const double grid_step, const GridPoint& grid_offset)
-		{
-			x=static_cast<int>(s.p.x/grid_step)-grid_offset.x;
-			y=static_cast<int>(s.p.y/grid_step)-grid_offset.y;
-			z=static_cast<int>(s.p.z/grid_step)-grid_offset.z;
-		}
-
-		int index(const GridPoint& grid_size) const
-		{
-			return ((x>=0 && y>=0 && z>=0 && x<grid_size.x && y<grid_size.y &&z<grid_size.z) ? (z*grid_size.x*grid_size.y+y*grid_size.x+x) : (-1));
-		}
-
-		bool operator<(const GridPoint& gp) const
-		{
-			return (x<gp.x || (x==gp.x && y<gp.y) || (x==gp.x && y==gp.y && z<gp.z));
-		}
-	};
-
-	std::vector<SimpleSphere> spheres_;
-	GridPoint grid_offset_;
-	GridPoint grid_size_;
-	std::vector<int> map_of_boxes_;
-	std::vector< std::vector<std::size_t> > boxes_;
-	double box_size_;
-};
 
 struct SpheresCollisionDescriptor
 {
@@ -511,289 +40,94 @@ struct SpheresCollisionDescriptor
 	}
 };
 
-class ConstrainedContactsConstruction
+struct ContourPoint
+{
+	SimplePoint p;
+	std::size_t left_id;
+	std::size_t right_id;
+	int indicator;
+	double angle;
+
+	ContourPoint(const SimplePoint& p, const std::size_t left_id, const std::size_t right_id) : p(p), left_id(left_id), right_id(right_id), indicator(0), angle(0.0)
+	{
+	}
+};
+
+typedef std::vector<ContourPoint> Contour;
+
+struct NeighborDescriptor
+{
+	double sort_value;
+	std::size_t neighbor_id;
+
+	NeighborDescriptor() : sort_value(0.0), neighbor_id(0)
+	{
+	}
+
+	bool operator<(const NeighborDescriptor& d) const
+	{
+		return (sort_value<d.sort_value || (sort_value==d.sort_value && neighbor_id<d.neighbor_id));
+	}
+};
+
+struct ContactDescriptor
+{
+	SimpleSphere intersection_circle_sphere;
+	SimplePoint intersection_circle_axis;
+	std::vector<NeighborDescriptor> neighbor_descriptors;
+	Contour contour;
+	SimplePoint contour_barycenter;
+	std::size_t id_a;
+	std::size_t id_b;
+	double sum_of_arc_angles;
+	double area;
+	double solid_angle_a;
+	double solid_angle_b;
+	double pyramid_volume_a;
+	double pyramid_volume_b;
+	bool valid;
+
+	ContactDescriptor() : id_a(0), id_b(0), sum_of_arc_angles(0.0), area(0.0), solid_angle_a(0.0), solid_angle_b(0.0), pyramid_volume_a(0.0), pyramid_volume_b(0.0), valid(false)
+	{
+	}
+
+	void clear()
+	{
+		id_a=0;
+		id_b=0;
+		neighbor_descriptors.clear();
+		contour.clear();
+		sum_of_arc_angles=0.0;
+		area=0.0;
+		solid_angle_a=0.0;
+		solid_angle_b=0.0;
+		pyramid_volume_a=0.0;
+		pyramid_volume_b=0.0;
+		valid=false;
+	}
+};
+
+struct ContactDescriptorsGraphics
+{
+	std::vector<SimplePoint> outer_points;
+	SimplePoint barycenter;
+	SimplePoint normal;
+	bool valid;
+
+	ContactDescriptorsGraphics() : valid(false)
+	{
+	}
+
+	void clear()
+	{
+		outer_points.clear();
+		valid=false;
+	}
+};
+
+class TessellationContactsConstruction
 {
 public:
-	struct ContourPoint
-	{
-		SimplePoint p;
-		std::size_t left_id;
-		std::size_t right_id;
-		int indicator;
-		double angle;
-
-		ContourPoint(const SimplePoint& p, const std::size_t left_id, const std::size_t right_id) : p(p), left_id(left_id), right_id(right_id), indicator(0), angle(0.0)
-		{
-		}
-	};
-
-	typedef std::vector<ContourPoint> Contour;
-
-	struct NeighborDescriptor
-	{
-		double sort_value;
-		std::size_t neighbor_id;
-
-		NeighborDescriptor() : sort_value(0.0), neighbor_id(0)
-		{
-		}
-
-		bool operator<(const NeighborDescriptor& d) const
-		{
-			return (sort_value<d.sort_value || (sort_value==d.sort_value && neighbor_id<d.neighbor_id));
-		}
-	};
-
-	struct ContactDescriptor
-	{
-		SimpleSphere intersection_circle_sphere;
-		SimplePoint intersection_circle_axis;
-		std::vector<NeighborDescriptor> neighbor_descriptors;
-		Contour contour;
-		SimplePoint contour_barycenter;
-		std::size_t id_a;
-		std::size_t id_b;
-		double sum_of_arc_angles;
-		double area;
-		double solid_angle_a;
-		double solid_angle_b;
-		double pyramid_volume_a;
-		double pyramid_volume_b;
-		bool valid;
-
-		ContactDescriptor() : id_a(0), id_b(0), sum_of_arc_angles(0.0), area(0.0), solid_angle_a(0.0), solid_angle_b(0.0), pyramid_volume_a(0.0), pyramid_volume_b(0.0), valid(false)
-		{
-		}
-
-		void clear()
-		{
-			id_a=0;
-			id_b=0;
-			neighbor_descriptors.clear();
-			contour.clear();
-			sum_of_arc_angles=0.0;
-			area=0.0;
-			solid_angle_a=0.0;
-			solid_angle_b=0.0;
-			pyramid_volume_a=0.0;
-			pyramid_volume_b=0.0;
-			valid=false;
-		}
-	};
-
-	struct ContactDescriptorSummary
-	{
-		std::size_t id_a;
-		std::size_t id_b;
-		double area;
-		double arc_length;
-		int complexity;
-		double solid_angle_a;
-		double solid_angle_b;
-		double pyramid_volume_a;
-		double pyramid_volume_b;
-		bool valid;
-
-		ContactDescriptorSummary() : id_a(0), id_b(0), area(0.0), arc_length(0.0), complexity(0), solid_angle_a(0.0), solid_angle_b(0.0), pyramid_volume_a(0.0), pyramid_volume_b(0.0), valid(false)
-		{
-		}
-
-		void set(const ContactDescriptor& cd)
-		{
-			if(cd.valid)
-			{
-				id_a=cd.id_a;
-				id_b=cd.id_b;
-				area=cd.area;
-				arc_length=(cd.sum_of_arc_angles*cd.intersection_circle_sphere.r);
-				complexity=cd.contour.size();
-				solid_angle_a=cd.solid_angle_a;
-				solid_angle_b=cd.solid_angle_b;
-				pyramid_volume_a=cd.pyramid_volume_a;
-				pyramid_volume_b=cd.pyramid_volume_b;
-				valid=true;
-			}
-		}
-	};
-
-	struct ContactDescriptorsGraphics
-	{
-		std::vector<SimplePoint> outer_points;
-		SimplePoint barycenter;
-		SimplePoint normal;
-		bool valid;
-
-		ContactDescriptorsGraphics() : valid(false)
-		{
-		}
-
-		void clear()
-		{
-			outer_points.clear();
-			valid=false;
-		}
-	};
-
-	struct CellContactDescriptorsSummary
-	{
-		std::size_t id;
-		int count;
-		double area;
-		double arc_length;
-		int complexity;
-		double explained_solid_angle_positive;
-		double explained_solid_angle_negative;
-		double explained_pyramid_volume_positive;
-		double explained_pyramid_volume_negative;
-		bool valid;
-		double sas_r;
-		double sas_area;
-		double sas_inside_volume;
-		bool sas_computed;
-
-		CellContactDescriptorsSummary() : id(0), count(0), area(0.0), arc_length(0.0), complexity(0), explained_solid_angle_positive(0.0), explained_solid_angle_negative(0.0), explained_pyramid_volume_positive(0.0), explained_pyramid_volume_negative(0.0), valid(false), sas_r(0.0), sas_area(0.0), sas_inside_volume(0.0), sas_computed(false)
-		{
-		}
-
-		void clear(const std::size_t new_id)
-		{
-			id=new_id;
-			count=0;
-			area=0.0;
-			arc_length=0.0;
-			complexity=0;
-			explained_solid_angle_positive=0.0;
-			explained_solid_angle_negative=0.0;
-			explained_pyramid_volume_positive=0.0;
-			explained_pyramid_volume_negative=0.0;
-			valid=false;
-			sas_r=0.0;
-			sas_area=0.0;
-			sas_inside_volume=0.0;
-			sas_computed=false;
-		}
-
-		void add(const ContactDescriptorSummary& cds)
-		{
-			if(cds.valid && (cds.id_a==id || cds.id_b==id))
-			{
-				count++;
-				area+=cds.area;
-				arc_length+=cds.arc_length;
-				complexity+=cds.complexity;
-				explained_solid_angle_positive+=std::max(0.0, (cds.id_a==id ? cds.solid_angle_a : cds.solid_angle_b));
-				explained_solid_angle_negative+=0.0-std::min(0.0, (cds.id_a==id ? cds.solid_angle_a : cds.solid_angle_b));
-				explained_pyramid_volume_positive+=std::max(0.0, (cds.id_a==id ? cds.pyramid_volume_a : cds.pyramid_volume_b));
-				explained_pyramid_volume_negative+=0.0-std::min(0.0, (cds.id_a==id ? cds.pyramid_volume_a : cds.pyramid_volume_b));
-				valid=true;
-			}
-		}
-
-		void add(const std::size_t new_id, const ContactDescriptorSummary& cds)
-		{
-			if(cds.valid)
-			{
-				if(!valid)
-				{
-					clear(new_id);
-				}
-				add(cds);
-			}
-		}
-
-		void compute_sas(const double r)
-		{
-			if(valid)
-			{
-				sas_r=r;
-				sas_area=0.0;
-				sas_inside_volume=0.0;
-				if(arc_length>0.0)
-				{
-					if(explained_solid_angle_positive>explained_solid_angle_negative)
-					{
-						sas_area=((4.0*pi_value())-std::max(0.0, explained_solid_angle_positive-explained_solid_angle_negative))*(r*r);
-					}
-					else if(explained_solid_angle_negative>explained_solid_angle_positive)
-					{
-						sas_area=(std::max(0.0, explained_solid_angle_negative-explained_solid_angle_positive))*(r*r);
-					}
-					sas_inside_volume=(sas_area*r/3.0)+explained_pyramid_volume_positive-explained_pyramid_volume_negative;
-				}
-				else
-				{
-					sas_inside_volume=explained_pyramid_volume_positive-explained_pyramid_volume_negative;
-				}
-				sas_computed=true;
-			}
-		}
-	};
-
-	struct TotalContactDescriptorsSummary
-	{
-		int count;
-		double area;
-		double arc_length;
-		int complexity;
-		bool valid;
-
-		TotalContactDescriptorsSummary() : count(0), area(0.0), arc_length(0.0), complexity(0), valid(false)
-		{
-		}
-
-		void clear()
-		{
-			count=0;
-			area=0.0;
-			arc_length=0.0;
-			complexity=0;
-			valid=false;
-		}
-
-		void add(const ContactDescriptorSummary& cds)
-		{
-			if(cds.valid)
-			{
-				count++;
-				area+=cds.area;
-				arc_length+=cds.arc_length;
-				complexity+=cds.complexity;
-				valid=true;
-			}
-		}
-	};
-
-	struct TotalCellContactDescriptorsSummary
-	{
-		int count;
-		double sas_area;
-		double sas_inside_volume;
-		bool valid;
-
-		TotalCellContactDescriptorsSummary() : count(0), sas_area(0.0), sas_inside_volume(0.0), valid(false)
-		{
-		}
-
-		void clear()
-		{
-			count=0;
-			sas_area=0.0;
-			sas_inside_volume=0.0;
-			valid=false;
-		}
-
-		void add(const CellContactDescriptorsSummary& ccds)
-		{
-			if(ccds.sas_computed)
-			{
-				count++;
-				sas_area+=ccds.sas_area;
-				sas_inside_volume+=ccds.sas_inside_volume;
-				valid=true;
-			}
-		}
-	};
-
 	static bool construct_contact_descriptor(
 			const std::vector<SimpleSphere>& spheres,
 			const SpheresCollisionDescriptor& collision,
@@ -1335,5 +669,4 @@ private:
 
 }
 
-#endif /* VORONOTA_LT_H_ */
-
+#endif /* VORONOTALT_TESSELLATION_CONTACT_CONSTRUCTION_H_ */
