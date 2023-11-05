@@ -205,10 +205,10 @@ struct TotalCellContactDescriptorsSummary
 struct TessellationFullConstructionResult
 {
 	std::size_t total_collisions;
-	std::vector<bool> hidden_statuses;
-	std::vector< std::vector<SpheresCollisionDescriptor> > all_collision_descriptors;
-	std::vector<ContactDescriptorSummary> contacts_descriptors_summaries;
-	std::vector<ContactDescriptorsGraphics> contacts_descriptors_graphics;
+	std::vector<bool> spheres_hidden;
+	std::vector< std::vector<SpheresCollisionDescriptor> > all_collisions;
+	std::vector<ContactDescriptorSummary> contacts_summaries;
+	std::vector<ContactDescriptorGraphics> contacts_graphics;
 	std::vector<CellContactDescriptorsSummary> cells_summaries;
 	TotalContactDescriptorsSummary total_contacts_summary;
 	TotalCellContactDescriptorsSummary total_cells_summary;
@@ -228,7 +228,7 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 
 	std::vector< std::vector<std::size_t> > all_colliding_ids(N);
 
-	result.hidden_statuses.resize(N, false);
+	result.spheres_hidden.resize(N, false);
 
 	{
 #pragma omp parallel for
@@ -245,12 +245,12 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 						hidden=true;
 					}
 				}
-				result.hidden_statuses[i]=hidden;
+				result.spheres_hidden[i]=hidden;
 			}
 		}
 	}
 
-	result.all_collision_descriptors.resize(N);
+	result.all_collisions.resize(N);
 
 	{
 #pragma omp parallel for
@@ -258,17 +258,17 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 		{
 			for(std::size_t i=proc;i<N;i+=max_number_of_processors)
 			{
-				if(!result.hidden_statuses[i])
+				if(!result.spheres_hidden[i])
 				{
-					result.all_collision_descriptors[i].reserve(all_colliding_ids[i].size());
+					result.all_collisions[i].reserve(all_colliding_ids[i].size());
 					for(std::size_t j=0;j<all_colliding_ids[i].size();j++)
 					{
-						if(!result.hidden_statuses[all_colliding_ids[i][j]])
+						if(!result.spheres_hidden[all_colliding_ids[i][j]])
 						{
 							SpheresCollisionDescriptor scd;
 							if(scd.set(spheres, i, all_colliding_ids[i][j]))
 							{
-								result.all_collision_descriptors[i].push_back(scd);
+								result.all_collisions[i].push_back(scd);
 							}
 						}
 					}
@@ -278,19 +278,19 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 	}
 
 	result.total_collisions=0;
-	for(std::size_t i=0;i<result.all_collision_descriptors.size();i++)
+	for(std::size_t i=0;i<result.all_collisions.size();i++)
 	{
-		result.total_collisions+=result.all_collision_descriptors[i].size();
+		result.total_collisions+=result.all_collisions[i].size();
 	}
 
 	std::vector< std::pair<std::size_t, std::size_t> > possible_pairs;
 	possible_pairs.reserve(result.total_collisions/2);
-	for(std::size_t i=0;i<result.all_collision_descriptors.size();i++)
+	for(std::size_t i=0;i<result.all_collisions.size();i++)
 	{
-	    for(std::size_t j=0;j<result.all_collision_descriptors[i].size();j++)
+	    for(std::size_t j=0;j<result.all_collisions[i].size();j++)
 	    {
-	    	const SpheresCollisionDescriptor& scd=result.all_collision_descriptors[i][j];
-	        if(result.all_collision_descriptors[scd.id_a].size()<result.all_collision_descriptors[scd.id_b].size() || (result.all_collision_descriptors[scd.id_a].size()==result.all_collision_descriptors[scd.id_b].size() && scd.id_a<scd.id_b))
+	    	const SpheresCollisionDescriptor& scd=result.all_collisions[i][j];
+	        if(result.all_collisions[scd.id_a].size()<result.all_collisions[scd.id_b].size() || (result.all_collisions[scd.id_a].size()==result.all_collisions[scd.id_b].size() && scd.id_a<scd.id_b))
 	        {
 	        	possible_pairs.push_back(std::pair<std::size_t, std::size_t>(i, j));
 	        }
@@ -299,7 +299,7 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 
 	std::vector<ContactDescriptorSummary> possible_pair_summaries(possible_pairs.size());
 
-	std::vector<ContactDescriptorsGraphics> possible_pair_graphics;
+	std::vector<ContactDescriptorGraphics> possible_pair_graphics;
 	if(with_graphics)
 	{
 		possible_pair_graphics.resize(possible_pair_summaries.size());
@@ -318,8 +318,8 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 		{
 			for(std::size_t i=proc;i<possible_pairs.size();i+=max_number_of_processors)
 			{
-				const SpheresCollisionDescriptor& scd=result.all_collision_descriptors[possible_pairs[i].first][possible_pairs[i].second];
-				if(TessellationContactsConstruction::construct_contact_descriptor(spheres, scd, result.all_collision_descriptors[scd.id_a], allocated_contact_descriptors[proc]))
+				const SpheresCollisionDescriptor& scd=result.all_collisions[possible_pairs[i].first][possible_pairs[i].second];
+				if(TessellationContactsConstruction::construct_contact_descriptor(spheres, scd, result.all_collisions[scd.id_a], allocated_contact_descriptors[proc]))
 				{
 					possible_pair_summaries[i].set(allocated_contact_descriptors[proc]);
 					if(with_graphics)
@@ -337,31 +337,31 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 		result.total_contacts_summary.add(possible_pair_summaries[i]);
 	}
 
-	result.contacts_descriptors_summaries.reserve(total_contacts_summary.count);
+	result.contacts_summaries.reserve(total_contacts_summary.count);
 	for(std::size_t i=0;i<possible_pair_summaries.size();i++)
 	{
 		if(possible_pair_summaries[i].valid)
 		{
-			result.contacts_descriptors_summaries.push_back(possible_pair_summaries[i]);
+			result.contacts_summaries.push_back(possible_pair_summaries[i]);
 		}
 	}
 
 	if(with_graphics)
 	{
-		result.contacts_descriptors_graphics.reserve(total_contacts_summary.count);
+		result.contacts_graphics.reserve(total_contacts_summary.count);
 		for(std::size_t i=0;i<possible_pair_graphics.size();i++)
 		{
 			if(possible_pair_graphics[i].valid)
 			{
-				result.contacts_descriptors_graphics.push_back(possible_pair_graphics[i]);
+				result.contacts_graphics.push_back(possible_pair_graphics[i]);
 			}
 		}
 	}
 
 	result.cells_summaries.resize(N);
-	for(std::size_t i=0;i<result.contacts_descriptors_summaries.size();i++)
+	for(std::size_t i=0;i<result.contacts_summaries.size();i++)
 	{
-		const ContactDescriptorSummary& cds=result.contacts_descriptors_summaries[i];
+		const ContactDescriptorSummary& cds=result.contacts_summaries[i];
 		result.cells_summaries[cds.id_a].add(cds.id_a, cds);
 		result.cells_summaries[cds.id_b].add(cds.id_b, cds);
 	}

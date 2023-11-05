@@ -135,13 +135,13 @@ int main(const int argc, const char** argv)
 
 	if(output_csa)
 	{
-		for(std::size_t i=0;i<result.contacts_descriptors_summaries.size();i++)
+		for(std::size_t i=0;i<result.contacts_summaries.size();i++)
 		{
-			const voronotalt::ContactDescriptorSummary& pair_summary=result.contacts_descriptors_summaries[i];
+			const voronotalt::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 			std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area << " " << pair_summary.solid_angle_a << " " << pair_summary.solid_angle_b;
 			if(output_csa_with_graphics)
 			{
-				const voronotalt::ContactDescriptorsGraphics& pair_graphics=result.contacts_descriptors_graphics[i];
+				const voronotalt::ContactDescriptorGraphics& pair_graphics=result.contacts_graphics[i];
 				std::cout << " BEGIN,TRIANGLE_FAN";
 				if(pair_graphics.valid && !pair_graphics.outer_points.empty())
 				{

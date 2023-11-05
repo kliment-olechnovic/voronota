@@ -107,14 +107,14 @@ struct ContactDescriptor
 	}
 };
 
-struct ContactDescriptorsGraphics
+struct ContactDescriptorGraphics
 {
 	std::vector<SimplePoint> outer_points;
 	SimplePoint barycenter;
 	SimplePoint normal;
 	bool valid;
 
-	ContactDescriptorsGraphics() : valid(false)
+	ContactDescriptorGraphics() : valid(false)
 	{
 	}
 
@@ -246,7 +246,7 @@ public:
 		return result_contact_descriptor.valid;
 	}
 
-	static bool construct_contact_descriptor_graphics(const ContactDescriptor& contact_descriptor, const double length_step, ContactDescriptorsGraphics& result_contact_descriptor_graphics)
+	static bool construct_contact_descriptor_graphics(const ContactDescriptor& contact_descriptor, const double length_step, ContactDescriptorGraphics& result_contact_descriptor_graphics)
 	{
 		result_contact_descriptor_graphics.clear();
 		if(contact_descriptor.valid)
