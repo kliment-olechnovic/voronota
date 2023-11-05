@@ -57,6 +57,12 @@ inline double pi_value()
 	return pi;
 }
 
+inline double pi2_value()
+{
+	static const double pi2=std::acos(-1.0)*2.0;
+	return pi2;
+}
+
 inline double default_comparison_epsilon()
 {
 	static const double e=0.0000000001;
@@ -305,7 +311,7 @@ inline SimpleQuaternion quaternion_product(const SimpleQuaternion& q1, const Sim
 
 inline SimpleQuaternion inverted_quaternion(const SimpleQuaternion& q)
 {
-	return SimpleQuaternion(q.a, 0-q.b, 0-q.c, 0-q.d);
+	return SimpleQuaternion(q.a, 0.0-q.b, 0.0-q.c, 0.0-q.d);
 }
 
 inline SimplePoint rotate_point_around_axis(const SimplePoint axis, const double angle, const SimplePoint& p)

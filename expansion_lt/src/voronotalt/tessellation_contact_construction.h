@@ -204,7 +204,7 @@ public:
 						if(result_contact_descriptor.neighbor_descriptors.empty())
 						{
 							result_contact_descriptor.contour_barycenter=result_contact_descriptor.intersection_circle_sphere.p;
-							result_contact_descriptor.sum_of_arc_angles=2.0*pi_value();
+							result_contact_descriptor.sum_of_arc_angles=pi2_value();
 							result_contact_descriptor.area=result_contact_descriptor.intersection_circle_sphere.r*result_contact_descriptor.intersection_circle_sphere.r*pi_value();
 							result_contact_descriptor.valid=true;
 						}
@@ -255,9 +255,9 @@ public:
 			if(contact_descriptor.contour.empty())
 			{
 				const SimplePoint first_point=point_and_number_product(any_normal_of_vector(contact_descriptor.intersection_circle_axis), contact_descriptor.intersection_circle_sphere.r);
-				result_contact_descriptor_graphics.outer_points.reserve(static_cast<int>((2.0*pi_value())/angle_step)+2);
+				result_contact_descriptor_graphics.outer_points.reserve(static_cast<int>(pi2_value()/angle_step)+2);
 				result_contact_descriptor_graphics.outer_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, first_point));
-				for(double rotation_angle=angle_step;rotation_angle<(2.0*pi_value());rotation_angle+=angle_step)
+				for(double rotation_angle=angle_step;rotation_angle<pi2_value();rotation_angle+=angle_step)
 				{
 					result_contact_descriptor_graphics.outer_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_point)));
 				}
@@ -322,7 +322,7 @@ private:
 		const double angle_step=pi_value()/3.0;
 		result.reserve(12);
 		result.push_back(ContourPoint(sum_of_points(base.p, first_point), a_id, a_id));
-		for(double rotation_angle=angle_step;rotation_angle<(2.0*pi_value());rotation_angle+=angle_step)
+		for(double rotation_angle=angle_step;rotation_angle<pi2_value();rotation_angle+=angle_step)
 		{
 			result.push_back(ContourPoint(sum_of_points(base.p, rotate_point_around_axis(axis, rotation_angle, first_point)), a_id, a_id));
 		}
@@ -653,10 +653,10 @@ private:
 		}
 		else
 		{
-			turn_angle=(2.0*pi_value())*(distance_from_point_to_point(a.p, ic_sphere.p)/a.r);
+			turn_angle=pi2_value()*(distance_from_point_to_point(a.p, ic_sphere.p)/a.r);
 		}
 
-		double solid_angle=((2.0*pi_value())-turn_angle);
+		double solid_angle=(pi2_value()-turn_angle);
 
 		if(dot_product(sub_of_points(ic_sphere.p, a.p), sub_of_points(ic_sphere.p, b.p))>0.0 && squared_distance_from_point_to_point(ic_sphere.p, a.p)<squared_distance_from_point_to_point(ic_sphere.p, b.p))
 		{
