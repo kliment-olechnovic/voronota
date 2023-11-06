@@ -130,7 +130,7 @@ omp_set_num_threads(max_number_of_processors);
 
 	voronotalt::TessellationFullConstructionResult result;
 
-	voronotalt::construct_full_tessellation(max_number_of_processors, spheres, output_csa_with_graphics, result);
+	voronotalt::construct_full_tessellation(spheres, output_csa_with_graphics, result);
 
 	std::cout << "total_balls: " << spheres.size() << "\n";
 	std::cout << "total_collisions: " << result.total_collisions << "\n";

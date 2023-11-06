@@ -182,7 +182,7 @@ struct TessellationFullConstructionResult
 	}
 };
 
-void construct_full_tessellation(const unsigned int max_number_of_processors, const std::vector<SimpleSphere>& spheres, const bool with_graphics, TessellationFullConstructionResult& result)
+void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const bool with_graphics, TessellationFullConstructionResult& result)
 {
 	result=TessellationFullConstructionResult();
 
@@ -200,24 +200,21 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 
 	{
 #pragma omp parallel for
-		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
+		for(std::size_t i=0;i<N;i++)
 		{
-			for(std::size_t i=proc;i<N;i+=max_number_of_processors)
+			spheres_searcher.find_colliding_ids(i, all_colliding_ids[i]);
+			bool hidden=false;
+			for(std::size_t j=0;j<all_colliding_ids[i].size() && !hidden;j++)
 			{
-				spheres_searcher.find_colliding_ids(i, all_colliding_ids[i]);
-				bool hidden=false;
-				for(std::size_t j=0;j<all_colliding_ids[i].size() && !hidden;j++)
+				if(sphere_contains_sphere(spheres[all_colliding_ids[i][j]], spheres[i]))
 				{
-					if(sphere_contains_sphere(spheres[all_colliding_ids[i][j]], spheres[i]))
-					{
-						hidden=true;
-					}
+					hidden=true;
 				}
-				if(hidden)
-				{
-					result.spheres_hidden[i]=true;
-					all_colliding_ids[i].clear();
-				}
+			}
+			if(hidden)
+			{
+				result.spheres_hidden[i]=true;
+				all_colliding_ids[i].clear();
 			}
 		}
 	}
@@ -232,15 +229,12 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 	relevant_collision_ids.reserve(result.total_collisions/2);
 	for(std::size_t id_a=0;id_a<N;id_a++)
 	{
-		if(!result.spheres_hidden[id_a])
+		for(std::size_t j=0;j<all_colliding_ids[id_a].size();j++)
 		{
-			for(std::size_t j=0;j<all_colliding_ids[id_a].size();j++)
+			const std::size_t id_b=all_colliding_ids[id_a][j];
+			if(all_colliding_ids[id_a].size()<all_colliding_ids[id_b].size() || (all_colliding_ids[id_a].size()==all_colliding_ids[id_b].size() && id_a<id_b))
 			{
-				const std::size_t id_b=all_colliding_ids[id_a][j];
-				if(!result.spheres_hidden[id_b] && (all_colliding_ids[id_a].size()<all_colliding_ids[id_b].size() || (all_colliding_ids[id_a].size()==all_colliding_ids[id_b].size() && id_a<id_b)))
-				{
-					relevant_collision_ids.push_back(std::pair<std::size_t, std::size_t>(id_a, id_b));
-				}
+				relevant_collision_ids.push_back(std::pair<std::size_t, std::size_t>(id_a, id_b));
 			}
 		}
 	}
@@ -254,27 +248,20 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 	}
 
 	{
-		std::vector<ContactDescriptor> allocated_contact_descriptors(max_number_of_processors);
-		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
-		{
-			allocated_contact_descriptors[proc].neighbor_descriptors.reserve(100);
-			allocated_contact_descriptors[proc].contour.reserve(50);
-		}
-
 #pragma omp parallel for
-		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
+		for(std::size_t i=0;i<relevant_collision_ids.size();i++)
 		{
-			for(std::size_t i=proc;i<relevant_collision_ids.size();i+=max_number_of_processors)
+			const std::size_t id_a=relevant_collision_ids[i].first;
+			const std::size_t id_b=relevant_collision_ids[i].second;
+			ContactDescriptor cd;
+			cd.contour.reserve(12);
+			cd.neighbor_descriptors.reserve(12);
+			if(TessellationContactsConstruction::construct_contact_descriptor(spheres, id_a, id_b, all_colliding_ids[id_a], cd))
 			{
-		    	const std::size_t id_a=relevant_collision_ids[i].first;
-		    	const std::size_t id_b=relevant_collision_ids[i].second;
-				if(TessellationContactsConstruction::construct_contact_descriptor(spheres, id_a, id_b, all_colliding_ids[id_a], allocated_contact_descriptors[proc]))
+				possible_contacts_summaries[i].set(cd);
+				if(with_graphics)
 				{
-					possible_contacts_summaries[i].set(allocated_contact_descriptors[proc]);
-					if(with_graphics)
-					{
-						TessellationContactsConstruction::construct_contact_descriptor_graphics(allocated_contact_descriptors[proc], 0.2, possible_contacts_graphics[i]);
-					}
+					TessellationContactsConstruction::construct_contact_descriptor_graphics(cd, 0.2, possible_contacts_graphics[i]);
 				}
 			}
 		}

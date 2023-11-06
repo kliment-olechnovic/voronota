@@ -113,7 +113,6 @@ public:
 				{
 					bool discarded=false;
 					{
-						result_contact_descriptor.neighbor_descriptors.reserve(a_neighbor_collisions.size());
 						for(std::size_t i=0;i<a_neighbor_collisions.size() && !discarded;i++)
 						{
 							const std::size_t neighbor_id=a_neighbor_collisions[i];
@@ -282,7 +281,6 @@ private:
 	{
 		const SimplePoint first_point=point_and_number_product(any_normal_of_vector(axis), base.r*1.19);
 		const double angle_step=pi_value()/3.0;
-		result.reserve(12);
 		result.push_back(ContourPoint(sum_of_points(base.p, first_point), a_id, a_id));
 		for(double rotation_angle=angle_step;rotation_angle<pi2_value();rotation_angle+=angle_step)
 		{
