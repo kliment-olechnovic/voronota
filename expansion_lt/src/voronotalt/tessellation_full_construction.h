@@ -191,12 +191,12 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 	SpheresSearcher spheres_searcher(spheres);
 
 	std::vector< std::vector<std::size_t> > all_colliding_ids(N);
-
-	result.spheres_hidden.resize(N, false);
 	for(std::size_t i=0;i<N;i++)
 	{
 		all_colliding_ids[i].reserve(20);
 	}
+
+	result.spheres_hidden.resize(N, false);
 
 	{
 #pragma omp parallel for
@@ -213,7 +213,11 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 						hidden=true;
 					}
 				}
-				result.spheres_hidden[i]=hidden;
+				if(hidden)
+				{
+					result.spheres_hidden[i]=true;
+					all_colliding_ids[i].clear();
+				}
 			}
 		}
 	}
@@ -226,17 +230,19 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 
 	std::vector< std::pair<std::size_t, std::size_t> > relevant_collision_ids;
 	relevant_collision_ids.reserve(result.total_collisions/2);
-	for(std::size_t i=0;i<all_colliding_ids.size();i++)
+	for(std::size_t id_a=0;id_a<N;id_a++)
 	{
-	    for(std::size_t j=0;j<all_colliding_ids[i].size();j++)
-	    {
-	    	const std::size_t id_a=i;
-	    	const std::size_t id_b=all_colliding_ids[i][j];
-	        if(all_colliding_ids[id_a].size()<all_colliding_ids[id_b].size() || (all_colliding_ids[id_a].size()==all_colliding_ids[id_b].size() && id_a<id_b))
-	        {
-	        	relevant_collision_ids.push_back(std::pair<std::size_t, std::size_t>(id_a, id_b));
-	        }
-	    }
+		if(!result.spheres_hidden[id_a])
+		{
+			for(std::size_t j=0;j<all_colliding_ids[id_a].size();j++)
+			{
+				const std::size_t id_b=all_colliding_ids[id_a][j];
+				if(!result.spheres_hidden[id_b] && (all_colliding_ids[id_a].size()<all_colliding_ids[id_b].size() || (all_colliding_ids[id_a].size()==all_colliding_ids[id_b].size() && id_a<id_b)))
+				{
+					relevant_collision_ids.push_back(std::pair<std::size_t, std::size_t>(id_a, id_b));
+				}
+			}
+		}
 	}
 
 	std::vector<ContactDescriptorSummary> possible_contacts_summaries(relevant_collision_ids.size());

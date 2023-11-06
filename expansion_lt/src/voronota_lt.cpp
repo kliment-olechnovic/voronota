@@ -1,6 +1,10 @@
 #include <iostream>
 #include <sstream>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include "voronotalt/tessellation_full_construction.h"
 
 int main(const int argc, const char** argv)
@@ -119,6 +123,10 @@ int main(const int argc, const char** argv)
 			spheres.push_back(sphere);
 		}
 	}
+
+#ifdef _OPENMP
+omp_set_num_threads(max_number_of_processors);
+#endif
 
 	voronotalt::TessellationFullConstructionResult result;
 
