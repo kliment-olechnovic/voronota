@@ -2,7 +2,6 @@
 #define VORONOTALT_TESSELLATION_CONTACT_CONSTRUCTION_H_
 
 #include <vector>
-#include <algorithm>
 
 #include "basic_types_and_functions.h"
 
@@ -26,18 +25,12 @@ typedef std::vector<ContourPoint> Contour;
 
 struct NeighborDescriptor
 {
-	double sort_value;
 	std::size_t neighbor_id;
 	SimplePoint ac_plane_center;
 	SimplePoint ac_plane_normal;
 
-	NeighborDescriptor() : sort_value(0.0), neighbor_id(0)
+	NeighborDescriptor() : neighbor_id(0)
 	{
-	}
-
-	bool operator<(const NeighborDescriptor& d) const
-	{
-		return (sort_value<d.sort_value || (sort_value==d.sort_value && neighbor_id<d.neighbor_id));
 	}
 };
 
@@ -139,14 +132,13 @@ public:
 										nd.ac_plane_center=center_of_intersection_circle_of_two_spheres(a, c);
 										nd.ac_plane_normal=unit_point(sub_of_points(c.p, a.p));
 										const double cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(nd.ac_plane_center, a.p)));
-										const int hsi=halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p);
 										if(std::abs(cos_val)<1.0)
 										{
 											const double l=std::abs(signed_distance_from_point_to_plane(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p));
 											const double xl=l/std::sqrt(1-(cos_val*cos_val));
 											if(xl>=result_contact_descriptor.intersection_circle_sphere.r)
 											{
-												if(hsi>=0)
+												if(halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p)>=0)
 												{
 													discarded=true;
 												}
@@ -154,13 +146,12 @@ public:
 											else
 											{
 												nd.neighbor_id=neighbor_id;
-												nd.sort_value=(hsi>0 ? (0.0-xl) : xl);
 												result_contact_descriptor.neighbor_descriptors.push_back(nd);
 											}
 										}
 										else
 										{
-											if(hsi>0)
+											if(halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p)>0)
 											{
 												discarded=true;
 											}
@@ -186,7 +177,6 @@ public:
 							init_contour_from_base_and_axis(a_id, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, result_contact_descriptor.contour);
 							if(!result_contact_descriptor.contour.empty() && !result_contact_descriptor.neighbor_descriptors.empty())
 							{
-								std::sort(result_contact_descriptor.neighbor_descriptors.begin(), result_contact_descriptor.neighbor_descriptors.end());
 								for(std::size_t i=0;i<result_contact_descriptor.neighbor_descriptors.size();i++)
 								{
 									const NeighborDescriptor& nd=result_contact_descriptor.neighbor_descriptors[i];
