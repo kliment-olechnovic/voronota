@@ -217,6 +217,14 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 
 	result.all_collisions.resize(N);
 
+	for(std::size_t i=0;i<N;i++)
+	{
+		if(!result.spheres_hidden[i])
+		{
+			result.all_collisions[i].reserve(all_colliding_ids[i].size());
+		}
+	}
+
 	{
 #pragma omp parallel for
 		for(unsigned int proc=0;proc<max_number_of_processors;proc++)
@@ -225,7 +233,6 @@ void construct_full_tessellation(const unsigned int max_number_of_processors, co
 			{
 				if(!result.spheres_hidden[i])
 				{
-					result.all_collisions[i].reserve(all_colliding_ids[i].size());
 					for(std::size_t j=0;j<all_colliding_ids[i].size();j++)
 					{
 						if(!result.spheres_hidden[all_colliding_ids[i][j]])
