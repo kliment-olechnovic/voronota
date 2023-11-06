@@ -72,7 +72,6 @@ public:
 		if(central_id<spheres_.size())
 		{
 			const SimpleSphere& central_sphere=spheres_[central_id];
-			colliding_ids.reserve(20);
 			const GridPoint gp(central_sphere, box_size_, grid_offset_);
 			GridPoint dgp=gp;
 			for(int dx=-1;dx<=1;dx++)
