@@ -199,7 +199,7 @@ public:
 					}
 					if(!discarded)
 					{
-						result_contact_descriptor.intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
+						result_contact_descriptor.intersection_circle_axis=collision.intersection_circle_axis;
 
 						if(result_contact_descriptor.neighbor_descriptors.empty())
 						{
