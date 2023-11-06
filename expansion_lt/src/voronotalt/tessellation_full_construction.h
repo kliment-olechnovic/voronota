@@ -191,22 +191,21 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 	SpheresSearcher spheres_searcher(spheres);
 
 	std::vector< std::vector<std::size_t> > all_colliding_ids(N);
-	for(std::size_t i=0;i<N;i++)
-	{
-		all_colliding_ids[i].reserve(20);
-	}
-
 	result.spheres_hidden.resize(N, false);
 
+	#pragma omp parallel
 	{
-#pragma omp parallel for
+		std::vector<std::size_t> colliding_ids;
+		colliding_ids.reserve(20);
+
+		#pragma omp for
 		for(std::size_t i=0;i<N;i++)
 		{
-			spheres_searcher.find_colliding_ids(i, all_colliding_ids[i]);
+			spheres_searcher.find_colliding_ids(i, colliding_ids);
 			bool hidden=false;
-			for(std::size_t j=0;j<all_colliding_ids[i].size() && !hidden;j++)
+			for(std::size_t j=0;j<colliding_ids.size() && !hidden;j++)
 			{
-				if(sphere_contains_sphere(spheres[all_colliding_ids[i][j]], spheres[i]))
+				if(sphere_contains_sphere(spheres[colliding_ids[j]], spheres[i]))
 				{
 					hidden=true;
 				}
@@ -214,7 +213,10 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 			if(hidden)
 			{
 				result.spheres_hidden[i]=true;
-				all_colliding_ids[i].clear();
+			}
+			else
+			{
+				all_colliding_ids[i]=colliding_ids;
 			}
 		}
 	}
@@ -247,15 +249,17 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		possible_contacts_graphics.resize(possible_contacts_summaries.size());
 	}
 
+	#pragma omp parallel
 	{
-#pragma omp parallel for
+		ContactDescriptor cd;
+		cd.contour.reserve(12);
+		cd.neighbor_descriptors.reserve(24);
+
+		#pragma omp for
 		for(std::size_t i=0;i<relevant_collision_ids.size();i++)
 		{
 			const std::size_t id_a=relevant_collision_ids[i].first;
 			const std::size_t id_b=relevant_collision_ids[i].second;
-			ContactDescriptor cd;
-			cd.contour.reserve(12);
-			cd.neighbor_descriptors.reserve(12);
 			if(TessellationContactsConstruction::construct_contact_descriptor(spheres, id_a, id_b, all_colliding_ids[id_a], cd))
 			{
 				possible_contacts_summaries[i].set(cd);
