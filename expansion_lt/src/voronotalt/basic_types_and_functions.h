@@ -252,6 +252,14 @@ inline bool sphere_contains_sphere(const SimpleSphere& a, const SimpleSphere& b)
 	return (greater_or_equal(a.r, b.r) && less_or_equal(squared_distance_from_point_to_point(a.p, b.p), (a.r-b.r)*(a.r-b.r)));
 }
 
+inline SimplePoint center_of_intersection_circle_of_two_spheres(const SimpleSphere& a, const SimpleSphere& b)
+{
+	const SimplePoint cv=sub_of_points(b.p, a.p);
+	const double cm=point_module(cv);
+	const double cos_g=(a.r*a.r+cm*cm-b.r*b.r)/(2*a.r*cm);
+	return sum_of_points(a.p, point_and_number_product(cv, a.r*cos_g/cm));
+}
+
 inline SimpleSphere intersection_circle_of_two_spheres(const SimpleSphere& a, const SimpleSphere& b)
 {
 	const SimplePoint cv=sub_of_points(b.p, a.p);

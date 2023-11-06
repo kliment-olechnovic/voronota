@@ -9,37 +9,6 @@
 namespace voronotalt
 {
 
-struct SpheresCollisionDescriptor
-{
-	std::size_t id_a;
-	std::size_t id_b;
-	SimpleSphere intersection_circle_sphere;
-	SimplePoint intersection_circle_axis;
-	bool valid;
-
-	SpheresCollisionDescriptor() : id_a(0), id_b(0), valid(false)
-	{
-	}
-
-	bool set(const std::vector<SimpleSphere>& spheres, const std::size_t a_id, const std::size_t b_id)
-	{
-		if(a_id<spheres.size() && b_id<spheres.size() && a_id!=b_id)
-		{
-			const SimpleSphere& a=spheres[a_id];
-			const SimpleSphere& b=spheres[b_id];
-			if(sphere_intersects_sphere(a, b) && !sphere_contains_sphere(a, b) && !sphere_contains_sphere(b, a))
-			{
-				id_a=a_id;
-				id_b=b_id;
-				intersection_circle_sphere=intersection_circle_of_two_spheres(a, b);
-				intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
-				valid=true;
-			}
-		}
-		return valid;
-	}
-};
-
 struct ContourPoint
 {
 	SimplePoint p;
@@ -59,6 +28,8 @@ struct NeighborDescriptor
 {
 	double sort_value;
 	std::size_t neighbor_id;
+	SimplePoint ac_plane_center;
+	SimplePoint ac_plane_normal;
 
 	NeighborDescriptor() : sort_value(0.0), neighbor_id(0)
 	{
@@ -130,21 +101,21 @@ class TessellationContactsConstruction
 public:
 	static bool construct_contact_descriptor(
 			const std::vector<SimpleSphere>& spheres,
-			const SpheresCollisionDescriptor& collision,
-			const std::vector<SpheresCollisionDescriptor>& a_neighbor_collisions,
+			const std::size_t a_id,
+			const std::size_t b_id,
+			const std::vector<std::size_t>& a_neighbor_collisions,
 			ContactDescriptor& result_contact_descriptor)
 	{
 		result_contact_descriptor.clear();
-		if(collision.valid)
+		if(a_id<spheres.size() && b_id<spheres.size())
 		{
-			result_contact_descriptor.id_a=collision.id_a;
-			result_contact_descriptor.id_b=collision.id_b;
-			const std::size_t a_id=collision.id_a;
-			const std::size_t b_id=collision.id_b;
+			result_contact_descriptor.id_a=a_id;
+			result_contact_descriptor.id_b=b_id;
 			const SimpleSphere& a=spheres[a_id];
 			const SimpleSphere& b=spheres[b_id];
+			if(sphere_intersects_sphere(a, b) && !sphere_contains_sphere(a, b) && !sphere_contains_sphere(b, a))
 			{
-				result_contact_descriptor.intersection_circle_sphere=collision.intersection_circle_sphere;
+				result_contact_descriptor.intersection_circle_sphere=intersection_circle_of_two_spheres(a, b);
 				if(result_contact_descriptor.intersection_circle_sphere.r>0.0)
 				{
 					bool discarded=false;
@@ -152,10 +123,10 @@ public:
 						result_contact_descriptor.neighbor_descriptors.reserve(a_neighbor_collisions.size());
 						for(std::size_t i=0;i<a_neighbor_collisions.size() && !discarded;i++)
 						{
-							const SpheresCollisionDescriptor& neighbor_collision=a_neighbor_collisions[i];
-							if(neighbor_collision.id_b!=b_id)
+							const std::size_t neighbor_id=a_neighbor_collisions[i];
+							if(neighbor_id!=b_id)
 							{
-								const SimpleSphere& c=spheres[neighbor_collision.id_b];
+								const SimpleSphere& c=spheres[neighbor_id];
 								if(sphere_intersects_sphere(result_contact_descriptor.intersection_circle_sphere, c) && sphere_intersects_sphere(b, c))
 								{
 									if(sphere_contains_sphere(c, a) || sphere_contains_sphere(c, b))
@@ -164,11 +135,14 @@ public:
 									}
 									else
 									{
-										const double cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(neighbor_collision.intersection_circle_sphere.p, a.p)));
-										const int hsi=halfspace_of_point(neighbor_collision.intersection_circle_sphere.p, neighbor_collision.intersection_circle_axis, result_contact_descriptor.intersection_circle_sphere.p);
+										NeighborDescriptor nd;
+										nd.ac_plane_center=center_of_intersection_circle_of_two_spheres(a, c);
+										nd.ac_plane_normal=unit_point(sub_of_points(c.p, a.p));
+										const double cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(nd.ac_plane_center, a.p)));
+										const int hsi=halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p);
 										if(std::abs(cos_val)<1.0)
 										{
-											const double l=std::abs(signed_distance_from_point_to_plane(neighbor_collision.intersection_circle_sphere.p, neighbor_collision.intersection_circle_axis, result_contact_descriptor.intersection_circle_sphere.p));
+											const double l=std::abs(signed_distance_from_point_to_plane(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p));
 											const double xl=l/std::sqrt(1-(cos_val*cos_val));
 											if(xl>=result_contact_descriptor.intersection_circle_sphere.r)
 											{
@@ -179,8 +153,7 @@ public:
 											}
 											else
 											{
-												NeighborDescriptor nd;
-												nd.neighbor_id=i;
+												nd.neighbor_id=neighbor_id;
 												nd.sort_value=(hsi>0 ? (0.0-xl) : xl);
 												result_contact_descriptor.neighbor_descriptors.push_back(nd);
 											}
@@ -199,7 +172,7 @@ public:
 					}
 					if(!discarded)
 					{
-						result_contact_descriptor.intersection_circle_axis=collision.intersection_circle_axis;
+						result_contact_descriptor.intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
 
 						if(result_contact_descriptor.neighbor_descriptors.empty())
 						{
@@ -217,8 +190,7 @@ public:
 								for(std::size_t i=0;i<result_contact_descriptor.neighbor_descriptors.size();i++)
 								{
 									const NeighborDescriptor& nd=result_contact_descriptor.neighbor_descriptors[i];
-									const SpheresCollisionDescriptor& neighbor_collision=a_neighbor_collisions[nd.neighbor_id];
-									mark_and_cut_contour(neighbor_collision.intersection_circle_sphere.p, neighbor_collision.intersection_circle_axis, neighbor_collision.id_b, result_contact_descriptor.contour);
+									mark_and_cut_contour(nd.ac_plane_center, nd.ac_plane_normal, nd.neighbor_id, result_contact_descriptor.contour);
 								}
 							}
 							if(!result_contact_descriptor.contour.empty())
