@@ -282,13 +282,12 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 
 	time_recorder.record_elapsed_miliseconds_and_reset("parallel contacts construction");
 
-	TotalContactDescriptorsSummary total_contacts_summary;
 	for(std::size_t i=0;i<possible_contacts_summaries.size();i++)
 	{
 		result.total_contacts_summary.add(possible_contacts_summaries[i]);
 	}
 
-	result.contacts_summaries.reserve(total_contacts_summary.count);
+	result.contacts_summaries.reserve(result.total_contacts_summary.count);
 	for(std::size_t i=0;i<possible_contacts_summaries.size();i++)
 	{
 		if(possible_contacts_summaries[i].valid)
@@ -299,7 +298,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 
 	if(with_graphics)
 	{
-		result.contacts_graphics.reserve(total_contacts_summary.count);
+		result.contacts_graphics.reserve(result.total_contacts_summary.count);
 		for(std::size_t i=0;i<possible_contacts_graphics.size();i++)
 		{
 			if(possible_contacts_graphics[i].valid)
