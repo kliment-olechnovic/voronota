@@ -226,13 +226,15 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		}
 	}
 
-	time_recorder.record_elapsed_miliseconds_and_reset("parallell collision detection");
+	time_recorder.record_elapsed_miliseconds_and_reset("detect all collisions");
 
 	result.total_collisions=0;
 	for(std::size_t i=0;i<all_colliding_ids.size();i++)
 	{
 		result.total_collisions+=all_colliding_ids[i].size();
 	}
+
+	time_recorder.record_elapsed_miliseconds_and_reset("count all collisions");
 
 	std::vector< std::pair<std::size_t, std::size_t> > relevant_collision_ids;
 	relevant_collision_ids.reserve(result.total_collisions/2);
@@ -248,6 +250,8 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		}
 	}
 
+	time_recorder.record_elapsed_miliseconds_and_reset("prepare possible pairs");
+
 	std::vector<ContactDescriptorSummary> possible_contacts_summaries(relevant_collision_ids.size());
 
 	std::vector<ContactDescriptorGraphics> possible_contacts_graphics;
@@ -256,7 +260,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		possible_contacts_graphics.resize(possible_contacts_summaries.size());
 	}
 
-	time_recorder.record_elapsed_miliseconds_and_reset("pairs preparation");
+	time_recorder.record_elapsed_miliseconds_and_reset("prepare possible pair summaries");
 
 	#pragma omp parallel
 	{
@@ -280,21 +284,51 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		}
 	}
 
-	time_recorder.record_elapsed_miliseconds_and_reset("parallel contacts construction");
+	time_recorder.record_elapsed_miliseconds_and_reset("construct contacts");
 
-	for(std::size_t i=0;i<possible_contacts_summaries.size();i++)
-	{
-		result.total_contacts_summary.add(possible_contacts_summaries[i]);
-	}
-
-	result.contacts_summaries.reserve(result.total_contacts_summary.count);
+	std::size_t number_of_valid_pairs=0;
 	for(std::size_t i=0;i<possible_contacts_summaries.size();i++)
 	{
 		if(possible_contacts_summaries[i].valid)
 		{
-			result.contacts_summaries.push_back(possible_contacts_summaries[i]);
+			number_of_valid_pairs++;
 		}
 	}
+
+	time_recorder.record_elapsed_miliseconds_and_reset("count valid pairs");
+
+	std::vector<std::size_t> ids_of_valid_pairs;
+	ids_of_valid_pairs.reserve(number_of_valid_pairs);
+
+	for(std::size_t i=0;i<possible_contacts_summaries.size();i++)
+	{
+		if(possible_contacts_summaries[i].valid)
+		{
+			ids_of_valid_pairs.push_back(i);
+		}
+	}
+
+	time_recorder.record_elapsed_miliseconds_and_reset("collect indices of valid pairs");
+
+	result.contacts_summaries.resize(ids_of_valid_pairs.size());
+
+	#pragma omp parallel
+	{
+		#pragma omp for
+		for(std::size_t i=0;i<ids_of_valid_pairs.size();i++)
+		{
+			result.contacts_summaries[i]=possible_contacts_summaries[ids_of_valid_pairs[i]];
+		}
+	}
+
+	time_recorder.record_elapsed_miliseconds_and_reset("collect summaries of valid pairs");
+
+	for(std::size_t i=0;i<result.contacts_summaries.size();i++)
+	{
+		result.total_contacts_summary.add(result.contacts_summaries[i]);
+	}
+
+	time_recorder.record_elapsed_miliseconds_and_reset("accumulate total contacts summary");
 
 	if(with_graphics)
 	{
@@ -309,6 +343,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 	}
 
 	result.cells_summaries.resize(N);
+
 	for(std::size_t i=0;i<result.contacts_summaries.size();i++)
 	{
 		const ContactDescriptorSummary& cds=result.contacts_summaries[i];
@@ -316,13 +351,21 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		result.cells_summaries[cds.id_b].add(cds.id_b, cds);
 	}
 
+	#pragma omp parallel
+	{
+		#pragma omp for
+		for(std::size_t i=0;i<result.cells_summaries.size();i++)
+		{
+			result.cells_summaries[i].compute_sas(spheres[i].r);
+		}
+	}
+
 	for(std::size_t i=0;i<result.cells_summaries.size();i++)
 	{
-		result.cells_summaries[i].compute_sas(spheres[i].r);
 		result.total_cells_summary.add(result.cells_summaries[i]);
 	}
 
-	time_recorder.record_elapsed_miliseconds_and_reset("summarization");
+	time_recorder.record_elapsed_miliseconds_and_reset("accumulate other summaries");
 }
 
 }
