@@ -250,7 +250,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		}
 	}
 
-	time_recorder.record_elapsed_miliseconds_and_reset("prepare possible pairs");
+	time_recorder.record_elapsed_miliseconds_and_reset("collect relevant collision indices");
 
 	std::vector<ContactDescriptorSummary> possible_contacts_summaries(relevant_collision_ids.size());
 
@@ -260,7 +260,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		possible_contacts_graphics.resize(possible_contacts_summaries.size());
 	}
 
-	time_recorder.record_elapsed_miliseconds_and_reset("prepare possible pair summaries");
+	time_recorder.record_elapsed_miliseconds_and_reset("allocate possible contact summaries");
 
 	#pragma omp parallel
 	{
@@ -286,19 +286,19 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 
 	time_recorder.record_elapsed_miliseconds_and_reset("construct contacts");
 
-	std::size_t number_of_valid_pairs=0;
+	std::size_t number_of_valid_contact_summaries=0;
 	for(std::size_t i=0;i<possible_contacts_summaries.size();i++)
 	{
 		if(possible_contacts_summaries[i].valid)
 		{
-			number_of_valid_pairs++;
+			number_of_valid_contact_summaries++;
 		}
 	}
 
-	time_recorder.record_elapsed_miliseconds_and_reset("count valid pairs");
+	time_recorder.record_elapsed_miliseconds_and_reset("count valid contact summaries");
 
 	std::vector<std::size_t> ids_of_valid_pairs;
-	ids_of_valid_pairs.reserve(number_of_valid_pairs);
+	ids_of_valid_pairs.reserve(number_of_valid_contact_summaries);
 
 	for(std::size_t i=0;i<possible_contacts_summaries.size();i++)
 	{
@@ -308,7 +308,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		}
 	}
 
-	time_recorder.record_elapsed_miliseconds_and_reset("collect indices of valid pairs");
+	time_recorder.record_elapsed_miliseconds_and_reset("collect indices of valid contact summaries");
 
 	result.contacts_summaries.resize(ids_of_valid_pairs.size());
 
@@ -321,7 +321,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		}
 	}
 
-	time_recorder.record_elapsed_miliseconds_and_reset("collect summaries of valid pairs");
+	time_recorder.record_elapsed_miliseconds_and_reset("copy valid contact summaries");
 
 	for(std::size_t i=0;i<result.contacts_summaries.size();i++)
 	{

@@ -9,6 +9,8 @@
 
 int main(const int argc, const char** argv)
 {
+	std::ios_base::sync_with_stdio(false);
+
 	unsigned int max_number_of_processors=40;
 	double probe=1.4;
 	bool output_csa=false;
@@ -131,7 +133,7 @@ int main(const int argc, const char** argv)
 		}
 	}
 
-	time_recoder_for_input.record_elapsed_miliseconds_and_reset("spheres reading");
+	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read balls from stdin");
 
 #ifdef _OPENMP
 omp_set_num_threads(max_number_of_processors);
@@ -194,7 +196,7 @@ omp_set_num_threads(max_number_of_processors);
 		}
 	}
 
-	time_recoder_for_output.record_elapsed_miliseconds_and_reset("results output");
+	time_recoder_for_output.record_elapsed_miliseconds_and_reset("write results to stdout");
 
 	time_recoder_for_input.print_recordings(std::clog, "time of input stage");
 	time_recoder_for_tessellation.print_recordings(std::clog, "time of tessellation stage");
