@@ -14,6 +14,7 @@ int main(const int argc, const char** argv)
 	bool output_csa=false;
 	bool output_csa_with_graphics=false;
 	bool output_sasa=false;
+	bool measure_time=false;
 
 	{
 		int i=1;
@@ -79,6 +80,10 @@ int main(const int argc, const char** argv)
 			{
 				output_sasa=true;
 			}
+			else if(name=="-measure-time")
+			{
+				measure_time=true;
+			}
 			else
 			{
 				std::cerr << "Error: invalid command line argument '" << name << "'\n";
@@ -87,6 +92,8 @@ int main(const int argc, const char** argv)
 			i++;
 		}
 	}
+
+	voronotalt::TimeRecorder time_recoder_for_input(measure_time);
 
 	std::vector<voronotalt::SimpleSphere> spheres;
 	{
@@ -124,13 +131,19 @@ int main(const int argc, const char** argv)
 		}
 	}
 
+	time_recoder_for_input.record_elapsed_miliseconds_and_reset("spheres reading");
+
 #ifdef _OPENMP
 omp_set_num_threads(max_number_of_processors);
 #endif
 
 	voronotalt::TessellationFullConstructionResult result;
 
-	voronotalt::construct_full_tessellation(spheres, output_csa_with_graphics, result);
+	voronotalt::TimeRecorder time_recoder_for_tessellation(measure_time);
+
+	voronotalt::construct_full_tessellation(spheres, output_csa_with_graphics, result, time_recoder_for_tessellation);
+
+	voronotalt::TimeRecorder time_recoder_for_output(measure_time);
 
 	std::cout << "total_balls: " << spheres.size() << "\n";
 	std::cout << "total_collisions: " << result.total_collisions << "\n";
@@ -180,6 +193,12 @@ omp_set_num_threads(max_number_of_processors);
 			}
 		}
 	}
+
+	time_recoder_for_output.record_elapsed_miliseconds_and_reset("results output");
+
+	time_recoder_for_input.print_recordings(std::clog, "time of input stage");
+	time_recoder_for_tessellation.print_recordings(std::clog, "time of tessellation stage");
+	time_recoder_for_output.print_recordings(std::clog, "time of output stage");
 
 	return 1;
 }

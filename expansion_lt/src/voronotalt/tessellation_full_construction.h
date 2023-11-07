@@ -3,6 +3,7 @@
 
 #include "spheres_searcher.h"
 #include "tessellation_contact_construction.h"
+#include "time_recorder.h"
 
 namespace voronotalt
 {
@@ -182,16 +183,20 @@ struct TessellationFullConstructionResult
 	}
 };
 
-void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const bool with_graphics, TessellationFullConstructionResult& result)
+void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const bool with_graphics, TessellationFullConstructionResult& result, TimeRecorder& time_recorder)
 {
 	result=TessellationFullConstructionResult();
 
 	const std::size_t N=spheres.size();
 
+	time_recorder.reset();
+
 	SpheresSearcher spheres_searcher(spheres);
 
 	std::vector< std::vector<std::size_t> > all_colliding_ids(N);
 	result.spheres_hidden.resize(N, false);
+
+	time_recorder.record_elapsed_miliseconds_and_reset("init spheres searcher");
 
 	#pragma omp parallel
 	{
@@ -221,6 +226,8 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		}
 	}
 
+	time_recorder.record_elapsed_miliseconds_and_reset("parallell collision detection");
+
 	result.total_collisions=0;
 	for(std::size_t i=0;i<all_colliding_ids.size();i++)
 	{
@@ -249,6 +256,8 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		possible_contacts_graphics.resize(possible_contacts_summaries.size());
 	}
 
+	time_recorder.record_elapsed_miliseconds_and_reset("pairs preparation");
+
 	#pragma omp parallel
 	{
 		ContactDescriptor cd;
@@ -270,6 +279,8 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 			}
 		}
 	}
+
+	time_recorder.record_elapsed_miliseconds_and_reset("parallel contacts construction");
 
 	TotalContactDescriptorsSummary total_contacts_summary;
 	for(std::size_t i=0;i<possible_contacts_summaries.size();i++)
@@ -311,6 +322,8 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		result.cells_summaries[i].compute_sas(spheres[i].r);
 		result.total_cells_summary.add(result.cells_summaries[i]);
 	}
+
+	time_recorder.record_elapsed_miliseconds_and_reset("summarization");
 }
 
 }
