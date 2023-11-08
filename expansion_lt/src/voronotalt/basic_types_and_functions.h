@@ -8,9 +8,11 @@
 
 #ifdef VORONOTALT_FP32
 #define FLOATCONST( v ) v ## f
+#define FLOATEPSILON 0.000001f
 #define PIVALUE 3.14159265358979323846f
 #else
 #define FLOATCONST( v ) v
+#define FLOATEPSILON 0.0000000001
 #define PIVALUE 3.14159265358979323846
 #endif
 
@@ -74,12 +76,6 @@ struct SimpleQuaternion
 	}
 };
 
-inline Float default_comparison_epsilon()
-{
-	static const Float e=FLOATCONST(0.0000000001);
-	return e;
-}
-
 inline bool equal(const Float a, const Float b, const Float e)
 {
 	return (((a-b)<=e) && ((b-a)<=e));
@@ -87,17 +83,17 @@ inline bool equal(const Float a, const Float b, const Float e)
 
 inline bool equal(const Float a, const Float b)
 {
-	return equal(a, b, default_comparison_epsilon());
+	return equal(a, b, FLOATEPSILON);
 }
 
 inline bool less(const Float a, const Float b)
 {
-	return ((a+default_comparison_epsilon())<b);
+	return ((a+FLOATEPSILON)<b);
 }
 
 inline bool greater(const Float a, const Float b)
 {
-	return ((a-default_comparison_epsilon())>b);
+	return ((a-FLOATEPSILON)>b);
 }
 
 inline bool less_or_equal(const Float a, const Float b)
