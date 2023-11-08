@@ -13,13 +13,13 @@ class SpheresSearcher
 public:
 	SpheresSearcher(const std::vector<SimpleSphere>& spheres) : spheres_(spheres), box_size_(1.0)
 	{
-		for(std::size_t i=0;i<spheres_.size();i++)
+		for(UnsignedInt i=0;i<spheres_.size();i++)
 		{
 			const SimpleSphere& s=spheres_[i];
 			box_size_=std::max(box_size_, s.r*2.0+0.25);
 		}
 
-		for(std::size_t i=0;i<spheres_.size();i++)
+		for(UnsignedInt i=0;i<spheres_.size();i++)
 		{
 			const GridPoint gp(spheres_[i], box_size_);
 			if(i==0)
@@ -44,7 +44,7 @@ public:
 
 		map_of_boxes_.resize(grid_size_.x*grid_size_.y*grid_size_.z, -1);
 
-		for(std::size_t i=0;i<spheres_.size();i++)
+		for(UnsignedInt i=0;i<spheres_.size();i++)
 		{
 			const GridPoint gp(spheres_[i], box_size_, grid_offset_);
 			const int index=gp.index(grid_size_);
@@ -52,7 +52,7 @@ public:
 			if(box_id<0)
 			{
 				map_of_boxes_[index]=static_cast<int>(boxes_.size());
-				boxes_.push_back(std::vector<std::size_t>(1, i));
+				boxes_.push_back(std::vector<UnsignedInt>(1, i));
 			}
 			else
 			{
@@ -66,7 +66,7 @@ public:
 		return spheres_;
 	}
 
-	bool find_colliding_ids(const std::size_t& central_id, std::vector<std::size_t>& colliding_ids, const bool discard_hidden) const
+	bool find_colliding_ids(const UnsignedInt& central_id, std::vector<UnsignedInt>& colliding_ids, const bool discard_hidden) const
 	{
 		colliding_ids.clear();
 		if(central_id<spheres_.size())
@@ -89,10 +89,10 @@ public:
 							const int box_id=map_of_boxes_[index];
 							if(box_id>=0)
 							{
-								const std::vector<std::size_t>& ids=boxes_[box_id];
-								for(std::size_t i=0;i<ids.size();i++)
+								const std::vector<UnsignedInt>& ids=boxes_[box_id];
+								for(UnsignedInt i=0;i<ids.size();i++)
 								{
-									const std::size_t id=ids[i];
+									const UnsignedInt id=ids[i];
 									const SimpleSphere& candidate_sphere=spheres_[id];
 									if(id!=central_id && sphere_intersects_sphere(central_sphere, candidate_sphere))
 									{
@@ -127,24 +127,24 @@ private:
 		{
 		}
 
-		GridPoint(const SimpleSphere& s, const double grid_step)
+		GridPoint(const SimpleSphere& s, const Float grid_step)
 		{
 			init(s, grid_step);
 		}
 
-		GridPoint(const SimpleSphere& s, const double grid_step, const GridPoint& grid_offset)
+		GridPoint(const SimpleSphere& s, const Float grid_step, const GridPoint& grid_offset)
 		{
 			init(s, grid_step, grid_offset);
 		}
 
-		void init(const SimpleSphere& s, const double grid_step)
+		void init(const SimpleSphere& s, const Float grid_step)
 		{
 			x=static_cast<int>(s.p.x/grid_step);
 			y=static_cast<int>(s.p.y/grid_step);
 			z=static_cast<int>(s.p.z/grid_step);
 		}
 
-		void init(const SimpleSphere& s, const double grid_step, const GridPoint& grid_offset)
+		void init(const SimpleSphere& s, const Float grid_step, const GridPoint& grid_offset)
 		{
 			x=static_cast<int>(s.p.x/grid_step)-grid_offset.x;
 			y=static_cast<int>(s.p.y/grid_step)-grid_offset.y;
@@ -166,8 +166,8 @@ private:
 	GridPoint grid_offset_;
 	GridPoint grid_size_;
 	std::vector<int> map_of_boxes_;
-	std::vector< std::vector<std::size_t> > boxes_;
-	double box_size_;
+	std::vector< std::vector<UnsignedInt> > boxes_;
+	Float box_size_;
 };
 
 }

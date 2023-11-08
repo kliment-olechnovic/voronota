@@ -10,15 +10,15 @@ namespace voronotalt
 
 struct ContactDescriptorSummary
 {
-	std::size_t id_a;
-	std::size_t id_b;
-	double area;
-	double arc_length;
+	UnsignedInt id_a;
+	UnsignedInt id_b;
+	Float area;
+	Float arc_length;
 	int complexity;
-	double solid_angle_a;
-	double solid_angle_b;
-	double pyramid_volume_a;
-	double pyramid_volume_b;
+	Float solid_angle_a;
+	Float solid_angle_b;
+	Float pyramid_volume_a;
+	Float pyramid_volume_b;
 	bool valid;
 
 	ContactDescriptorSummary() : id_a(0), id_b(0), area(0.0), arc_length(0.0), complexity(0), solid_angle_a(0.0), solid_angle_b(0.0), pyramid_volume_a(0.0), pyramid_volume_b(0.0), valid(false)
@@ -45,19 +45,19 @@ struct ContactDescriptorSummary
 
 struct CellContactDescriptorsSummary
 {
-	std::size_t id;
+	UnsignedInt id;
 	int count;
-	double area;
-	double arc_length;
+	Float area;
+	Float arc_length;
 	int complexity;
-	double explained_solid_angle_positive;
-	double explained_solid_angle_negative;
-	double explained_pyramid_volume_positive;
-	double explained_pyramid_volume_negative;
+	Float explained_solid_angle_positive;
+	Float explained_solid_angle_negative;
+	Float explained_pyramid_volume_positive;
+	Float explained_pyramid_volume_negative;
 	bool valid;
-	double sas_r;
-	double sas_area;
-	double sas_inside_volume;
+	Float sas_r;
+	Float sas_area;
+	Float sas_inside_volume;
 	bool sas_computed;
 
 	CellContactDescriptorsSummary() : id(0), count(0), area(0.0), arc_length(0.0), complexity(0), explained_solid_angle_positive(0.0), explained_solid_angle_negative(0.0), explained_pyramid_volume_positive(0.0), explained_pyramid_volume_negative(0.0), valid(false), sas_r(0.0), sas_area(0.0), sas_inside_volume(0.0), sas_computed(false)
@@ -80,7 +80,7 @@ struct CellContactDescriptorsSummary
 		}
 	}
 
-	void add(const std::size_t new_id, const ContactDescriptorSummary& cds)
+	void add(const UnsignedInt new_id, const ContactDescriptorSummary& cds)
 	{
 		if(cds.valid)
 		{
@@ -92,7 +92,7 @@ struct CellContactDescriptorsSummary
 		}
 	}
 
-	void compute_sas(const double r)
+	void compute_sas(const Float r)
 	{
 		if(valid)
 		{
@@ -123,8 +123,8 @@ struct CellContactDescriptorsSummary
 struct TotalContactDescriptorsSummary
 {
 	int count;
-	double area;
-	double arc_length;
+	Float area;
+	Float arc_length;
 	int complexity;
 	bool valid;
 
@@ -148,8 +148,8 @@ struct TotalContactDescriptorsSummary
 struct TotalCellContactDescriptorsSummary
 {
 	int count;
-	double sas_area;
-	double sas_inside_volume;
+	Float sas_area;
+	Float sas_inside_volume;
 	bool valid;
 
 	TotalCellContactDescriptorsSummary() : count(0), sas_area(0.0), sas_inside_volume(0.0), valid(false)
@@ -170,7 +170,7 @@ struct TotalCellContactDescriptorsSummary
 
 struct TessellationFullConstructionResult
 {
-	std::size_t total_collisions;
+	UnsignedInt total_collisions;
 	std::vector<ContactDescriptorSummary> contacts_summaries;
 	std::vector<ContactDescriptorGraphics> contacts_graphics;
 	std::vector<CellContactDescriptorsSummary> cells_summaries;
@@ -186,7 +186,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 {
 	result=TessellationFullConstructionResult();
 
-	const std::size_t N=spheres.size();
+	const UnsignedInt N=spheres.size();
 
 	time_recorder.reset();
 
@@ -194,8 +194,8 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 
 	time_recorder.record_elapsed_miliseconds_and_reset("init spheres searcher");
 
-	std::vector< std::vector<std::size_t> > all_colliding_ids(N);
-	for(std::size_t i=0;i<N;i++)
+	std::vector< std::vector<UnsignedInt> > all_colliding_ids(N);
+	for(UnsignedInt i=0;i<N;i++)
 	{
 		all_colliding_ids[i].reserve(100);
 	}
@@ -204,11 +204,11 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 
 	#pragma omp parallel
 	{
-		std::vector<std::size_t> colliding_ids;
+		std::vector<UnsignedInt> colliding_ids;
 		colliding_ids.reserve(100);
 
 		#pragma omp for
-		for(std::size_t i=0;i<N;i++)
+		for(UnsignedInt i=0;i<N;i++)
 		{
 			spheres_searcher.find_colliding_ids(i, colliding_ids, true);
 			if(!colliding_ids.empty())
@@ -221,23 +221,23 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 	time_recorder.record_elapsed_miliseconds_and_reset("detect all collisions");
 
 	result.total_collisions=0;
-	for(std::size_t i=0;i<all_colliding_ids.size();i++)
+	for(UnsignedInt i=0;i<all_colliding_ids.size();i++)
 	{
 		result.total_collisions+=all_colliding_ids[i].size();
 	}
 
 	time_recorder.record_elapsed_miliseconds_and_reset("count all collisions");
 
-	std::vector< std::pair<std::size_t, std::size_t> > relevant_collision_ids;
+	std::vector< std::pair<UnsignedInt, UnsignedInt> > relevant_collision_ids;
 	relevant_collision_ids.reserve(result.total_collisions/2);
-	for(std::size_t id_a=0;id_a<N;id_a++)
+	for(UnsignedInt id_a=0;id_a<N;id_a++)
 	{
-		for(std::size_t j=0;j<all_colliding_ids[id_a].size();j++)
+		for(UnsignedInt j=0;j<all_colliding_ids[id_a].size();j++)
 		{
-			const std::size_t id_b=all_colliding_ids[id_a][j];
+			const UnsignedInt id_b=all_colliding_ids[id_a][j];
 			if(all_colliding_ids[id_a].size()<all_colliding_ids[id_b].size() || (all_colliding_ids[id_a].size()==all_colliding_ids[id_b].size() && id_a<id_b))
 			{
-				relevant_collision_ids.push_back(std::pair<std::size_t, std::size_t>(id_a, id_b));
+				relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
 			}
 		}
 	}
@@ -261,10 +261,10 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		cd.neighbor_descriptors.reserve(24);
 
 		#pragma omp for
-		for(std::size_t i=0;i<relevant_collision_ids.size();i++)
+		for(UnsignedInt i=0;i<relevant_collision_ids.size();i++)
 		{
-			const std::size_t id_a=relevant_collision_ids[i].first;
-			const std::size_t id_b=relevant_collision_ids[i].second;
+			const UnsignedInt id_a=relevant_collision_ids[i].first;
+			const UnsignedInt id_b=relevant_collision_ids[i].second;
 			if(TessellationContactsConstruction::construct_contact_descriptor(spheres, id_a, id_b, all_colliding_ids[id_a], cd))
 			{
 				possible_contacts_summaries[i].set(cd);
@@ -278,8 +278,8 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 
 	time_recorder.record_elapsed_miliseconds_and_reset("construct contacts");
 
-	std::size_t number_of_valid_contact_summaries=0;
-	for(std::size_t i=0;i<possible_contacts_summaries.size();i++)
+	UnsignedInt number_of_valid_contact_summaries=0;
+	for(UnsignedInt i=0;i<possible_contacts_summaries.size();i++)
 	{
 		if(possible_contacts_summaries[i].valid)
 		{
@@ -289,10 +289,10 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 
 	time_recorder.record_elapsed_miliseconds_and_reset("count valid contact summaries");
 
-	std::vector<std::size_t> ids_of_valid_pairs;
+	std::vector<UnsignedInt> ids_of_valid_pairs;
 	ids_of_valid_pairs.reserve(number_of_valid_contact_summaries);
 
-	for(std::size_t i=0;i<possible_contacts_summaries.size();i++)
+	for(UnsignedInt i=0;i<possible_contacts_summaries.size();i++)
 	{
 		if(possible_contacts_summaries[i].valid)
 		{
@@ -307,7 +307,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 	#pragma omp parallel
 	{
 		#pragma omp for
-		for(std::size_t i=0;i<ids_of_valid_pairs.size();i++)
+		for(UnsignedInt i=0;i<ids_of_valid_pairs.size();i++)
 		{
 			result.contacts_summaries[i]=possible_contacts_summaries[ids_of_valid_pairs[i]];
 		}
@@ -315,7 +315,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 
 	time_recorder.record_elapsed_miliseconds_and_reset("copy valid contact summaries");
 
-	for(std::size_t i=0;i<result.contacts_summaries.size();i++)
+	for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
 	{
 		result.total_contacts_summary.add(result.contacts_summaries[i]);
 	}
@@ -325,7 +325,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 	if(with_graphics)
 	{
 		result.contacts_graphics.reserve(result.total_contacts_summary.count);
-		for(std::size_t i=0;i<possible_contacts_graphics.size();i++)
+		for(UnsignedInt i=0;i<possible_contacts_graphics.size();i++)
 		{
 			if(possible_contacts_graphics[i].valid)
 			{
@@ -336,7 +336,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 
 	result.cells_summaries.resize(N);
 
-	for(std::size_t i=0;i<result.contacts_summaries.size();i++)
+	for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
 	{
 		const ContactDescriptorSummary& cds=result.contacts_summaries[i];
 		result.cells_summaries[cds.id_a].add(cds.id_a, cds);
@@ -346,13 +346,13 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 	#pragma omp parallel
 	{
 		#pragma omp for
-		for(std::size_t i=0;i<result.cells_summaries.size();i++)
+		for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
 		{
 			result.cells_summaries[i].compute_sas(spheres[i].r);
 		}
 	}
 
-	for(std::size_t i=0;i<result.cells_summaries.size();i++)
+	for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
 	{
 		result.total_cells_summary.add(result.cells_summaries[i]);
 	}

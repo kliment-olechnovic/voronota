@@ -12,7 +12,7 @@ int main(const int argc, const char** argv)
 	std::ios_base::sync_with_stdio(false);
 
 	unsigned int max_number_of_processors=40;
-	double probe=1.4;
+	voronotalt::Float probe=1.4;
 	bool output_csa=false;
 	bool output_csa_with_graphics=false;
 	bool output_sasa=false;

@@ -11,12 +11,12 @@ namespace voronotalt
 struct ContourPoint
 {
 	SimplePoint p;
-	std::size_t left_id;
-	std::size_t right_id;
+	UnsignedInt left_id;
+	UnsignedInt right_id;
 	int indicator;
-	double angle;
+	Float angle;
 
-	ContourPoint(const SimplePoint& p, const std::size_t left_id, const std::size_t right_id) : p(p), left_id(left_id), right_id(right_id), indicator(0), angle(0.0)
+	ContourPoint(const SimplePoint& p, const UnsignedInt left_id, const UnsignedInt right_id) : p(p), left_id(left_id), right_id(right_id), indicator(0), angle(0.0)
 	{
 	}
 };
@@ -25,7 +25,7 @@ typedef std::vector<ContourPoint> Contour;
 
 struct NeighborDescriptor
 {
-	std::size_t neighbor_id;
+	UnsignedInt neighbor_id;
 	SimplePoint ac_plane_center;
 	SimplePoint ac_plane_normal;
 
@@ -41,14 +41,14 @@ struct ContactDescriptor
 	std::vector<NeighborDescriptor> neighbor_descriptors;
 	Contour contour;
 	SimplePoint contour_barycenter;
-	std::size_t id_a;
-	std::size_t id_b;
-	double sum_of_arc_angles;
-	double area;
-	double solid_angle_a;
-	double solid_angle_b;
-	double pyramid_volume_a;
-	double pyramid_volume_b;
+	UnsignedInt id_a;
+	UnsignedInt id_b;
+	Float sum_of_arc_angles;
+	Float area;
+	Float solid_angle_a;
+	Float solid_angle_b;
+	Float pyramid_volume_a;
+	Float pyramid_volume_b;
 	bool valid;
 
 	ContactDescriptor() : id_a(0), id_b(0), sum_of_arc_angles(0.0), area(0.0), solid_angle_a(0.0), solid_angle_b(0.0), pyramid_volume_a(0.0), pyramid_volume_b(0.0), valid(false)
@@ -94,9 +94,9 @@ class TessellationContactsConstruction
 public:
 	static bool construct_contact_descriptor(
 			const std::vector<SimpleSphere>& spheres,
-			const std::size_t a_id,
-			const std::size_t b_id,
-			const std::vector<std::size_t>& a_neighbor_collisions,
+			const UnsignedInt a_id,
+			const UnsignedInt b_id,
+			const std::vector<UnsignedInt>& a_neighbor_collisions,
 			ContactDescriptor& result_contact_descriptor)
 	{
 		result_contact_descriptor.clear();
@@ -113,9 +113,9 @@ public:
 				{
 					bool discarded=false;
 					{
-						for(std::size_t i=0;i<a_neighbor_collisions.size() && !discarded;i++)
+						for(UnsignedInt i=0;i<a_neighbor_collisions.size() && !discarded;i++)
 						{
-							const std::size_t neighbor_id=a_neighbor_collisions[i];
+							const UnsignedInt neighbor_id=a_neighbor_collisions[i];
 							if(neighbor_id!=b_id)
 							{
 								const SimpleSphere& c=spheres[neighbor_id];
@@ -130,11 +130,11 @@ public:
 										NeighborDescriptor nd;
 										nd.ac_plane_center=center_of_intersection_circle_of_two_spheres(a, c);
 										nd.ac_plane_normal=unit_point(sub_of_points(c.p, a.p));
-										const double cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(nd.ac_plane_center, a.p)));
+										const Float cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(nd.ac_plane_center, a.p)));
 										if(std::abs(cos_val)<1.0)
 										{
-											const double l=std::abs(signed_distance_from_point_to_plane(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p));
-											const double xl=l/std::sqrt(1-(cos_val*cos_val));
+											const Float l=std::abs(signed_distance_from_point_to_plane(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p));
+											const Float xl=l/std::sqrt(1-(cos_val*cos_val));
 											if(xl>=result_contact_descriptor.intersection_circle_sphere.r)
 											{
 												if(halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p)>=0)
@@ -176,7 +176,7 @@ public:
 							init_contour_from_base_and_axis(a_id, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, result_contact_descriptor.contour);
 							if(!result_contact_descriptor.contour.empty() && !result_contact_descriptor.neighbor_descriptors.empty())
 							{
-								for(std::size_t i=0;i<result_contact_descriptor.neighbor_descriptors.size();i++)
+								for(UnsignedInt i=0;i<result_contact_descriptor.neighbor_descriptors.size();i++)
 								{
 									const NeighborDescriptor& nd=result_contact_descriptor.neighbor_descriptors[i];
 									mark_and_cut_contour(nd.ac_plane_center, nd.ac_plane_normal, nd.neighbor_id, result_contact_descriptor.contour);
@@ -207,18 +207,18 @@ public:
 		return result_contact_descriptor.valid;
 	}
 
-	static bool construct_contact_descriptor_graphics(const ContactDescriptor& contact_descriptor, const double length_step, ContactDescriptorGraphics& result_contact_descriptor_graphics)
+	static bool construct_contact_descriptor_graphics(const ContactDescriptor& contact_descriptor, const Float length_step, ContactDescriptorGraphics& result_contact_descriptor_graphics)
 	{
 		result_contact_descriptor_graphics.clear();
 		if(contact_descriptor.valid)
 		{
-			const double angle_step=std::max(std::min(length_step/contact_descriptor.intersection_circle_sphere.r, pi_value()/3.0), pi_value()/36.0);
+			const Float angle_step=std::max(std::min(length_step/contact_descriptor.intersection_circle_sphere.r, pi_value()/3.0), pi_value()/36.0);
 			if(contact_descriptor.contour.empty())
 			{
 				const SimplePoint first_point=point_and_number_product(any_normal_of_vector(contact_descriptor.intersection_circle_axis), contact_descriptor.intersection_circle_sphere.r);
 				result_contact_descriptor_graphics.outer_points.reserve(static_cast<int>(pi2_value()/angle_step)+2);
 				result_contact_descriptor_graphics.outer_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, first_point));
-				for(double rotation_angle=angle_step;rotation_angle<pi2_value();rotation_angle+=angle_step)
+				for(Float rotation_angle=angle_step;rotation_angle<pi2_value();rotation_angle+=angle_step)
 				{
 					result_contact_descriptor_graphics.outer_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_point)));
 				}
@@ -228,13 +228,13 @@ public:
 			{
 				if(contact_descriptor.sum_of_arc_angles>0.0)
 				{
-					result_contact_descriptor_graphics.outer_points.reserve(static_cast<std::size_t>(contact_descriptor.sum_of_arc_angles/angle_step)+contact_descriptor.contour.size()+4);
+					result_contact_descriptor_graphics.outer_points.reserve(static_cast<UnsignedInt>(contact_descriptor.sum_of_arc_angles/angle_step)+contact_descriptor.contour.size()+4);
 				}
 				else
 				{
 					result_contact_descriptor_graphics.outer_points.reserve(contact_descriptor.contour.size());
 				}
-				for(std::size_t i=0;i<contact_descriptor.contour.size();i++)
+				for(UnsignedInt i=0;i<contact_descriptor.contour.size();i++)
 				{
 					const ContourPoint& pr=contact_descriptor.contour[i];
 					result_contact_descriptor_graphics.outer_points.push_back(pr.p);
@@ -243,7 +243,7 @@ public:
 						if(pr.angle>angle_step)
 						{
 							const SimplePoint first_v=sub_of_points(pr.p, contact_descriptor.intersection_circle_sphere.p);
-							for(double rotation_angle=angle_step;rotation_angle<pr.angle;rotation_angle+=angle_step)
+							for(Float rotation_angle=angle_step;rotation_angle<pr.angle;rotation_angle+=angle_step)
 							{
 								result_contact_descriptor_graphics.outer_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_v)));
 							}
@@ -255,15 +255,15 @@ public:
 				result_contact_descriptor_graphics.barycenter.z=0.0;
 				if(!result_contact_descriptor_graphics.outer_points.empty())
 				{
-					for(std::size_t i=0;i<result_contact_descriptor_graphics.outer_points.size();i++)
+					for(UnsignedInt i=0;i<result_contact_descriptor_graphics.outer_points.size();i++)
 					{
 						result_contact_descriptor_graphics.barycenter.x+=result_contact_descriptor_graphics.outer_points[i].x;
 						result_contact_descriptor_graphics.barycenter.y+=result_contact_descriptor_graphics.outer_points[i].y;
 						result_contact_descriptor_graphics.barycenter.z+=result_contact_descriptor_graphics.outer_points[i].z;
 					}
-					result_contact_descriptor_graphics.barycenter.x/=static_cast<double>(result_contact_descriptor_graphics.outer_points.size());
-					result_contact_descriptor_graphics.barycenter.y/=static_cast<double>(result_contact_descriptor_graphics.outer_points.size());
-					result_contact_descriptor_graphics.barycenter.z/=static_cast<double>(result_contact_descriptor_graphics.outer_points.size());
+					result_contact_descriptor_graphics.barycenter.x/=static_cast<Float>(result_contact_descriptor_graphics.outer_points.size());
+					result_contact_descriptor_graphics.barycenter.y/=static_cast<Float>(result_contact_descriptor_graphics.outer_points.size());
+					result_contact_descriptor_graphics.barycenter.z/=static_cast<Float>(result_contact_descriptor_graphics.outer_points.size());
 				}
 			}
 			result_contact_descriptor_graphics.normal=contact_descriptor.intersection_circle_axis;
@@ -274,15 +274,15 @@ public:
 
 private:
 	static void init_contour_from_base_and_axis(
-			const std::size_t a_id,
+			const UnsignedInt a_id,
 			const SimpleSphere& base,
 			const SimplePoint& axis,
 			Contour& result)
 	{
 		const SimplePoint first_point=point_and_number_product(any_normal_of_vector(axis), base.r*1.19);
-		const double angle_step=pi_value()/3.0;
+		const Float angle_step=pi_value()/3.0;
 		result.push_back(ContourPoint(sum_of_points(base.p, first_point), a_id, a_id));
-		for(double rotation_angle=angle_step;rotation_angle<pi2_value();rotation_angle+=angle_step)
+		for(Float rotation_angle=angle_step;rotation_angle<pi2_value();rotation_angle+=angle_step)
 		{
 			result.push_back(ContourPoint(sum_of_points(base.p, rotate_point_around_axis(axis, rotation_angle, first_point)), a_id, a_id));
 		}
@@ -291,10 +291,10 @@ private:
 	static bool mark_and_cut_contour(
 			const SimplePoint& ac_plane_center,
 			const SimplePoint& ac_plane_normal,
-			const std::size_t c_id,
+			const UnsignedInt c_id,
 			Contour& contour)
 	{
-		const std::size_t outsiders_count=mark_contour(ac_plane_center, ac_plane_normal, c_id, contour);
+		const UnsignedInt outsiders_count=mark_contour(ac_plane_center, ac_plane_normal, c_id, contour);
 		if(outsiders_count>0)
 		{
 			if(outsiders_count<contour.size())
@@ -310,13 +310,13 @@ private:
 		return false;
 	}
 
-	static std::size_t mark_contour(
+	static UnsignedInt mark_contour(
 			const SimplePoint& ac_plane_center,
 			const SimplePoint& ac_plane_normal,
-			const std::size_t c_id,
+			const UnsignedInt c_id,
 			Contour& contour)
 	{
-		std::size_t outsiders_count=0;
+		UnsignedInt outsiders_count=0;
 		for(Contour::iterator it=contour.begin();it!=contour.end();++it)
 		{
 			if(halfspace_of_point(ac_plane_center, ac_plane_normal, it->p)>=0)
@@ -332,7 +332,7 @@ private:
 	static void cut_contour(
 			const SimplePoint& ac_plane_center,
 			const SimplePoint& ac_plane_normal,
-			const std::size_t c_id,
+			const UnsignedInt c_id,
 			Contour& contour)
 	{
 		if(contour.size()<3)
@@ -340,7 +340,7 @@ private:
 			return;
 		}
 
-		std::size_t i_start=0;
+		UnsignedInt i_start=0;
 		while(i_start<contour.size() && !(contour[i_start].left_id==c_id && contour[i_start].right_id==c_id))
 		{
 			i_start++;
@@ -351,7 +351,7 @@ private:
 			return;
 		}
 
-		std::size_t i_end=(contour.size()-1);
+		UnsignedInt i_end=(contour.size()-1);
 		while(i_end>0 && !(contour[i_end].left_id==c_id && contour[i_end].right_id==c_id))
 		{
 			i_end--;
@@ -401,12 +401,12 @@ private:
 		}
 
 		{
-			const std::size_t i_left=((i_start)>0 ? (i_start-1) : (contour.size()-1));
+			const UnsignedInt i_left=((i_start)>0 ? (i_start-1) : (contour.size()-1));
 			contour[i_start]=ContourPoint(intersection_of_plane_and_segment(ac_plane_center, ac_plane_normal, contour[i_start].p, contour[i_left].p), contour[i_left].right_id, contour[i_start].left_id);
 		}
 
 		{
-			const std::size_t i_right=((i_end+1)<contour.size() ? (i_end+1) : 0);
+			const UnsignedInt i_right=((i_end+1)<contour.size() ? (i_end+1) : 0);
 			contour[i_end]=ContourPoint(intersection_of_plane_and_segment(ac_plane_center, ac_plane_normal, contour[i_end].p, contour[i_right].p), contour[i_end].right_id, contour[i_right].left_id);
 		}
 	}
@@ -414,12 +414,12 @@ private:
 	static bool restrict_contour_to_circle(
 			const SimpleSphere& ic_sphere,
 			const SimplePoint& ic_axis,
-			const std::size_t a_id,
+			const UnsignedInt a_id,
 			Contour& contour,
-			double& sum_of_arc_angles)
+			Float& sum_of_arc_angles)
 	{
-		std::size_t outsiders_count=0;
-		for(std::size_t i=0;i<contour.size();i++)
+		UnsignedInt outsiders_count=0;
+		for(UnsignedInt i=0;i<contour.size();i++)
 		{
 			if(squared_distance_from_point_to_point(contour[i].p, ic_sphere.p)<=(ic_sphere.r*ic_sphere.r))
 			{
@@ -434,9 +434,9 @@ private:
 
 		if(outsiders_count>0)
 		{
-			std::size_t insertions_count=0;
+			UnsignedInt insertions_count=0;
 			{
-				std::size_t i=0;
+				UnsignedInt i=0;
 				while(i<contour.size())
 				{
 					ContourPoint& pr1=contour[i];
@@ -454,7 +454,7 @@ private:
 									SimplePoint ip2;
 									if(intersect_segment_with_circle(ic_sphere, mp, pr1.p, ip1) && intersect_segment_with_circle(ic_sphere, mp, pr2.p, ip2))
 									{
-										const std::size_t pr2_left_id=pr2.left_id;
+										const UnsignedInt pr2_left_id=pr2.left_id;
 										contour.insert(((i+1)<contour.size() ? (contour.begin()+(i+1)) : contour.end()), 2, ContourPoint(ip1, a_id, pr1.right_id));
 										contour[i+2]=ContourPoint(ip2, pr2_left_id, a_id);
 										insertions_count+=2;
@@ -507,7 +507,7 @@ private:
 			else if(!contour.empty())
 			{
 				{
-					std::size_t i=(contour.size()-1);
+					UnsignedInt i=(contour.size()-1);
 					while(i<contour.size())
 					{
 						if(contour[i].indicator==1)
@@ -522,7 +522,7 @@ private:
 					contour.clear();
 				}
 				{
-					std::size_t i=0;
+					UnsignedInt i=0;
 					while(i<contour.size())
 					{
 						ContourPoint& pr1=contour[i];
@@ -543,24 +543,24 @@ private:
 		return (outsiders_count>0);
 	}
 
-	static double calculate_contour_area(const SimpleSphere& ic_sphere, const Contour& contour, SimplePoint& contour_barycenter)
+	static Float calculate_contour_area(const SimpleSphere& ic_sphere, const Contour& contour, SimplePoint& contour_barycenter)
 	{
-		double area=0.0;
+		Float area=0.0;
 
 		contour_barycenter.x=0.0;
 		contour_barycenter.y=0.0;
 		contour_barycenter.z=0.0;
-		for(std::size_t i=0;i<contour.size();i++)
+		for(UnsignedInt i=0;i<contour.size();i++)
 		{
 			contour_barycenter.x+=contour[i].p.x;
 			contour_barycenter.y+=contour[i].p.y;
 			contour_barycenter.z+=contour[i].p.z;
 		}
-		contour_barycenter.x/=static_cast<double>(contour.size());
-		contour_barycenter.y/=static_cast<double>(contour.size());
-		contour_barycenter.z/=static_cast<double>(contour.size());
+		contour_barycenter.x/=static_cast<Float>(contour.size());
+		contour_barycenter.y/=static_cast<Float>(contour.size());
+		contour_barycenter.z/=static_cast<Float>(contour.size());
 
-		for(std::size_t i=0;i<contour.size();i++)
+		for(UnsignedInt i=0;i<contour.size();i++)
 		{
 			const ContourPoint& pr1=contour[i];
 			const ContourPoint& pr2=contour[(i+1)<contour.size() ? (i+1) : 0];
@@ -574,13 +574,13 @@ private:
 		return area;
 	}
 
-	static double calculate_contour_solid_angle(const SimpleSphere& a, const SimpleSphere& b, const SimpleSphere& ic_sphere, const Contour& contour)
+	static Float calculate_contour_solid_angle(const SimpleSphere& a, const SimpleSphere& b, const SimpleSphere& ic_sphere, const Contour& contour)
 	{
-		double turn_angle=0.0;
+		Float turn_angle=0.0;
 
 		if(!contour.empty())
 		{
-			for(std::size_t i=0;i<contour.size();i++)
+			for(UnsignedInt i=0;i<contour.size();i++)
 			{
 				const ContourPoint& pr0=contour[(i>0) ? (i-1) : (contour.size()-1)];
 				const ContourPoint& pr1=contour[i];
@@ -616,7 +616,7 @@ private:
 			turn_angle=pi2_value()*(distance_from_point_to_point(a.p, ic_sphere.p)/a.r);
 		}
 
-		double solid_angle=(pi2_value()-turn_angle);
+		Float solid_angle=(pi2_value()-turn_angle);
 
 		if(dot_product(sub_of_points(ic_sphere.p, a.p), sub_of_points(ic_sphere.p, b.p))>0.0 && squared_distance_from_point_to_point(ic_sphere.p, a.p)<squared_distance_from_point_to_point(ic_sphere.p, b.p))
 		{
