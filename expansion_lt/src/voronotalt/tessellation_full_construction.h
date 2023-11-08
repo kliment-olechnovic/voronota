@@ -343,17 +343,15 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 
 	if(with_graphics)
 	{
-		result.contacts_graphics.reserve(result.total_contacts_summary.count);
-		for(UnsignedInt i=0;i<possible_contacts_graphics.size();i++)
+		result.contacts_graphics.resize(ids_of_valid_pairs.size());
+
+		for(UnsignedInt i=0;i<ids_of_valid_pairs.size();i++)
 		{
-			if(!possible_contacts_graphics[i].outer_points.empty())
-			{
-				result.contacts_graphics.push_back(possible_contacts_graphics[i]);
-			}
+			result.contacts_graphics[i]=possible_contacts_graphics[ids_of_valid_pairs[i]];
 		}
 	}
 
-	time_recorder.record_elapsed_miliseconds_and_reset("collect contacts graphics");
+	time_recorder.record_elapsed_miliseconds_and_reset("copy valid contacts graphics");
 
 	result.cells_summaries.resize(N);
 
