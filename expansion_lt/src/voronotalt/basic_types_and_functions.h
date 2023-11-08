@@ -106,6 +106,14 @@ inline bool greater_or_equal(const Float a, const Float b)
 	return (greater(a, b) || equal(a, b));
 }
 
+inline void set_close_to_equal(Float& a, const Float b)
+{
+	if(equal(a, b))
+	{
+		a=b;
+	}
+}
+
 inline Float squared_distance_from_point_to_point(const SimplePoint& a, const SimplePoint& b)
 {
 	const Float dx=(a.x-b.x);

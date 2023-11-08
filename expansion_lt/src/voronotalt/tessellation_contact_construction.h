@@ -265,6 +265,9 @@ public:
 				{
 					for(UnsignedInt i=0;i<result_contact_descriptor_graphics.outer_points.size();i++)
 					{
+						set_close_to_equal(result_contact_descriptor_graphics.outer_points[i].x, FLOATCONST(0.0));
+						set_close_to_equal(result_contact_descriptor_graphics.outer_points[i].y, FLOATCONST(0.0));
+						set_close_to_equal(result_contact_descriptor_graphics.outer_points[i].z, FLOATCONST(0.0));
 						result_contact_descriptor_graphics.barycenter.x+=result_contact_descriptor_graphics.outer_points[i].x;
 						result_contact_descriptor_graphics.barycenter.y+=result_contact_descriptor_graphics.outer_points[i].y;
 						result_contact_descriptor_graphics.barycenter.z+=result_contact_descriptor_graphics.outer_points[i].z;
