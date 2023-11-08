@@ -7,7 +7,7 @@ namespace voronotalt
 {
 
 typedef double Float;
-typedef std::size_t UnsignedInt;
+typedef unsigned int UnsignedInt;
 
 struct SimplePoint
 {
