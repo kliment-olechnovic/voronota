@@ -103,7 +103,7 @@ struct CellContactDescriptorsSummary
 			{
 				if(explained_solid_angle_positive>explained_solid_angle_negative)
 				{
-					sas_area=((FLOATCONST(4.0)*pi_value())-std::max(FLOATCONST(0.0), explained_solid_angle_positive-explained_solid_angle_negative))*(r*r);
+					sas_area=((FLOATCONST(4.0)*PIVALUE)-std::max(FLOATCONST(0.0), explained_solid_angle_positive-explained_solid_angle_negative))*(r*r);
 				}
 				else if(explained_solid_angle_negative>explained_solid_angle_positive)
 				{

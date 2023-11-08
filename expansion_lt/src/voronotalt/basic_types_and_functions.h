@@ -8,8 +8,10 @@
 
 #ifdef VORONOTALT_FP32
 #define FLOATCONST( v ) v ## f
+#define PIVALUE 3.14159265358979323846f
 #else
 #define FLOATCONST( v ) v
+#define PIVALUE 3.14159265358979323846
 #endif
 
 namespace voronotalt
@@ -71,18 +73,6 @@ struct SimpleQuaternion
 	{
 	}
 };
-
-inline Float pi_value()
-{
-	static const Float pi=std::acos(FLOATCONST(-1.0));
-	return pi;
-}
-
-inline Float pi2_value()
-{
-	static const Float pi2=std::acos(FLOATCONST(-1.0))*FLOATCONST(2.0);
-	return pi2;
-}
 
 inline Float default_comparison_epsilon()
 {
@@ -236,7 +226,7 @@ inline Float directed_angle(const SimplePoint& o, const SimplePoint& a, const Si
 	}
 	else
 	{
-		return (pi_value()*2-angle);
+		return (PIVALUE*FLOATCONST(2.0)-angle);
 	}
 }
 
