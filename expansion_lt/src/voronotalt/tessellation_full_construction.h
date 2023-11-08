@@ -10,17 +10,26 @@ namespace voronotalt
 
 struct ContactDescriptorSummary
 {
-	UnsignedInt id_a;
-	UnsignedInt id_b;
 	Float area;
 	Float arc_length;
-	int complexity;
 	Float solid_angle_a;
 	Float solid_angle_b;
 	Float pyramid_volume_a;
 	Float pyramid_volume_b;
+	UnsignedInt id_a;
+	UnsignedInt id_b;
+	UnsignedInt complexity;
 
-	ContactDescriptorSummary() : id_a(0), id_b(0), area(FLOATCONST(0.0)), arc_length(FLOATCONST(0.0)), complexity(0), solid_angle_a(FLOATCONST(0.0)), solid_angle_b(FLOATCONST(0.0)), pyramid_volume_a(FLOATCONST(0.0)), pyramid_volume_b(FLOATCONST(0.0))
+	ContactDescriptorSummary() :
+		area(FLOATCONST(0.0)),
+		arc_length(FLOATCONST(0.0)),
+		solid_angle_a(FLOATCONST(0.0)),
+		solid_angle_b(FLOATCONST(0.0)),
+		pyramid_volume_a(FLOATCONST(0.0)),
+		pyramid_volume_b(FLOATCONST(0.0)),
+		id_a(0),
+		id_b(0),
+		complexity(0)
 	{
 	}
 
@@ -43,20 +52,32 @@ struct ContactDescriptorSummary
 
 struct CellContactDescriptorsSummary
 {
-	UnsignedInt id;
-	int count;
 	Float area;
 	Float arc_length;
-	UnsignedInt complexity;
 	Float explained_solid_angle_positive;
 	Float explained_solid_angle_negative;
 	Float explained_pyramid_volume_positive;
 	Float explained_pyramid_volume_negative;
 	Float sas_area;
 	Float sas_inside_volume;
+	UnsignedInt id;
+	UnsignedInt complexity;
+	UnsignedInt count;
 	int stage;
 
-	CellContactDescriptorsSummary() : id(0), count(0), area(FLOATCONST(0.0)), arc_length(FLOATCONST(0.0)), complexity(0), explained_solid_angle_positive(FLOATCONST(0.0)), explained_solid_angle_negative(FLOATCONST(0.0)), explained_pyramid_volume_positive(FLOATCONST(0.0)), explained_pyramid_volume_negative(FLOATCONST(0.0)), sas_area(FLOATCONST(0.0)), sas_inside_volume(FLOATCONST(0.0)), stage(0)
+	CellContactDescriptorsSummary() :
+		area(FLOATCONST(0.0)),
+		arc_length(FLOATCONST(0.0)),
+		explained_solid_angle_positive(FLOATCONST(0.0)),
+		explained_solid_angle_negative(FLOATCONST(0.0)),
+		explained_pyramid_volume_positive(FLOATCONST(0.0)),
+		explained_pyramid_volume_negative(FLOATCONST(0.0)),
+		sas_area(FLOATCONST(0.0)),
+		sas_inside_volume(FLOATCONST(0.0)),
+		id(0),
+		complexity(0),
+		count(0),
+		stage(0)
 	{
 	}
 
@@ -117,12 +138,16 @@ struct CellContactDescriptorsSummary
 
 struct TotalContactDescriptorsSummary
 {
-	int count;
 	Float area;
 	Float arc_length;
-	int complexity;
+	UnsignedInt complexity;
+	UnsignedInt count;
 
-	TotalContactDescriptorsSummary() : count(0), area(FLOATCONST(0.0)), arc_length(FLOATCONST(0.0)), complexity(0)
+	TotalContactDescriptorsSummary() :
+		area(FLOATCONST(0.0)),
+		arc_length(FLOATCONST(0.0)),
+		complexity(0),
+		count(0)
 	{
 	}
 
@@ -140,11 +165,14 @@ struct TotalContactDescriptorsSummary
 
 struct TotalCellContactDescriptorsSummary
 {
-	int count;
 	Float sas_area;
 	Float sas_inside_volume;
+	UnsignedInt count;
 
-	TotalCellContactDescriptorsSummary() : count(0), sas_area(FLOATCONST(0.0)), sas_inside_volume(FLOATCONST(0.0))
+	TotalCellContactDescriptorsSummary() :
+		sas_area(FLOATCONST(0.0)),
+		sas_inside_volume(FLOATCONST(0.0)),
+		count(0)
 	{
 	}
 
@@ -161,12 +189,12 @@ struct TotalCellContactDescriptorsSummary
 
 struct TessellationFullConstructionResult
 {
-	UnsignedInt total_collisions;
+	TotalContactDescriptorsSummary total_contacts_summary;
+	TotalCellContactDescriptorsSummary total_cells_summary;
 	std::vector<ContactDescriptorSummary> contacts_summaries;
 	std::vector<ContactDescriptorGraphics> contacts_graphics;
 	std::vector<CellContactDescriptorsSummary> cells_summaries;
-	TotalContactDescriptorsSummary total_contacts_summary;
-	TotalCellContactDescriptorsSummary total_cells_summary;
+	UnsignedInt total_collisions;
 
 	TessellationFullConstructionResult() : total_collisions(0)
 	{
@@ -318,7 +346,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		result.contacts_graphics.reserve(result.total_contacts_summary.count);
 		for(UnsignedInt i=0;i<possible_contacts_graphics.size();i++)
 		{
-			if(possible_contacts_graphics[i].valid)
+			if(!possible_contacts_graphics[i].outer_points.empty())
 			{
 				result.contacts_graphics.push_back(possible_contacts_graphics[i]);
 			}

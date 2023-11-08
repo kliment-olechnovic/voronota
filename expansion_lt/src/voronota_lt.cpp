@@ -166,7 +166,7 @@ omp_set_num_threads(max_number_of_processors);
 			{
 				const voronotalt::ContactDescriptorGraphics& pair_graphics=result.contacts_graphics[i];
 				std::cout << " BEGIN,TRIANGLE_FAN";
-				if(pair_graphics.valid && !pair_graphics.outer_points.empty())
+				if(!pair_graphics.outer_points.empty())
 				{
 					std::cout << ",NORMAL," << pair_graphics.normal.x << "," << pair_graphics.normal.y << "," << pair_graphics.normal.z;
 					std::cout << ",VERTEX," << pair_graphics.barycenter.x << "," << pair_graphics.barycenter.y << "," << pair_graphics.barycenter.z;

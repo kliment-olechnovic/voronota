@@ -11,12 +11,18 @@ namespace voronotalt
 struct ContourPoint
 {
 	SimplePoint p;
+	Float angle;
 	UnsignedInt left_id;
 	UnsignedInt right_id;
 	int indicator;
-	Float angle;
 
-	ContourPoint(const SimplePoint& p, const UnsignedInt left_id, const UnsignedInt right_id) : p(p), left_id(left_id), right_id(right_id), indicator(0), angle(FLOATCONST(0.0))
+
+	ContourPoint(const SimplePoint& p, const UnsignedInt left_id, const UnsignedInt right_id) :
+		p(p),
+		angle(FLOATCONST(0.0)),
+		left_id(left_id),
+		right_id(right_id),
+		indicator(0)
 	{
 	}
 };
@@ -25,9 +31,9 @@ typedef std::vector<ContourPoint> Contour;
 
 struct NeighborDescriptor
 {
-	UnsignedInt neighbor_id;
 	SimplePoint ac_plane_center;
 	SimplePoint ac_plane_normal;
+	UnsignedInt neighbor_id;
 
 	NeighborDescriptor() : neighbor_id(0)
 	{
@@ -36,21 +42,29 @@ struct NeighborDescriptor
 
 struct ContactDescriptor
 {
+	Contour contour;
+	std::vector<NeighborDescriptor> neighbor_descriptors;
 	SimpleSphere intersection_circle_sphere;
 	SimplePoint intersection_circle_axis;
-	std::vector<NeighborDescriptor> neighbor_descriptors;
-	Contour contour;
 	SimplePoint contour_barycenter;
-	UnsignedInt id_a;
-	UnsignedInt id_b;
 	Float sum_of_arc_angles;
 	Float area;
 	Float solid_angle_a;
 	Float solid_angle_b;
 	Float pyramid_volume_a;
 	Float pyramid_volume_b;
+	UnsignedInt id_a;
+	UnsignedInt id_b;
 
-	ContactDescriptor() : id_a(0), id_b(0), sum_of_arc_angles(FLOATCONST(0.0)), area(FLOATCONST(0.0)), solid_angle_a(FLOATCONST(0.0)), solid_angle_b(FLOATCONST(0.0)), pyramid_volume_a(FLOATCONST(0.0)), pyramid_volume_b(FLOATCONST(0.0))
+	ContactDescriptor() :
+		sum_of_arc_angles(FLOATCONST(0.0)),
+		area(FLOATCONST(0.0)),
+		solid_angle_a(FLOATCONST(0.0)),
+		solid_angle_b(FLOATCONST(0.0)),
+		pyramid_volume_a(FLOATCONST(0.0)),
+		pyramid_volume_b(FLOATCONST(0.0)),
+		id_a(0),
+		id_b(0)
 	{
 	}
 
@@ -74,16 +88,14 @@ struct ContactDescriptorGraphics
 	std::vector<SimplePoint> outer_points;
 	SimplePoint barycenter;
 	SimplePoint normal;
-	bool valid;
 
-	ContactDescriptorGraphics() : valid(false)
+	ContactDescriptorGraphics()
 	{
 	}
 
 	void clear()
 	{
 		outer_points.clear();
-		valid=false;
 	}
 };
 
@@ -263,9 +275,8 @@ public:
 				}
 			}
 			result_contact_descriptor_graphics.normal=contact_descriptor.intersection_circle_axis;
-			result_contact_descriptor_graphics.valid=!result_contact_descriptor_graphics.outer_points.empty();
 		}
-		return result_contact_descriptor_graphics.valid;
+		return (!result_contact_descriptor_graphics.outer_points.empty());
 	}
 
 private:
