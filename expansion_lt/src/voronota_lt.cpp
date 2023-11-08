@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <cstdlib>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -97,43 +98,54 @@ int main(const int argc, const char** argv)
 
 	voronotalt::TimeRecorder time_recoder_for_input(measure_time);
 
+	std::istreambuf_iterator<char> stdin_eos;
+	std::string stdin_data(std::istreambuf_iterator<char>(std::cin), stdin_eos);
+
+	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read stdin content to string");
+
 	std::vector<voronotalt::SimpleSphere> spheres;
+
 	{
-		voronotalt::SimpleSphere sphere;
-		std::cin >> std::ws;
-		while(std::cin.good())
+		const char* data=stdin_data.c_str();
+		const char* end=data+stdin_data.size();
+		std::vector<double> values;
+		values.reserve(stdin_data.size()/4);
+		while(data<end)
 		{
-			std::cin >> sphere.p.x;
-			if(std::cin.fail())
+			char* next=0;
+			const double value=strtod(data, &next);
+			if(data==next)
 			{
-				std::cerr << "Error reading sphere.x at line " << spheres.size() << "\n";
-				return 1;
+				++data;
 			}
-			std::cin >> sphere.p.y;
-			if(std::cin.fail())
+			else
 			{
-				std::cerr << "Error reading sphere.y at line " << spheres.size() << "\n";
-				return 1;
+				values.push_back(value);
+				data=next;
 			}
-			std::cin >> sphere.p.z;
-			if(std::cin.fail())
-			{
-				std::cerr << "Error reading sphere.z at line " << spheres.size() << "\n";
-				return 1;
-			}
-			std::cin >> sphere.r;
-			if(std::cin.fail())
-			{
-				std::cerr << "Error reading sphere.r at line " << spheres.size() << "\n";
-				return 1;
-			}
-			std::cin >> std::ws;
-			sphere.r+=probe;
-			spheres.push_back(sphere);
+		}
+		if(values.empty())
+		{
+			std::cerr << "No data read from stdin\n";
+			return 1;
+		}
+		if(values.size()%4!=0)
+		{
+			std::cerr << "Invalid data in stdin\n";
+			return 1;
+		}
+		spheres.resize(values.size()/4);
+		for(std::size_t i=0;i<spheres.size();i++)
+		{
+			voronotalt::SimpleSphere& sphere=spheres[i];
+			sphere.p.x=static_cast<voronotalt::Float>(values[i*4+0]);
+			sphere.p.y=static_cast<voronotalt::Float>(values[i*4+1]);
+			sphere.p.z=static_cast<voronotalt::Float>(values[i*4+2]);
+			sphere.r=static_cast<voronotalt::Float>(values[i*4+3])+probe;
 		}
 	}
 
-	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read balls from stdin");
+	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read balls from input string");
 
 #ifdef _OPENMP
 omp_set_num_threads(max_number_of_processors);
