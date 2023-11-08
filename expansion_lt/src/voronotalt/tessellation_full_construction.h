@@ -328,6 +328,8 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		}
 	}
 
+	time_recorder.record_elapsed_miliseconds_and_reset("collect contacts graphics");
+
 	result.cells_summaries.resize(N);
 
 	for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
@@ -337,21 +339,21 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		result.cells_summaries[cds.id_b].add(cds.id_b, cds);
 	}
 
-	#pragma omp parallel
+	time_recorder.record_elapsed_miliseconds_and_reset("accumulate cell summaries");
+
+	for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
 	{
-		#pragma omp for
-		for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
-		{
-			result.cells_summaries[i].compute_sas(spheres[i].r);
-		}
+		result.cells_summaries[i].compute_sas(spheres[i].r);
 	}
+
+	time_recorder.record_elapsed_miliseconds_and_reset("compute sas for cell summaries");
 
 	for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
 	{
 		result.total_cells_summary.add(result.cells_summaries[i]);
 	}
 
-	time_recorder.record_elapsed_miliseconds_and_reset("accumulate other summaries");
+	time_recorder.record_elapsed_miliseconds_and_reset("accumulate total cells summary");
 }
 
 }
