@@ -66,7 +66,7 @@ public:
 		return spheres_;
 	}
 
-	bool find_colliding_ids(const std::size_t& central_id, std::vector<std::size_t>& colliding_ids) const
+	bool find_colliding_ids(const std::size_t& central_id, std::vector<std::size_t>& colliding_ids, const bool discard_hidden) const
 	{
 		colliding_ids.clear();
 		if(central_id<spheres_.size())
@@ -93,9 +93,18 @@ public:
 								for(std::size_t i=0;i<ids.size();i++)
 								{
 									const std::size_t id=ids[i];
-									if(id!=central_id && sphere_intersects_sphere(central_sphere, spheres_[id]))
+									const SimpleSphere& candidate_sphere=spheres_[id];
+									if(id!=central_id && sphere_intersects_sphere(central_sphere, candidate_sphere))
 									{
-										colliding_ids.push_back(id);
+										if(discard_hidden && sphere_contains_sphere(candidate_sphere, central_sphere))
+										{
+											colliding_ids.clear();
+											return false;
+										}
+										else if(!discard_hidden || !sphere_contains_sphere(central_sphere, candidate_sphere))
+										{
+											colliding_ids.push_back(id);
+										}
 									}
 								}
 							}

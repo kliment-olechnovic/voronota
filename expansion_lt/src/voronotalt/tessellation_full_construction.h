@@ -171,7 +171,6 @@ struct TotalCellContactDescriptorsSummary
 struct TessellationFullConstructionResult
 {
 	std::size_t total_collisions;
-	std::vector<bool> spheres_hidden;
 	std::vector<ContactDescriptorSummary> contacts_summaries;
 	std::vector<ContactDescriptorGraphics> contacts_graphics;
 	std::vector<CellContactDescriptorsSummary> cells_summaries;
@@ -193,33 +192,26 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 
 	SpheresSearcher spheres_searcher(spheres);
 
-	std::vector< std::vector<std::size_t> > all_colliding_ids(N);
-	result.spheres_hidden.resize(N, false);
-
 	time_recorder.record_elapsed_miliseconds_and_reset("init spheres searcher");
+
+	std::vector< std::vector<std::size_t> > all_colliding_ids(N);
+	for(std::size_t i=0;i<N;i++)
+	{
+		all_colliding_ids[i].reserve(100);
+	}
+
+	time_recorder.record_elapsed_miliseconds_and_reset("pre-allocate colliding IDs");
 
 	#pragma omp parallel
 	{
 		std::vector<std::size_t> colliding_ids;
-		colliding_ids.reserve(20);
+		colliding_ids.reserve(100);
 
 		#pragma omp for
 		for(std::size_t i=0;i<N;i++)
 		{
-			spheres_searcher.find_colliding_ids(i, colliding_ids);
-			bool hidden=false;
-			for(std::size_t j=0;j<colliding_ids.size() && !hidden;j++)
-			{
-				if(sphere_contains_sphere(spheres[colliding_ids[j]], spheres[i]))
-				{
-					hidden=true;
-				}
-			}
-			if(hidden)
-			{
-				result.spheres_hidden[i]=true;
-			}
-			else
+			spheres_searcher.find_colliding_ids(i, colliding_ids, true);
+			if(!colliding_ids.empty())
 			{
 				all_colliding_ids[i]=colliding_ids;
 			}
