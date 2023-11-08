@@ -49,9 +49,8 @@ struct ContactDescriptor
 	Float solid_angle_b;
 	Float pyramid_volume_a;
 	Float pyramid_volume_b;
-	bool valid;
 
-	ContactDescriptor() : id_a(0), id_b(0), sum_of_arc_angles(FLOATCONST(0.0)), area(FLOATCONST(0.0)), solid_angle_a(FLOATCONST(0.0)), solid_angle_b(FLOATCONST(0.0)), pyramid_volume_a(FLOATCONST(0.0)), pyramid_volume_b(FLOATCONST(0.0)), valid(false)
+	ContactDescriptor() : id_a(0), id_b(0), sum_of_arc_angles(FLOATCONST(0.0)), area(FLOATCONST(0.0)), solid_angle_a(FLOATCONST(0.0)), solid_angle_b(FLOATCONST(0.0)), pyramid_volume_a(FLOATCONST(0.0)), pyramid_volume_b(FLOATCONST(0.0))
 	{
 	}
 
@@ -67,7 +66,6 @@ struct ContactDescriptor
 		solid_angle_b=FLOATCONST(0.0);
 		pyramid_volume_a=FLOATCONST(0.0);
 		pyramid_volume_b=FLOATCONST(0.0);
-		valid=false;
 	}
 };
 
@@ -169,7 +167,6 @@ public:
 							result_contact_descriptor.contour_barycenter=result_contact_descriptor.intersection_circle_sphere.p;
 							result_contact_descriptor.sum_of_arc_angles=(PIVALUE*FLOATCONST(2.0));
 							result_contact_descriptor.area=result_contact_descriptor.intersection_circle_sphere.r*result_contact_descriptor.intersection_circle_sphere.r*PIVALUE;
-							result_contact_descriptor.valid=true;
 						}
 						else
 						{
@@ -188,12 +185,11 @@ public:
 								if(!result_contact_descriptor.contour.empty())
 								{
 									result_contact_descriptor.area=calculate_contour_area(result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour, result_contact_descriptor.contour_barycenter);
-									result_contact_descriptor.valid=true;
 								}
 							}
 						}
 
-						if(result_contact_descriptor.valid)
+						if(result_contact_descriptor.area>FLOATCONST(0.0))
 						{
 							result_contact_descriptor.solid_angle_a=calculate_contour_solid_angle(a, b, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
 							result_contact_descriptor.solid_angle_b=calculate_contour_solid_angle(b, a, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
@@ -204,13 +200,13 @@ public:
 				}
 			}
 		}
-		return result_contact_descriptor.valid;
+		return (result_contact_descriptor.area>FLOATCONST(0.0));
 	}
 
 	static bool construct_contact_descriptor_graphics(const ContactDescriptor& contact_descriptor, const Float length_step, ContactDescriptorGraphics& result_contact_descriptor_graphics)
 	{
 		result_contact_descriptor_graphics.clear();
-		if(contact_descriptor.valid)
+		if(contact_descriptor.area>FLOATCONST(0.0))
 		{
 			const Float angle_step=std::max(std::min(length_step/contact_descriptor.intersection_circle_sphere.r, PIVALUE/FLOATCONST(3.0)), PIVALUE/FLOATCONST(36.0));
 			if(contact_descriptor.contour.empty())

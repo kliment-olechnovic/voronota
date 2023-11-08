@@ -189,7 +189,7 @@ omp_set_num_threads(max_number_of_processors);
 		for(std::size_t i=0;i<result.cells_summaries.size();i++)
 		{
 			const voronotalt::CellContactDescriptorsSummary& cell_summary=result.cells_summaries[i];
-			if(cell_summary.sas_computed)
+			if(cell_summary.stage==2)
 			{
 				std::cout << "sasa " << cell_summary.id << " " << cell_summary.sas_area << " " << cell_summary.sas_inside_volume << "\n";
 			}

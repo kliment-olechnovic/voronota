@@ -19,15 +19,14 @@ struct ContactDescriptorSummary
 	Float solid_angle_b;
 	Float pyramid_volume_a;
 	Float pyramid_volume_b;
-	bool valid;
 
-	ContactDescriptorSummary() : id_a(0), id_b(0), area(FLOATCONST(0.0)), arc_length(FLOATCONST(0.0)), complexity(0), solid_angle_a(FLOATCONST(0.0)), solid_angle_b(FLOATCONST(0.0)), pyramid_volume_a(FLOATCONST(0.0)), pyramid_volume_b(FLOATCONST(0.0)), valid(false)
+	ContactDescriptorSummary() : id_a(0), id_b(0), area(FLOATCONST(0.0)), arc_length(FLOATCONST(0.0)), complexity(0), solid_angle_a(FLOATCONST(0.0)), solid_angle_b(FLOATCONST(0.0)), pyramid_volume_a(FLOATCONST(0.0)), pyramid_volume_b(FLOATCONST(0.0))
 	{
 	}
 
 	void set(const ContactDescriptor& cd)
 	{
-		if(cd.valid)
+		if(cd.area>FLOATCONST(0.0))
 		{
 			id_a=cd.id_a;
 			id_b=cd.id_b;
@@ -38,7 +37,6 @@ struct ContactDescriptorSummary
 			solid_angle_b=cd.solid_angle_b;
 			pyramid_volume_a=cd.pyramid_volume_a;
 			pyramid_volume_b=cd.pyramid_volume_b;
-			valid=true;
 		}
 	}
 };
@@ -49,23 +47,22 @@ struct CellContactDescriptorsSummary
 	int count;
 	Float area;
 	Float arc_length;
-	int complexity;
+	UnsignedInt complexity;
 	Float explained_solid_angle_positive;
 	Float explained_solid_angle_negative;
 	Float explained_pyramid_volume_positive;
 	Float explained_pyramid_volume_negative;
-	bool valid;
 	Float sas_area;
 	Float sas_inside_volume;
-	bool sas_computed;
+	int stage;
 
-	CellContactDescriptorsSummary() : id(0), count(0), area(FLOATCONST(0.0)), arc_length(FLOATCONST(0.0)), complexity(0), explained_solid_angle_positive(FLOATCONST(0.0)), explained_solid_angle_negative(FLOATCONST(0.0)), explained_pyramid_volume_positive(FLOATCONST(0.0)), explained_pyramid_volume_negative(FLOATCONST(0.0)), valid(false), sas_area(FLOATCONST(0.0)), sas_inside_volume(FLOATCONST(0.0)), sas_computed(false)
+	CellContactDescriptorsSummary() : id(0), count(0), area(FLOATCONST(0.0)), arc_length(FLOATCONST(0.0)), complexity(0), explained_solid_angle_positive(FLOATCONST(0.0)), explained_solid_angle_negative(FLOATCONST(0.0)), explained_pyramid_volume_positive(FLOATCONST(0.0)), explained_pyramid_volume_negative(FLOATCONST(0.0)), sas_area(FLOATCONST(0.0)), sas_inside_volume(FLOATCONST(0.0)), stage(0)
 	{
 	}
 
 	void add(const ContactDescriptorSummary& cds)
 	{
-		if(cds.valid && (cds.id_a==id || cds.id_b==id))
+		if(cds.area>FLOATCONST(0.0) && (cds.id_a==id || cds.id_b==id))
 		{
 			count++;
 			area+=cds.area;
@@ -75,15 +72,15 @@ struct CellContactDescriptorsSummary
 			explained_solid_angle_negative+=FLOATCONST(0.0)-std::min(FLOATCONST(0.0), (cds.id_a==id ? cds.solid_angle_a : cds.solid_angle_b));
 			explained_pyramid_volume_positive+=std::max(FLOATCONST(0.0), (cds.id_a==id ? cds.pyramid_volume_a : cds.pyramid_volume_b));
 			explained_pyramid_volume_negative+=FLOATCONST(0.0)-std::min(FLOATCONST(0.0), (cds.id_a==id ? cds.pyramid_volume_a : cds.pyramid_volume_b));
-			valid=true;
+			stage=1;
 		}
 	}
 
 	void add(const UnsignedInt new_id, const ContactDescriptorSummary& cds)
 	{
-		if(cds.valid)
+		if(cds.area>FLOATCONST(0.0))
 		{
-			if(!valid)
+			if(stage==0)
 			{
 				id=new_id;
 			}
@@ -93,7 +90,7 @@ struct CellContactDescriptorsSummary
 
 	void compute_sas(const Float r)
 	{
-		if(valid)
+		if(stage!=0)
 		{
 			sas_area=FLOATCONST(0.0);
 			sas_inside_volume=FLOATCONST(0.0);
@@ -113,7 +110,7 @@ struct CellContactDescriptorsSummary
 			{
 				sas_inside_volume=explained_pyramid_volume_positive-explained_pyramid_volume_negative;
 			}
-			sas_computed=true;
+			stage=2;
 		}
 	}
 };
@@ -131,7 +128,7 @@ struct TotalContactDescriptorsSummary
 
 	void add(const ContactDescriptorSummary& cds)
 	{
-		if(cds.valid)
+		if(cds.area>FLOATCONST(0.0))
 		{
 			count++;
 			area+=cds.area;
@@ -153,7 +150,7 @@ struct TotalCellContactDescriptorsSummary
 
 	void add(const CellContactDescriptorsSummary& ccds)
 	{
-		if(ccds.sas_computed)
+		if(ccds.stage==2)
 		{
 			count++;
 			sas_area+=ccds.sas_area;
@@ -275,7 +272,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 	UnsignedInt number_of_valid_contact_summaries=0;
 	for(UnsignedInt i=0;i<possible_contacts_summaries.size();i++)
 	{
-		if(possible_contacts_summaries[i].valid)
+		if(possible_contacts_summaries[i].area>FLOATCONST(0.0))
 		{
 			number_of_valid_contact_summaries++;
 		}
@@ -288,7 +285,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 
 	for(UnsignedInt i=0;i<possible_contacts_summaries.size();i++)
 	{
-		if(possible_contacts_summaries[i].valid)
+		if(possible_contacts_summaries[i].area>FLOATCONST(0.0))
 		{
 			ids_of_valid_pairs.push_back(i);
 		}
