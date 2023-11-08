@@ -3,11 +3,29 @@
 
 #include <cmath>
 
+//#define VORONOTALT_FP32
+#define VORONOTALT_UI32
+
+#ifdef VORONOTALT_FP32
+#define FLOATCONST( v ) v ## f
+#else
+#define FLOATCONST( v ) v
+#endif
+
 namespace voronotalt
 {
 
+#ifdef VORONOTALT_FP32
+typedef float Float;
+#else
 typedef double Float;
+#endif
+
+#ifdef VORONOTALT_UI32
 typedef unsigned int UnsignedInt;
+#else
+typedef std::size_t UnsignedInt;
+#endif
 
 struct SimplePoint
 {
@@ -15,7 +33,7 @@ struct SimplePoint
 	Float y;
 	Float z;
 
-	SimplePoint() : x(0.0), y(0.0), z(0.0)
+	SimplePoint() : x(FLOATCONST(0.0)), y(FLOATCONST(0.0)), z(FLOATCONST(0.0))
 	{
 	}
 
@@ -29,7 +47,7 @@ struct SimpleSphere
 	SimplePoint p;
 	Float r;
 
-	SimpleSphere() : r(0.0)
+	SimpleSphere() : r(FLOATCONST(0.0))
 	{
 	}
 
@@ -56,19 +74,19 @@ struct SimpleQuaternion
 
 inline Float pi_value()
 {
-	static const Float pi=std::acos(-1.0);
+	static const Float pi=std::acos(FLOATCONST(-1.0));
 	return pi;
 }
 
 inline Float pi2_value()
 {
-	static const Float pi2=std::acos(-1.0)*2.0;
+	static const Float pi2=std::acos(FLOATCONST(-1.0))*FLOATCONST(2.0);
 	return pi2;
 }
 
 inline Float default_comparison_epsilon()
 {
-	static const Float e=0.0000000001;
+	static const Float e=FLOATCONST(0.0000000001);
 	return e;
 }
 
@@ -142,7 +160,7 @@ inline SimplePoint point_and_number_product(const SimplePoint& a, const Float k)
 
 inline SimplePoint unit_point(const SimplePoint& a)
 {
-	return ((equal(squared_point_module(a), 1.0)) ? a : point_and_number_product(a, 1.0/point_module(a)));
+	return ((equal(squared_point_module(a), FLOATCONST(1.0))) ? a : point_and_number_product(a, FLOATCONST(1.0)/point_module(a)));
 }
 
 inline SimplePoint sum_of_points(const SimplePoint& a, const SimplePoint& b)
@@ -163,11 +181,11 @@ inline Float signed_distance_from_point_to_plane(const SimplePoint& plane_point,
 inline int halfspace_of_point(const SimplePoint& plane_point, const SimplePoint& plane_normal, const SimplePoint& x)
 {
 	const Float sd=signed_distance_from_point_to_plane(plane_point, plane_normal, x);
-	if(greater(sd, 0.0))
+	if(greater(sd, FLOATCONST(0.0)))
 	{
 		return 1;
 	}
-	else if(less(sd, 0.0))
+	else if(less(sd, FLOATCONST(0.0)))
 	{
 		return -1;
 	}
@@ -191,19 +209,19 @@ inline SimplePoint intersection_of_plane_and_segment(const SimplePoint& plane_po
 
 inline Float triangle_area(const SimplePoint& a, const SimplePoint& b, const SimplePoint& c)
 {
-	return (point_module(cross_product(sub_of_points(b, a), sub_of_points(c, a)))/2.0);
+	return (point_module(cross_product(sub_of_points(b, a), sub_of_points(c, a)))/FLOATCONST(2.0));
 }
 
 inline Float min_angle(const SimplePoint& o, const SimplePoint& a, const SimplePoint& b)
 {
 	Float cos_val=dot_product(unit_point(sub_of_points(a, o)), unit_point(sub_of_points(b, o)));
-	if(cos_val<-1.0)
+	if(cos_val<FLOATCONST(-1.0))
 	{
-		cos_val=-1.0;
+		cos_val=FLOATCONST(-1.0);
 	}
-	else if(cos_val>1.0)
+	else if(cos_val>FLOATCONST(1.0))
 	{
-		cos_val=1.0;
+		cos_val=FLOATCONST(1.0);
 	}
 	return std::acos(cos_val);
 }
@@ -225,23 +243,23 @@ inline Float directed_angle(const SimplePoint& o, const SimplePoint& a, const Si
 SimplePoint any_normal_of_vector(const SimplePoint& a)
 {
 	SimplePoint b=a;
-	if(!equal(b.x, 0.0) && (!equal(b.y, 0.0) || !equal(b.z, 0.0)))
+	if(!equal(b.x, FLOATCONST(0.0)) && (!equal(b.y, FLOATCONST(0.0)) || !equal(b.z, FLOATCONST(0.0))))
 	{
-		b.x=0.0-b.x;
+		b.x=FLOATCONST(0.0)-b.x;
 		return unit_point(cross_product(a, b));
 	}
-	else if(!equal(b.y, 0.0) && (!equal(b.x, 0.0) || !equal(b.z, 0.0)))
+	else if(!equal(b.y, FLOATCONST(0.0)) && (!equal(b.x, FLOATCONST(0.0)) || !equal(b.z, FLOATCONST(0.0))))
 	{
-		b.y=0.0-b.y;
+		b.y=FLOATCONST(0.0)-b.y;
 		return unit_point(cross_product(a, b));
 	}
-	else if(!equal(b.x, 0.0))
+	else if(!equal(b.x, FLOATCONST(0.0)))
 	{
-		return SimplePoint(0.0, 1.0, 0.0);
+		return SimplePoint(FLOATCONST(0.0), FLOATCONST(1.0), FLOATCONST(0.0));
 	}
 	else
 	{
-		return SimplePoint(1.0, 0.0, 0.0);
+		return SimplePoint(FLOATCONST(1.0), FLOATCONST(0.0), FLOATCONST(0.0));
 	}
 }
 
@@ -276,7 +294,7 @@ inline bool project_point_inside_line(const SimplePoint& o, const SimplePoint& a
 {
 	const SimplePoint v=unit_point(sub_of_points(b, a));
 	const Float l=dot_product(v, sub_of_points(o, a));
-	if(l>0.0 && (l*l)<=squared_distance_from_point_to_point(a, b))
+	if(l>FLOATCONST(0.0) && (l*l)<=squared_distance_from_point_to_point(a, b))
 	{
 		result=sum_of_points(a, point_and_number_product(v, l));
 		return true;
@@ -287,15 +305,15 @@ inline bool project_point_inside_line(const SimplePoint& o, const SimplePoint& a
 inline bool intersect_segment_with_circle(const SimpleSphere& circle, const SimplePoint& p_in, const SimplePoint& p_out, SimplePoint& result)
 {
 	const Float dist_in_to_out=distance_from_point_to_point(p_in, p_out);
-	if(dist_in_to_out>0.0)
+	if(dist_in_to_out>FLOATCONST(0.0))
 	{
-		const SimplePoint v=point_and_number_product(sub_of_points(p_in, p_out), 1.0/dist_in_to_out);
+		const SimplePoint v=point_and_number_product(sub_of_points(p_in, p_out), FLOATCONST(1.0)/dist_in_to_out);
 		const SimplePoint u=sub_of_points(circle.p, p_out);
 		const SimplePoint s=sum_of_points(p_out, point_and_number_product(v, dot_product(v, u)));
 		const Float ll=(circle.r*circle.r)-squared_distance_from_point_to_point(circle.p, s);
-		if(ll>=0.0)
+		if(ll>=FLOATCONST(0.0))
 		{
-			result=sum_of_points(s, point_and_number_product(v, 0.0-std::sqrt(ll)));
+			result=sum_of_points(s, point_and_number_product(v, FLOATCONST(0.0)-std::sqrt(ll)));
 			return true;
 		}
 	}
@@ -308,7 +326,7 @@ inline Float min_dihedral_angle(const SimplePoint& o, const SimplePoint& a, cons
 	const SimplePoint d1=sub_of_points(b1, sum_of_points(o, point_and_number_product(oa, dot_product(oa, sub_of_points(b1, o)))));
 	const SimplePoint d2=sub_of_points(b2, sum_of_points(o, point_and_number_product(oa, dot_product(oa, sub_of_points(b2, o)))));
 	const Float cos_val=dot_product(unit_point(d1), unit_point(d2));
-	return std::acos(std::max(-1.0, std::min(cos_val, 1.0)));
+	return std::acos(std::max(FLOATCONST(-1.0), std::min(cos_val, FLOATCONST(1.0))));
 }
 
 inline SimpleQuaternion quaternion_product(const SimpleQuaternion& q1, const SimpleQuaternion& q2)
@@ -322,16 +340,16 @@ inline SimpleQuaternion quaternion_product(const SimpleQuaternion& q1, const Sim
 
 inline SimpleQuaternion inverted_quaternion(const SimpleQuaternion& q)
 {
-	return SimpleQuaternion(q.a, 0.0-q.b, 0.0-q.c, 0.0-q.d);
+	return SimpleQuaternion(q.a, FLOATCONST(0.0)-q.b, FLOATCONST(0.0)-q.c, FLOATCONST(0.0)-q.d);
 }
 
 inline SimplePoint rotate_point_around_axis(const SimplePoint axis, const Float angle, const SimplePoint& p)
 {
 	if(squared_point_module(axis)>0)
 	{
-		const Float radians_angle_half=(angle*0.5);
+		const Float radians_angle_half=(angle*FLOATCONST(0.5));
 		const SimpleQuaternion q1=SimpleQuaternion(std::cos(radians_angle_half), point_and_number_product(unit_point(axis), std::sin(radians_angle_half)));
-		const SimpleQuaternion q2=SimpleQuaternion(0.0, p);
+		const SimpleQuaternion q2=SimpleQuaternion(FLOATCONST(0.0), p);
 		const SimpleQuaternion q3=quaternion_product(quaternion_product(q1, q2), inverted_quaternion(q1));
 		return SimplePoint(q3.b, q3.c, q3.d);
 	}
