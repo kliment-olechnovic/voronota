@@ -55,12 +55,11 @@ struct CellContactDescriptorsSummary
 	Float explained_pyramid_volume_positive;
 	Float explained_pyramid_volume_negative;
 	bool valid;
-	Float sas_r;
 	Float sas_area;
 	Float sas_inside_volume;
 	bool sas_computed;
 
-	CellContactDescriptorsSummary() : id(0), count(0), area(FLOATCONST(0.0)), arc_length(FLOATCONST(0.0)), complexity(0), explained_solid_angle_positive(FLOATCONST(0.0)), explained_solid_angle_negative(FLOATCONST(0.0)), explained_pyramid_volume_positive(FLOATCONST(0.0)), explained_pyramid_volume_negative(FLOATCONST(0.0)), valid(false), sas_r(FLOATCONST(0.0)), sas_area(FLOATCONST(0.0)), sas_inside_volume(FLOATCONST(0.0)), sas_computed(false)
+	CellContactDescriptorsSummary() : id(0), count(0), area(FLOATCONST(0.0)), arc_length(FLOATCONST(0.0)), complexity(0), explained_solid_angle_positive(FLOATCONST(0.0)), explained_solid_angle_negative(FLOATCONST(0.0)), explained_pyramid_volume_positive(FLOATCONST(0.0)), explained_pyramid_volume_negative(FLOATCONST(0.0)), valid(false), sas_area(FLOATCONST(0.0)), sas_inside_volume(FLOATCONST(0.0)), sas_computed(false)
 	{
 	}
 
@@ -96,7 +95,6 @@ struct CellContactDescriptorsSummary
 	{
 		if(valid)
 		{
-			sas_r=r;
 			sas_area=FLOATCONST(0.0);
 			sas_inside_volume=FLOATCONST(0.0);
 			if(arc_length>FLOATCONST(0.0))
@@ -126,9 +124,8 @@ struct TotalContactDescriptorsSummary
 	Float area;
 	Float arc_length;
 	int complexity;
-	bool valid;
 
-	TotalContactDescriptorsSummary() : count(0), area(FLOATCONST(0.0)), arc_length(FLOATCONST(0.0)), complexity(0), valid(false)
+	TotalContactDescriptorsSummary() : count(0), area(FLOATCONST(0.0)), arc_length(FLOATCONST(0.0)), complexity(0)
 	{
 	}
 
@@ -140,7 +137,6 @@ struct TotalContactDescriptorsSummary
 			area+=cds.area;
 			arc_length+=cds.arc_length;
 			complexity+=cds.complexity;
-			valid=true;
 		}
 	}
 };
@@ -150,9 +146,8 @@ struct TotalCellContactDescriptorsSummary
 	int count;
 	Float sas_area;
 	Float sas_inside_volume;
-	bool valid;
 
-	TotalCellContactDescriptorsSummary() : count(0), sas_area(FLOATCONST(0.0)), sas_inside_volume(FLOATCONST(0.0)), valid(false)
+	TotalCellContactDescriptorsSummary() : count(0), sas_area(FLOATCONST(0.0)), sas_inside_volume(FLOATCONST(0.0))
 	{
 	}
 
@@ -163,7 +158,6 @@ struct TotalCellContactDescriptorsSummary
 			count++;
 			sas_area+=ccds.sas_area;
 			sas_inside_volume+=ccds.sas_inside_volume;
-			valid=true;
 		}
 	}
 };
