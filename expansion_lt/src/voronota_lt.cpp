@@ -12,7 +12,7 @@ int main(const int argc, const char** argv)
 {
 	std::ios_base::sync_with_stdio(false);
 
-	unsigned int max_number_of_processors=40;
+	unsigned int max_number_of_processors=1;
 	voronotalt::Float probe=1.4;
 	bool output_csa=false;
 	bool output_csa_with_graphics=false;
@@ -96,6 +96,10 @@ int main(const int argc, const char** argv)
 		}
 	}
 
+#ifdef _OPENMP
+	omp_set_num_threads(max_number_of_processors);
+#endif
+
 	voronotalt::TimeRecorder time_recoder_for_input(measure_time);
 
 	std::vector<voronotalt::SimpleSphere> spheres;
@@ -125,10 +129,6 @@ int main(const int argc, const char** argv)
 	}
 
 	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read balls from stdin");
-
-#ifdef _OPENMP
-omp_set_num_threads(max_number_of_processors);
-#endif
 
 	voronotalt::TessellationFullConstructionResult result;
 
