@@ -337,7 +337,7 @@ inline SimpleQuaternion inverted_quaternion(const SimpleQuaternion& q)
 	return SimpleQuaternion(q.a, FLOATCONST(0.0)-q.b, FLOATCONST(0.0)-q.c, FLOATCONST(0.0)-q.d);
 }
 
-inline SimplePoint rotate_point_around_axis(const SimplePoint axis, const Float angle, const SimplePoint& p)
+inline SimplePoint rotate_point_around_axis(const SimplePoint& axis, const Float angle, const SimplePoint& p)
 {
 	if(squared_point_module(axis)>0)
 	{

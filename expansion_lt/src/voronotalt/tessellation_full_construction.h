@@ -254,7 +254,7 @@ void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const
 		for(UnsignedInt j=0;j<all_colliding_ids[id_a].size();j++)
 		{
 			const UnsignedInt id_b=all_colliding_ids[id_a][j];
-			if(all_colliding_ids[id_a].size()<all_colliding_ids[id_b].size() || (all_colliding_ids[id_a].size()==all_colliding_ids[id_b].size() && id_a<id_b))
+			if(all_colliding_ids[id_a].size()<all_colliding_ids[id_b].size() || (id_a<id_b && all_colliding_ids[id_a].size()==all_colliding_ids[id_b].size()))
 			{
 				relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
 			}

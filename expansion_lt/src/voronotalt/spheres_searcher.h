@@ -11,7 +11,7 @@ namespace voronotalt
 class SpheresSearcher
 {
 public:
-	SpheresSearcher(const std::vector<SimpleSphere>& spheres) : spheres_(spheres), box_size_(FLOATCONST(1.0))
+	explicit SpheresSearcher(const std::vector<SimpleSphere>& spheres) : spheres_(spheres), box_size_(FLOATCONST(1.0))
 	{
 		for(UnsignedInt i=0;i<spheres_.size();i++)
 		{

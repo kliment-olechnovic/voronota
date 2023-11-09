@@ -12,7 +12,7 @@ namespace voronotalt
 class TimeRecorder
 {
 public:
-	TimeRecorder(const bool enabled) : enabled_(enabled)
+	explicit TimeRecorder(const bool enabled) : enabled_(enabled)
 	{
 		reset();
 	}
