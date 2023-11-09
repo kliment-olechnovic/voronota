@@ -1,11 +1,11 @@
 #include <iostream>
 #include <sstream>
-#include <cstdlib>
 
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
+#include "voronotalt/io_utilities.h"
 #include "voronotalt/tessellation_full_construction.h"
 
 int main(const int argc, const char** argv)
@@ -98,32 +98,11 @@ int main(const int argc, const char** argv)
 
 	voronotalt::TimeRecorder time_recoder_for_input(measure_time);
 
-	std::istreambuf_iterator<char> stdin_eos;
-	std::string stdin_data(std::istreambuf_iterator<char>(std::cin), stdin_eos);
-
-	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read stdin content to string");
-
 	std::vector<voronotalt::SimpleSphere> spheres;
 
 	{
-		const char* data=stdin_data.c_str();
-		const char* end=data+stdin_data.size();
 		std::vector<double> values;
-		values.reserve(stdin_data.size()/4);
-		while(data<end)
-		{
-			char* next=0;
-			const double value=strtod(data, &next);
-			if(data==next)
-			{
-				++data;
-			}
-			else
-			{
-				values.push_back(value);
-				data=next;
-			}
-		}
+		voronotalt::read_double_values_from_text_stream(std::cin, values);
 		if(values.empty())
 		{
 			std::cerr << "No data read from stdin\n";
@@ -145,7 +124,7 @@ int main(const int argc, const char** argv)
 		}
 	}
 
-	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read balls from input string");
+	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read balls from stdin");
 
 #ifdef _OPENMP
 omp_set_num_threads(max_number_of_processors);
