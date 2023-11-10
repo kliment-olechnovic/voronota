@@ -57,7 +57,16 @@ public:
 		recordings_.push_back(std::pair<std::string, double>(message, get_elapsed_miliseconds_and_reset()));
 	}
 
-	void print_recordings(std::ostream& output, const std::string& prefix)
+	void print_elapsed_time(std::ostream& output, const std::string& prefix)
+	{
+		if(!enabled_)
+		{
+			return;
+		}
+		output << prefix << " elapsed = " << get_elapsed_miliseconds() << " ms\n";
+	}
+
+	void print_recordings(std::ostream& output, const std::string& prefix, const bool with_sum)
 	{
 		if(!enabled_)
 		{
@@ -66,6 +75,15 @@ public:
 		for(std::size_t i=0;i<recordings_.size();i++)
 		{
 			output << prefix << " '" << recordings_[i].first << "' = " << recordings_[i].second << " ms\n";
+		}
+		if(with_sum && recordings_.size()>1)
+		{
+			double sum=0.0;
+			for(std::size_t i=0;i<recordings_.size();i++)
+			{
+				sum+=recordings_[i].second;
+			}
+			output << prefix << " total sum = " << sum << " ms\n";
 		}
 	}
 

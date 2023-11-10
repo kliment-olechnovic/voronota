@@ -100,6 +100,8 @@ int main(const int argc, const char** argv)
 	omp_set_num_threads(max_number_of_processors);
 #endif
 
+	voronotalt::TimeRecorder time_recoder_for_all(measure_time);
+
 	voronotalt::TimeRecorder time_recoder_for_input(measure_time);
 
 	std::vector<voronotalt::SimpleSphere> spheres;
@@ -189,9 +191,11 @@ int main(const int argc, const char** argv)
 
 	time_recoder_for_output.record_elapsed_miliseconds_and_reset("write results to stdout");
 
-	time_recoder_for_input.print_recordings(std::clog, "time of input stage");
-	time_recoder_for_tessellation.print_recordings(std::clog, "time of tessellation stage");
-	time_recoder_for_output.print_recordings(std::clog, "time of output stage");
+	time_recoder_for_input.print_recordings(std::clog, "time of input stage", true);
+	time_recoder_for_tessellation.print_recordings(std::clog, "time of tessellation stage", true);
+	time_recoder_for_output.print_recordings(std::clog, "time of output stage", true);
+
+	time_recoder_for_all.print_elapsed_time(std::clog, "time of full program");
 
 	return 1;
 }
