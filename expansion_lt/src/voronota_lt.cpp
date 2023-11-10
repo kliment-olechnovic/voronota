@@ -191,11 +191,18 @@ int main(const int argc, const char** argv)
 
 	time_recoder_for_output.record_elapsed_miliseconds_and_reset("write results to stdout");
 
-	time_recoder_for_input.print_recordings(std::clog, "time of input stage", true);
-	time_recoder_for_tessellation.print_recordings(std::clog, "time of tessellation stage", true);
-	time_recoder_for_output.print_recordings(std::clog, "time of output stage", true);
-
-	time_recoder_for_all.print_elapsed_time(std::clog, "time of full program");
+	if(measure_time)
+	{
+		int number_of_threads=1;
+#ifdef _OPENMP
+		number_of_threads=omp_get_max_threads();
+#endif
+		std::cout << "threads_max_number: " << number_of_threads << "\n";
+		time_recoder_for_input.print_recordings(std::cout, "time input stage", true);
+		time_recoder_for_tessellation.print_recordings(std::cout, "time tessellation stage", true);
+		time_recoder_for_output.print_recordings(std::cout, "time output stage", true);
+		time_recoder_for_all.print_elapsed_time(std::cout, "time full program");
+	}
 
 	return 1;
 }

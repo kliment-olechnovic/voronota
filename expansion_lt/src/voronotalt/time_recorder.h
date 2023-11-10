@@ -63,7 +63,7 @@ public:
 		{
 			return;
 		}
-		output << prefix << " elapsed = " << get_elapsed_miliseconds() << " ms\n";
+		output << string_without_whitespaces(prefix) << "_elapsed: " << get_elapsed_miliseconds() << "\n";
 	}
 
 	void print_recordings(std::ostream& output, const std::string& prefix, const bool with_sum)
@@ -72,9 +72,10 @@ public:
 		{
 			return;
 		}
+		const std::string prefix_without_whitespaces=string_without_whitespaces(prefix);
 		for(std::size_t i=0;i<recordings_.size();i++)
 		{
-			output << prefix << " '" << recordings_[i].first << "' = " << recordings_[i].second << " ms\n";
+			output << prefix_without_whitespaces << "__" << string_without_whitespaces(recordings_[i].first) << ": " << recordings_[i].second << "\n";
 		}
 		if(with_sum && recordings_.size()>1)
 		{
@@ -83,11 +84,24 @@ public:
 			{
 				sum+=recordings_[i].second;
 			}
-			output << prefix << " total sum = " << sum << " ms\n";
+			output << prefix_without_whitespaces << "_total_sum: " << sum << "\n";
 		}
 	}
 
 private:
+	static std::string string_without_whitespaces(const std::string& input)
+	{
+		std::string output=input;
+		for(std::size_t i=0;i<output.size();i++)
+		{
+			if(output[i]<=' ')
+			{
+				output[i]='_';
+			}
+		}
+		return output;
+	}
+
 	bool enabled_;
 	std::chrono::time_point<std::chrono::steady_clock> start_;
 	std::vector< std::pair<std::string, double> > recordings_;
