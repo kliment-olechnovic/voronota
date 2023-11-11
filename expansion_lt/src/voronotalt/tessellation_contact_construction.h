@@ -8,100 +8,100 @@
 namespace voronotalt
 {
 
-struct ContourPoint
-{
-	SimplePoint p;
-	Float angle;
-	UnsignedInt left_id;
-	UnsignedInt right_id;
-	int indicator;
-
-
-	ContourPoint(const SimplePoint& p, const UnsignedInt left_id, const UnsignedInt right_id) :
-		p(p),
-		angle(FLOATCONST(0.0)),
-		left_id(left_id),
-		right_id(right_id),
-		indicator(0)
-	{
-	}
-};
-
-typedef std::vector<ContourPoint> Contour;
-
-struct NeighborDescriptor
-{
-	SimplePoint ac_plane_center;
-	SimplePoint ac_plane_normal;
-	UnsignedInt neighbor_id;
-
-	NeighborDescriptor() : neighbor_id(0)
-	{
-	}
-};
-
-struct ContactDescriptor
-{
-	Contour contour;
-	std::vector<NeighborDescriptor> neighbor_descriptors;
-	SimpleSphere intersection_circle_sphere;
-	SimplePoint intersection_circle_axis;
-	SimplePoint contour_barycenter;
-	Float sum_of_arc_angles;
-	Float area;
-	Float solid_angle_a;
-	Float solid_angle_b;
-	Float pyramid_volume_a;
-	Float pyramid_volume_b;
-	UnsignedInt id_a;
-	UnsignedInt id_b;
-
-	ContactDescriptor() :
-		sum_of_arc_angles(FLOATCONST(0.0)),
-		area(FLOATCONST(0.0)),
-		solid_angle_a(FLOATCONST(0.0)),
-		solid_angle_b(FLOATCONST(0.0)),
-		pyramid_volume_a(FLOATCONST(0.0)),
-		pyramid_volume_b(FLOATCONST(0.0)),
-		id_a(0),
-		id_b(0)
-	{
-	}
-
-	void clear()
-	{
-		id_a=0;
-		id_b=0;
-		neighbor_descriptors.clear();
-		contour.clear();
-		sum_of_arc_angles=FLOATCONST(0.0);
-		area=FLOATCONST(0.0);
-		solid_angle_a=FLOATCONST(0.0);
-		solid_angle_b=FLOATCONST(0.0);
-		pyramid_volume_a=FLOATCONST(0.0);
-		pyramid_volume_b=FLOATCONST(0.0);
-	}
-};
-
-struct ContactDescriptorGraphics
-{
-	std::vector<SimplePoint> outer_points;
-	SimplePoint barycenter;
-	SimplePoint normal;
-
-	ContactDescriptorGraphics()
-	{
-	}
-
-	void clear()
-	{
-		outer_points.clear();
-	}
-};
-
-class TessellationContactsConstruction
+class TessellationContactConstruction
 {
 public:
+	struct ContourPoint
+	{
+		SimplePoint p;
+		Float angle;
+		UnsignedInt left_id;
+		UnsignedInt right_id;
+		int indicator;
+
+
+		ContourPoint(const SimplePoint& p, const UnsignedInt left_id, const UnsignedInt right_id) :
+			p(p),
+			angle(FLOATCONST(0.0)),
+			left_id(left_id),
+			right_id(right_id),
+			indicator(0)
+		{
+		}
+	};
+
+	typedef std::vector<ContourPoint> Contour;
+
+	struct NeighborDescriptor
+	{
+		SimplePoint ac_plane_center;
+		SimplePoint ac_plane_normal;
+		UnsignedInt neighbor_id;
+
+		NeighborDescriptor() : neighbor_id(0)
+		{
+		}
+	};
+
+	struct ContactDescriptor
+	{
+		Contour contour;
+		std::vector<NeighborDescriptor> neighbor_descriptors;
+		SimpleSphere intersection_circle_sphere;
+		SimplePoint intersection_circle_axis;
+		SimplePoint contour_barycenter;
+		Float sum_of_arc_angles;
+		Float area;
+		Float solid_angle_a;
+		Float solid_angle_b;
+		Float pyramid_volume_a;
+		Float pyramid_volume_b;
+		UnsignedInt id_a;
+		UnsignedInt id_b;
+
+		ContactDescriptor() :
+			sum_of_arc_angles(FLOATCONST(0.0)),
+			area(FLOATCONST(0.0)),
+			solid_angle_a(FLOATCONST(0.0)),
+			solid_angle_b(FLOATCONST(0.0)),
+			pyramid_volume_a(FLOATCONST(0.0)),
+			pyramid_volume_b(FLOATCONST(0.0)),
+			id_a(0),
+			id_b(0)
+		{
+		}
+
+		void clear()
+		{
+			id_a=0;
+			id_b=0;
+			neighbor_descriptors.clear();
+			contour.clear();
+			sum_of_arc_angles=FLOATCONST(0.0);
+			area=FLOATCONST(0.0);
+			solid_angle_a=FLOATCONST(0.0);
+			solid_angle_b=FLOATCONST(0.0);
+			pyramid_volume_a=FLOATCONST(0.0);
+			pyramid_volume_b=FLOATCONST(0.0);
+		}
+	};
+
+	struct ContactDescriptorGraphics
+	{
+		std::vector<SimplePoint> outer_points;
+		SimplePoint barycenter;
+		SimplePoint normal;
+
+		ContactDescriptorGraphics()
+		{
+		}
+
+		void clear()
+		{
+			outer_points.clear();
+		}
+	};
+
 	static bool construct_contact_descriptor(
 			const std::vector<SimpleSphere>& spheres,
 			const UnsignedInt a_id,

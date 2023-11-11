@@ -132,11 +132,11 @@ int main(const int argc, const char** argv)
 
 	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read balls from stdin");
 
-	voronotalt::TessellationFullConstructionResult result;
+	voronotalt::TessellationFullConstruction::TessellationFullConstructionResult result;
 
 	voronotalt::TimeRecorder time_recoder_for_tessellation(measure_time);
 
-	voronotalt::construct_full_tessellation(spheres, output_csa_with_graphics, result, time_recoder_for_tessellation);
+	voronotalt::TessellationFullConstruction::construct_full_tessellation(spheres, output_csa_with_graphics, result, time_recoder_for_tessellation);
 
 	voronotalt::TimeRecorder time_recoder_for_output(measure_time);
 
@@ -153,11 +153,11 @@ int main(const int argc, const char** argv)
 	{
 		for(std::size_t i=0;i<result.contacts_summaries.size();i++)
 		{
-			const voronotalt::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
+			const voronotalt::TessellationFullConstruction::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 			std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area << " " << pair_summary.solid_angle_a << " " << pair_summary.solid_angle_b;
 			if(output_csa_with_graphics)
 			{
-				const voronotalt::ContactDescriptorGraphics& pair_graphics=result.contacts_graphics[i];
+				const voronotalt::TessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result.contacts_graphics[i];
 				std::cout << " BEGIN,TRIANGLE_FAN";
 				if(!pair_graphics.outer_points.empty())
 				{
@@ -181,7 +181,7 @@ int main(const int argc, const char** argv)
 	{
 		for(std::size_t i=0;i<result.cells_summaries.size();i++)
 		{
-			const voronotalt::CellContactDescriptorsSummary& cell_summary=result.cells_summaries[i];
+			const voronotalt::TessellationFullConstruction::CellContactDescriptorsSummary& cell_summary=result.cells_summaries[i];
 			if(cell_summary.stage==2)
 			{
 				std::cout << "sasa " << cell_summary.id << " " << cell_summary.sas_area << " " << cell_summary.sas_inside_volume << "\n";
