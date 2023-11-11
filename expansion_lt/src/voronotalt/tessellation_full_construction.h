@@ -190,7 +190,7 @@ public:
 		}
 	};
 
-	struct TessellationFullConstructionResult
+	struct Result
 	{
 		TotalContactDescriptorsSummary total_contacts_summary;
 		TotalCellContactDescriptorsSummary total_cells_summary;
@@ -199,14 +199,14 @@ public:
 		std::vector<CellContactDescriptorsSummary> cells_summaries;
 		UnsignedInt total_collisions;
 
-		TessellationFullConstructionResult() : total_collisions(0)
+		Result() : total_collisions(0)
 		{
 		}
 	};
 
-	static void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const bool with_graphics, TessellationFullConstructionResult& result, TimeRecorder& time_recorder)
+	static void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const bool with_graphics, Result& result, TimeRecorder& time_recorder)
 	{
-		result=TessellationFullConstructionResult();
+		result=Result();
 
 		const UnsignedInt N=spheres.size();
 

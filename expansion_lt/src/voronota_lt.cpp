@@ -132,7 +132,7 @@ int main(const int argc, const char** argv)
 
 	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read balls from stdin");
 
-	voronotalt::TessellationFullConstruction::TessellationFullConstructionResult result;
+	voronotalt::TessellationFullConstruction::Result result;
 
 	voronotalt::TimeRecorder time_recoder_for_tessellation(measure_time);
 
