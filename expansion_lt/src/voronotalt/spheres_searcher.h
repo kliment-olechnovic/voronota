@@ -61,11 +61,6 @@ public:
 		}
 	}
 
-	const std::vector<SimpleSphere>& all_spheres() const
-	{
-		return spheres_;
-	}
-
 	bool find_colliding_ids(const UnsignedInt& central_id, std::vector<UnsignedInt>& colliding_ids, const bool discard_hidden) const
 	{
 		colliding_ids.clear();
@@ -162,7 +157,7 @@ private:
 		}
 	};
 
-	std::vector<SimpleSphere> spheres_;
+	const std::vector<SimpleSphere>& spheres_;
 	GridPoint grid_offset_;
 	GridPoint grid_size_;
 	std::vector<int> map_of_boxes_;

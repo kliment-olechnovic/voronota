@@ -143,17 +143,20 @@ int main(const int argc, const char** argv)
 
 	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read balls from stdin");
 
+	time_recoder_for_tessellation.reset();
+
+	voronotalt::PreparationForTessellation::Result preparation_result;
+	voronotalt::PreparationForTessellation::prepare_for_tessellation(spheres, preparation_result, time_recoder_for_tessellation);
+
 	if(old_regime)
 	{
-		time_recoder_for_tessellation.reset();
-
 		voronotalt::SimplifiedAWTessellationFullConstruction::Result result;
-		voronotalt::SimplifiedAWTessellationFullConstruction::construct_full_tessellation(spheres, output_csa_with_graphics, result, time_recoder_for_tessellation);
+		voronotalt::SimplifiedAWTessellationFullConstruction::construct_full_tessellation(spheres, preparation_result, output_csa_with_graphics, result, time_recoder_for_tessellation);
 
 		time_recoder_for_output.reset();
 
-		std::cout << "total_balls: " << spheres.size() << "\n";
-		std::cout << "total_collisions: " << result.total_collisions << "\n";
+		std::cout << "total_balls: " << preparation_result.total_spheres << "\n";
+		std::cout << "total_collisions: " << preparation_result.total_collisions << "\n";
 		std::cout << "total_contacts_count: " << result.total_contacts_summary.count << "\n";
 		std::cout << "total_contacts_area: " << result.total_contacts_summary.area << "\n";
 
@@ -171,15 +174,13 @@ int main(const int argc, const char** argv)
 	}
 	else
 	{
-		time_recoder_for_tessellation.reset();
-
 		voronotalt::TessellationFullConstruction::Result result;
-		voronotalt::TessellationFullConstruction::construct_full_tessellation(spheres, output_csa_with_graphics, result, time_recoder_for_tessellation);
+		voronotalt::TessellationFullConstruction::construct_full_tessellation(spheres, preparation_result, output_csa_with_graphics, result, time_recoder_for_tessellation);
 
 		time_recoder_for_output.reset();
 
-		std::cout << "total_balls: " << spheres.size() << "\n";
-		std::cout << "total_collisions: " << result.total_collisions << "\n";
+		std::cout << "total_balls: " << preparation_result.total_spheres << "\n";
+		std::cout << "total_collisions: " << preparation_result.total_collisions << "\n";
 		std::cout << "total_contacts_count: " << result.total_contacts_summary.count << "\n";
 		std::cout << "total_contacts_area: " << result.total_contacts_summary.area << "\n";
 		std::cout << "total_contacts_complexity: " << result.total_contacts_summary.complexity << "\n";
