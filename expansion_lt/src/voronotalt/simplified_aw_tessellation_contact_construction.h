@@ -16,10 +16,10 @@ public:
 	struct ContourPoint
 	{
 		SimplePoint p;
-		std::size_t left_id;
-		std::size_t right_id;
+		UnsignedInt left_id;
+		UnsignedInt right_id;
 
-		ContourPoint(const SimplePoint& p, const std::size_t left_id, const std::size_t right_id) : p(p), left_id(left_id), right_id(right_id)
+		ContourPoint(const SimplePoint& p, const UnsignedInt left_id, const UnsignedInt right_id) : p(p), left_id(left_id), right_id(right_id)
 		{
 		}
 	};
@@ -28,10 +28,10 @@ public:
 
 	struct NeighborDescriptor
 	{
-		double sort_value;
-		std::size_t neighbor_id;
+		Float sort_value;
+		UnsignedInt neighbor_id;
 
-		NeighborDescriptor() : sort_value(0.0), neighbor_id(0)
+		NeighborDescriptor() : sort_value(FLOATCONST(0.0)), neighbor_id(0)
 		{
 		}
 
@@ -141,7 +141,7 @@ public:
 											{
 												NeighborDescriptor nd;
 												nd.neighbor_id=neighbor_id;
-												nd.sort_value=(hsi>0 ? (0.0-xl) : xl);
+												nd.sort_value=(hsi>0 ? (FLOATCONST(0.0)-xl) : xl);
 												result_contact_descriptor.neighbor_descriptors.push_back(nd);
 											}
 										}
@@ -177,7 +177,7 @@ public:
 								std::sort(result_contact_descriptor.neighbor_descriptors.begin(), result_contact_descriptor.neighbor_descriptors.end());
 								for(UnsignedInt i=0;i<result_contact_descriptor.neighbor_descriptors.size();i++)
 								{
-									const std::size_t c_id=result_contact_descriptor.neighbor_descriptors[i].neighbor_id;
+									const UnsignedInt c_id=result_contact_descriptor.neighbor_descriptors[i].neighbor_id;
 									const SimpleSphere& c=spheres[c_id];
 									std::list<Contour>::iterator jt=result_contact_descriptor.contours.begin();
 									while(jt!=result_contact_descriptor.contours.end())
@@ -225,7 +225,7 @@ public:
 
 							if(!result_contact_descriptor.contours.empty())
 							{
-								const double tolerated_deviation=0.5;
+								const Float tolerated_deviation=FLOATCONST(0.5);
 								bool strangely_extended=false;
 								for(std::list<Contour>::const_iterator it=result_contact_descriptor.contours.begin();it!=result_contact_descriptor.contours.end() && !strangely_extended;++it)
 								{
@@ -238,7 +238,7 @@ public:
 								}
 								if(strangely_extended)
 								{
-									SimplePoint safe_center=point_and_number_product(sum_of_points(a.p, b.p), 0.5);
+									SimplePoint safe_center=point_and_number_product(sum_of_points(a.p, b.p), FLOATCONST(0.5));
 									std::list<Contour> forcibly_shrunk_result=result_contact_descriptor.contours;
 									for(std::list<Contour>::iterator it=forcibly_shrunk_result.begin();it!=forcibly_shrunk_result.end();++it)
 									{
@@ -288,18 +288,18 @@ private:
 			}
 			else
 			{
-				const SimplePoint dv=point_and_number_product(sub_of_points(s1.p, s2.p), 0.5);
+				const SimplePoint dv=point_and_number_product(sub_of_points(s1.p, s2.p), FLOATCONST(0.5));
 				const SimplePoint dv_unit=unit_point(dv);
 				const SimplePoint c=sum_of_points(s2.p, dv);
 				const SimplePoint cp=sub_of_points(p, c);
-				const double lz=dot_product(dv_unit, cp);
-				const double lx=std::sqrt(std::max(squared_point_module(cp)-(lz*lz), 0.0));
-				const double z=project_point_on_simple_hyperboloid(lx, 0, point_module(dv), s1.r, s2.r);
+				const Float lz=dot_product(dv_unit, cp);
+				const Float lx=std::sqrt(std::max(squared_point_module(cp)-(lz*lz), FLOATCONST(0.0)));
+				const Float z=project_point_on_simple_hyperboloid(lx, 0, point_module(dv), s1.r, s2.r);
 				return sum_of_points(sub_of_points(p, point_and_number_product(dv_unit, lz)), point_and_number_product(dv_unit, z));
 			}
 		}
 
-		static inline double intersect_vector_with_hyperboloid(const SimplePoint& a, const SimplePoint& b, const SimpleSphere& s1, const SimpleSphere& s2)
+		static inline Float intersect_vector_with_hyperboloid(const SimplePoint& a, const SimplePoint& b, const SimpleSphere& s1, const SimpleSphere& s2)
 		{
 			if(s1.r>s2.r)
 			{
@@ -307,28 +307,28 @@ private:
 			}
 			else
 			{
-				const SimplePoint dv=point_and_number_product(sub_of_points(s1.p, s2.p), 0.5);
+				const SimplePoint dv=point_and_number_product(sub_of_points(s1.p, s2.p), FLOATCONST(0.5));
 				const SimplePoint dv_unit=unit_point(dv);
 				const SimplePoint c=sum_of_points(s2.p, dv);
 
 				const SimplePoint ca=sub_of_points(a, c);
-				const double maz=dot_product(dv_unit, ca);
+				const Float maz=dot_product(dv_unit, ca);
 				const SimplePoint cax=sub_of_points(sub_of_points(a, point_and_number_product(dv_unit, maz)), c);
 				const SimplePoint cax_unit=unit_point(cax);
-				const double max=dot_product(cax_unit, ca);
-				const double may=0.0;
+				const Float max=dot_product(cax_unit, ca);
+				const Float may=FLOATCONST(0.0);
 
 				const SimplePoint cb=sub_of_points(b, c);
-				const double mbz=dot_product(dv_unit, cb);
-				const double mbx=dot_product(cax_unit, cb);
-				const double mby=std::sqrt(std::max(squared_point_module(cb)-mbz*mbz-mbx*mbx, 0.0));
+				const Float mbz=dot_product(dv_unit, cb);
+				const Float mbx=dot_product(cax_unit, cb);
+				const Float mby=std::sqrt(std::max(squared_point_module(cb)-mbz*mbz-mbx*mbx, FLOATCONST(0.0)));
 
 				return intersect_vector_with_simple_hyperboloid(SimplePoint(max, may, maz), SimplePoint(mbx, mby, mbz), point_module(dv), s1.r, s2.r);
 			}
 		}
 
 	private:
-		static inline double project_point_on_simple_hyperboloid(const double x, const double y, const double d, const double r1, const double r2)
+		static inline Float project_point_on_simple_hyperboloid(const Float x, const Float y, const Float d, const Float r1, const Float r2)
 		{
 			if(r1>r2)
 			{
@@ -336,12 +336,12 @@ private:
 			}
 			else
 			{
-				const double r=r2-r1;
-				return 2*r*std::sqrt(std::max((0-r*r+4*d*d)*(4*x*x+4*y*y+4*d*d-r*r), 0.0))/(0-4*r*r+16*d*d);
+				const Float r=r2-r1;
+				return 2*r*std::sqrt(std::max((0-r*r+4*d*d)*(4*x*x+4*y*y+4*d*d-r*r), FLOATCONST(0.0)))/(0-4*r*r+16*d*d);
 			}
 		}
 
-		static inline double intersect_vector_with_simple_hyperboloid(const SimplePoint& a, const SimplePoint& b, const double d, const double r1, const double r2)
+		static inline Float intersect_vector_with_simple_hyperboloid(const SimplePoint& a, const SimplePoint& b, const Float d, const Float r1, const Float r2)
 		{
 			if(r1>r2)
 			{
@@ -349,36 +349,36 @@ private:
 			}
 			else
 			{
-				const double r=r2-r1;
+				const Float r=r2-r1;
 				SimplePoint ab=sub_of_points(b, a);
 				SimplePoint v=unit_point(ab);
-				const double k=(4*r*r/((0-4*r*r+16*d*d)*(0-4*r*r+16*d*d))) * (0-r*r+4*d*d) * 4;
-				const double m=(4*d*d-r*r)*k/4;
+				const Float k=(4*r*r/((0-4*r*r+16*d*d)*(0-4*r*r+16*d*d))) * (0-r*r+4*d*d) * 4;
+				const Float m=(4*d*d-r*r)*k/4;
 
-				const double x0=a.x;
-				const double y0=a.y;
-				const double z0=a.z;
-				const double vx=v.x;
-				const double vy=v.y;
-				const double vz=v.z;
+				const Float x0=a.x;
+				const Float y0=a.y;
+				const Float z0=a.z;
+				const Float vx=v.x;
+				const Float vy=v.y;
+				const Float vz=v.z;
 
-				const double t1 =  (std::sqrt((k*vy*vy+k*vx*vx)*z0*z0+(-2*k*vy*vz*y0-2*k*vx*vz*x0)*z0+(k*vz*vz-k*k*vx*vx)*y0*y0+2*k*k*vx*vy*x0*y0+(k*vz*vz-k*k*vy*vy)*x0*x0+m*vz*vz-k*m*vy*vy-k*m*vx*vx)-vz*z0+k*vy*y0+k*vx*x0)/(vz*vz-k*vy*vy-k*vx*vx);
+				const Float t1 =  (std::sqrt((k*vy*vy+k*vx*vx)*z0*z0+(-2*k*vy*vz*y0-2*k*vx*vz*x0)*z0+(k*vz*vz-k*k*vx*vx)*y0*y0+2*k*k*vx*vy*x0*y0+(k*vz*vz-k*k*vy*vy)*x0*x0+m*vz*vz-k*m*vy*vy-k*m*vx*vx)-vz*z0+k*vy*y0+k*vx*x0)/(vz*vz-k*vy*vy-k*vx*vx);
 
-				const double t2 = -(std::sqrt((k*vy*vy+k*vx*vx)*z0*z0+(-2*k*vy*vz*y0-2*k*vx*vz*x0)*z0+(k*vz*vz-k*k*vx*vx)*y0*y0+2*k*k*vx*vy*x0*y0+(k*vz*vz-k*k*vy*vy)*x0*x0+m*vz*vz-k*m*vy*vy-k*m*vx*vx)+vz*z0-k*vy*y0-k*vx*x0)/(vz*vz-k*vy*vy-k*vx*vx);
+				const Float t2 = -(std::sqrt((k*vy*vy+k*vx*vx)*z0*z0+(-2*k*vy*vz*y0-2*k*vx*vz*x0)*z0+(k*vz*vz-k*k*vx*vx)*y0*y0+2*k*k*vx*vy*x0*y0+(k*vz*vz-k*k*vy*vy)*x0*x0+m*vz*vz-k*m*vy*vy-k*m*vx*vx)+vz*z0-k*vy*y0-k*vx*x0)/(vz*vz-k*vy*vy-k*vx*vx);
 
 				const SimplePoint tp1=sum_of_points(a, point_and_number_product(v, t1));
 				const SimplePoint tp2=sum_of_points(a, point_and_number_product(v, t2));
-				if(greater(t1, 0.0) && less(t1, point_module(ab)) && equal(tp1.z, std::sqrt(k*tp1.x*tp1.x+k*tp1.y*tp1.y+m), 0.000001))
+				if(greater(t1, FLOATCONST(0.0)) && less(t1, point_module(ab)) && equal(tp1.z, std::sqrt(k*tp1.x*tp1.x+k*tp1.y*tp1.y+m), FLOATCONST(0.000001)))
 				{
 					return t1;
 				}
-				else if(greater(t2, 0.0) && less(t2, point_module(ab)) && equal(tp2.z, std::sqrt(k*tp2.x*tp2.x+k*tp2.y*tp2.y+m), 0.000001))
+				else if(greater(t2, FLOATCONST(0.0)) && less(t2, point_module(ab)) && equal(tp2.z, std::sqrt(k*tp2.x*tp2.x+k*tp2.y*tp2.y+m), FLOATCONST(0.000001)))
 				{
 					return t2;
 				}
 				else
 				{
-					return 0.0;
+					return FLOATCONST(0.0);
 				}
 			}
 		}
@@ -403,11 +403,11 @@ private:
 	static bool cut_and_split_contour(
 			const SimpleSphere& a,
 			const SimpleSphere& c,
-			const std::size_t c_id,
+			const UnsignedInt c_id,
 			Contour& contour,
 			std::list<Contour>& segments)
 	{
-		const std::size_t outsiders_count=mark_contour(a, c, c_id, contour);
+		const UnsignedInt outsiders_count=mark_contour(a, c, c_id, contour);
 		if(outsiders_count>0)
 		{
 			if(outsiders_count<contour.size())
@@ -432,13 +432,13 @@ private:
 		return false;
 	}
 
-	static std::size_t mark_contour(
+	static UnsignedInt mark_contour(
 			const SimpleSphere& a,
 			const SimpleSphere& c,
-			const std::size_t c_id,
+			const UnsignedInt c_id,
 			Contour& contour)
 	{
-		std::size_t outsiders_count=0;
+		UnsignedInt outsiders_count=0;
 		for(Contour::iterator it=contour.begin();it!=contour.end();++it)
 		{
 			if((distance_from_point_to_point(it->p, c.p)-c.r)<(distance_from_point_to_point(it->p, a.p)-a.r))
@@ -451,14 +451,14 @@ private:
 		return outsiders_count;
 	}
 
-	static std::size_t cut_contour(
+	static UnsignedInt cut_contour(
 			const SimpleSphere& a,
 			const SimpleSphere& c,
-			const std::size_t c_id,
+			const UnsignedInt c_id,
 			Contour& contour,
 			std::list<Contour::iterator>& cuts)
 	{
-		std::size_t cuts_count=0;
+		UnsignedInt cuts_count=0;
 		Contour::iterator it=contour.begin();
 		while(it!=contour.end())
 		{
@@ -471,7 +471,7 @@ private:
 				{
 					const SimplePoint& p0=it->p;
 					const SimplePoint& p1=left_it->p;
-					const double l=HyperboloidBetweenTwoSpheres::intersect_vector_with_hyperboloid(p0, p1, a, c);
+					const Float l=HyperboloidBetweenTwoSpheres::intersect_vector_with_hyperboloid(p0, p1, a, c);
 					cuts.push_back(contour.insert(it, ContourPoint(sum_of_points(p0, point_and_number_product(unit_point(sub_of_points(p1, p0)), l)), left_it->right_id, it->left_id)));
 					cuts_count++;
 				}
@@ -480,7 +480,7 @@ private:
 				{
 					const SimplePoint& p0=it->p;
 					const SimplePoint& p1=right_it->p;
-					const double l=HyperboloidBetweenTwoSpheres::intersect_vector_with_hyperboloid(p0, p1, a, c);
+					const Float l=HyperboloidBetweenTwoSpheres::intersect_vector_with_hyperboloid(p0, p1, a, c);
 					cuts.push_back(contour.insert(right_it, ContourPoint(sum_of_points(p0, point_and_number_product(unit_point(sub_of_points(p1, p0)), l)), it->right_id, right_it->left_id)));
 					cuts_count++;
 				}
@@ -497,7 +497,7 @@ private:
 
 	static void order_cuts(std::list<Contour::iterator>& cuts)
 	{
-		double sums[2]={0.0, 0.0};
+		Float sums[2]={FLOATCONST(0.0), FLOATCONST(0.0)};
 		for(int i=0;i<2;i++)
 		{
 			if(i==1)
@@ -527,12 +527,12 @@ private:
 		}
 	}
 
-	static std::size_t split_contour(
+	static UnsignedInt split_contour(
 			Contour& contour,
 			const std::list<Contour::iterator>& ordered_cuts,
 			std::list<Contour>& segments)
 	{
-		std::size_t segments_count=0;
+		UnsignedInt segments_count=0;
 		std::list<Contour::iterator>::const_iterator it=ordered_cuts.begin();
 		while(it!=ordered_cuts.end())
 		{
@@ -572,8 +572,8 @@ private:
 			const SimpleSphere& a,
 			const SimpleSphere& b,
 			const SimpleSphere& c,
-			const std::size_t c_id,
-			const double step,
+			const UnsignedInt c_id,
+			const Float step,
 			const int projections,
 			Contour& contour)
 	{
@@ -596,15 +596,15 @@ private:
 						p1=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(p1, a, c);
 						p1=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(p1, a, b);
 					}
-					const double distance=distance_from_point_to_point(p0, p1);
+					const Float distance=distance_from_point_to_point(p0, p1);
 					if(distance>step)
 					{
-						const int leap_distance=static_cast<int>(floor(distance/step+0.5));
-						const double leap_size=distance/static_cast<double>(leap_distance);
+						const int leap_distance=static_cast<int>(floor(distance/step+FLOATCONST(0.5)));
+						const Float leap_size=distance/static_cast<Float>(leap_distance);
 						const SimplePoint direction=unit_point(sub_of_points(p1, p0));
 						for(int leap=1;leap<leap_distance;leap++)
 						{
-							SimplePoint p=sum_of_points(p0, point_and_number_product(direction, (leap_size*static_cast<double>(leap))));
+							SimplePoint p=sum_of_points(p0, point_and_number_product(direction, (leap_size*static_cast<Float>(leap))));
 							for(int e=0;e<projections;e++)
 							{
 								p=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(p, b, c);
@@ -703,7 +703,7 @@ private:
 
 	static Float calculate_area_from_contour(const Contour& contour, const SimpleSphere& sphere1, const SimpleSphere& sphere2, std::vector<SimplePoint>& contour_points, SimplePoint& contour_barycenter)
 	{
-		Float area=0.0;
+		Float area=FLOATCONST(0.0);
 		if(collect_points_from_contour(contour, contour_points))
 		{
 			contour_barycenter.x=FLOATCONST(0.0);
