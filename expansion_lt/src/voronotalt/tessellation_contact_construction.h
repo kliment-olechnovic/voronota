@@ -90,7 +90,6 @@ public:
 	{
 		std::vector<SimplePoint> outer_points;
 		SimplePoint barycenter;
-		SimplePoint normal;
 
 		ContactDescriptorGraphics()
 		{
@@ -277,7 +276,6 @@ public:
 					result_contact_descriptor_graphics.barycenter.z/=static_cast<Float>(result_contact_descriptor_graphics.outer_points.size());
 				}
 			}
-			result_contact_descriptor_graphics.normal=contact_descriptor.intersection_circle_axis;
 		}
 		return (!result_contact_descriptor_graphics.outer_points.empty());
 	}

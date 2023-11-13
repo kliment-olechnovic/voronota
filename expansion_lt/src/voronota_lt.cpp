@@ -6,10 +6,9 @@
 #endif
 
 #include "voronotalt/io_utilities.h"
-
 #include "voronotalt/tessellation_full_construction.h"
-
 #include "voronotalt/simplified_aw_tessellation_full_construction.h"
+#include "voronotalt/graphics_output.h"
 
 int main(const int argc, const char** argv)
 {
@@ -166,6 +165,13 @@ int main(const int argc, const char** argv)
 			{
 				const voronotalt::SimplifiedAWTessellationFullConstruction::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 				std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area;
+				if(output_csa_with_graphics)
+				{
+					for(std::size_t j=0;j<pair_summary.graphics.size();j++)
+					{
+						voronotalt::print_triangle_fan_for_pymol(pair_summary.graphics[j].outer_points, pair_summary.graphics[j].barycenter, voronotalt::unit_point(voronotalt::sub_of_points(spheres[pair_summary.id_b].p, spheres[pair_summary.id_a].p)), (j==0 ? " " : ","), std::cout);
+					}
+				}
 				std::cout << "\n";
 			}
 		}
@@ -197,20 +203,7 @@ int main(const int argc, const char** argv)
 				if(output_csa_with_graphics)
 				{
 					const voronotalt::TessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result.contacts_graphics[i];
-					std::cout << " BEGIN,TRIANGLE_FAN";
-					if(!pair_graphics.outer_points.empty())
-					{
-						std::cout << ",NORMAL," << pair_graphics.normal.x << "," << pair_graphics.normal.y << "," << pair_graphics.normal.z;
-						std::cout << ",VERTEX," << pair_graphics.barycenter.x << "," << pair_graphics.barycenter.y << "," << pair_graphics.barycenter.z;
-						for(std::size_t j=0;j<pair_graphics.outer_points.size();j++)
-						{
-							std::cout << ",NORMAL," << pair_graphics.normal.x << "," << pair_graphics.normal.y << "," << pair_graphics.normal.z;
-							std::cout << ",VERTEX," << pair_graphics.outer_points[j].x << "," << pair_graphics.outer_points[j].y << "," << pair_graphics.outer_points[j].z;
-						}
-						std::cout << ",NORMAL," << pair_graphics.normal.x << "," << pair_graphics.normal.y << "," << pair_graphics.normal.z;
-						std::cout << ",VERTEX," << pair_graphics.outer_points[0].x << "," << pair_graphics.outer_points[0].y << "," << pair_graphics.outer_points[0].z;
-					}
-					std::cout << ",END";
+					voronotalt::print_triangle_fan_for_pymol(pair_graphics.outer_points, pair_graphics.barycenter, voronotalt::unit_point(voronotalt::sub_of_points(spheres[pair_summary.id_b].p, spheres[pair_summary.id_a].p)), " ", std::cout);
 				}
 				std::cout << "\n";
 			}
