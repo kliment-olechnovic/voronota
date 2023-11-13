@@ -57,7 +57,7 @@ inline bool read_double_values_from_text_stream(std::istream& input, std::vector
 								while(data<end)
 								{
 									char* next=0;
-									const double value=strtod(data, &next);
+									const double value=std::strtod(data, &next);
 									if(data==next)
 									{
 										++data;
@@ -99,7 +99,7 @@ inline bool read_double_values_from_text_stream(std::istream& input, std::vector
 			while(data<end)
 			{
 				char* next=0;
-				const double value=strtod(data, &next);
+				const double value=std::strtod(data, &next);
 				if(data==next)
 				{
 					++data;

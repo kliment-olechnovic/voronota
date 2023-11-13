@@ -599,7 +599,7 @@ private:
 					const Float distance=distance_from_point_to_point(p0, p1);
 					if(distance>step)
 					{
-						const int leap_distance=static_cast<int>(floor(distance/step+FLOATCONST(0.5)));
+						const int leap_distance=static_cast<int>(std::floor(distance/step+FLOATCONST(0.5)));
 						const Float leap_size=distance/static_cast<Float>(leap_distance);
 						const SimplePoint direction=unit_point(sub_of_points(p1, p0));
 						for(int leap=1;leap<leap_distance;leap++)
