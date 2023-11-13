@@ -92,6 +92,7 @@ public:
 			const std::vector<UnsignedInt>& a_neighbor_collisions,
 			const Float step,
 			const int projections,
+			const bool record_graphics,
 			ContactDescriptor& result_contact_descriptor)
 	{
 		result_contact_descriptor.clear();
@@ -123,14 +124,18 @@ public:
 									else
 									{
 										const SimplePoint nd_ac_plane_center=center_of_intersection_circle_of_two_spheres(a, c);
-										const SimplePoint nd_ac_plane_normal=unit_point(sub_of_points(c.p, a.p));
-										const Float cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(nd_ac_plane_center, a.p)));
+										const Float dist_from_a_center_to_c_center=distance_from_point_to_point(a.p, c.p);
+										const SimplePoint nd_ac_plane_normal=point_and_number_product(sub_of_points(c.p, a.p), FLOATCONST(1.0)/dist_from_a_center_to_c_center);
+										const Float dist_from_a_center_to_nd_ac_plane_center=distance_from_point_to_point(a.p, nd_ac_plane_center);
+										const Float cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), point_and_number_product(sub_of_points(nd_ac_plane_center, a.p), FLOATCONST(1.0)/dist_from_a_center_to_nd_ac_plane_center));
 										const int hsi=halfspace_of_point(nd_ac_plane_center, nd_ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p);
 										if(std::abs(cos_val)<FLOATCONST(1.0))
 										{
 											const Float l=std::abs(signed_distance_from_point_to_plane(nd_ac_plane_center, nd_ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p));
 											const Float xl=l/std::sqrt(1-(cos_val*cos_val));
-											if(xl>=result_contact_descriptor.intersection_circle_sphere.r)
+											const Float dist_from_a_to_midpoint=a.r+((dist_from_a_center_to_c_center-a.r-c.r)/FLOATCONST(2.0));
+											const Float xl_buffer=std::abs(dist_from_a_to_midpoint-dist_from_a_center_to_nd_ac_plane_center);
+											if(xl>=(result_contact_descriptor.intersection_circle_sphere.r+xl_buffer))
 											{
 												if(hsi>=0)
 												{
@@ -261,11 +266,13 @@ public:
 							for(std::list<Contour>::const_iterator it=result_contact_descriptor.contours.begin();it!=result_contact_descriptor.contours.end();++it)
 							{
 								const Contour& contour=(*it);
-								ContourGraphics graphics;
-								result_contact_descriptor.area+=calculate_area_from_contour(contour, a, b, graphics.outer_points, graphics.barycenter);
-								if(!graphics.outer_points.empty())
+								SimplePoint barycenter;
+								result_contact_descriptor.area+=calculate_area_from_contour(contour, a, b, barycenter);
+								if(record_graphics && result_contact_descriptor.area>FLOATCONST(0.0))
 								{
-									result_contact_descriptor.graphics.push_back(graphics);
+									result_contact_descriptor.graphics.push_back(ContourGraphics());
+									result_contact_descriptor.graphics.back().barycenter=barycenter;
+									collect_points_from_contour(contour, result_contact_descriptor.graphics.back().outer_points);
 								}
 							}
 						}
@@ -701,29 +708,35 @@ private:
 		return (!contour_points.empty());
 	}
 
-	static Float calculate_area_from_contour(const Contour& contour, const SimpleSphere& sphere1, const SimpleSphere& sphere2, std::vector<SimplePoint>& contour_points, SimplePoint& contour_barycenter)
+	static Float calculate_area_from_contour(const Contour& contour, const SimpleSphere& sphere1, const SimpleSphere& sphere2, SimplePoint& contour_barycenter)
 	{
 		Float area=FLOATCONST(0.0);
-		if(collect_points_from_contour(contour, contour_points))
+		if(!contour.empty())
 		{
 			contour_barycenter.x=FLOATCONST(0.0);
 			contour_barycenter.y=FLOATCONST(0.0);
 			contour_barycenter.z=FLOATCONST(0.0);
-			for(UnsignedInt i=0;i<contour_points.size();i++)
+			for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
 			{
-				contour_barycenter.x+=contour_points[i].x;
-				contour_barycenter.y+=contour_points[i].y;
-				contour_barycenter.z+=contour_points[i].z;
+				contour_barycenter.x+=jt->p.x;
+				contour_barycenter.y+=jt->p.y;
+				contour_barycenter.z+=jt->p.z;
 			}
 			contour_barycenter.x/=static_cast<Float>(contour.size());
 			contour_barycenter.y/=static_cast<Float>(contour.size());
 			contour_barycenter.z/=static_cast<Float>(contour.size());
 
-			for(UnsignedInt i=0;i<contour_points.size();i++)
+			contour_barycenter=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(contour_barycenter, sphere1, sphere2);
+
+			for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
 			{
-				const SimplePoint& pr1=contour_points[i];
-				const SimplePoint& pr2=contour_points[(i+1)<contour_points.size() ? (i+1) : 0];
-				area+=triangle_area(contour_barycenter, pr1, pr2);
+				Contour::const_iterator jt_next=jt;
+				++jt_next;
+				if(jt_next==contour.end())
+				{
+					jt_next=contour.begin();
+				}
+				area+=triangle_area(contour_barycenter, jt->p, jt_next->p);
 			}
 		}
 		return area;
