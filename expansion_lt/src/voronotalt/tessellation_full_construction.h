@@ -320,6 +320,81 @@ public:
 
 		time_recorder.record_elapsed_miliseconds_and_reset("accumulate total cells summary");
 	}
+
+	static void construct_filter_preparation_for_tessellation(const std::vector<SimpleSphere>& spheres, const PreparationForTessellation::Result& preparation_result, PreparationForTessellation::Result& filtered_preparation_result, TimeRecorder& time_recorder)
+	{
+		filtered_preparation_result=PreparationForTessellation::Result();
+
+		time_recorder.reset();
+
+		std::vector< std::pair<UnsignedInt, UnsignedInt> > possible_contacting_pairs(preparation_result.relevant_collision_ids.size(), std::pair<UnsignedInt, UnsignedInt>(0, 0));
+
+		time_recorder.record_elapsed_miliseconds_and_reset("allocate possible contacting pairs");
+
+		#pragma omp parallel
+		{
+			TessellationContactConstruction::ContactDescriptor cd;
+			cd.contour.reserve(12);
+			cd.neighbor_descriptors.reserve(24);
+
+			#pragma omp for
+			for(UnsignedInt i=0;i<preparation_result.relevant_collision_ids.size();i++)
+			{
+				const UnsignedInt id_a=preparation_result.relevant_collision_ids[i].first;
+				const UnsignedInt id_b=preparation_result.relevant_collision_ids[i].second;
+				if(TessellationContactConstruction::construct_contact_descriptor(spheres, id_a, id_b, preparation_result.all_colliding_ids[id_a], cd))
+				{
+					possible_contacting_pairs[i]=preparation_result.relevant_collision_ids[i];
+				}
+			}
+		}
+
+		time_recorder.record_elapsed_miliseconds_and_reset("construct contacts");
+
+		UnsignedInt number_of_valid_contacting_pairs=0;
+		for(UnsignedInt i=0;i<possible_contacting_pairs.size();i++)
+		{
+			if(possible_contacting_pairs[i].first!=possible_contacting_pairs[i].second)
+			{
+				number_of_valid_contacting_pairs++;
+			}
+		}
+
+		time_recorder.record_elapsed_miliseconds_and_reset("count valid contacting pairs");
+
+		filtered_preparation_result.relevant_collision_ids.reserve(number_of_valid_contacting_pairs);
+
+		for(UnsignedInt i=0;i<possible_contacting_pairs.size();i++)
+		{
+			const std::pair<UnsignedInt, UnsignedInt>& p=possible_contacting_pairs[i];
+			if(p.first!=p.second)
+			{
+				filtered_preparation_result.relevant_collision_ids.push_back(p);
+			}
+		}
+
+		time_recorder.record_elapsed_miliseconds_and_reset("copy valid contacting pairs");
+
+		filtered_preparation_result.total_collisions=filtered_preparation_result.relevant_collision_ids.size()*2;
+
+		const UnsignedInt N=spheres.size();
+		filtered_preparation_result.total_spheres=N;
+
+		filtered_preparation_result.all_colliding_ids.resize(N);
+		for(UnsignedInt i=0;i<N;i++)
+		{
+			filtered_preparation_result.all_colliding_ids[i].reserve(30);
+		}
+
+		for(UnsignedInt i=0;i<filtered_preparation_result.relevant_collision_ids.size();i++)
+		{
+			const std::pair<UnsignedInt, UnsignedInt>& p=filtered_preparation_result.relevant_collision_ids[i];
+			filtered_preparation_result.all_colliding_ids[p.first].push_back(p.second);
+			filtered_preparation_result.all_colliding_ids[p.second].push_back(p.first);
+		}
+
+		time_recorder.record_elapsed_miliseconds_and_reset("collect all filtered collision IDs");
+	}
 };
 
 }
