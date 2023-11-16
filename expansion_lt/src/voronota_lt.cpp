@@ -5,6 +5,7 @@
 #include <omp.h>
 #endif
 
+#include "voronotalt/clo_parser.h"
 #include "voronotalt/io_utilities.h"
 #include "voronotalt/tessellation_full_construction.h"
 #include "voronotalt/simplified_aw_tessellation_full_construction.h"
@@ -23,83 +24,63 @@ int main(const int argc, const char** argv)
 	bool old_regime=false;
 
 	{
-		int i=1;
-		while(i<argc)
+		const std::vector<voronotalt::CLOParser::Option> cloptions=voronotalt::CLOParser::read_options(argc, argv);
+
+		for(std::size_t i=0;i<cloptions.size();i++)
 		{
-			const std::string name(argv[i]);
-			if(name=="-processors")
+			const voronotalt::CLOParser::Option& opt=cloptions[i];
+			if(opt.name=="processors" && opt.args_ints.size()==1)
 			{
-				bool success=false;
-				if(i+1<argc)
+				max_number_of_processors=static_cast<unsigned int>(opt.args_ints.front());
+				if(!(max_number_of_processors>=1 && max_number_of_processors<=1000))
 				{
-					i++;
-					const std::string value(argv[i]);
-					if(!value.empty())
-					{
-						std::istringstream input(value);
-						input >> max_number_of_processors;
-						if(!input.fail() && max_number_of_processors>=1 && max_number_of_processors<=1000)
-						{
-							success=true;
-						}
-					}
-				}
-				if(!success)
-				{
-					std::cerr << "Error: invalid command line argument for the maximum number of processors (-processors), must be an integer from 1 to 1000.\n";
+					std::cerr << "Error: invalid command line argument for the maximum number of processors, must be an integer from 1 to 1000.\n";
 					return 1;
 				}
 			}
-			else if(name=="-probe")
+			else if(opt.name=="probe" && opt.args_doubles.size()==1)
 			{
-				bool success=false;
-				if(i+1<argc)
+				probe=static_cast<voronotalt::Float>(opt.args_doubles.front());
+				if(!(probe>0.01 && probe<=30.0))
 				{
-					i++;
-					const std::string value(argv[i]);
-					if(!value.empty())
-					{
-						std::istringstream input(value);
-						input >> probe;
-						if(!input.fail() && probe>0.01 && probe<=30.0)
-						{
-							success=true;
-						}
-					}
-				}
-				if(!success)
-				{
-					std::cerr << "Error: invalid command line argument for the rolling probe radius (-probe), must be a value from 0.01 to 30.0.\n";
+					std::cerr << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.01 to 30.0.\n";
 					return 1;
 				}
 			}
-			else if(name=="-output-csa")
+			else if(opt.name=="output-csa" && opt.is_flag())
 			{
-				output_csa=true;
+				output_csa=opt.is_flag_and_true();
 			}
-			else if(name=="-output-csa-with-graphics")
+			else if(opt.name=="output-csa-with-graphics" && opt.is_flag())
 			{
-				output_csa=true;
-				output_csa_with_graphics=true;
+				output_csa_with_graphics=opt.is_flag_and_true();
+				if(output_csa_with_graphics)
+				{
+					output_csa=true;
+				}
 			}
-			else if(name=="-output-sasa")
+			else if(opt.name=="output-sasa" && opt.is_flag())
 			{
-				output_sasa=true;
+				output_sasa=opt.is_flag_and_true();
 			}
-			else if(name=="-measure-time")
+			else if(opt.name=="measure-time" && opt.is_flag())
 			{
-				measure_time=true;
+				measure_time=opt.is_flag_and_true();
 			}
-			else if(name=="-old-regime")
+			else if(opt.name=="old-regime" && opt.is_flag())
 			{
-				old_regime=true;
+				old_regime=opt.is_flag_and_true();
+			}
+			else if(opt.name.empty())
+			{
+				std::cerr << "Error: unnamed command line arguments detected.\n";
+				return 1;
 			}
 			else
 			{
-				std::cerr << "Error: invalid command line argument '" << name << "'\n";
+				std::cerr << "Error: invalid command line option '" << opt.name << "'.\n";
 				return 1;
 			}
-			i++;
 		}
 	}
 
