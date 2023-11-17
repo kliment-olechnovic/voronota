@@ -11,6 +11,18 @@
 #include "voronotalt/simplified_aw_tessellation_full_construction.h"
 #include "voronotalt/graphics_output.h"
 
+namespace
+{
+
+struct SphereLabel
+{
+	std::string chain_id;
+	std::string residue_id;
+	std::string atom_name;
+};
+
+}
+
 int main(const int argc, const char** argv)
 {
 	std::ios_base::sync_with_stdio(false);
@@ -96,28 +108,57 @@ int main(const int argc, const char** argv)
 	time_recoder_for_input.reset();
 
 	std::vector<voronotalt::SimpleSphere> spheres;
+	std::vector<SphereLabel> sphere_labels;
 
 	{
+		std::vector<std::string> string_ids;
 		std::vector<double> values;
-		voronotalt::read_double_values_from_text_stream(std::cin, values);
-		if(values.empty())
+		if(voronotalt::read_string_ids_and_double_values_from_text_stream(4, std::cin, string_ids, values))
 		{
-			std::cerr << "No data read from stdin\n";
-			return 1;
+			const std::size_t N=(values.size()/4);
+			const std::size_t label_size=(string_ids.size()/N);
+			if(label_size>3 || string_ids.size()!=N*label_size)
+			{
+				std::cerr << "Invalid label size, must be exactly 0, 1, 2, or 3 string IDs per line\n";
+				return 1;
+			}
+			spheres.resize(N);
+			for(std::size_t i=0;i<N;i++)
+			{
+				voronotalt::SimpleSphere& sphere=spheres[i];
+				sphere.p.x=static_cast<voronotalt::Float>(values[i*4+0]);
+				sphere.p.y=static_cast<voronotalt::Float>(values[i*4+1]);
+				sphere.p.z=static_cast<voronotalt::Float>(values[i*4+2]);
+				sphere.r=static_cast<voronotalt::Float>(values[i*4+3])+probe;
+			}
+			if(label_size>0)
+			{
+				sphere_labels.resize(N);
+				for(std::size_t i=0;i<N;i++)
+				{
+					SphereLabel& sphere_label=sphere_labels[i];
+					if(label_size==1)
+					{
+						sphere_label.atom_name=string_ids[i];
+					}
+					else if(label_size==2)
+					{
+						sphere_label.residue_id=string_ids[i*label_size+0];
+						sphere_label.atom_name=string_ids[i*label_size+1];
+					}
+					else if(label_size==3)
+					{
+						sphere_label.chain_id=string_ids[i*label_size+0];
+						sphere_label.residue_id=string_ids[i*label_size+1];
+						sphere_label.atom_name=string_ids[i*label_size+2];
+					}
+				}
+			}
 		}
-		if(values.size()%4!=0)
+		else
 		{
-			std::cerr << "Invalid data in stdin\n";
+			std::cerr << "Invalid data in stdin, must be a text table with exactly 0, 1, 2, or 3 string IDs and exactly 4 floating point values (x, y, z, r) per line\n";
 			return 1;
-		}
-		spheres.resize(values.size()/4);
-		for(std::size_t i=0;i<spheres.size();i++)
-		{
-			voronotalt::SimpleSphere& sphere=spheres[i];
-			sphere.p.x=static_cast<voronotalt::Float>(values[i*4+0]);
-			sphere.p.y=static_cast<voronotalt::Float>(values[i*4+1]);
-			sphere.p.z=static_cast<voronotalt::Float>(values[i*4+2]);
-			sphere.r=static_cast<voronotalt::Float>(values[i*4+3])+probe;
 		}
 	}
 
