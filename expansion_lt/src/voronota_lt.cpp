@@ -1,5 +1,4 @@
 #include <iostream>
-#include <sstream>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -10,7 +9,7 @@
 #include "voronotalt/sphere_labeling.h"
 #include "voronotalt/tessellation_full_construction.h"
 #include "voronotalt/simplified_aw_tessellation_full_construction.h"
-#include "voronotalt/graphics_output.h"
+#include "voronotalt/graphics_writer.h"
 
 int main(const int argc, const char** argv)
 {
@@ -18,8 +17,8 @@ int main(const int argc, const char** argv)
 
 	unsigned int max_number_of_processors=1;
 	voronotalt::Float probe=1.4;
+	std::string write_graphics_file;
 	bool output_csa=false;
-	bool output_csa_with_graphics=false;
 	bool output_sasa=false;
 	bool measure_time=false;
 	bool old_regime=false;
@@ -52,17 +51,13 @@ int main(const int argc, const char** argv)
 					return 1;
 				}
 			}
+			else if(opt.name=="write-graphics-file" && opt.args_strings.size()==1)
+			{
+				write_graphics_file=opt.args_strings.front();
+			}
 			else if(opt.name=="output-csa" && opt.is_flag())
 			{
 				output_csa=opt.is_flag_and_true();
-			}
-			else if(opt.name=="output-csa-with-graphics" && opt.is_flag())
-			{
-				output_csa_with_graphics=opt.is_flag_and_true();
-				if(output_csa_with_graphics)
-				{
-					output_csa=true;
-				}
 			}
 			else if(opt.name=="output-sasa" && opt.is_flag())
 			{
@@ -199,10 +194,12 @@ int main(const int argc, const char** argv)
 	voronotalt::PreparationForTessellation::Result preparation_result;
 	voronotalt::PreparationForTessellation::prepare_for_tessellation(spheres, grouping, preparation_result, time_recoder_for_tessellation);
 
+	voronotalt::GraphicsWriter graphics_writer(!write_graphics_file.empty());
+
 	if(old_regime)
 	{
 		voronotalt::SimplifiedAWTessellationFullConstruction::Result result;
-		voronotalt::SimplifiedAWTessellationFullConstruction::construct_full_tessellation(spheres, preparation_result, output_csa_with_graphics, result, time_recoder_for_tessellation);
+		voronotalt::SimplifiedAWTessellationFullConstruction::construct_full_tessellation(spheres, preparation_result, graphics_writer.enabled(), result, time_recoder_for_tessellation);
 
 		time_recoder_for_output.reset();
 
@@ -216,26 +213,32 @@ int main(const int argc, const char** argv)
 			for(std::size_t i=0;i<result.contacts_summaries.size();i++)
 			{
 				const voronotalt::SimplifiedAWTessellationFullConstruction::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
-				std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area;
-				if(output_csa_with_graphics)
-				{
-					for(std::size_t j=0;j<pair_summary.graphics.size();j++)
-					{
-						voronotalt::print_triangle_fan_for_pymol(pair_summary.graphics[j].outer_points, pair_summary.graphics[j].barycenter, voronotalt::unit_point(voronotalt::sub_of_points(spheres[pair_summary.id_b].p, spheres[pair_summary.id_a].p)), (j==0 ? " " : ","), std::cout);
-					}
-				}
-				std::cout << "\n";
+				std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area << "\n";
 			}
 		}
 
 		time_recoder_for_output.record_elapsed_miliseconds_and_reset("write results to stdout");
+
+		if(graphics_writer.enabled())
+		{
+			for(std::size_t i=0;i<result.contacts_summaries.size();i++)
+			{
+				const voronotalt::SimplifiedAWTessellationFullConstruction::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
+				for(std::size_t j=0;j<pair_summary.graphics.size();j++)
+				{
+					graphics_writer.add_triangle_fan(pair_summary.graphics[j].outer_points, pair_summary.graphics[j].barycenter, spheres[pair_summary.id_a].p, spheres[pair_summary.id_b].p);
+				}
+			}
+
+			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
+		}
 	}
 	else
 	{
 		const bool summarize_cells=grouping.empty();
 
 		voronotalt::TessellationFullConstruction::Result result;
-		voronotalt::TessellationFullConstruction::construct_full_tessellation(spheres, preparation_result, output_csa_with_graphics, summarize_cells, result, time_recoder_for_tessellation);
+		voronotalt::TessellationFullConstruction::construct_full_tessellation(spheres, preparation_result, graphics_writer.enabled(), summarize_cells, result, time_recoder_for_tessellation);
 
 		time_recoder_for_output.reset();
 
@@ -253,13 +256,7 @@ int main(const int argc, const char** argv)
 			for(std::size_t i=0;i<result.contacts_summaries.size();i++)
 			{
 				const voronotalt::TessellationFullConstruction::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
-				std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area << " " << pair_summary.solid_angle_a << " " << pair_summary.solid_angle_b;
-				if(output_csa_with_graphics)
-				{
-					const voronotalt::TessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result.contacts_graphics[i];
-					voronotalt::print_triangle_fan_for_pymol(pair_graphics.outer_points, pair_graphics.barycenter, voronotalt::unit_point(voronotalt::sub_of_points(spheres[pair_summary.id_b].p, spheres[pair_summary.id_a].p)), " ", std::cout);
-				}
-				std::cout << "\n";
+				std::cout << "csa " << pair_summary.id_a << " " <<  pair_summary.id_b << " " << pair_summary.area << " " << pair_summary.solid_angle_a << " " << pair_summary.solid_angle_b << "\n";
 			}
 		}
 
@@ -276,6 +273,25 @@ int main(const int argc, const char** argv)
 		}
 
 		time_recoder_for_output.record_elapsed_miliseconds_and_reset("write results to stdout");
+
+		if(graphics_writer.enabled())
+		{
+			for(std::size_t i=0;i<result.contacts_summaries.size();i++)
+			{
+				const voronotalt::TessellationFullConstruction::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
+				const voronotalt::TessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result.contacts_graphics[i];
+				graphics_writer.add_triangle_fan(pair_graphics.outer_points, pair_graphics.barycenter, spheres[pair_summary.id_a].p, spheres[pair_summary.id_b].p);
+			}
+
+			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
+		}
+	}
+
+	if(graphics_writer.enabled())
+	{
+		graphics_writer.write_to_file(write_graphics_file);
+
+		time_recoder_for_output.record_elapsed_miliseconds_and_reset("write printed graphics to file");
 	}
 
 	if(measure_time)

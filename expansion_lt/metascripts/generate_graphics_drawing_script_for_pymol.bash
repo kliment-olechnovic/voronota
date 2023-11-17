@@ -12,6 +12,9 @@ trap "rm -r $TMPLDIR" EXIT
 
 cat > "${TMPLDIR}/balls"
 
+cat "${TMPLDIR}/balls" \
+| voronota-lt -probe "$PROBE" -write-graphics-file "${TMPLDIR}/graphics" > /dev/null
+
 CASEID="$(cat ${TMPLDIR}/balls | md5sum | awk '{print $1}')"
 
 {
@@ -26,13 +29,8 @@ cat "${TMPLDIR}/balls" \
 
 echo "COLOR, 1.0, 1.0, 0.0,"
 
-cat "${TMPLDIR}/balls" \
-| voronota-lt -output-csa-with-graphics -probe "$PROBE" \
-| egrep '^csa ' \
-| awk '{print $7}' \
-| sed 's/NORMAL/\nNORMAL/g' \
-| sed 's/END/\nEND,/g' \
-| sed 's/,/, /g'
+cat "${TMPLDIR}/graphics" \
+| egrep '^[A-Z]'
 
 cat << 'EOF'
 ]
