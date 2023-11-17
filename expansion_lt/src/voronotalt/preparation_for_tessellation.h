@@ -22,7 +22,7 @@ public:
 		}
 	};
 
-	static void prepare_for_tessellation(const std::vector<SimpleSphere>& spheres, Result& result, TimeRecorder& time_recorder)
+	static void prepare_for_tessellation(const std::vector<SimpleSphere>& spheres, const std::vector<int>& grouping, Result& result, TimeRecorder& time_recorder)
 	{
 		result=Result();
 
@@ -76,7 +76,10 @@ public:
 				const UnsignedInt id_b=result.all_colliding_ids[id_a][j];
 				if(result.all_colliding_ids[id_a].size()<result.all_colliding_ids[id_b].size() || (id_a<id_b && result.all_colliding_ids[id_a].size()==result.all_colliding_ids[id_b].size()))
 				{
-					result.relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
+					if(grouping.empty() || id_a>=grouping.size() || id_b>=grouping.size() || grouping[id_a]!=grouping[id_b])
+					{
+						result.relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
+					}
 				}
 			}
 		}

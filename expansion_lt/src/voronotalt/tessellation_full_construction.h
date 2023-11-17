@@ -199,7 +199,7 @@ public:
 		std::vector<CellContactDescriptorsSummary> cells_summaries;
 	};
 
-	static void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const PreparationForTessellation::Result& preparation_result, const bool with_graphics, Result& result, TimeRecorder& time_recorder)
+	static void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const PreparationForTessellation::Result& preparation_result, const bool with_graphics, const bool summarize_cells, Result& result, TimeRecorder& time_recorder)
 	{
 		result=Result();
 
@@ -295,30 +295,33 @@ public:
 
 		time_recorder.record_elapsed_miliseconds_and_reset("copy valid contacts graphics");
 
-		result.cells_summaries.resize(preparation_result.total_spheres);
-
-		for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
+		if(summarize_cells)
 		{
-			const ContactDescriptorSummary& cds=result.contacts_summaries[i];
-			result.cells_summaries[cds.id_a].add(cds.id_a, cds);
-			result.cells_summaries[cds.id_b].add(cds.id_b, cds);
+			result.cells_summaries.resize(preparation_result.total_spheres);
+
+			for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
+			{
+				const ContactDescriptorSummary& cds=result.contacts_summaries[i];
+				result.cells_summaries[cds.id_a].add(cds.id_a, cds);
+				result.cells_summaries[cds.id_b].add(cds.id_b, cds);
+			}
+
+			time_recorder.record_elapsed_miliseconds_and_reset("accumulate cell summaries");
+
+			for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
+			{
+				result.cells_summaries[i].compute_sas(spheres[i].r);
+			}
+
+			time_recorder.record_elapsed_miliseconds_and_reset("compute sas for cell summaries");
+
+			for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
+			{
+				result.total_cells_summary.add(result.cells_summaries[i]);
+			}
+
+			time_recorder.record_elapsed_miliseconds_and_reset("accumulate total cells summary");
 		}
-
-		time_recorder.record_elapsed_miliseconds_and_reset("accumulate cell summaries");
-
-		for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
-		{
-			result.cells_summaries[i].compute_sas(spheres[i].r);
-		}
-
-		time_recorder.record_elapsed_miliseconds_and_reset("compute sas for cell summaries");
-
-		for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
-		{
-			result.total_cells_summary.add(result.cells_summaries[i]);
-		}
-
-		time_recorder.record_elapsed_miliseconds_and_reset("accumulate total cells summary");
 	}
 };
 

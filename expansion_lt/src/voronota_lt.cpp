@@ -7,21 +7,10 @@
 
 #include "voronotalt/clo_parser.h"
 #include "voronotalt/io_utilities.h"
+#include "voronotalt/sphere_labeling.h"
 #include "voronotalt/tessellation_full_construction.h"
 #include "voronotalt/simplified_aw_tessellation_full_construction.h"
 #include "voronotalt/graphics_output.h"
-
-namespace
-{
-
-struct SphereLabel
-{
-	std::string chain_id;
-	std::string residue_id;
-	std::string atom_name;
-};
-
-}
 
 int main(const int argc, const char** argv)
 {
@@ -34,6 +23,10 @@ int main(const int argc, const char** argv)
 	bool output_sasa=false;
 	bool measure_time=false;
 	bool old_regime=false;
+	bool inter_residue=false;
+	bool inter_chain=false;
+	bool residue_level=false;
+	bool output_with_labels=false;
 
 	{
 		const std::vector<voronotalt::CLOParser::Option> cloptions=voronotalt::CLOParser::read_options(argc, argv);
@@ -83,6 +76,22 @@ int main(const int argc, const char** argv)
 			{
 				old_regime=opt.is_flag_and_true();
 			}
+			else if(opt.name=="inter-residue" && opt.is_flag())
+			{
+				inter_residue=opt.is_flag_and_true();
+			}
+			else if(opt.name=="inter-chain" && opt.is_flag())
+			{
+				inter_chain=opt.is_flag_and_true();
+			}
+			else if(opt.name=="residue-level" && opt.is_flag())
+			{
+				residue_level=opt.is_flag_and_true();
+			}
+			else if(opt.name=="output-with-labels" && opt.is_flag())
+			{
+				output_with_labels=opt.is_flag_and_true();
+			}
 			else if(opt.name.empty())
 			{
 				std::cerr << "Error: unnamed command line arguments detected.\n";
@@ -108,7 +117,7 @@ int main(const int argc, const char** argv)
 	time_recoder_for_input.reset();
 
 	std::vector<voronotalt::SimpleSphere> spheres;
-	std::vector<SphereLabel> sphere_labels;
+	std::vector<voronotalt::SphereLabel> sphere_labels;
 
 	{
 		std::vector<std::string> string_ids;
@@ -136,7 +145,7 @@ int main(const int argc, const char** argv)
 				sphere_labels.resize(N);
 				for(std::size_t i=0;i<N;i++)
 				{
-					SphereLabel& sphere_label=sphere_labels[i];
+					voronotalt::SphereLabel& sphere_label=sphere_labels[i];
 					if(label_size==1)
 					{
 						sphere_label.atom_name=string_ids[i];
@@ -164,10 +173,31 @@ int main(const int argc, const char** argv)
 
 	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read balls from stdin");
 
+	std::vector<int> grouping;
+
+	if(inter_chain)
+	{
+		if(voronotalt::assign_groups_to_sphere_labels_by_chain(sphere_labels, grouping)<2)
+		{
+			std::cerr << "Inter-chain contact filtering not possible - not enough distinct chains derived from labels\n";
+			return 1;
+		}
+	}
+	else if(inter_residue)
+	{
+		if(voronotalt::assign_groups_to_sphere_labels_by_residue(sphere_labels, grouping)<2)
+		{
+			std::cerr << "Inter-residue contact filtering not possible - not enough distinct residues derived from labels\n";
+			return 1;
+		}
+	}
+
+	time_recoder_for_input.record_elapsed_miliseconds_and_reset("assign groups based on labels");
+
 	time_recoder_for_tessellation.reset();
 
 	voronotalt::PreparationForTessellation::Result preparation_result;
-	voronotalt::PreparationForTessellation::prepare_for_tessellation(spheres, preparation_result, time_recoder_for_tessellation);
+	voronotalt::PreparationForTessellation::prepare_for_tessellation(spheres, grouping, preparation_result, time_recoder_for_tessellation);
 
 	if(old_regime)
 	{
@@ -202,8 +232,10 @@ int main(const int argc, const char** argv)
 	}
 	else
 	{
+		const bool summarize_cells=grouping.empty();
+
 		voronotalt::TessellationFullConstruction::Result result;
-		voronotalt::TessellationFullConstruction::construct_full_tessellation(spheres, preparation_result, output_csa_with_graphics, result, time_recoder_for_tessellation);
+		voronotalt::TessellationFullConstruction::construct_full_tessellation(spheres, preparation_result, output_csa_with_graphics, summarize_cells, result, time_recoder_for_tessellation);
 
 		time_recoder_for_output.reset();
 
@@ -231,7 +263,7 @@ int main(const int argc, const char** argv)
 			}
 		}
 
-		if(output_sasa)
+		if(summarize_cells && output_sasa)
 		{
 			for(std::size_t i=0;i<result.cells_summaries.size();i++)
 			{
