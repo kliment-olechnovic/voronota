@@ -1,5 +1,6 @@
 total_balls: 3545
-total_collisions: 164464
+total_collisions: 82232
+total_relevant_collisions: 82232
 total_contacts_count: 23855
 total_contacts_area: 75956.7
 total_contacts_complexity: 121968

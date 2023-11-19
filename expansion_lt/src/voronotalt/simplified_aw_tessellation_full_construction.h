@@ -63,15 +63,43 @@ public:
 
 	struct Result
 	{
-		TotalContactDescriptorsSummary total_contacts_summary;
+		UnsignedInt total_spheres;
+		UnsignedInt total_collisions;
+		UnsignedInt total_relevant_collisions;
 		std::vector<ContactDescriptorSummary> contacts_summaries;
+		TotalContactDescriptorsSummary total_contacts_summary;
+
+		Result() : total_spheres(0), total_collisions(0), total_relevant_collisions(0)
+		{
+		}
 	};
 
-	static void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const PreparationForTessellation::Result& preparation_result, const bool with_graphics, Result& result, TimeRecorder& time_recorder)
+	static void construct_full_tessellation(
+			const std::vector<SimpleSphere>& spheres,
+			const std::vector<int>& grouping_of_spheres,
+			const bool with_graphics,
+			Result& result,
+			TimeRecorder& time_recorder)
 	{
+		PreparationForTessellation::Result preparation_result;
+		PreparationForTessellation::prepare_for_tessellation(spheres, grouping_of_spheres, preparation_result, time_recorder);
+		construct_full_tessellation(spheres, preparation_result, with_graphics, result, time_recorder);
+	}
+
+	static void construct_full_tessellation(
+			const std::vector<SimpleSphere>& spheres,
+			const PreparationForTessellation::Result& preparation_result,
+			const bool with_graphics,
+			Result& result,
+			TimeRecorder& time_recorder)
+	{
+		time_recorder.reset();
+
 		result=Result();
 
-		time_recorder.reset();
+		result.total_spheres=preparation_result.total_spheres;
+		result.total_collisions=preparation_result.total_collisions;
+		result.total_relevant_collisions=preparation_result.relevant_collision_ids.size();
 
 		std::vector<ContactDescriptorSummary> possible_contacts_summaries(preparation_result.relevant_collision_ids.size());
 

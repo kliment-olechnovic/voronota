@@ -22,14 +22,18 @@ public:
 		}
 	};
 
-	static void prepare_for_tessellation(const std::vector<SimpleSphere>& spheres, const std::vector<int>& grouping, Result& result, TimeRecorder& time_recorder)
+	static void prepare_for_tessellation(
+			const std::vector<SimpleSphere>& spheres,
+			const std::vector<int>& grouping_of_spheres,
+			Result& result,
+			TimeRecorder& time_recorder)
 	{
+		time_recorder.reset();
+
 		result=Result();
 
 		const UnsignedInt N=spheres.size();
 		result.total_spheres=N;
-
-		time_recorder.reset();
 
 		SpheresSearcher spheres_searcher(spheres);
 
@@ -66,9 +70,11 @@ public:
 			result.total_collisions+=result.all_colliding_ids[i].size();
 		}
 
+		result.total_collisions=result.total_collisions/2;
+
 		time_recorder.record_elapsed_miliseconds_and_reset("count all collisions");
 
-		result.relevant_collision_ids.reserve(result.total_collisions/2);
+		result.relevant_collision_ids.reserve(result.total_collisions);
 		for(UnsignedInt id_a=0;id_a<N;id_a++)
 		{
 			for(UnsignedInt j=0;j<result.all_colliding_ids[id_a].size();j++)
@@ -76,7 +82,7 @@ public:
 				const UnsignedInt id_b=result.all_colliding_ids[id_a][j];
 				if(result.all_colliding_ids[id_a].size()<result.all_colliding_ids[id_b].size() || (id_a<id_b && result.all_colliding_ids[id_a].size()==result.all_colliding_ids[id_b].size()))
 				{
-					if(grouping.empty() || id_a>=grouping.size() || id_b>=grouping.size() || grouping[id_a]!=grouping[id_b])
+					if(grouping_of_spheres.empty() || id_a>=grouping_of_spheres.size() || id_b>=grouping_of_spheres.size() || grouping_of_spheres[id_a]!=grouping_of_spheres[id_b])
 					{
 						result.relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
 					}
