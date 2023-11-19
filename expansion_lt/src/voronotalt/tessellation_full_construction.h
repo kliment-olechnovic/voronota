@@ -51,6 +51,16 @@ public:
 				pyramid_volume_b=cd.pyramid_volume_b;
 			}
 		}
+
+		void ensure_ids_ordered()
+		{
+			if(id_b>id_a)
+			{
+				std::swap(id_a, id_b);
+				std::swap(solid_angle_a, solid_angle_b);
+				std::swap(pyramid_volume_a, pyramid_volume_b);
+			}
+		}
 	};
 
 	struct CellContactDescriptorsSummary
@@ -192,14 +202,20 @@ public:
 
 	struct Result
 	{
-		TotalContactDescriptorsSummary total_contacts_summary;
-		TotalCellContactDescriptorsSummary total_cells_summary;
 		std::vector<ContactDescriptorSummary> contacts_summaries;
 		std::vector<TessellationContactConstruction::ContactDescriptorGraphics> contacts_graphics;
+		TotalContactDescriptorsSummary total_contacts_summary;
 		std::vector<CellContactDescriptorsSummary> cells_summaries;
+		TotalCellContactDescriptorsSummary total_cells_summary;
 	};
 
-	static void construct_full_tessellation(const std::vector<SimpleSphere>& spheres, const PreparationForTessellation::Result& preparation_result, const bool with_graphics, const bool summarize_cells, Result& result, TimeRecorder& time_recorder)
+	static void construct_full_tessellation(
+			const std::vector<SimpleSphere>& spheres,
+			const PreparationForTessellation::Result& preparation_result,
+			const bool with_graphics,
+			const bool summarize_cells,
+			Result& result,
+			TimeRecorder& time_recorder)
 	{
 		result=Result();
 
@@ -271,6 +287,7 @@ public:
 			for(UnsignedInt i=0;i<ids_of_valid_pairs.size();i++)
 			{
 				result.contacts_summaries[i]=possible_contacts_summaries[ids_of_valid_pairs[i]];
+				result.contacts_summaries[i].ensure_ids_ordered();
 			}
 		}
 
