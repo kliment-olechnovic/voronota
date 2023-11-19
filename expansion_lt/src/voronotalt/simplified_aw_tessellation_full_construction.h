@@ -1,6 +1,8 @@
 #ifndef VORONOTALT_SIMPLIFIED_AW_TESSELLATION_FULL_CONSTRUCTION_H_
 #define VORONOTALT_SIMPLIFIED_AW_TESSELLATION_FULL_CONSTRUCTION_H_
 
+#include <map>
+
 #include "preparation_for_tessellation.h"
 #include "simplified_aw_tessellation_contact_construction.h"
 #include "time_recorder.h"
@@ -31,6 +33,14 @@ public:
 				id_a=cd.id_a;
 				id_b=cd.id_b;
 				area=cd.area;
+			}
+		}
+
+		void ensure_ids_ordered()
+		{
+			if(id_a>id_b)
+			{
+				std::swap(id_a, id_b);
 			}
 		}
 	};
@@ -68,6 +78,12 @@ public:
 		Result() : total_spheres(0), total_collisions(0), total_relevant_collisions(0)
 		{
 		}
+	};
+
+	struct GroupedResult
+	{
+		std::vector<UnsignedInt> grouped_contacts_representative_ids;
+		std::vector<TotalContactDescriptorsSummary> grouped_contacts_summaries;
 	};
 
 	static void construct_full_tessellation(
@@ -162,6 +178,7 @@ public:
 			for(UnsignedInt i=0;i<ids_of_valid_pairs.size();i++)
 			{
 				result.contacts_summaries[i]=possible_contacts_summaries[ids_of_valid_pairs[i]];
+				result.contacts_summaries[i].ensure_ids_ordered();
 			}
 		}
 
@@ -185,6 +202,59 @@ public:
 		}
 
 		time_recorder.record_elapsed_miliseconds_and_reset("copy valid contacts graphics");
+	}
+
+	static bool group_results(
+			const Result& full_result,
+			const std::vector<int>& grouping_of_spheres,
+			GroupedResult& grouped_result,
+			TimeRecorder& time_recorder)
+	{
+		time_recorder.reset();
+
+		grouped_result=GroupedResult();
+
+		if(!grouping_of_spheres.empty() && grouping_of_spheres.size()==full_result.total_spheres)
+		{
+			grouped_result.grouped_contacts_representative_ids.reserve(full_result.contacts_summaries.size()/5);
+			grouped_result.grouped_contacts_summaries.reserve(full_result.contacts_summaries.size()/5);
+
+			std::map< std::pair<int, int>, UnsignedInt > map_of_groups;
+
+			for(UnsignedInt i=0;i<full_result.contacts_summaries.size();i++)
+			{
+				const ContactDescriptorSummary& cds=full_result.contacts_summaries[i];
+				if(cds.id_a<grouping_of_spheres.size() && cds.id_b<grouping_of_spheres.size())
+				{
+					std::pair<int, int> group_id(grouping_of_spheres[cds.id_a], grouping_of_spheres[cds.id_b]);
+					if(group_id.first!=group_id.second)
+					{
+						if(group_id.first>group_id.second)
+						{
+							std::swap(group_id.first, group_id.second);
+						}
+						UnsignedInt group_index=0;
+						std::map< std::pair<int, int>, UnsignedInt >::const_iterator it=map_of_groups.find(group_id);
+						if(it==map_of_groups.end())
+						{
+							group_index=grouped_result.grouped_contacts_summaries.size();
+							grouped_result.grouped_contacts_representative_ids.push_back(i);
+							grouped_result.grouped_contacts_summaries.push_back(TotalContactDescriptorsSummary());
+							map_of_groups[group_id]=group_index;
+						}
+						else
+						{
+							group_index=it->second;
+						}
+						grouped_result.grouped_contacts_summaries[group_index].add(cds);
+					}
+				}
+			}
+
+			time_recorder.record_elapsed_miliseconds_and_reset("grouped contacts summaries");
+		}
+
+		return (!grouped_result.grouped_contacts_summaries.empty());
 	}
 };
 

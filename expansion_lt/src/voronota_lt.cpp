@@ -122,7 +122,7 @@ int main(const int argc, const char** argv)
 		return 1;
 	}
 
-	if(inter_residue && spheres_input_result.number_of_residue_groups<2)
+	if((inter_residue || residue_level) && spheres_input_result.number_of_residue_groups<2)
 	{
 		std::cerr << "Inter-residue contact filtering not possible - not enough distinct residues derived from labels\n";
 		return 1;
@@ -141,6 +141,13 @@ int main(const int argc, const char** argv)
 		voronotalt::SimplifiedAWTessellationFullConstruction::Result result;
 		voronotalt::SimplifiedAWTessellationFullConstruction::construct_full_tessellation(spheres_input_result.spheres, grouping, graphics_writer.enabled(), result, time_recoder_for_tessellation);
 
+		voronotalt::SimplifiedAWTessellationFullConstruction::GroupedResult result_grouped_by_residue;
+
+		if(residue_level)
+		{
+			voronotalt::SimplifiedAWTessellationFullConstruction::group_results(result, spheres_input_result.grouping_by_residue, result_grouped_by_residue, time_recoder_for_tessellation);
+		}
+
 		time_recoder_for_output.reset();
 
 		std::cout << "total_balls: " << result.total_spheres << "\n";
@@ -148,6 +155,11 @@ int main(const int argc, const char** argv)
 		std::cout << "total_relevant_collisions: " << result.total_relevant_collisions << "\n";
 		std::cout << "total_contacts_count: " << result.total_contacts_summary.count << "\n";
 		std::cout << "total_contacts_area: " << result.total_contacts_summary.area << "\n";
+
+		if(residue_level)
+		{
+			std::cout << "total_residue_level_contacts_count: " << result_grouped_by_residue.grouped_contacts_summaries.size() << "\n";
+		}
 
 		if(output_csa)
 		{
@@ -184,6 +196,13 @@ int main(const int argc, const char** argv)
 		voronotalt::TessellationFullConstruction::Result result;
 		voronotalt::TessellationFullConstruction::construct_full_tessellation(spheres_input_result.spheres, grouping, graphics_writer.enabled(), summarize_cells, result, time_recoder_for_tessellation);
 
+		voronotalt::TessellationFullConstruction::GroupedResult result_grouped_by_residue;
+
+		if(residue_level)
+		{
+			voronotalt::TessellationFullConstruction::group_results(result, spheres_input_result.grouping_by_residue, result_grouped_by_residue, time_recoder_for_tessellation);
+		}
+
 		time_recoder_for_output.reset();
 
 		std::cout << "total_balls: " << result.total_spheres << "\n";
@@ -195,6 +214,12 @@ int main(const int argc, const char** argv)
 		std::cout << "total_cells_count: " << result.total_cells_summary.count << "\n";
 		std::cout << "total_cells_sas_area: " << result.total_cells_summary.sas_area << "\n";
 		std::cout << "total_cells_sas_inside_volume: " << result.total_cells_summary.sas_inside_volume << "\n";
+
+		if(residue_level)
+		{
+			std::cout << "total_residue_level_contacts_count: " << result_grouped_by_residue.grouped_contacts_summaries.size() << "\n";
+			std::cout << "total_residue_level_cells_count: " << result_grouped_by_residue.grouped_cells_summaries.size() << "\n";
+		}
 
 		if(output_csa)
 		{

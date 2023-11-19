@@ -1,6 +1,8 @@
 #ifndef VORONOTALT_TESSELLATION_FULL_CONSTRUCTION_H_
 #define VORONOTALT_TESSELLATION_FULL_CONSTRUCTION_H_
 
+#include <map>
+
 #include "preparation_for_tessellation.h"
 #include "tessellation_contact_construction.h"
 #include "time_recorder.h"
@@ -54,7 +56,7 @@ public:
 
 		void ensure_ids_ordered()
 		{
-			if(id_b>id_a)
+			if(id_a>id_b)
 			{
 				std::swap(id_a, id_b);
 				std::swap(solid_angle_a, solid_angle_b);
@@ -216,6 +218,14 @@ public:
 		}
 	};
 
+	struct GroupedResult
+	{
+		std::vector<UnsignedInt> grouped_contacts_representative_ids;
+		std::vector<TotalContactDescriptorsSummary> grouped_contacts_summaries;
+		std::vector<UnsignedInt> grouped_cells_representative_ids;
+		std::vector<TotalCellContactDescriptorsSummary> grouped_cells_summaries;
+	};
+
 	static void construct_full_tessellation(
 			const std::vector<SimpleSphere>& spheres,
 			const std::vector<int>& grouping_of_spheres,
@@ -363,6 +373,94 @@ public:
 
 			time_recorder.record_elapsed_miliseconds_and_reset("accumulate total cells summary");
 		}
+	}
+
+	static bool group_results(
+			const Result& full_result,
+			const std::vector<int>& grouping_of_spheres,
+			GroupedResult& grouped_result,
+			TimeRecorder& time_recorder)
+	{
+		time_recorder.reset();
+
+		grouped_result=GroupedResult();
+
+		if(!grouping_of_spheres.empty() && grouping_of_spheres.size()==full_result.total_spheres)
+		{
+			{
+				grouped_result.grouped_contacts_representative_ids.reserve(full_result.contacts_summaries.size()/5);
+				grouped_result.grouped_contacts_summaries.reserve(full_result.contacts_summaries.size()/5);
+
+				std::map< std::pair<int, int>, UnsignedInt > map_of_groups;
+
+				for(UnsignedInt i=0;i<full_result.contacts_summaries.size();i++)
+				{
+					const ContactDescriptorSummary& cds=full_result.contacts_summaries[i];
+					if(cds.id_a<grouping_of_spheres.size() && cds.id_b<grouping_of_spheres.size())
+					{
+						std::pair<int, int> group_id(grouping_of_spheres[cds.id_a], grouping_of_spheres[cds.id_b]);
+						if(group_id.first!=group_id.second)
+						{
+							if(group_id.first>group_id.second)
+							{
+								std::swap(group_id.first, group_id.second);
+							}
+							UnsignedInt group_index=0;
+							std::map< std::pair<int, int>, UnsignedInt >::const_iterator it=map_of_groups.find(group_id);
+							if(it==map_of_groups.end())
+							{
+								group_index=grouped_result.grouped_contacts_summaries.size();
+								grouped_result.grouped_contacts_representative_ids.push_back(i);
+								grouped_result.grouped_contacts_summaries.push_back(TotalContactDescriptorsSummary());
+								map_of_groups[group_id]=group_index;
+							}
+							else
+							{
+								group_index=it->second;
+							}
+							grouped_result.grouped_contacts_summaries[group_index].add(cds);
+						}
+					}
+				}
+
+				time_recorder.record_elapsed_miliseconds_and_reset("grouped contacts summaries");
+			}
+
+			if(!full_result.cells_summaries.empty() && full_result.cells_summaries.size()==grouping_of_spheres.size())
+			{
+				grouped_result.grouped_cells_representative_ids.reserve(full_result.cells_summaries.size()/5);
+				grouped_result.grouped_cells_summaries.reserve(full_result.cells_summaries.size()/5);
+
+				std::map< int, UnsignedInt > map_of_groups;
+
+				for(UnsignedInt i=0;i<full_result.cells_summaries.size();i++)
+				{
+					const CellContactDescriptorsSummary& ccds=full_result.cells_summaries[i];
+					if(ccds.id<grouping_of_spheres.size())
+					{
+						const int group_id=grouping_of_spheres[ccds.id];
+						UnsignedInt group_index=0;
+						std::map< int, UnsignedInt >::const_iterator it=map_of_groups.find(group_id);
+						if(it==map_of_groups.end())
+						{
+							group_index=grouped_result.grouped_cells_summaries.size();
+							grouped_result.grouped_cells_representative_ids.push_back(i);
+							grouped_result.grouped_cells_summaries.push_back(TotalCellContactDescriptorsSummary());
+							map_of_groups[group_id]=group_index;
+						}
+						else
+						{
+							group_index=it->second;
+						}
+						grouped_result.grouped_cells_summaries[group_index].add(ccds);
+					}
+				}
+
+				time_recorder.record_elapsed_miliseconds_and_reset("grouped cells summaries");
+			}
+		}
+
+		return (!grouped_result.grouped_contacts_summaries.empty());
 	}
 };
 
