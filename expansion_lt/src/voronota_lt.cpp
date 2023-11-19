@@ -6,7 +6,7 @@
 
 #include "voronotalt/clo_parser.h"
 #include "voronotalt/io_utilities.h"
-#include "voronotalt/sphere_labeling.h"
+#include "voronotalt/spheres_input.h"
 #include "voronotalt/tessellation_full_construction.h"
 #include "voronotalt/simplified_aw_tessellation_full_construction.h"
 #include "voronotalt/graphics_writer.h"
@@ -109,85 +109,28 @@ int main(const int argc, const char** argv)
 	voronotalt::TimeRecorder time_recoder_for_tessellation(measure_time);
 	voronotalt::TimeRecorder time_recoder_for_output(measure_time);
 
-	time_recoder_for_input.reset();
+	voronotalt::SpheresInput::Result spheres_input_result;
 
-	std::vector<voronotalt::SimpleSphere> spheres;
-	std::vector<voronotalt::SphereLabel> sphere_labels;
-
+	if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_stream(std::cin, probe, spheres_input_result, std::cerr, time_recoder_for_input))
 	{
-		std::vector<std::string> string_ids;
-		std::vector<double> values;
-		if(voronotalt::read_string_ids_and_double_values_from_text_stream(4, std::cin, string_ids, values))
-		{
-			const std::size_t N=(values.size()/4);
-			const std::size_t label_size=(string_ids.size()/N);
-			if(label_size>3 || string_ids.size()!=N*label_size)
-			{
-				std::cerr << "Invalid label size, must be exactly 0, 1, 2, or 3 string IDs per line\n";
-				return 1;
-			}
-			spheres.resize(N);
-			for(std::size_t i=0;i<N;i++)
-			{
-				voronotalt::SimpleSphere& sphere=spheres[i];
-				sphere.p.x=static_cast<voronotalt::Float>(values[i*4+0]);
-				sphere.p.y=static_cast<voronotalt::Float>(values[i*4+1]);
-				sphere.p.z=static_cast<voronotalt::Float>(values[i*4+2]);
-				sphere.r=static_cast<voronotalt::Float>(values[i*4+3])+probe;
-			}
-			if(label_size>0)
-			{
-				sphere_labels.resize(N);
-				for(std::size_t i=0;i<N;i++)
-				{
-					voronotalt::SphereLabel& sphere_label=sphere_labels[i];
-					if(label_size==1)
-					{
-						sphere_label.atom_name=string_ids[i];
-					}
-					else if(label_size==2)
-					{
-						sphere_label.residue_id=string_ids[i*label_size+0];
-						sphere_label.atom_name=string_ids[i*label_size+1];
-					}
-					else if(label_size==3)
-					{
-						sphere_label.chain_id=string_ids[i*label_size+0];
-						sphere_label.residue_id=string_ids[i*label_size+1];
-						sphere_label.atom_name=string_ids[i*label_size+2];
-					}
-				}
-			}
-		}
-		else
-		{
-			std::cerr << "Invalid data in stdin, must be a text table with exactly 0, 1, 2, or 3 string IDs and exactly 4 floating point values (x, y, z, r) per line\n";
-			return 1;
-		}
+		return 1;
 	}
 
-	time_recoder_for_input.record_elapsed_miliseconds_and_reset("read balls from stdin");
-
-	std::vector<int> grouping;
-
-	if(inter_chain)
+	if(inter_chain && spheres_input_result.number_of_chain_groups<2)
 	{
-		if(voronotalt::assign_groups_to_sphere_labels_by_chain(sphere_labels, grouping)<2)
-		{
-			std::cerr << "Inter-chain contact filtering not possible - not enough distinct chains derived from labels\n";
-			return 1;
-		}
-	}
-	else if(inter_residue)
-	{
-		if(voronotalt::assign_groups_to_sphere_labels_by_residue(sphere_labels, grouping)<2)
-		{
-			std::cerr << "Inter-residue contact filtering not possible - not enough distinct residues derived from labels\n";
-			return 1;
-		}
+		std::cerr << "Inter-chain contact filtering not possible - not enough distinct chains derived from labels\n";
+		return 1;
 	}
 
-	time_recoder_for_input.record_elapsed_miliseconds_and_reset("assign groups based on labels");
+	if(inter_residue && spheres_input_result.number_of_residue_groups<2)
+	{
+		std::cerr << "Inter-residue contact filtering not possible - not enough distinct residues derived from labels\n";
+		return 1;
+	}
+
+	std::vector<int> grouping_none;
+
+	const std::vector<int>& grouping=(inter_chain ? spheres_input_result.grouping_by_chain : (inter_residue ? spheres_input_result.grouping_by_residue : grouping_none));
 
 	voronotalt::GraphicsWriter graphics_writer(!write_graphics_file.empty());
 
@@ -196,7 +139,7 @@ int main(const int argc, const char** argv)
 		time_recoder_for_tessellation.reset();
 
 		voronotalt::SimplifiedAWTessellationFullConstruction::Result result;
-		voronotalt::SimplifiedAWTessellationFullConstruction::construct_full_tessellation(spheres, grouping, graphics_writer.enabled(), result, time_recoder_for_tessellation);
+		voronotalt::SimplifiedAWTessellationFullConstruction::construct_full_tessellation(spheres_input_result.spheres, grouping, graphics_writer.enabled(), result, time_recoder_for_tessellation);
 
 		time_recoder_for_output.reset();
 
@@ -225,7 +168,7 @@ int main(const int argc, const char** argv)
 				const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result.contacts_graphics[i];
 				for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
 				{
-					graphics_writer.add_triangle_fan(pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres[pair_summary.id_a].p, spheres[pair_summary.id_b].p);
+					graphics_writer.add_triangle_fan(pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
 				}
 			}
 
@@ -239,7 +182,7 @@ int main(const int argc, const char** argv)
 		const bool summarize_cells=grouping.empty();
 
 		voronotalt::TessellationFullConstruction::Result result;
-		voronotalt::TessellationFullConstruction::construct_full_tessellation(spheres, grouping, graphics_writer.enabled(), summarize_cells, result, time_recoder_for_tessellation);
+		voronotalt::TessellationFullConstruction::construct_full_tessellation(spheres_input_result.spheres, grouping, graphics_writer.enabled(), summarize_cells, result, time_recoder_for_tessellation);
 
 		time_recoder_for_output.reset();
 
@@ -282,7 +225,7 @@ int main(const int argc, const char** argv)
 			{
 				const voronotalt::TessellationFullConstruction::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 				const voronotalt::TessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result.contacts_graphics[i];
-				graphics_writer.add_triangle_fan(pair_graphics.outer_points, pair_graphics.barycenter, spheres[pair_summary.id_a].p, spheres[pair_summary.id_b].p);
+				graphics_writer.add_triangle_fan(pair_graphics.outer_points, pair_graphics.barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
 			}
 
 			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
