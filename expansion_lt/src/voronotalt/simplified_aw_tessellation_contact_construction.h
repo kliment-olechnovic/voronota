@@ -45,14 +45,19 @@ public:
 	{
 		std::vector<SimplePoint> outer_points;
 		SimplePoint barycenter;
+	};
 
-		ContourGraphics()
+	struct ContactDescriptorGraphics
+	{
+		std::vector<ContourGraphics> contours_graphics;
+
+		ContactDescriptorGraphics()
 		{
 		}
 
 		void clear()
 		{
-			outer_points.clear();
+			contours_graphics.clear();
 		}
 	};
 
@@ -60,7 +65,7 @@ public:
 	{
 		std::list<Contour> contours;
 		std::vector<NeighborDescriptor> neighbor_descriptors;
-		std::vector<ContourGraphics> graphics;
+		ContactDescriptorGraphics graphics;
 		SimpleSphere intersection_circle_sphere;
 		SimplePoint intersection_circle_axis;
 		Float area;
@@ -270,9 +275,9 @@ public:
 								result_contact_descriptor.area+=calculate_area_from_contour(contour, a, b, barycenter);
 								if(record_graphics && result_contact_descriptor.area>FLOATCONST(0.0))
 								{
-									result_contact_descriptor.graphics.push_back(ContourGraphics());
-									result_contact_descriptor.graphics.back().barycenter=barycenter;
-									collect_points_from_contour(contour, result_contact_descriptor.graphics.back().outer_points);
+									result_contact_descriptor.graphics.contours_graphics.push_back(ContourGraphics());
+									result_contact_descriptor.graphics.contours_graphics.back().barycenter=barycenter;
+									collect_points_from_contour(contour, result_contact_descriptor.graphics.contours_graphics.back().outer_points);
 								}
 							}
 						}

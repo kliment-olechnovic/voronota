@@ -13,7 +13,6 @@ class SimplifiedAWTessellationFullConstruction
 public:
 	struct ContactDescriptorSummary
 	{
-		std::vector<SimplifiedAWTessellationContactConstruction::ContourGraphics> graphics;
 		Float area;
 		UnsignedInt id_a;
 		UnsignedInt id_b;
@@ -25,17 +24,13 @@ public:
 		{
 		}
 
-		void set(const SimplifiedAWTessellationContactConstruction::ContactDescriptor& cd, const bool with_graphics)
+		void set(const SimplifiedAWTessellationContactConstruction::ContactDescriptor& cd)
 		{
 			if(cd.area>FLOATCONST(0.0))
 			{
 				id_a=cd.id_a;
 				id_b=cd.id_b;
 				area=cd.area;
-				if(with_graphics)
-				{
-					graphics=cd.graphics;
-				}
 			}
 		}
 	};
@@ -67,6 +62,7 @@ public:
 		UnsignedInt total_collisions;
 		UnsignedInt total_relevant_collisions;
 		std::vector<ContactDescriptorSummary> contacts_summaries;
+		std::vector<SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics> contacts_graphics;
 		TotalContactDescriptorsSummary total_contacts_summary;
 
 		Result() : total_spheres(0), total_collisions(0), total_relevant_collisions(0)
@@ -103,6 +99,12 @@ public:
 
 		std::vector<ContactDescriptorSummary> possible_contacts_summaries(preparation_result.relevant_collision_ids.size());
 
+		std::vector<SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics> possible_contacts_graphics;
+		if(with_graphics)
+		{
+			possible_contacts_graphics.resize(possible_contacts_summaries.size());
+		}
+
 		time_recorder.record_elapsed_miliseconds_and_reset("allocate possible contact summaries");
 
 		#pragma omp parallel
@@ -117,7 +119,11 @@ public:
 				const UnsignedInt id_b=preparation_result.relevant_collision_ids[i].second;
 				if(SimplifiedAWTessellationContactConstruction::construct_contact_descriptor(spheres, id_a, id_b, preparation_result.all_colliding_ids[id_a], 0.2, 5, with_graphics, cd))
 				{
-					possible_contacts_summaries[i].set(cd, with_graphics);
+					possible_contacts_summaries[i].set(cd);
+					if(with_graphics)
+					{
+						possible_contacts_graphics[i]=cd.graphics;
+					}
 				}
 			}
 		}
@@ -167,6 +173,18 @@ public:
 		}
 
 		time_recorder.record_elapsed_miliseconds_and_reset("accumulate total contacts summary");
+
+		if(with_graphics)
+		{
+			result.contacts_graphics.resize(ids_of_valid_pairs.size());
+
+			for(UnsignedInt i=0;i<ids_of_valid_pairs.size();i++)
+			{
+				result.contacts_graphics[i]=possible_contacts_graphics[ids_of_valid_pairs[i]];
+			}
+		}
+
+		time_recorder.record_elapsed_miliseconds_and_reset("copy valid contacts graphics");
 	}
 };
 
