@@ -7,3 +7,7 @@ total_contacts_complexity: 327582
 total_cells_count: 9745
 total_cells_sas_area: 58651
 total_cells_sas_inside_volume: 240566
+total_residue_level_contacts_count: 0
+total_residue_level_cells_count: 0
+total_chain_level_contacts_count: 0
+total_chain_level_cells_count: 0
