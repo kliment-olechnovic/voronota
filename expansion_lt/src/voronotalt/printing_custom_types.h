@@ -1,7 +1,11 @@
 #ifndef VORONOTALT_PRINTING_CUSTOM_TYPES_H_
 #define VORONOTALT_PRINTING_CUSTOM_TYPES_H_
 
-#include <iostream>
+#include <sstream>
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 #include "spheres_input.h"
 #include "tessellation_full_construction.h"
@@ -18,9 +22,56 @@ public:
 			const ContactsContainer& contacts, const std::vector<SpheresInput::SphereLabel>& sphere_labels, const bool labels_enabled, std::ostream& output)
 	{
 		const SpheresInput::SphereLabel null_label;
-		for(std::size_t i=0;i<contacts.size();i++)
+		if(!contacts.empty())
 		{
-			print_contact_to_stream(i, contacts, sphere_labels, null_label, labels_enabled, output);
+			bool printed_in_parallel=false;
+#ifdef _OPENMP
+			if(contacts.size()>10000)
+			{
+				const int data_size=static_cast<int>(contacts.size());
+				const int n_threads=omp_get_max_threads();
+				if(n_threads>1)
+				{
+					const int approximate_portion_size=(data_size/n_threads);
+					if(approximate_portion_size>1000)
+					{
+						std::vector<int> thread_data_starts(n_threads, 0);
+						for(int i=1;i<n_threads;i++)
+						{
+							thread_data_starts[i]=thread_data_starts[i-1]+approximate_portion_size;
+						}
+
+						std::vector<std::ostringstream> suboutputs(n_threads);
+
+						#pragma omp parallel
+						{
+							#pragma omp for schedule(static,1)
+							for(int i=0;i<n_threads;i++)
+							{
+								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
+								{
+									print_contact_to_stream(static_cast<std::size_t>(j), contacts, sphere_labels, null_label, labels_enabled, suboutputs[i]);
+								}
+							}
+						}
+
+						for(int i=0;i<n_threads;i++)
+						{
+							output << suboutputs[i].str();
+						}
+
+						printed_in_parallel=true;
+					}
+				}
+			}
+#endif
+			if(!printed_in_parallel)
+			{
+				for(std::size_t i=0;i<contacts.size();i++)
+				{
+					print_contact_to_stream(i, contacts, sphere_labels, null_label, labels_enabled, output);
+				}
+			}
 		}
 	}
 
@@ -53,9 +104,56 @@ public:
 			const CellsContainer& cells, const std::vector<SpheresInput::SphereLabel>& sphere_labels, const bool labels_enabled, std::ostream& output)
 	{
 		const SpheresInput::SphereLabel null_label;
-		for(std::size_t i=0;i<cells.size();i++)
+		if(!cells.empty())
 		{
-			print_sas_and_volume_to_stream(i, cells, sphere_labels, labels_enabled, null_label, output);
+			bool printed_in_parallel=false;
+#ifdef _OPENMP
+			if(cells.size()>10000)
+			{
+				const int data_size=static_cast<int>(cells.size());
+				const int n_threads=omp_get_max_threads();
+				if(n_threads>1)
+				{
+					const int approximate_portion_size=(data_size/n_threads);
+					if(approximate_portion_size>1000)
+					{
+						std::vector<int> thread_data_starts(n_threads, 0);
+						for(int i=1;i<n_threads;i++)
+						{
+							thread_data_starts[i]=thread_data_starts[i-1]+approximate_portion_size;
+						}
+
+						std::vector<std::ostringstream> suboutputs(n_threads);
+
+						#pragma omp parallel
+						{
+							#pragma omp for schedule(static,1)
+							for(int i=0;i<n_threads;i++)
+							{
+								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
+								{
+									print_sas_and_volume_to_stream(static_cast<std::size_t>(j), cells, sphere_labels, labels_enabled, null_label, suboutputs[i]);
+								}
+							}
+						}
+
+						for(int i=0;i<n_threads;i++)
+						{
+							output << suboutputs[i].str();
+						}
+
+						printed_in_parallel=true;
+					}
+				}
+			}
+#endif
+			if(!printed_in_parallel)
+			{
+				for(std::size_t i=0;i<cells.size();i++)
+				{
+					print_sas_and_volume_to_stream(i, cells, sphere_labels, labels_enabled, null_label, output);
+				}
+			}
 		}
 	}
 
@@ -138,17 +236,14 @@ private:
 			const SpheresInput::SphereLabel& null_label,
 			std::ostream& output)
 	{
-		for(std::size_t i=0;i<cells.size();i++)
+		output << "sa ";
+		if(labels_enabled)
 		{
-			output << "sa ";
-			if(labels_enabled)
-			{
-				print_label((cells[i].id<sphere_labels.size() ? sphere_labels[cells[i].id] : null_label), false, false, output);
-				output << " ";
-			}
-			print(cells[i], output);
-			output << "\n";
+			print_label((cells[i].id<sphere_labels.size() ? sphere_labels[cells[i].id] : null_label), false, false, output);
+			output << " ";
 		}
+		print(cells[i], output);
+		output << "\n";
 	}
 
 	template<class CellsContainer, class GroupedCellsContainer>
