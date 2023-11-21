@@ -61,7 +61,7 @@ int main(const int argc, const char** argv)
 			{
 				compute_only_inter_chain_contacts=opt.is_flag_and_true();
 			}
-			else if(opt.name=="run-in-simplified-aw-diagram-regime" && opt.is_flag())
+			else if(opt.name=="run-in-aw-diagram-regime" && opt.is_flag())
 			{
 				run_in_simplified_aw_diagram_regime=opt.is_flag_and_true();
 			}

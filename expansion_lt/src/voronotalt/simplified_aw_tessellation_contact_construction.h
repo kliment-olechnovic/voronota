@@ -69,11 +69,13 @@ public:
 		SimpleSphere intersection_circle_sphere;
 		SimplePoint intersection_circle_axis;
 		Float area;
+		Float arc_length;
 		UnsignedInt id_a;
 		UnsignedInt id_b;
 
 		ContactDescriptor() :
 			area(FLOATCONST(0.0)),
+			arc_length(FLOATCONST(0.0)),
 			id_a(0),
 			id_b(0)
 		{
@@ -87,6 +89,7 @@ public:
 			contours.clear();
 			graphics.clear();
 			area=FLOATCONST(0.0);
+			arc_length=FLOATCONST(0.0);
 		}
 	};
 
@@ -273,6 +276,7 @@ public:
 								const Contour& contour=(*it);
 								SimplePoint barycenter;
 								result_contact_descriptor.area+=calculate_area_from_contour(contour, a, b, barycenter);
+								result_contact_descriptor.arc_length+=calculate_arc_length_from_contour(a_id, contour);
 								if(record_graphics && result_contact_descriptor.area>FLOATCONST(0.0))
 								{
 									result_contact_descriptor.graphics.contours_graphics.push_back(ContourGraphics());
@@ -745,6 +749,25 @@ private:
 			}
 		}
 		return area;
+	}
+
+	static Float calculate_arc_length_from_contour(const UnsignedInt a_id, const Contour& contour)
+	{
+		Float arc_length=FLOATCONST(0.0);
+		for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
+		{
+			Contour::const_iterator jt_next=jt;
+			++jt_next;
+			if(jt_next==contour.end())
+			{
+				jt_next=contour.begin();
+			}
+			if(jt->right_id==a_id && jt_next->left_id==a_id)
+			{
+				arc_length+=distance_from_point_to_point(jt->p, jt_next->p);
+			}
+		}
+		return arc_length;
 	}
 };
 

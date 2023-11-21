@@ -16,11 +16,13 @@ public:
 	struct ContactDescriptorSummary
 	{
 		Float area;
+		Float arc_length;
 		UnsignedInt id_a;
 		UnsignedInt id_b;
 
 		ContactDescriptorSummary() :
 			area(FLOATCONST(0.0)),
+			arc_length(FLOATCONST(0.0)),
 			id_a(0),
 			id_b(0)
 		{
@@ -33,6 +35,7 @@ public:
 				id_a=cd.id_a;
 				id_b=cd.id_b;
 				area=cd.area;
+				arc_length=cd.arc_length;
 			}
 		}
 
@@ -48,10 +51,12 @@ public:
 	struct TotalContactDescriptorsSummary
 	{
 		Float area;
+		Float arc_length;
 		UnsignedInt count;
 
 		TotalContactDescriptorsSummary() :
 			area(FLOATCONST(0.0)),
+			arc_length(FLOATCONST(0.0)),
 			count(0)
 		{
 		}
@@ -62,6 +67,7 @@ public:
 			{
 				count++;
 				area+=cds.area;
+				arc_length+=cds.arc_length;
 			}
 		}
 	};

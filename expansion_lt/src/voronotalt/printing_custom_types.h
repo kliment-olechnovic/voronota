@@ -301,7 +301,7 @@ private:
 
 	inline static void print(const TessellationFullConstruction::ContactDescriptorSummary& obj, std::ostream& output)
 	{
-		output << obj.id_a << " " <<  obj.id_b << " " << obj.area << " " << obj.arc_length << " " << obj.solid_angle_a << " " << obj.solid_angle_b;
+		output << obj.id_a << " " <<  obj.id_b << " " << obj.area << " " << obj.arc_length;
 	}
 
 	inline static void print(const TessellationFullConstruction::TotalContactDescriptorsSummary& obj, std::ostream& output)
@@ -321,12 +321,12 @@ private:
 
 	inline static void print(const SimplifiedAWTessellationFullConstruction::ContactDescriptorSummary& obj, std::ostream& output)
 	{
-		output << obj.id_a << " " <<  obj.id_b << " " << obj.area;
+		output << obj.id_a << " " <<  obj.id_b << " " << obj.area << " " << obj.arc_length;
 	}
 
 	inline static void print(const SimplifiedAWTessellationFullConstruction::TotalContactDescriptorsSummary& obj, std::ostream& output)
 	{
-		output << obj.area << " " << obj.count;
+		output << obj.area << " " << obj.arc_length << " " << obj.count;
 	}
 };
 
