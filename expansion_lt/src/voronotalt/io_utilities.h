@@ -131,24 +131,14 @@ inline bool read_lines_from_text_stream(std::istream& input, std::vector<std::st
 		std::getline(input, line);
 		if(!line.empty())
 		{
+			std::size_t last_content_pos=line.find_last_not_of(" \t\n\r\f\v");
+			if(last_content_pos!=std::string::npos)
 			{
-				const std::size_t comments_pos=line.find("#", 0);
-				if(comments_pos!=std::string::npos && comments_pos>0)
+				if(last_content_pos+1<line.size())
 				{
-					line=line.substr(0, comments_pos);
+					line=line.substr(0, last_content_pos+1);
 				}
-			}
-			if(!line.empty())
-			{
-				std::size_t last_content_pos=line.find_last_not_of(" \t\n\r\f\v");
-				if(last_content_pos!=std::string::npos)
-				{
-					if(last_content_pos+1<line.size())
-					{
-						line=line.substr(0, last_content_pos+1);
-					}
-					lines.push_back(line);
-				}
+				lines.push_back(line);
 			}
 		}
 	}

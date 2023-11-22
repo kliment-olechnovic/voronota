@@ -145,7 +145,7 @@ int main(const int argc, const char** argv)
 	const std::vector<int> null_grouping;
 	const std::vector<int>& grouping_for_filtering=(compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
 
-	std::ostringstream global_summary_output;
+	std::ostringstream global_log_output;
 
 	voronotalt::GraphicsWriter graphics_writer(!write_contacts_graphics_to_file.empty());
 
@@ -172,19 +172,19 @@ int main(const int argc, const char** argv)
 
 		time_recoder_for_output.reset();
 
-		global_summary_output << "total_balls: " << result.total_spheres << "\n";
-		global_summary_output << "total_collisions: " << result.total_collisions << "\n";
-		global_summary_output << "total_relevant_collisions: " << result.total_relevant_collisions << "\n";
-		global_summary_output << "total_contacts_count: " << result.total_contacts_summary.count << "\n";
-		global_summary_output << "total_contacts_area: " << result.total_contacts_summary.area << "\n";
-		global_summary_output << "total_contacts_complexity: " << result.total_contacts_summary.complexity << "\n";
-		global_summary_output << "total_cells_count: " << result.total_cells_summary.count << "\n";
-		global_summary_output << "total_cells_sas_area: " << result.total_cells_summary.sas_area << "\n";
-		global_summary_output << "total_cells_sas_inside_volume: " << result.total_cells_summary.sas_inside_volume << "\n";
-		global_summary_output << "total_residue_level_contacts_count: " << result_grouped_by_residue.grouped_contacts_summaries.size() << "\n";
-		global_summary_output << "total_residue_level_cells_count: " << result_grouped_by_residue.grouped_cells_summaries.size() << "\n";
-		global_summary_output << "total_chain_level_contacts_count: " << result_grouped_by_chain.grouped_contacts_summaries.size() << "\n";
-		global_summary_output << "total_chain_level_cells_count: " << result_grouped_by_chain.grouped_cells_summaries.size() << "\n";
+		global_log_output << "total_balls: " << result.total_spheres << "\n";
+		global_log_output << "total_collisions: " << result.total_collisions << "\n";
+		global_log_output << "total_relevant_collisions: " << result.total_relevant_collisions << "\n";
+		global_log_output << "total_contacts_count: " << result.total_contacts_summary.count << "\n";
+		global_log_output << "total_contacts_area: " << result.total_contacts_summary.area << "\n";
+		global_log_output << "total_contacts_complexity: " << result.total_contacts_summary.complexity << "\n";
+		global_log_output << "total_cells_count: " << result.total_cells_summary.count << "\n";
+		global_log_output << "total_cells_sas_area: " << result.total_cells_summary.sas_area << "\n";
+		global_log_output << "total_cells_sas_inside_volume: " << result.total_cells_summary.sas_inside_volume << "\n";
+		global_log_output << "total_residue_level_contacts_count: " << result_grouped_by_residue.grouped_contacts_summaries.size() << "\n";
+		global_log_output << "total_residue_level_cells_count: " << result_grouped_by_residue.grouped_cells_summaries.size() << "\n";
+		global_log_output << "total_chain_level_contacts_count: " << result_grouped_by_chain.grouped_contacts_summaries.size() << "\n";
+		global_log_output << "total_chain_level_cells_count: " << result_grouped_by_chain.grouped_cells_summaries.size() << "\n";
 
 		time_recoder_for_output.record_elapsed_miliseconds_and_reset("print total numbers");
 
@@ -262,13 +262,13 @@ int main(const int argc, const char** argv)
 
 		time_recoder_for_output.reset();
 
-		global_summary_output << "total_balls: " << result.total_spheres << "\n";
-		global_summary_output << "total_collisions: " << result.total_collisions << "\n";
-		global_summary_output << "total_relevant_collisions: " << result.total_relevant_collisions << "\n";
-		global_summary_output << "total_contacts_count: " << result.total_contacts_summary.count << "\n";
-		global_summary_output << "total_contacts_area: " << result.total_contacts_summary.area << "\n";
-		global_summary_output << "total_residue_level_contacts_count: " << result_grouped_by_residue.grouped_contacts_summaries.size() << "\n";
-		global_summary_output << "total_chain_level_contacts_count: " << result_grouped_by_chain.grouped_contacts_summaries.size() << "\n";
+		global_log_output << "total_balls: " << result.total_spheres << "\n";
+		global_log_output << "total_collisions: " << result.total_collisions << "\n";
+		global_log_output << "total_relevant_collisions: " << result.total_relevant_collisions << "\n";
+		global_log_output << "total_contacts_count: " << result.total_contacts_summary.count << "\n";
+		global_log_output << "total_contacts_area: " << result.total_contacts_summary.area << "\n";
+		global_log_output << "total_residue_level_contacts_count: " << result_grouped_by_residue.grouped_contacts_summaries.size() << "\n";
+		global_log_output << "total_chain_level_contacts_count: " << result_grouped_by_chain.grouped_contacts_summaries.size() << "\n";
 
 		time_recoder_for_output.record_elapsed_miliseconds_and_reset("print total numbers");
 
@@ -318,14 +318,14 @@ int main(const int argc, const char** argv)
 #ifdef _OPENMP
 		number_of_threads=omp_get_max_threads();
 #endif
-		global_summary_output << "time_threads: " << number_of_threads << "\n";
-		time_recoder_for_input.print_recordings(global_summary_output, "time input stage", true);
-		time_recoder_for_tessellation.print_recordings(global_summary_output, "time tessellation stage", true);
-		time_recoder_for_output.print_recordings(global_summary_output, "time output stage", true);
-		time_recoder_for_all.print_elapsed_time(global_summary_output, "time full program");
+		global_log_output << "time_threads: " << number_of_threads << "\n";
+		time_recoder_for_input.print_recordings(global_log_output, "time input stage", true);
+		time_recoder_for_tessellation.print_recordings(global_log_output, "time tessellation stage", true);
+		time_recoder_for_output.print_recordings(global_log_output, "time output stage", true);
+		time_recoder_for_all.print_elapsed_time(global_log_output, "time full program");
 	}
 
-	std::cout << global_summary_output.str();
+	std::cerr << global_log_output.str();
 
 	return 0;
 }

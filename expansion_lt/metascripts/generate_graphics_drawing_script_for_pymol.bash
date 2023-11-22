@@ -13,7 +13,7 @@ trap "rm -r $TMPLDIR" EXIT
 cat > "${TMPLDIR}/balls"
 
 cat "${TMPLDIR}/balls" \
-| voronota-lt -probe "$PROBE" -write-contacts-graphics-to-file "${TMPLDIR}/graphics" > /dev/null
+| voronota-lt -probe "$PROBE" -write-contacts-graphics-to-file "${TMPLDIR}/graphics" 2> /dev/null
 
 CASEID="$(cat ${TMPLDIR}/balls | md5sum | awk '{print $1}')"
 
