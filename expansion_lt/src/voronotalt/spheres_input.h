@@ -57,7 +57,7 @@ public:
 				const std::size_t label_size=(string_ids.size()/N);
 				if(label_size>3 || string_ids.size()!=N*label_size)
 				{
-					error_message_output_stream << "Invalid label size, must be exactly 0, 1, 2, or 3 string IDs per line\n";
+					error_message_output_stream << "Error: invalid label size, must be exactly 0, 1, 2, or 3 string IDs per line\n";
 					return false;
 				}
 				result.spheres.resize(N);
@@ -96,7 +96,7 @@ public:
 			}
 			else
 			{
-				error_message_output_stream << "Invalid data in stdin, must be a text table with exactly 0, 1, 2, or 3 string IDs and exactly 4 floating point values (x, y, z, r) per line\n";
+				error_message_output_stream << "Error: invalid data in stdin, must be a text table with exactly 0, 1, 2, or 3 string IDs and exactly 4 floating point values (x, y, z, r) per line\n";
 				return false;
 			}
 		}

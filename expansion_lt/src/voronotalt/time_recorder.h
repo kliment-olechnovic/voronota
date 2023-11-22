@@ -63,7 +63,7 @@ public:
 		{
 			return;
 		}
-		output << string_without_whitespaces(prefix) << "_elapsed: " << get_elapsed_miliseconds() << "\n";
+		output << string_without_whitespaces(prefix) << "_elapsed\t" << get_elapsed_miliseconds() << "\n";
 	}
 
 	void print_recordings(std::ostream& output, const std::string& prefix, const bool with_sum)
@@ -75,7 +75,7 @@ public:
 		const std::string prefix_without_whitespaces=string_without_whitespaces(prefix);
 		for(std::size_t i=0;i<recordings_.size();i++)
 		{
-			output << prefix_without_whitespaces << "__" << string_without_whitespaces(recordings_[i].first) << ": " << recordings_[i].second << "\n";
+			output << prefix_without_whitespaces << "__" << string_without_whitespaces(recordings_[i].first) << "\t" << recordings_[i].second << "\n";
 		}
 		if(with_sum && recordings_.size()>1)
 		{
@@ -84,7 +84,7 @@ public:
 			{
 				sum+=recordings_[i].second;
 			}
-			output << prefix_without_whitespaces << "_total_sum: " << sum << "\n";
+			output << prefix_without_whitespaces << "_total_sum\t" << sum << "\n";
 		}
 	}
 

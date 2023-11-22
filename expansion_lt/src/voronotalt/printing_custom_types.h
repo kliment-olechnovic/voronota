@@ -24,7 +24,7 @@ public:
 		const SpheresInput::SphereLabel null_label;
 		if(!contacts.empty())
 		{
-			output << "ca_header ID1_chain ID1_residue ID1_atom ID2_chain ID2_residue ID2_atom ID1_index ID2_index area arc_legth\n";
+			output << "ca_header\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom\tID1_index\tID2_index\tarea\tarc_legth\n";
 			bool printed_in_parallel=false;
 #ifdef _OPENMP
 			if(contacts.size()>1000)
@@ -99,7 +99,7 @@ public:
 		const SpheresInput::SphereLabel null_label;
 		if(!cells.empty())
 		{
-			output << "sa_header ID_chain ID_residue ID_atom ID_index sas_area volume\n";
+			output << "sa_header\tID_chain\tID_residue\tID_atom\tID_index\tsas_area\tvolume\n";
 			bool printed_in_parallel=false;
 #ifdef _OPENMP
 			if(cells.size()>1000)
@@ -167,6 +167,28 @@ public:
 		print_sas_and_volumes_residue_level_or_chain_level_to_stream(true,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, output);
 	}
 
+	template<class Result, class GroupedResult>
+	static void print_tessellation_full_construction_result_log_basic(const Result& result, const GroupedResult& result_grouped_by_residue, const GroupedResult& result_grouped_by_chain, std::ostream& output)
+	{
+		output << "log_total_input_balls\t" << result.total_spheres << "\n";
+		output << "log_total_collisions\t" << result.total_collisions << "\n";
+		output << "log_total_relevant_collisions\t" << result.total_relevant_collisions << "\n";
+		output << "log_total_contacts_count\t" << result.total_contacts_summary.count << "\n";
+		output << "log_total_contacts_area\t" << result.total_contacts_summary.area << "\n";
+		output << "log_total_residue_level_contacts_count\t" << result_grouped_by_residue.grouped_contacts_summaries.size() << "\n";
+		output << "log_total_chain_level_contacts_count\t" << result_grouped_by_chain.grouped_contacts_summaries.size() << "\n";
+	}
+
+	template<class Result, class GroupedResult>
+	static void print_tessellation_full_construction_result_log_about_cells(const Result& result, const GroupedResult& result_grouped_by_residue, const GroupedResult& result_grouped_by_chain, std::ostream& output)
+	{
+		output << "log_total_cells_count\t" << result.total_cells_summary.count << "\n";
+		output << "log_total_cells_sas_area\t" << result.total_cells_summary.sas_area << "\n";
+		output << "log_total_cells_sas_inside_volume\t" << result.total_cells_summary.sas_inside_volume << "\n";
+		output << "log_total_residue_level_cells_count\t" << result_grouped_by_residue.grouped_cells_summaries.size() << "\n";
+		output << "log_total_chain_level_cells_count\t" << result_grouped_by_chain.grouped_cells_summaries.size() << "\n";
+	}
+
 private:
 	template<class ContactsContainer, class GroupedContactsContainer>
 	static void print_contacts_residue_level_or_chain_level_to_stream(
@@ -180,7 +202,7 @@ private:
 		const SpheresInput::SphereLabel null_label;
 		if(!grouped_contacts.empty())
 		{
-			output << (chain_level ? "cu" : "cr") << "_header ID1_chain ID1_residue ID1_atom ID2_chain ID2_residue ID2_atom area arc_legth count\n";
+			output << (chain_level ? "cu" : "cr") << "_header\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom\tarea\tarc_legth\tcount\n";
 			bool printed_in_parallel=false;
 #ifdef _OPENMP
 			if(grouped_contacts.size()>1000)
@@ -244,7 +266,7 @@ private:
 		const SpheresInput::SphereLabel null_label;
 		if(!grouped_cells.empty())
 		{
-			output << (chain_level ? "su" : "sr") << "_header ID_chain ID_residue ID_atom sas_area volume count\n";
+			output << (chain_level ? "su" : "sr") << "_header\tID_chain\tID_residue\tID_atom\tsas_area\tvolume\tcount\n";
 			bool printed_in_parallel=false;
 #ifdef _OPENMP
 			if(grouped_cells.size()>1000)
@@ -305,13 +327,13 @@ private:
 			const bool labels_enabled,
 			std::ostream& output)
 	{
-		output << "ca ";
+		output << "ca\t";
 		if(labels_enabled)
 		{
 			print_label((contacts[i].id_a<sphere_labels.size() ? sphere_labels[contacts[i].id_a] : null_label), false, false, output);
-			output << " ";
+			output << "\t";
 			print_label((contacts[i].id_b<sphere_labels.size() ? sphere_labels[contacts[i].id_b] : null_label), false, false, output);
-			output << " ";
+			output << "\t";
 		}
 		print(contacts[i], output);
 		output << "\n";
@@ -329,14 +351,14 @@ private:
 			std::ostream& output)
 	{
 		const std::size_t j=grouped_contacts_representative_ids[i];
-		output << (chain_level ? "cu " : "cr ");
+		output << (chain_level ? "cu\t" : "cr\t");
 		const SpheresInput::SphereLabel& sl1=(contacts[j].id_a<sphere_labels.size() ? sphere_labels[contacts[j].id_a] : null_label);
 		const SpheresInput::SphereLabel& sl2=(contacts[j].id_b<sphere_labels.size() ? sphere_labels[contacts[j].id_b] : null_label);
 		const bool no_reverse=(sl1.chain_id<sl2.chain_id || (sl1.chain_id==sl2.chain_id && sl1.residue_id<sl2.residue_id));
 		print_label((no_reverse ? sl1 : sl2), true, chain_level, output);
-		output << " ";
+		output << "\t";
 		print_label((no_reverse ? sl2 : sl1), true, chain_level, output);
-		output << " ";
+		output << "\t";
 		print(grouped_contacts[i], output);
 		output << "\n";
 	}
@@ -350,11 +372,11 @@ private:
 			const SpheresInput::SphereLabel& null_label,
 			std::ostream& output)
 	{
-		output << "sa ";
+		output << "sa\t";
 		if(labels_enabled)
 		{
 			print_label((cells[i].id<sphere_labels.size() ? sphere_labels[cells[i].id] : null_label), false, false, output);
-			output << " ";
+			output << "\t";
 		}
 		print(cells[i], output);
 		output << "\n";
@@ -372,9 +394,9 @@ private:
 			std::ostream& output)
 	{
 		const std::size_t j=grouped_cells_representative_ids[i];
-		output << (chain_level ? "su " : "sr ");
+		output << (chain_level ? "su\t" : "sr\t");
 		print_label((cells[j].id<sphere_labels.size() ? sphere_labels[cells[j].id] : null_label), true, chain_level, output);
-		output << " ";
+		output << "\t";
 		print(grouped_cells[i], output);
 		output << "\n";
 	}
@@ -390,7 +412,7 @@ private:
 			output << obj.chain_id;
 		}
 
-		output << " ";
+		output << "\t";
 
 		if(no_residue || obj.residue_id.empty())
 		{
@@ -401,7 +423,7 @@ private:
 			output << obj.residue_id;
 		}
 
-		output << " ";
+		output << "\t";
 
 		if(no_atom || obj.atom_name.empty())
 		{
@@ -415,32 +437,32 @@ private:
 
 	inline static void print(const TessellationFullConstruction::ContactDescriptorSummary& obj, std::ostream& output)
 	{
-		output << obj.id_a << " " <<  obj.id_b << " " << obj.area << " " << obj.arc_length;
+		output << obj.id_a << "\t" <<  obj.id_b << "\t" << obj.area << "\t" << obj.arc_length;
 	}
 
 	inline static void print(const TessellationFullConstruction::TotalContactDescriptorsSummary& obj, std::ostream& output)
 	{
-		output << obj.area << " " << obj.arc_length << " " << obj.count;
+		output << obj.area << "\t" << obj.arc_length << "\t" << obj.count;
 	}
 
 	inline static void print(const TessellationFullConstruction::CellContactDescriptorsSummary& obj, std::ostream& output)
 	{
-		output << obj.id << " " << obj.sas_area << " " << obj.sas_inside_volume;
+		output << obj.id << "\t" << obj.sas_area << "\t" << obj.sas_inside_volume;
 	}
 
 	inline static void print(const TessellationFullConstruction::TotalCellContactDescriptorsSummary& obj, std::ostream& output)
 	{
-		output << obj.sas_area << " " << obj.sas_inside_volume << " " << obj.count;
+		output << obj.sas_area << "\t" << obj.sas_inside_volume << "\t" << obj.count;
 	}
 
 	inline static void print(const SimplifiedAWTessellationFullConstruction::ContactDescriptorSummary& obj, std::ostream& output)
 	{
-		output << obj.id_a << " " <<  obj.id_b << " " << obj.area << " " << obj.arc_length;
+		output << obj.id_a << "\t" <<  obj.id_b << "\t" << obj.area << "\t" << obj.arc_length;
 	}
 
 	inline static void print(const SimplifiedAWTessellationFullConstruction::TotalContactDescriptorsSummary& obj, std::ostream& output)
 	{
-		output << obj.area << " " << obj.arc_length << " " << obj.count;
+		output << obj.area << "\t" << obj.arc_length << "\t" << obj.count;
 	}
 };
 

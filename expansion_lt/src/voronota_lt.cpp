@@ -126,26 +126,24 @@ int main(const int argc, const char** argv)
 
 	if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_stream(std::cin, probe, spheres_input_result, std::cerr, time_recoder_for_input))
 	{
-		std::cerr << "Failed to read input without errors\n";
+		std::cerr << "Error: failed to read input without errors\n";
 		return 1;
 	}
 
 	if((compute_only_inter_chain_contacts || need_summaries_on_chain_level) && spheres_input_result.number_of_chain_groups<2)
 	{
-		std::cerr << "Inter-chain contact selection not possible - not enough distinct chains derived from labels\n";
+		std::cerr << "Error: inter-chain contact selection not possible - not enough distinct chains derived from labels\n";
 		return 1;
 	}
 
 	if((compute_only_inter_residue_contacts || need_summaries_on_residue_level) && spheres_input_result.number_of_residue_groups<2)
 	{
-		std::cerr << "Inter-residue contact selection not possible - not enough distinct residues derived from labels\n";
+		std::cerr << "Error: inter-residue contact selection not possible - not enough distinct residues derived from labels\n";
 		return 1;
 	}
 
 	const std::vector<int> null_grouping;
 	const std::vector<int>& grouping_for_filtering=(compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
-
-	std::ostringstream global_log_output;
 
 	voronotalt::GraphicsWriter graphics_writer(!write_contacts_graphics_to_file.empty());
 
@@ -172,19 +170,8 @@ int main(const int argc, const char** argv)
 
 		time_recoder_for_output.reset();
 
-		global_log_output << "total_balls: " << result.total_spheres << "\n";
-		global_log_output << "total_collisions: " << result.total_collisions << "\n";
-		global_log_output << "total_relevant_collisions: " << result.total_relevant_collisions << "\n";
-		global_log_output << "total_contacts_count: " << result.total_contacts_summary.count << "\n";
-		global_log_output << "total_contacts_area: " << result.total_contacts_summary.area << "\n";
-		global_log_output << "total_contacts_complexity: " << result.total_contacts_summary.complexity << "\n";
-		global_log_output << "total_cells_count: " << result.total_cells_summary.count << "\n";
-		global_log_output << "total_cells_sas_area: " << result.total_cells_summary.sas_area << "\n";
-		global_log_output << "total_cells_sas_inside_volume: " << result.total_cells_summary.sas_inside_volume << "\n";
-		global_log_output << "total_residue_level_contacts_count: " << result_grouped_by_residue.grouped_contacts_summaries.size() << "\n";
-		global_log_output << "total_residue_level_cells_count: " << result_grouped_by_residue.grouped_cells_summaries.size() << "\n";
-		global_log_output << "total_chain_level_contacts_count: " << result_grouped_by_chain.grouped_contacts_summaries.size() << "\n";
-		global_log_output << "total_chain_level_cells_count: " << result_grouped_by_chain.grouped_cells_summaries.size() << "\n";
+		voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_basic(result, result_grouped_by_residue, result_grouped_by_chain, std::cerr);
+		voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_about_cells(result, result_grouped_by_residue, result_grouped_by_chain, std::cerr);
 
 		time_recoder_for_output.record_elapsed_miliseconds_and_reset("print total numbers");
 
@@ -230,15 +217,7 @@ int main(const int argc, const char** argv)
 				const voronotalt::TessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result.contacts_graphics[i];
 				graphics_writer.add_triangle_fan(pair_graphics.outer_points, pair_graphics.barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
 			}
-
 			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
-
-			if(!graphics_writer.write_to_file(write_contacts_graphics_to_file))
-			{
-				std::cerr << "Failed to write graphics to file '" << write_contacts_graphics_to_file << "'\n";
-			}
-
-			time_recoder_for_output.record_elapsed_miliseconds_and_reset("write printed graphics to file");
 		}
 	}
 	else
@@ -262,13 +241,7 @@ int main(const int argc, const char** argv)
 
 		time_recoder_for_output.reset();
 
-		global_log_output << "total_balls: " << result.total_spheres << "\n";
-		global_log_output << "total_collisions: " << result.total_collisions << "\n";
-		global_log_output << "total_relevant_collisions: " << result.total_relevant_collisions << "\n";
-		global_log_output << "total_contacts_count: " << result.total_contacts_summary.count << "\n";
-		global_log_output << "total_contacts_area: " << result.total_contacts_summary.area << "\n";
-		global_log_output << "total_residue_level_contacts_count: " << result_grouped_by_residue.grouped_contacts_summaries.size() << "\n";
-		global_log_output << "total_chain_level_contacts_count: " << result_grouped_by_chain.grouped_contacts_summaries.size() << "\n";
+		voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_basic(result, result_grouped_by_residue, result_grouped_by_chain, std::cerr);
 
 		time_recoder_for_output.record_elapsed_miliseconds_and_reset("print total numbers");
 
@@ -300,32 +273,30 @@ int main(const int argc, const char** argv)
 					graphics_writer.add_triangle_fan(pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
 				}
 			}
-
 			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
-
-			if(!graphics_writer.write_to_file(write_contacts_graphics_to_file))
-			{
-				std::cerr << "Failed to write graphics to file '" << write_contacts_graphics_to_file << "'\n";
-			}
-
-			time_recoder_for_output.record_elapsed_miliseconds_and_reset("write printed graphics to file");
 		}
+	}
+
+	if(graphics_writer.enabled())
+	{
+		time_recoder_for_output.reset();
+		if(!graphics_writer.write_to_file(write_contacts_graphics_to_file))
+		{
+			std::cerr << "Error (non-terminating): failed to write graphics to file '" << write_contacts_graphics_to_file << "'\n";
+		}
+		time_recoder_for_output.record_elapsed_miliseconds_and_reset("write printed graphics to file");
 	}
 
 	if(measure_running_time)
 	{
-		int number_of_threads=1;
 #ifdef _OPENMP
-		number_of_threads=omp_get_max_threads();
+		std::cerr << "log_openmp_threads\t" << omp_get_max_threads() << "\n";
 #endif
-		global_log_output << "time_threads: " << number_of_threads << "\n";
-		time_recoder_for_input.print_recordings(global_log_output, "time input stage", true);
-		time_recoder_for_tessellation.print_recordings(global_log_output, "time tessellation stage", true);
-		time_recoder_for_output.print_recordings(global_log_output, "time output stage", true);
-		time_recoder_for_all.print_elapsed_time(global_log_output, "time full program");
+		time_recoder_for_input.print_recordings(std::cerr, "log time input stage", true);
+		time_recoder_for_tessellation.print_recordings(std::cerr, "log time tessellation stage", true);
+		time_recoder_for_output.print_recordings(std::cerr, "log time output stage", true);
+		time_recoder_for_all.print_elapsed_time(std::cerr, "log time full program");
 	}
-
-	std::cerr << global_log_output.str();
 
 	return 0;
 }
