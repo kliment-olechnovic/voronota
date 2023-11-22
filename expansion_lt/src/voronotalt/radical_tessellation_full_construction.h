@@ -1,16 +1,16 @@
-#ifndef VORONOTALT_TESSELLATION_FULL_CONSTRUCTION_H_
-#define VORONOTALT_TESSELLATION_FULL_CONSTRUCTION_H_
+#ifndef VORONOTALT_RADICAL_TESSELLATION_FULL_CONSTRUCTION_H_
+#define VORONOTALT_RADICAL_TESSELLATION_FULL_CONSTRUCTION_H_
 
 #include <map>
 
 #include "preparation_for_tessellation.h"
-#include "tessellation_contact_construction.h"
+#include "radical_tessellation_contact_construction.h"
 #include "time_recorder.h"
 
 namespace voronotalt
 {
 
-class TessellationFullConstruction
+class RadicalTessellationFullConstruction
 {
 public:
 	struct ContactDescriptorSummary
@@ -38,7 +38,7 @@ public:
 		{
 		}
 
-		void set(const TessellationContactConstruction::ContactDescriptor& cd)
+		void set(const RadicalTessellationContactConstruction::ContactDescriptor& cd)
 		{
 			if(cd.area>FLOATCONST(0.0))
 			{
@@ -208,7 +208,7 @@ public:
 		UnsignedInt total_collisions;
 		UnsignedInt total_relevant_collisions;
 		std::vector<ContactDescriptorSummary> contacts_summaries;
-		std::vector<TessellationContactConstruction::ContactDescriptorGraphics> contacts_graphics;
+		std::vector<RadicalTessellationContactConstruction::ContactDescriptorGraphics> contacts_graphics;
 		TotalContactDescriptorsSummary total_contacts_summary;
 		std::vector<CellContactDescriptorsSummary> cells_summaries;
 		TotalCellContactDescriptorsSummary total_cells_summary;
@@ -257,7 +257,7 @@ public:
 
 		std::vector<ContactDescriptorSummary> possible_contacts_summaries(preparation_result.relevant_collision_ids.size());
 
-		std::vector<TessellationContactConstruction::ContactDescriptorGraphics> possible_contacts_graphics;
+		std::vector<RadicalTessellationContactConstruction::ContactDescriptorGraphics> possible_contacts_graphics;
 		if(with_graphics)
 		{
 			possible_contacts_graphics.resize(possible_contacts_summaries.size());
@@ -267,7 +267,7 @@ public:
 
 		#pragma omp parallel
 		{
-			TessellationContactConstruction::ContactDescriptor cd;
+			RadicalTessellationContactConstruction::ContactDescriptor cd;
 			cd.contour.reserve(12);
 			cd.neighbor_descriptors.reserve(24);
 
@@ -276,12 +276,12 @@ public:
 			{
 				const UnsignedInt id_a=preparation_result.relevant_collision_ids[i].first;
 				const UnsignedInt id_b=preparation_result.relevant_collision_ids[i].second;
-				if(TessellationContactConstruction::construct_contact_descriptor(spheres, id_a, id_b, preparation_result.all_colliding_ids[id_a], cd))
+				if(RadicalTessellationContactConstruction::construct_contact_descriptor(spheres, id_a, id_b, preparation_result.all_colliding_ids[id_a], cd))
 				{
 					possible_contacts_summaries[i].set(cd);
 					if(with_graphics)
 					{
-						TessellationContactConstruction::construct_contact_descriptor_graphics(cd, 0.2, possible_contacts_graphics[i]);
+						RadicalTessellationContactConstruction::construct_contact_descriptor_graphics(cd, 0.2, possible_contacts_graphics[i]);
 					}
 				}
 			}
@@ -466,4 +466,4 @@ public:
 
 }
 
-#endif /* VORONOTALT_TESSELLATION_FULL_CONSTRUCTION_H_ */
+#endif /* VORONOTALT_RADICAL_TESSELLATION_FULL_CONSTRUCTION_H_ */

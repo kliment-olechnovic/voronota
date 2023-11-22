@@ -7,7 +7,7 @@
 #include <omp.h>
 #endif
 
-#include "../voronotalt/tessellation_full_construction.h"
+#include "../voronotalt/radical_tessellation_full_construction.h"
 #include "../voronotalt/simplified_aw_tessellation_full_construction.h"
 
 #include "spheres_input.h"
@@ -436,22 +436,22 @@ private:
 		}
 	}
 
-	inline static void print(const TessellationFullConstruction::ContactDescriptorSummary& obj, std::ostream& output)
+	inline static void print(const RadicalTessellationFullConstruction::ContactDescriptorSummary& obj, std::ostream& output)
 	{
 		output << obj.id_a << "\t" <<  obj.id_b << "\t" << obj.area << "\t" << obj.arc_length;
 	}
 
-	inline static void print(const TessellationFullConstruction::TotalContactDescriptorsSummary& obj, std::ostream& output)
+	inline static void print(const RadicalTessellationFullConstruction::TotalContactDescriptorsSummary& obj, std::ostream& output)
 	{
 		output << obj.area << "\t" << obj.arc_length << "\t" << obj.count;
 	}
 
-	inline static void print(const TessellationFullConstruction::CellContactDescriptorsSummary& obj, std::ostream& output)
+	inline static void print(const RadicalTessellationFullConstruction::CellContactDescriptorsSummary& obj, std::ostream& output)
 	{
 		output << obj.id << "\t" << obj.sas_area << "\t" << obj.sas_inside_volume;
 	}
 
-	inline static void print(const TessellationFullConstruction::TotalCellContactDescriptorsSummary& obj, std::ostream& output)
+	inline static void print(const RadicalTessellationFullConstruction::TotalCellContactDescriptorsSummary& obj, std::ostream& output)
 	{
 		output << obj.sas_area << "\t" << obj.sas_inside_volume << "\t" << obj.count;
 	}

@@ -1,5 +1,5 @@
-#ifndef VORONOTALT_TESSELLATION_CONTACT_CONSTRUCTION_H_
-#define VORONOTALT_TESSELLATION_CONTACT_CONSTRUCTION_H_
+#ifndef VORONOTALT_RADICAL_TESSELLATION_CONTACT_CONSTRUCTION_H_
+#define VORONOTALT_RADICAL_TESSELLATION_CONTACT_CONSTRUCTION_H_
 
 #include <vector>
 
@@ -8,7 +8,7 @@
 namespace voronotalt
 {
 
-class TessellationContactConstruction
+class RadicalTessellationContactConstruction
 {
 public:
 	struct ContourPoint
@@ -637,4 +637,4 @@ private:
 
 }
 
-#endif /* VORONOTALT_TESSELLATION_CONTACT_CONSTRUCTION_H_ */
+#endif /* VORONOTALT_RADICAL_TESSELLATION_CONTACT_CONSTRUCTION_H_ */
