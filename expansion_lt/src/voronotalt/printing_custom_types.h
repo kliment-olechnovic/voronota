@@ -24,16 +24,17 @@ public:
 		const SpheresInput::SphereLabel null_label;
 		if(!contacts.empty())
 		{
+			output << "ca_header ID1_chain ID1_residue ID1_atom ID2_chain ID2_residue ID2_atom ID1_index ID2_index area arc_legth\n";
 			bool printed_in_parallel=false;
 #ifdef _OPENMP
-			if(contacts.size()>10000)
+			if(contacts.size()>1000)
 			{
 				const int data_size=static_cast<int>(contacts.size());
 				const int n_threads=omp_get_max_threads();
 				if(n_threads>1)
 				{
 					const int approximate_portion_size=(data_size/n_threads);
-					if(approximate_portion_size>1000)
+					if(approximate_portion_size>100)
 					{
 						std::vector<int> thread_data_starts(n_threads, 0);
 						for(int i=1;i<n_threads;i++)
@@ -80,11 +81,7 @@ public:
 			const ContactsContainer& contacts, const std::vector<SpheresInput::SphereLabel>& sphere_labels,
 			const std::vector<UnsignedInt>& grouped_contacts_representative_ids, const GroupedContactsContainer& grouped_contacts, std::ostream& output)
 	{
-		const SpheresInput::SphereLabel null_label;
-		for(std::size_t i=0;i<grouped_contacts.size();i++)
-		{
-			print_contact_residue_level_or_chain_level_to_stream(i, false, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, null_label, output);
-		}
+		print_contacts_residue_level_or_chain_level_to_stream(false, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, output);
 	}
 
 	template<class ContactsContainer, class GroupedContactsContainer>
@@ -92,11 +89,7 @@ public:
 			const ContactsContainer& contacts, const std::vector<SpheresInput::SphereLabel>& sphere_labels,
 			const std::vector<UnsignedInt>& grouped_contacts_representative_ids, const GroupedContactsContainer& grouped_contacts, std::ostream& output)
 	{
-		const SpheresInput::SphereLabel null_label;
-		for(std::size_t i=0;i<grouped_contacts.size();i++)
-		{
-			print_contact_residue_level_or_chain_level_to_stream(i, true, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, null_label, output);
-		}
+		print_contacts_residue_level_or_chain_level_to_stream(true, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, output);
 	}
 
 	template<class CellsContainer>
@@ -106,16 +99,17 @@ public:
 		const SpheresInput::SphereLabel null_label;
 		if(!cells.empty())
 		{
+			output << "sa_header ID_chain ID_residue ID_atom ID_index sas_area volume\n";
 			bool printed_in_parallel=false;
 #ifdef _OPENMP
-			if(cells.size()>10000)
+			if(cells.size()>1000)
 			{
 				const int data_size=static_cast<int>(cells.size());
 				const int n_threads=omp_get_max_threads();
 				if(n_threads>1)
 				{
 					const int approximate_portion_size=(data_size/n_threads);
-					if(approximate_portion_size>1000)
+					if(approximate_portion_size>100)
 					{
 						std::vector<int> thread_data_starts(n_threads, 0);
 						for(int i=1;i<n_threads;i++)
@@ -162,11 +156,7 @@ public:
 			const CellsContainer& cells, const std::vector<SpheresInput::SphereLabel>& sphere_labels,
 			const std::vector<UnsignedInt>& grouped_cells_representative_ids, const GroupedCellsContainer& grouped_cells, std::ostream& output)
 	{
-		const SpheresInput::SphereLabel null_label;
-		for(std::size_t i=0;i<grouped_cells.size();i++)
-		{
-			print_sas_and_volume_residue_level_or_chain_level_to_stream(i, false, cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, null_label, output);
-		}
+		print_sas_and_volumes_residue_level_or_chain_level_to_stream(false,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, output);
 	}
 
 	template<class CellsContainer, class GroupedCellsContainer>
@@ -174,14 +164,138 @@ public:
 			const CellsContainer& cells, const std::vector<SpheresInput::SphereLabel>& sphere_labels,
 			const std::vector<UnsignedInt>& grouped_cells_representative_ids, const GroupedCellsContainer& grouped_cells, std::ostream& output)
 	{
-		const SpheresInput::SphereLabel null_label;
-		for(std::size_t i=0;i<grouped_cells.size();i++)
-		{
-			print_sas_and_volume_residue_level_or_chain_level_to_stream(i, true, cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, null_label, output);
-		}
+		print_sas_and_volumes_residue_level_or_chain_level_to_stream(true,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, output);
 	}
 
 private:
+	template<class ContactsContainer, class GroupedContactsContainer>
+	static void print_contacts_residue_level_or_chain_level_to_stream(
+			const bool chain_level,
+			const ContactsContainer& contacts,
+			const std::vector<SpheresInput::SphereLabel>& sphere_labels,
+			const std::vector<UnsignedInt>& grouped_contacts_representative_ids,
+			const GroupedContactsContainer& grouped_contacts,
+			std::ostream& output)
+	{
+		const SpheresInput::SphereLabel null_label;
+		if(!grouped_contacts.empty())
+		{
+			output << (chain_level ? "cu" : "cr") << "_header ID1_chain ID1_residue ID1_atom ID2_chain ID2_residue ID2_atom area arc_legth count\n";
+			bool printed_in_parallel=false;
+#ifdef _OPENMP
+			if(grouped_contacts.size()>1000)
+			{
+				const int data_size=static_cast<int>(grouped_contacts.size());
+				const int n_threads=omp_get_max_threads();
+				if(n_threads>1)
+				{
+					const int approximate_portion_size=(data_size/n_threads);
+					if(approximate_portion_size>100)
+					{
+						std::vector<int> thread_data_starts(n_threads, 0);
+						for(int i=1;i<n_threads;i++)
+						{
+							thread_data_starts[i]=thread_data_starts[i-1]+approximate_portion_size;
+						}
+
+						std::vector<std::ostringstream> suboutputs(n_threads);
+
+						#pragma omp parallel
+						{
+							#pragma omp for schedule(static,1)
+							for(int i=0;i<n_threads;i++)
+							{
+								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
+								{
+									print_contact_residue_level_or_chain_level_to_stream(static_cast<std::size_t>(j), chain_level, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, null_label, suboutputs[i]);
+								}
+							}
+						}
+
+						for(int i=0;i<n_threads;i++)
+						{
+							output << suboutputs[i].str();
+						}
+
+						printed_in_parallel=true;
+					}
+				}
+			}
+#endif
+			if(!printed_in_parallel)
+			{
+				for(std::size_t i=0;i<grouped_contacts.size();i++)
+				{
+					print_contact_residue_level_or_chain_level_to_stream(i, chain_level, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, null_label, output);
+				}
+			}
+		}
+	}
+
+	template<class CellsContainer, class GroupedCellsContainer>
+	static void print_sas_and_volumes_residue_level_or_chain_level_to_stream(
+			const bool chain_level,
+			const CellsContainer& cells,
+			const std::vector<SpheresInput::SphereLabel>& sphere_labels,
+			const std::vector<UnsignedInt>& grouped_cells_representative_ids,
+			const GroupedCellsContainer& grouped_cells,
+			std::ostream& output)
+	{
+		const SpheresInput::SphereLabel null_label;
+		if(!grouped_cells.empty())
+		{
+			output << (chain_level ? "su" : "sr") << "_header ID_chain ID_residue ID_atom sas_area volume count\n";
+			bool printed_in_parallel=false;
+#ifdef _OPENMP
+			if(grouped_cells.size()>1000)
+			{
+				const int data_size=static_cast<int>(grouped_cells.size());
+				const int n_threads=omp_get_max_threads();
+				if(n_threads>1)
+				{
+					const int approximate_portion_size=(data_size/n_threads);
+					if(approximate_portion_size>100)
+					{
+						std::vector<int> thread_data_starts(n_threads, 0);
+						for(int i=1;i<n_threads;i++)
+						{
+							thread_data_starts[i]=thread_data_starts[i-1]+approximate_portion_size;
+						}
+
+						std::vector<std::ostringstream> suboutputs(n_threads);
+
+						#pragma omp parallel
+						{
+							#pragma omp for schedule(static,1)
+							for(int i=0;i<n_threads;i++)
+							{
+								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
+								{
+									print_sas_and_volume_residue_level_or_chain_level_to_stream(static_cast<std::size_t>(j), chain_level, cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, null_label, suboutputs[i]);
+								}
+							}
+						}
+
+						for(int i=0;i<n_threads;i++)
+						{
+							output << suboutputs[i].str();
+						}
+
+						printed_in_parallel=true;
+					}
+				}
+			}
+#endif
+			if(!printed_in_parallel)
+			{
+				for(std::size_t i=0;i<grouped_cells.size();i++)
+				{
+					print_sas_and_volume_residue_level_or_chain_level_to_stream(i, chain_level, cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, null_label, output);
+				}
+			}
+		}
+	}
+
 	template<class ContactsContainer>
 	static void print_contact_to_stream(
 			const std::size_t i,
