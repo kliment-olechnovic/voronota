@@ -27,6 +27,7 @@ int main(const int argc, const char** argv)
 	bool print_sas_and_volumes=false;
 	bool print_sas_and_volumes_residue_level=false;
 	bool print_sas_and_volumes_chain_level=false;
+	bool print_everything=false;
 	std::string write_contacts_graphics_to_file;
 
 	{
@@ -93,6 +94,10 @@ int main(const int argc, const char** argv)
 			{
 				print_sas_and_volumes_chain_level=opt.is_flag_and_true();
 			}
+			else if(opt.name=="print-everything" && opt.is_flag())
+			{
+				print_everything=opt.is_flag_and_true();
+			}
 			else if(opt.name=="write-contacts-graphics-to-file" && opt.args_strings.size()==1)
 			{
 				write_contacts_graphics_to_file=opt.args_strings.front();
@@ -108,6 +113,16 @@ int main(const int argc, const char** argv)
 				return 1;
 			}
 		}
+	}
+
+	if(print_everything)
+	{
+		print_contacts=true;
+		print_contacts_residue_level=true;
+		print_contacts_chain_level=true;
+		print_sas_and_volumes=true;
+		print_sas_and_volumes_residue_level=true;
+		print_sas_and_volumes_chain_level=true;
 	}
 
 	const bool need_summaries_on_residue_level=(print_contacts_residue_level || print_sas_and_volumes_residue_level);
