@@ -11,6 +11,7 @@
 #include "voronotalt_cli/spheres_input.h"
 #include "voronotalt_cli/printing_custom_types.h"
 #include "voronotalt_cli/graphics_writer.h"
+#include "voronotalt_cli/time_recorder_chrono.h"
 
 int main(const int argc, const char** argv)
 {
@@ -133,10 +134,10 @@ int main(const int argc, const char** argv)
 	omp_set_num_threads(max_number_of_processors);
 #endif
 
-	voronotalt::TimeRecorder time_recoder_for_all(measure_running_time);
-	voronotalt::TimeRecorder time_recoder_for_input(measure_running_time);
-	voronotalt::TimeRecorder time_recoder_for_tessellation(measure_running_time);
-	voronotalt::TimeRecorder time_recoder_for_output(measure_running_time);
+	voronotalt::TimeRecorderChrono time_recoder_for_all(measure_running_time);
+	voronotalt::TimeRecorderChrono time_recoder_for_input(measure_running_time);
+	voronotalt::TimeRecorderChrono time_recoder_for_tessellation(measure_running_time);
+	voronotalt::TimeRecorderChrono time_recoder_for_output(measure_running_time);
 
 	voronotalt::SpheresInput::Result spheres_input_result;
 
