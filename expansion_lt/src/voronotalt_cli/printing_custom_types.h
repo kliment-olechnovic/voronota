@@ -7,9 +7,10 @@
 #include <omp.h>
 #endif
 
+#include "../voronotalt/tessellation_full_construction.h"
+#include "../voronotalt/simplified_aw_tessellation_full_construction.h"
+
 #include "spheres_input.h"
-#include "tessellation_full_construction.h"
-#include "simplified_aw_tessellation_full_construction.h"
 
 namespace voronotalt
 {

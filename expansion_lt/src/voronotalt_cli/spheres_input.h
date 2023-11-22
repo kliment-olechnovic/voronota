@@ -5,9 +5,10 @@
 #include <vector>
 #include <map>
 
-#include "basic_types_and_functions.h"
+#include "../voronotalt/basic_types_and_functions.h"
+#include "../voronotalt/time_recorder.h"
+
 #include "io_utilities.h"
-#include "time_recorder.h"
 
 namespace voronotalt
 {

@@ -4,12 +4,13 @@
 #include <omp.h>
 #endif
 
-#include "voronotalt/clo_parser.h"
-#include "voronotalt/spheres_input.h"
 #include "voronotalt/tessellation_full_construction.h"
 #include "voronotalt/simplified_aw_tessellation_full_construction.h"
-#include "voronotalt/printing_custom_types.h"
-#include "voronotalt/graphics_writer.h"
+
+#include "voronotalt_cli/clo_parser.h"
+#include "voronotalt_cli/spheres_input.h"
+#include "voronotalt_cli/printing_custom_types.h"
+#include "voronotalt_cli/graphics_writer.h"
 
 int main(const int argc, const char** argv)
 {

@@ -7,7 +7,7 @@
 #include <sstream>
 #include <fstream>
 
-#include "basic_types_and_functions.h"
+#include "../voronotalt/basic_types_and_functions.h"
 
 namespace voronotalt
 {
