@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <fstream>
+#include <stdexcept>
 
 #include "../src/voronotalt/radical_tessellation_full_construction.h"
 #include "../src/voronotalt_cli/io_utilities.h"
@@ -55,83 +56,106 @@ public:
 		recompute(probe);
 	}
 
-	RadicalTessellation(const char* filename, double probe) : probe(probe)
+	RadicalTessellation(const char* balls_file_path, double probe) : probe(probe)
 	{
-		if(filename!=0)
+		if(balls_file_path==0 || std::string(balls_file_path).empty())
 		{
-			std::ifstream input(filename, std::ios::in);
-			std::vector<double> values;
-			if(voronotalt::read_double_values_from_text_stream(input, values))
-			{
-				if(!values.empty() && values.size()%4==0)
-				{
-					const std::size_t N=values.size()/4;
-					balls.resize(N);
-					for(std::size_t i=0;i<N;i++)
-					{
-						Ball& b=balls[i];
-						b.x=values[i*4+0];
-						b.y=values[i*4+1];
-						b.z=values[i*4+2];
-						b.r=values[i*4+3];
-					}
-					recompute(probe);
-				}
-			}
+			throw std::runtime_error("Invalid file name provided for reading.");
 		}
+
+		std::ifstream input(balls_file_path, std::ios::in);
+
+		if(!input.good())
+		{
+			throw std::runtime_error(std::string("Failed to open file '")+std::string(balls_file_path)+std::string("' for reading."));
+		}
+
+		std::vector<double> values;
+		if(!voronotalt::read_double_values_from_text_stream(input, values))
+		{
+			throw std::runtime_error(std::string("Failed to read data from file '")+std::string(balls_file_path)+std::string("'."));
+		}
+
+		if(values.empty() || values.size()%4!=0)
+		{
+			throw std::runtime_error(std::string("Invalid data in file '")+std::string(balls_file_path)+std::string("'."));
+		}
+
+		const std::size_t N=values.size()/4;
+		balls.resize(N);
+		for(std::size_t i=0;i<N;i++)
+		{
+			Ball& b=balls[i];
+			b.x=values[i*4+0];
+			b.y=values[i*4+1];
+			b.z=values[i*4+2];
+			b.r=values[i*4+3];
+		}
+
+		recompute(probe);
 	}
 
-	bool recompute(const double new_probe)
+	int recompute(const double new_probe)
 	{
 		probe=new_probe;
 		contacts.clear();
 		cells.clear();
 
-		if(!balls.empty())
+		if(balls.empty())
 		{
-			std::vector<voronotalt::SimpleSphere> spheres(balls.size());
-			for(std::size_t i=0;i<balls.size();i++)
+			throw std::runtime_error("No balls to compute the tessellation for.");
+		}
+
+		std::vector<voronotalt::SimpleSphere> spheres(balls.size());
+		for(std::size_t i=0;i<balls.size();i++)
+		{
+			const Ball& b=balls[i];
+			voronotalt::SimpleSphere& s=spheres[i];
+			s.p.x=b.x;
+			s.p.y=b.y;
+			s.p.z=b.z;
+			s.r=b.r+probe;
+		}
+
+		voronotalt::RadicalTessellationFullConstruction::Result result;
+		voronotalt::RadicalTessellationFullConstruction::construct_full_tessellation(spheres, result);
+
+		if(result.contacts_summaries.empty())
+		{
+			throw std::runtime_error("No contacts constructed for the provided balls and probe.");
+		}
+
+		if(result.cells_summaries.empty())
+		{
+			throw std::runtime_error("No cells constructed for the provided balls and probe.");
+		}
+
+		{
+			contacts.resize(result.contacts_summaries.size());
+			for(std::size_t i=0;i<result.contacts_summaries.size();i++)
 			{
-				const Ball& b=balls[i];
-				voronotalt::SimpleSphere& s=spheres[i];
-				s.p.x=b.x;
-				s.p.y=b.y;
-				s.p.z=b.z;
-				s.r=b.r+probe;
+				contacts[i].index_a=result.contacts_summaries[i].id_a;
+				contacts[i].index_b=result.contacts_summaries[i].id_b;
+				contacts[i].area=result.contacts_summaries[i].area;
+				contacts[i].arc_length=result.contacts_summaries[i].arc_length;
 			}
+		}
 
-			voronotalt::RadicalTessellationFullConstruction::Result result;
-			voronotalt::RadicalTessellationFullConstruction::construct_full_tessellation(spheres, result);
-
-			if(!result.contacts_summaries.empty())
+		{
+			cells.resize(spheres.size());
+			for(std::size_t i=0;i<result.cells_summaries.size();i++)
 			{
-				contacts.resize(result.contacts_summaries.size());
-				for(std::size_t i=0;i<result.contacts_summaries.size();i++)
+				std::size_t index=static_cast<std::size_t>(result.cells_summaries[i].id);
+				if(index<spheres.size())
 				{
-					contacts[i].index_a=result.contacts_summaries[i].id_a;
-					contacts[i].index_b=result.contacts_summaries[i].id_b;
-					contacts[i].area=result.contacts_summaries[i].area;
-					contacts[i].arc_length=result.contacts_summaries[i].arc_length;
-				}
-			}
-
-			if(!result.cells_summaries.empty())
-			{
-				cells.resize(spheres.size());
-				for(std::size_t i=0;i<result.cells_summaries.size();i++)
-				{
-					std::size_t index=static_cast<std::size_t>(result.cells_summaries[i].id);
-					if(index<spheres.size())
-					{
-						cells[index].sas_area=result.cells_summaries[i].sas_area;
-						cells[index].volume=result.cells_summaries[i].sas_inside_volume;
-						cells[index].included=true;
-					}
+					cells[index].sas_area=result.cells_summaries[i].sas_area;
+					cells[index].volume=result.cells_summaries[i].sas_inside_volume;
+					cells[index].included=true;
 				}
 			}
 		}
 
-		return (!contacts.empty() && !cells.empty());
+		return static_cast<int>(contacts.size());
 	}
 };
 
