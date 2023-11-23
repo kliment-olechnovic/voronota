@@ -1,4 +1,4 @@
-import voronotalt
+import voronotalt_python as voronotalt
 
 balls = [voronotalt.Ball(1.0, 2.0, 3.0, 1.5), voronotalt.Ball(4.0, 5.0, 6.0, 2.0)]
 rt = voronotalt.RadicalTessellation(balls, 2.5)

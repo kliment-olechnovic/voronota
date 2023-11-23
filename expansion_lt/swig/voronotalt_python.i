@@ -1,4 +1,4 @@
-%module voronotalt
+%module voronotalt_python
 
 %{
 #include "voronotalt.h"
