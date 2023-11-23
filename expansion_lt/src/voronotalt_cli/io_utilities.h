@@ -2,6 +2,7 @@
 #define VORONOTALT_IO_UTILITIES_H_
 
 #include <iostream>
+#include <sstream>
 #include <cstdlib>
 #include <vector>
 

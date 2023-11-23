@@ -228,6 +228,14 @@ public:
 
 	static void construct_full_tessellation(
 			const std::vector<SimpleSphere>& spheres,
+			Result& result)
+	{
+		TimeRecorder time_recorder;
+		construct_full_tessellation(spheres, std::vector<int>(), false, true, result, time_recorder);
+	}
+
+	static void construct_full_tessellation(
+			const std::vector<SimpleSphere>& spheres,
 			const std::vector<int>& grouping_of_spheres,
 			const bool with_graphics,
 			const bool summarize_cells,
