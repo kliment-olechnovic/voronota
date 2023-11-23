@@ -10,7 +10,11 @@
 
 struct Ball
 {
-	Ball(double x=0.0, double y=0.0, double z=0.0, double r=0.0) : x(x), y(y), z(z), r(r)
+	Ball() : x(0.0), y(0.0), z(0.0), r(0.0)
+	{
+	}
+
+	Ball(double x, double y, double z, double r) : x(x), y(y), z(z), r(r)
 	{
 	}
 
