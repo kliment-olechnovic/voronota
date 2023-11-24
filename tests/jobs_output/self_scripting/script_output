@@ -929,9 +929,6 @@
             "name":"add-figure-of-2nd-order-cells-for-contacts",
             "short_description":""},
           {
-            "name":"add-figure-of-alt-contacts",
-            "short_description":""},
-          {
             "name":"add-figure-of-convex-hull",
             "short_description":""},
           {

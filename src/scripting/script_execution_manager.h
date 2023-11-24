@@ -9,7 +9,6 @@
 #include "operators/add_figure_of_text.h"
 #include "operators/add_figure_of_triangulation.h"
 #include "operators/add_figure_of_voxels_test.h"
-#include "operators/add_figure_of_alt_contacts.h"
 #include "operators/cad_score_many.h"
 #include "operators/cad_score.h"
 #include "operators/calculate_betweenness.h"
@@ -243,7 +242,6 @@ public:
 		set_command_for_data_manager("add-figure-of-text", operators::AddFigureOfText(), true);
 		set_command_for_data_manager("add-figure-of-triangulation", operators::AddFigureOfTriangulation(), true);
 		set_command_for_data_manager("add-figure-of-voxels-test", operators::AddFigureOfVoxelsTest(), true);
-		set_command_for_data_manager("add-figure-of-alt-contacts", operators::AddFigureOfAltContacts(), true);
 		set_command_for_data_manager("calculate-betweenness", operators::CalculateBetweenness(), true);
 		set_command_for_data_manager("calculate-burial-depth", operators::CalculateBurialDepth(), true);
 		set_command_for_data_manager("center-atoms", operators::CenterAtoms(), true);
