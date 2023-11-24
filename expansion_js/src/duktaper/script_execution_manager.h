@@ -7,6 +7,7 @@
 #include "operators/checksum.h"
 #include "operators/congruence_score.h"
 #include "operators/congruence_score_many.h"
+#include "operators/construct_contacts_radically_fast.h"
 #include "operators/construct_or_load_contacts.h"
 #include "operators/construct_or_load_quality_scores.h"
 #include "operators/convert_bff_obj_to_svg.h"
@@ -52,6 +53,7 @@ public:
 		set_command_for_extra_actions("nnport-predict", operators::NNPortPredict());
 		set_command_for_extra_actions("setup-defaults", operators::SetupDefaults());
 
+		set_command_for_data_manager("construct-contacts-radically-fast", operators::ConstructContactsRadicallyFast(), true);
 		set_command_for_data_manager("construct-or-load-contacts", operators::ConstructOrLoadContacts(), true);
 		set_command_for_data_manager("construct-or-load-quality-scores", operators::ConstructOrLoadQualityScores(), true);
 		set_command_for_data_manager("export-atoms-to-mmcif", operators::ExportAtomsToMMCIF(), false);

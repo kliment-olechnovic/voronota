@@ -105,6 +105,40 @@ bool draw_solvent_contact(
 }
 
 template<typename OpenGLPrinter>
+bool draw_solvent_contact_without_tessellation(
+		const std::vector<SimpleSphere>& spheres,
+		const std::vector<std::size_t>& sorted_neighbor_ids,
+		const std::size_t a_id,
+		const double probe,
+		const SubdividedIcosahedron& sih,
+		std::string& output_graphics)
+{
+	output_graphics.clear();
+	if(a_id<spheres.size())
+	{
+		const ConstrainedContactRemainder::Remainder remainder=ConstrainedContactRemainder::construct_contact_remainder_without_tessellation(spheres, sorted_neighbor_ids, a_id, probe, sih);
+		if(!remainder.empty())
+		{
+			OpenGLPrinter opengl_printer;
+			for(ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
+			{
+				std::vector<SimplePoint> ts(3);
+				std::vector<SimplePoint> ns(3);
+				for(int i=0;i<3;i++)
+				{
+					ts[i]=remainder_it->p[i];
+					ns[i]=sub_of_points<SimplePoint>(ts[i], spheres[a_id]).unit();
+				}
+				opengl_printer.add_triangle_strip(ts, ns);
+			}
+			output_graphics=opengl_printer.str();
+			return true;
+		}
+	}
+	return false;
+}
+
+template<typename OpenGLPrinter>
 bool draw_solvent_contact_in_two_scales(
 		const std::vector<SimpleSphere>& spheres,
 		const Triangulation::VerticesVector& vertices_vector,

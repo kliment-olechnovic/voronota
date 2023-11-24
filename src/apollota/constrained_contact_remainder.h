@@ -64,6 +64,33 @@ public:
 		return result;
 	}
 
+	static Remainder construct_contact_remainder_without_tessellation(
+			const std::vector<SimpleSphere>& spheres,
+			const std::vector<std::size_t>& sorted_neighbor_ids,
+			const std::size_t a_id,
+			const double probe,
+			const SubdividedIcosahedron& raw_sih)
+	{
+		Remainder result;
+		if(a_id<spheres.size())
+		{
+			const SimpleSphere& a=spheres[a_id];
+			const SimpleSphere a_expanded=SimpleSphere(a, a.r+probe);
+			result=init_remainder(a_expanded, raw_sih);
+			for(std::vector<std::size_t>::const_iterator it=sorted_neighbor_ids.begin();it!=sorted_neighbor_ids.end();++it)
+			{
+				const std::size_t c_id=(*it);
+				if(c_id<spheres.size())
+				{
+					const SimpleSphere& c=spheres[c_id];
+					const SimpleSphere c_expanded=SimpleSphere(c, c.r+probe);
+					cut_contact_remainder(c_expanded, std::make_pair(10, a_expanded), result);
+				}
+			}
+		}
+		return result;
+	}
+
 private:
 	static void cut_contact_remainder(const SimpleSphere& sphere, const std::pair<int, SimpleSphere>& projection_parameters, Remainder& remainder)
 	{
