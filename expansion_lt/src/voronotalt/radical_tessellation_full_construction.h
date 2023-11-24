@@ -21,9 +21,9 @@ public:
 		Float solid_angle_b;
 		Float pyramid_volume_a;
 		Float pyramid_volume_b;
+		Float distance;
 		UnsignedInt id_a;
 		UnsignedInt id_b;
-		UnsignedInt complexity;
 
 		ContactDescriptorSummary() :
 			area(FLOATCONST(0.0)),
@@ -32,9 +32,9 @@ public:
 			solid_angle_b(FLOATCONST(0.0)),
 			pyramid_volume_a(FLOATCONST(0.0)),
 			pyramid_volume_b(FLOATCONST(0.0)),
+			distance(FLOATCONST(0.0)),
 			id_a(0),
-			id_b(0),
-			complexity(0)
+			id_b(0)
 		{
 		}
 
@@ -46,11 +46,11 @@ public:
 				id_b=cd.id_b;
 				area=cd.area;
 				arc_length=(cd.sum_of_arc_angles*cd.intersection_circle_sphere.r);
-				complexity=cd.contour.size();
 				solid_angle_a=cd.solid_angle_a;
 				solid_angle_b=cd.solid_angle_b;
 				pyramid_volume_a=cd.pyramid_volume_a;
 				pyramid_volume_b=cd.pyramid_volume_b;
+				distance=cd.distance;
 			}
 		}
 
@@ -76,7 +76,6 @@ public:
 		Float sas_area;
 		Float sas_inside_volume;
 		UnsignedInt id;
-		UnsignedInt complexity;
 		UnsignedInt count;
 		int stage;
 
@@ -90,7 +89,6 @@ public:
 			sas_area(FLOATCONST(0.0)),
 			sas_inside_volume(FLOATCONST(0.0)),
 			id(0),
-			complexity(0),
 			count(0),
 			stage(0)
 		{
@@ -103,7 +101,6 @@ public:
 				count++;
 				area+=cds.area;
 				arc_length+=cds.arc_length;
-				complexity+=cds.complexity;
 				explained_solid_angle_positive+=std::max(FLOATCONST(0.0), (cds.id_a==id ? cds.solid_angle_a : cds.solid_angle_b));
 				explained_solid_angle_negative+=FLOATCONST(0.0)-std::min(FLOATCONST(0.0), (cds.id_a==id ? cds.solid_angle_a : cds.solid_angle_b));
 				explained_pyramid_volume_positive+=std::max(FLOATCONST(0.0), (cds.id_a==id ? cds.pyramid_volume_a : cds.pyramid_volume_b));
@@ -155,13 +152,13 @@ public:
 	{
 		Float area;
 		Float arc_length;
-		UnsignedInt complexity;
+		Float distance;
 		UnsignedInt count;
 
 		TotalContactDescriptorsSummary() :
 			area(FLOATCONST(0.0)),
 			arc_length(FLOATCONST(0.0)),
-			complexity(0),
+			distance(FLOATCONST(-1.0)),
 			count(0)
 		{
 		}
@@ -173,7 +170,7 @@ public:
 				count++;
 				area+=cds.area;
 				arc_length+=cds.arc_length;
-				complexity+=cds.complexity;
+				distance=((distance<FLOATCONST(0.0)) ? cds.distance : std::min(distance, cds.distance));
 			}
 		}
 	};

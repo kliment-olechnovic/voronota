@@ -25,7 +25,7 @@ public:
 		const SpheresInput::SphereLabel null_label;
 		if(!contacts.empty())
 		{
-			output << "ca_header\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom\tID1_index\tID2_index\tarea\tarc_legth\n";
+			output << "ca_header\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom\tID1_index\tID2_index\tarea\tarc_legth\tdistance\n";
 			bool printed_in_parallel=false;
 #ifdef _OPENMP
 			if(contacts.size()>1000)
@@ -203,7 +203,7 @@ private:
 		const SpheresInput::SphereLabel null_label;
 		if(!grouped_contacts.empty())
 		{
-			output << (chain_level ? "cu" : "cr") << "_header\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom\tarea\tarc_legth\tcount\n";
+			output << (chain_level ? "cu" : "cr") << "_header\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom\tarea\tarc_legth\tdistance\tcount\n";
 			bool printed_in_parallel=false;
 #ifdef _OPENMP
 			if(grouped_contacts.size()>1000)
@@ -438,12 +438,12 @@ private:
 
 	inline static void print(const RadicalTessellationFullConstruction::ContactDescriptorSummary& obj, std::ostream& output)
 	{
-		output << obj.id_a << "\t" <<  obj.id_b << "\t" << obj.area << "\t" << obj.arc_length;
+		output << obj.id_a << "\t" <<  obj.id_b << "\t" << obj.area << "\t" << obj.arc_length << "\t" << obj.distance;
 	}
 
 	inline static void print(const RadicalTessellationFullConstruction::TotalContactDescriptorsSummary& obj, std::ostream& output)
 	{
-		output << obj.area << "\t" << obj.arc_length << "\t" << obj.count;
+		output << obj.area << "\t" << obj.arc_length << "\t" << obj.distance << "\t" << obj.count;
 	}
 
 	inline static void print(const RadicalTessellationFullConstruction::CellContactDescriptorsSummary& obj, std::ostream& output)
@@ -458,12 +458,12 @@ private:
 
 	inline static void print(const SimplifiedAWTessellationFullConstruction::ContactDescriptorSummary& obj, std::ostream& output)
 	{
-		output << obj.id_a << "\t" <<  obj.id_b << "\t" << obj.area << "\t" << obj.arc_length;
+		output << obj.id_a << "\t" <<  obj.id_b << "\t" << obj.area << "\t" << obj.arc_length << "\t" << obj.distance;
 	}
 
 	inline static void print(const SimplifiedAWTessellationFullConstruction::TotalContactDescriptorsSummary& obj, std::ostream& output)
 	{
-		output << obj.area << "\t" << obj.arc_length << "\t" << obj.count;
+		output << obj.area << "\t" << obj.arc_length << "\t" << obj.distance << "\t" << obj.count;
 	}
 };
 

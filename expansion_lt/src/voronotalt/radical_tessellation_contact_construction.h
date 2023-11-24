@@ -56,6 +56,7 @@ public:
 		Float solid_angle_b;
 		Float pyramid_volume_a;
 		Float pyramid_volume_b;
+		Float distance;
 		UnsignedInt id_a;
 		UnsignedInt id_b;
 
@@ -66,6 +67,7 @@ public:
 			solid_angle_b(FLOATCONST(0.0)),
 			pyramid_volume_a(FLOATCONST(0.0)),
 			pyramid_volume_b(FLOATCONST(0.0)),
+			distance(FLOATCONST(0.0)),
 			id_a(0),
 			id_b(0)
 		{
@@ -83,6 +85,7 @@ public:
 			solid_angle_b=FLOATCONST(0.0);
 			pyramid_volume_a=FLOATCONST(0.0);
 			pyramid_volume_b=FLOATCONST(0.0);
+			distance=FLOATCONST(0.0);
 		}
 	};
 
@@ -207,6 +210,8 @@ public:
 							result_contact_descriptor.pyramid_volume_a=distance_from_point_to_point(a.p, result_contact_descriptor.intersection_circle_sphere.p)*result_contact_descriptor.area/FLOATCONST(3.0)*(result_contact_descriptor.solid_angle_a<FLOATCONST(0.0) ? FLOATCONST(-1.0) : FLOATCONST(1.0));
 							result_contact_descriptor.pyramid_volume_b=distance_from_point_to_point(b.p, result_contact_descriptor.intersection_circle_sphere.p)*result_contact_descriptor.area/FLOATCONST(3.0)*(result_contact_descriptor.solid_angle_b<FLOATCONST(0.0) ? FLOATCONST(-1.0) : FLOATCONST(1.0));
 						}
+
+						result_contact_descriptor.distance=distance_from_point_to_point(a.p, b.p);
 					}
 				}
 			}

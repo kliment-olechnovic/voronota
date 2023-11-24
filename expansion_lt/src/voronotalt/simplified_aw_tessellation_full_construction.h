@@ -17,12 +17,14 @@ public:
 	{
 		Float area;
 		Float arc_length;
+		Float distance;
 		UnsignedInt id_a;
 		UnsignedInt id_b;
 
 		ContactDescriptorSummary() :
 			area(FLOATCONST(0.0)),
 			arc_length(FLOATCONST(0.0)),
+			distance(FLOATCONST(0.0)),
 			id_a(0),
 			id_b(0)
 		{
@@ -36,6 +38,7 @@ public:
 				id_b=cd.id_b;
 				area=cd.area;
 				arc_length=cd.arc_length;
+				distance=cd.distance;
 			}
 		}
 
@@ -52,11 +55,13 @@ public:
 	{
 		Float area;
 		Float arc_length;
+		Float distance;
 		UnsignedInt count;
 
 		TotalContactDescriptorsSummary() :
 			area(FLOATCONST(0.0)),
 			arc_length(FLOATCONST(0.0)),
+			distance(FLOATCONST(-1.0)),
 			count(0)
 		{
 		}
@@ -68,6 +73,7 @@ public:
 				count++;
 				area+=cds.area;
 				arc_length+=cds.arc_length;
+				distance=((distance<FLOATCONST(0.0)) ? cds.distance : std::min(distance, cds.distance));
 			}
 		}
 	};

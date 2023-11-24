@@ -70,12 +70,14 @@ public:
 		SimplePoint intersection_circle_axis;
 		Float area;
 		Float arc_length;
+		Float distance;
 		UnsignedInt id_a;
 		UnsignedInt id_b;
 
 		ContactDescriptor() :
 			area(FLOATCONST(0.0)),
 			arc_length(FLOATCONST(0.0)),
+			distance(FLOATCONST(0.0)),
 			id_a(0),
 			id_b(0)
 		{
@@ -90,6 +92,7 @@ public:
 			graphics.clear();
 			area=FLOATCONST(0.0);
 			arc_length=FLOATCONST(0.0);
+			distance=FLOATCONST(0.0);
 		}
 	};
 
@@ -285,6 +288,8 @@ public:
 								}
 							}
 						}
+
+						result_contact_descriptor.distance=distance_from_point_to_point(a.p, b.p);
 					}
 				}
 			}
