@@ -993,6 +993,14 @@ public:
 		}
 	}
 
+	void assert_primary_structure_info_valid() const
+	{
+		if(!primary_structure_info_.valid(atoms_))
+		{
+			throw std::runtime_error(std::string("Invalid primary structure information."));
+		}
+	}
+
 	bool is_any_atom_visible() const
 	{
 		for(std::size_t i=0;i<atoms_display_states_.size();i++)

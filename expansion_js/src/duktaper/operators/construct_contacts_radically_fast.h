@@ -3,8 +3,6 @@
 
 #include "../../../../expansion_lt/src/voronotalt/radical_tessellation_full_construction.h"
 
-#include "../../../../src/apollota/constrained_contacts_utilities.h"
-
 #include "../../../../src/auxiliaries/opengl_printer.h"
 
 #include "../operators_common.h"
@@ -32,27 +30,41 @@ public:
 	};
 
 	double probe;
+	bool no_intra_chain;
+	bool no_intra_residue;
 	bool generate_graphics;
 
-	ConstructContactsRadicallyFast() : probe(1.4), generate_graphics(false)
+	ConstructContactsRadicallyFast() : probe(1.4), no_intra_chain(false), no_intra_residue(false), generate_graphics(false)
 	{
 	}
 
 	void initialize(scripting::CommandInput& input)
 	{
 		probe=input.get_value_or_default<double>("probe", 1.4);
+		no_intra_chain=input.get_flag("no-intra-chain");
+		no_intra_residue=input.get_flag("no-intra-residue");
 		generate_graphics=input.get_flag("generate-graphics");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("probe", CDOD::DATATYPE_FLOAT, "probe radius", 1.4));
+		doc.set_option_decription(CDOD("no-intra-chain", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-chain contacts"));
+		doc.set_option_decription(CDOD("no-intra-residue", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-residue contacts"));
 		doc.set_option_decription(CDOD("generate-graphics", CDOD::DATATYPE_BOOL, "flag to generate graphics"));
 	}
 
 	Result run(scripting::DataManager& data_manager) const
 	{
+		const bool with_grouping_for_filtering=(no_intra_chain || no_intra_residue);
+		const bool summarize_cells=!with_grouping_for_filtering;
+
 		data_manager.assert_atoms_availability();
+
+		if(with_grouping_for_filtering)
+		{
+			data_manager.assert_primary_structure_info_valid();
+		}
 
 		std::vector<voronotalt::SimpleSphere> spheres(data_manager.atoms().size());
 		for(std::size_t i=0;i<data_manager.atoms().size();i++)
@@ -65,16 +77,35 @@ public:
 			s.r=a.value.r+probe;
 		}
 
+		std::vector<int> grouping_for_filtering;
+		if(with_grouping_for_filtering)
+		{
+			grouping_for_filtering.resize(spheres.size(), 0);
+			for(std::size_t i=0;i<spheres.size();i++)
+			{
+				const std::size_t residue_index=data_manager.primary_structure_info().map_of_atoms_to_residues[i];
+				if(no_intra_chain)
+				{
+					const std::size_t chain_index=data_manager.primary_structure_info().map_of_residues_to_chains[residue_index];
+					grouping_for_filtering[i]=static_cast<int>(chain_index);
+				}
+				else if(no_intra_residue)
+				{
+					grouping_for_filtering[i]=static_cast<int>(residue_index);
+				}
+			}
+		}
+
 		voronotalt::RadicalTessellationFullConstruction::Result radical_tessellation_result;
 		voronotalt::TimeRecorder mock_time_recorder;
-		voronotalt::RadicalTessellationFullConstruction::construct_full_tessellation(spheres, std::vector<int>(), generate_graphics, true, radical_tessellation_result, mock_time_recorder);
+		voronotalt::RadicalTessellationFullConstruction::construct_full_tessellation(spheres, grouping_for_filtering, generate_graphics, summarize_cells, radical_tessellation_result, mock_time_recorder);
 
 		if(radical_tessellation_result.contacts_summaries.empty())
 		{
 			throw std::runtime_error("No contacts constructed for the provided atoms and probe.");
 		}
 
-		if(radical_tessellation_result.cells_summaries.empty())
+		if(summarize_cells && radical_tessellation_result.cells_summaries.empty())
 		{
 			throw std::runtime_error("No cells constructed for the provided atoms and probe.");
 		}
@@ -103,54 +134,10 @@ public:
 			}
 		}
 
-		std::vector<std::string> sas_graphics;
-		if(generate_graphics)
-		{
-			sas_graphics.resize(spheres.size());
-
-			std::vector<apollota::SimpleSphere> sas_balls(spheres.size());
-			for(std::size_t i=0;i<spheres.size();i++)
-			{
-				sas_balls[i].x=spheres[i].p.x;
-				sas_balls[i].y=spheres[i].p.y;
-				sas_balls[i].z=spheres[i].p.z;
-				sas_balls[i].r=spheres[i].r-probe;
-			}
-
-			std::vector< std::multimap< std::pair<double, double>, std::size_t > > sas_neighbors(spheres.size());
-			for(std::size_t i=0;i<radical_tessellation_result.contacts_summaries.size();i++)
-			{
-				const voronotalt::RadicalTessellationFullConstruction::ContactDescriptorSummary& cds=radical_tessellation_result.contacts_summaries[i];
-				const std::pair<double, double> sort_value(0.0-cds.arc_length, cds.distance);
-				sas_neighbors[cds.id_a].insert(std::make_pair(sort_value, cds.id_b));
-				sas_neighbors[cds.id_b].insert(std::make_pair(sort_value, cds.id_a));
-			}
-
-			const apollota::SubdividedIcosahedron sih(3);
-
-			for(std::size_t i=0;i<radical_tessellation_result.cells_summaries.size();i++)
-			{
-				const voronotalt::RadicalTessellationFullConstruction::CellContactDescriptorsSummary& ccds=radical_tessellation_result.cells_summaries[i];
-				const std::multimap< std::pair<double, double>, std::size_t >& neighbors_as_multimap=sas_neighbors[ccds.id];
-				std::vector<std::size_t> sorted_neighbors;
-				sorted_neighbors.reserve(neighbors_as_multimap.size());
-				for(std::multimap< std::pair<double, double>, std::size_t >::const_iterator it=neighbors_as_multimap.begin();it!=neighbors_as_multimap.end();++it)
-				{
-					sorted_neighbors.push_back(it->second);
-				}
-				apollota::draw_solvent_contact_without_tessellation<auxiliaries::OpenGLPrinter>(sas_balls, sorted_neighbors, ccds.id, probe, sih, sas_graphics[ccds.id]);
-			}
-		}
-
 		for(std::size_t i=0;i<radical_tessellation_result.cells_summaries.size();i++)
 		{
 			const voronotalt::RadicalTessellationFullConstruction::CellContactDescriptorsSummary& ccds=radical_tessellation_result.cells_summaries[i];
-			bool valid_solvent_contact=(ccds.sas_area>0.0);
-			if(generate_graphics)
-			{
-				valid_solvent_contact=(valid_solvent_contact && ccds.id<sas_graphics.size() && !sas_graphics[ccds.id].empty());
-			}
-			if(valid_solvent_contact)
+			if(ccds.sas_area>0.0)
 			{
 				contacts.push_back(scripting::Contact());
 				scripting::Contact& contact=contacts.back();
@@ -158,10 +145,6 @@ public:
 				contact.ids[1]=ccds.id;
 				contact.value.area=ccds.sas_area;
 				contact.value.dist=spheres[ccds.id].r+probe*2.0;
-				if(generate_graphics)
-				{
-					contact.value.graphics=sas_graphics[ccds.id];
-				}
 			}
 			data_manager.atom_adjuncts_mutable(ccds.id)["volume"]=ccds.sas_inside_volume;
 		}
