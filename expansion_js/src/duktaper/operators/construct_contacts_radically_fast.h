@@ -145,7 +145,12 @@ public:
 		for(std::size_t i=0;i<radical_tessellation_result.cells_summaries.size();i++)
 		{
 			const voronotalt::RadicalTessellationFullConstruction::CellContactDescriptorsSummary& ccds=radical_tessellation_result.cells_summaries[i];
-			if(ccds.sas_area>0.0)
+			bool valid_solvent_contact=(ccds.sas_area>0.0);
+			if(generate_graphics)
+			{
+				valid_solvent_contact=(valid_solvent_contact && ccds.id<sas_graphics.size() && !sas_graphics[ccds.id].empty());
+			}
+			if(valid_solvent_contact)
 			{
 				contacts.push_back(scripting::Contact());
 				scripting::Contact& contact=contacts.back();
@@ -153,7 +158,7 @@ public:
 				contact.ids[1]=ccds.id;
 				contact.value.area=ccds.sas_area;
 				contact.value.dist=spheres[ccds.id].r+probe*2.0;
-				if(generate_graphics && ccds.id<sas_graphics.size())
+				if(generate_graphics)
 				{
 					contact.value.graphics=sas_graphics[ccds.id];
 				}
