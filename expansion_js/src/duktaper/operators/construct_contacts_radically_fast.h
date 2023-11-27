@@ -3,6 +3,8 @@
 
 #include "../../../../expansion_lt/src/voronotalt/radical_tessellation_full_construction.h"
 
+#include "../../../../src/apollota/constrained_contacts_utilities.h"
+
 #include "../../../../src/auxiliaries/opengl_printer.h"
 
 #include "../operators_common.h"
@@ -101,6 +103,45 @@ public:
 			}
 		}
 
+		std::vector<std::string> sas_graphics;
+		if(generate_graphics)
+		{
+			sas_graphics.resize(spheres.size());
+
+			std::vector<apollota::SimpleSphere> sas_balls(spheres.size());
+			for(std::size_t i=0;i<spheres.size();i++)
+			{
+				sas_balls[i].x=spheres[i].p.x;
+				sas_balls[i].y=spheres[i].p.y;
+				sas_balls[i].z=spheres[i].p.z;
+				sas_balls[i].r=spheres[i].r-probe;
+			}
+
+			std::vector< std::multimap< std::pair<double, double>, std::size_t > > sas_neighbors(spheres.size());
+			for(std::size_t i=0;i<radical_tessellation_result.contacts_summaries.size();i++)
+			{
+				const voronotalt::RadicalTessellationFullConstruction::ContactDescriptorSummary& cds=radical_tessellation_result.contacts_summaries[i];
+				const std::pair<double, double> sort_value(0.0-cds.arc_length, cds.distance);
+				sas_neighbors[cds.id_a].insert(std::make_pair(sort_value, cds.id_b));
+				sas_neighbors[cds.id_b].insert(std::make_pair(sort_value, cds.id_a));
+			}
+
+			const apollota::SubdividedIcosahedron sih(3);
+
+			for(std::size_t i=0;i<radical_tessellation_result.cells_summaries.size();i++)
+			{
+				const voronotalt::RadicalTessellationFullConstruction::CellContactDescriptorsSummary& ccds=radical_tessellation_result.cells_summaries[i];
+				const std::multimap< std::pair<double, double>, std::size_t >& neighbors_as_multimap=sas_neighbors[ccds.id];
+				std::vector<std::size_t> sorted_neighbors;
+				sorted_neighbors.reserve(neighbors_as_multimap.size());
+				for(std::multimap< std::pair<double, double>, std::size_t >::const_iterator it=neighbors_as_multimap.begin();it!=neighbors_as_multimap.end();++it)
+				{
+					sorted_neighbors.push_back(it->second);
+				}
+				apollota::draw_solvent_contact_without_tessellation<auxiliaries::OpenGLPrinter>(sas_balls, sorted_neighbors, ccds.id, probe, sih, sas_graphics[ccds.id]);
+			}
+		}
+
 		for(std::size_t i=0;i<radical_tessellation_result.cells_summaries.size();i++)
 		{
 			const voronotalt::RadicalTessellationFullConstruction::CellContactDescriptorsSummary& ccds=radical_tessellation_result.cells_summaries[i];
@@ -112,6 +153,10 @@ public:
 				contact.ids[1]=ccds.id;
 				contact.value.area=ccds.sas_area;
 				contact.value.dist=spheres[ccds.id].r+probe*2.0;
+				if(generate_graphics && ccds.id<sas_graphics.size())
+				{
+					contact.value.graphics=sas_graphics[ccds.id];
+				}
 			}
 			data_manager.atom_adjuncts_mutable(ccds.id)["volume"]=ccds.sas_inside_volume;
 		}
