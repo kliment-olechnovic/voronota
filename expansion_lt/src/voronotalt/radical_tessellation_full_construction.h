@@ -22,6 +22,7 @@ public:
 		Float pyramid_volume_a;
 		Float pyramid_volume_b;
 		Float distance;
+		UnsignedInt flags;
 		UnsignedInt id_a;
 		UnsignedInt id_b;
 
@@ -33,6 +34,7 @@ public:
 			pyramid_volume_a(FLOATCONST(0.0)),
 			pyramid_volume_b(FLOATCONST(0.0)),
 			distance(FLOATCONST(0.0)),
+			flags(0),
 			id_a(0),
 			id_b(0)
 		{
@@ -51,6 +53,7 @@ public:
 				pyramid_volume_a=cd.pyramid_volume_a;
 				pyramid_volume_b=cd.pyramid_volume_b;
 				distance=cd.distance;
+				flags=cd.flags;
 			}
 		}
 

@@ -123,6 +123,10 @@ public:
 			contact.value.area=cds.area;
 			contact.value.dist=cds.distance;
 			contact.value.props.adjuncts["boundary"]=cds.arc_length;
+			if(cds.flags>0)
+			{
+				contact.value.props.tags.insert("central");
+			}
 			if(generate_graphics && i<radical_tessellation_result.contacts_graphics.size())
 			{
 				auxiliaries::OpenGLPrinter opengl_printer;

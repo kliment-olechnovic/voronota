@@ -57,6 +57,7 @@ public:
 		Float pyramid_volume_a;
 		Float pyramid_volume_b;
 		Float distance;
+		UnsignedInt flags;
 		UnsignedInt id_a;
 		UnsignedInt id_b;
 
@@ -68,6 +69,7 @@ public:
 			pyramid_volume_a(FLOATCONST(0.0)),
 			pyramid_volume_b(FLOATCONST(0.0)),
 			distance(FLOATCONST(0.0)),
+			flags(0),
 			id_a(0),
 			id_b(0)
 		{
@@ -86,6 +88,7 @@ public:
 			pyramid_volume_a=FLOATCONST(0.0);
 			pyramid_volume_b=FLOATCONST(0.0);
 			distance=FLOATCONST(0.0);
+			flags=0;
 		}
 	};
 
@@ -209,6 +212,7 @@ public:
 							result_contact_descriptor.solid_angle_b=calculate_contour_solid_angle(b, a, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.contour);
 							result_contact_descriptor.pyramid_volume_a=distance_from_point_to_point(a.p, result_contact_descriptor.intersection_circle_sphere.p)*result_contact_descriptor.area/FLOATCONST(3.0)*(result_contact_descriptor.solid_angle_a<FLOATCONST(0.0) ? FLOATCONST(-1.0) : FLOATCONST(1.0));
 							result_contact_descriptor.pyramid_volume_b=distance_from_point_to_point(b.p, result_contact_descriptor.intersection_circle_sphere.p)*result_contact_descriptor.area/FLOATCONST(3.0)*(result_contact_descriptor.solid_angle_b<FLOATCONST(0.0) ? FLOATCONST(-1.0) : FLOATCONST(1.0));
+							result_contact_descriptor.flags=(check_if_contour_is_central(result_contact_descriptor.intersection_circle_sphere.p, result_contact_descriptor.contour, result_contact_descriptor.contour_barycenter) ? 1 : 0);
 						}
 
 						result_contact_descriptor.distance=distance_from_point_to_point(a.p, b.p);
@@ -637,6 +641,21 @@ private:
 		}
 
 		return solid_angle;
+	}
+
+	static bool check_if_contour_is_central(const SimplePoint& center, const Contour& contour, const SimplePoint& contour_barycenter)
+	{
+		bool central=true;
+		for(UnsignedInt i=0;i<contour.size() && central;i++)
+		{
+			const UnsignedInt j=((i+1)<contour.size() ? (i+1) : 0);
+			const SimplePoint sidepoint=point_and_number_product(sum_of_points(contour[i].p, contour[j].p), FLOATCONST(0.5));
+			if(dot_product(sub_of_points(contour_barycenter, sidepoint), sub_of_points(center, sidepoint))<FLOATCONST(0.0))
+			{
+				central=false;
+			}
+		}
+		return central;
 	}
 };
 
