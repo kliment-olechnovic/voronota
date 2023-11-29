@@ -32,8 +32,7 @@ cat << 'EOF'
 1.0 0.0 0.0 1.0
 EOF
 } \
-| ../metascripts/generate_graphics_drawing_script_for_pymol.bash 1.0 \
-> "./output/tricky_cases_graphics/draw_case_1.py"
+| voronota-lt -probe 1.0 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_1.py" -graphics-title "case_1" 2> /dev/null
 
 ########################################
 
@@ -45,8 +44,7 @@ cat << 'EOF'
 0 1 1 1
 EOF
 } \
-| ../metascripts/generate_graphics_drawing_script_for_pymol.bash 2.0 \
-> "./output/tricky_cases_graphics/draw_case_2.py"
+| voronota-lt -probe 2.0 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_2.py" -graphics-title "case_2" 2> /dev/null
 
 ########################################
 
@@ -62,8 +60,7 @@ cat << 'EOF'
 1 1 1 1
 EOF
 } \
-| ../metascripts/generate_graphics_drawing_script_for_pymol.bash 2.0 \
-> "./output/tricky_cases_graphics/draw_case_3.py"
+| voronota-lt -probe 2.0 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_3.py" -graphics-title "case_3" 2> /dev/null
 
 ########################################
 
@@ -74,8 +71,7 @@ cat << 'EOF'
 1 0 0 1
 EOF
 } \
-| ../metascripts/generate_graphics_drawing_script_for_pymol.bash 0.5 \
-> "./output/tricky_cases_graphics/draw_case_4.py"
+| voronota-lt -probe 0.5 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_4.py" -graphics-title "case_4" 2> /dev/null
 
 ########################################
 
@@ -100,8 +96,7 @@ cat << 'EOF'
 -0.38268343236509 0.923879532511287 0 0.5
 EOF
 } \
-| ../metascripts/generate_graphics_drawing_script_for_pymol.bash 1.0 \
-> "./output/tricky_cases_graphics/draw_case_5.py"
+| voronota-lt -probe 1.0 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_5.py" -graphics-title "case_5" 2> /dev/null
 
 ################################################################################
 

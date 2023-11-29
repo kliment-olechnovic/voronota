@@ -33,7 +33,28 @@ public:
 		print_triangle_fan_for_pymol(outer_points, center, unit_point(sub_of_points(normal_direction_end, normal_direction_start)), "", ", \n", graphics_output_stream_);
 	}
 
-	bool write_to_file(const std::string& filename)
+	void add_spheres(const std::vector<SimpleSphere>& spheres, const Float& radius_change)
+	{
+		if(!enabled_)
+		{
+			return;
+		}
+		for(std::size_t i=0;i<spheres.size();i++)
+		{
+			print_sphere(spheres[i], radius_change, "", ",\n", graphics_output_stream_);
+		}
+	}
+
+	void add_color(const double r, const double g, const double b)
+	{
+		if(!enabled_)
+		{
+			return;
+		}
+		graphics_output_stream_ << "COLOR, " << r << ", " << g << ", " << b << ",\n";
+	}
+
+	bool write_to_file(const std::string& title, const std::string& filename)
 	{
 		if(!enabled_)
 		{
@@ -48,10 +69,10 @@ public:
 		{
 			output << "from pymol.cgo import *\n";
 			output << "from pymol import cmd\n";
-			output << "contacts  = [COLOR, 1.0, 1.0, 0.0,\n";
+			output << "cgo_graphics_list = [";
 			output << graphics_output_stream_.str();
 			output << "]\n";
-			output << "cmd.load_cgo(contacts, 'contacts')\n";
+			output << "cmd.load_cgo(cgo_graphics_list, '" << (title.empty() ? std::string("cgo") : title) << "')\n";
 			output << "cmd.set('two_sided_lighting', 1)\n";
 			return true;
 		}
@@ -75,6 +96,11 @@ private:
 			output << ", VERTEX, " << outer_points[0].x << ", " << outer_points[0].y << ", " << outer_points[0].z;
 		}
 		output << ", \nEND" << postfix;
+	}
+
+	static void print_sphere(const SimpleSphere& sphere, const Float& radius_change, const std::string& prefix, const std::string& postfix, std::ostream& output)
+	{
+		output << prefix << "SPHERE" << ", " << sphere.p.x << ", " << sphere.p.y << ", " << sphere.p.z << ", " << (sphere.r-radius_change) << postfix;
 	}
 
 	bool enabled_;

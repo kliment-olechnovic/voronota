@@ -31,6 +31,7 @@ int main(const int argc, const char** argv)
 	bool print_sas_and_volumes_chain_level=false;
 	bool print_everything=false;
 	std::string write_contacts_graphics_to_file;
+	std::string graphics_title;
 
 	{
 		const std::vector<voronotalt::CLOParser::Option> cloptions=voronotalt::CLOParser::read_options(argc, argv);
@@ -103,6 +104,10 @@ int main(const int argc, const char** argv)
 			else if(opt.name=="write-contacts-graphics-to-file" && opt.args_strings.size()==1)
 			{
 				write_contacts_graphics_to_file=opt.args_strings.front();
+			}
+			else if(opt.name=="graphics-title" && opt.args_strings.size()==1)
+			{
+				graphics_title=opt.args_strings.front();
 			}
 			else if(opt.name.empty())
 			{
@@ -228,6 +233,9 @@ int main(const int argc, const char** argv)
 
 		if(graphics_writer.enabled())
 		{
+			graphics_writer.add_color(0.0, 1.0, 1.0);
+			graphics_writer.add_spheres(spheres_input_result.spheres, probe);
+			graphics_writer.add_color(1.0, 1.0, 0.0);
 			for(std::size_t i=0;i<result.contacts_graphics.size();i++)
 			{
 				const voronotalt::RadicalTessellationFullConstruction::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
@@ -281,6 +289,9 @@ int main(const int argc, const char** argv)
 
 		if(graphics_writer.enabled())
 		{
+			graphics_writer.add_color(0.0, 1.0, 1.0);
+			graphics_writer.add_spheres(spheres_input_result.spheres, probe);
+			graphics_writer.add_color(1.0, 1.0, 0.0);
 			for(std::size_t i=0;i<result.contacts_graphics.size();i++)
 			{
 				const voronotalt::SimplifiedAWTessellationFullConstruction::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
@@ -297,7 +308,7 @@ int main(const int argc, const char** argv)
 	if(graphics_writer.enabled())
 	{
 		time_recoder_for_output.reset();
-		if(!graphics_writer.write_to_file(write_contacts_graphics_to_file))
+		if(!graphics_writer.write_to_file(graphics_title, write_contacts_graphics_to_file))
 		{
 			std::cerr << "Error (non-terminating): failed to write graphics to file '" << write_contacts_graphics_to_file << "'\n";
 		}
