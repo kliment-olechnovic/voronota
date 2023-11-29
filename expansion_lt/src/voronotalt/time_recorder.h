@@ -19,7 +19,7 @@ public:
 	{
 	}
 
-	void record_elapsed_miliseconds_and_reset(const char* /*message*/)
+	virtual void record_elapsed_miliseconds_and_reset(const char* /*message*/)
 	{
 	}
 };

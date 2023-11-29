@@ -13,10 +13,10 @@ do
 	
 	BALLS_NUM="$(cat ${INFILE} | wc -l)"
 	
-	time -p (cat "$INFILE" | ./voronota-lt -processors 20 -probe 1.4 -output-csa -old-regime > /dev/null) 2> "${TMPLDIR}/${INNAME}.time_new_old"
+	time -p (cat "$INFILE" | ./voronota-lt -processors 20 -probe 1.4 -run-in-aw-diagram-regime > /dev/null) 2> "${TMPLDIR}/${INNAME}.time_new_old"
 	TIME_NEW_OLD="$(cat ${TMPLDIR}/${INNAME}.time_new_old | egrep '^real ' | awk '{print $2}')"
 	
-	time -p (cat "$INFILE" | ./voronota-lt -processors 20 -probe 1.4 -output-csa > /dev/null) 2> "${TMPLDIR}/${INNAME}.time_new"
+	time -p (cat "$INFILE" | ./voronota-lt -processors 20 -probe 1.4 > /dev/null) 2> "${TMPLDIR}/${INNAME}.time_new"
 	TIME_NEW="$(cat ${TMPLDIR}/${INNAME}.time_new | egrep '^real ' | awk '{print $2}')"
 	
 	echo "$BALLS_NUM $TIME_NEW_OLD $TIME_NEW"
