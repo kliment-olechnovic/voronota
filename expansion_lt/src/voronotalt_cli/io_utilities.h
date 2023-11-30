@@ -153,7 +153,6 @@ inline bool read_string_ids_and_double_values_from_text_stream(const std::size_t
 	values.clear();
 
 	std::string first_line;
-	std::size_t number_of_tokens_in_first_line=0;
 
 	do
 	{
@@ -166,6 +165,8 @@ inline bool read_string_ids_and_double_values_from_text_stream(const std::size_t
 		return false;
 	}
 
+	std::vector<std::string> first_line_tokens;
+
 	{
 		std::istringstream lineinput(first_line);
 		std::string token;
@@ -175,10 +176,12 @@ inline bool read_string_ids_and_double_values_from_text_stream(const std::size_t
 			lineinput >> token;
 			if(!lineinput.fail() && !token.empty())
 			{
-				number_of_tokens_in_first_line++;
+				first_line_tokens.push_back(token);
 			}
 		}
 	}
+
+	const std::size_t number_of_tokens_in_first_line=first_line_tokens.size();
 
 	if(number_of_tokens_in_first_line<number_of_double_values_per_line)
 	{
@@ -197,6 +200,8 @@ inline bool read_string_ids_and_double_values_from_text_stream(const std::size_t
 
 	const std::size_t number_of_string_ids_per_line=(number_of_tokens_in_first_line-number_of_double_values_per_line);
 
+	const bool string_ids_tailing=(first_line_tokens[number_of_double_values_per_line]=="#");
+
 	std::vector<std::string> lines;
 	lines.push_back(first_line);
 	read_lines_from_text_stream(input, lines);
@@ -213,20 +218,29 @@ inline bool read_string_ids_and_double_values_from_text_stream(const std::size_t
 			for(std::size_t i=0;i<lines.size();i++)
 			{
 				std::istringstream lineinput(lines[i]);
-				for(std::size_t j=0;j<number_of_string_ids_per_line;j++)
+				for(int block=0;block<2;block++)
 				{
-					lineinput >> string_ids[i*number_of_string_ids_per_line+j];
-					if(lineinput.fail())
+					if((block==0 && !string_ids_tailing) || (block==1 && string_ids_tailing))
 					{
-						failures[i]++;
+						for(std::size_t j=0;j<number_of_string_ids_per_line;j++)
+						{
+							lineinput >> string_ids[i*number_of_string_ids_per_line+j];
+							if(lineinput.fail())
+							{
+								failures[i]++;
+							}
+						}
 					}
-				}
-				for(std::size_t j=0;j<number_of_double_values_per_line;j++)
-				{
-					lineinput >> values[i*number_of_double_values_per_line+j];
-					if(lineinput.fail())
+					else
 					{
-						failures[i]++;
+						for(std::size_t j=0;j<number_of_double_values_per_line;j++)
+						{
+							lineinput >> values[i*number_of_double_values_per_line+j];
+							if(lineinput.fail())
+							{
+								failures[i]++;
+							}
+						}
 					}
 				}
 			}

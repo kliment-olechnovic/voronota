@@ -56,9 +56,10 @@ public:
 			{
 				const std::size_t N=(values.size()/4);
 				const std::size_t label_size=(string_ids.size()/N);
-				if(label_size>3 || string_ids.size()!=N*label_size)
+				const bool labels_tailing=(!string_ids.empty() && string_ids.front()=="#");
+				if(!(label_size<=3 || (labels_tailing && label_size==8)) || string_ids.size()!=N*label_size)
 				{
-					error_message_output_stream << "Error: invalid label size, must be exactly 0, 1, 2, or 3 string IDs per line\n";
+					error_message_output_stream << "Error: invalid input format, must be exactly 0, 1, 2, or 3 front string IDs or 8 tailing string IDs per line\n";
 					return false;
 				}
 				result.spheres.resize(N);
@@ -72,7 +73,6 @@ public:
 				}
 				if(label_size>0)
 				{
-					result.label_size=static_cast<int>(label_size);
 					result.sphere_labels.resize(N);
 					for(std::size_t i=0;i<N;i++)
 					{
@@ -92,6 +92,17 @@ public:
 							sphere_label.residue_id=string_ids[i*label_size+1];
 							sphere_label.atom_name=string_ids[i*label_size+2];
 						}
+						else if(label_size==8)
+						{
+							sphere_label.chain_id=string_ids[i*label_size+2];
+							sphere_label.residue_id=string_ids[i*label_size+3];
+							sphere_label.atom_name=string_ids[i*label_size+5];
+							if(string_ids[i*label_size+7]!=".")
+							{
+								sphere_label.residue_id+=string_ids[i*label_size+7];
+							}
+						}
+						result.label_size=std::min(static_cast<int>(label_size), 3);
 					}
 				}
 			}
