@@ -18,6 +18,22 @@ namespace voronotalt
 class PrintingCustomTypes
 {
 public:
+	static void print_balls_to_stream(
+			std::vector<SimpleSphere>& spheres,
+			const std::vector<SpheresInput::SphereLabel>& sphere_labels,
+			const double probe,
+			std::ostream& output)
+	{
+		const SpheresInput::SphereLabel null_label;
+		for(std::size_t i=0;i<spheres.size();i++)
+		{
+			print_label((i<sphere_labels.size() ? sphere_labels[i] : null_label), false, false, output);
+			output << "\t";
+			output << spheres[i].p.x << "\t" << spheres[i].p.y << "\t" << spheres[i].p.z << "\t" << (spheres[i].r-probe);
+			output << "\n";
+		}
+	}
+
 	template<class ContactsContainer>
 	static void print_contacts_to_stream(
 			const ContactsContainer& contacts, const std::vector<SpheresInput::SphereLabel>& sphere_labels, const bool labels_enabled, std::ostream& output)
@@ -25,7 +41,14 @@ public:
 		const SpheresInput::SphereLabel null_label;
 		if(!contacts.empty())
 		{
-			output << "ca_header\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom\tID1_index\tID2_index\tarea\tarc_legth\tdistance\n";
+			if(labels_enabled)
+			{
+				output << "ca_header\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom\tID1_index\tID2_index\tarea\tarc_legth\tdistance\n";
+			}
+			else
+			{
+				output << "ca_header\tID1_index\tID2_index\tarea\tarc_legth\tdistance\n";
+			}
 			bool printed_in_parallel=false;
 #ifdef _OPENMP
 			if(contacts.size()>1000)
@@ -100,7 +123,14 @@ public:
 		const SpheresInput::SphereLabel null_label;
 		if(!cells.empty())
 		{
-			output << "sa_header\tID_chain\tID_residue\tID_atom\tID_index\tsas_area\tvolume\n";
+			if(labels_enabled)
+			{
+				output << "sa_header\tID_chain\tID_residue\tID_atom\tID_index\tsas_area\tvolume\n";
+			}
+			else
+			{
+				output << "sa_header\tID_index\tsas_area\tvolume\n";
+			}
 			bool printed_in_parallel=false;
 #ifdef _OPENMP
 			if(cells.size()>1000)

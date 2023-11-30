@@ -23,6 +23,7 @@ int main(const int argc, const char** argv)
 	bool compute_only_inter_chain_contacts=false;
 	bool run_in_simplified_aw_diagram_regime=false;
 	bool measure_running_time=false;
+	bool only_print_input_balls_and_exit=false;
 	bool print_contacts=false;
 	bool print_contacts_residue_level=false;
 	bool print_contacts_chain_level=false;
@@ -51,9 +52,9 @@ int main(const int argc, const char** argv)
 			else if(opt.name=="probe" && opt.args_doubles.size()==1)
 			{
 				probe=static_cast<voronotalt::Float>(opt.args_doubles.front());
-				if(!(probe>0.01 && probe<=30.0))
+				if(!(probe>=0.0 && probe<=30.0))
 				{
-					std::cerr << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.01 to 30.0.\n";
+					std::cerr << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.0 to 30.0.\n";
 					return 1;
 				}
 			}
@@ -72,6 +73,10 @@ int main(const int argc, const char** argv)
 			else if(opt.name=="measure-running-time" && opt.is_flag())
 			{
 				measure_running_time=opt.is_flag_and_true();
+			}
+			else if(opt.name=="only-print-input-balls-and-exit" && opt.is_flag())
+			{
+				only_print_input_balls_and_exit=opt.is_flag_and_true();
 			}
 			else if(opt.name=="print-contacts" && opt.is_flag())
 			{
@@ -150,6 +155,12 @@ int main(const int argc, const char** argv)
 	{
 		std::cerr << "Error: failed to read input without errors\n";
 		return 1;
+	}
+
+	if(only_print_input_balls_and_exit)
+	{
+		voronotalt::PrintingCustomTypes::print_balls_to_stream(spheres_input_result.spheres, spheres_input_result.sphere_labels, probe, std::cout);
+		return 0;
 	}
 
 	if((compute_only_inter_chain_contacts || need_summaries_on_chain_level) && spheres_input_result.number_of_chain_groups<2)
