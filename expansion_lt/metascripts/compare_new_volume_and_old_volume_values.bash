@@ -13,7 +13,7 @@ cat "${TMPLDIR}/old_volumes"
 } \
 > "${TMPLDIR}/volumes1"
 
-cat "${TMPLDIR}/balls" | ./voronota-lt -probe 1.4 -print-sas-and-volumes > "${TMPLDIR}/volumes2"
+cat "${TMPLDIR}/balls" | ./voronota-lt -probe 1.4 -print-cells > "${TMPLDIR}/volumes2"
 
 head "${TMPLDIR}/volumes1"
 echo
