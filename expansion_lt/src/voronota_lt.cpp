@@ -4,14 +4,9 @@
 #include <omp.h>
 #endif
 
-#include "voronotalt/radical_tessellation.h"
-#include "voronotalt/simplified_aw_tessellation.h"
+#include "voronotalt/voronotalt.h"
 
-#include "voronotalt_cli/clo_parser.h"
-#include "voronotalt_cli/spheres_input.h"
-#include "voronotalt_cli/printing_custom_types.h"
-#include "voronotalt_cli/graphics_writer.h"
-#include "voronotalt_cli/time_recorder_chrono.h"
+#include "voronotalt_cli/voronotalt_cli.h"
 
 int main(const int argc, const char** argv)
 {

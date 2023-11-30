@@ -19,22 +19,22 @@ balls.append(voronotalt.Ball(-0.923879532511287, 0.38268343236509, 0, 0.5))
 balls.append(voronotalt.Ball(-0.707106781186548, 0.707106781186547, 0, 0.5))
 balls.append(voronotalt.Ball(-0.38268343236509, 0.923879532511287, 0, 0.5))
 
-rt = voronotalt.RadicalTessellation(balls, 1.4)
+for i, ball in enumerate(balls):
+    print("ball", i, ball.x, ball.y, ball.z, ball.r);
 
-print(type(rt.contacts));
-print(rt.contacts.size());
+rt = voronotalt.RadicalTessellation(balls, 1.0)
 
-print(type(rt.contacts[0]));
-print(rt.contacts[0].area, rt.contacts[0].arc_length);
+contacts=list(rt.contacts)
 
-print(type(rt.cells));
-print(rt.cells.size());
+print("contacts:")
 
-print(type(rt.cells[0]));
-print(rt.cells[0].sas_area, rt.cells[0].volume);
+for contact in contacts:
+    print("contact", contact.index_a, contact.index_b, contact.area, contact.arc_length);
 
-sorted_contacts=list(rt.contacts)
-sorted_contacts.sort(key = lambda x: x.area, reverse=True)
-print(type(sorted_contacts));
-print(len(sorted_contacts));
-print(sorted_contacts[0].area, sorted_contacts[0].arc_length);
+cells=list(rt.cells)
+
+print("cells:")
+
+for i, cell in enumerate(cells):
+    print("cell", i, cell.sas_area, cell.volume);
+
