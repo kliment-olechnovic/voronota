@@ -13,9 +13,9 @@ cat "${TMPLDIR}/balls" | voronota calculate-contacts --probe 1.4 | awk '{if($1==
 
 cat "${TMPLDIR}/balls" | ./voronota-lt -probe 1.4 -print-sas-and-volumes > "${TMPLDIR}/areas2"
 
-head "${TMPLDIR}/sasa1"
+head "${TMPLDIR}/areas1"
 echo
-head "${TMPLDIR}/sasa2"
+head "${TMPLDIR}/areas2"
 
 cd "$TMPLDIR"
 
