@@ -21,6 +21,24 @@ voronota-lt -processors 40 -probe 1.4  < "./input/balls_7br8.xyzr" 2> "./output/
 
 ####################################################################
 
+mkdir -p "./output/written_files"
+
+voronota-lt \
+  -processors 40 \
+  -probe 1.4 \
+  -write-input-balls-to-file ./output/written_files/output_2zsk_input_balls.txt \
+  -write-contacts-to-file ./output/written_files/output_2zsk_contacts.txt \
+  -write-contacts-residue-level-to-file ./output/written_files/output_2zsk_contacts_residue_level.txt \
+  -write-contacts-chain-level-to-file ./output/written_files/output_2zsk_contacts_chain_level.txt \
+  -write-sas-and-volumes-to-file ./output/written_files/output_2zsk_sas_and_volumes.txt \
+  -write-sas-and-volumes-residue-level-to-file ./output/written_files/output_2zsk_sas_and_volumes_residue_level.txt \
+  -write-sas-and-volumes-chain-level-to-file ./output/written_files/output_2zsk_sas_and_volumes_chain_level.txt \
+  -write-log-to-file ./output/written_files/output_2zsk_log.txt \
+< "./input/balls_2zsk.xyzr" \
+2> /dev/null
+
+####################################################################
+
 mkdir -p "./output/tricky_cases_graphics"
 
 ########################################
