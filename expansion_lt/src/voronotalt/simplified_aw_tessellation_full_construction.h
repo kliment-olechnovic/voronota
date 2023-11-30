@@ -84,12 +84,16 @@ public:
 		UnsignedInt total_collisions;
 		UnsignedInt total_relevant_collisions;
 		std::vector<ContactDescriptorSummary> contacts_summaries;
-		std::vector<SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics> contacts_graphics;
 		TotalContactDescriptorsSummary total_contacts_summary;
 
 		Result() : total_spheres(0), total_collisions(0), total_relevant_collisions(0)
 		{
 		}
+	};
+
+	struct ResultGraphics
+	{
+		std::vector<SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics> contacts_graphics;
 	};
 
 	struct GroupedResult
@@ -100,14 +104,24 @@ public:
 
 	static void construct_full_tessellation(
 			const std::vector<SimpleSphere>& spheres,
+			Result& result)
+	{
+		TimeRecorder time_recorder;
+		ResultGraphics result_graphics;
+		construct_full_tessellation(spheres, std::vector<int>(), false, result, result_graphics, time_recorder);
+	}
+
+	static void construct_full_tessellation(
+			const std::vector<SimpleSphere>& spheres,
 			const std::vector<int>& grouping_of_spheres,
 			const bool with_graphics,
 			Result& result,
+			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder)
 	{
 		PreparationForTessellation::Result preparation_result;
 		PreparationForTessellation::prepare_for_tessellation(spheres, grouping_of_spheres, preparation_result, time_recorder);
-		construct_full_tessellation(spheres, preparation_result, with_graphics, result, time_recorder);
+		construct_full_tessellation(spheres, preparation_result, with_graphics, result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -115,11 +129,13 @@ public:
 			const PreparationForTessellation::Result& preparation_result,
 			const bool with_graphics,
 			Result& result,
+			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder)
 	{
 		time_recorder.reset();
 
 		result=Result();
+		result_graphics=ResultGraphics();
 
 		result.total_spheres=preparation_result.total_spheres;
 		result.total_collisions=preparation_result.total_collisions;
@@ -205,15 +221,24 @@ public:
 
 		if(with_graphics)
 		{
-			result.contacts_graphics.resize(ids_of_valid_pairs.size());
+			result_graphics.contacts_graphics.resize(ids_of_valid_pairs.size());
 
 			for(UnsignedInt i=0;i<ids_of_valid_pairs.size();i++)
 			{
-				result.contacts_graphics[i]=possible_contacts_graphics[ids_of_valid_pairs[i]];
+				result_graphics.contacts_graphics[i]=possible_contacts_graphics[ids_of_valid_pairs[i]];
 			}
 		}
 
 		time_recorder.record_elapsed_miliseconds_and_reset("copy valid contacts graphics");
+	}
+
+	static bool group_results(
+			const Result& full_result,
+			const std::vector<int>& grouping_of_spheres,
+			GroupedResult& grouped_result)
+	{
+		TimeRecorder time_recorder;
+		return group_results(full_result, grouping_of_spheres, grouped_result, time_recorder);
 	}
 
 	static bool group_results(

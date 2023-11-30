@@ -7,7 +7,7 @@ cat > "${TMPLDIR}/balls"
 
 {
 echo "ID_index sas_area"
-cat "${TMPLDIR}/balls" | awk '{print $4 " " $5 " " $6 " " $7}' | voronota calculate-contacts --probe 1.4 | awk '{if($1==$2){print $1 " " $3}}'
+cat "${TMPLDIR}/balls" | voronota calculate-contacts --probe 1.4 | awk '{if($1==$2){print $1 " " $3}}'
 } \
 > "${TMPLDIR}/areas1"
 
