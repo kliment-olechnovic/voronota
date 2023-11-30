@@ -5,7 +5,7 @@
 #include <fstream>
 #include <stdexcept>
 
-#include "../src/voronotalt/radical_tessellation_full_construction.h"
+#include "../src/voronotalt/radical_tessellation.h"
 #include "../src/voronotalt_cli/io_utilities.h"
 
 struct Ball
@@ -121,8 +121,8 @@ public:
 			s.r=b.r+probe;
 		}
 
-		voronotalt::RadicalTessellationFullConstruction::Result result;
-		voronotalt::RadicalTessellationFullConstruction::construct_full_tessellation(spheres, result);
+		voronotalt::RadicalTessellation::Result result;
+		voronotalt::RadicalTessellation::construct_full_tessellation(spheres, result);
 
 		if(result.contacts_summaries.empty())
 		{

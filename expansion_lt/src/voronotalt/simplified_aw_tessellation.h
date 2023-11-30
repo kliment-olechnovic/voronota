@@ -1,5 +1,5 @@
-#ifndef VORONOTALT_SIMPLIFIED_AW_TESSELLATION_FULL_CONSTRUCTION_H_
-#define VORONOTALT_SIMPLIFIED_AW_TESSELLATION_FULL_CONSTRUCTION_H_
+#ifndef VORONOTALT_SIMPLIFIED_AW_TESSELLATION_H_
+#define VORONOTALT_SIMPLIFIED_AW_TESSELLATION_H_
 
 #include <map>
 
@@ -10,7 +10,7 @@
 namespace voronotalt
 {
 
-class SimplifiedAWTessellationFullConstruction
+class SimplifiedAWTessellation
 {
 public:
 	struct ContactDescriptorSummary
@@ -297,4 +297,4 @@ public:
 
 }
 
-#endif /* VORONOTALT_SIMPLIFIED_AW_TESSELLATION_FULL_CONSTRUCTION_H_ */
+#endif /* VORONOTALT_SIMPLIFIED_AW_TESSELLATION_H_ */

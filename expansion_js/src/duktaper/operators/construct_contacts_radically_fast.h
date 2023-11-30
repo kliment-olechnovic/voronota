@@ -1,8 +1,7 @@
 #ifndef DUKTAPER_OPERATORS_CONSTRUCT_CONTACTS_RADICALLY_FAST_H_
 #define DUKTAPER_OPERATORS_CONSTRUCT_CONTACTS_RADICALLY_FAST_H_
 
-#include "../../../../expansion_lt/src/voronotalt/radical_tessellation_full_construction.h"
-
+#include "../../../../expansion_lt/src/voronotalt/radical_tessellation.h"
 #include "../../../../src/auxiliaries/opengl_printer.h"
 
 #include "../operators_common.h"
@@ -96,9 +95,10 @@ public:
 			}
 		}
 
-		voronotalt::RadicalTessellationFullConstruction::Result radical_tessellation_result;
+		voronotalt::RadicalTessellation::Result radical_tessellation_result;
+		voronotalt::RadicalTessellation::ResultGraphics radical_tessellation_result_graphics;
 		voronotalt::TimeRecorder mock_time_recorder;
-		voronotalt::RadicalTessellationFullConstruction::construct_full_tessellation(spheres, grouping_for_filtering, generate_graphics, summarize_cells, radical_tessellation_result, mock_time_recorder);
+		voronotalt::RadicalTessellation::construct_full_tessellation(spheres, grouping_for_filtering, generate_graphics, summarize_cells, radical_tessellation_result, radical_tessellation_result_graphics, mock_time_recorder);
 
 		if(radical_tessellation_result.contacts_summaries.empty())
 		{
@@ -115,7 +115,7 @@ public:
 
 		for(std::size_t i=0;i<radical_tessellation_result.contacts_summaries.size();i++)
 		{
-			const voronotalt::RadicalTessellationFullConstruction::ContactDescriptorSummary& cds=radical_tessellation_result.contacts_summaries[i];
+			const voronotalt::RadicalTessellation::ContactDescriptorSummary& cds=radical_tessellation_result.contacts_summaries[i];
 			contacts.push_back(scripting::Contact());
 			scripting::Contact& contact=contacts.back();
 			contact.ids[0]=cds.id_a;
@@ -127,12 +127,12 @@ public:
 			{
 				contact.value.props.tags.insert("central");
 			}
-			if(generate_graphics && i<radical_tessellation_result.contacts_graphics.size())
+			if(generate_graphics && i<radical_tessellation_result_graphics.contacts_graphics.size())
 			{
 				auxiliaries::OpenGLPrinter opengl_printer;
 				opengl_printer.add_triangle_fan(
-						radical_tessellation_result.contacts_graphics[i].barycenter,
-						radical_tessellation_result.contacts_graphics[i].outer_points,
+						radical_tessellation_result_graphics.contacts_graphics[i].barycenter,
+						radical_tessellation_result_graphics.contacts_graphics[i].outer_points,
 						voronotalt::unit_point(voronotalt::sub_of_points(spheres[cds.id_b].p, spheres[cds.id_a].p)));
 				contact.value.graphics=opengl_printer.str();
 			}
@@ -140,7 +140,7 @@ public:
 
 		for(std::size_t i=0;i<radical_tessellation_result.cells_summaries.size();i++)
 		{
-			const voronotalt::RadicalTessellationFullConstruction::CellContactDescriptorsSummary& ccds=radical_tessellation_result.cells_summaries[i];
+			const voronotalt::RadicalTessellation::CellContactDescriptorsSummary& ccds=radical_tessellation_result.cells_summaries[i];
 			if(ccds.sas_area>0.0)
 			{
 				contacts.push_back(scripting::Contact());

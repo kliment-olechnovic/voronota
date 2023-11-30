@@ -1,5 +1,5 @@
-#ifndef VORONOTALT_RADICAL_TESSELLATION_FULL_CONSTRUCTION_H_
-#define VORONOTALT_RADICAL_TESSELLATION_FULL_CONSTRUCTION_H_
+#ifndef VORONOTALT_RADICAL_TESSELLATION_H_
+#define VORONOTALT_RADICAL_TESSELLATION_H_
 
 #include <map>
 
@@ -10,7 +10,7 @@
 namespace voronotalt
 {
 
-class RadicalTessellationFullConstruction
+class RadicalTessellation
 {
 public:
 	struct ContactDescriptorSummary
@@ -491,4 +491,4 @@ public:
 
 }
 
-#endif /* VORONOTALT_RADICAL_TESSELLATION_FULL_CONSTRUCTION_H_ */
+#endif /* VORONOTALT_RADICAL_TESSELLATION_H_ */

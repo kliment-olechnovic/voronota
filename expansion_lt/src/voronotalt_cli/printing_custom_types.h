@@ -7,8 +7,8 @@
 #include <omp.h>
 #endif
 
-#include "../voronotalt/radical_tessellation_full_construction.h"
-#include "../voronotalt/simplified_aw_tessellation_full_construction.h"
+#include "../voronotalt/radical_tessellation.h"
+#include "../voronotalt/simplified_aw_tessellation.h"
 
 #include "spheres_input.h"
 
@@ -466,32 +466,32 @@ private:
 		}
 	}
 
-	inline static void print(const RadicalTessellationFullConstruction::ContactDescriptorSummary& obj, std::ostream& output)
+	inline static void print(const RadicalTessellation::ContactDescriptorSummary& obj, std::ostream& output)
 	{
 		output << obj.id_a << "\t" <<  obj.id_b << "\t" << obj.area << "\t" << obj.arc_length << "\t" << obj.distance;
 	}
 
-	inline static void print(const RadicalTessellationFullConstruction::TotalContactDescriptorsSummary& obj, std::ostream& output)
+	inline static void print(const RadicalTessellation::TotalContactDescriptorsSummary& obj, std::ostream& output)
 	{
 		output << obj.area << "\t" << obj.arc_length << "\t" << obj.distance << "\t" << obj.count;
 	}
 
-	inline static void print(const RadicalTessellationFullConstruction::CellContactDescriptorsSummary& obj, std::ostream& output)
+	inline static void print(const RadicalTessellation::CellContactDescriptorsSummary& obj, std::ostream& output)
 	{
 		output << obj.id << "\t" << obj.sas_area << "\t" << obj.sas_inside_volume;
 	}
 
-	inline static void print(const RadicalTessellationFullConstruction::TotalCellContactDescriptorsSummary& obj, std::ostream& output)
+	inline static void print(const RadicalTessellation::TotalCellContactDescriptorsSummary& obj, std::ostream& output)
 	{
 		output << obj.sas_area << "\t" << obj.sas_inside_volume << "\t" << obj.count;
 	}
 
-	inline static void print(const SimplifiedAWTessellationFullConstruction::ContactDescriptorSummary& obj, std::ostream& output)
+	inline static void print(const SimplifiedAWTessellation::ContactDescriptorSummary& obj, std::ostream& output)
 	{
 		output << obj.id_a << "\t" <<  obj.id_b << "\t" << obj.area << "\t" << obj.arc_length << "\t" << obj.distance;
 	}
 
-	inline static void print(const SimplifiedAWTessellationFullConstruction::TotalContactDescriptorsSummary& obj, std::ostream& output)
+	inline static void print(const SimplifiedAWTessellation::TotalContactDescriptorsSummary& obj, std::ostream& output)
 	{
 		output << obj.area << "\t" << obj.arc_length << "\t" << obj.distance << "\t" << obj.count;
 	}
