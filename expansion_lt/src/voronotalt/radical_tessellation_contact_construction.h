@@ -426,6 +426,12 @@ private:
 			const UnsignedInt i_right=((i_end+1)<contour.size() ? (i_end+1) : 0);
 			contour[i_end]=ContourPoint(intersection_of_plane_and_segment(ac_plane_center, ac_plane_normal, contour[i_end].p, contour[i_right].p), contour[i_end].right_id, contour[i_right].left_id);
 		}
+
+		if(!greater(squared_distance_from_point_to_point(contour[i_start].p, contour[i_end].p), FLOATCONST(0.0)))
+		{
+			contour[i_start].right_id=contour[i_end].right_id;
+			contour.erase(contour.begin()+i_end);
+		}
 	}
 
 	static bool restrict_contour_to_circle(
