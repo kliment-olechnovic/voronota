@@ -117,7 +117,7 @@ public:
 	}
 
 	template<class CellsContainer>
-	static void print_sas_and_volumes_to_stream(
+	static void print_cells_to_stream(
 			const CellsContainer& cells, const std::vector<SpheresInput::SphereLabel>& sphere_labels, const bool labels_enabled, std::ostream& output)
 	{
 		const SpheresInput::SphereLabel null_label;
@@ -183,19 +183,19 @@ public:
 	}
 
 	template<class CellsContainer, class GroupedCellsContainer>
-	static void print_sas_and_volumes_residue_level_to_stream(
+	static void print_cells_residue_level_to_stream(
 			const CellsContainer& cells, const std::vector<SpheresInput::SphereLabel>& sphere_labels,
 			const std::vector<UnsignedInt>& grouped_cells_representative_ids, const GroupedCellsContainer& grouped_cells, std::ostream& output)
 	{
-		print_sas_and_volumes_residue_level_or_chain_level_to_stream(false,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, output);
+		print_cells_residue_level_or_chain_level_to_stream(false,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, output);
 	}
 
 	template<class CellsContainer, class GroupedCellsContainer>
-	static void print_sas_and_volumes_chain_level_to_stream(
+	static void print_cells_chain_level_to_stream(
 			const CellsContainer& cells, const std::vector<SpheresInput::SphereLabel>& sphere_labels,
 			const std::vector<UnsignedInt>& grouped_cells_representative_ids, const GroupedCellsContainer& grouped_cells, std::ostream& output)
 	{
-		print_sas_and_volumes_residue_level_or_chain_level_to_stream(true,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, output);
+		print_cells_residue_level_or_chain_level_to_stream(true,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, output);
 	}
 
 	template<class Result, class GroupedResult>
@@ -286,7 +286,7 @@ private:
 	}
 
 	template<class CellsContainer, class GroupedCellsContainer>
-	static void print_sas_and_volumes_residue_level_or_chain_level_to_stream(
+	static void print_cells_residue_level_or_chain_level_to_stream(
 			const bool chain_level,
 			const CellsContainer& cells,
 			const std::vector<SpheresInput::SphereLabel>& sphere_labels,

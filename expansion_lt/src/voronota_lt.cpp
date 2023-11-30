@@ -21,17 +21,17 @@ int main(const int argc, const char** argv)
 	bool print_contacts=false;
 	bool print_contacts_residue_level=false;
 	bool print_contacts_chain_level=false;
-	bool print_sas_and_volumes=false;
-	bool print_sas_and_volumes_residue_level=false;
-	bool print_sas_and_volumes_chain_level=false;
+	bool print_cells=false;
+	bool print_cells_residue_level=false;
+	bool print_cells_chain_level=false;
 	bool print_everything=false;
 	std::string write_input_balls_to_file;
 	std::string write_contacts_to_file;
 	std::string write_contacts_residue_level_to_file;
 	std::string write_contacts_chain_level_to_file;
-	std::string write_sas_and_volumes_to_file;
-	std::string write_sas_and_volumes_residue_level_to_file;
-	std::string write_sas_and_volumes_chain_level_to_file;
+	std::string write_cells_to_file;
+	std::string write_cells_residue_level_to_file;
+	std::string write_cells_chain_level_to_file;
 	std::string write_contacts_graphics_to_file;
 	std::string graphics_title;
 	std::string write_log_to_file;
@@ -88,17 +88,17 @@ int main(const int argc, const char** argv)
 			{
 				print_contacts_chain_level=opt.is_flag_and_true();
 			}
-			else if(opt.name=="print-sas-and-volumes" && opt.is_flag())
+			else if(opt.name=="print-cells" && opt.is_flag())
 			{
-				print_sas_and_volumes=opt.is_flag_and_true();
+				print_cells=opt.is_flag_and_true();
 			}
-			else if(opt.name=="print-sas-and-volumes-residue-level" && opt.is_flag())
+			else if(opt.name=="print-cells-residue-level" && opt.is_flag())
 			{
-				print_sas_and_volumes_residue_level=opt.is_flag_and_true();
+				print_cells_residue_level=opt.is_flag_and_true();
 			}
-			else if(opt.name=="print-sas-and-volumes-chain-level" && opt.is_flag())
+			else if(opt.name=="print-cells-chain-level" && opt.is_flag())
 			{
-				print_sas_and_volumes_chain_level=opt.is_flag_and_true();
+				print_cells_chain_level=opt.is_flag_and_true();
 			}
 			else if(opt.name=="print-everything" && opt.is_flag())
 			{
@@ -120,17 +120,17 @@ int main(const int argc, const char** argv)
 			{
 				write_contacts_chain_level_to_file=opt.args_strings.front();
 			}
-			else if(opt.name=="write-sas-and-volumes-to-file" && opt.args_strings.size()==1)
+			else if(opt.name=="write-cells-to-file" && opt.args_strings.size()==1)
 			{
-				write_sas_and_volumes_to_file=opt.args_strings.front();
+				write_cells_to_file=opt.args_strings.front();
 			}
-			else if(opt.name=="write-sas-and-volumes-residue-level-to-file" && opt.args_strings.size()==1)
+			else if(opt.name=="write-cells-residue-level-to-file" && opt.args_strings.size()==1)
 			{
-				write_sas_and_volumes_residue_level_to_file=opt.args_strings.front();
+				write_cells_residue_level_to_file=opt.args_strings.front();
 			}
-			else if(opt.name=="write-sas-and-volumes-chain-level-to-file" && opt.args_strings.size()==1)
+			else if(opt.name=="write-cells-chain-level-to-file" && opt.args_strings.size()==1)
 			{
-				write_sas_and_volumes_chain_level_to_file=opt.args_strings.front();
+				write_cells_chain_level_to_file=opt.args_strings.front();
 			}
 			else if(opt.name=="write-contacts-graphics-to-file" && opt.args_strings.size()==1)
 			{
@@ -162,13 +162,13 @@ int main(const int argc, const char** argv)
 		print_contacts=true;
 		print_contacts_residue_level=true;
 		print_contacts_chain_level=true;
-		print_sas_and_volumes=true;
-		print_sas_and_volumes_residue_level=true;
-		print_sas_and_volumes_chain_level=true;
+		print_cells=true;
+		print_cells_residue_level=true;
+		print_cells_chain_level=true;
 	}
 
-	const bool need_summaries_on_residue_level=(print_contacts_residue_level || print_sas_and_volumes_residue_level || !write_contacts_residue_level_to_file.empty() || !write_sas_and_volumes_residue_level_to_file.empty());
-	const bool need_summaries_on_chain_level=(print_contacts_chain_level || print_sas_and_volumes_chain_level || !write_contacts_chain_level_to_file.empty() || !write_sas_and_volumes_chain_level_to_file.empty());
+	const bool need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty());
+	const bool need_summaries_on_chain_level=(print_contacts_chain_level || print_cells_chain_level || !write_contacts_chain_level_to_file.empty() || !write_cells_chain_level_to_file.empty());
 
 #ifdef _OPENMP
 	omp_set_num_threads(max_number_of_processors);
@@ -304,57 +304,57 @@ int main(const int argc, const char** argv)
 
 		time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result contacts");
 
-		if(print_sas_and_volumes)
+		if(print_cells)
 		{
-			voronotalt::PrintingCustomTypes::print_sas_and_volumes_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, true, std::cout);
+			voronotalt::PrintingCustomTypes::print_cells_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, true, std::cout);
 		}
 
-		if(!write_sas_and_volumes_to_file.empty())
+		if(!write_cells_to_file.empty())
 		{
-			std::ofstream foutput(write_sas_and_volumes_to_file.c_str(), std::ios::out);
+			std::ofstream foutput(write_cells_to_file.c_str(), std::ios::out);
 			if(foutput.good())
 			{
-				voronotalt::PrintingCustomTypes::print_sas_and_volumes_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, true, foutput);
+				voronotalt::PrintingCustomTypes::print_cells_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, true, foutput);
 			}
 			else
 			{
-				std::cerr << "Error (non-terminating): failed to write SAS areas and volumes to file '" << write_sas_and_volumes_to_file << "'\n";
+				std::cerr << "Error (non-terminating): failed to write cells to file '" << write_cells_to_file << "'\n";
 			}
 		}
 
-		if(print_sas_and_volumes_residue_level)
+		if(print_cells_residue_level)
 		{
-			voronotalt::PrintingCustomTypes::print_sas_and_volumes_residue_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, std::cout);
+			voronotalt::PrintingCustomTypes::print_cells_residue_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, std::cout);
 		}
 
-		if(!write_sas_and_volumes_residue_level_to_file.empty())
+		if(!write_cells_residue_level_to_file.empty())
 		{
-			std::ofstream foutput(write_sas_and_volumes_residue_level_to_file.c_str(), std::ios::out);
+			std::ofstream foutput(write_cells_residue_level_to_file.c_str(), std::ios::out);
 			if(foutput.good())
 			{
-				voronotalt::PrintingCustomTypes::print_sas_and_volumes_residue_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, foutput);
+				voronotalt::PrintingCustomTypes::print_cells_residue_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, foutput);
 			}
 			else
 			{
-				std::cerr << "Error (non-terminating): failed to write SAS areas and volumes on residue level to file '" << write_sas_and_volumes_residue_level_to_file << "'\n";
+				std::cerr << "Error (non-terminating): failed to write cells on residue level to file '" << write_cells_residue_level_to_file << "'\n";
 			}
 		}
 
-		if(print_sas_and_volumes_chain_level)
+		if(print_cells_chain_level)
 		{
-			voronotalt::PrintingCustomTypes::print_sas_and_volumes_chain_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, std::cout);
+			voronotalt::PrintingCustomTypes::print_cells_chain_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, std::cout);
 		}
 
-		if(!write_sas_and_volumes_chain_level_to_file.empty())
+		if(!write_cells_chain_level_to_file.empty())
 		{
-			std::ofstream foutput(write_sas_and_volumes_chain_level_to_file.c_str(), std::ios::out);
+			std::ofstream foutput(write_cells_chain_level_to_file.c_str(), std::ios::out);
 			if(foutput.good())
 			{
-				voronotalt::PrintingCustomTypes::print_sas_and_volumes_chain_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, foutput);
+				voronotalt::PrintingCustomTypes::print_cells_chain_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, foutput);
 			}
 			else
 			{
-				std::cerr << "Error (non-terminating): failed to write SAS areas and volumes on chain level to file '" << write_sas_and_volumes_chain_level_to_file << "'\n";
+				std::cerr << "Error (non-terminating): failed to write cells on chain level to file '" << write_cells_chain_level_to_file << "'\n";
 			}
 		}
 

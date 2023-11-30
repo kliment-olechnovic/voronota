@@ -30,9 +30,9 @@ voronota-lt \
   -write-contacts-to-file ./output/written_files/output_2zsk_contacts.txt \
   -write-contacts-residue-level-to-file ./output/written_files/output_2zsk_contacts_residue_level.txt \
   -write-contacts-chain-level-to-file ./output/written_files/output_2zsk_contacts_chain_level.txt \
-  -write-sas-and-volumes-to-file ./output/written_files/output_2zsk_sas_and_volumes.txt \
-  -write-sas-and-volumes-residue-level-to-file ./output/written_files/output_2zsk_sas_and_volumes_residue_level.txt \
-  -write-sas-and-volumes-chain-level-to-file ./output/written_files/output_2zsk_sas_and_volumes_chain_level.txt \
+  -write-cells-to-file ./output/written_files/output_2zsk_cells.txt \
+  -write-cells-residue-level-to-file ./output/written_files/output_2zsk_cells_residue_level.txt \
+  -write-cells-chain-level-to-file ./output/written_files/output_2zsk_cells_chain_level.txt \
   -write-log-to-file ./output/written_files/output_2zsk_log.txt \
 < "./input/balls_2zsk.xyzr" \
 2> /dev/null
