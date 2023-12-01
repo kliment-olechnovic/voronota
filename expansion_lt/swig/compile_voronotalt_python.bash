@@ -6,6 +6,5 @@ rm -rf "./voronotalt_python_wrap.cxx" "./_voronotalt_python.so" "./voronotalt_py
 
 swig -python -c++ voronotalt_python.i
 
-g++ -fPIC -shared -Ofast -march=native -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so -I/usr/include/python3.11
+g++ -fPIC -shared -Ofast -march=native -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
 
-python3 -B "./test_run_voronotalt_python.py"

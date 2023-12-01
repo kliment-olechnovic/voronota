@@ -6,13 +6,17 @@ Python bindings of Voronota-LT can be built using SWIG, in the "expansion_lt/swi
 
     swig -python -c++ voronotalt_python.i
     
-    g++ -fPIC -shared -O3 -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so -I/usr/include/python3.11
+    g++ -fPIC -shared -O3 -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
 
 This produces "_voronotalt_python.so" and "voronotalt_python.py" that are needed to call Voronota-LT from Python code.
 
 ## Using Python bindings
 
-When "_voronotalt_python.so" and "voronotalt_python.py" are prepared, Voronota-LT can be used in Python code as in the following example:
+When "_voronotalt_python.so" and "voronotalt_python.py" are generated, the "voronotalt_python" module can be made findable by python by adding its dyrectory to the PYTHONPATH environmental variable:
+
+    export PYTHONPATH="${PYTHONPATH}:/path/to/voronota/expansion_lt/swig"
+
+Then Voronota-LT can be used in Python code as in the following example:
 
     import voronotalt_python as voronotalt
     

@@ -67,7 +67,7 @@ The overview text is the following:
     of atomic balls of van der Waals radii constrained inside a solvent-accessible surface defined by a rolling probe.
     The software computes inter-atom contact areas, per-cell solvent accessible surface areas, per-cell constrained volumes.
     'voronota-lt' is very fast when used on molecular data with a not large rolling probe radius (less than 2.0 angstroms, 1.4 is recommended)
-    and and can be made even faster by running it using multiple processors.
+    and can be made even faster by running it using multiple processors.
     
     Options:
         --probe                                          number     rolling probe radius, default is 1.4
@@ -216,13 +216,17 @@ Python bindings of Voronota-LT can be built using SWIG, in the "expansion_lt/swi
 
     swig -python -c++ voronotalt_python.i
     
-    g++ -fPIC -shared -O3 -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so -I/usr/include/python3.11
+    g++ -fPIC -shared -O3 -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
 
 This produces "_voronotalt_python.so" and "voronotalt_python.py" that are needed to call Voronota-LT from Python code.
 
 ## Using Python bindings
 
-When "_voronotalt_python.so" and "voronotalt_python.py" are prepared, Voronota-LT can be used in Python code as in the following example:
+When "_voronotalt_python.so" and "voronotalt_python.py" are generated, the "voronotalt_python" module can be made findable by python by adding its dyrectory to the PYTHONPATH environmental variable:
+
+    export PYTHONPATH="${PYTHONPATH}:/path/to/voronota/expansion_lt/swig"
+
+Then Voronota-LT can be used in Python code as in the following example:
 
     import voronotalt_python as voronotalt
     

@@ -5,7 +5,7 @@ Voronota-LT version 0.9
 of atomic balls of van der Waals radii constrained inside a solvent-accessible surface defined by a rolling probe.
 The software computes inter-atom contact areas, per-cell solvent accessible surface areas, per-cell constrained volumes.
 'voronota-lt' is very fast when used on molecular data with a not large rolling probe radius (less than 2.0 angstroms, 1.4 is recommended)
-and and can be made even faster by running it using multiple processors.
+and can be made even faster by running it using multiple processors.
 
 Options:
     --probe                                          number     rolling probe radius, default is 1.4
