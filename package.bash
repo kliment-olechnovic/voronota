@@ -76,6 +76,20 @@ mkdir -p "${PACKAGE_NAME}/expansion_lt"
 
 cp -r "./expansion_lt/src" "${PACKAGE_NAME}/expansion_lt/src"
 
+cp \
+  "./expansion_lt/CMakeLists.txt" \
+  "./expansion_lt/LICENSE.txt" \
+  "./expansion_lt/README.md" \
+  "./expansion_lt/index.html" \
+  "${PACKAGE_NAME}/expansion_lt/"
+
+mkdir -p "${PACKAGE_NAME}/expansion_lt/swig"
+
+cp \
+  "./expansion_lt/swig/voronotalt.h" \
+  "./expansion_lt/swig/voronotalt_python.i" \
+  "${PACKAGE_NAME}/expansion_lt/swig/"
+
 ################################################################################
 
 ./expansion_js/document.bash
