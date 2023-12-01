@@ -4,9 +4,11 @@
 
 Python bindings of Voronota-LT can be built using SWIG, in the "expansion_lt/swig" directory:
 
-    swig -python -c++ voronotalt_python.i
-    
-    g++ -fPIC -shared -O3 -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
+```bash
+swig -python -c++ voronotalt_python.i
+
+g++ -fPIC -shared -O3 -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
+```
 
 This produces "_voronotalt_python.so" and "voronotalt_python.py" that are needed to call Voronota-LT from Python code.
 
@@ -14,10 +16,13 @@ This produces "_voronotalt_python.so" and "voronotalt_python.py" that are needed
 
 When "_voronotalt_python.so" and "voronotalt_python.py" are generated, the "voronotalt_python" module can be made findable by python by adding its directory to the PYTHONPATH environmental variable:
 
-    export PYTHONPATH="${PYTHONPATH}:/path/to/voronota/expansion_lt/swig"
+```bash
+export PYTHONPATH="${PYTHONPATH}:/path/to/voronota/expansion_lt/swig"
+```
 
 Then Voronota-LT can be used in Python code as in the following example:
 
+```py
     import voronotalt_python as voronotalt
     
     balls = []
@@ -55,3 +60,4 @@ Then Voronota-LT can be used in Python code as in the following example:
     for i, cell in enumerate(cells):
         print("cell", i, cell.sas_area, cell.volume);
     
+```

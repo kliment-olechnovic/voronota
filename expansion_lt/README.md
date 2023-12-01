@@ -30,34 +30,44 @@ You can build using CMake for makefile generation.
 Starting in the directory containing "CMakeLists.txt" file,
 run the sequence of commands:
 
-    cmake ./
-    make
+```bash
+cmake ./
+make
+```
 
 Alternatively, to keep files more organized, CMake can be run in a separate "build" directory:
 
-    mkdir build
-    cd build
-    cmake ../
-    make
-    cp ./voronota-lt ../voronota-lt
+```bash
+mkdir build
+cd build
+cmake ../
+make
+cp ./voronota-lt ../voronota-lt
+```
 
 ## Using C++ compiler directly
 
 For example, "voronota-lt" executable can be built using GNU C++ compiler:
 
-    g++ -std=c++14 -O3 -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
+```bash
+g++ -std=c++14 -O3 -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
+```
 
 Performance-boosting compiler flags can be included:
 
-    g++ -std=c++14 -Ofast -march=native -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
+```bash
+g++ -std=c++14 -Ofast -march=native -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
+```
 
 # Running the command-line tool
 
 The overview of command-line options, as well as input and output, is printed when running the "voronota-lt" executable with "--help" or "-h" flags:
 
-    voronota-lt --help
-    
-    voronota-lt -h
+```bash
+voronota-lt --help
+
+voronota-lt -h
+```
 
 The overview text is the following:
 
@@ -122,6 +132,7 @@ The only header file needed to be included is "voronotalt.h".
 
 Below is a detailed example:
 
+```cpp
     #include <stdexcept> // this example uses exceptions, but the Voronota-LT code does not
     
     include "voronotalt.h" // assuming that the "voronotalt" directory is in the include path
@@ -208,6 +219,7 @@ Below is a detailed example:
         }
     }
 
+```
 
 # Using Voronota-LT Python bindings
 
@@ -215,9 +227,11 @@ Below is a detailed example:
 
 Python bindings of Voronota-LT can be built using SWIG, in the "expansion_lt/swig" directory:
 
-    swig -python -c++ voronotalt_python.i
-    
-    g++ -fPIC -shared -O3 -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
+```bash
+swig -python -c++ voronotalt_python.i
+
+g++ -fPIC -shared -O3 -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
+```
 
 This produces "_voronotalt_python.so" and "voronotalt_python.py" that are needed to call Voronota-LT from Python code.
 
@@ -225,10 +239,13 @@ This produces "_voronotalt_python.so" and "voronotalt_python.py" that are needed
 
 When "_voronotalt_python.so" and "voronotalt_python.py" are generated, the "voronotalt_python" module can be made findable by python by adding its directory to the PYTHONPATH environmental variable:
 
-    export PYTHONPATH="${PYTHONPATH}:/path/to/voronota/expansion_lt/swig"
+```bash
+export PYTHONPATH="${PYTHONPATH}:/path/to/voronota/expansion_lt/swig"
+```
 
 Then Voronota-LT can be used in Python code as in the following example:
 
+```py
     import voronotalt_python as voronotalt
     
     balls = []
@@ -266,3 +283,4 @@ Then Voronota-LT can be used in Python code as in the following example:
     for i, cell in enumerate(cells):
         print("cell", i, cell.sas_area, cell.volume);
     
+```

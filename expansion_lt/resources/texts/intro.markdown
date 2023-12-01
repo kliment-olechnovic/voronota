@@ -30,34 +30,44 @@ You can build using CMake for makefile generation.
 Starting in the directory containing "CMakeLists.txt" file,
 run the sequence of commands:
 
-    cmake ./
-    make
+```bash
+cmake ./
+make
+```
 
 Alternatively, to keep files more organized, CMake can be run in a separate "build" directory:
 
-    mkdir build
-    cd build
-    cmake ../
-    make
-    cp ./voronota-lt ../voronota-lt
+```bash
+mkdir build
+cd build
+cmake ../
+make
+cp ./voronota-lt ../voronota-lt
+```
 
 ## Using C++ compiler directly
 
 For example, "voronota-lt" executable can be built using GNU C++ compiler:
 
-    g++ -std=c++14 -O3 -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
+```bash
+g++ -std=c++14 -O3 -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
+```
 
 Performance-boosting compiler flags can be included:
 
-    g++ -std=c++14 -Ofast -march=native -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
+```bash
+g++ -std=c++14 -Ofast -march=native -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
+```
 
 # Running the command-line tool
 
 The overview of command-line options, as well as input and output, is printed when running the "voronota-lt" executable with "--help" or "-h" flags:
 
-    voronota-lt --help
-    
-    voronota-lt -h
+```bash
+voronota-lt --help
+
+voronota-lt -h
+```
 
 The overview text is the following:
 
