@@ -45,7 +45,7 @@
 </ul>
 </nav>
 <h1 id="about-voronota-lt">About Voronota-LT</h1>
-<p>Voronota-LT (pronounced ‘voronota lite’) is an alternative version of Voronota for contructing tessellation-derived atomic contact areas and volumes. Voronota-LT was written from scratch and does not use any external code, even from the core Voronota. The primary motivation for creating Voronota-LT was drastically increasing the speed of computing tessellation-based atom-atom contact areas and atom solvent-accessible surface areas. Like Voronota, Voronota-LT can compute contact areas derived from the additively weighted Voronoi tessellation, but the main increase in speed comes when utilizing a simpler, radical tessellation variant, also known as Laguerre tessellation. This is a default tessellation variant in Voronota-LT. It considers radii of atoms together with the rolling probe radius to define radical planes as bisectors between atoms.</p>
+<p>Voronota-LT (pronounced ‘voronota lite’) is an alternative version of Voronota for contructing tessellation-derived atomic contact areas and volumes. Voronota-LT was written from scratch and does not use any external code, even from the core Voronota. The primary motivation for creating Voronota-LT was drastically increasing the speed of computing tessellation-based atom-atom contact areas and atom solvent-accessible surface areas. Like Voronota, Voronota-LT can compute contact areas derived from the additively weighted Voronoi tessellation, but the main increase in speed comes when utilizing a simpler, radical tessellation variant, also known as Laguerre tessellation. This is the default tessellation variant in Voronota-LT. It considers radii of atoms together with the rolling probe radius to define radical planes as bisectors between atoms.</p>
 <h1 id="getting-the-latest-version">Getting the latest version</h1>
 <p>Download the latest archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
 <p>The archive contains the Voronota-LT software in the ‘expansion_lt’ subdirectory. This executable can be built from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>
@@ -220,7 +220,7 @@ void compute_contact_and_cell_descriptors(
 g++ -fPIC -shared -O3 -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)</code></pre>
 <p>This produces “_voronotalt_python.so” and “voronotalt_python.py” that are needed to call Voronota-LT from Python code.</p>
 <h2 id="using-python-bindings">Using Python bindings</h2>
-<p>When “_voronotalt_python.so” and “voronotalt_python.py” are generated, the “voronotalt_python” module can be made findable by python by adding its dyrectory to the PYTHONPATH environmental variable:</p>
+<p>When “_voronotalt_python.so” and “voronotalt_python.py” are generated, the “voronotalt_python” module can be made findable by python by adding its directory to the PYTHONPATH environmental variable:</p>
 <pre><code>export PYTHONPATH=&quot;${PYTHONPATH}:/path/to/voronota/expansion_lt/swig&quot;</code></pre>
 <p>Then Voronota-LT can be used in Python code as in the following example:</p>
 <pre><code>import voronotalt_python as voronotalt

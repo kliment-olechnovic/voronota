@@ -12,7 +12,7 @@ This produces "_voronotalt_python.so" and "voronotalt_python.py" that are needed
 
 ## Using Python bindings
 
-When "_voronotalt_python.so" and "voronotalt_python.py" are generated, the "voronotalt_python" module can be made findable by python by adding its dyrectory to the PYTHONPATH environmental variable:
+When "_voronotalt_python.so" and "voronotalt_python.py" are generated, the "voronotalt_python" module can be made findable by python by adding its directory to the PYTHONPATH environmental variable:
 
     export PYTHONPATH="${PYTHONPATH}:/path/to/voronota/expansion_lt/swig"
 

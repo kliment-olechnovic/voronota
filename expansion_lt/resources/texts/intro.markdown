@@ -5,7 +5,7 @@ Voronota-LT was written from scratch and does not use any external code, even fr
 The primary motivation for creating Voronota-LT was drastically increasing the speed of computing tessellation-based atom-atom contact areas and atom solvent-accessible surface areas.
 Like Voronota, Voronota-LT can compute contact areas derived from the additively weighted Voronoi tessellation,
 but the main increase in speed comes when utilizing a simpler, radical tessellation variant, also known as Laguerre tessellation.
-This is a default tessellation variant in Voronota-LT. It considers radii of atoms together with the rolling probe radius to define radical planes as bisectors between atoms.
+This is the default tessellation variant in Voronota-LT. It considers radii of atoms together with the rolling probe radius to define radical planes as bisectors between atoms.
 
 # Getting the latest version
 
