@@ -22,7 +22,7 @@ balls.append(voronotalt.Ball(-0.38268343236509, 0.923879532511287, 0, 0.5))
 for i, ball in enumerate(balls):
     print("ball", i, ball.x, ball.y, ball.z, ball.r);
 
-rt = voronotalt.RadicalTessellation(balls, 1.0)
+rt = voronotalt.RadicalTessellation(balls, probe=1.0)
 
 contacts=list(rt.contacts)
 

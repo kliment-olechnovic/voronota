@@ -82,29 +82,22 @@ public:
 			throw std::runtime_error("No cells constructed for the provided balls and probe.");
 		}
 
+		contacts.resize(result.contacts_summaries.size());
+		for(std::size_t i=0;i<result.contacts_summaries.size();i++)
 		{
-			contacts.resize(result.contacts_summaries.size());
-			for(std::size_t i=0;i<result.contacts_summaries.size();i++)
-			{
-				contacts[i].index_a=result.contacts_summaries[i].id_a;
-				contacts[i].index_b=result.contacts_summaries[i].id_b;
-				contacts[i].area=result.contacts_summaries[i].area;
-				contacts[i].arc_length=result.contacts_summaries[i].arc_length;
-			}
+			contacts[i].index_a=result.contacts_summaries[i].id_a;
+			contacts[i].index_b=result.contacts_summaries[i].id_b;
+			contacts[i].area=result.contacts_summaries[i].area;
+			contacts[i].arc_length=result.contacts_summaries[i].arc_length;
 		}
 
+		cells.resize(balls.size());
+		for(std::size_t i=0;i<result.cells_summaries.size();i++)
 		{
-			cells.resize(balls.size());
-			for(std::size_t i=0;i<result.cells_summaries.size();i++)
-			{
-				std::size_t index=static_cast<std::size_t>(result.cells_summaries[i].id);
-				if(index<balls.size())
-				{
-					cells[index].sas_area=result.cells_summaries[i].sas_area;
-					cells[index].volume=result.cells_summaries[i].sas_inside_volume;
-					cells[index].included=true;
-				}
-			}
+			const std::size_t index=static_cast<std::size_t>(result.cells_summaries[i].id);
+			cells[index].sas_area=result.cells_summaries[i].sas_area;
+			cells[index].volume=result.cells_summaries[i].sas_inside_volume;
+			cells[index].included=true;
 		}
 
 		return static_cast<int>(contacts.size());
