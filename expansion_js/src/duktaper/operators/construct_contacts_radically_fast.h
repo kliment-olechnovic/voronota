@@ -1,7 +1,8 @@
 #ifndef DUKTAPER_OPERATORS_CONSTRUCT_CONTACTS_RADICALLY_FAST_H_
 #define DUKTAPER_OPERATORS_CONSTRUCT_CONTACTS_RADICALLY_FAST_H_
 
-#include "../../../../expansion_lt/src/voronotalt/radical_tessellation.h"
+#include "../../../../expansion_lt/src/voronotalt/voronotalt.h"
+
 #include "../../../../src/auxiliaries/opengl_printer.h"
 
 #include "../operators_common.h"
@@ -68,12 +69,7 @@ public:
 		std::vector<voronotalt::SimpleSphere> spheres(data_manager.atoms().size());
 		for(std::size_t i=0;i<data_manager.atoms().size();i++)
 		{
-			const scripting::Atom& a=data_manager.atoms()[i];
-			voronotalt::SimpleSphere& s=spheres[i];
-			s.p.x=a.value.x;
-			s.p.y=a.value.y;
-			s.p.z=a.value.z;
-			s.r=a.value.r+probe;
+			voronotalt::fill_sphere_from_ball(data_manager.atoms()[i].value, probe, spheres[i]);
 		}
 
 		std::vector<int> grouping_for_filtering;

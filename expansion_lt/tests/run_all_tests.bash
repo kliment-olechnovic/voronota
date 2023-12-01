@@ -13,6 +13,10 @@ cd - &> /dev/null
 
 ####################################################################
 
+voronota-lt --help &> "./output/help_message.txt"
+
+####################################################################
+
 voronota-lt -processors 40 -probe 1.4 -print-everything < "./input/balls_2zsk.xyzr" 2> "./output/contacts_2zsk_summary.txt" > "./output/contacts_2zsk_tables.txt"
 
 voronota-lt -processors 40 -probe 1.4  < "./input/balls_3dlb.xyzr" 2> "./output/contacts_3dlb_summary.txt"

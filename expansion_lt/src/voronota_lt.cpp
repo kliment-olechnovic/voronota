@@ -8,6 +8,69 @@
 
 #include "voronotalt_cli/voronotalt_cli.h"
 
+namespace
+{
+
+void print_help()
+{
+	const std::string message=R"(Voronota-LT version 0.9
+
+'voronota-lt' executable constructs a radical Voronoi tessellation (also known as a Laguerre-Voronoi diagram or a power diagram)
+of atomic balls of van der Waals radii constrained inside a solvent-accessible surface defined by a rolling probe.
+The software computes inter-atom contact areas, per-cell solvent accessible surface areas, per-cell constrained volumes.
+'voronota-lt' is very fast when used on molecular data with a not large rolling probe radius (less than 2.0 angstroms, 1.4 is recommended)
+and and can be made even faster by running it using multiple processors.
+
+Options:
+    --probe                                          number     rolling probe radius, default is 1.4
+    --processors                                     number     maximum number of OpenMP threads to use, default is 1
+    --compute-only-inter-residue-contacts                       flag to only compute inter-residue contacts, turns off per-cell summaries
+    --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
+    --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
+    --measure-running-time                                      flag to measure and output running times
+    --print-contacts                                            flag to print table of contacts to stdout
+    --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
+    --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout
+    --print-cells                                               flag to print table of per-cell summaries to stdout
+    --print-cells-residue-level                                 flag to print residue-level grouped per-cell summaries to stdout
+    --print-cells-chain-level                                   flag to print chain-level grouped per-cell summaries to stdout
+    --print-everything                                          flag to print everything to stdout, terminate if printing everything is not possible
+    --write-contacts-to-file                         string     output file path to write table of contacts
+    --write-contacts-residue-level-to-file           string     output file path to write residue-level grouped contacts
+    --write-contacts-chain-level-to-file             string     output file path to write chain-level grouped contacts
+    --write-cells-to-file                            string     output file path to write of per-cell summaries
+    --write-cells-residue-level-to-file              string     output file path to write residue-level grouped per-cell summaries
+    --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
+    --write-log-to-file                              string     output file path to write global log, does not turn off printing log to stderr
+    --help | -h                                                 flag to print help to stderr and exit
+
+Standard input stream:
+    Space-separated or tab-separated header-less table of balls, one of the following line formats possible:
+        x y z radius
+        chainID x y z radius
+        chainID residueID x y z radius
+        chainID residueID atomName x y z radius
+    Alternatively, output of 'voronota get-balls-from-atoms-file' is acceptable, where line format is:
+        x y z radius # atomSerial chainID resSeq resName atomName altLoc iCode
+
+Standard output stream:
+     Requested tables with headers, with column values tab-separated
+
+Standard error output stream:
+    Log (a name-value pair line), error messages
+
+Usage examples:
+
+    cat ~/2zsk.pdb | voronota get-balls-from-atoms-file | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
+
+    cat ~/2zsk.pdb | voronota get-balls-from-atoms-file | voronota-lt --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
+)";
+
+	std::cerr << message << std::endl;
+}
+
+}
+
 int main(const int argc, const char** argv)
 {
 	std::ios_base::sync_with_stdio(false);
@@ -35,6 +98,8 @@ int main(const int argc, const char** argv)
 	std::string write_contacts_graphics_to_file;
 	std::string graphics_title;
 	std::string write_log_to_file;
+	bool help=false;
+	std::ostringstream error_log_for_options_parsing;
 
 	{
 		const std::vector<voronotalt::CLOParser::Option> cloptions=voronotalt::CLOParser::read_options(argc, argv);
@@ -144,18 +209,42 @@ int main(const int argc, const char** argv)
 			{
 				write_log_to_file=opt.args_strings.front();
 			}
+			else if((opt.name=="help" || opt.name=="h") && opt.is_flag())
+			{
+				help=opt.is_flag_and_true();
+			}
 			else if(opt.name.empty())
 			{
-				std::cerr << "Error: unnamed command line arguments detected.\n";
-				return 1;
+				error_log_for_options_parsing << "Error: unnamed command line arguments detected.\n";
 			}
 			else
 			{
-				std::cerr << "Error: invalid command line option '" << opt.name << "'.\n";
-				return 1;
+				error_log_for_options_parsing << "Error: invalid command line option '" << opt.name << "'.\n";
 			}
 		}
 	}
+
+	if(help)
+	{
+		print_help();
+		return 0;
+	}
+
+	if(!error_log_for_options_parsing.str().empty())
+	{
+		std::cerr << error_log_for_options_parsing.str() << "\n";
+		return 1;
+	}
+
+#ifdef _OPENMP
+	omp_set_num_threads(max_number_of_processors);
+#else
+	if(max_number_of_processors>1)
+	{
+		std::cerr << "Error: this executable was not compiled to use OpenMP, therefore using more than 1 processor is not supported.\n";
+		return 1;
+	}
+#endif
 
 	if(print_everything)
 	{
@@ -169,10 +258,6 @@ int main(const int argc, const char** argv)
 
 	const bool need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty());
 	const bool need_summaries_on_chain_level=(print_contacts_chain_level || print_cells_chain_level || !write_contacts_chain_level_to_file.empty() || !write_cells_chain_level_to_file.empty());
-
-#ifdef _OPENMP
-	omp_set_num_threads(max_number_of_processors);
-#endif
 
 	voronotalt::TimeRecorderChrono time_recoder_for_all(measure_running_time);
 	voronotalt::TimeRecorderChrono time_recoder_for_input(measure_running_time);
