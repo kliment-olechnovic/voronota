@@ -72,6 +72,8 @@ cp \
 
 ################################################################################
 
+./expansion_lt/document.bash
+
 mkdir -p "${PACKAGE_NAME}/expansion_lt"
 
 cp -r "./expansion_lt/src" "${PACKAGE_NAME}/expansion_lt/src"
