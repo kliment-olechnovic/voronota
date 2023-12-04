@@ -138,6 +138,7 @@
 #include "operators/setup_chemistry_annotating.h"
 #include "operators/setup_loading.h"
 #include "operators/setup_mock_voromqa.h"
+#include "operators/setup_parallelization.h"
 #include "operators/setup_random_seed.h"
 #include "operators/setup_voromqa.h"
 #include "operators/show_atoms.h"
@@ -370,6 +371,7 @@ public:
 		set_command_for_extra_actions("setup-chemistry-annotating", operators::SetupChemistryAnnotating());
 		set_command_for_extra_actions("setup-loading", operators::SetupLoading());
 		set_command_for_extra_actions("setup-mock-voromqa", operators::SetupMockVoroMQA());
+		set_command_for_extra_actions("setup-parallelization", operators::SetupParallelization());
 		set_command_for_extra_actions("setup-random-seed", operators::SetupRandomSeed());
 		set_command_for_extra_actions("setup-voromqa", operators::SetupVoroMQA());
 		set_command_for_extra_actions("explain-command", operators::ExplainCommand(collection_of_command_documentations_));
@@ -891,11 +893,7 @@ private:
 				}
 				else if(picked_data_managers.size()==1 || commands_for_data_manager_[command_name]->multiplicable())
 				{
-#ifdef _OPENMP
-					const bool in_parallel=true;
-#else
-					const bool in_parallel=false;
-#endif
+					const bool in_parallel=Parallelization::Configuration::get_default_configuration().in_script;
 					if(!in_parallel || picked_data_managers.size()==1)
 					{
 						for(std::size_t i=0;i<picked_data_managers.size();i++)

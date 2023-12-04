@@ -50,6 +50,7 @@ int main(const int argc, const char** argv)
 		voronota::viewer::Application::instance().enqueue_script("occlusion-none");
 		voronota::viewer::Application::instance().enqueue_script("multisampling-basic");
 		voronota::viewer::Application::instance().enqueue_script("background 0xCCCCCC");
+		voronota::viewer::Application::instance().enqueue_script("setup-parallelization -processors 8 -dynamic -in-script");
 
 		const bool faster_loading=(files.size()>5);
 		const bool show_cartoons_after_faster_loading=(faster_loading && files.size()<=30);
