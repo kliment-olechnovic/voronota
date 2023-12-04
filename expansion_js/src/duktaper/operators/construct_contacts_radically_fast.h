@@ -33,8 +33,9 @@ public:
 	bool no_intra_chain;
 	bool no_intra_residue;
 	bool generate_graphics;
+	bool no_remove_triangulation_info;
 
-	ConstructContactsRadicallyFast() : probe(1.4), no_intra_chain(false), no_intra_residue(false), generate_graphics(false)
+	ConstructContactsRadicallyFast() : probe(1.4), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), no_remove_triangulation_info(false)
 	{
 	}
 
@@ -44,6 +45,7 @@ public:
 		no_intra_chain=input.get_flag("no-intra-chain");
 		no_intra_residue=input.get_flag("no-intra-residue");
 		generate_graphics=input.get_flag("generate-graphics");
+		no_remove_triangulation_info=input.get_flag("no-remove-triangulation-info");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -52,6 +54,7 @@ public:
 		doc.set_option_decription(CDOD("no-intra-chain", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-chain contacts"));
 		doc.set_option_decription(CDOD("no-intra-residue", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-residue contacts"));
 		doc.set_option_decription(CDOD("generate-graphics", CDOD::DATATYPE_BOOL, "flag to generate graphics"));
+		doc.set_option_decription(CDOD("no-remove-triangulation-info", CDOD::DATATYPE_BOOL, "flag to not remove triangulation info"));
 	}
 
 	Result run(scripting::DataManager& data_manager) const
@@ -147,6 +150,11 @@ public:
 				contact.value.dist=spheres[ccds.id].r+probe*2.0;
 			}
 			data_manager.atom_adjuncts_mutable(ccds.id)["volume"]=ccds.sas_inside_volume;
+		}
+
+		if(!no_remove_triangulation_info)
+		{
+			data_manager.remove_triangulation_info();
 		}
 
 		data_manager.reset_contacts_by_swapping(contacts);
