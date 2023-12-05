@@ -12,12 +12,13 @@ Options:
     --cache-dir               string  *  path to support directory to cache big reference files from PDB
     --output-dir              string  *  path to root output directory to store ensemble info and structures
     --size-condition          number     max allowed number of residues to deviate from maximum size in cluster, default is 80
+    --log-to-file             string     file path prefix for file to redirect stdout and stderr to, default is '' to not redirect
     --no-superposing                     flag to not perform superposition and related actions
     --no-date                            flag to not name cached clusters file by date
     --help | -h                          flag to display help message and exit
     
 Standard output:
-    path to ensemble output directory
+    results summary
     
 Examples:
     
@@ -43,14 +44,12 @@ fi
 
 export LC_ALL=C
 
-command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
-command -v clustalo &> /dev/null || { echo >&2 "Error: 'clustalo' executable not in binaries path"; exit 1; }
-
 ENTITYID=""
 SEQIDENTITY=""
 CACHEDIR=""
 OUTPUTDIR=""
 SIZECONDITION="80"
+LOGTOFILE=""
 NOSUPERPOSING="false"
 NODATE="false"
 RUNMT="false"
@@ -83,6 +82,10 @@ do
 		SIZECONDITION="$OPTARG"
 		shift
 		;;
+	--log-to-file)
+		LOGTOFILE="$OPTARG"
+		shift
+		;;
 	--no-superposing)
 		NOSUPERPOSING="true"
 		;;
@@ -110,6 +113,17 @@ if [ "$HELP_MODE" == "true" ]
 then
 	print_help_and_exit
 fi
+
+if [ -n "$LOGTOFILE" ]
+then
+	LOGFILE="${LOGTOFILE}log-ident-${SEQIDENTITY}-sizecond-${SIZECONDITION}-entity-${ENTITYID}.txt"
+	mkdir -p "$(dirname ${LOGFILE})"
+	exec > "$LOGFILE"
+	exec 2>&1
+fi
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+command -v clustalo &> /dev/null || { echo >&2 "Error: 'clustalo' executable not in binaries path"; exit 1; }
 
 if [ -z "$ENTITYID" ]
 then
