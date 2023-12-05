@@ -13,6 +13,7 @@ Options:
     --output-dir              string  *  path to root output directory to store ensemble info and structures
     --size-condition          number     max allowed number of residues to deviate from maximum size in cluster, default is 80
     --no-superposing                     flag to not perform superposition and related actions
+    --no-date                            flag to not name cached clusters file by date
     --help | -h                          flag to display help message and exit
     
 Standard output:
@@ -51,6 +52,7 @@ CACHEDIR=""
 OUTPUTDIR=""
 SIZECONDITION="80"
 NOSUPERPOSING="false"
+NODATE="false"
 RUNMT="false"
 RUNANALYSISAFTERMT="false"
 HELP_MODE="false"
@@ -83,6 +85,9 @@ do
 		;;
 	--no-superposing)
 		NOSUPERPOSING="true"
+		;;
+	--no-date)
+		NODATE="true"
 		;;
 	--run-mt)
 		RUNMT="true"
@@ -170,7 +175,14 @@ cd "$CACHEDIR"
 CACHEDIR="$(pwd)"
 cd - &> /dev/null
 
-CLUSTERSFILE="${CACHEDIR}/clusters-by-entity-${SEQIDENTITY}-year-$(date '+%Y-week-%V').txt"
+CLUSTERSFILE="${CACHEDIR}/clusters-by-entity-${SEQIDENTITY}"
+
+if [ "$NODATE" == "true" ]
+then
+	CLUSTERSFILE="${CLUSTERSFILE}.txt"
+else
+	CLUSTERSFILE="${CLUSTERSFILE}-year-$(date '+%Y-week-%V').txt"
+fi
 
 echo >&2 "... Preparing the sequence-based clustering info"
 
