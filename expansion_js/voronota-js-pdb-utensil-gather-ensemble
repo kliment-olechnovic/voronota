@@ -12,6 +12,7 @@ Options:
     --cache-dir               string  *  path to support directory to cache big reference files from PDB
     --output-dir              string  *  path to root output directory to store ensemble info and structures
     --size-condition          number     max allowed number of residues to deviate from maximum size in cluster, default is 80
+    --no-superposing                     flag to not perform superposition and related actions
     --help | -h                          flag to display help message and exit
     
 Standard output:
@@ -49,6 +50,7 @@ SEQIDENTITY=""
 CACHEDIR=""
 OUTPUTDIR=""
 SIZECONDITION="80"
+NOSUPERPOSING="false"
 RUNMT="false"
 RUNANALYSISAFTERMT="false"
 HELP_MODE="false"
@@ -78,6 +80,9 @@ do
 	--size-condition)
 		SIZECONDITION="$OPTARG"
 		shift
+		;;
+	--no-superposing)
+		NOSUPERPOSING="true"
 		;;
 	--run-mt)
 		RUNMT="true"
@@ -355,7 +360,14 @@ cd "$RAW_OUTPUTDIR"
 
 RAW_OUTPUTDIR="$(pwd)"
 
-REDUCED_JOBID="$(echo ${RAW_JOBID} | sed 's|__raw__.*$|__reduced_|')_$(cat ./structure_sequence_table.tsv | awk -v maxloss=${SIZECONDITION} '{if($4<=maxloss){print $1}}' | sort | md5sum | awk '{print $1}')"
+REDUCED_JOBID="$(echo ${RAW_JOBID} | sed 's|__raw__.*$|__reduced_|')"
+
+if [ "$NOSUPERPOSING" == "true" ]
+then
+	REDUCED_JOBID="${REDUCED_JOBID}_nosuperpos"
+fi
+
+REDUCED_JOBID="${REDUCED_JOBID}_$(cat ./structure_sequence_table.tsv | awk -v maxloss=${SIZECONDITION} '{if($4<=maxloss){print $1}}' | sort | md5sum | awk '{print $1}')"
 
 cd ../
 
@@ -461,6 +473,10 @@ if [ "$(cat ./structure_reduced_sequence_table.tsv | wc -l)" -lt "2" ]
 then
 	echo >&2 "... Abandoning further operations because there is only one structure"
 	echo "yes" > "./finished"
+elif [ "$NOSUPERPOSING" == "true" ]
+then
+	echo >&2 "... Abandoning further operations because no superposing was requested"
+	echo "yes" > "./finished"
 else
 
 echo >&2 "...... Superposing reduced structured using qcprot, saving RMSD info and superposed structures"
@@ -562,7 +578,7 @@ echo "$(basename ${REDUCED_OUTPUTDIR})/unstable_residue_numbers                 
 echo "$(basename ${REDUCED_OUTPUTDIR})/structure_reduced_sequence_table.tsv                   -  summary table"
 echo "$(basename ${REDUCED_OUTPUTDIR})/structure_reduced_msa.fasta                            -  MSA from sequences of reduced structures"
 
-if [ "$(cat ${REDUCED_OUTPUTDIR}/structure_reduced_sequence_table.tsv | wc -l)" -gt "1" ]
+if [ -s "${REDUCED_OUTPUTDIR}/rmsd_for_all_pairs" ]
 then
 echo "$(basename ${REDUCED_OUTPUTDIR})/rmsd_for_all_pairs                                     -  RMSD for all pairs of reduced structures"
 echo "$(basename ${REDUCED_OUTPUTDIR})/structures_reduced_superposed/                         -  directory with reduced and superposed structures"
@@ -574,6 +590,11 @@ echo
 echo "Commands to view raw structures:"
 echo "pymol ${RAW_OUTPUTDIR}/structures/*"
 echo "voronota-gl ${RAW_OUTPUTDIR}/structures/*"
+
+echo
+echo "Commands to view reduced structures:"
+echo "pymol ${REDUCED_OUTPUTDIR}/structures_reduced/*"
+echo "voronota-gl ${REDUCED_OUTPUTDIR}/structures_reduced/*"
 
 if [ -s "${REDUCED_OUTPUTDIR}/structures_reduced_superposed_multimodel_numbered.cif" ]
 then
