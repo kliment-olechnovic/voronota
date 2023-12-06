@@ -13,6 +13,7 @@ Options:
     --output-dir              string  *  path to root output directory to store ensemble info and structures
     --size-condition          number     max allowed number of residues to deviate from maximum size in cluster, default is 80
     --log-to-file             string     file path prefix for file to redirect stdout and stderr to, default is '' to not redirect
+    --no-reducing                        flag to not reduce structures to the stable residue set
     --no-superposing                     flag to not perform superposition and related actions
     --no-date                            flag to not name cached clusters file by date
     --help | -h                          flag to display help message and exit
@@ -50,6 +51,7 @@ CACHEDIR=""
 OUTPUTDIR=""
 SIZECONDITION="80"
 LOGTOFILE=""
+NOREDUCING="false"
 NOSUPERPOSING="false"
 NODATE="false"
 RUNMT="false"
@@ -85,6 +87,9 @@ do
 	--log-to-file)
 		LOGTOFILE="$OPTARG"
 		shift
+		;;
+	--no-reducing)
+		NOREDUCING="true"
 		;;
 	--no-superposing)
 		NOSUPERPOSING="true"
@@ -432,7 +437,7 @@ echo >&2 "... Preparing the reduced structural data"
 echo >&2 "...... Checking if the reduced structural data is already prepared"
 
 ### {
-if [ -f "${REDUCED_OUTPUTDIR}/finished" ]
+if [ -f "${REDUCED_OUTPUTDIR}/finished" ] || [ "$NOREDUCING" == "true" ]
 then
 	echo >&2 "...... Skipping the reduced structural data preparation"
 else
@@ -625,12 +630,15 @@ echo "$(basename ${RAW_OUTPUTDIR})/msa.fasta                     -  MSA from seq
 echo "$(basename ${RAW_OUTPUTDIR})/structure_sequence_table.tsv  -  summary table"
 echo "$(basename ${RAW_OUTPUTDIR})/structures/                   -  directory with renumbered structures"
 
+if [ -d "${REDUCED_OUTPUTDIR}" ]
+then
 echo
 echo "Reduced structural data files:"
 echo "$(basename ${REDUCED_OUTPUTDIR})/                                                       -  root reduced data directory"
 echo "$(basename ${REDUCED_OUTPUTDIR})/unstable_residue_numbers                               -  removed unstable residue numbers"
 echo "$(basename ${REDUCED_OUTPUTDIR})/structure_reduced_sequence_table.tsv                   -  summary table"
 echo "$(basename ${REDUCED_OUTPUTDIR})/structure_reduced_msa.fasta                            -  MSA from sequences of reduced structures"
+fi
 
 if [ -s "${REDUCED_OUTPUTDIR}/rmsd_for_all_pairs" ]
 then
@@ -645,10 +653,13 @@ echo "Commands to view raw structures:"
 echo "pymol ${RAW_OUTPUTDIR}/structures/*"
 echo "voronota-gl ${RAW_OUTPUTDIR}/structures/*"
 
+if [ -d "${REDUCED_OUTPUTDIR}/structures_reduced" ]
+then
 echo
 echo "Commands to view reduced structures:"
 echo "pymol ${REDUCED_OUTPUTDIR}/structures_reduced/*"
 echo "voronota-gl ${REDUCED_OUTPUTDIR}/structures_reduced/*"
+fi
 
 if [ -s "${REDUCED_OUTPUTDIR}/structures_reduced_superposed_multimodel_numbered.cif" ]
 then
