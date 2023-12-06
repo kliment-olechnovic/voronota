@@ -222,7 +222,7 @@ trap "rm -r $TMPLDIR" EXIT
 
 echo >&2 "...... Getting a cluster of entities that contains entity '${ENTITYID}'"
 
-cat "$CLUSTERSFILE" | egrep "^${ENTITYID}|\s${ENTITYID}" | head -1 | sed 's/\s\+/\n/g' | egrep '\S+' \
+cat "$CLUSTERSFILE" | egrep "^${ENTITYID}\$|\s${ENTITYID}\$|^${ENTITYID}\s|\s${ENTITYID}\s" | head -1 | sed 's/\s\+/\n/g' | egrep '\S+' \
 | while read -r ANENTITYID
 do
 	if [[ $ANENTITYID =~ ^[0-9][A-Z0-9]{3}_[0-9]+$ ]]
