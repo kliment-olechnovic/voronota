@@ -531,7 +531,7 @@ public:
 
 						static float animation_time_step=15.0f;
 
-						if(ImGui::SliderFloat("milliseconds per frame", &animation_time_step, 1.0f, 40.0f, "%.1f", 0))
+						if(ImGui::SliderFloat("milliseconds per frame", &animation_time_step, 1.0f, 250.0f, "%.0f", 0))
 						{
 							GUIConfiguration::instance().animation_step_miliseconds=static_cast<double>(animation_time_step);
 						}
