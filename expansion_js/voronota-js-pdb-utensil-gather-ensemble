@@ -116,7 +116,7 @@ fi
 
 if [ -n "$LOGTOFILE" ]
 then
-	LOGFILE="${LOGTOFILE}log-ident-${SEQIDENTITY}-sizecond-${SIZECONDITION}-entity-${ENTITYID}.txt"
+	LOGFILE="${LOGTOFILE}logs-ident-${SEQIDENTITY}-sizecond-${SIZECONDITION}/$(echo ${ENTITYID} | sed 's/^\(..\).*$/\1/')/${ENTITYID}.txt"
 	mkdir -p "$(dirname ${LOGFILE})"
 	exec > "$LOGFILE"
 	exec 2>&1
@@ -241,6 +241,10 @@ fi
 NUMOFENTITIES="$(cat ${TMPLDIR}/entities | wc -l)"
 
 LISTOFENTITIES="$(cat ${TMPLDIR}/entities | tr '\n' ',' | sed 's/,$//')"
+
+SUBGROUPID="$(cat ${TMPLDIR}/entities | head -1 | sed 's/^\(..\).*$/\1/')"
+
+OUTPUTDIR="${OUTPUTDIR}/${SUBGROUPID}"
 
 RAW_JOBID="$(cat ${TMPLDIR}/entities | head -1)__$(cat ${TMPLDIR}/entities | tail -1)__raw__$(echo ${LISTOFENTITIES} | md5sum | awk '{print $1}')"
 
