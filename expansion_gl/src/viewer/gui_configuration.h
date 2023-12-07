@@ -120,7 +120,7 @@ private:
 		enabled_cursor_label(true),
 		enabled_waiting_indicator(true),
 		json_writing_level(0),
-		animation_step_miliseconds(1000.0/30.0),
+		animation_step_miliseconds(50.0),
 		enabled_sequence_view(false),
 		enabled_console(true),
 		hint_render_area_width(-1),

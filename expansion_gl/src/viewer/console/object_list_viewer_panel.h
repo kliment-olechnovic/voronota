@@ -529,7 +529,7 @@ public:
 
 						ImGui::Separator();
 
-						static float animation_time_step=15.0f;
+						static float animation_time_step=50.0f;
 
 						if(ImGui::SliderFloat("milliseconds per frame", &animation_time_step, 1.0f, 250.0f, "%.0f", 0))
 						{
