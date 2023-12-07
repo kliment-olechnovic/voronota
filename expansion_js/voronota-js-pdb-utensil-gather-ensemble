@@ -312,7 +312,7 @@ cat "./entities" \
 | while read -r EID
 do
 	paste -d '\t' \
-	  <(cat "./msa.fasta" | egrep "^>${EID}" | sed 's/^.\(....\).\+Chai\S\+\s\+\([^|]\+\)|.*$/\1\t\2/' | tr '[' ' ' | tr ']' ' ' | tr ',' ' ' | awk '{print $1 "\t" $2}') \
+	  <(cat "./msa.fasta" | egrep "^>${EID}" | sed 's/^.\(....\).\+Chai\S\+\s\+\([^|,\[\s]\+\).*$/\1\t\2/' | awk '{print $1 "\t" $2}') \
 	  <(cat "./msa.fasta" | egrep "^>${EID}" -A 1 | tail -1)
 done \
 > "./pdbid_chain_sequence_table.tsv"
@@ -326,18 +326,33 @@ cat "./pdbid_chain_sequence_table.tsv" \
 | while read -r PDBID CHAINID MSASEQ
 do
 	PDBIDSUBGROUP="$(echo ${PDBID} | sed 's/^\(..\).*$/\1/')"
-	PDBCACHEDFILE="${CACHEDIR}/structures/${PDBIDSUBGROUP}/${PDBID}.cif.gz"
 	if [ ! -s "${CACHEDIR}/structures/${PDBIDSUBGROUP}/${PDBID}.cif.gz" ]
 	then
 		mkdir -p "${CACHEDIR}/structures/${PDBIDSUBGROUP}"
 		cd "${CACHEDIR}/structures/${PDBIDSUBGROUP}"
-		wget -O "${PDBID}.cif.gz.tmp" -q "https://files.rcsb.org/download/${PDBID}.cif.gz"
-		mv "${PDBID}.cif.gz.tmp" "${PDBID}.cif.gz"
+		LOCKDIRFORDOWNLOAD="./lock${PDBID}"
+		
+		if mkdir "$LOCKDIRFORDOWNLOAD" 2>/dev/null
+		then
+			wget -O "${PDBID}.cif.gz" -q "https://files.rcsb.org/download/${PDBID}.cif.gz"
+			if [ ! -s "${PDBID}.cif.gz" ]
+			then
+				rm "${PDBID}.cif.gz"
+			fi
+			rm -rf "$LOCKDIRFORDOWNLOAD"
+		else
+			while [ -d "$LOCKDIRFORDOWNLOAD" ]
+			do
+				sleep 1
+			done
+		fi
+		
 		if [ ! -s "${PDBID}.cif.gz" ]
 		then
 			echo >&2 "Error: could not download mmCIF file for PDB ID '${PDBID}'"
 			exit 1
 		fi
+		
 		cd - &> /dev/null
 	fi
 done
@@ -608,7 +623,10 @@ echo "Stats:"
 {
 echo "$(cat ${RAW_OUTPUTDIR}/entities | wc -l) - number_of_entities"
 echo "$(cat ${RAW_OUTPUTDIR}/structure_sequence_table.tsv | wc -l) - number_of_raw_structures"
+if [ -f "${REDUCED_OUTPUTDIR}/structure_reduced_sequence_table.tsv" ]
+then
 echo "$(cat ${REDUCED_OUTPUTDIR}/structure_reduced_sequence_table.tsv | wc -l) - number_of_reduced_structures"
+fi
 if [ -f "${REDUCED_OUTPUTDIR}/rmsd_for_all_pairs" ]
 then
 echo "$(cat ${REDUCED_OUTPUTDIR}/rmsd_for_all_pairs | head -1 | awk '{print $3}') - max_RMSD"
