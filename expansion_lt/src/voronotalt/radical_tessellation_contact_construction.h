@@ -190,7 +190,7 @@ public:
 							init_contour_from_base_and_axis(a_id, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, result_contact_descriptor.contour);
 							if(!result_contact_descriptor.contour.empty() && !result_contact_descriptor.neighbor_descriptors.empty())
 							{
-								for(UnsignedInt i=0;i<result_contact_descriptor.neighbor_descriptors.size();i++)
+								for(UnsignedInt i=0;i<result_contact_descriptor.neighbor_descriptors.size() && !result_contact_descriptor.contour.empty();i++)
 								{
 									const NeighborDescriptor& nd=result_contact_descriptor.neighbor_descriptors[i];
 									mark_and_cut_contour(nd.ac_plane_center, nd.ac_plane_normal, nd.neighbor_id, result_contact_descriptor.contour);
