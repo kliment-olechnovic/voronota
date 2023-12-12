@@ -7,6 +7,11 @@ mkdir -p "./output"
 
 cd ../
 
+if [ ! -s "./_voronotalt_python.so" ] || [ ! -s "./voronotalt_python.py" ]
+then
+	./compile_voronotalt_python.bash
+fi
+
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 
 cd - &> /dev/null

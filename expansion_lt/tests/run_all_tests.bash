@@ -7,6 +7,11 @@ mkdir -p "./output"
 
 cd ../
 
+if [ ! -s "./voronota-lt" ]
+then
+	g++ -std=c++14 -Ofast -march=native -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
+fi
+
 export PATH="$(pwd):${PATH}"
 
 cd - &> /dev/null
@@ -123,4 +128,9 @@ EOF
 ################################################################################
 
 git status -s ./output/
+
+################################################################################
+
+../swig/tests/run_all_tests.bash
+
 
