@@ -971,6 +971,9 @@
             "name":"clash-score",
             "short_description":""},
           {
+            "name":"collect-inter-residue-contact-area-ranges",
+            "short_description":""},
+          {
             "name":"color-atoms",
             "short_description":""},
           {
@@ -1347,6 +1350,9 @@
             "short_description":""},
           {
             "name":"setup-mock-voromqa",
+            "short_description":""},
+          {
+            "name":"setup-parallelization",
             "short_description":""},
           {
             "name":"setup-random-seed",

@@ -195,17 +195,21 @@ public:
 			throw std::runtime_error(std::string("No value rows in table."));
 		}
 
-		const bool possible_to_sort_simply=(column_values.size()==1 && add_win_score_column.empty());
+		const bool possible_to_sort_simply=((column_values.size()==1 || no_tournament) && add_win_score_column.empty());
 
 		if(possible_to_sort_simply)
 		{
-			typedef std::pair<double, std::size_t> SortableID;
+			typedef std::pair< std::vector<double>, std::size_t> SortableID;
 			std::vector<SortableID> sortable_ids(N);
 
 			for(std::size_t a=0;a<N;a++)
 			{
 				SortableID& sid=sortable_ids[a];
-				sid.first=(0.0-column_values[0][a]);
+				sid.first.resize(column_values.size());
+				for(std::size_t i=0;i<column_values.size();i++)
+				{
+					sid.first[i]=(0.0-column_values[i][a]);
+				}
 				sid.second=a;
 			}
 
