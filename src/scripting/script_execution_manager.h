@@ -32,6 +32,7 @@
 #include "operators/delete_figures_of_labels.h"
 #include "operators/delete_global_adjuncts.h"
 #include "operators/delete_objects.h"
+#include "operators/delete_objects_if.h"
 #include "operators/delete_selections_of_atoms.h"
 #include "operators/delete_selections_of_contacts.h"
 #include "operators/delete_tags_of_atoms.h"
@@ -215,6 +216,7 @@ public:
 
 		set_command_for_congregation_of_data_managers("list-objects", operators::ListObjects());
 		set_command_for_congregation_of_data_managers("delete-objects", operators::DeleteObjects());
+		set_command_for_congregation_of_data_managers("delete-objects-if", operators::DeleteObjectsIf());
 		set_command_for_congregation_of_data_managers("rename-object", operators::RenameObject());
 		set_command_for_congregation_of_data_managers("collect-inter-residue-contact-area-ranges", operators::CollectInterResidueContactAreaRanges());
 		set_command_for_congregation_of_data_managers("copy-object", operators::CopyObject());
