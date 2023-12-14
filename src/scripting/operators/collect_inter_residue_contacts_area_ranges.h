@@ -45,9 +45,9 @@ public:
 	{
 		parameters_for_selecting_contacts=OperatorsUtilities::read_generic_selecting_query(input);
 		objects_query=OperatorsUtilities::read_congregation_of_data_managers_object_query(input);
-		adjunct_min_area=input.get_value_or_default<std::string>("adj-min-area", "stat_min_area");
-		adjunct_max_area=input.get_value_or_default<std::string>("adj-max-area", "stat_max_area");
-		adjunct_min_max_area_sqrt_diff=input.get_value_or_default<std::string>("adj-min-max-area-sqrt-diff", "stat_min_max_area_sqrt_diff");
+		adjunct_min_area=input.get_value_or_default<std::string>("adj-min-area", "");
+		adjunct_max_area=input.get_value_or_default<std::string>("adj-max-area", "");
+		adjunct_min_max_area_sqrt_diff=input.get_value_or_default<std::string>("adj-min-max-area-sqrt-diff", "");
 		stats_output_file=input.get_value_or_default<std::string>("stats-output-file", "");
 	}
 
@@ -55,9 +55,9 @@ public:
 	{
 		OperatorsUtilities::document_read_congregation_of_data_managers_object_query(doc);
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
-		doc.set_option_decription(CDOD("adj-min-area", CDOD::DATATYPE_STRING, "adjunct name for min area stat", "stat_min_area"));
-		doc.set_option_decription(CDOD("adj-max-area", CDOD::DATATYPE_STRING, "adjunct name for max area stat", "stat_max_area"));
-		doc.set_option_decription(CDOD("adj-min-max-area-sqrt-diff", CDOD::DATATYPE_STRING, "adjunct name for min-max area difference stat", "stat_min_max_area_sqrt_diff"));
+		doc.set_option_decription(CDOD("adj-min-area", CDOD::DATATYPE_STRING, "adjunct name for min area stat", ""));
+		doc.set_option_decription(CDOD("adj-max-area", CDOD::DATATYPE_STRING, "adjunct name for max area stat", ""));
+		doc.set_option_decription(CDOD("adj-min-max-area-sqrt-diff", CDOD::DATATYPE_STRING, "adjunct name for min-max area difference stat", ""));
 		doc.set_option_decription(CDOD("stats-output-file", CDOD::DATATYPE_STRING, "file path to output stats", ""));
 	}
 
@@ -184,64 +184,67 @@ public:
 			}
 		}
 
-		for(std::size_t i=0;i<objects.size();i++)
+		if(!adjunct_min_area.empty() || !adjunct_max_area.empty() || !adjunct_min_max_area_sqrt_diff.empty())
 		{
-			DataManager& data_manager=(*(objects[i]));
-			const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts);
-			if(!ids.empty())
+			for(std::size_t i=0;i<objects.size();i++)
 			{
-				const std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>& map_of_crad_to_residue_sequence_contexts=all_maps_of_crad_to_residue_sequence_contexts[i];
-				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				DataManager& data_manager=(*(objects[i]));
+				const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts);
+				if(!ids.empty())
 				{
-					std::map<std::string, double>& contact_adjuncts=data_manager.contact_adjuncts_mutable(*it);
-
-					if(!adjunct_min_area.empty())
+					const std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>& map_of_crad_to_residue_sequence_contexts=all_maps_of_crad_to_residue_sequence_contexts[i];
+					for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 					{
-						contact_adjuncts.erase(adjunct_min_area);
-					}
-
-					if(!adjunct_max_area.empty())
-					{
-						contact_adjuncts.erase(adjunct_max_area);
-					}
-
-					if(!adjunct_min_max_area_sqrt_diff.empty())
-					{
-						contact_adjuncts.erase(adjunct_min_max_area_sqrt_diff);
-					}
-
-					const Contact& contact=data_manager.contacts()[*it];
-					std::map<RRIdentifier, RRContactValueStatistics>::const_iterator jt=inter_residue_contacts_statistics.end();
-					if(!contact.solvent())
-					{
-						std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_a=map_of_crad_to_residue_sequence_contexts.find(simplified_crad(data_manager.atoms()[contact.ids[0]].crad));
-						if(jt_a!=map_of_crad_to_residue_sequence_contexts.end())
-						{
-							std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_b=map_of_crad_to_residue_sequence_contexts.find(simplified_crad(data_manager.atoms()[contact.ids[1]].crad));
-							if(jt_b!=map_of_crad_to_residue_sequence_contexts.end())
-							{
-								jt=inter_residue_contacts_statistics.find(RRIdentifier(jt_a->second, jt_b->second));
-							}
-						}
-					}
-
-					if(jt!=inter_residue_contacts_statistics.end())
-					{
-						const RRContactValueStatistics& stats=jt->second;
+						std::map<std::string, double>& contact_adjuncts=data_manager.contact_adjuncts_mutable(*it);
 
 						if(!adjunct_min_area.empty())
 						{
-							contact_adjuncts[adjunct_min_area]=stats.min_area;
+							contact_adjuncts.erase(adjunct_min_area);
 						}
 
 						if(!adjunct_max_area.empty())
 						{
-							contact_adjuncts[adjunct_max_area]=stats.max_area;
+							contact_adjuncts.erase(adjunct_max_area);
 						}
 
 						if(!adjunct_min_max_area_sqrt_diff.empty())
 						{
-							contact_adjuncts[adjunct_min_max_area_sqrt_diff]=std::sqrt(stats.max_area)-std::sqrt(stats.min_area);
+							contact_adjuncts.erase(adjunct_min_max_area_sqrt_diff);
+						}
+
+						const Contact& contact=data_manager.contacts()[*it];
+						std::map<RRIdentifier, RRContactValueStatistics>::const_iterator jt=inter_residue_contacts_statistics.end();
+						if(!contact.solvent())
+						{
+							std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_a=map_of_crad_to_residue_sequence_contexts.find(simplified_crad(data_manager.atoms()[contact.ids[0]].crad));
+							if(jt_a!=map_of_crad_to_residue_sequence_contexts.end())
+							{
+								std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_b=map_of_crad_to_residue_sequence_contexts.find(simplified_crad(data_manager.atoms()[contact.ids[1]].crad));
+								if(jt_b!=map_of_crad_to_residue_sequence_contexts.end())
+								{
+									jt=inter_residue_contacts_statistics.find(RRIdentifier(jt_a->second, jt_b->second));
+								}
+							}
+						}
+
+						if(jt!=inter_residue_contacts_statistics.end())
+						{
+							const RRContactValueStatistics& stats=jt->second;
+
+							if(!adjunct_min_area.empty())
+							{
+								contact_adjuncts[adjunct_min_area]=stats.min_area;
+							}
+
+							if(!adjunct_max_area.empty())
+							{
+								contact_adjuncts[adjunct_max_area]=stats.max_area;
+							}
+
+							if(!adjunct_min_max_area_sqrt_diff.empty())
+							{
+								contact_adjuncts[adjunct_min_max_area_sqrt_diff]=std::sqrt(stats.max_area)-std::sqrt(stats.min_area);
+							}
 						}
 					}
 				}
