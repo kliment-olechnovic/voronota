@@ -151,7 +151,7 @@ public:
 			const RRIdentifier& rrid=it->first;
 			const std::map<std::size_t, RRContactValue>& map_of_realized_values=it->second;
 
-			int count_contact_possible_but_not_realized_in_some_object=0;
+			int count_contact_possible_but_not_realized=0;
 
 			if(map_of_realized_values.size()<objects.size())
 			{
@@ -162,21 +162,24 @@ public:
 						std::set<ResidueSequenceContext>& residue_availability=all_residue_availabilities[i];
 						if(residue_availability.count(rrid.rsc_a)>0 && residue_availability.count(rrid.rsc_b)>0)
 						{
-							count_contact_possible_but_not_realized_in_some_object++;
+							count_contact_possible_but_not_realized++;
 						}
 					}
 				}
 			}
 
 			RRContactValueStatistics stats;
-			stats.count=count_contact_possible_but_not_realized_in_some_object;
+			stats.count=count_contact_possible_but_not_realized;
 
 			for(std::map<std::size_t, RRContactValue>::const_iterator jt=map_of_realized_values.begin();jt!=map_of_realized_values.end();++jt)
 			{
 				stats.add(jt->second);
 			}
 
-			inter_residue_contacts_statistics[rrid]=stats;
+			if(stats.count>1)
+			{
+				inter_residue_contacts_statistics[rrid]=stats;
+			}
 		}
 
 		for(std::size_t i=0;i<objects.size();i++)
@@ -185,7 +188,7 @@ public:
 			const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts);
 			if(!ids.empty())
 			{
-				std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>& map_of_crad_to_residue_sequence_contexts=all_maps_of_crad_to_residue_sequence_contexts[i];
+				const std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>& map_of_crad_to_residue_sequence_contexts=all_maps_of_crad_to_residue_sequence_contexts[i];
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
 					std::map<std::string, double>& contact_adjuncts=data_manager.contact_adjuncts_mutable(*it);
