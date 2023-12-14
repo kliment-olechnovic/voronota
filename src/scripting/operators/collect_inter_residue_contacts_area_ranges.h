@@ -35,6 +35,7 @@ public:
 	std::string adjunct_min_area;
 	std::string adjunct_max_area;
 	std::string adjunct_min_max_area_sqrt_diff;
+	std::string stats_output_file;
 
 	CollectInterResidueContactAreaRanges()
 	{
@@ -47,6 +48,7 @@ public:
 		adjunct_min_area=input.get_value_or_default<std::string>("adj-min-area", "stat_min_area");
 		adjunct_max_area=input.get_value_or_default<std::string>("adj-max-area", "stat_max_area");
 		adjunct_min_max_area_sqrt_diff=input.get_value_or_default<std::string>("adj-min-max-area-sqrt-diff", "stat_min_max_area_sqrt_diff");
+		stats_output_file=input.get_value_or_default<std::string>("stats-output-file", "");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -56,6 +58,7 @@ public:
 		doc.set_option_decription(CDOD("adj-min-area", CDOD::DATATYPE_STRING, "adjunct name for min area stat", "stat_min_area"));
 		doc.set_option_decription(CDOD("adj-max-area", CDOD::DATATYPE_STRING, "adjunct name for max area stat", "stat_max_area"));
 		doc.set_option_decription(CDOD("adj-min-max-area-sqrt-diff", CDOD::DATATYPE_STRING, "adjunct name for min-max area difference stat", "stat_min_max_area_sqrt_diff"));
+		doc.set_option_decription(CDOD("stats-output-file", CDOD::DATATYPE_STRING, "file path to output stats", ""));
 	}
 
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
@@ -142,7 +145,6 @@ public:
 				}
 			}
 		}
-
 
 		std::map<RRIdentifier, RRContactValueStatistics> inter_residue_contacts_statistics;
 
@@ -243,6 +245,25 @@ public:
 						}
 					}
 				}
+			}
+		}
+
+		if(!stats_output_file.empty())
+		{
+			OutputSelector output_selector(stats_output_file);
+			std::ostream& output=output_selector.stream();
+			assert_io_stream(stats_output_file, output);
+
+			for(std::map<RRIdentifier, RRContactValueStatistics>::const_iterator it=inter_residue_contacts_statistics.begin();it!=inter_residue_contacts_statistics.end();++it)
+			{
+				const RRIdentifier& rrid=it->first;
+				const RRContactValueStatistics& stat=it->second;
+				const int seq_sep=std::abs(rrid.rsc_a.crad.resSeq-rrid.rsc_b.crad.resSeq);
+				output << rrid.rsc_a.crad.resName << " " << rrid.rsc_b.crad.resName << " ";
+				output << rrid.rsc_a.crad_left.resName << " " << rrid.rsc_a.crad_right.resName << " ";
+				output << rrid.rsc_b.crad_left.resName << " " << rrid.rsc_b.crad_right.resName << " ";
+				output << seq_sep << " ";
+				output << stat.min_area << " " << stat.max_area << "\n";
 			}
 		}
 
