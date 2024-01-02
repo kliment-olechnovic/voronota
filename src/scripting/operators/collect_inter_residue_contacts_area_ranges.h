@@ -266,7 +266,8 @@ public:
 				output << rrid.rsc_a.crad_left.resName << " " << rrid.rsc_a.crad_right.resName << " ";
 				output << rrid.rsc_b.crad_left.resName << " " << rrid.rsc_b.crad_right.resName << " ";
 				output << seq_sep << " ";
-				output << stat.min_area << " " << stat.max_area << "\n";
+				output << stat.min_area << " " << stat.max_area << " ";
+				output << rrid.rsc_a.crad.resSeq << " " << rrid.rsc_b.crad.resSeq << "\n";
 			}
 		}
 

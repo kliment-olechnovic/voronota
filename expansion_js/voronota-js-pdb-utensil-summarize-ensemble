@@ -1,0 +1,192 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-pdb-utensil-summarize-ensemble' script reads structures and summarizes contacts in them.
+
+Options:
+    --probe                   number     probe radius, default is 1.4
+    --input-directory         string     path to directory to find input structures, default is ''
+    --output-file             string     path to file to output resuts, default is '_stdout'
+    --help | -h                          flag to display help message and exit
+
+Standard input:
+    if no input directory specified, the list of input file paths is read from stdin
+    
+Standard output:
+    if no output file specified, then statistics of contacts is printed to stdout
+    
+Examples:
+    
+    find ./input/ -type f -name '*.pdb' | voronota-js-pdb-utensil-summarize-ensemble
+    
+    voronota-js-pdb-utensil-summarize-ensemble --input-directory ./input --output-file ./output/table.txt
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd "$(dirname ${ZEROARG})"
+	export PATH="$(pwd):${PATH}"
+	cd - &> /dev/null
+fi
+
+export LC_ALL=C
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+PROBE="1.4"
+INDIR=""
+OUTFILE="_stdout"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	--probe)
+		PROBE="$OPTARG"
+		shift
+		;;
+	--input-directory)
+		INDIR="$OPTARG"
+		shift
+		;;
+	--output-file)
+		OUTFILE="$OPTARG"
+		shift
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+{
+if [ -z "$INDIR" ]
+then
+	cat | sort | uniq
+else
+	find "$INDIR" -type f -not -empty | egrep -i '\.cif$|\.pdb$'
+fi
+} \
+> "$TMPLDIR/input.txt"
+
+if [ ! -s "$TMPLDIR/input.txt" ]
+then
+	echo >&2 "Error: no input file paths"
+	exit 1
+fi
+
+cat "$TMPLDIR/input.txt" \
+| while read -r SFILE
+do
+	SFILETYPE="$(basename ${SFILE} | sed 's|^.\+\.\([[:alpha:]]\+\)$|\1|' | tr '[:upper:]' '[:lower:]')"
+	if [ "$SFILETYPE" == "cif" ] || [ "$SFILETYPE" == "pdb" ]
+	then
+		echo "$SFILE $SFILETYPE"
+	fi
+done \
+> "$TMPLDIR/typed_input.txt"
+
+if [ ! -s "$TMPLDIR/typed_input.txt" ]
+then
+	echo >&2 "Error: no input file paths with '.cif' or '.pdb' extensions"
+	exit 1
+fi
+
+if [ -z "$OUTFILE" ]
+then
+	OUTFILE="_stdout"
+fi
+
+{
+cat << EOF
+var params={}
+params.probe='$PROBE';
+params.output_file='$TMPLDIR/output.txt';
+EOF
+
+cat << 'EOF'
+voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential");
+voronota_assert_full_success("Failed to setup defaults");
+EOF
+
+cat "$TMPLDIR/typed_input.txt" \
+| while read -r SFILEPATH SFILETYPE
+do
+	if [ "$SFILETYPE" == "cif" ]
+	then
+cat << EOF
+voronota_import_mmcif('-files', ['${SFILEPATH}']);
+voronota_assert_full_success('Failed to import structure "${SFILEPATH}"');
+EOF
+	fi
+	
+	if [ "$SFILETYPE" == "pdb" ]
+	then
+cat << EOF
+voronota_import('-files', '${SFILEPATH}');
+voronota_assert_full_success('Failed to import structure "${SFILEPATH}"');
+EOF
+	fi
+done
+
+cat << 'EOF'
+voronota_pick_objects();
+
+voronota_delete_objects_if("-residues-fewer-than", 80, "-atoms-to-residues-ratio-less-than", 6.0);
+voronota_delete_objects_if("-objects-fewer-than", 2);
+
+voronota_pick_objects();
+
+voronota_construct_contacts_radically_fast("-probe", params.probe, "-no-intra-residue");
+voronota_assert_full_success("Failed to construct contacts");
+
+voronota_delete_objects_if("-not-enough-contacts-in-selection", "[-min-seq-sep 2 -no-solvent]");
+voronota_delete_objects_if("-objects-fewer-than", 2);
+
+voronota_pick_objects();
+
+voronota_collect_inter_residue_contact_area_ranges("-stats-output-file", params.output_file);
+voronota_assert_full_success("Failed to collect contact area ranges");
+EOF
+
+} \
+| voronota-js --no-setup-defaults
+
+if [ ! -s "$TMPLDIR/output.txt" ]
+then
+	echo >&2 "Error: no output produced"
+	exit 1
+fi
+
+if [ "$OUTFILE" == "_stdout" ]
+then
+	cat "$TMPLDIR/output.txt"
+else
+	mkdir -p "$(dirname ${OUTFILE})"
+	mv "$TMPLDIR/output.txt" "$OUTFILE"
+fi
+
