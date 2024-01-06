@@ -130,7 +130,7 @@ public:
 			{
 				sas_area=FLOATCONST(0.0);
 				sas_inside_volume=FLOATCONST(0.0);
-				if(arc_length>FLOATCONST(0.0))
+				if(arc_length>FLOATCONST(0.0) && !equal(explained_solid_angle_positive, explained_solid_angle_negative))
 				{
 					if(explained_solid_angle_positive>explained_solid_angle_negative)
 					{
