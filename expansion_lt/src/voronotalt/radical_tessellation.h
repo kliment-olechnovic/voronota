@@ -126,7 +126,7 @@ public:
 
 		void compute_sas(const Float r)
 		{
-			if(stage!=0)
+			if(stage==1)
 			{
 				sas_area=FLOATCONST(0.0);
 				sas_inside_volume=FLOATCONST(0.0);
@@ -146,6 +146,17 @@ public:
 				{
 					sas_inside_volume=explained_pyramid_volume_positive-explained_pyramid_volume_negative;
 				}
+				stage=2;
+			}
+		}
+
+		void compute_sas_detached(const UnsignedInt new_id, const Float r)
+		{
+			if(stage==0)
+			{
+				id=new_id;
+				sas_area=(FLOATCONST(4.0)*PIVALUE)*(r*r);
+				sas_inside_volume=(sas_area*r/FLOATCONST(3.0));
 				stage=2;
 			}
 		}
@@ -378,6 +389,10 @@ public:
 			for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
 			{
 				result.cells_summaries[i].compute_sas(spheres[i].r);
+				if(result.cells_summaries[i].stage==0 && preparation_result.all_colliding_ids[i].empty())
+				{
+					result.cells_summaries[i].compute_sas_detached(i, spheres[i].r);
+				}
 			}
 
 			time_recorder.record_elapsed_miliseconds_and_reset("compute sas for cell summaries");
@@ -461,7 +476,7 @@ public:
 				for(UnsignedInt i=0;i<full_result.cells_summaries.size();i++)
 				{
 					const CellContactDescriptorsSummary& ccds=full_result.cells_summaries[i];
-					if(ccds.id<grouping_of_spheres.size())
+					if(ccds.stage==2 && ccds.id<grouping_of_spheres.size())
 					{
 						const int group_id=grouping_of_spheres[ccds.id];
 						UnsignedInt group_index=0;

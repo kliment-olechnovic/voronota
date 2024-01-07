@@ -403,14 +403,17 @@ private:
 			const SpheresInput::SphereLabel& null_label,
 			std::ostream& output)
 	{
-		output << "sa\t";
-		if(labels_enabled)
+		if(cells[i].stage>0)
 		{
-			print_label((cells[i].id<sphere_labels.size() ? sphere_labels[cells[i].id] : null_label), false, false, output);
-			output << "\t";
+			output << "sa\t";
+			if(labels_enabled)
+			{
+				print_label((cells[i].id<sphere_labels.size() ? sphere_labels[cells[i].id] : null_label), false, false, output);
+				output << "\t";
+			}
+			print(cells[i], output);
+			output << "\n";
 		}
-		print(cells[i], output);
-		output << "\n";
 	}
 
 	template<class CellsContainer, class GroupedCellsContainer>
