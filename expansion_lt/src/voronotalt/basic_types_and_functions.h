@@ -262,6 +262,11 @@ inline bool sphere_intersects_sphere(const SimpleSphere& a, const SimpleSphere& 
 	return less(squared_distance_from_point_to_point(a.p, b.p), (a.r+b.r)*(a.r+b.r));
 }
 
+inline bool sphere_equals_sphere(const SimpleSphere& a, const SimpleSphere& b)
+{
+	return (equal(a.r, b.r) && equal(a.p.x, b.p.x) && equal(a.p.y, b.p.y) && equal(a.p.z, b.p.z));
+}
+
 inline bool sphere_contains_sphere(const SimpleSphere& a, const SimpleSphere& b)
 {
 	return (greater_or_equal(a.r, b.r) && less_or_equal(squared_distance_from_point_to_point(a.p, b.p), (a.r-b.r)*(a.r-b.r)));

@@ -389,7 +389,7 @@ public:
 			for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
 			{
 				result.cells_summaries[i].compute_sas(spheres[i].r);
-				if(result.cells_summaries[i].stage==0 && preparation_result.all_colliding_ids[i].empty())
+				if(result.cells_summaries[i].stage==0 && preparation_result.all_exclusion_statuses[i]==0 && preparation_result.all_colliding_ids[i].empty())
 				{
 					result.cells_summaries[i].compute_sas_detached(i, spheres[i].r);
 				}

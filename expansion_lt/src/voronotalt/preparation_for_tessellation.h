@@ -12,6 +12,7 @@ class PreparationForTessellation
 public:
 	struct Result
 	{
+		std::vector<int> all_exclusion_statuses;
 		std::vector< std::vector<UnsignedInt> > all_colliding_ids;
 		std::vector< std::pair<UnsignedInt, UnsignedInt> > relevant_collision_ids;
 		UnsignedInt total_spheres;
@@ -39,6 +40,8 @@ public:
 
 		time_recorder.record_elapsed_miliseconds_and_reset("init spheres searcher");
 
+		result.all_exclusion_statuses.resize(N, 0);
+
 		result.all_colliding_ids.resize(N);
 		for(UnsignedInt i=0;i<N;i++)
 		{
@@ -55,7 +58,7 @@ public:
 			#pragma omp for
 			for(UnsignedInt i=0;i<N;i++)
 			{
-				spheres_searcher.find_colliding_ids(i, colliding_ids, true);
+				spheres_searcher.find_colliding_ids(i, colliding_ids, true, result.all_exclusion_statuses[i]);
 				if(!colliding_ids.empty())
 				{
 					result.all_colliding_ids[i]=colliding_ids;
@@ -77,14 +80,17 @@ public:
 		result.relevant_collision_ids.reserve(result.total_collisions);
 		for(UnsignedInt id_a=0;id_a<N;id_a++)
 		{
-			for(UnsignedInt j=0;j<result.all_colliding_ids[id_a].size();j++)
+			if(result.all_exclusion_statuses[id_a]==0)
 			{
-				const UnsignedInt id_b=result.all_colliding_ids[id_a][j];
-				if(result.all_colliding_ids[id_a].size()<result.all_colliding_ids[id_b].size() || (id_a<id_b && result.all_colliding_ids[id_a].size()==result.all_colliding_ids[id_b].size()))
+				for(UnsignedInt j=0;j<result.all_colliding_ids[id_a].size();j++)
 				{
-					if(grouping_of_spheres.empty() || id_a>=grouping_of_spheres.size() || id_b>=grouping_of_spheres.size() || grouping_of_spheres[id_a]!=grouping_of_spheres[id_b])
+					const UnsignedInt id_b=result.all_colliding_ids[id_a][j];
+					if(result.all_exclusion_statuses[id_b]==0 && result.all_colliding_ids[id_a].size()<result.all_colliding_ids[id_b].size() || (id_a<id_b && result.all_colliding_ids[id_a].size()==result.all_colliding_ids[id_b].size()))
 					{
-						result.relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
+						if(grouping_of_spheres.empty() || id_a>=grouping_of_spheres.size() || id_b>=grouping_of_spheres.size() || grouping_of_spheres[id_a]!=grouping_of_spheres[id_b])
+						{
+							result.relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
+						}
 					}
 				}
 			}

@@ -61,9 +61,10 @@ public:
 		}
 	}
 
-	bool find_colliding_ids(const UnsignedInt& central_id, std::vector<UnsignedInt>& colliding_ids, const bool discard_hidden) const
+	bool find_colliding_ids(const UnsignedInt& central_id, std::vector<UnsignedInt>& colliding_ids, const bool discard_hidden, int& exclusion_status) const
 	{
 		colliding_ids.clear();
+		exclusion_status=0;
 		if(central_id<spheres_.size())
 		{
 			const SimpleSphere& central_sphere=spheres_[central_id];
@@ -91,12 +92,16 @@ public:
 									const SimpleSphere& candidate_sphere=spheres_[id];
 									if(id!=central_id && sphere_intersects_sphere(central_sphere, candidate_sphere))
 									{
-										if(discard_hidden && sphere_contains_sphere(candidate_sphere, central_sphere))
+										if(discard_hidden
+												&& sphere_contains_sphere(candidate_sphere, central_sphere)
+												/*&& (!sphere_equals_sphere(candidate_sphere, central_sphere) || central_id>id)*/)
 										{
 											colliding_ids.clear();
+											exclusion_status=1;
 											return false;
 										}
-										else if(!discard_hidden || !sphere_contains_sphere(central_sphere, candidate_sphere))
+										else if(!discard_hidden
+												|| !sphere_contains_sphere(central_sphere, candidate_sphere))
 										{
 											colliding_ids.push_back(id);
 										}
