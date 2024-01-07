@@ -303,7 +303,7 @@ public:
 			{
 				const UnsignedInt id_a=preparation_result.relevant_collision_ids[i].first;
 				const UnsignedInt id_b=preparation_result.relevant_collision_ids[i].second;
-				if(RadicalTessellationContactConstruction::construct_contact_descriptor(spheres, id_a, id_b, preparation_result.all_colliding_ids[id_a], cd))
+				if(RadicalTessellationContactConstruction::construct_contact_descriptor(spheres, preparation_result.all_exclusion_statuses, id_a, id_b, preparation_result.all_colliding_ids[id_a], cd))
 				{
 					possible_contacts_summaries[i].set(cd);
 					if(with_graphics)

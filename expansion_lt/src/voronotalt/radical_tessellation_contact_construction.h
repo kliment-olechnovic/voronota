@@ -109,6 +109,7 @@ public:
 
 	static bool construct_contact_descriptor(
 			const std::vector<SimpleSphere>& spheres,
+			const std::vector<int>& spheres_exclusion_statuses,
 			const UnsignedInt a_id,
 			const UnsignedInt b_id,
 			const std::vector<UnsignedInt>& a_neighbor_collisions,
@@ -131,7 +132,7 @@ public:
 						for(UnsignedInt i=0;i<a_neighbor_collisions.size() && !discarded;i++)
 						{
 							const UnsignedInt neighbor_id=a_neighbor_collisions[i];
-							if(neighbor_id!=b_id)
+							if(neighbor_id!=b_id && (neighbor_id>=spheres_exclusion_statuses.size() || spheres_exclusion_statuses[neighbor_id]==0))
 							{
 								const SimpleSphere& c=spheres[neighbor_id];
 								if(sphere_intersects_sphere(result_contact_descriptor.intersection_circle_sphere, c) && sphere_intersects_sphere(b, c))

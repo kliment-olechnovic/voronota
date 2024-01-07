@@ -94,7 +94,7 @@ public:
 									{
 										if(discard_hidden
 												&& sphere_contains_sphere(candidate_sphere, central_sphere)
-												/*&& (!sphere_equals_sphere(candidate_sphere, central_sphere) || central_id>id)*/)
+												&& (!sphere_equals_sphere(candidate_sphere, central_sphere) || central_id>id))
 										{
 											colliding_ids.clear();
 											exclusion_status=1;
