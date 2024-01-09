@@ -141,6 +141,11 @@ public:
 						sas_area=(std::max(FLOATCONST(0.0), explained_solid_angle_negative-explained_solid_angle_positive))*(r*r);
 					}
 					sas_inside_volume=(sas_area*r/FLOATCONST(3.0))+explained_pyramid_volume_positive-explained_pyramid_volume_negative;
+					if(sas_inside_volume>(FLOATCONST(4.0)/FLOATCONST(3.0)*PIVALUE*r*r*r))
+					{
+						sas_area=FLOATCONST(0.0);
+						sas_inside_volume=explained_pyramid_volume_positive-explained_pyramid_volume_negative;
+					}
 				}
 				else
 				{
