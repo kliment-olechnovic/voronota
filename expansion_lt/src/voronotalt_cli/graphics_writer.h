@@ -31,7 +31,16 @@ public:
 		{
 			return;
 		}
-		parts_.push_back(std::pair<std::string, std::string>("tfan", print_triangle_fan_for_pymol(outer_points, center, unit_point(sub_of_points(normal_direction_end, normal_direction_start)), "", ", \n")));
+		parts_.push_back(std::pair<std::string, std::string>("face", print_triangle_fan_for_pymol(outer_points, center, unit_point(sub_of_points(normal_direction_end, normal_direction_start)), "", ", \n")));
+	}
+
+	void add_line_loop(const std::vector<SimplePoint>& outer_points)
+	{
+		if(!enabled_)
+		{
+			return;
+		}
+		parts_.push_back(std::pair<std::string, std::string>("wire", print_line_loop_for_pymol(outer_points, "", ", \n")));
 	}
 
 	void add_spheres(const std::vector<SimpleSphere>& spheres, const Float& radius_change)
@@ -142,6 +151,21 @@ private:
 			}
 			output << ", \nNORMAL, " << normal.x << ", " << normal.y << ", " << normal.z;
 			output << ", VERTEX, " << outer_points[0].x << ", " << outer_points[0].y << ", " << outer_points[0].z;
+		}
+		output << ", \nEND" << postfix;
+		return output.str();
+	}
+
+	static std::string print_line_loop_for_pymol(const std::vector<SimplePoint>& outer_points, const std::string& prefix, const std::string& postfix)
+	{
+		std::ostringstream output;
+		output << prefix << "BEGIN, LINE_LOOP";
+		if(!outer_points.empty())
+		{
+			for(std::size_t j=0;j<outer_points.size();j++)
+			{
+				output << ", \nVERTEX, " << outer_points[j].x << ", " << outer_points[j].y << ", " << outer_points[j].z;
+			}
 		}
 		output << ", \nEND" << postfix;
 		return output.str();
