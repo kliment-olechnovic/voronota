@@ -1,9 +1,13 @@
 from pymol.cgo import *
 from pymol import cmd
-cgo_graphics_list = [COLOR, 0, 1, 1,
+cgo_graphics_list_sphere = [COLOR, 0, 1, 1,
 SPHERE, 0, 0, 0, 1,
 SPHERE, 0.5, 0, 0, 1,
 SPHERE, 1, 0, 0, 1,
+COLOR, 1, 1, 0,
+]
+cmd.load_cgo(cgo_graphics_list_sphere, 'case_1_sphere')
+cgo_graphics_list_tfan = [COLOR, 0, 1, 1,
 COLOR, 1, 1, 0,
 BEGIN, TRIANGLE_FAN, 
 NORMAL, 1, 0, 0, VERTEX, 0.25, 0, 0, 
@@ -140,5 +144,5 @@ NORMAL, 1, 0, 0, VERTEX, 0.75, 1.98315, -0.0677961,
 NORMAL, 1, 0, 0, VERTEX, 0.75, 1.98431, 0, 
 END, 
 ]
-cmd.load_cgo(cgo_graphics_list, 'case_1')
+cmd.load_cgo(cgo_graphics_list_tfan, 'case_1_tfan')
 cmd.set('two_sided_lighting', 1)

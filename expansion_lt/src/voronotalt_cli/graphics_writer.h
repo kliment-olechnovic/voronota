@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <set>
 #include <sstream>
 #include <fstream>
 
@@ -30,7 +31,7 @@ public:
 		{
 			return;
 		}
-		print_triangle_fan_for_pymol(outer_points, center, unit_point(sub_of_points(normal_direction_end, normal_direction_start)), "", ", \n", graphics_output_stream_);
+		parts_.push_back(std::pair<std::string, std::string>("tfan", print_triangle_fan_for_pymol(outer_points, center, unit_point(sub_of_points(normal_direction_end, normal_direction_start)), "", ", \n")));
 	}
 
 	void add_spheres(const std::vector<SimpleSphere>& spheres, const Float& radius_change)
@@ -41,7 +42,7 @@ public:
 		}
 		for(std::size_t i=0;i<spheres.size();i++)
 		{
-			print_sphere(spheres[i], radius_change, "", ",\n", graphics_output_stream_);
+			parts_.push_back(std::pair<std::string, std::string>("sphere", print_sphere(spheres[i], radius_change, "", ",\n")));
 		}
 	}
 
@@ -51,7 +52,20 @@ public:
 		{
 			return;
 		}
-		graphics_output_stream_ << "COLOR, " << r << ", " << g << ", " << b << ",\n";
+		std::ostringstream output;
+		output << "COLOR, " << r << ", " << g << ", " << b << ",\n";
+		parts_.push_back(std::pair<std::string, std::string>("color", output.str()));
+	}
+
+	void add_alpha(const double a)
+	{
+		if(!enabled_)
+		{
+			return;
+		}
+		std::ostringstream output;
+		output << "ALPHA, " << a << ",\n";
+		parts_.push_back(std::pair<std::string, std::string>("alpha", output.str()));
 	}
 
 	bool write_to_file(const std::string& title, const std::string& filename)
@@ -60,28 +74,62 @@ public:
 		{
 			return false;
 		}
+
 		if(filename.empty())
 		{
 			return false;
 		}
+
 		std::ofstream output(filename, std::ios::out);
-		if(output.good())
+
+		if(!output.good())
 		{
-			output << "from pymol.cgo import *\n";
-			output << "from pymol import cmd\n";
-			output << "cgo_graphics_list = [";
-			output << graphics_output_stream_.str();
-			output << "]\n";
-			output << "cmd.load_cgo(cgo_graphics_list, '" << (title.empty() ? std::string("cgo") : title) << "')\n";
-			output << "cmd.set('two_sided_lighting', 1)\n";
-			return true;
+			return false;
 		}
-		return false;
+
+		std::set<std::string> category_names;
+		for(std::size_t i=0;i<parts_.size();i++)
+		{
+			const std::string& category_name=parts_[i].first;
+			if(category_name!="color" && category_name!="alpha")
+			{
+				category_names.insert(category_name);
+			}
+		}
+
+		if(category_names.empty())
+		{
+			return false;
+		}
+
+		output << "from pymol.cgo import *\n";
+		output << "from pymol import cmd\n";
+
+		for(std::set<std::string>::const_iterator it=category_names.begin();it!=category_names.end();++it)
+		{
+			const std::string& current_category_name=(*it);
+			output << "cgo_graphics_list_" << current_category_name << " = [";
+			for(std::size_t i=0;i<parts_.size();i++)
+			{
+				const std::string& category_name=parts_[i].first;
+				if(category_name==current_category_name || category_name=="color" || category_name=="alpha")
+				{
+					output << parts_[i].second;
+				}
+			}
+			output << "]\n";
+			output << "cmd.load_cgo(cgo_graphics_list_" <<  current_category_name << ", '" << (title.empty() ? std::string("cgo") : title) << "_" << current_category_name << "')\n";
+		}
+
+		output << "cmd.set('two_sided_lighting', 1)\n";
+
+		return true;
 	}
 
 private:
-	static void print_triangle_fan_for_pymol(const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal, const std::string& prefix, const std::string& postfix, std::ostream& output)
+	static std::string print_triangle_fan_for_pymol(const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal, const std::string& prefix, const std::string& postfix)
 	{
+		std::ostringstream output;
 		output << prefix << "BEGIN, TRIANGLE_FAN";
 		if(!outer_points.empty())
 		{
@@ -96,15 +144,18 @@ private:
 			output << ", VERTEX, " << outer_points[0].x << ", " << outer_points[0].y << ", " << outer_points[0].z;
 		}
 		output << ", \nEND" << postfix;
+		return output.str();
 	}
 
-	static void print_sphere(const SimpleSphere& sphere, const Float& radius_change, const std::string& prefix, const std::string& postfix, std::ostream& output)
+	static std::string print_sphere(const SimpleSphere& sphere, const Float& radius_change, const std::string& prefix, const std::string& postfix)
 	{
+		std::ostringstream output;
 		output << prefix << "SPHERE" << ", " << sphere.p.x << ", " << sphere.p.y << ", " << sphere.p.z << ", " << (sphere.r-radius_change) << postfix;
+		return output.str();
 	}
 
 	bool enabled_;
-	std::ostringstream graphics_output_stream_;
+	std::vector< std::pair<std::string, std::string> > parts_;
 };
 
 
