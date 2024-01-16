@@ -449,20 +449,23 @@ int main(const int argc, const char** argv)
 		if(graphics_writer.enabled())
 		{
 			graphics_writer.add_color(0.0, 1.0, 1.0);
-			graphics_writer.add_spheres(spheres_input_result.spheres, probe);
+			graphics_writer.add_spheres("balls", spheres_input_result.spheres, probe);
 			graphics_writer.add_color(1.0, 1.0, 0.0);
 			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 			{
 				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-				graphics_writer.add_triangle_fan(pair_graphics.outer_points, pair_graphics.barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
+				graphics_writer.add_triangle_fan("faces", pair_graphics.outer_points, pair_graphics.barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
 			}
 			graphics_writer.add_color(0.5, 0.5, 0.5);
 			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 			{
 				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-				graphics_writer.add_line_loop(pair_graphics.outer_points);
+				graphics_writer.add_line_loop("wireframe", pair_graphics.outer_points);
 			}
+			graphics_writer.add_alpha(0.5);
+			graphics_writer.add_color(0.0, 1.0, 0.0);
+			graphics_writer.add_spheres("xspheres", spheres_input_result.spheres, 0.0);
 			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
 		}
 	}
@@ -551,7 +554,7 @@ int main(const int argc, const char** argv)
 		if(graphics_writer.enabled())
 		{
 			graphics_writer.add_color(0.0, 1.0, 1.0);
-			graphics_writer.add_spheres(spheres_input_result.spheres, probe);
+			graphics_writer.add_spheres("balls", spheres_input_result.spheres, probe);
 			graphics_writer.add_color(1.0, 1.0, 0.0);
 			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 			{
@@ -559,7 +562,7 @@ int main(const int argc, const char** argv)
 				const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 				for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
 				{
-					graphics_writer.add_triangle_fan(pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
+					graphics_writer.add_triangle_fan("faces", pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
 				}
 			}
 			graphics_writer.add_color(0.5, 0.5, 0.5);
@@ -568,9 +571,12 @@ int main(const int argc, const char** argv)
 				const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 				for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
 				{
-					graphics_writer.add_line_loop(pair_graphics.contours_graphics[j].outer_points);
+					graphics_writer.add_line_loop("wireframe", pair_graphics.contours_graphics[j].outer_points);
 				}
 			}
+			graphics_writer.add_alpha(0.5);
+			graphics_writer.add_color(0.0, 1.0, 0.0);
+			graphics_writer.add_spheres("xspheres", spheres_input_result.spheres, 0.0);
 			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
 		}
 	}

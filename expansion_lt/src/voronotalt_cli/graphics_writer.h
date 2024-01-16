@@ -25,25 +25,25 @@ public:
 		return enabled_;
 	}
 
-	void add_triangle_fan(const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal_direction_start, const SimplePoint& normal_direction_end)
+	void add_triangle_fan(const std::string& group_name, const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal_direction_start, const SimplePoint& normal_direction_end)
 	{
 		if(!enabled_)
 		{
 			return;
 		}
-		parts_.push_back(std::pair<std::string, std::string>("face", print_triangle_fan_for_pymol(outer_points, center, unit_point(sub_of_points(normal_direction_end, normal_direction_start)), "", ", \n")));
+		parts_.push_back(std::pair<std::string, std::string>(group_name, print_triangle_fan_for_pymol(outer_points, center, unit_point(sub_of_points(normal_direction_end, normal_direction_start)), "", ", \n")));
 	}
 
-	void add_line_loop(const std::vector<SimplePoint>& outer_points)
+	void add_line_loop(const std::string& group_name, const std::vector<SimplePoint>& outer_points)
 	{
 		if(!enabled_)
 		{
 			return;
 		}
-		parts_.push_back(std::pair<std::string, std::string>("wire", print_line_loop_for_pymol(outer_points, "", ", \n")));
+		parts_.push_back(std::pair<std::string, std::string>(group_name, print_line_loop_for_pymol(outer_points, "", ", \n")));
 	}
 
-	void add_spheres(const std::vector<SimpleSphere>& spheres, const Float& radius_change)
+	void add_spheres(const std::string& group_name, const std::vector<SimpleSphere>& spheres, const Float& radius_change)
 	{
 		if(!enabled_)
 		{
@@ -51,7 +51,7 @@ public:
 		}
 		for(std::size_t i=0;i<spheres.size();i++)
 		{
-			parts_.push_back(std::pair<std::string, std::string>("sphere", print_sphere(spheres[i], radius_change, "", ",\n")));
+			parts_.push_back(std::pair<std::string, std::string>(group_name, print_sphere(spheres[i], radius_change, "", ",\n")));
 		}
 	}
 
@@ -63,7 +63,7 @@ public:
 		}
 		std::ostringstream output;
 		output << "COLOR, " << r << ", " << g << ", " << b << ",\n";
-		parts_.push_back(std::pair<std::string, std::string>("color", output.str()));
+		parts_.push_back(std::pair<std::string, std::string>("", output.str()));
 	}
 
 	void add_alpha(const double a)
@@ -74,7 +74,7 @@ public:
 		}
 		std::ostringstream output;
 		output << "ALPHA, " << a << ",\n";
-		parts_.push_back(std::pair<std::string, std::string>("alpha", output.str()));
+		parts_.push_back(std::pair<std::string, std::string>("", output.str()));
 	}
 
 	bool write_to_file(const std::string& title, const std::string& filename)
@@ -100,7 +100,7 @@ public:
 		for(std::size_t i=0;i<parts_.size();i++)
 		{
 			const std::string& category_name=parts_[i].first;
-			if(category_name!="color" && category_name!="alpha")
+			if(!category_name.empty())
 			{
 				category_names.insert(category_name);
 			}
@@ -121,7 +121,7 @@ public:
 			for(std::size_t i=0;i<parts_.size();i++)
 			{
 				const std::string& category_name=parts_[i].first;
-				if(category_name==current_category_name || category_name=="color" || category_name=="alpha")
+				if(category_name.empty() || category_name==current_category_name)
 				{
 					output << parts_[i].second;
 				}
@@ -131,6 +131,7 @@ public:
 		}
 
 		output << "cmd.set('two_sided_lighting', 1)\n";
+		output << "cmd.set('cgo_line_width', 3)\n";
 
 		return true;
 	}

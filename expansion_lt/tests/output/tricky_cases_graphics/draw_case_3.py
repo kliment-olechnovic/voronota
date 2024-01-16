@@ -1,6 +1,21 @@
 from pymol.cgo import *
 from pymol import cmd
-cgo_graphics_list_face = [COLOR, 0, 1, 1,
+cgo_graphics_list_balls = [COLOR, 0, 1, 1,
+SPHERE, 0, 0, 0, 1,
+SPHERE, 0, 0, 1, 1,
+SPHERE, 0, 1, 0, 1,
+SPHERE, 0, 1, 1, 1,
+SPHERE, 1, 0, 0, 1,
+SPHERE, 1, 0, 1, 1,
+SPHERE, 1, 1, 0, 1,
+SPHERE, 1, 1, 1, 1,
+COLOR, 1, 1, 0,
+COLOR, 0.5, 0.5, 0.5,
+ALPHA, 0.5,
+COLOR, 0, 1, 0,
+]
+cmd.load_cgo(cgo_graphics_list_balls, 'case_3_balls')
+cgo_graphics_list_faces = [COLOR, 0, 1, 1,
 COLOR, 1, 1, 0,
 BEGIN, TRIANGLE_FAN, 
 NORMAL, 0, 0, 1, VERTEX, -1.6575, -1.67235, 0.5, 
@@ -339,22 +354,11 @@ NORMAL, 0, 0, 1, VERTEX, 0.728382, 3.94554, 0.5,
 NORMAL, 0, 0, 1, VERTEX, 0.5, 3.91548, 0.5, 
 END, 
 COLOR, 0.5, 0.5, 0.5,
+ALPHA, 0.5,
+COLOR, 0, 1, 0,
 ]
-cmd.load_cgo(cgo_graphics_list_face, 'case_3_face')
-cgo_graphics_list_sphere = [COLOR, 0, 1, 1,
-SPHERE, 0, 0, 0, 1,
-SPHERE, 0, 0, 1, 1,
-SPHERE, 0, 1, 0, 1,
-SPHERE, 0, 1, 1, 1,
-SPHERE, 1, 0, 0, 1,
-SPHERE, 1, 0, 1, 1,
-SPHERE, 1, 1, 0, 1,
-SPHERE, 1, 1, 1, 1,
-COLOR, 1, 1, 0,
-COLOR, 0.5, 0.5, 0.5,
-]
-cmd.load_cgo(cgo_graphics_list_sphere, 'case_3_sphere')
-cgo_graphics_list_wire = [COLOR, 0, 1, 1,
+cmd.load_cgo(cgo_graphics_list_faces, 'case_3_faces')
+cgo_graphics_list_wireframe = [COLOR, 0, 1, 1,
 COLOR, 1, 1, 0,
 COLOR, 0.5, 0.5, 0.5,
 BEGIN, LINE_LOOP, 
@@ -669,6 +673,24 @@ VERTEX, 1.244, 3.94796, 0.5,
 VERTEX, 0.986137, 3.95801, 0.5, 
 VERTEX, 0.728382, 3.94554, 0.5, 
 END, 
+ALPHA, 0.5,
+COLOR, 0, 1, 0,
 ]
-cmd.load_cgo(cgo_graphics_list_wire, 'case_3_wire')
+cmd.load_cgo(cgo_graphics_list_wireframe, 'case_3_wireframe')
+cgo_graphics_list_xspheres = [COLOR, 0, 1, 1,
+COLOR, 1, 1, 0,
+COLOR, 0.5, 0.5, 0.5,
+ALPHA, 0.5,
+COLOR, 0, 1, 0,
+SPHERE, 0, 0, 0, 3,
+SPHERE, 0, 0, 1, 3,
+SPHERE, 0, 1, 0, 3,
+SPHERE, 0, 1, 1, 3,
+SPHERE, 1, 0, 0, 3,
+SPHERE, 1, 0, 1, 3,
+SPHERE, 1, 1, 0, 3,
+SPHERE, 1, 1, 1, 3,
+]
+cmd.load_cgo(cgo_graphics_list_xspheres, 'case_3_xspheres')
 cmd.set('two_sided_lighting', 1)
+cmd.set('cgo_line_width', 3)

@@ -1,6 +1,16 @@
 from pymol.cgo import *
 from pymol import cmd
-cgo_graphics_list_face = [COLOR, 0, 1, 1,
+cgo_graphics_list_balls = [COLOR, 0, 1, 1,
+SPHERE, 0, 0, 0, 1,
+SPHERE, 0, 0, 0, 0.5,
+SPHERE, 1, 0, 0, 1,
+COLOR, 1, 1, 0,
+COLOR, 0.5, 0.5, 0.5,
+ALPHA, 0.5,
+COLOR, 0, 1, 0,
+]
+cmd.load_cgo(cgo_graphics_list_balls, 'case_4_balls')
+cgo_graphics_list_faces = [COLOR, 0, 1, 1,
 COLOR, 1, 1, 0,
 BEGIN, TRIANGLE_FAN, 
 NORMAL, 1, 0, 0, VERTEX, 0.5, 0, 0, 
@@ -52,17 +62,11 @@ NORMAL, 1, 0, 0, VERTEX, 0.5, 1.41161, -0.0857133,
 NORMAL, 1, 0, 0, VERTEX, 0.5, 1.41421, 0, 
 END, 
 COLOR, 0.5, 0.5, 0.5,
+ALPHA, 0.5,
+COLOR, 0, 1, 0,
 ]
-cmd.load_cgo(cgo_graphics_list_face, 'case_4_face')
-cgo_graphics_list_sphere = [COLOR, 0, 1, 1,
-SPHERE, 0, 0, 0, 1,
-SPHERE, 0, 0, 0, 0.5,
-SPHERE, 1, 0, 0, 1,
-COLOR, 1, 1, 0,
-COLOR, 0.5, 0.5, 0.5,
-]
-cmd.load_cgo(cgo_graphics_list_sphere, 'case_4_sphere')
-cgo_graphics_list_wire = [COLOR, 0, 1, 1,
+cmd.load_cgo(cgo_graphics_list_faces, 'case_4_faces')
+cgo_graphics_list_wireframe = [COLOR, 0, 1, 1,
 COLOR, 1, 1, 0,
 COLOR, 0.5, 0.5, 0.5,
 BEGIN, LINE_LOOP, 
@@ -112,6 +116,19 @@ VERTEX, 0.5, 1.3316, -0.47627,
 VERTEX, 0.5, 1.38544, -0.283825, 
 VERTEX, 0.5, 1.41161, -0.0857133, 
 END, 
+ALPHA, 0.5,
+COLOR, 0, 1, 0,
 ]
-cmd.load_cgo(cgo_graphics_list_wire, 'case_4_wire')
+cmd.load_cgo(cgo_graphics_list_wireframe, 'case_4_wireframe')
+cgo_graphics_list_xspheres = [COLOR, 0, 1, 1,
+COLOR, 1, 1, 0,
+COLOR, 0.5, 0.5, 0.5,
+ALPHA, 0.5,
+COLOR, 0, 1, 0,
+SPHERE, 0, 0, 0, 1.5,
+SPHERE, 0, 0, 0, 1,
+SPHERE, 1, 0, 0, 1.5,
+]
+cmd.load_cgo(cgo_graphics_list_xspheres, 'case_4_xspheres')
 cmd.set('two_sided_lighting', 1)
+cmd.set('cgo_line_width', 3)
