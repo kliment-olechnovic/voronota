@@ -70,6 +70,30 @@ Usage examples:
 	std::cerr << message << std::endl;
 }
 
+std::string name_ball(const std::string& prefix, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index)
+{
+	std::ostringstream output;
+	output << prefix;
+	if(index<spheres_input_result.sphere_labels.size())
+	{
+		output << "_" << spheres_input_result.sphere_labels[index].chain_id;
+	}
+	return output.str();
+}
+
+std::string name_contact(const std::string& prefix, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index1, const std::size_t index2)
+{
+	std::ostringstream output;
+	output << prefix;
+	if(index1<spheres_input_result.sphere_labels.size() && index2<spheres_input_result.sphere_labels.size())
+	{
+		const bool need_to_swap=(spheres_input_result.sphere_labels[index2].chain_id<spheres_input_result.sphere_labels[index1].chain_id);
+		output << "_" << spheres_input_result.sphere_labels[need_to_swap? index2 : index1].chain_id;
+		output << "_" << spheres_input_result.sphere_labels[need_to_swap? index1 : index2].chain_id;
+	}
+	return output.str();
+}
+
 }
 
 int main(const int argc, const char** argv)
@@ -449,23 +473,30 @@ int main(const int argc, const char** argv)
 		if(graphics_writer.enabled())
 		{
 			graphics_writer.add_color(0.0, 1.0, 1.0);
-			graphics_writer.add_spheres("balls", spheres_input_result.spheres, probe);
+			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+			{
+				graphics_writer.add_sphere(name_ball("balls", spheres_input_result, i), spheres_input_result.spheres[i], probe);
+			}
 			graphics_writer.add_color(1.0, 1.0, 0.0);
 			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 			{
 				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-				graphics_writer.add_triangle_fan("faces", pair_graphics.outer_points, pair_graphics.barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
+				graphics_writer.add_triangle_fan(name_contact("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points, pair_graphics.barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
 			}
 			graphics_writer.add_color(0.5, 0.5, 0.5);
 			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 			{
+				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-				graphics_writer.add_line_loop("wireframe", pair_graphics.outer_points);
+				graphics_writer.add_line_loop(name_contact("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points);
 			}
 			graphics_writer.add_alpha(0.5);
 			graphics_writer.add_color(0.0, 1.0, 0.0);
-			graphics_writer.add_spheres("xspheres", spheres_input_result.spheres, 0.0);
+			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+			{
+				graphics_writer.add_sphere(name_ball("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
+			}
 			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
 		}
 	}
@@ -554,7 +585,10 @@ int main(const int argc, const char** argv)
 		if(graphics_writer.enabled())
 		{
 			graphics_writer.add_color(0.0, 1.0, 1.0);
-			graphics_writer.add_spheres("balls", spheres_input_result.spheres, probe);
+			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+			{
+				graphics_writer.add_sphere(name_ball("balls", spheres_input_result, i), spheres_input_result.spheres[i], probe);
+			}
 			graphics_writer.add_color(1.0, 1.0, 0.0);
 			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 			{
@@ -562,21 +596,25 @@ int main(const int argc, const char** argv)
 				const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 				for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
 				{
-					graphics_writer.add_triangle_fan("faces", pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
+					graphics_writer.add_triangle_fan(name_contact("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
 				}
 			}
 			graphics_writer.add_color(0.5, 0.5, 0.5);
 			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 			{
+				const voronotalt::SimplifiedAWTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 				const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 				for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
 				{
-					graphics_writer.add_line_loop("wireframe", pair_graphics.contours_graphics[j].outer_points);
+					graphics_writer.add_line_loop(name_contact("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points);
 				}
 			}
 			graphics_writer.add_alpha(0.5);
 			graphics_writer.add_color(0.0, 1.0, 0.0);
-			graphics_writer.add_spheres("xspheres", spheres_input_result.spheres, 0.0);
+			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+			{
+				graphics_writer.add_sphere(name_ball("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
+			}
 			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
 		}
 	}

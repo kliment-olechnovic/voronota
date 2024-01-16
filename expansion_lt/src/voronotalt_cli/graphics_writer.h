@@ -43,16 +43,13 @@ public:
 		parts_.push_back(std::pair<std::string, std::string>(group_name, print_line_loop_for_pymol(outer_points, "", ", \n")));
 	}
 
-	void add_spheres(const std::string& group_name, const std::vector<SimpleSphere>& spheres, const Float& radius_change)
+	void add_sphere(const std::string& group_name, const SimpleSphere& sphere, const Float& radius_change)
 	{
 		if(!enabled_)
 		{
 			return;
 		}
-		for(std::size_t i=0;i<spheres.size();i++)
-		{
-			parts_.push_back(std::pair<std::string, std::string>(group_name, print_sphere(spheres[i], radius_change, "", ",\n")));
-		}
+		parts_.push_back(std::pair<std::string, std::string>(group_name, print_sphere(sphere, radius_change, "", ",\n")));
 	}
 
 	void add_color(const double r, const double g, const double b)
