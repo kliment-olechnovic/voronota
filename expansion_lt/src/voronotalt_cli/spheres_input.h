@@ -79,12 +79,12 @@ public:
 						SphereLabel& sphere_label=result.sphere_labels[i];
 						if(label_size==1)
 						{
-							sphere_label.atom_name=string_ids[i];
+							sphere_label.chain_id=string_ids[i];
 						}
 						else if(label_size==2)
 						{
-							sphere_label.residue_id=string_ids[i*label_size+0];
-							sphere_label.atom_name=string_ids[i*label_size+1];
+							sphere_label.chain_id=string_ids[i*label_size+0];
+							sphere_label.residue_id=string_ids[i*label_size+1];
 						}
 						else if(label_size==3)
 						{
