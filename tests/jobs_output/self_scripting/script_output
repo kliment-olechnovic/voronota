@@ -1016,6 +1016,9 @@
             "name":"delete-objects",
             "short_description":""},
           {
+            "name":"delete-objects-if",
+            "short_description":""},
+          {
             "name":"delete-selections-of-atoms",
             "short_description":""},
           {
