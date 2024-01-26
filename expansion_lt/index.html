@@ -90,7 +90,10 @@
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#about-voronota-lt">About Voronota-LT</a></li>
+<li><a href="#about-voronota-lt">About Voronota-LT</a>
+<ul>
+<li><a href="#benchmarking-data-and-results">Benchmarking data and results</a></li>
+</ul></li>
 <li><a href="#getting-the-latest-version">Getting the latest version</a></li>
 <li><a href="#building-the-command-line-tool-from-source-code">Building the command-line tool from source code</a>
 <ul>
@@ -110,6 +113,8 @@
 <h1 id="about-voronota-lt">About Voronota-LT</h1>
 <p>Voronota-LT (pronounced ‘voronota lite’) is an alternative version of Voronota for constructing tessellation-derived atomic contact areas and volumes. Voronota-LT was written from scratch and does not use any external code, even from the core Voronota. The primary motivation for creating Voronota-LT was drastically increasing the speed of computing tessellation-based atom-atom contact areas and atom solvent-accessible surface areas.</p>
 <p>Like Voronota, Voronota-LT can compute contact areas derived from the additively weighted Voronoi tessellation, but the main increase in speed comes when utilizing a simpler, radical tessellation variant, also known as Laguerre tessellation. This is the default tessellation variant in Voronota-LT. It considers radii of atoms together with the rolling probe radius to define radical planes as bisectors between atoms.</p>
+<h2 id="benchmarking-data-and-results">Benchmarking data and results</h2>
+<p>Benchmarking data and results are available <a href="./benchmark/index.html">here</a>.</p>
 <h1 id="getting-the-latest-version">Getting the latest version</h1>
 <p>Download the latest archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
 <p>The archive contains the Voronota-LT software in the ‘expansion_lt’ subdirectory. This executable can be built from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>

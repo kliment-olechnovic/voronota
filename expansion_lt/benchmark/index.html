@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Voronota-LT benchmark</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style type="text/css">
+  a { color: #0000CC; }
+  td { padding-right: 1em; }
+  pre { background-color: #DDDDDD; padding: 1em; }
+  div#TOC > ul > li > ul > li ul { display: none; }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Voronota-LT benchmark</h1>
+</header>
+<h2 id="table-files">Table files</h2>
+<p><a href="pdb_ids_sizes_correlations_times.tsv">pdb_ids_sizes_correlations_times.tsv</a></p>
+<p><a href="pdb_ids_chain_chain_areas.tsv">pdb_ids_chain_chain_areas.tsv</a></p>
+<h2 id="plots">Plots</h2>
+<h3 id="wall-running-time">Wall running time</h3>
+<p><img src="wall_running_times.png" /></p>
+<h3 id="correlations-between-contact-areas">Correlations between contact areas</h3>
+<pre><code>x                                                        y                                                        min_Pearson_cor_coeff  average_Pearson_cor_coeff
+Voronota-Vanilla-AW atom-atom area                       Voronota-LT-Radical atom-atom area                       0.9609                 0.9843
+Voronota-Vanilla-AW atom-atom area                       Voronota-LT-AW atom-atom area                            0.9990                 1.0000
+Voronota-Vanilla-AW atom-atom area, using uniform-radii  Voronota-LT-Radical atom-atom area, using uniform-radii  1.0000                 1.0000
+Voronota-Vanilla-AW residue-residue area                 Voronota-LT-Radical residue-residue area                 0.9947                 0.9990
+Voronota-Vanilla-AW SAS area                             Voronota-LT-Radical SAS area                             0.9997                 1.0000</code></pre>
+<p><img src="histograms_of_pearson_cor_coeffs.png" /></p>
+<p><img src="comparison_of_chain_chain_areas.png" /></p>
+</body>
+</html>

@@ -8,6 +8,10 @@ Like Voronota, Voronota-LT can compute contact areas derived from the additively
 but the main increase in speed comes when utilizing a simpler, radical tessellation variant, also known as Laguerre tessellation.
 This is the default tessellation variant in Voronota-LT. It considers radii of atoms together with the rolling probe radius to define radical planes as bisectors between atoms.
 
+## Benchmarking data and results
+
+Benchmarking data and results are available [here](./benchmark/README.md).
+
 # Getting the latest version
 
 Download the latest archive from the official downloads page:
