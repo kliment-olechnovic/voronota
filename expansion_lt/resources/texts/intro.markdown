@@ -1,12 +1,17 @@
 # About Voronota-LT
 
-Voronota-LT (pronounced 'voronota lite') is an alternative version of Voronota for constructing tessellation-derived atomic contact areas and volumes.
+Voronota-LT (pronounced 'voronota lite') is an alternative version of [Voronota](../index.html) for constructing tessellation-derived atomic contact areas and volumes.
 Voronota-LT was written from scratch and does not use any external code, even from the core Voronota.
 The primary motivation for creating Voronota-LT was drastically increasing the speed of computing tessellation-based atom-atom contact areas and atom solvent-accessible surface areas.
 
 Like Voronota, Voronota-LT can compute contact areas derived from the additively weighted Voronoi tessellation,
-but the main increase in speed comes when utilizing a simpler, radical tessellation variant, also known as Laguerre tessellation.
+but the main increase in speed comes when utilizing a simpler, radical tessellation variant, also known as Laguerre-Laguerre tessellation or power diagram.
 This is the default tessellation variant in Voronota-LT. It considers radii of atoms together with the rolling probe radius to define radical planes as bisectors between atoms.
+
+Voronota-LT is distributed an expansion part of [the Voronota software package](../index.html) for two reasons:
+to enable other Voronota expansions to easily use the Voronota-LT library;
+to bundle the Voronota-LT command-line tool with the vanilla Voronota command-line tools that can produce input for Voronota-LT
+by parsing molecular structure files and assigning van der Waals radii to atoms.
 
 ## Benchmarking data and results
 

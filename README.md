@@ -19,10 +19,10 @@ Voronota is developed by Kliment Olechnovic (kliment.olechnovic@bti.vu.lt).
 
 # About Voronota expansions
 
-Currently there are two expansions of Voronota: Voronota-JS and Voronota-GL.
+Currently there are three expansions of Voronota: Voronota-JS, Voronota-LT and Voronota-GL.
 
 The expansions need to be built separately in their subdirectories.
-Alternatively, they can be built by appending `-DEXPANSION_JS=ON` and `-DEXPANSION_GL=ON` to the CMake command call.
+Alternatively, they can be built by appending `-DEXPANSION_JS=ON` and/or `-DEXPANSION_LT=ON` and/or `-DEXPANSION_GL=ON` to the CMake command call.
 
 The expansions have separate dedicated documentation pages.
 
@@ -45,6 +45,16 @@ Currently, the Voronota-JS package contains several executables:
  * "voronota-js-fast-iface-data-graph" - wrapper to a voronota-js program for the computation of interface graphs used by the VoroIF-GNN method.
  * "voronota-js-voroif-gnn" - wrapper to a voronota-js program and GNN inference scripts that run the VoroIF-GNN method for scoring models of protein-protein complexes (developed for CASP15).
  * "voronota-js-ligand-cadscore" - wrapper to a voronota-js program for the computation of protein-ligand variation of CAD-score (developed to analyze protein-ligand models from CASP15).
+
+## Voronota-LT
+
+[Voronota-LT](./expansion_lt/README.md) expansion is located in the 'expansion_lt' subdirectory of the Voronota package.
+
+Voronota-LT (pronounced 'voronota lite') is an alternative version of Voronota for constructing tessellation-derived atomic contact areas and volumes.
+Voronota-LT was written from scratch and does not use any external code, even from the core Voronota.
+The primary motivation for creating Voronota-LT was drastically increasing the speed of computing tessellation-based atom-atom contact areas and atom solvent-accessible surface areas.
+Like Voronota, Voronota-LT can compute contact areas derived from the additively weighted Voronoi tessellation,
+but the main increase in speed comes when utilizing a simpler, radical tessellation variant, also known as Laguerre-Laguerre tessellation or power diagram.
 
 ## Voronota-GL
 

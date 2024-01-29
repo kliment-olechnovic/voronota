@@ -43,6 +43,7 @@ pandoc $TMPLDIR/documentation.markdown -f markdown -t html --metadata title="$DO
 ################################################################################
 
 cat $TMPLDIR/documentation.markdown \
+| sed 's|\./index.html|./README.md|g' \
 | sed 's|benchmark/index.html|benchmark/README.md|g' \
 > ./README.md
 

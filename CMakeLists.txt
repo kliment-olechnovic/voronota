@@ -21,3 +21,7 @@ endif(EXPANSION_GL)
 if(EXPANSION_JS)
     add_subdirectory(expansion_js)
 endif(EXPANSION_JS)
+
+if(EXPANSION_LT)
+    add_subdirectory(expansion_lt)
+endif(EXPANSION_LT)

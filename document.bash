@@ -99,6 +99,7 @@ cat << 'EOF'
 <h2>Quick links</h2>
 <ul>
 <li><a href="./expansion_js/index.html">Voronota-JS</a> (for advanced scripting using JavaScript)</li>
+<li><a href="./expansion_lt/index.html">Voronota-LT</a> (for faster and parallelizable computation of tessellation-derived contact areas)</li>
 <li><a href="./expansion_gl/index.html">Voronota-GL</a> (for advanced scripting and visualization)</li>
 <li><a href="./expansion_gl/web/index.html">Web Voronota-GL</a> (online version of Voronota-GL)</li>
 </ul>
@@ -115,6 +116,7 @@ pandoc $TMPLDIR/documentation.markdown -f markdown -t html --metadata title="$DO
 cat $TMPLDIR/documentation.markdown \
 | sed 's|\./index.html|./README.md|g' \
 | sed 's|expansion_js/index.html|expansion_js/README.md|g' \
+| sed 's|expansion_lt/index.html|expansion_lt/README.md|g' \
 | sed 's|expansion_gl/index.html|expansion_gl/README.md|g' \
 > ./README.md
 
@@ -126,6 +128,8 @@ mv "$TMPLDIR/manpage.troff" "./voronota.man"
 ################################################################################
 
 ./expansion_js/document.bash
+
+./expansion_lt/document.bash
 
 ./expansion_gl/document.bash
 

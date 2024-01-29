@@ -7,7 +7,9 @@ trap "rm -r $TMPLDIR" EXIT
 
 ################################################################################
 
-cat ./README.md > $TMPLDIR/documentation.markdown
+cat ./README.md \
+| sed 's|\./README.md|./index.html|g' \
+> $TMPLDIR/documentation.markdown
 
 ################################################################################
 
