@@ -7,10 +7,9 @@ mkdir -p "./output"
 
 cd ../
 
-if [ ! -s "./_voronotalt_python.so" ] || [ ! -s "./voronotalt_python.py" ]
-then
-	./compile_voronotalt_python.bash
-fi
+rm -rf "./voronotalt_python_wrap.cxx" "./_voronotalt_python.so" "./voronotalt_python.py" "./__pycache__"
+
+./compile_voronotalt_python.bash
 
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 

@@ -7,10 +7,9 @@ mkdir -p "./output"
 
 cd ../
 
-if [ ! -s "./voronota-lt" ]
-then
-	g++ -std=c++14 -Ofast -march=native -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
-fi
+rm -f "./voronota-lt"
+
+g++ -std=c++14 -Ofast -march=native -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
 
 export PATH="$(pwd):${PATH}"
 
