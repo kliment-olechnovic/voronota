@@ -1,0 +1,265 @@
+Voronota version 1.28
+
+Commands:
+
+get-balls-from-atoms-file
+calculate-vertices
+calculate-vertices-in-parallel
+calculate-contacts
+query-balls
+query-contacts
+draw-contacts
+score-contacts-energy
+score-contacts-quality
+score-contacts-potential
+compare-contacts
+write-balls-to-atoms-file
+query-balls-clashes
+run-script
+expand-descriptors
+
+Command 'get-balls-from-atoms-file' options:
+--annotated                                 flag to enable annotated mode
+--include-heteroatoms                       flag to include heteroatoms
+--include-hydrogens                         flag to include hydrogen atoms
+--multimodel-chains                         flag to read multiple models in PDB format and rename chains accordingly
+--input-format                  string      input format, variants are: 'pdb' (default), 'mmcif', 'detect'
+--radii-file                    string      path to radii configuration file
+--default-radius                number      default atomic radius
+--only-default-radius                       flag to make all radii equal to the default radius
+--hull-offset                   number      positive offset distance enables adding artificial hull balls
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  file in PDB or mmCIF format
+stdout  ->  list of balls
+              (default mode line format: 'x y z r # atomSerial chainID resSeq resName atomName altLoc iCode')
+              (annotated mode line format: 'annotation x y z r tags adjuncts')
+
+Command 'calculate-vertices' options:
+--print-log                                 flag to print log of calculations
+--exclude-hidden-balls                      flag to exclude hidden input balls
+--include-surplus-quadruples                flag to include surplus quadruples
+--link                                      flag to output links between vertices
+--init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+--check                                     flag to slowly check the resulting vertices (used only for testing)
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of balls (line format: 'x y z r')
+stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
+
+Command 'calculate-vertices-in-parallel' options:
+--method                        string   *  parallelization method name, variants are: 'simulated'
+--parts                         number   *  number of parts for splitting, must be power of 2
+--print-log                                 flag to print log of calculations
+--include-surplus-quadruples                flag to include surplus quadruples
+--link                                      flag to output links between vertices
+--init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of balls (line format: 'x y z r')
+stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
+
+Command 'calculate-contacts' options:
+--annotated                                 flag to enable annotated mode
+--probe                         number      probe radius
+--exclude-hidden-balls                      flag to exclude hidden input balls
+--step                          number      curve step length
+--projections                   number      curve optimization depth
+--sih-depth                     number      spherical surface optimization depth
+--add-mirrored                              flag to add mirrored contacts to non-annnotated output
+--draw                                      flag to output graphics for annotated contacts
+--tag-centrality                            flag to tag contacts centrality
+--tag-peripherial                           flag to tag peripherial contacts
+--old-contacts-output           string      file path to output spherical contacts
+--volumes-output                string      file path to output constrained cells volumes
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of balls
+              (default mode line format: 'x y z r')
+              (annotated mode line format: 'annotation x y z r tags adjuncts')
+stdout  ->  list of contacts
+              (default mode line format: 'b1 b2 area')
+              (annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+
+Command 'query-balls' options:
+--match                         string      selection
+--match-not                     string      negative selection
+--match-tags                    string      tags to match
+--match-tags-not                string      tags to not match
+--match-adjuncts                string      adjuncts intervals to match
+--match-adjuncts-not            string      adjuncts intervals to not match
+--match-external-annotations    string      file path to input matchable annotations
+--invert                                    flag to invert selection
+--whole-residues                            flag to select whole residues
+--drop-atom-serials                         flag to drop atom serial numbers from input
+--drop-altloc-indicators                    flag to drop alternate location indicators from input
+--drop-tags                                 flag to drop all tags from input
+--drop-adjuncts                             flag to drop all adjuncts from input
+--set-tags                      string      set tags instead of filtering
+--set-dssp-info                 string      file path to input DSSP file
+--set-adjuncts                  string      set adjuncts instead of filtering
+--set-external-adjuncts         string      file path to input external adjuncts
+--set-external-adjuncts-name    string      name for external adjuncts
+--rename-chains                             flag to rename input chains to be in interval from 'A' to 'Z'
+--guess-chain-names                         flag to assign input chain names based on residue numbering
+--renumber-from-adjunct         string      adjunct name to use for input residue renumbering
+--renumber-positively                       flag to increment residue numbers to make them positive
+--reset-serials                             flag to reset atom serial numbers
+--set-seq-pos-adjunct                       flag to set normalized sequence position adjunct
+--set-ref-seq-num-adjunct       string      file path to input reference sequence
+--ref-seq-alignment             string      file path to output alignment with reference
+--seq-output                    string      file path to output query result sequence string
+--chains-summary-output         string      file path to output chains summary
+--chains-seq-identity           number      sequence identity threshold for chains summary, default is 0.9
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
+stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
+
+Command 'query-contacts' options:
+--match-first                   string      selection for first contacting group
+--match-first-not               string      negative selection for first contacting group
+--match-second                  string      selection for second contacting group
+--match-second-not              string      negative selection for second contacting group
+--match-min-seq-sep             number      minimum residue sequence separation
+--match-max-seq-sep             number      maximum residue sequence separation
+--match-min-area                number      minimum contact area
+--match-max-area                number      maximum contact area
+--match-min-dist                number      minimum distance
+--match-max-dist                number      maximum distance
+--match-tags                    string      tags to match
+--match-tags-not                string      tags to not match
+--match-adjuncts                string      adjuncts intervals to match
+--match-adjuncts-not            string      adjuncts intervals to not match
+--match-external-first          string      file path to input matchable annotations
+--match-external-second         string      file path to input matchable annotations
+--match-external-pairs          string      file path to input matchable annotation pairs
+--no-solvent                                flag to not include solvent accessible areas
+--ignore-dist-for-solvent                   flag to ignore distance for solvent contacts
+--ignore-seq-sep-for-solvent                flag to ignore sequence separation for solvent contacts
+--no-same-chain                             flag to not include same chain contacts
+--no-poly-bonds                             flag to not include peptide and nucleic polymerization bonds
+--invert                                    flag to invert selection
+--drop-tags                                 flag to drop all tags from input
+--drop-adjuncts                             flag to drop all adjuncts from input
+--set-tags                      string      set tags instead of filtering
+--set-hbplus-tags               string      file path to input HBPLUS file
+--set-distance-bins-tags        string      list of distance thresholds
+--inter-residue-hbplus-tags                 flag to set inter-residue H-bond tags
+--set-adjuncts                  string      set adjuncts instead of filtering
+--set-external-adjuncts         string      file path to input external adjuncts
+--set-external-adjuncts-name    string      name for external adjuncts
+--set-external-means            string      file path to input external values for averaging
+--set-external-means-name       string      name for external means
+--renaming-map                  string      file path to input atoms renaming map
+--inter-residue                             flag to convert input to inter-residue contacts
+--inter-residue-after                       flag to convert output to inter-residue contacts
+--summing-exceptions            string      file path to input inter-residue summing exceptions annotations
+--summarize                                 flag to output only summary of matched contacts
+--summarize-by-first                        flag to output only summary of matched contacts by first identifier
+--preserve-graphics                         flag to preserve graphics in output
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+
+Command 'draw-contacts' options:
+--drawing-for-pymol             string      file path to output drawing as pymol script
+--drawing-for-jmol              string      file path to output drawing as jmol script
+--drawing-for-scenejs           string      file path to output drawing as scenejs script
+--drawing-for-chimera           string      file path to output drawing as chimera bild script
+--drawing-name                  string      graphics object name for drawing output
+--default-color                 string      default color for drawing output, in hex format, white is 0xFFFFFF
+--adjunct-gradient              string      adjunct name to use for gradient-based coloring
+--adjunct-gradient-blue         number      blue adjunct gradient value
+--adjunct-gradient-red          number      red adjunct gradient value
+--adjuncts-rgb                              flag to use RGB color values from adjuncts
+--random-colors                             flag to use random color for each drawn contact
+--alpha                         number      alpha opacity value for drawing output
+--use-labels                                flag to use labels in drawing if possible
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts graphics')
+stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts graphics')
+
+Command 'score-contacts-energy' options:
+--potential-file                string   *  file path to input potential values
+--ignorable-max-seq-sep         number      maximum residue sequence separation for ignorable contacts
+--inter-atom-scores-file        string      file path to output inter-atom scores
+--atom-scores-file              string      file path to output atom scores
+--depth                         number      neighborhood normalization depth
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')
+stdout  ->  global scores
+
+Command 'score-contacts-quality' options:
+--default-mean                  number      default mean parameter
+--default-sd                    number      default standard deviation parameter
+--means-and-sds-file            string      file path to input atomic mean and sd parameters
+--mean-shift                    number      mean shift in standard deviations
+--external-weights-file         string      file path to input external weights for global scoring
+--smoothing-window              number      window to smooth residue quality scores along sequence
+--atom-scores-file              string      file path to output atom scores
+--residue-scores-file           string      file path to output residue scores
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of atom energy descriptors
+stdout  ->  weighted average local score
+
+Command 'score-contacts-potential' options:
+--input-file-list                           flag to read file list from stdin
+--input-contributions           string      file path to input contact types contributions
+--input-fixed-types             string      file path to input fixed types
+--input-seq-pairs-stats         string      file path to input sequence pairings statistics
+--potential-file                string      file path to output potential values
+--probabilities-file            string      file path to output observed and expected probabilities
+--single-areas-file             string      file path to output single type total areas
+--contributions-file            string      file path to output contact types contributions
+--multiply-areas                number      coefficient to multiply output areas
+--toggling-list                 string      list of toggling subtags
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')
+stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')
+
+Command 'compare-contacts' options:
+--target-contacts-file          string   *  file path to input target contacts
+--inter-atom-scores-file        string      file path to output inter-atom scores
+--inter-residue-scores-file     string      file path to output inter-residue scores
+--atom-scores-file              string      file path to output atom scores
+--residue-scores-file           string      file path to output residue scores
+--depth                         number      local neighborhood depth
+--smoothing-window              number      window to smooth residue scores along sequence
+--smoothed-scores-file          string      file path to output smoothed residue scores
+--ignore-residue-names                      flag to consider just residue numbers and ignore residue names
+--residue-level-only                        flag to output only residue-level results
+--detailed-output                           flag to enable detailed output
+--chains-renaming-file          string      file path to input chains renaming
+--remap-chains                              flag to calculate optimal chains remapping
+--remap-chains-log                          flag output remapping progress to stderr
+--remapped-chains-file          string      file path to output calculated chains remapping
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')
+stdout  ->  global scores (atom-level and residue-level)
+
+Command 'write-balls-to-atoms-file' options:
+--pdb-output                    string      file path to output query result in PDB format
+--pdb-output-b-factor           string      name of adjunct to output as B-factor in PDB format
+--pdb-output-template           string      file path to input template for B-factor insertions
+--add-chain-terminators                     flag to add TER lines after chains
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
+stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
+
+Command 'query-balls-clashes' options:
+--clash-distance                number      clash distance threshold in angstroms, default is 3.0
+--min-seq-sep                   number      minimum residue sequence separation, default is 2
+--init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of balls (line format: 'annotation x y z r')
+stdout  ->  list of clashes (line format: 'annotation1 annotation2 distance min-distance-between-balls')
+
+Command 'run-script' options:
+--interactive                               flag for interactive mode
+--exit-on-first-failure                     flag to terminate script when a command fails
+--max-unfolding                 number      maximum level of output unfolding, default is 6
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  script as plain text
+stdout  ->  output of script execution
+
+Command 'expand-descriptors' options:
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  any text containing atom descriptors
+stdout  ->  text with each atom descriptor expanded to 'chainID resSeq iCode serial altLoc resName name'
+
