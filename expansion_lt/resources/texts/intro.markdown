@@ -23,6 +23,7 @@ Download the latest archive from the official downloads page:
 [https://github.com/kliment-olechnovic/voronota/releases](https://github.com/kliment-olechnovic/voronota/releases).
 
 The archive contains the Voronota-LT software in the 'expansion_lt' subdirectory.
+
 This executable can be built from the provided
 source code to work on any modern Linux, macOS or Windows operating systems.
 
@@ -36,8 +37,14 @@ a C++14-compliant compiler is needed to build it.
 ## Using CMake
 
 You can build using CMake for makefile generation.
-Starting in the directory containing "CMakeLists.txt" file,
-run the sequence of commands:
+
+Change to the 'expansion_lt' directory:
+
+```bash
+cd expansion_lt
+```
+
+Then run the sequence of commands:
 
 ```bash
 cmake ./
@@ -56,7 +63,15 @@ cp ./voronota-lt ../voronota-lt
 
 ## Using C++ compiler directly
 
-For example, "voronota-lt" executable can be built using GNU C++ compiler:
+For example, "voronota-lt" executable can be built using GNU C++ compiler.
+
+Change to the 'expansion_lt' directory:
+
+```bash
+cd expansion_lt
+```
+
+Then run the compiler:
 
 ```bash
 g++ -std=c++14 -O3 -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
