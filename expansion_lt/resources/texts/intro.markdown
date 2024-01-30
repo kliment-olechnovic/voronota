@@ -83,6 +83,23 @@ Performance-boosting compiler flags can be included:
 g++ -std=c++14 -Ofast -march=native -fopenmp -o ./voronota-lt ./src/voronota_lt.cpp
 ```
 
+## Compiling on Windows
+
+### Using Windows Subsystem for Linux
+
+When using Windows Subsystem for Linux, Voronota-LT can be compiled using the same instructions as described above, that is, using CMake or g++ directly.
+
+### Using Microsoft Visual C++ command-line compiler
+
+If you have installed Visual Studio 2017 or later on Windows 10 or later,
+open 'Developer Command Prompt for VS' from start menu,
+navigate to the 'expansion_lt' folder,
+and run the following command that produces 'voronota-lt.exe' program:
+
+```
+cl /Ox /openmp:llvm .\src\voronota_lt.cpp
+```
+
 # Running the command-line tool
 
 The overview of command-line options, as well as input and output, is printed when running the "voronota-lt" executable with "--help" or "-h" flags:
