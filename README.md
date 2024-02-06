@@ -32,7 +32,7 @@ tar -xf ./voronota_1.28.4083.tar.gz
 cd ./voronota_1.28.4083
 
 # run CMake
-cmake . -DEXPANSION_JS=ON -DEXPANSION_JS=ON
+cmake . -DEXPANSION_JS=ON -DEXPANSION_LT=ON
 
 # compile everything
 make
