@@ -23,13 +23,13 @@ Below are several commands that install the latest version of Voronota and its e
 
 ```bash
 # download the latest package
-wget https://github.com/kliment-olechnovic/voronota/releases/download/v1.28.4077/voronota_1.28.4077.tar.gz
+wget https://github.com/kliment-olechnovic/voronota/releases/download/v1.28.4083/voronota_1.28.4083.tar.gz
 
 # unpack the package
-tar -xf ./voronota_1.28.4077.tar.gz
+tar -xf ./voronota_1.28.4083.tar.gz
 
 # change to the package directory
-cd ./voronota_1.28.4077
+cd ./voronota_1.28.4083
 
 # run CMake
 cmake . -DEXPANSION_JS=ON -DEXPANSION_JS=ON
