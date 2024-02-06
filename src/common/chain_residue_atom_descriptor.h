@@ -10,6 +10,7 @@
 #include <set>
 #include <map>
 #include <cmath>
+#include <cstdint>
 
 namespace voronota
 {
@@ -424,46 +425,46 @@ public:
 		return output.str();
 	}
 
-	uint32_t hash_value() const
+	std::uint32_t hash_value() const
 	{
-		uint32_t h=0;
+		std::uint32_t h=0;
 		{
-			h += static_cast<uint32_t>(resSeq);
+			h += static_cast<std::uint32_t>(resSeq);
 			h += (h << 10);
 			h ^= (h >> 6);
 		}
 		{
-			h += static_cast<uint32_t>(serial);
+			h += static_cast<std::uint32_t>(serial);
 			h += (h << 10);
 			h ^= (h >> 6);
 		}
 		for(std::size_t i=0;i<chainID.size();i++)
 		{
-			h += static_cast<uint32_t>(chainID[i]);
+			h += static_cast<std::uint32_t>(chainID[i]);
 			h += (h << 10);
 			h ^= (h >> 6);
 		}
 		for(std::size_t i=0;i<iCode.size();i++)
 		{
-			h += static_cast<uint32_t>(iCode[i]);
+			h += static_cast<std::uint32_t>(iCode[i]);
 			h += (h << 10);
 			h ^= (h >> 6);
 		}
 		for(std::size_t i=0;i<altLoc.size();i++)
 		{
-			h += static_cast<uint32_t>(altLoc[i]);
+			h += static_cast<std::uint32_t>(altLoc[i]);
 			h += (h << 10);
 			h ^= (h >> 6);
 		}
 		for(std::size_t i=0;i<resName.size();i++)
 		{
-			h += static_cast<uint32_t>(resName[i]);
+			h += static_cast<std::uint32_t>(resName[i]);
 			h += (h << 10);
 			h ^= (h >> 6);
 		}
 		for(std::size_t i=0;i<name.size();i++)
 		{
-			h += static_cast<uint32_t>(name[i]);
+			h += static_cast<std::uint32_t>(name[i]);
 			h += (h << 10);
 			h ^= (h >> 6);
 		}
@@ -612,9 +613,9 @@ public:
 		return ChainResidueAtomDescriptorsPair(a.without_some_info(no_serial, no_name, no_resSeq, no_resName), b.without_some_info(no_serial, no_name, no_resSeq, no_resName));
 	}
 
-	uint32_t hash_value() const
+	std::uint32_t hash_value() const
 	{
-		uint32_t h=0;
+		std::uint32_t h=0;
 		{
 			h += a.hash_value();
 			h += (h << 10);

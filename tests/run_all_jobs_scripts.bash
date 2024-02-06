@@ -17,4 +17,4 @@ $VORONOTADIR/voronota-resources radii > $VORONOTADIR/resources/radii
 rm -r -f $OUTPUTDIR
 mkdir $OUTPUTDIR
 
-find ./jobs_scripts/ -type f -name "*.bash" | xargs -L 1 -P 10 bash
+find ./jobs_scripts/ -type f -name "*.bash" | xargs -L 1 -P 16 bash

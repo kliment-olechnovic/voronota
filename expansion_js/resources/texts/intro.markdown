@@ -37,6 +37,10 @@ Voronota-JS relies on several externally developed software projects (big thanks
 * tinf - [https://github.com/jibsen/tinf](https://github.com/jibsen/tinf)
 * LodePNG - [https://github.com/lvandeve/lodepng](https://github.com/lvandeve/lodepng)
 
+# Quick install guide
+
+Please refer to the [core Voronota quick install guide](../index.html#quick-install-guide).
+
 # Getting the latest version
 
 Download the latest archive from the official downloads page:

@@ -17,6 +17,10 @@ by parsing molecular structure files and assigning van der Waals radii to atoms.
 
 Benchmarking data and results are available [here](./benchmark/README.md).
 
+# Quick install guide
+
+Please refer to the [core Voronota quick install guide](../README.md#quick-install-guide).
+
 # Getting the latest version
 
 Download the latest archive from the official downloads page:

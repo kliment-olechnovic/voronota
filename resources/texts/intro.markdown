@@ -17,6 +17,37 @@ compare contacts and evaluate quality of protein structural models using contact
 
 Voronota is developed by Kliment Olechnovic (kliment.olechnovic@bti.vu.lt).
 
+# Quick install guide
+
+Below are several commands that install the latest version of Voronota and its expansions for the command line use in Unix-like systems.
+
+```bash
+# download the latest package
+wget https://github.com/kliment-olechnovic/voronota/releases/download/v1.28.4077/voronota_1.28.4077.tar.gz
+
+# unpack the package
+tar -xf ./voronota_1.28.4077.tar.gz
+
+# change to the package directory
+cd ./voronota_1.28.4077
+
+# run CMake
+cmake . -DEXPANSION_JS=ON -DEXPANSION_JS=ON
+
+# compile everything
+make
+
+# install everything
+sudo make install
+```
+
+The installed files are listed in the 'install_manifest.txt' file.
+They can be uninstalled by running
+
+```bash
+sudo xargs rm < ./install_manifest.txt
+```
+
 # About Voronota expansions
 
 Currently there are three expansions of Voronota: Voronota-JS, Voronota-LT and Voronota-GL.
