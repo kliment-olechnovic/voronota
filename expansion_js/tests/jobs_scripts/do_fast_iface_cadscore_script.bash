@@ -21,10 +21,19 @@ find "$INPUTDIR/complex/" -type f \
 | $VORONOTAJSDIR/voronota-js-fast-iface-cadscore \
   --target "$INPUTDIR/complex/target.pdb" \
   --model _list \
+  --subselect-site '[-chain A]' \
+| column -t \
+> "$SUBDIR/global_scores_with_site_sel_formatted"
+
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-cadscore \
+  --target "$INPUTDIR/complex/target.pdb" \
+  --model _list \
   --processors 4 \
   --remap-chains \
+  --subselect-site '[-chain A]' \
 | column -t \
-> "$SUBDIR/global_scores_remapped_formatted"
+> "$SUBDIR/global_scores_with_site_sel_remapped_formatted"
 
 find "$INPUTDIR/complex/" -type f \
 | $VORONOTAJSDIR/voronota-js-fast-iface-cadscore \

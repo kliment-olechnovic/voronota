@@ -354,6 +354,7 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         --model | -m              string  *  model file path or '_list' to read file paths from stdin
         --restrict-input          string     query to restrict input atoms, default is '[]'
         --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
+        --subselect-site          string     query to subselect atoms for binding site scoring, default is '[]'
         --output-table-file       string     output table file path, default is '_stdout' to print to stdout
         --processors              number     maximum number of processors to run in parallel, default is 1
         --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''

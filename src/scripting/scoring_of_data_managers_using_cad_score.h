@@ -26,6 +26,7 @@ public:
 		bool remap_chains_logging;
 		std::string target_selection_expression;
 		std::string model_selection_expression;
+		std::string site_selection_expression;
 		std::vector<std::string> chain_renaming_pairs;
 		std::string target_adjunct_atom_scores;
 		std::string target_adjunct_inter_atom_scores;
@@ -121,10 +122,14 @@ public:
 				parameters_for_cad_score.remap_chains=false;
 			}
 
+			const std::set<std::size_t> target_site_atom_ids=((params.site_selection_expression.empty() || params.site_selection_expression=="[]") ? std::set<std::size_t>() : target_dm.selection_manager().select_atoms(SelectionManager::Query(params.site_selection_expression, false)));
+
+			const std::set<std::size_t> model_site_atom_ids=((params.site_selection_expression.empty() || params.site_selection_expression=="[]") ? std::set<std::size_t>() : model_dm.selection_manager().select_atoms(SelectionManager::Query(params.site_selection_expression, false)));
+
 			if(!common::ConstructionOfCADScore::construct_bundle_of_cadscore_information(
 					parameters_for_cad_score,
-					collect_map_of_contacts_summarized_by_first(target_dm.atoms(), target_dm.contacts(), target_contacts_ids),
-					collect_map_of_contacts_summarized_by_first(model_dm.atoms(), model_dm.contacts(), model_contact_ids),
+					collect_map_of_contacts_summarized_by_first(target_dm.atoms(), target_dm.contacts(), target_contacts_ids, target_site_atom_ids),
+					collect_map_of_contacts_summarized_by_first(model_dm.atoms(), model_dm.contacts(), model_contact_ids, model_site_atom_ids),
 					result.site_bundle))
 			{
 				throw std::runtime_error(std::string("Failed to calculate site-based CAD-score."));
@@ -169,7 +174,8 @@ private:
 	static std::map<common::ChainResidueAtomDescriptorsPair, double> collect_map_of_contacts_summarized_by_first(
 			const std::vector<Atom>& atoms,
 			const std::vector<Contact>& contacts,
-			const std::set<std::size_t>& contact_ids)
+			const std::set<std::size_t>& contact_ids,
+			const std::set<std::size_t>& site_atom_ids)
 	{
 		std::map<common::ChainResidueAtomDescriptorsPair, double> map_of_contacts;
 		for(std::set<std::size_t>::const_iterator it_contact_ids=contact_ids.begin();it_contact_ids!=contact_ids.end();++it_contact_ids)
@@ -178,11 +184,25 @@ private:
 			if(contact_id<contacts.size())
 			{
 				const Contact& contact=contacts[contact_id];
-				const common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(atoms, contact);
-				if(crads.valid())
+				if(site_atom_ids.empty())
 				{
-					map_of_contacts[common::ChainResidueAtomDescriptorsPair(crads.a, common::ChainResidueAtomDescriptor::any())]+=contact.value.area;
-					map_of_contacts[common::ChainResidueAtomDescriptorsPair(crads.b, common::ChainResidueAtomDescriptor::any())]+=contact.value.area;
+					const common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(atoms, contact);
+					if(crads.valid())
+					{
+						map_of_contacts[common::ChainResidueAtomDescriptorsPair(crads.a, common::ChainResidueAtomDescriptor::any())]+=contact.value.area;
+						map_of_contacts[common::ChainResidueAtomDescriptorsPair(crads.b, common::ChainResidueAtomDescriptor::any())]+=contact.value.area;
+					}
+				}
+				else
+				{
+					if(site_atom_ids.count(contact.ids[0])>0)
+					{
+						map_of_contacts[common::ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad, common::ChainResidueAtomDescriptor::any())]+=contact.value.area;
+					}
+					if(site_atom_ids.count(contact.ids[1])>0)
+					{
+						map_of_contacts[common::ChainResidueAtomDescriptorsPair(atoms[contact.ids[1]].crad, common::ChainResidueAtomDescriptor::any())]+=contact.value.area;
+					}
 				}
 			}
 		}

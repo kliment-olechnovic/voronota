@@ -11,6 +11,7 @@ Options:
     --model | -m              string  *  model file path or '_list' to read file paths from stdin
     --restrict-input          string     query to restrict input atoms, default is '[]'
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
+    --subselect-site          string     query to subselect atoms for binding site scoring, default is '[]'
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to run in parallel, default is 1
     --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
@@ -71,6 +72,7 @@ TARGET_INFILE=""
 MODEL_INFILE=""
 RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
+SUBSELECT_SITE="[]"
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
@@ -108,6 +110,10 @@ do
 		;;
 	--subselect-contacts)
 		SUBSELECT_CONTACTS="$OPTARG"
+		shift
+		;;
+	--subselect-site)
+		SUBSELECT_SITE="$OPTARG"
 		shift
 		;;
 	--output-table-file)
@@ -386,6 +392,7 @@ common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.ignore_residue_names='$IGNORE_RESIDUE_NAMES';
 common_params.test_common_ids='$TEST_COMMON_IDS';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
+common_params.site_subselection='$SUBSELECT_SITE';
 common_params.remap_chains='$REMAP_CHAINS';
 common_params.remap_chains_logging='$REMAP_CHAINS_LOGGING';
 common_params.crude_mode='$CRUDE_MODE'
@@ -488,7 +495,7 @@ prepare_contacts=function(params)
 
 analyze_interface=function(params, target_object, model_object, initial_summary)
 {
-	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based", "-remap-chains", params.remap_chains, "-remap-chains-logging", params.remap_chains_logging, "-ignore-residue-names", params.ignore_residue_names);
+	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based", "-site-sel", params.site_subselection, "-remap-chains", params.remap_chains, "-remap-chains-logging", params.remap_chains_logging, "-ignore-residue-names", params.ignore_residue_names);
 	voronota_assert_full_success("Failed to compute CAD-score");
 	result_cadscore=voronota_last_output().results[0].output.residue_level_result;
 	result_cadscore_site_based=voronota_last_output().results[0].output.site_residue_level_result;
