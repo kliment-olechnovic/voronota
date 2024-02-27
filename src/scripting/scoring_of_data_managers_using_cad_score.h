@@ -78,6 +78,22 @@ public:
 			throw std::runtime_error(std::string("No model contacts selected."));
 		}
 
+		const bool need_nonempty_site_selections=(params.also_site_based && !params.site_selection_expression.empty() && params.site_selection_expression!="[]");
+
+		const std::set<std::size_t> target_site_atom_ids=(need_nonempty_site_selections ? target_dm.selection_manager().select_atoms(SelectionManager::Query(params.site_selection_expression, false)) : std::set<std::size_t>());
+
+		if(need_nonempty_site_selections && target_site_atom_ids.empty())
+		{
+			throw std::runtime_error(std::string("No target site atoms selected."));
+		}
+
+		const std::set<std::size_t> model_site_atom_ids=(need_nonempty_site_selections ? model_dm.selection_manager().select_atoms(SelectionManager::Query(params.site_selection_expression, false)) : std::set<std::size_t>());
+
+		if(need_nonempty_site_selections && model_site_atom_ids.empty())
+		{
+			throw std::runtime_error(std::string("No model site atoms selected."));
+		}
+
 		common::ConstructionOfCADScore::ParametersToConstructBundleOfCADScoreInformation parameters_for_cad_score;
 
 		parameters_for_cad_score.ignore_residue_names=params.ignore_residue_names;
@@ -121,10 +137,6 @@ public:
 				parameters_for_cad_score.map_of_renamings=result.bundle.map_of_renamings_from_remapping;
 				parameters_for_cad_score.remap_chains=false;
 			}
-
-			const std::set<std::size_t> target_site_atom_ids=((params.site_selection_expression.empty() || params.site_selection_expression=="[]") ? std::set<std::size_t>() : target_dm.selection_manager().select_atoms(SelectionManager::Query(params.site_selection_expression, false)));
-
-			const std::set<std::size_t> model_site_atom_ids=((params.site_selection_expression.empty() || params.site_selection_expression=="[]") ? std::set<std::size_t>() : model_dm.selection_manager().select_atoms(SelectionManager::Query(params.site_selection_expression, false)));
 
 			if(!common::ConstructionOfCADScore::construct_bundle_of_cadscore_information(
 					parameters_for_cad_score,
