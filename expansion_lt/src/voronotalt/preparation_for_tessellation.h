@@ -85,7 +85,7 @@ public:
 				for(UnsignedInt j=0;j<result.all_colliding_ids[id_a].size();j++)
 				{
 					const UnsignedInt id_b=result.all_colliding_ids[id_a][j];
-					if(result.all_exclusion_statuses[id_b]==0 && result.all_colliding_ids[id_a].size()<result.all_colliding_ids[id_b].size() || (id_a<id_b && result.all_colliding_ids[id_a].size()==result.all_colliding_ids[id_b].size()))
+					if((result.all_exclusion_statuses[id_b]==0 && result.all_colliding_ids[id_a].size()<result.all_colliding_ids[id_b].size()) || (id_a<id_b && result.all_colliding_ids[id_a].size()==result.all_colliding_ids[id_b].size()))
 					{
 						if(grouping_of_spheres.empty() || id_a>=grouping_of_spheres.size() || id_b>=grouping_of_spheres.size() || grouping_of_spheres[id_a]!=grouping_of_spheres[id_b])
 						{
