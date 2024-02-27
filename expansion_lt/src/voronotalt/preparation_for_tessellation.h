@@ -1,6 +1,8 @@
 #ifndef VORONOTALT_PREPARATION_FOR_TESSELLATION_H_
 #define VORONOTALT_PREPARATION_FOR_TESSELLATION_H_
 
+#include <algorithm>
+
 #include "spheres_searcher.h"
 #include "time_recorder.h"
 
@@ -55,12 +57,26 @@ public:
 			std::vector<UnsignedInt> colliding_ids;
 			colliding_ids.reserve(100);
 
+			std::vector< std::pair<Float, UnsignedInt> > distances_of_colliding_ids;
+			distances_of_colliding_ids.reserve(100);
+
 			#pragma omp for
 			for(UnsignedInt i=0;i<N;i++)
 			{
 				spheres_searcher.find_colliding_ids(i, colliding_ids, true, result.all_exclusion_statuses[i]);
 				if(!colliding_ids.empty())
 				{
+					distances_of_colliding_ids.resize(colliding_ids.size());
+					for(std::size_t j=0;j<colliding_ids.size();j++)
+					{
+						distances_of_colliding_ids[j].first=distance_to_center_of_intersection_circle_of_two_spheres(spheres[i], spheres[colliding_ids[j]]);
+						distances_of_colliding_ids[j].second=colliding_ids[j];
+					}
+					std::sort(distances_of_colliding_ids.begin(), distances_of_colliding_ids.end());
+					for(std::size_t j=0;j<colliding_ids.size();j++)
+					{
+						colliding_ids[j]=distances_of_colliding_ids[j].second;
+					}
 					result.all_colliding_ids[i]=colliding_ids;
 				}
 			}

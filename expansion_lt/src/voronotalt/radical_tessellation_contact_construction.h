@@ -191,10 +191,15 @@ public:
 							init_contour_from_base_and_axis(a_id, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, result_contact_descriptor.contour);
 							if(!result_contact_descriptor.contour.empty() && !result_contact_descriptor.neighbor_descriptors.empty())
 							{
-								for(UnsignedInt i=0;i<result_contact_descriptor.neighbor_descriptors.size() && !result_contact_descriptor.contour.empty();i++)
+								bool nostop=true;
+								for(UnsignedInt i=0;nostop && i<result_contact_descriptor.neighbor_descriptors.size() && !result_contact_descriptor.contour.empty();i++)
 								{
 									const NeighborDescriptor& nd=result_contact_descriptor.neighbor_descriptors[i];
-									mark_and_cut_contour(nd.ac_plane_center, nd.ac_plane_normal, nd.neighbor_id, result_contact_descriptor.contour);
+									nostop=(i==0 || test_if_contour_is_still_cuttable(a.p, nd.ac_plane_center, result_contact_descriptor.contour));
+									if(nostop)
+									{
+										mark_and_cut_contour(nd.ac_plane_center, nd.ac_plane_normal, nd.neighbor_id, result_contact_descriptor.contour);
+									}
 								}
 							}
 							if(!result_contact_descriptor.contour.empty())
@@ -433,6 +438,17 @@ private:
 			contour[i_start].right_id=contour[i_end].right_id;
 			contour.erase(contour.begin()+i_end);
 		}
+	}
+
+	static bool test_if_contour_is_still_cuttable(const SimplePoint& a_center, const SimplePoint& closest_possible_cut_point, const Contour& contour)
+	{
+		bool cuttable=false;
+		const Float dist_threshold=squared_distance_from_point_to_point(a_center, closest_possible_cut_point);
+		for(UnsignedInt i=0;!cuttable && i<contour.size();i++)
+		{
+			cuttable=squared_distance_from_point_to_point(a_center, contour[i].p)>=dist_threshold;
+		}
+		return cuttable;
 	}
 
 	static bool restrict_contour_to_circle(
