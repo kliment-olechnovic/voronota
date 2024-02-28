@@ -301,7 +301,6 @@ public:
 		{
 			RadicalTessellationContactConstruction::ContactDescriptor cd;
 			cd.contour.reserve(12);
-			cd.neighbor_descriptors.reserve(24);
 
 			#pragma omp for
 			for(UnsignedInt i=0;i<preparation_result.relevant_collision_ids.size();i++)

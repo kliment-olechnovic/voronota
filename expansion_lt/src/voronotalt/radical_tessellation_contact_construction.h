@@ -32,21 +32,9 @@ public:
 
 	typedef std::vector<ContourPoint> Contour;
 
-	struct NeighborDescriptor
-	{
-		SimplePoint ac_plane_center;
-		SimplePoint ac_plane_normal;
-		UnsignedInt neighbor_id;
-
-		NeighborDescriptor() : neighbor_id(0)
-		{
-		}
-	};
-
 	struct ContactDescriptor
 	{
 		Contour contour;
-		std::vector<NeighborDescriptor> neighbor_descriptors;
 		SimpleSphere intersection_circle_sphere;
 		SimplePoint intersection_circle_axis;
 		SimplePoint contour_barycenter;
@@ -79,7 +67,6 @@ public:
 		{
 			id_a=0;
 			id_b=0;
-			neighbor_descriptors.clear();
 			contour.clear();
 			sum_of_arc_angles=FLOATCONST(0.0);
 			area=FLOATCONST(0.0);
@@ -128,8 +115,10 @@ public:
 				if(result_contact_descriptor.intersection_circle_sphere.r>FLOATCONST(0.0))
 				{
 					bool discarded=false;
+					bool contour_initialized=false;
+					bool nostop=true;
 					{
-						for(UnsignedInt i=0;i<a_neighbor_collisions.size() && !discarded;i++)
+						for(UnsignedInt i=0;i<a_neighbor_collisions.size() && !discarded && nostop;i++)
 						{
 							const UnsignedInt neighbor_id=a_neighbor_collisions[i];
 							if(neighbor_id!=b_id && (neighbor_id>=spheres_exclusion_statuses.size() || spheres_exclusion_statuses[neighbor_id]==0))
@@ -143,30 +132,45 @@ public:
 									}
 									else
 									{
-										NeighborDescriptor nd;
-										nd.ac_plane_center=center_of_intersection_circle_of_two_spheres(a, c);
-										nd.ac_plane_normal=unit_point(sub_of_points(c.p, a.p));
-										const Float cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(nd.ac_plane_center, a.p)));
+										const SimplePoint neighbor_ac_plane_center=center_of_intersection_circle_of_two_spheres(a, c);
+										const SimplePoint neighbor_ac_plane_normal=unit_point(sub_of_points(c.p, a.p));
+										const Float cos_val=dot_product(unit_point(sub_of_points(result_contact_descriptor.intersection_circle_sphere.p, a.p)), unit_point(sub_of_points(neighbor_ac_plane_center, a.p)));
 										if(std::abs(cos_val)<FLOATCONST(1.0))
 										{
-											const Float l=std::abs(signed_distance_from_point_to_plane(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p));
+											const Float l=std::abs(signed_distance_from_point_to_plane(neighbor_ac_plane_center, neighbor_ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p));
 											const Float xl=l/std::sqrt(1-(cos_val*cos_val));
 											if(xl>=result_contact_descriptor.intersection_circle_sphere.r)
 											{
-												if(halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p)>=0)
+												if(halfspace_of_point(neighbor_ac_plane_center, neighbor_ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p)>=0)
 												{
 													discarded=true;
 												}
 											}
 											else
 											{
-												nd.neighbor_id=neighbor_id;
-												result_contact_descriptor.neighbor_descriptors.push_back(nd);
+												if(!contour_initialized)
+												{
+													result_contact_descriptor.intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
+													init_contour_from_base_and_axis(a_id, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, result_contact_descriptor.contour);
+													contour_initialized=true;
+												}
+												else
+												{
+													nostop=(test_if_contour_is_still_cuttable(a.p, neighbor_ac_plane_center, result_contact_descriptor.contour));
+												}
+												if(nostop)
+												{
+													mark_and_cut_contour(neighbor_ac_plane_center, neighbor_ac_plane_normal, neighbor_id, result_contact_descriptor.contour);
+													if(contour_initialized && result_contact_descriptor.contour.empty())
+													{
+														discarded=true;
+													}
+												}
 											}
 										}
 										else
 										{
-											if(halfspace_of_point(nd.ac_plane_center, nd.ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p)>0)
+											if(halfspace_of_point(neighbor_ac_plane_center, neighbor_ac_plane_normal, result_contact_descriptor.intersection_circle_sphere.p)>0)
 											{
 												discarded=true;
 											}
@@ -178,30 +182,15 @@ public:
 					}
 					if(!discarded)
 					{
-						result_contact_descriptor.intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
-
-						if(result_contact_descriptor.neighbor_descriptors.empty())
+						if(!contour_initialized)
 						{
+							result_contact_descriptor.intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
 							result_contact_descriptor.contour_barycenter=result_contact_descriptor.intersection_circle_sphere.p;
 							result_contact_descriptor.sum_of_arc_angles=(PIVALUE*FLOATCONST(2.0));
 							result_contact_descriptor.area=result_contact_descriptor.intersection_circle_sphere.r*result_contact_descriptor.intersection_circle_sphere.r*PIVALUE;
 						}
 						else
 						{
-							init_contour_from_base_and_axis(a_id, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, result_contact_descriptor.contour);
-							if(!result_contact_descriptor.contour.empty() && !result_contact_descriptor.neighbor_descriptors.empty())
-							{
-								bool nostop=true;
-								for(UnsignedInt i=0;nostop && i<result_contact_descriptor.neighbor_descriptors.size() && !result_contact_descriptor.contour.empty();i++)
-								{
-									const NeighborDescriptor& nd=result_contact_descriptor.neighbor_descriptors[i];
-									nostop=(i==0 || test_if_contour_is_still_cuttable(a.p, nd.ac_plane_center, result_contact_descriptor.contour));
-									if(nostop)
-									{
-										mark_and_cut_contour(nd.ac_plane_center, nd.ac_plane_normal, nd.neighbor_id, result_contact_descriptor.contour);
-									}
-								}
-							}
 							if(!result_contact_descriptor.contour.empty())
 							{
 								restrict_contour_to_circle(result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, a_id, result_contact_descriptor.contour, result_contact_descriptor.sum_of_arc_angles);
