@@ -64,9 +64,11 @@ Standard error output stream:
 
 Usage examples:
 
-    cat 2zsk.pdb | voronota get-balls-from-atoms-file | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
+    cat ./2zsk.pdb | voronota get-balls-from-atoms-file | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
 
-    cat 2zsk.pdb | voronota get-balls-from-atoms-file | voronota-lt --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
+    cat ./2zsk.pdb | voronota get-balls-from-atoms-file --radii-file ../radii | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
+
+    cat ./2zsk.pdb | voronota get-balls-from-atoms-file | voronota-lt --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
 )";
 
 	std::cerr << message << std::endl;
@@ -260,6 +262,12 @@ int main(const int argc, const char** argv)
 	if(!error_log_for_options_parsing.str().empty())
 	{
 		std::cerr << error_log_for_options_parsing.str() << "\n";
+		return 1;
+	}
+
+	if(voronotalt::is_stdin_from_terminal())
+	{
+		std::cerr << "Please provide input, use -h or --help flag to see documentation and examples.\n";
 		return 1;
 	}
 

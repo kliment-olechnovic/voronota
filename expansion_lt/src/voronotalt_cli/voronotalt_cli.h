@@ -6,5 +6,6 @@
 #include "printing_custom_types.h"
 #include "graphics_writer.h"
 #include "time_recorder_chrono.h"
+#include "terminal_utilities.h"
 
 #endif /* VORONOTALT_CLI_VORONOTALT_CLI_H_ */
