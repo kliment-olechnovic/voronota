@@ -76,6 +76,8 @@ public:
 
 		std::map< AAIdentifier, std::map<std::size_t, AAContactValue> > inter_atom_contacts_realizations;
 
+		bool solvent_encountered=false;
+
 		for(std::size_t i=0;i<objects.size();i++)
 		{
 			DataManager& data_manager=(*(objects[i]));
@@ -96,9 +98,22 @@ public:
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
 					const Contact& contact=data_manager.contacts()[*it];
-					if(!contact.solvent())
+					if(contact.solvent())
 					{
-						const AAIdentifier aaid(simplified_crad(data_manager.atoms()[contact.ids[0]].crad), simplified_crad(data_manager.atoms()[contact.ids[1]].crad));
+						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(1));
+						if(is_residue_standard(aaid.asc_a.crad.resName))
+						{
+							inter_atom_contacts_realizations[aaid][i].set(contact.value);
+							if(!solvent_encountered)
+							{
+								all_atom_availabilities[i].insert(aaid.asc_b);
+								solvent_encountered=true;
+							}
+						}
+					}
+					else
+					{
+						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
 						if(is_residue_standard(aaid.asc_a.crad.resName) && is_residue_standard(aaid.asc_b.crad.resName))
 						{
 							inter_atom_contacts_realizations[aaid][i].set(contact.value);
@@ -173,20 +188,31 @@ public:
 private:
 	struct AtomSequenceContext
 	{
+		int special_id;
 		common::ChainResidueAtomDescriptor crad;
 
-		AtomSequenceContext(const common::ChainResidueAtomDescriptor& crad) : crad(crad)
+		explicit AtomSequenceContext(const common::ChainResidueAtomDescriptor& crad) : special_id(0), crad(crad)
 		{
+		}
+
+		explicit AtomSequenceContext(const int special_id) : special_id(special_id)
+		{
+			if(special_id==1)
+			{
+				crad.resName="ZSR";
+				crad.name="ZSA";
+				crad.resSeq=1000000;
+			}
 		}
 
 		bool operator==(const AtomSequenceContext& v) const
 		{
-			return (crad==v.crad);
+			return (special_id==v.special_id && crad==v.crad);
 		}
 
 		bool operator<(const AtomSequenceContext& v) const
 		{
-			return (crad<v.crad);
+			return (special_id<v.special_id || (special_id==v.special_id && crad<v.crad));
 		}
 	};
 

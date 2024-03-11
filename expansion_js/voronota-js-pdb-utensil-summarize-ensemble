@@ -184,7 +184,7 @@ voronota_delete_objects_if("-objects-fewer-than", 2);
 
 voronota_pick_objects();
 
-voronota_construct_contacts_radically_fast("-probe", params.probe, "-no-intra-residue");
+voronota_construct_contacts_radically_fast("-probe", params.probe);
 voronota_assert_full_success("Failed to construct contacts");
 
 voronota_delete_objects_if("-not-enough-contacts-in-selection", "[-min-seq-sep 2 -no-solvent]");
@@ -192,12 +192,12 @@ voronota_delete_objects_if("-objects-fewer-than", 2);
 
 voronota_pick_objects();
 
-voronota_collect_inter_residue_contact_area_ranges("-stats-output-file", params.output_file);
+voronota_collect_inter_residue_contact_area_ranges("-stats-output-file", params.output_file, "-use", "[-min-seq-sep 1 -no-solvent]");
 voronota_assert_full_success("Failed to collect contact area ranges");
 
 if(params.atom_atom_output_file)
 {
-voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file);
+voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]");
 voronota_assert_full_success("Failed to collect atom-atom contact area ranges");
 }
 EOF
