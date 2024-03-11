@@ -1,8 +1,8 @@
 #ifndef SCRIPTING_OPERATORS_COLLECT_INTER_ATOM_CONTACTS_AREA_RANGES_H_
 #define SCRIPTING_OPERATORS_COLLECT_INTER_ATOM_CONTACTS_AREA_RANGES_H_
 
-
 #include "../operators_common.h"
+#include "../../common/contacts_scoring_utilities.h"
 
 namespace voronota
 {
@@ -86,7 +86,11 @@ public:
 			{
 				for(std::size_t j=0;j<data_manager.atoms().size();j++)
 				{
-					all_atom_availabilities[i].insert(AtomSequenceContext(simplified_crad(data_manager.atoms()[j].crad)));
+					const AtomSequenceContext asc(simplified_crad(data_manager.atoms()[j].crad));
+					if(is_residue_standard(asc.crad.resName))
+					{
+						all_atom_availabilities[i].insert(asc);
+					}
 				}
 
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
@@ -94,7 +98,11 @@ public:
 					const Contact& contact=data_manager.contacts()[*it];
 					if(!contact.solvent())
 					{
-						inter_atom_contacts_realizations[AAIdentifier(simplified_crad(data_manager.atoms()[contact.ids[0]].crad), simplified_crad(data_manager.atoms()[contact.ids[1]].crad))][i].set(contact.value);
+						const AAIdentifier aaid(simplified_crad(data_manager.atoms()[contact.ids[0]].crad), simplified_crad(data_manager.atoms()[contact.ids[1]].crad));
+						if(is_residue_standard(aaid.asc_a.crad.resName) && is_residue_standard(aaid.asc_b.crad.resName))
+						{
+							inter_atom_contacts_realizations[aaid][i].set(contact.value);
+						}
 					}
 				}
 			}
@@ -233,11 +241,37 @@ private:
 
 	static common::ChainResidueAtomDescriptor simplified_crad(const common::ChainResidueAtomDescriptor& crad)
 	{
+		const common::ChainResidueAtomDescriptor gen_crad=common::generalize_crad(crad);
 		common::ChainResidueAtomDescriptor s_crad;
 		s_crad.resSeq=crad.resSeq;
-		s_crad.resName=crad.resName;
-		s_crad.name=crad.name;
+		s_crad.resName=gen_crad.resName;
+		s_crad.name=gen_crad.name;
 		return s_crad;
+	}
+
+	static bool is_residue_standard(const std::string& residue_name)
+	{
+		if(residue_name=="ILE"){return true;}
+		else if(residue_name=="VAL"){return true;}
+		else if(residue_name=="LEU"){return true;}
+		else if(residue_name=="PHE"){return true;}
+		else if(residue_name=="CYS"){return true;}
+		else if(residue_name=="MET"){return true;}
+		else if(residue_name=="ALA"){return true;}
+		else if(residue_name=="GLY"){return true;}
+		else if(residue_name=="THR"){return true;}
+		else if(residue_name=="SER"){return true;}
+		else if(residue_name=="TRP"){return true;}
+		else if(residue_name=="TYR"){return true;}
+		else if(residue_name=="PRO"){return true;}
+		else if(residue_name=="HIS"){return true;}
+		else if(residue_name=="GLU"){return true;}
+		else if(residue_name=="GLN"){return true;}
+		else if(residue_name=="ASP"){return true;}
+		else if(residue_name=="ASN"){return true;}
+		else if(residue_name=="LYS"){return true;}
+		else if(residue_name=="ARG"){return true;}
+		return false;
 	}
 };
 
