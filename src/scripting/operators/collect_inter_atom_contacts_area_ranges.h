@@ -103,7 +103,7 @@ public:
 						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(1));
 						if(is_residue_standard(aaid.asc_a.crad.resName))
 						{
-							inter_atom_contacts_realizations[aaid][i].set(contact.value);
+							inter_atom_contacts_realizations[aaid][i].add(contact.value);
 							if(!solvent_encountered)
 							{
 								all_atom_availabilities[i].insert(aaid.asc_b);
@@ -116,7 +116,7 @@ public:
 						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
 						if(is_residue_standard(aaid.asc_a.crad.resName) && is_residue_standard(aaid.asc_b.crad.resName))
 						{
-							inter_atom_contacts_realizations[aaid][i].set(contact.value);
+							inter_atom_contacts_realizations[aaid][i].add(contact.value);
 						}
 					}
 				}
@@ -235,15 +235,17 @@ private:
 	{
 		double area;
 		double dist;
+		bool accumulated;
 
-		AAContactValue() : area(0.0), dist(0.0)
+		AAContactValue() : area(0.0), dist(0.0), accumulated(false)
 		{
 		}
 
-		void set(const common::ContactValue& v)
+		void add(const common::ContactValue& v)
 		{
-			area=v.area;
-			dist=v.dist;
+			area+=v.area;
+			dist=(!accumulated ? v.dist : std::min(dist, v.dist));
+			accumulated=true;
 		}
 	};
 
