@@ -9,7 +9,8 @@ cat >&2 << 'EOF'
 Options:
     --probe                   number     probe radius, default is 1.4
     --input-directory         string     path to directory to find input structures, default is ''
-    --output-file             string     path to file to output resuts, default is '_stdout'
+    --output-file             string     path to file to output results, default is '_stdout'
+    --atom-atom-output-file   string     path to file to output atom-atom results, default is ''
     --plot-file               string     path to file to output a plot of results, default is ''
     --help | -h                          flag to display help message and exit
 
@@ -46,6 +47,7 @@ command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executab
 PROBE="1.4"
 INDIR=""
 OUTFILE="_stdout"
+ATOM_ATOM_OUTFILE=""
 PLOTFILE=""
 HELP_MODE="false"
 
@@ -65,6 +67,10 @@ do
 		;;
 	--output-file)
 		OUTFILE="$OPTARG"
+		shift
+		;;
+	--atom-atom-output-file)
+		ATOM_ATOM_OUTFILE="$OPTARG"
 		shift
 		;;
 	--plot-file)
@@ -134,6 +140,17 @@ params.probe='$PROBE';
 params.output_file='$TMPLDIR/output.txt';
 EOF
 
+if [ -z "$ATOM_ATOM_OUTFILE" ]
+then
+cat << EOF
+params.atom_atom_output_file='';
+EOF
+else
+cat << EOF
+params.atom_atom_output_file='$TMPLDIR/atom_atom_output.txt';
+EOF
+fi
+
 cat << 'EOF'
 voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential");
 voronota_assert_full_success("Failed to setup defaults");
@@ -177,6 +194,12 @@ voronota_pick_objects();
 
 voronota_collect_inter_residue_contact_area_ranges("-stats-output-file", params.output_file);
 voronota_assert_full_success("Failed to collect contact area ranges");
+
+if(params.atom_atom_output_file)
+{
+voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file);
+voronota_assert_full_success("Failed to collect atom-atom contact area ranges");
+}
 EOF
 
 } \
@@ -194,6 +217,12 @@ then
 else
 	mkdir -p "$(dirname ${OUTFILE})"
 	cp "$TMPLDIR/output.txt" "$OUTFILE"
+fi
+
+if [ -n "$ATOM_ATOM_OUTFILE" ]
+then
+	mkdir -p "$(dirname ${ATOM_ATOM_OUTFILE})"
+	cp "$TMPLDIR/atom_atom_output.txt" "$ATOM_ATOM_OUTFILE"
 fi
 
 if [ -n "$PLOTFILE" ]

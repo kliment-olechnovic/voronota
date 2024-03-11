@@ -17,6 +17,7 @@
 #include "operators/center_atoms.h"
 #include "operators/check_distance_constraint.h"
 #include "operators/clash_score.h"
+#include "operators/collect_inter_atom_contacts_area_ranges.h"
 #include "operators/collect_inter_residue_contacts_area_ranges.h"
 #include "operators/color_atoms.h"
 #include "operators/color_contacts.h"
@@ -218,6 +219,7 @@ public:
 		set_command_for_congregation_of_data_managers("delete-objects", operators::DeleteObjects());
 		set_command_for_congregation_of_data_managers("delete-objects-if", operators::DeleteObjectsIf());
 		set_command_for_congregation_of_data_managers("rename-object", operators::RenameObject());
+		set_command_for_congregation_of_data_managers("collect-inter-atom-contact-area-ranges", operators::CollectInterAtomContactAreaRanges());
 		set_command_for_congregation_of_data_managers("collect-inter-residue-contact-area-ranges", operators::CollectInterResidueContactAreaRanges());
 		set_command_for_congregation_of_data_managers("copy-object", operators::CopyObject());
 		set_command_for_congregation_of_data_managers("import-docking-result", operators::ImportDockingResult());
