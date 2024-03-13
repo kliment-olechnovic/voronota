@@ -2,6 +2,7 @@
 #define SCRIPTING_OPERATORS_COLLECT_INTER_RESIDUE_CONTACTS_AREA_RANGES_H_
 
 #include "../operators_common.h"
+#include "../../common/contacts_scoring_utilities.h"
 
 namespace voronota
 {
@@ -86,6 +87,8 @@ public:
 
 		std::map< RRIdentifier, std::map<std::size_t, RRContactValue> > inter_residue_contacts_realizations;
 
+		bool solvent_encountered=false;
+
 		for(std::size_t i=0;i<objects.size();i++)
 		{
 			DataManager& data_manager=(*(objects[i]));
@@ -96,21 +99,13 @@ public:
 				std::set<ResidueSequenceContext>& residue_availability=all_residue_availabilities[i];
 				std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>& map_of_crad_to_residue_sequence_contexts=all_maps_of_crad_to_residue_sequence_contexts[i];
 
-				for(std::size_t j=1;(j+1)<data_manager.primary_structure_info().residues.size();j++)
+				for(std::size_t j=0;j<data_manager.primary_structure_info().residues.size();j++)
 				{
 					const common::ConstructionOfPrimaryStructure::Residue& residue=data_manager.primary_structure_info().residues[j];
 					if(residue.atom_ids.size()>=get_min_acceptable_number_of_heavy_atoms_in_residue(residue.chain_residue_descriptor.resName))
 					{
-						const common::ConstructionOfPrimaryStructure::Residue& residue_left=data_manager.primary_structure_info().residues[j-1];
-						const common::ConstructionOfPrimaryStructure::Residue& residue_right=data_manager.primary_structure_info().residues[j+1];
-						if(residue_left.atom_ids.size()>=get_min_acceptable_number_of_heavy_atoms_in_residue(residue_left.chain_residue_descriptor.resName) && residue_left.segment_id==residue.segment_id)
-						{
-							if(residue_right.atom_ids.size()>=get_min_acceptable_number_of_heavy_atoms_in_residue(residue_right.chain_residue_descriptor.resName) && residue_right.segment_id==residue.segment_id)
-							{
-								ResidueSequenceContext rsc(simplified_crad(residue.chain_residue_descriptor), simplified_crad(residue_left.chain_residue_descriptor), simplified_crad(residue_right.chain_residue_descriptor));
-								map_of_crad_to_residue_sequence_contexts.insert(std::make_pair(rsc.crad, rsc));
-							}
-						}
+						ResidueSequenceContext rsc(simplified_crad(residue.chain_residue_descriptor));
+						map_of_crad_to_residue_sequence_contexts.insert(std::make_pair(rsc.crad, rsc));
 					}
 				}
 
@@ -120,11 +115,16 @@ public:
 				}
 
 				std::map<common::ChainResidueAtomDescriptorsPair, RRContactValue> map_of_contacts;
+				std::map<common::ChainResidueAtomDescriptor, RRContactValue> map_of_sasa;
 
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
 					const Contact& contact=data_manager.contacts()[*it];
-					if(!contact.solvent())
+					if(contact.solvent())
+					{
+						map_of_sasa[simplified_crad(data_manager.atoms()[contact.ids[0]].crad)].add(contact.value);
+					}
+					else
 					{
 						map_of_contacts[common::ChainResidueAtomDescriptorsPair(simplified_crad(data_manager.atoms()[contact.ids[0]].crad), simplified_crad(data_manager.atoms()[contact.ids[1]].crad))].add(contact.value);
 					}
@@ -140,6 +140,21 @@ public:
 						if(jt_b!=map_of_crad_to_residue_sequence_contexts.end())
 						{
 							inter_residue_contacts_realizations[RRIdentifier(jt_a->second, jt_b->second)][i]=it->second;
+						}
+					}
+				}
+
+				for(std::map<common::ChainResidueAtomDescriptor, RRContactValue>::const_iterator it=map_of_sasa.begin();it!=map_of_sasa.end();++it)
+				{
+					const common::ChainResidueAtomDescriptor& crad_a=it->first;
+					std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_a=map_of_crad_to_residue_sequence_contexts.find(crad_a);
+					if(jt_a!=map_of_crad_to_residue_sequence_contexts.end())
+					{
+						inter_residue_contacts_realizations[RRIdentifier(jt_a->second, ResidueSequenceContext(1))][i]=it->second;
+						if(!solvent_encountered)
+						{
+							residue_availability.insert(ResidueSequenceContext(1));
+							solvent_encountered=true;
 						}
 					}
 				}
@@ -214,7 +229,15 @@ public:
 
 						const Contact& contact=data_manager.contacts()[*it];
 						std::map<RRIdentifier, RRContactValueStatistics>::const_iterator jt=inter_residue_contacts_statistics.end();
-						if(!contact.solvent())
+						if(contact.solvent())
+						{
+							std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_a=map_of_crad_to_residue_sequence_contexts.find(simplified_crad(data_manager.atoms()[contact.ids[0]].crad));
+							if(jt_a!=map_of_crad_to_residue_sequence_contexts.end())
+							{
+								jt=inter_residue_contacts_statistics.find(RRIdentifier(jt_a->second, ResidueSequenceContext(1)));
+							}
+						}
+						else
 						{
 							std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_a=map_of_crad_to_residue_sequence_contexts.find(simplified_crad(data_manager.atoms()[contact.ids[0]].crad));
 							if(jt_a!=map_of_crad_to_residue_sequence_contexts.end())
@@ -263,8 +286,6 @@ public:
 				const RRContactValueStatistics& stat=it->second;
 				const int seq_sep=std::abs(rrid.rsc_a.crad.resSeq-rrid.rsc_b.crad.resSeq);
 				output << rrid.rsc_a.crad.resName << " " << rrid.rsc_b.crad.resName << " ";
-				output << rrid.rsc_a.crad_left.resName << " " << rrid.rsc_a.crad_right.resName << " ";
-				output << rrid.rsc_b.crad_left.resName << " " << rrid.rsc_b.crad_right.resName << " ";
 				output << seq_sep << " ";
 				output << stat.min_area << " " << stat.max_area << " ";
 				output << rrid.rsc_a.crad.resSeq << " " << rrid.rsc_b.crad.resSeq << "\n";
@@ -280,28 +301,31 @@ public:
 private:
 	struct ResidueSequenceContext
 	{
+		int special_id;
 		common::ChainResidueAtomDescriptor crad;
-		common::ChainResidueAtomDescriptor crad_left;
-		common::ChainResidueAtomDescriptor crad_right;
 
-		ResidueSequenceContext(
-				const common::ChainResidueAtomDescriptor& crad,
-				const common::ChainResidueAtomDescriptor& crad_left,
-				const common::ChainResidueAtomDescriptor& crad_right) :
-					crad(crad),
-					crad_left(crad_left),
-					crad_right(crad_right)
+		explicit ResidueSequenceContext(const common::ChainResidueAtomDescriptor& crad) : special_id(0), crad(crad)
 		{
+		}
+
+		explicit ResidueSequenceContext(const int special_id) : special_id(special_id)
+		{
+			if(special_id==1)
+			{
+				crad.resName="ZSR";
+				crad.name="ZSA";
+				crad.resSeq=1000000;
+			}
 		}
 
 		bool operator==(const ResidueSequenceContext& v) const
 		{
-			return (crad==v.crad && crad_left==v.crad_left && crad_right==v.crad_right);
+			return (special_id==v.special_id && crad==v.crad);
 		}
 
 		bool operator<(const ResidueSequenceContext& v) const
 		{
-			return ((crad<v.crad) || (crad==v.crad && crad_left<v.crad_left) || (crad==v.crad && crad_left==v.crad_left && crad_right<v.crad_right));
+			return (special_id<v.special_id || (special_id==v.special_id && crad<v.crad));
 		}
 	};
 
@@ -358,9 +382,10 @@ private:
 
 	static common::ChainResidueAtomDescriptor simplified_crad(const common::ChainResidueAtomDescriptor& crad)
 	{
+		const common::ChainResidueAtomDescriptor gen_crad=common::generalize_crad(crad);
 		common::ChainResidueAtomDescriptor s_crad;
 		s_crad.resSeq=crad.resSeq;
-		s_crad.resName=crad.resName;
+		s_crad.resName=gen_crad.resName;
 		return s_crad;
 	}
 

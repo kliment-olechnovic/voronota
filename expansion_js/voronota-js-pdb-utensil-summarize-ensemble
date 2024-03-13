@@ -192,7 +192,7 @@ voronota_delete_objects_if("-objects-fewer-than", 2);
 
 voronota_pick_objects();
 
-voronota_collect_inter_residue_contact_area_ranges("-stats-output-file", params.output_file, "-use", "[-min-seq-sep 1 -no-solvent]");
+voronota_collect_inter_residue_contact_area_ranges("-stats-output-file", params.output_file, "-use", "[-min-seq-sep 1]");
 voronota_assert_full_success("Failed to collect contact area ranges");
 
 if(params.atom_atom_output_file)
@@ -235,12 +235,14 @@ R --slave --vanilla --args "$TMPLDIR/output.txt" "$PLOTFILE" "$(cat ${TMPLDIR}/i
 	title=args[3];
 	
 	dt=read.table(infile, header=FALSE, stringsAsFactors=FALSE);
+	dt=dt[which(dt[,2]!="ZSR"),];
+	
 	N=nrow(dt);
-	x=dt[,10];
-	y=dt[,11];
+	x=dt[,6];
+	y=dt[,7];
 	M=max(c(x, y));
-	v_min=dt[,8];
-	v_max=dt[,9];
+	v_min=dt[,4];
+	v_max=dt[,5];
 	
 	max_col_comp=30;
 	r=pmin(v_max/max_col_comp, rep(1, N));
