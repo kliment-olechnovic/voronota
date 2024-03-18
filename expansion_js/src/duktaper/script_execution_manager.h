@@ -27,6 +27,7 @@
 #include "operators/run_bff.h"
 #include "operators/run_hbplus.h"
 #include "operators/run_nolb.h"
+#include "operators/run_pulchra.h"
 #include "operators/set_adjuncts_of_atoms_by_pca.h"
 #include "operators/setup_defaults.h"
 #include "operators/summarize_two_state_motion.h"
@@ -61,6 +62,7 @@ public:
 		set_command_for_data_manager("plot-contacts-map", operators::PlotContactsMap(), true);
 		set_command_for_data_manager("run-bff", operators::RunBFF(), true);
 		set_command_for_data_manager("run-hbplus", operators::RunHBPlus(), true);
+		set_command_for_data_manager("run-pulchra", operators::RunPULCHRA(), true);
 		set_command_for_data_manager("set-adjuncts-of-atoms-by-pca", operators::SetAdjunctsOfAtomsByPCA(), true);
 		set_command_for_data_manager("voromqa-dark-global", operators::VoroMQADarkGlobal(), true);
 		set_command_for_data_manager("voromqa-dark-local", operators::VoroMQADarkLocal(), true);
