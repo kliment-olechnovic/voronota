@@ -45,6 +45,7 @@ export LC_ALL=C
 command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
 
 PROBE="1.4"
+MINRESCOUNT="60"
 INDIR=""
 OUTFILE="_stdout"
 ATOM_ATOM_OUTFILE=""
@@ -59,6 +60,10 @@ do
 	case $OPTION in
 	--probe)
 		PROBE="$OPTARG"
+		shift
+		;;
+	--min-res-count)
+		MINRESCOUNT="$OPTARG"
 		shift
 		;;
 	--input-directory)
@@ -136,6 +141,7 @@ fi
 {
 cat << EOF
 var params={}
+params.min_residue_count='$MINRESCOUNT';
 params.probe='$PROBE';
 params.output_file='$TMPLDIR/output.txt';
 EOF
@@ -179,7 +185,7 @@ done
 cat << 'EOF'
 voronota_pick_objects();
 
-voronota_delete_objects_if("-residues-fewer-than", 60, "-atoms-to-residues-ratio-less-than", 6.0);
+voronota_delete_objects_if("-residues-fewer-than", params.min_residue_count, "-atoms-to-residues-ratio-less-than", 6.0);
 voronota_delete_objects_if("-objects-fewer-than", 2);
 
 voronota_pick_objects();
