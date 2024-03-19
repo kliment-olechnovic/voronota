@@ -234,10 +234,10 @@ fi
 if [ -n "$PLOTFILE" ]
 then
 	mkdir -p "$(dirname ${PLOTFILE})"
-R --slave --vanilla --args "$TMPLDIR/output.txt" "$PLOTFILE" "$(cat ${TMPLDIR}/input.txt | sort | head -1 | xargs basename)" << 'EOF' > /dev/null
+R --slave --vanilla --args "$TMPLDIR/output.txt" "$(dirname ${PLOTFILE})/$(basename ${PLOTFILE} .png)" "$(cat ${TMPLDIR}/input.txt | sort | head -1 | xargs basename)" << 'EOF' > /dev/null
 	args=commandArgs(TRUE);
 	infile=args[1];
-	outfile=args[2];
+	outfilebase=args[2];
 	title=args[3];
 	
 	dt=read.table(infile, header=FALSE, stringsAsFactors=FALSE);
@@ -246,23 +246,26 @@ R --slave --vanilla --args "$TMPLDIR/output.txt" "$PLOTFILE" "$(cat ${TMPLDIR}/i
 	N=nrow(dt);
 	x=dt[,6];
 	y=dt[,7];
+	m=ifelse(min(c(x, y))<1, 0, 1);
 	M=max(c(x, y));
 	v_min=dt[,4];
 	v_max=dt[,5];
+	v_mean=dt[,9];
+	v_sd=dt[,10];
 	
 	max_col_comp=30;
+	
 	r=pmin(v_max/max_col_comp, rep(1, N));
 	g=pmin(v_min/max_col_comp, rep(1, N));
-	d=(sqrt(v_max)-sqrt(v_min));
-	d=d/max(d);
+	b=pmin((v_mean+4*v_sd)/max_col_comp, rep(1, N));
 	
-	png(filename=outfile, width=5, height=5.5, units="in", res=500);
-	plot(1:M, 1:M, xlim=c(0.5, M+0.5), ylim=c(0.5, M+0.5), type='n', xlab='rgb(sqrt(max_area)-sqrt(min_area), 0, 0)', ylab='rgb(max_area, min_area, 0)', asp=1, main=paste0(title, " ..."))
-	rect(0.5, 0.5, M+0.5, M+0.5, col="black", border=NA);
+	png(filename=paste0(outfilebase, ".png"), width=5, height=5.5, units="in", res=500);
+	plot(m:M, m:M, xlim=c(m-0.5, M+0.5), ylim=c(m-0.5, M+0.5), type='n', xlab="", ylab="", asp=1, main=paste0(title, " ..."))
+	rect(m-0.5, m-0.5, M+0.5, M+0.5, col="black", border=NA);
 	for(i in 1:N)
 	{
 		rect(x[i]-0.5, y[i]-0.5, x[i]+0.5, y[i]+0.5, col=rgb(r[i], g[i], 0), border=NA);
-		rect(y[i]-0.5, x[i]-0.5, y[i]+0.5, x[i]+0.5, col=rgb(d[i], d[i], d[i]), border=NA);
+		rect(y[i]-0.5, x[i]-0.5, y[i]+0.5, x[i]+0.5, col=rgb(r[i], 0, b[i]), border=NA);
 	}
 	dev.off();
 EOF

@@ -171,11 +171,15 @@ public:
 			{
 				const AAIdentifier& aaid=it->first;
 				const AAContactValueStatistics& stat=it->second;
-				const int seq_sep=std::abs(aaid.asc_a.crad.resSeq-aaid.asc_b.crad.resSeq);
-				output << aaid.asc_a.crad.resName << " " << aaid.asc_a.crad.name << " ";
-				output << aaid.asc_b.crad.resName << " " << aaid.asc_b.crad.name << " ";
-				output << seq_sep << " ";
-				output << stat.min_area << " " << stat.max_area << "\n";
+				if(stat.count>1)
+				{
+					const int seq_sep=std::abs(aaid.asc_a.crad.resSeq-aaid.asc_b.crad.resSeq);
+					output << aaid.asc_a.crad.resName << " " << aaid.asc_a.crad.name << " ";
+					output << aaid.asc_b.crad.resName << " " << aaid.asc_b.crad.name << " ";
+					output << seq_sep << " ";
+					output << stat.min_area << " " << stat.max_area << " ";
+					output << stat.count << " " << stat.mean_area << " " << stat.sample_standard_deviation_of_area() << "\n";
+				}
 			}
 		}
 
@@ -253,9 +257,11 @@ private:
 	{
 		double min_area;
 		double max_area;
+		double mean_area;
+		double aggregate_for_variance_of_area;
 		int count;
 
-		AAContactValueStatistics() : min_area(0.0), max_area(0.0), count(0)
+		AAContactValueStatistics() : min_area(0.0), max_area(0.0), mean_area(0.0), aggregate_for_variance_of_area(0.0), count(0)
 		{
 		}
 
@@ -264,6 +270,27 @@ private:
 			min_area=(count>0 ? std::min(min_area, v.area) : v.area);
 			max_area=(count>0 ? std::max(max_area, v.area) : v.area);
 			count++;
+			if(count==1)
+			{
+				mean_area=v.area;
+				aggregate_for_variance_of_area=0.0;
+			}
+			else
+			{
+				const double old_mean_area=mean_area;
+				mean_area+=(v.area-mean_area)/static_cast<double>(count);
+				aggregate_for_variance_of_area+=(v.area-mean_area)*(v.area-old_mean_area);
+			}
+		}
+
+		inline double sample_variance_of_area() const
+		{
+			return (count>1 ? (aggregate_for_variance_of_area/static_cast<double>(count-1)) : 0.0);
+		}
+
+		inline double sample_standard_deviation_of_area() const
+		{
+			return std::sqrt(sample_variance_of_area());
 		}
 	};
 
