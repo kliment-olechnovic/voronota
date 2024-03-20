@@ -22,6 +22,7 @@
 #include "operators/import_url.h"
 #include "operators/nnport_predict.h"
 #include "operators/plot_contacts_map.h"
+#include "operators/pulchra.h"
 #include "operators/qcprot_many.h"
 #include "operators/qcprot.h"
 #include "operators/run_bff.h"
@@ -60,6 +61,7 @@ public:
 		set_command_for_data_manager("export-atoms-to-mmcif", operators::ExportAtomsToMMCIF(), false);
 		set_command_for_data_manager("faspr", operators::FASPR(), true);
 		set_command_for_data_manager("plot-contacts-map", operators::PlotContactsMap(), true);
+		set_command_for_data_manager("pulchra", operators::PULCHRA(), true);
 		set_command_for_data_manager("run-bff", operators::RunBFF(), true);
 		set_command_for_data_manager("run-hbplus", operators::RunHBPlus(), true);
 		set_command_for_data_manager("run-pulchra", operators::RunPULCHRA(), true);
