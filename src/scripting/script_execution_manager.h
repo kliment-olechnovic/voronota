@@ -136,6 +136,7 @@
 #include "operators/set_chain_residue_numbers_by_sequence.h"
 #include "operators/set_global_adjunct_by_pooling.h"
 #include "operators/set_global_adjunct.h"
+#include "operators/set_residue_numbers_sequentially.h"
 #include "operators/set_tag_of_atoms_by_secondary_structure.h"
 #include "operators/set_tag_of_atoms.h"
 #include "operators/set_tag_of_contacts.h"
@@ -345,6 +346,7 @@ public:
 		set_command_for_data_manager("set-chain-residue-numbers-by-sequence", operators::SetChainResidueNumbersBySequences(), true);
 		set_command_for_data_manager("set-global-adjunct-by-pooling", operators::SetGlobalAdjunctByPooling(), true);
 		set_command_for_data_manager("set-global-adjunct", operators::SetGlobalAdjunct(), true);
+		set_command_for_data_manager("set-residue-numbers-sequentially", operators::SetResidueNumbersSequentially(), true);
 		set_command_for_data_manager("set-tag-of-atoms-by-secondary-structure", operators::SetTagOfAtomsBySecondaryStructure(), true);
 		set_command_for_data_manager("set-tag-of-atoms", operators::SetTagOfAtoms(), true);
 		set_command_for_data_manager("set-tag-of-contacts", operators::SetTagOfContacts(), true);
