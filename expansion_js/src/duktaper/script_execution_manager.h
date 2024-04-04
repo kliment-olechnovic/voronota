@@ -31,7 +31,6 @@
 #include "operators/run_pulchra.h"
 #include "operators/set_adjuncts_of_atoms_by_pca.h"
 #include "operators/setup_defaults.h"
-#include "operators/setup_defaults_requested.h"
 #include "operators/summarize_two_state_motion.h"
 #include "operators/tmalign_many.h"
 #include "operators/tmalign.h"
@@ -55,7 +54,6 @@ public:
 		set_command_for_extra_actions("convert-bff-obj-to-svg", operators::ConvertBFFObjToSVG());
 		set_command_for_extra_actions("nnport-predict", operators::NNPortPredict());
 		set_command_for_extra_actions("setup-defaults", operators::SetupDefaults());
-		set_command_for_extra_actions("setup-defaults-requested", operators::SetupDefaultsRequested());
 
 		set_command_for_data_manager("construct-contacts-radically-fast", operators::ConstructContactsRadicallyFast(), true);
 		set_command_for_data_manager("construct-or-load-contacts", operators::ConstructOrLoadContacts(), true);

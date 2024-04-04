@@ -7,6 +7,7 @@ cat >&2 << 'EOF'
 'voronota-js-fast-iface-akbps' script rapidly computes area KBPs-based interface energy of protein complexes.
 
 Options:
+    --akbps-lib                 string  *  input area KBPs library file path
     --input | -i                string  *  input file path or '_list' to read file paths from stdin
     --restrict-input            string     query to restrict input atoms, default is '[]'
     --subselect-contacts        string     query to subselect inter-chain contacts, default is '[]''
@@ -23,9 +24,9 @@ Standard output:
     
 Examples:
 
-    voronota-js-fast-iface-akbps --input model.pdb
+    voronota-js-fast-iface-akbps --akbps-lib ./akbps --input ./model.pdb
     
-    ls *.pdb | voronota-js-fast-iface-akbps --input _list --processors 8 | column -t
+    ls *.pdb | voronota-js-fast-iface-akbps --akbps-lib ./akbps --input _list --processors 8 | column -t
 
 EOF
 exit 1
@@ -85,6 +86,7 @@ export LC_ALL=C
 
 command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
 
+AKBPSLIB=""
 INFILE=""
 RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
@@ -102,6 +104,10 @@ do
 	OPTARG="$2"
 	shift
 	case $OPTION in
+	--akbps-lib)
+		AKBPSLIB="$OPTARG"
+		shift
+		;;
 	-i|--input)
 		INFILE="$OPTARG"
 		shift
@@ -149,6 +155,18 @@ done
 if [ "$HELP_MODE" == "true" ]
 then
 	print_help_and_exit
+fi
+
+if [ -z "$AKBPSLIB" ]
+then
+	echo >&2 "Error: input area KBPs file not provided"
+	exit 1
+fi
+
+if [ ! -s "$AKBPSLIB" ]
+then
+	echo >&2 "Error: input area KBPs file '$AKBPSLIB' does not exist"
+	exit 1
 fi
 
 if [ -z "$INFILE" ]
@@ -253,7 +271,7 @@ then
 	| sort \
 	| xargs -L 1 cat \
 	| awk '{if(NR==1 || $1!="input_name") print $0}' \
-	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_score_kbp1_pdb_aa -multipliers -1 -tolerances 0.0');" \
+	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_scored_area -multipliers 1 -tolerances 0.0');" \
 	> "$TMPLDIR/full_output_table"
 	
 	if [ -n "$OUTPUT_TABLE_FILE" ] && [ "$OUTPUT_TABLE_FILE" != "_stdout" ]
@@ -273,6 +291,7 @@ OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE_BASENAME" "$OUTPUT_TABLE
 {
 cat << EOF
 var common_params={}
+common_params.akbps_lib='$AKBPSLIB';
 common_params.input_is_script='$INPUT_IS_SCRIPT';
 common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
@@ -384,15 +403,24 @@ summary.iface_area=result_akpbs.contacts_summary.area;
 
 summary.iface_scored_area=result_akpbs.scoring_summary.known_area;
 
-summary.iface_score_kbp1_pdb_aa=result_akpbs.scoring_summary.score_kbp1_pdb_aa;
-summary.iface_score_kbp2_pdb_aa=result_akpbs.scoring_summary.score_kbp2_pdb_aa;
-summary.iface_score_kbp1_pdb_rr=result_akpbs.scoring_summary.score_kbp1_pdb_rr;
-summary.iface_score_kbp2_pdb_rr=result_akpbs.scoring_summary.score_kbp2_pdb_rr;
-summary.iface_score_kbp2_pdb_rrfaa=result_akpbs.scoring_summary.score_kbp2_pdb_rrfaa;
-summary.iface_score_kbp1_idp_rr=result_akpbs.scoring_summary.score_kbp1_idp_rr;
-summary.iface_score_kbp2_idp_rr=result_akpbs.scoring_summary.score_kbp2_idp_rr;
-summary.iface_score_kbp1_revoromqa_aa=result_akpbs.scoring_summary.score_kbp1_revoromqa_aa;
-summary.iface_score_kbp1_revoromqa_rrfaa=result_akpbs.scoring_summary.score_kbp1_revoromqa_rrfaa;
+summary.iface_score_kbp1_obs_pdb_aa=result_akpbs.scoring_summary.score_kbp1_obs_pdb_aa;
+summary.iface_score_kbp1_exp_pdb_aa=result_akpbs.scoring_summary.score_kbp1_exp_pdb_aa;
+summary.iface_score_kbp2_obs_pdb_aa=result_akpbs.scoring_summary.score_kbp2_obs_pdb_aa;
+summary.iface_score_kbp2_exp_pdb_aa=result_akpbs.scoring_summary.score_kbp2_exp_pdb_aa;
+summary.iface_score_kbp1_obs_pdb_rr=result_akpbs.scoring_summary.score_kbp1_obs_pdb_rr;
+summary.iface_score_kbp1_exp_pdb_rr=result_akpbs.scoring_summary.score_kbp1_exp_pdb_rr;
+summary.iface_score_kbp2_obs_pdb_rr=result_akpbs.scoring_summary.score_kbp2_obs_pdb_rr;
+summary.iface_score_kbp2_exp_pdb_rr=result_akpbs.scoring_summary.score_kbp2_exp_pdb_rr;
+summary.iface_score_kbp2_obs_pdb_rrfaa=result_akpbs.scoring_summary.score_kbp2_obs_pdb_rrfaa;
+summary.iface_score_kbp2_exp_pdb_rrfaa=result_akpbs.scoring_summary.score_kbp2_exp_pdb_rrfaa;
+summary.iface_score_kbp1_obs_idp_rr=result_akpbs.scoring_summary.score_kbp1_obs_idp_rr;
+summary.iface_score_kbp1_exp_idp_rr=result_akpbs.scoring_summary.score_kbp1_exp_idp_rr;
+summary.iface_score_kbp2_obs_idp_rr=result_akpbs.scoring_summary.score_kbp2_obs_idp_rr;
+summary.iface_score_kbp2_exp_idp_rr=result_akpbs.scoring_summary.score_kbp2_exp_idp_rr;
+summary.iface_score_kbp1_obs_revoromqa_aa=result_akpbs.scoring_summary.score_kbp1_obs_revoromqa_aa;
+summary.iface_score_kbp1_exp_revoromqa_aa=result_akpbs.scoring_summary.score_kbp1_exp_revoromqa_aa;
+summary.iface_score_kbp1_obs_revoromqa_rrfaa=result_akpbs.scoring_summary.score_kbp1_obs_revoromqa_rrfaa;
+summary.iface_score_kbp1_exp_revoromqa_rrfaa=result_akpbs.scoring_summary.score_kbp1_exp_revoromqa_rrfaa;
 summary.iface_score_kbp1_voromqa_caa=result_akpbs.scoring_summary.score_kbp1_voromqa_caa;
 summary.iface_score_kbp1_voromqa_ncaa=result_akpbs.scoring_summary.score_kbp1_voromqa_ncaa;
 
@@ -427,7 +455,9 @@ return summary_table;
 }
 
 voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-alt-voromqa-potential", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential");
-voronota_setup_defaults_requested("-load-akbps");
+
+voronota_setup_akbps("-potentials", common_params.akbps_lib);
+voronota_assert_full_success("Failed to setup area KBPs");
 
 var full_summary_table="";
 
@@ -456,7 +486,7 @@ if(common_params.output_table_file!=="_stdout")
 	shell('mkdir -p "$(dirname '+common_params.output_table_file+')"');
 }
 
-voronota_tournament_sort('-input-file', '_virtual/summary', '-output-file', common_params.output_table_file, '-columns', 'iface_score_kbp1_pdb_aa', '-multipliers', -1, '-tolerances', 0.0);
+voronota_tournament_sort('-input-file', '_virtual/summary', '-output-file', common_params.output_table_file, '-columns', 'iface_scored_area', '-multipliers', 1, '-tolerances', 0.0);
 voronota_assert_full_success("Failed to output sorted scores table");
 
 EOF
