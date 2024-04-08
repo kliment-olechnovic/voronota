@@ -29,6 +29,7 @@ public:
 			for(std::size_t i=0;i<scoring_result.score_names.size() && i<scoring_result.score_values.size();i++)
 			{
 				info.value(std::string("score_")+scoring_result.score_names[i])=scoring_result.score_values[i];
+				info.value(std::string("score_")+scoring_result.score_names[i]+"_solvated")=scoring_result.score_values_solvated[i];
 			}
 		}
 	};

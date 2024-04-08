@@ -44,19 +44,20 @@ public:
 			{
 				InputSelector kbps_file_input_selector(kbps_file);
 				std::istream& finput=kbps_file_input_selector.stream();
-				if(finput.good())
+				if(!finput.good())
 				{
-					if(!read_kbps_names_and_coeffs(finput, raw_kbp_names, raw_kbp_coeffs))
-					{
-						return false;
-					}
+					return false;
+				}
+				if(!read_kbps_names_and_coeffs(finput, raw_kbp_names, raw_kbp_coeffs))
+				{
+					return false;
 				}
 			}
 
 			get_default_configuration_mutable().kbp_names.swap(raw_kbp_names);
 			get_default_configuration_mutable().kbp_coeffs.swap(raw_kbp_coeffs);
 
-			return true;
+			return get_default_configuration().valid();
 		}
 
 	private:
@@ -82,6 +83,7 @@ public:
 	{
 		std::vector<std::string> score_names;
 		std::vector<double> score_values;
+		std::vector<double> score_values_solvated;
 		double known_area;
 		double unknown_area;
 		SummaryOfContacts contacts_summary;
@@ -127,13 +129,18 @@ public:
 
 		result.score_names=configuration.kbp_names;
 		result.score_values.resize(configuration.kbp_names.size());
+		result.score_values_solvated.resize(configuration.kbp_names.size());
 
 		for(std::set<std::size_t>::const_iterator it=all_contact_ids.begin();it!=all_contact_ids.end();++it)
 		{
 			const Contact& contact=data_manager.contacts()[*it];
 			const common::ChainResidueAtomDescriptorsPair crads=common::generalize_crads_pair(common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact));
+			const common::ChainResidueAtomDescriptorsPair crads_solv1=common::generalize_crads_pair(common::ChainResidueAtomDescriptorsPair(data_manager.atoms()[contact.ids[0]].crad, common::ChainResidueAtomDescriptor::solvent()));
+			const common::ChainResidueAtomDescriptorsPair crads_solv2=common::generalize_crads_pair(common::ChainResidueAtomDescriptorsPair(data_manager.atoms()[contact.ids[1]].crad, common::ChainResidueAtomDescriptor::solvent()));
 			std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> >::const_iterator kbp_it=configuration.kbp_coeffs.find(crads);
-			if(kbp_it==configuration.kbp_coeffs.end())
+			std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> >::const_iterator kbp_solv1_it=configuration.kbp_coeffs.find(crads_solv1);
+			std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> >::const_iterator kbp_solv2_it=configuration.kbp_coeffs.find(crads_solv2);
+			if(kbp_it==configuration.kbp_coeffs.end() || kbp_solv1_it==configuration.kbp_coeffs.end() || kbp_solv2_it==configuration.kbp_coeffs.end())
 			{
 				result.unknown_area+=contact.value.area;
 			}
@@ -143,6 +150,7 @@ public:
 				for(std::size_t i=0;i<configuration.kbp_names.size();i++)
 				{
 					result.score_values[i]+=kbp_it->second[i]*contact.value.area;
+					result.score_values_solvated[i]+=(kbp_solv1_it->second[i]+kbp_solv2_it->second[i])*contact.value.area;
 				}
 				if(!params.adjunct_prefix.empty())
 				{
@@ -151,6 +159,8 @@ public:
 					{
 						map_of_contact_adjuncts[params.adjunct_prefix+"_"+configuration.kbp_names[i]]=kbp_it->second[i]*contact.value.area;
 						map_of_contact_adjuncts[params.adjunct_prefix+"_"+configuration.kbp_names[i]+"_coeff"]=kbp_it->second[i];
+						map_of_contact_adjuncts[params.adjunct_prefix+"_"+configuration.kbp_names[i]+"_solvated"]=(kbp_solv1_it->second[i]+kbp_solv2_it->second[i])*contact.value.area;
+						map_of_contact_adjuncts[params.adjunct_prefix+"_"+configuration.kbp_names[i]+"_solvated_coeff"]=(kbp_solv1_it->second[i]+kbp_solv2_it->second[i]);
 					}
 				}
 			}
@@ -162,6 +172,8 @@ public:
 			{
 				data_manager.global_numeric_adjuncts_mutable()[params.global_adjunct_prefix+"_"+result.score_names[i]]=result.score_values[i];
 				data_manager.global_numeric_adjuncts_mutable()[params.global_adjunct_prefix+"_"+result.score_names[i]+"_mean"]=result.score_values[i]/result.known_area;
+				data_manager.global_numeric_adjuncts_mutable()[params.global_adjunct_prefix+"_"+result.score_names[i]+"_solvated"]=result.score_values_solvated[i];
+				data_manager.global_numeric_adjuncts_mutable()[params.global_adjunct_prefix+"_"+result.score_names[i]+"_solvated_mean"]=result.score_values_solvated[i]/result.known_area;
 			}
 		}
 	}
