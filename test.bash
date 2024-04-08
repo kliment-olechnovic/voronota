@@ -2,6 +2,13 @@
 
 cd $(dirname "$0")
 
+if [ "$1" == "clean" ]
+then
+	rm -f ./voronota
+	rm -f ./expansion_js/voronota-js
+	rm -f ./expansion_lt/voronota-lt
+fi
+
 export PATH="/usr/lib64/openmpi/bin:${PATH}"
 export LD_LIBRARY_PATH="/usr/lib64/openmpi/lib:${LD_LIBRARY_PATH}"
 

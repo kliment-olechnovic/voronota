@@ -953,6 +953,9 @@
             "name":"cad-score-many",
             "short_description":""},
           {
+            "name":"calculate-akbps",
+            "short_description":""},
+          {
             "name":"calculate-betweenness",
             "short_description":""},
           {
@@ -969,6 +972,9 @@
             "short_description":""},
           {
             "name":"clash-score",
+            "short_description":""},
+          {
+            "name":"collect-inter-atom-contact-area-ranges",
             "short_description":""},
           {
             "name":"collect-inter-residue-contact-area-ranges",
@@ -1316,6 +1322,9 @@
             "name":"set-alias",
             "short_description":""},
           {
+            "name":"set-atom-names",
+            "short_description":""},
+          {
             "name":"set-atom-serials",
             "short_description":""},
           {
@@ -1337,6 +1346,9 @@
             "name":"set-global-adjunct-by-pooling",
             "short_description":""},
           {
+            "name":"set-residue-numbers-sequentially",
+            "short_description":""},
+          {
             "name":"set-tag-of-atoms",
             "short_description":""},
           {
@@ -1344,6 +1356,9 @@
             "short_description":""},
           {
             "name":"set-tag-of-contacts",
+            "short_description":""},
+          {
+            "name":"setup-akbps",
             "short_description":""},
           {
             "name":"setup-chemistry-annotating",
