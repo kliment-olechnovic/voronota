@@ -9,7 +9,7 @@ Below is a detailed example:
 ```cpp
     #include <stdexcept> // this example uses exceptions, but the Voronota-LT code does not
     
-    include "voronotalt.h" // assuming that the "voronotalt" directory is in the include path
+    #include "voronotalt.h" // assuming that the "voronotalt" directory is in the include path
     
     //user-defined structure for a ball
     struct Ball
