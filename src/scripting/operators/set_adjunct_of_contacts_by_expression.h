@@ -117,6 +117,39 @@ public:
 				throw std::runtime_error(std::string("Not 2 parameters for the defined expression."));
 			}
 		}
+		else if(expression=="_min")
+		{
+			if(input_adjuncts.size()<2)
+			{
+				throw std::runtime_error(std::string("Not 2 or more input adjunct names for the defined expression."));
+			}
+			if(parameters.size()!=0)
+			{
+				throw std::runtime_error(std::string("Not 0 parameters for the defined expression."));
+			}
+		}
+		else if(expression=="_max")
+		{
+			if(input_adjuncts.size()<2)
+			{
+				throw std::runtime_error(std::string("Not 2 or more input adjunct names for the defined expression."));
+			}
+			if(parameters.size()!=0)
+			{
+				throw std::runtime_error(std::string("Not 0 parameters for the defined expression."));
+			}
+		}
+		else if(expression=="_to_goodness")
+		{
+			if(input_adjuncts.size()!=2)
+			{
+				throw std::runtime_error(std::string("Not 2 input adjunct names for the defined expression."));
+			}
+			if(parameters.size()!=2)
+			{
+				throw std::runtime_error(std::string("Not 2 parameters for the defined expression."));
+			}
+		}
 		else
 		{
 			throw std::runtime_error(std::string("Unsupported expression."));
@@ -162,13 +195,7 @@ public:
 						input_adjunct_values[i]=contact_adjuncts[input_adjuncts[i]];
 					}
 				}
-				if(expression=="_reverse_s")
-				{
-					contact_adjuncts[output_adjunct]=OperatorsUtilities::calculate_reverse_s_transform(
-							input_adjunct_values[0],
-							parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
-				}
-				else if(expression=="_logistic")
+				if(expression=="_logistic")
 				{
 					contact_adjuncts[output_adjunct]=OperatorsUtilities::calculate_logistic_transform(
 							input_adjunct_values[0],
@@ -199,6 +226,30 @@ public:
 				else if(expression=="_bound")
 				{
 					contact_adjuncts[output_adjunct]=std::max(parameters[0], std::min(input_adjunct_values[0], parameters[1]));
+				}
+				else if(expression=="_min")
+				{
+					double v=input_adjunct_values[0];
+					for(std::size_t i=1;i<input_adjunct_values.size();i++)
+					{
+						v=std::min(v, input_adjunct_values[i]);
+					}
+					contact_adjuncts[output_adjunct]=v;
+				}
+				else if(expression=="_max")
+				{
+					double v=input_adjunct_values[0];
+					for(std::size_t i=1;i<input_adjunct_values.size();i++)
+					{
+						v=std::max(v, input_adjunct_values[i]);
+					}
+					contact_adjuncts[output_adjunct]=v;
+				}
+				else if(expression=="_to_goodness")
+				{
+					contact_adjuncts[output_adjunct]=OperatorsUtilities::calculate_to_goodness_transform(
+							input_adjunct_values[0], input_adjunct_values[1],
+							parameters[0], parameters[1]);
 				}
 			}
 		}

@@ -38,8 +38,9 @@ public:
 	std::vector<std::string> adjuncts;
 	std::string sep;
 	std::string adjacency_file;
+	bool saturate_adjacency;
 
-	ExportAdjunctsOfContacts() : no_serial(false), no_name(false), no_resSeq(false), no_resName(false), all(false), inter_residue(false), expand_ids(false), sep(" ")
+	ExportAdjunctsOfContacts() : no_serial(false), no_name(false), no_resSeq(false), no_resName(false), all(false), inter_residue(false), expand_ids(false), sep(" "), saturate_adjacency(false)
 	{
 	}
 
@@ -58,6 +59,7 @@ public:
 		expand_ids=input.get_flag("expand-ids");
 		adjuncts=input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
 		sep=input.get_value_or_default<std::string>("sep", " ");
+		saturate_adjacency=input.get_flag("saturate-adjacency");
 		adjacency_file=input.get_value_or_default<std::string>("adjacency-file", "");
 		assert_file_name_input(adjacency_file, true);
 	}
@@ -77,6 +79,7 @@ public:
 		doc.set_option_decription(CDOD("adjuncts", CDOD::DATATYPE_STRING_ARRAY, "adjunct names", ""));
 		doc.set_option_decription(CDOD("sep", CDOD::DATATYPE_STRING, "output separator string", " "));
 		doc.set_option_decription(CDOD("adjacency-file", CDOD::DATATYPE_STRING, "path to contact-contact adjacency output file", ""));
+		doc.set_option_decription(CDOD("saturate-adjacency", CDOD::DATATYPE_BOOL, "flag to output bidirectional and self-connecting adjacency links"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -400,10 +403,22 @@ public:
 						}
 					}
 				}
+				if(saturate_adjacency)
+				{
+					for(std::map<apollota::Pair, double>::const_iterator it=inter_residue_contacts_graph.begin();it!=inter_residue_contacts_graph.end();++it)
+					{
+						inter_residue_contacts_graph[apollota::Pair(it->first.get(0), it->first.get(0))]+=it->second;
+						inter_residue_contacts_graph[apollota::Pair(it->first.get(1), it->first.get(1))]+=it->second;
+					}
+				}
 				output << "ir_contact_index1" << sep << "ir_contact_index2" << sep << "edge_value" << "\n";
 				for(std::map<apollota::Pair, double>::const_iterator it=inter_residue_contacts_graph.begin();it!=inter_residue_contacts_graph.end();++it)
 				{
 					output << it->first.get(0) << sep << it->first.get(1) << sep << it->second << "\n";
+					if(saturate_adjacency && it->first.get(0)!=it->first.get(1))
+					{
+						output << it->first.get(1) << sep << it->first.get(0) << sep << it->second << "\n";
+					}
 				}
 			}
 		}

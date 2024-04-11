@@ -338,6 +338,12 @@ public:
 		return (k*log(x));
 	}
 
+	static double calculate_to_goodness_transform(const double score, const double area, const double min_score_boundary, const double max_score_boundary)
+	{
+		const double safe_score=std::max(min_score_boundary, std::min(score, max_score_boundary));
+		return (((atanh(safe_score*2-1)+1)*1.2-0.2)*area);
+	}
+
 	static void assert_new_object_name_input(const std::string& name)
 	{
 		if(name.empty())
