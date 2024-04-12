@@ -31,6 +31,16 @@ public:
 			Result& result,
 			TimeRecorder& time_recorder)
 	{
+		prepare_for_tessellation(spheres, grouping_of_spheres, std::vector<UnsignedInt>(), result, time_recorder);
+	}
+
+	static void prepare_for_tessellation(
+			const std::vector<SimpleSphere>& spheres,
+			const std::vector<int>& grouping_of_spheres,
+			const std::vector<UnsignedInt>& periodic_links_of_spheres,
+			Result& result,
+			TimeRecorder& time_recorder)
+	{
 		time_recorder.reset();
 
 		result=Result();
@@ -105,7 +115,10 @@ public:
 					{
 						if(grouping_of_spheres.empty() || id_a>=grouping_of_spheres.size() || id_b>=grouping_of_spheres.size() || grouping_of_spheres[id_a]!=grouping_of_spheres[id_b])
 						{
-							result.relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
+							if(periodic_links_of_spheres.empty() || id_a>=periodic_links_of_spheres.size() || id_b>=periodic_links_of_spheres.size() || periodic_links_of_spheres[id_a]==id_a || periodic_links_of_spheres[id_b]==id_b)
+							{
+								result.relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
+							}
 						}
 					}
 				}
