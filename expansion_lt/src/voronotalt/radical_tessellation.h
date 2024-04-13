@@ -343,17 +343,8 @@ public:
 			#pragma omp for
 			for(UnsignedInt i=0;i<ids_of_valid_pairs.size();i++)
 			{
-				ContactDescriptorSummary& cds=result.contacts_summaries[i];
-				cds=possible_contacts_summaries[ids_of_valid_pairs[i]];
-				if(!preparation_result.periodic_links_of_spheres.empty() && cds.id_a<preparation_result.periodic_links_of_spheres.size())
-				{
-					cds.id_a=preparation_result.periodic_links_of_spheres[cds.id_a];
-				}
-				if(!preparation_result.periodic_links_of_spheres.empty() && cds.id_b<preparation_result.periodic_links_of_spheres.size())
-				{
-					cds.id_b=preparation_result.periodic_links_of_spheres[cds.id_b];
-				}
-				cds.ensure_ids_ordered();
+				result.contacts_summaries[i]=possible_contacts_summaries[ids_of_valid_pairs[i]];
+				result.contacts_summaries[i].ensure_ids_ordered();
 			}
 		}
 
@@ -385,8 +376,14 @@ public:
 			for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
 			{
 				const ContactDescriptorSummary& cds=result.contacts_summaries[i];
-				result.cells_summaries[cds.id_a].add(cds.id_a, cds);
-				result.cells_summaries[cds.id_b].add(cds.id_b, cds);
+				if(cds.id_a<result.total_spheres)
+				{
+					result.cells_summaries[cds.id_a].add(cds.id_a, cds);
+				}
+				if(cds.id_b<result.total_spheres)
+				{
+					result.cells_summaries[cds.id_b].add(cds.id_b, cds);
+				}
 			}
 
 			time_recorder.record_elapsed_miliseconds_and_reset("accumulate cell summaries");
@@ -408,6 +405,25 @@ public:
 			}
 
 			time_recorder.record_elapsed_miliseconds_and_reset("accumulate total cells summary");
+		}
+
+		if(!preparation_result.periodic_links_of_spheres.empty())
+		{
+			for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
+			{
+				ContactDescriptorSummary& cds=result.contacts_summaries[i];
+				if(cds.id_a<preparation_result.periodic_links_of_spheres.size())
+				{
+					cds.id_a=preparation_result.periodic_links_of_spheres[cds.id_a];
+				}
+				if(cds.id_b<preparation_result.periodic_links_of_spheres.size())
+				{
+					cds.id_b=preparation_result.periodic_links_of_spheres[cds.id_b];
+				}
+				cds.ensure_ids_ordered();
+			}
+
+			time_recorder.record_elapsed_miliseconds_and_reset("reassign ids in contacts at boundaries");
 		}
 	}
 
