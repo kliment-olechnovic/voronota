@@ -117,10 +117,7 @@ public:
 
 		if(result.label_size>1)
 		{
-			if(result.label_size==3)
-			{
-				result.number_of_chain_groups=assign_groups_to_sphere_labels_by_chain(result.sphere_labels, result.grouping_by_chain);
-			}
+			result.number_of_chain_groups=assign_groups_to_sphere_labels_by_chain(result.sphere_labels, result.grouping_by_chain);
 
 			result.number_of_residue_groups=assign_groups_to_sphere_labels_by_residue(result.sphere_labels, result.grouping_by_residue);
 
