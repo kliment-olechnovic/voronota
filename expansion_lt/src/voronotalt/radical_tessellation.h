@@ -247,18 +247,18 @@ public:
 	};
 
 	static void construct_full_tessellation(
-			const std::vector<SimpleSphere>& spheres,
+			const std::vector<SimpleSphere>& input_spheres,
 			Result& result)
 	{
 		TimeRecorder time_recorder;
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres, std::vector<int>(), std::vector<UnsignedInt>(), false, true, result, result_graphics, time_recorder);
+		construct_full_tessellation(input_spheres, std::vector<int>(), std::vector<SimplePoint>(), false, true, result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
-			const std::vector<SimpleSphere>& spheres,
+			const std::vector<SimpleSphere>& input_spheres,
 			const std::vector<int>& grouping_of_spheres,
-			const std::vector<UnsignedInt>& periodic_links_of_spheres,
+			const std::vector<SimplePoint>& periodic_box_corners,
 			const bool with_graphics,
 			const bool summarize_cells,
 			Result& result,
@@ -266,26 +266,16 @@ public:
 			TimeRecorder& time_recorder)
 	{
 		PreparationForTessellation::Result preparation_result;
-		PreparationForTessellation::prepare_for_tessellation(spheres, grouping_of_spheres, preparation_result, time_recorder);
+		PreparationForTessellation::prepare_for_tessellation(input_spheres, grouping_of_spheres, periodic_box_corners, preparation_result, time_recorder);
+
+		const std::vector<SimpleSphere>& spheres=(preparation_result.spheres_with_periodic_instances.empty() ? input_spheres : preparation_result.spheres_with_periodic_instances);
 
 		time_recorder.reset();
 
 		result=Result();
 		result_graphics=ResultGraphics();
 
-		if(periodic_links_of_spheres.empty())
-		{
-			result.total_spheres=preparation_result.total_spheres;
-		}
-		else
-		{
-			result.total_spheres=0;
-			for(UnsignedInt i=0;i<periodic_links_of_spheres.size();i++)
-			{
-				result.total_spheres=std::max(result.total_spheres, periodic_links_of_spheres[i]+1);
-			}
-		}
-
+		result.total_spheres=preparation_result.total_input_spheres;
 		result.total_collisions=preparation_result.total_collisions;
 		result.total_relevant_collisions=preparation_result.relevant_collision_ids.size();
 
@@ -355,13 +345,13 @@ public:
 			{
 				ContactDescriptorSummary& cds=result.contacts_summaries[i];
 				cds=possible_contacts_summaries[ids_of_valid_pairs[i]];
-				if(!periodic_links_of_spheres.empty() && cds.id_a<periodic_links_of_spheres.size())
+				if(!preparation_result.periodic_links_of_spheres.empty() && cds.id_a<preparation_result.periodic_links_of_spheres.size())
 				{
-					cds.id_a=periodic_links_of_spheres[cds.id_a];
+					cds.id_a=preparation_result.periodic_links_of_spheres[cds.id_a];
 				}
-				if(!periodic_links_of_spheres.empty() && cds.id_b<periodic_links_of_spheres.size())
+				if(!preparation_result.periodic_links_of_spheres.empty() && cds.id_b<preparation_result.periodic_links_of_spheres.size())
 				{
-					cds.id_b=periodic_links_of_spheres[cds.id_b];
+					cds.id_b=preparation_result.periodic_links_of_spheres[cds.id_b];
 				}
 				cds.ensure_ids_ordered();
 			}

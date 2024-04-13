@@ -68,7 +68,7 @@ public:
 		for(int i=1;i<argc;i++)
 		{
 			const std::string value_string(argv[i]);
-			if(value_string.size()>=2 && value_string[0]=='-' && value_string[1]!='-')
+			if(value_string.size()>=2 && value_string[0]=='-' && value_string[1]!='-' && (!(static_cast<int>(value_string[1])>=static_cast<int>('0') && static_cast<int>(value_string[1])<=static_cast<int>('9'))))
 			{
 				Option option;
 				option.name=value_string.substr(1);

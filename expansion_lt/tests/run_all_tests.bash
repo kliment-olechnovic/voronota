@@ -124,6 +124,22 @@ EOF
 } \
 | voronota-lt -probe 1.0 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_5.py" -graphics-title "case_5" 2> /dev/null
 
+########################################
+
+{
+cat << 'EOF'
+0 0 0 0.5
+0 0 1 0.5
+0 1 0 0.5
+0 1 1 0.5
+1 0 0 0.5
+1 0 1 0.5
+1 1 0 0.5
+1 1 1 0.5
+EOF
+} \
+| voronota-lt -probe 0.75 -periodic-box-corners -1 -1 -1 2 2 2 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_6.py" -graphics-title "case_6" 2> /dev/null
+
 ################################################################################
 
 git status -s ./output/

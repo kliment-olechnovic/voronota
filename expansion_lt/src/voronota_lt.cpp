@@ -106,6 +106,7 @@ int main(const int argc, const char** argv)
 
 	unsigned int max_number_of_processors=1;
 	voronotalt::Float probe=1.4;
+	std::vector<voronotalt::SimplePoint> periodic_box_corners;
 	bool compute_only_inter_residue_contacts=false;
 	bool compute_only_inter_chain_contacts=false;
 	bool run_in_simplified_aw_diagram_regime=false;
@@ -141,8 +142,7 @@ int main(const int argc, const char** argv)
 				max_number_of_processors=static_cast<unsigned int>(opt.args_ints.front());
 				if(!(max_number_of_processors>=1 && max_number_of_processors<=1000))
 				{
-					std::cerr << "Error: invalid command line argument for the maximum number of processors, must be an integer from 1 to 1000.\n";
-					return 1;
+					error_log_for_options_parsing << "Error: invalid command line argument for the maximum number of processors, must be an integer from 1 to 1000.\n";
 				}
 			}
 			else if(opt.name=="probe" && opt.args_doubles.size()==1)
@@ -150,9 +150,18 @@ int main(const int argc, const char** argv)
 				probe=static_cast<voronotalt::Float>(opt.args_doubles.front());
 				if(!(probe>=0.0 && probe<=30.0))
 				{
-					std::cerr << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.0 to 30.0.\n";
-					return 1;
+					error_log_for_options_parsing << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.0 to 30.0.\n";
 				}
+			}
+			else if(opt.name=="periodic-box-corners" && opt.args_doubles.size()==6)
+			{
+				periodic_box_corners.resize(2);
+				periodic_box_corners[0].x=opt.args_doubles[0];
+				periodic_box_corners[0].y=opt.args_doubles[1];
+				periodic_box_corners[0].z=opt.args_doubles[2];
+				periodic_box_corners[1].x=opt.args_doubles[3];
+				periodic_box_corners[1].y=opt.args_doubles[4];
+				periodic_box_corners[1].z=opt.args_doubles[5];
 			}
 			else if(opt.name=="compute-only-inter-residue-contacts" && opt.is_flag())
 			{
@@ -347,7 +356,7 @@ int main(const int argc, const char** argv)
 
 		voronotalt::RadicalTessellation::Result result;
 		voronotalt::RadicalTessellation::ResultGraphics result_graphics;
-		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_input_result.spheres, grouping_for_filtering, std::vector<voronotalt::UnsignedInt>(), graphics_writer.enabled(), summarize_cells, result, result_graphics, time_recoder_for_tessellation);
+		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_input_result.spheres, grouping_for_filtering, periodic_box_corners, graphics_writer.enabled(), summarize_cells, result, result_graphics, time_recoder_for_tessellation);
 
 		voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;
 		if(need_summaries_on_residue_level)
