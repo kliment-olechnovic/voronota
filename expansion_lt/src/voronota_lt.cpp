@@ -28,6 +28,7 @@ Options:
     --compute-only-inter-residue-contacts                       flag to only compute inter-residue contacts, turns off per-cell summaries
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
+    --periodic-box-corners                           numbers    coordinates of a periodic bounding box corners, by default no periodicity is applied
     --measure-running-time                                      flag to measure and output running times
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
@@ -68,7 +69,9 @@ Usage examples:
 
     cat ./2zsk.pdb | voronota get-balls-from-atoms-file --radii-file ../radii | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
 
-    cat ./2zsk.pdb | voronota get-balls-from-atoms-file | voronota-lt --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
+    cat ./balls.xyzr | voronota-lt --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
+
+    cat ./balls.xyzr | voronota-lt --probe 2 --periodic-box-corners 0 0 0 100 100 300 --processors 8 --write-cells-to-file ./cells.tsv
 )";
 
 	std::cerr << message << std::endl;
@@ -277,6 +280,18 @@ int main(const int argc, const char** argv)
 	if(voronotalt::is_stdin_from_terminal())
 	{
 		std::cerr << "Please provide input, use -h or --help flag to see documentation and examples.\n";
+		return 1;
+	}
+
+	if(!periodic_box_corners.empty() && run_in_simplified_aw_diagram_regime)
+	{
+		std::cerr << "Error: in this version a periodic box cannot be used in the simplified additively weighted Voronoi diagram regime.\n";
+		return 1;
+	}
+
+	if(!periodic_box_corners.empty() && periodic_box_corners.size()<2)
+	{
+		std::cerr << "Error: less than two periodic box corners provided.\n";
 		return 1;
 	}
 
