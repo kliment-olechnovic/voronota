@@ -1,8 +1,8 @@
 log_total_input_balls	100
 log_total_collisions	963
 log_total_relevant_collisions	225
-log_total_contacts_count	225
-log_total_contacts_area	5679.03
+log_total_contacts_count	189
+log_total_contacts_area	4812.14
 log_total_residue_level_contacts_count	0
 log_total_chain_level_contacts_count	0
 log_total_cells_count	100
