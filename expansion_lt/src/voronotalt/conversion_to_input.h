@@ -53,6 +53,18 @@ inline SimplePoint get_simple_point_from_point(const Point& point)
 	return SimplePoint(static_cast<Float>(point.x), static_cast<Float>(point.y), static_cast<Float>(point.z));
 }
 
+template<class PointsContainer>
+inline std::vector<SimplePoint> get_simple_points_from_points(const PointsContainer& points)
+{
+	std::vector<SimplePoint> result;
+	result.reserve(points.size());
+	for(typename PointsContainer::const_iterator it=points.begin();it!=points.end();++it)
+	{
+		result.push_back(get_simple_point_from_point(*it));
+	}
+	return result;
+}
+
 }
 
 #endif /* VORONOTALT_CONVERSION_TO_INPUT_H_ */

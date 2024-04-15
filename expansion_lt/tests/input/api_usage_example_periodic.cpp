@@ -50,8 +50,7 @@ struct Cell
 bool compute_contact_and_cell_descriptors_in_periodic_box(
 		const std::vector<Ball>& balls,
 		const double probe,
-		const Point& periodic_box_corner_min,
-		const Point& periodic_box_corner_max,
+		const std::vector<Point>& periodic_box_corners,
 		std::vector<Contact>& contacts,
 		std::vector<Cell>& cells)
 {
@@ -68,8 +67,7 @@ bool compute_contact_and_cell_descriptors_in_periodic_box(
 	voronotalt::RadicalTessellation::Result result;
 	voronotalt::RadicalTessellation::construct_full_tessellation(
 			voronotalt::get_spheres_from_balls(balls, probe),
-			voronotalt::get_simple_point_from_point(periodic_box_corner_min),
-			voronotalt::get_simple_point_from_point(periodic_box_corner_max),
+			voronotalt::get_simple_points_from_points(periodic_box_corners),
 			result);
 
 	if(result.contacts_summaries.empty())
@@ -134,13 +132,14 @@ int main(const int, const char**)
 	input_balls.push_back(Ball(-0.707107, 0.707107, 0, 0.5));
 	input_balls.push_back(Ball(-0.382683, 0.92388, 0, 0.5));
 
-	const Point periodic_box_corner_min(-1.6, -1.6, -0.6);
-	const Point periodic_box_corner_max(1.6, 1.6, 3.1);
+	std::vector<Point> periodic_box_corners;
+	periodic_box_corners.push_back(Point(-1.6, -1.6, -0.6));
+	periodic_box_corners.push_back(Point(1.6, 1.6, 3.1));
 
 	std::vector<Contact> output_contacts;
 	std::vector<Cell> output_cells;
 
-	if(compute_contact_and_cell_descriptors_in_periodic_box(input_balls, 1.0, periodic_box_corner_min, periodic_box_corner_max, output_contacts, output_cells))
+	if(compute_contact_and_cell_descriptors_in_periodic_box(input_balls, 1.0, periodic_box_corners, output_contacts, output_cells))
 	{
 		std::cout << "balls:\n";
 		for(std::size_t i=0;i<input_balls.size();i++)

@@ -258,14 +258,10 @@ public:
 
 	static void construct_full_tessellation(
 			const std::vector<SimpleSphere>& input_spheres,
-			const SimplePoint& periodic_box_corner_min,
-			const SimplePoint& periodic_box_corner_max,
+			const std::vector<SimplePoint>& periodic_box_corners,
 			Result& result)
 	{
 		TimeRecorder time_recorder;
-		std::vector<SimplePoint> periodic_box_corners(2);
-		periodic_box_corners[0]=periodic_box_corner_min;
-		periodic_box_corners[1]=periodic_box_corner_max;
 		ResultGraphics result_graphics;
 		construct_full_tessellation(input_spheres, std::vector<int>(), periodic_box_corners, false, true, result, result_graphics, time_recorder);
 	}
