@@ -79,17 +79,17 @@ public:
 				for(int sx=-1;sx<=1;sx++)
 				{
 					m.p.x=o.p.x+(shift.x*static_cast<Float>(sx));
-					const bool useful_x=((m.p.x<corner_a.x && (corner_a.x-m.p.x)<buffer_distance) || (m.p.x>corner_b.x && (m.p.x-corner_b.x)<buffer_distance));
+					const bool useful_x=((sx<0 && (corner_a.x-m.p.x)<=buffer_distance) || (sx>0 && (m.p.x-corner_b.x)<=buffer_distance));
 					for(int sy=-1;sy<=1;sy++)
 					{
 						m.p.y=o.p.y+(shift.y*static_cast<Float>(sy));
-						const bool useful_y=((m.p.y<corner_a.y && (corner_a.y-m.p.y)<buffer_distance) || (m.p.y>corner_b.y && (m.p.y-corner_b.y)<buffer_distance));
+						const bool useful_y=((sy<0 && (corner_a.y-m.p.y)<=buffer_distance) || (sy>0 && (m.p.y-corner_b.y)<=buffer_distance));
 						for(int sz=-1;sz<=1;sz++)
 						{
 							if(sx!=0 || sy!=0 || sz!=0)
 							{
 								m.p.z=o.p.z+(shift.z*static_cast<Float>(sz));
-								const bool useful_z=((m.p.z<corner_a.z && (corner_a.z-m.p.z)<buffer_distance) || (m.p.z>corner_b.z && (m.p.z-corner_b.z)<buffer_distance));
+								const bool useful_z=((sz<0 && (corner_a.z-m.p.z)<=buffer_distance) || (sz>0 && (m.p.z-corner_b.z)<=buffer_distance));
 								if(useful_x || useful_y || useful_z)
 								{
 									result.spheres_with_periodic_instances.push_back(m);
