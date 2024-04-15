@@ -63,11 +63,21 @@ voronota-lt -processors 40 -probe 2  < "./input/balls_cs_3x3.xyzr" -write-cells-
 
 mkdir -p "./output/api_usage_examples"
 
+########################################
+
 g++ -O3 -I../src/voronotalt -o "./output/api_usage_examples/example_basic" "./input/api_usage_example_basic.cpp"
 
 ./output/api_usage_examples/example_basic &> "./output/api_usage_examples/example_basic_output.txt"
 
 rm "./output/api_usage_examples/example_basic"
+
+########################################
+
+g++ -O3 -I../src/voronotalt -o "./output/api_usage_examples/example_periodic" "./input/api_usage_example_periodic.cpp"
+
+./output/api_usage_examples/example_periodic &> "./output/api_usage_examples/example_periodic_output.txt"
+
+rm "./output/api_usage_examples/example_periodic"
 
 ####################################################################
 

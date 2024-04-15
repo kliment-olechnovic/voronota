@@ -47,6 +47,12 @@ inline void fill_spheres_from_balls(const BallsContainer& balls, const Float pro
 	}
 }
 
+template<class Point>
+inline SimplePoint get_simple_point_from_point(const Point& point)
+{
+	return SimplePoint(static_cast<Float>(point.x), static_cast<Float>(point.y), static_cast<Float>(point.z));
+}
+
 }
 
 #endif /* VORONOTALT_CONVERSION_TO_INPUT_H_ */
