@@ -26,13 +26,12 @@ struct Ball
 //user-defined structure for a contact descriptor
 struct Contact
 {
-	Contact() : index_a(0), index_b(0), area(0.0), arc_length(0.0), redundant(false) {}
+	Contact() : index_a(0), index_b(0), area(0.0), arc_length(0.0) {}
 
 	int index_a;
 	int index_b;
 	double area;
 	double arc_length;
-	bool redundant;
 };
 
 //user-defined structure for a cell descriptor
@@ -63,6 +62,12 @@ bool compute_contact_and_cell_descriptors_in_periodic_box(
 		return false;
 	}
 
+	if(!periodic_box_corners.empty() && periodic_box_corners.size()<2)
+	{
+		std::cerr << "Not enough periodic box corners provided." << std::endl;
+		return false;
+	}
+
 	// computing Voronota-LT radical tessellation results
 	voronotalt::RadicalTessellation::Result result;
 	voronotalt::RadicalTessellation::construct_full_tessellation(
@@ -90,10 +95,6 @@ bool compute_contact_and_cell_descriptors_in_periodic_box(
 		contacts[i].index_b=result.contacts_summaries[i].id_b;
 		contacts[i].area=result.contacts_summaries[i].area;
 		contacts[i].arc_length=result.contacts_summaries[i].arc_length;
-		if(i<result.canonical_ids_of_contacts_in_periodic_box.size() && result.canonical_ids_of_contacts_in_periodic_box[i]!=i)
-		{
-			contacts[i].redundant=true;
-		}
 	}
 
 	// using the result data about cells
@@ -151,10 +152,7 @@ int main(const int, const char**)
 		std::cout << "contacts:\n";
 		for(const Contact& contact : output_contacts)
 		{
-			if(!contact.redundant)
-			{
-				std::cout << "contact " << contact.index_a << " " << contact.index_b << " " << contact.area << " " << contact.arc_length << "\n";
-			}
+			std::cout << "contact " << contact.index_a << " " << contact.index_b << " " << contact.area << " " << contact.arc_length << "\n";
 		}
 
 		std::cout << "cells:\n";
