@@ -516,7 +516,7 @@ int main(const int argc, const char** argv)
 			{
 				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-				graphics_writer.add_triangle_fan(name_contact("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points, pair_graphics.barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
+				graphics_writer.add_triangle_fan(name_contact("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
 			}
 			graphics_writer.add_color(0.5, 0.5, 0.5);
 			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)

@@ -25,13 +25,22 @@ public:
 		return enabled_;
 	}
 
+	void add_triangle_fan(const std::string& group_name, const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal)
+	{
+		if(!enabled_)
+		{
+			return;
+		}
+		parts_.push_back(std::pair<std::string, std::string>(group_name, print_triangle_fan_for_pymol(outer_points, center, normal, "", ", \n")));
+	}
+
 	void add_triangle_fan(const std::string& group_name, const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal_direction_start, const SimplePoint& normal_direction_end)
 	{
 		if(!enabled_)
 		{
 			return;
 		}
-		parts_.push_back(std::pair<std::string, std::string>(group_name, print_triangle_fan_for_pymol(outer_points, center, unit_point(sub_of_points(normal_direction_end, normal_direction_start)), "", ", \n")));
+		add_triangle_fan(group_name, outer_points, center, unit_point(sub_of_points(normal_direction_end, normal_direction_start)));
 	}
 
 	void add_line_loop(const std::string& group_name, const std::vector<SimplePoint>& outer_points)
