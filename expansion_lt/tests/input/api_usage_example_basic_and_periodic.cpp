@@ -2,16 +2,6 @@
 
 #include "voronotalt.h" // assuming that the "voronotalt" directory is in the include path
 
-//user-defined structure for a point, to define periodic box corners
-struct Point
-{
-	Point(const double x, const double y, const double z) : x(x), y(y), z(z) {}
-
-	double x;
-	double y;
-	double z;
-};
-
 //user-defined structure for a ball
 struct Ball
 {
@@ -45,8 +35,18 @@ struct Cell
 	bool included;
 };
 
+//user-defined structure for a point, to define optonal periodic box corners
+struct Point
+{
+	Point(const double x, const double y, const double z) : x(x), y(y), z(z) {}
+
+	double x;
+	double y;
+	double z;
+};
+
 //user-defined function that uses voronotalt::RadicalTessellation to fill vectors of contact and cell descriptors
-bool compute_contact_and_cell_descriptors_in_periodic_box(
+bool compute_contact_and_cell_descriptors_with_optional_periodic_box_conditions(
 		const std::vector<Ball>& balls,
 		const double probe,
 		const std::vector<Point>& periodic_box_corners,
@@ -64,7 +64,7 @@ bool compute_contact_and_cell_descriptors_in_periodic_box(
 
 	if(!periodic_box_corners.empty() && periodic_box_corners.size()<2)
 	{
-		std::cerr << "Not enough periodic box corners provided." << std::endl;
+		std::cerr << "Invalid number of provided periodic box corners, there must be either none or more than one corners." << std::endl;
 		return false;
 	}
 
@@ -111,6 +111,49 @@ bool compute_contact_and_cell_descriptors_in_periodic_box(
 	return true;
 }
 
+//user-defined convenience function that redirects to the previously defined function with an empty vector of periodic box corners
+bool compute_contact_and_cell_descriptors(
+		const std::vector<Ball>& balls,
+		const double probe,
+		std::vector<Contact>& contacts,
+		std::vector<Cell>& cells)
+{
+	return compute_contact_and_cell_descriptors_with_optional_periodic_box_conditions(balls, probe, std::vector<Point>(), contacts, cells);
+}
+
+//user-defined function to print input balls
+void print_balls(const std::vector<Ball>& balls)
+{
+	std::cout << "balls:\n";
+	for(std::size_t i=0;i<balls.size();i++)
+	{
+		const Ball& ball=balls[i];
+		std::cout << "ball " << i << " " << ball.x << " " << ball.y << " " << ball.z << " " << ball.r << "\n";
+	}
+	std::cout << "\n";
+}
+
+//user-defined function to print resulting contacts and cells
+void print_contacts_and_cells(const std::vector<Contact>& output_contacts, const std::vector<Cell>& output_cells)
+{
+	std::cout << "contacts:\n";
+	for(const Contact& contact : output_contacts)
+	{
+		std::cout << "contact " << contact.index_a << " " << contact.index_b << " " << contact.area << " " << contact.arc_length << "\n";
+	}
+	std::cout << "\n";
+
+	std::cout << "cells:\n";
+	for(const Cell& cell : output_cells)
+	{
+		if(cell.included)
+		{
+			std::cout << "cell " << cell.index << " " << cell.sas_area << " " << cell.volume << "\n";
+		}
+	}
+	std::cout << "\n";
+}
+
 int main(const int, const char**)
 {
 	std::vector<Ball> input_balls;
@@ -133,41 +176,48 @@ int main(const int, const char**)
 	input_balls.push_back(Ball(-0.707107, 0.707107, 0, 0.5));
 	input_balls.push_back(Ball(-0.382683, 0.92388, 0, 0.5));
 
-	std::vector<Point> periodic_box_corners;
-	periodic_box_corners.push_back(Point(-1.6, -1.6, -0.6));
-	periodic_box_corners.push_back(Point(1.6, 1.6, 3.1));
+	std::cout << "Input:\n\n";
 
-	std::vector<Contact> output_contacts;
-	std::vector<Cell> output_cells;
+	print_balls(input_balls);
 
-	if(compute_contact_and_cell_descriptors_in_periodic_box(input_balls, 1.0, periodic_box_corners, output_contacts, output_cells))
+	const double probe=1.0;
+
 	{
-		std::cout << "balls:\n";
-		for(std::size_t i=0;i<input_balls.size();i++)
-		{
-			const Ball& ball=input_balls[i];
-			std::cout << "ball " << i << " " << ball.x << " " << ball.y << " " << ball.z << " " << ball.r << "\n";
-		}
+		std::cout << "Output in basic mode:\n\n";
 
-		std::cout << "contacts:\n";
-		for(const Contact& contact : output_contacts)
-		{
-			std::cout << "contact " << contact.index_a << " " << contact.index_b << " " << contact.area << " " << contact.arc_length << "\n";
-		}
+		std::vector<Contact> output_contacts;
+		std::vector<Cell> output_cells;
 
-		std::cout << "cells:\n";
-		for(const Cell& cell : output_cells)
+		if(compute_contact_and_cell_descriptors(input_balls, probe, output_contacts, output_cells))
 		{
-			if(cell.included)
-			{
-				std::cout << "cell " << cell.index << " " << cell.sas_area << " " << cell.volume << "\n";
-			}
+			print_contacts_and_cells(output_contacts, output_cells);
+		}
+		else
+		{
+			std::cerr << "Failed to compute contact and cell descriptors in basic mode." << std::endl;
+			return 1;
 		}
 	}
-	else
+
 	{
-		std::cerr << "Failed to compute contact and cell descriptors." << std::endl;
-		return 1;
+		std::cout << "Output in periodic box mode:\n\n";
+
+		std::vector<Point> periodic_box_corners;
+		periodic_box_corners.push_back(Point(-1.6, -1.6, -0.6));
+		periodic_box_corners.push_back(Point(1.6, 1.6, 3.1));
+
+		std::vector<Contact> output_contacts;
+		std::vector<Cell> output_cells;
+
+		if(compute_contact_and_cell_descriptors_with_optional_periodic_box_conditions(input_balls, probe, periodic_box_corners, output_contacts, output_cells))
+		{
+			print_contacts_and_cells(output_contacts, output_cells);
+		}
+		else
+		{
+			std::cerr << "Failed to compute contact and cell descriptors in periodic box mode." << std::endl;
+			return 1;
+		}
 	}
 
 	return 0;
