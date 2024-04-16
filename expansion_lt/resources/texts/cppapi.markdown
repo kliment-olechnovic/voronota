@@ -4,7 +4,7 @@ Voronota-LT can be used as a header-only C++ library.
 The need headers are all in "./src/voronotalt" folder.
 The only header file needed to be included is "voronotalt.h".
 
-Below is a detailed example for both basic and periodic boc modes:
+Below is a detailed example for both basic and periodic box modes:
 
 ```cpp
     #include <iostream>

@@ -82,6 +82,7 @@ cp \
   "./expansion_lt/CMakeLists.txt" \
   "./expansion_lt/LICENSE.txt" \
   "./expansion_lt/README.md" \
+  "./expansion_lt/VERSION.txt" \
   "./expansion_lt/index.html" \
   "${PACKAGE_NAME}/expansion_lt/"
 
