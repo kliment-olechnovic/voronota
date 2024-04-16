@@ -1,5 +1,5 @@
 
-Voronota-LT version 0.9
+Voronota-LT version 0.9.2
 
 'voronota-lt' executable constructs a radical Voronoi tessellation (also known as a Laguerre-Voronoi diagram or a power diagram)
 of atomic balls of van der Waals radii constrained inside a solvent-accessible surface defined by a rolling probe.
@@ -13,6 +13,7 @@ Options:
     --compute-only-inter-residue-contacts                       flag to only compute inter-residue contacts, turns off per-cell summaries
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
+    --periodic-box-corners                           numbers    coordinates of a periodic bounding box corners, by default no periodicity is applied
     --measure-running-time                                      flag to measure and output running times
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
@@ -53,5 +54,7 @@ Usage examples:
 
     cat ./2zsk.pdb | voronota get-balls-from-atoms-file --radii-file ../radii | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
 
-    cat ./2zsk.pdb | voronota get-balls-from-atoms-file | voronota-lt --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
+    cat ./balls.xyzr | voronota-lt --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
+
+    cat ./balls.xyzr | voronota-lt --probe 2 --periodic-box-corners 0 0 0 100 100 300 --processors 8 --write-cells-to-file ./cells.tsv
 

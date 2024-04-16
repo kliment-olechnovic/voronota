@@ -97,7 +97,7 @@ public:
 		voronotalt::RadicalTessellation::Result radical_tessellation_result;
 		voronotalt::RadicalTessellation::ResultGraphics radical_tessellation_result_graphics;
 		voronotalt::TimeRecorder mock_time_recorder;
-		voronotalt::RadicalTessellation::construct_full_tessellation(spheres, grouping_for_filtering, generate_graphics, summarize_cells, radical_tessellation_result, radical_tessellation_result_graphics, mock_time_recorder);
+		voronotalt::RadicalTessellation::construct_full_tessellation(spheres, grouping_for_filtering, std::vector<voronotalt::SimplePoint>(), generate_graphics, summarize_cells, radical_tessellation_result, radical_tessellation_result_graphics, mock_time_recorder);
 
 		if(radical_tessellation_result.contacts_summaries.empty())
 		{
