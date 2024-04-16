@@ -7,6 +7,10 @@ trap "rm -r $TMPLDIR" EXIT
 
 ################################################################################
 
+cat ./src/voronota_lt.cpp | egrep '^Voronota-LT' > VERSION.txt
+
+################################################################################
+
 {
 
 cat ./resources/texts/intro.markdown

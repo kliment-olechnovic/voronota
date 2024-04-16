@@ -117,7 +117,7 @@ voronota-lt -h
 The overview text is the following:
 
 
-    Voronota-LT version 0.9
+    Voronota-LT version 0.9.2
     
     'voronota-lt' executable constructs a radical Voronoi tessellation (also known as a Laguerre-Voronoi diagram or a power diagram)
     of atomic balls of van der Waals radii constrained inside a solvent-accessible surface defined by a rolling probe.
@@ -131,6 +131,7 @@ The overview text is the following:
         --compute-only-inter-residue-contacts                       flag to only compute inter-residue contacts, turns off per-cell summaries
         --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
         --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
+        --periodic-box-corners                           numbers    coordinates of a periodic bounding box corners, by default no periodicity is applied
         --measure-running-time                                      flag to measure and output running times
         --print-contacts                                            flag to print table of contacts to stdout
         --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
@@ -171,7 +172,9 @@ The overview text is the following:
     
         cat ./2zsk.pdb | voronota get-balls-from-atoms-file --radii-file ../radii | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
     
-        cat ./2zsk.pdb | voronota get-balls-from-atoms-file | voronota-lt --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
+        cat ./balls.xyzr | voronota-lt --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
+    
+        cat ./balls.xyzr | voronota-lt --probe 2 --periodic-box-corners 0 0 0 100 100 300 --processors 8 --write-cells-to-file ./cells.tsv
 
 # Using Voronota-LT as a C++ library
 
@@ -179,74 +182,98 @@ Voronota-LT can be used as a header-only C++ library.
 The need headers are all in "./src/voronotalt" folder.
 The only header file needed to be included is "voronotalt.h".
 
-Below is a detailed example:
+Below is a detailed example for both basic and periodic boc modes:
 
 ```cpp
-    #include <stdexcept> // this example uses exceptions, but the Voronota-LT code does not
-    
+    #include <iostream>
+
     #include "voronotalt.h" // assuming that the "voronotalt" directory is in the include path
-    
+
     //user-defined structure for a ball
     struct Ball
     {
-        Ball() : x(0.0), y(0.0), z(0.0), r(0.0) {}
-    
+        Ball(const double x, const double y, const double z, const double r) : x(x), y(y), z(z), r(r) {}
+
         double x;
         double y;
         double z;
         double r;
     };
-    
+
     //user-defined structure for a contact descriptor
     struct Contact
     {
         Contact() : index_a(0), index_b(0), area(0.0), arc_length(0.0) {}
-    
+
         int index_a;
         int index_b;
         double area;
         double arc_length;
     };
-    
+
     //user-defined structure for a cell descriptor
     struct Cell
     {
-        Cell() : sas_area(0.0), volume(0.0), included(false) {}
-    
+        Cell() : index(0), sas_area(0.0), volume(0.0), included(false) {}
+
+        int index;
         double sas_area;
         double volume;
         bool included;
     };
-    
+
+    //user-defined structure for a point, to define optonal periodic box corners
+    struct Point
+    {
+        Point(const double x, const double y, const double z) : x(x), y(y), z(z) {}
+
+        double x;
+        double y;
+        double z;
+    };
+
     //user-defined function that uses voronotalt::RadicalTessellation to fill vectors of contact and cell descriptors
-    void compute_contact_and_cell_descriptors(
+    bool compute_contact_and_cell_descriptors_with_optional_periodic_box_conditions(
             const std::vector<Ball>& balls,
             const double probe,
+            const std::vector<Point>& periodic_box_corners,
             std::vector<Contact>& contacts,
             std::vector<Cell>& cells)
     {
         contacts.clear();
         cells.clear();
-    
+
         if(balls.empty())
         {
-            throw std::runtime_error("No balls to compute the tessellation for.");
+            std::cerr << "No balls to compute the tessellation for." << std::endl;
+            return false;
         }
-    
+
+        if(!periodic_box_corners.empty() && periodic_box_corners.size()<2)
+        {
+            std::cerr << "Invalid number of provided periodic box corners, there must be either none or more than one corners." << std::endl;
+            return false;
+        }
+
         // computing Voronota-LT radical tessellation results
         voronotalt::RadicalTessellation::Result result;
-        voronotalt::RadicalTessellation::construct_full_tessellation(voronotalt::get_spheres_from_balls(balls, probe), result);
-    
+        voronotalt::RadicalTessellation::construct_full_tessellation(
+                voronotalt::get_spheres_from_balls(balls, probe),
+                voronotalt::get_simple_points_from_points(periodic_box_corners),
+                result);
+
         if(result.contacts_summaries.empty())
         {
-            throw std::runtime_error("No contacts constructed for the provided balls and probe.");
+            std::cerr << "No contacts constructed for the provided balls and probe." << std::endl;
+            return false;
         }
-    
+
         if(result.cells_summaries.empty())
         {
-            throw std::runtime_error("No cells constructed for the provided balls and probe.");
+            std::cerr << "No cells constructed for the provided balls and probe.";
+            return false;
         }
-    
+
         // using the result data about contacts
         contacts.resize(result.contacts_summaries.size());
         for(std::size_t i=0;i<result.contacts_summaries.size();i++)
@@ -256,16 +283,131 @@ Below is a detailed example:
             contacts[i].area=result.contacts_summaries[i].area;
             contacts[i].arc_length=result.contacts_summaries[i].arc_length;
         }
-    
+
         // using the result data about cells
         cells.resize(balls.size());
         for(std::size_t i=0;i<result.cells_summaries.size();i++)
         {
             const std::size_t index=static_cast<std::size_t>(result.cells_summaries[i].id);
+            cells[index].index=static_cast<int>(result.cells_summaries[i].id);
             cells[index].sas_area=result.cells_summaries[i].sas_area;
             cells[index].volume=result.cells_summaries[i].sas_inside_volume;
             cells[index].included=true;
         }
+
+        return true;
+    }
+
+    //user-defined convenience function that redirects to the previously defined function with an empty vector of periodic box corners
+    bool compute_contact_and_cell_descriptors(
+            const std::vector<Ball>& balls,
+            const double probe,
+            std::vector<Contact>& contacts,
+            std::vector<Cell>& cells)
+    {
+        return compute_contact_and_cell_descriptors_with_optional_periodic_box_conditions(balls, probe, std::vector<Point>(), contacts, cells);
+    }
+
+    //user-defined function to print input balls
+    void print_balls(const std::vector<Ball>& balls)
+    {
+        std::cout << "balls:\n";
+        for(std::size_t i=0;i<balls.size();i++)
+        {
+            const Ball& ball=balls[i];
+            std::cout << "ball " << i << " " << ball.x << " " << ball.y << " " << ball.z << " " << ball.r << "\n";
+        }
+        std::cout << "\n";
+    }
+
+    //user-defined function to print resulting contacts and cells
+    void print_contacts_and_cells(const std::vector<Contact>& output_contacts, const std::vector<Cell>& output_cells)
+    {
+        std::cout << "contacts:\n";
+        for(const Contact& contact : output_contacts)
+        {
+            std::cout << "contact " << contact.index_a << " " << contact.index_b << " " << contact.area << " " << contact.arc_length << "\n";
+        }
+        std::cout << "\n";
+
+        std::cout << "cells:\n";
+        for(const Cell& cell : output_cells)
+        {
+            if(cell.included)
+            {
+                std::cout << "cell " << cell.index << " " << cell.sas_area << " " << cell.volume << "\n";
+            }
+        }
+        std::cout << "\n";
+    }
+
+    int main(const int, const char**)
+    {
+        std::vector<Ball> input_balls;
+
+        input_balls.push_back(Ball(0, 0, 2, 1));
+        input_balls.push_back(Ball(0, 1, 0, 0.5));
+        input_balls.push_back(Ball(0.382683, 0.92388, 0, 0.5));
+        input_balls.push_back(Ball(0.707107, 0.707107, 0, 0.5));
+        input_balls.push_back(Ball(0.92388, 0.382683, 0, 0.5));
+        input_balls.push_back(Ball(1, 0, 0, 0.5));
+        input_balls.push_back(Ball(0.92388, -0.382683, 0, 0.5));
+        input_balls.push_back(Ball(0.707107, -0.707107, 0, 0.5));
+        input_balls.push_back(Ball(0.382683, -0.92388, 0, 0.5));
+        input_balls.push_back(Ball(0, -1, 0, 0.5));
+        input_balls.push_back(Ball(-0.382683, -0.92388, 0, 0.5));
+        input_balls.push_back(Ball(-0.707107, -0.707107, 0, 0.5));
+        input_balls.push_back(Ball(-0.92388, -0.382683, 0, 0.5));
+        input_balls.push_back(Ball(-1, 0, 0, 0.5));
+        input_balls.push_back(Ball(-0.92388, 0.382683, 0, 0.5));
+        input_balls.push_back(Ball(-0.707107, 0.707107, 0, 0.5));
+        input_balls.push_back(Ball(-0.382683, 0.92388, 0, 0.5));
+
+        std::cout << "Input:\n\n";
+
+        print_balls(input_balls);
+
+        const double probe=1.0;
+
+        {
+            std::cout << "Output in basic mode:\n\n";
+
+            std::vector<Contact> output_contacts;
+            std::vector<Cell> output_cells;
+
+            if(compute_contact_and_cell_descriptors(input_balls, probe, output_contacts, output_cells))
+            {
+                print_contacts_and_cells(output_contacts, output_cells);
+            }
+            else
+            {
+                std::cerr << "Failed to compute contact and cell descriptors in basic mode." << std::endl;
+                return 1;
+            }
+        }
+
+        {
+            std::cout << "Output in periodic box mode:\n\n";
+
+            std::vector<Point> periodic_box_corners;
+            periodic_box_corners.push_back(Point(-1.6, -1.6, -0.6));
+            periodic_box_corners.push_back(Point(1.6, 1.6, 3.1));
+
+            std::vector<Contact> output_contacts;
+            std::vector<Cell> output_cells;
+
+            if(compute_contact_and_cell_descriptors_with_optional_periodic_box_conditions(input_balls, probe, periodic_box_corners, output_contacts, output_cells))
+            {
+                print_contacts_and_cells(output_contacts, output_cells);
+            }
+            else
+            {
+                std::cerr << "Failed to compute contact and cell descriptors in periodic box mode." << std::endl;
+                return 1;
+            }
+        }
+
+        return 0;
     }
 
 ```
