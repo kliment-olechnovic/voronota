@@ -1,0 +1,166 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-fast-iface-data-graph-v2-stats' script analyzes or transform graphs produced by 'voronota-js-fast-iface-data-graph-v2'.
+
+Options:
+    --calculate-columns-statistics                string     output file pathprefix for computed statistics of columns
+    --standardize-columns-using-statistics        string     input file path for statistics of columns to use
+    --help | -h                                              flag to display help message and exit
+
+Standard inpu:
+    list of input file path prefix
+
+Standard output:
+    list of generated output file path prefixes
+    
+Examples:
+    
+    find ./input_complexes/ -type f -name '*.pdb' \
+    | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps.txt --input _list --processors 8 --output-data-prefix ./data_graphs/ \
+    | voronota-js-fast-iface-data-graph-v2-stats --calculate-columns-statistics ./columns_statistics.txt
+    
+    find ./input_complexes/ -type f -name '*.pdb' \
+    | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps.txt --input _list --processors 8 --output-data-prefix ./data_graphs/ \
+    | voronota-js-fast-iface-data-graph-v2-stats --standardize-columns-using-statistics ./columns_statistics.txt
+    
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd "$(dirname ${ZEROARG})"
+	export PATH="$(pwd):${PATH}"
+	cd - &> /dev/null
+fi
+
+export LC_ALL=C
+
+OUTSTATSFILEPREFIX=""
+INSTATSFILEPREFIX=""
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	--calculate-columns-statistics)
+		OUTSTATSFILEPREFIX="$OPTARG"
+		shift
+		;;
+	--standardize-columns-using-statistics)
+		INSTATSFILEPREFIX="$OPTARG"
+		shift
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ -z "$OUTSTATSFILEPREFIX" ] && [ -z "$INSTATSFILEPREFIX" ]
+then
+	echo >&2 "Error: no operation arguments provided"
+	exit 1
+fi
+
+if [ -n "$INSTATSFILEPREFIX" ] && [ ! -s "${INSTATSFILEPREFIX}nodes.txt" ]
+then
+	echo >&2 "Error: input file '${INSTATSFILEPREFIX}nodes.txt' does not exist"
+	exit 1
+fi
+
+if [ -n "$INSTATSFILEPREFIX" ] && [ ! -s "${INSTATSFILEPREFIX}links.txt" ]
+then
+	echo >&2 "Error: input file '${INSTATSFILEPREFIX}links.txt' does not exist"
+	exit 1
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+cat | egrep . | sort | uniq > "$TMPLDIR/input_list"
+
+if [ ! -s "$TMPLDIR/input_list" ]
+then
+	echo >&2 "Error: no stdin data"
+	exit 1
+fi
+
+while read -r INPREFIX
+do
+	if [ ! -s "${INPREFIX}nodes.txt" ]
+	then
+		echo >&2 "Error: input graph nodes file '${INPREFIX}nodes.txt' does not exist"
+		exit 1
+	fi
+	
+	if [ ! -s "${INPREFIX}links.txt" ]
+	then
+		echo >&2 "Error: input graph links file '${INPREFIX}links.txt' does not exist"
+		exit 1
+	fi
+done \
+< "$TMPLDIR/input_list"
+
+if [ -n "$OUTSTATSFILEPREFIX" ]
+then
+
+cat "$TMPLDIR/input_list" | sed 's|$|nodes.txt|' | xargs -L 100 cat \
+| awk '{if(NR==1 || $1!="ID1"){print $0}}' \
+> $TMPLDIR/nodes.txt
+
+cat "$TMPLDIR/input_list" | sed 's|$|links.txt|' | xargs -L 100 cat \
+| awk '{if(NR==1 || $1!="ir_contact_index1"){print $0}}' \
+> $TMPLDIR/links.txt
+
+cd "$TMPLDIR"
+
+R --vanilla << 'EOF' > /dev/null
+for(obj in c("nodes.txt", "links.txt"))
+{
+	dt=read.table(obj, header=TRUE, stringsAsFactors=FALSE);
+	valcolnames=setdiff(colnames(dt), c("ID1", "ID2", "contact_index", "ir_contact_index", "ir_contact_index1", "ir_contact_index2"));
+	M=length(valcolnames);
+	summary=data.frame(name=valcolnames, mean=rep(0, M), sd=rep(0, M), median=rep(0, M), min=rep(0, M), max=rep(0, M));
+	for(i in 1:M)
+	{
+		valcolname=valcolnames[i];
+		x=dt[,valcolname];
+		summary$mean[i]=mean(x);
+		summary$sd[i]=sd(x);
+		summary$median[i]=median(x);
+		summary$min[i]=min(x);
+		summary$max[i]=max(x);
+	}
+	write.table(summary, file=paste0("stats_of_", obj), quote=FALSE, row.names=FALSE, col.names=TRUE, sep=" ");
+}
+EOF
+
+cd - &> /dev/null
+
+mkdir -p "$(dirname ${OUTSTATSFILEPREFIX}file)"
+
+cat "${TMPLDIR}/stats_of_nodes.txt" | column -t > "${OUTSTATSFILEPREFIX}stats_of_nodes.txt"
+cat "${TMPLDIR}/stats_of_links.txt" | column -t > "${OUTSTATSFILEPREFIX}stats_of_links.txt"
+
+fi
+
