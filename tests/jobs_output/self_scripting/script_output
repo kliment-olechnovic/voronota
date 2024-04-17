@@ -1319,6 +1319,9 @@
             "name":"set-adjuncts-of-atoms-by-ufsr",
             "short_description":""},
           {
+            "name":"set-adjuncts-of-contacts-by-ufsr",
+            "short_description":""},
+          {
             "name":"set-alias",
             "short_description":""},
           {
