@@ -9,6 +9,7 @@ cat >&2 << 'EOF'
 Options:
     --calculate-columns-statistics                string     output file pathprefix for computed statistics of columns
     --standardize-columns-using-statistics        string     input file path for statistics of columns to use
+    --output-data-prefix                          string     output data files prefix
     --help | -h                                              flag to display help message and exit
 
 Standard inpu:
@@ -16,17 +17,17 @@ Standard inpu:
 
 Standard output:
     list of generated output file path prefixes
-    
+
 Examples:
-    
+
     find ./input_complexes/ -type f -name '*.pdb' \
-    | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps.txt --input _list --processors 8 --output-data-prefix ./data_graphs/ \
-    | voronota-js-fast-iface-data-graph-v2-stats --calculate-columns-statistics ./columns_statistics.txt
-    
+    | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps.txt --input _list --processors 8 --output-data-prefix ./data_graphs_raw/ \
+    | voronota-js-fast-iface-data-graph-v2-stats --calculate-columns-statistics ./data_graph_statistics_
+
     find ./input_complexes/ -type f -name '*.pdb' \
-    | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps.txt --input _list --processors 8 --output-data-prefix ./data_graphs/ \
-    | voronota-js-fast-iface-data-graph-v2-stats --standardize-columns-using-statistics ./columns_statistics.txt
-    
+    | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps.txt --input _list --processors 8 --output-data-prefix ./data_graphs_raw/ \
+    | voronota-js-fast-iface-data-graph-v2-stats --standardize-columns-using-statistics ./data_graph_statistics_ --output-data-prefix ./data_graphs_standardized/
+
 EOF
 exit 1
 }
@@ -43,8 +44,11 @@ fi
 
 export LC_ALL=C
 
+command -v R &> /dev/null || { echo >&2 "Error: 'R' executable not in binaries path"; exit 1; }
+
 OUTSTATSFILEPREFIX=""
 INSTATSFILEPREFIX=""
+OUTPREFIX=""
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -59,6 +63,10 @@ do
 		;;
 	--standardize-columns-using-statistics)
 		INSTATSFILEPREFIX="$OPTARG"
+		shift
+		;;
+	--output-data-prefix)
+		OUTPREFIX="$OPTARG"
 		shift
 		;;
 	-h|--help)
@@ -82,6 +90,18 @@ then
 	exit 1
 fi
 
+if [ -n "$INSTATSFILEPREFIX" ] && [ -z "$OUTPREFIX" ]
+then
+	echo >&2 "Error: standardization was requested, but output data prefix was not provided"
+	exit 1
+fi
+
+if [ -z "$INSTATSFILEPREFIX" ] && [ -n "$OUTPREFIX" ]
+then
+	echo >&2 "Error: standardization was not requested, but output data prefix was provided"
+	exit 1
+fi
+
 if [ -n "$INSTATSFILEPREFIX" ] && [ ! -s "${INSTATSFILEPREFIX}nodes.txt" ]
 then
 	echo >&2 "Error: input file '${INSTATSFILEPREFIX}nodes.txt' does not exist"
@@ -93,6 +113,8 @@ then
 	echo >&2 "Error: input file '${INSTATSFILEPREFIX}links.txt' does not exist"
 	exit 1
 fi
+
+################################################################################
 
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
@@ -120,6 +142,8 @@ do
 	fi
 done \
 < "$TMPLDIR/input_list"
+
+################################################################################
 
 if [ -n "$OUTSTATSFILEPREFIX" ]
 then
@@ -159,8 +183,52 @@ cd - &> /dev/null
 
 mkdir -p "$(dirname ${OUTSTATSFILEPREFIX}file)"
 
-cat "${TMPLDIR}/stats_of_nodes.txt" | column -t > "${OUTSTATSFILEPREFIX}stats_of_nodes.txt"
-cat "${TMPLDIR}/stats_of_links.txt" | column -t > "${OUTSTATSFILEPREFIX}stats_of_links.txt"
+cat "${TMPLDIR}/stats_of_nodes.txt" | column -t > "${OUTSTATSFILEPREFIX}nodes.txt"
+cat "${TMPLDIR}/stats_of_links.txt" | column -t > "${OUTSTATSFILEPREFIX}links.txt"
 
 fi
+
+################################################################################
+
+if [ -n "$INSTATSFILEPREFIX" ]
+then
+
+mkdir -p "$(dirname ${OUTPREFIX}file)"
+
+cat "$TMPLDIR/input_list" \
+| while read -r INPREFIX
+do
+	for OBJNAME in nodes.txt links.txt
+do
+	STATSFILE="${INSTATSFILEPREFIX}${OBJNAME}"
+	INFILE="${INPREFIX}${OBJNAME}"
+	INFILEBASENAME="$(basename $INFILE)"
+	OUTFILE="${OUTPREFIX}${INFILEBASENAME}"
+
+R --vanilla --args "$STATSFILE" "$INFILE" "$OUTFILE" << 'EOF' > /dev/null
+args=commandArgs(TRUE);
+statsfile=args[1];
+infile=args[2];
+outfile=args[3];
+stats=read.table(statsfile, header=TRUE, stringsAsFactors=FALSE);
+dt=read.table(infile, header=TRUE, stringsAsFactors=FALSE);
+N=nrow(dt);
+zscore_limit_min=rep(-5, N);
+zscore_limit_max=rep(5, N);
+valcolnames=intersect(colnames(dt), stats$name);
+for(valcolname in valcolnames)
+{
+	substats=stats[which(stats$name==valcolname),];
+	sx=(dt[,valcolname]-substats$mean)/substats$sd;
+	dt[,valcolname]=pmin(pmax(zscore_limit_min, sx), zscore_limit_max);
+}
+write.table(dt, file=outfile, quote=FALSE, row.names=FALSE, col.names=TRUE, sep=" ");
+EOF
+
+	done
+done
+
+fi
+
+exit 0
 
