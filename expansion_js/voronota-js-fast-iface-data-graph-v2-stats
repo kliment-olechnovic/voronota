@@ -102,18 +102,6 @@ then
 	exit 1
 fi
 
-if [ -n "$INSTATSFILEPREFIX" ] && [ ! -s "${INSTATSFILEPREFIX}nodes.txt" ]
-then
-	echo >&2 "Error: input file '${INSTATSFILEPREFIX}nodes.txt' does not exist"
-	exit 1
-fi
-
-if [ -n "$INSTATSFILEPREFIX" ] && [ ! -s "${INSTATSFILEPREFIX}links.txt" ]
-then
-	echo >&2 "Error: input file '${INSTATSFILEPREFIX}links.txt' does not exist"
-	exit 1
-fi
-
 ################################################################################
 
 readonly TMPLDIR=$(mktemp -d)
@@ -179,6 +167,28 @@ for(obj in c("nodes.txt", "links.txt"))
 }
 EOF
 
+R --vanilla << 'EOF' > /dev/null
+dt=read.table("nodes.txt", header=TRUE, stringsAsFactors=FALSE);
+valcolnames=setdiff(colnames(dt), c("ID1", "ID2", "contact_index", "ir_contact_index", "distance", "IRCAD_sum", "IRCAD_goodness"));
+dt=dt[,valcolnames];
+dt=scale(dt);
+pca_result=prcomp(dt);
+NComp=10;
+pca_rotation_matrix=pca_result$rotation[,1:NComp];
+pca_rotation_dt=as.data.frame(pca_rotation_matrix);
+pca_rotation_dt$name=rownames(pca_rotation_dt);
+pca_rotation_dt=pca_rotation_dt[,c("name", setdiff(colnames(pca_rotation_dt), "name"))];
+stats=read.table("stats_of_nodes.txt", header=TRUE, stringsAsFactors=FALSE);
+stats$orig_order=1:nrow(stats);
+summary=merge(stats, pca_rotation_dt, all.x=TRUE);
+summary=summary[order(summary$orig_order), setdiff(colnames(summary), "orig_order")];
+for(pccolname in paste0("PC", 1:NComp))
+{
+	summary[is.na(summary[,pccolname]), pccolname]=0;
+}
+write.table(summary, file="stats_of_nodes.txt", quote=FALSE, row.names=FALSE, col.names=TRUE, sep=" ");
+EOF
+
 cd - &> /dev/null
 
 mkdir -p "$(dirname ${OUTSTATSFILEPREFIX}file)"
@@ -192,6 +202,18 @@ fi
 
 if [ -n "$INSTATSFILEPREFIX" ]
 then
+
+if [ ! -s "${INSTATSFILEPREFIX}nodes.txt" ]
+then
+	echo >&2 "Error: input file '${INSTATSFILEPREFIX}nodes.txt' does not exist"
+	exit 1
+fi
+
+if [ ! -s "${INSTATSFILEPREFIX}links.txt" ]
+then
+	echo >&2 "Error: input file '${INSTATSFILEPREFIX}links.txt' does not exist"
+	exit 1
+fi
 
 mkdir -p "$(dirname ${OUTPREFIX}file)"
 
@@ -221,6 +243,14 @@ for(valcolname in valcolnames)
 	substats=stats[which(stats$name==valcolname),];
 	sx=(dt[,valcolname]-substats$mean)/substats$sd;
 	dt[,valcolname]=pmin(pmax(zscore_limit_min, sx), zscore_limit_max);
+}
+if(is.element("PC1", colnames(stats)))
+{
+	dt_matrix=as.matrix(dt[,stats$name[which(stats$PC1!=0)]]);
+	pca_rotation_matrix=as.matrix(stats[which(stats$PC1!=0), paste0("PC", 1:10)]);
+	dt_pcs=dt_matrix %*% pca_rotation_matrix;
+	dt_pcs=as.data.frame(dt_pcs);
+	dt=cbind(dt, dt_pcs);
 }
 write.table(dt, file=outfile, quote=FALSE, row.names=FALSE, col.names=TRUE, sep=" ");
 EOF
