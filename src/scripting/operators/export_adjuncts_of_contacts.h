@@ -478,19 +478,19 @@ public:
 							}
 						}
 					}
-					output << "ir_contact_index1" << sep << "ir_contact_index2" << sep << "edge_value" << sep << "angle_value" << sep << "self_flag" << "\n";
+					output << "ir_contact_index1" << sep << "ir_contact_index2" << sep << "edge_value" << sep << "angle_value" << sep << "self_edge_value" << sep << "self_angle_value" << "\n";
 					for(std::map< apollota::Pair, std::vector<double> >::const_iterator it=inter_residue_contacts_graph.begin();it!=inter_residue_contacts_graph.end();++it)
 					{
 						if(it->second.size()==3)
 						{
 							if(it->first.get(0)==it->first.get(1))
 							{
-								output << it->first.get(0) << sep << it->first.get(1) << sep << it->second[0] << sep << it->second[2] << sep << 1 << "\n";
+								output << it->first.get(0) << sep << it->first.get(1) << sep << it->second[0] << sep << it->second[2] << sep << it->second[0] << sep << it->second[2] << "\n";
 							}
 							else
 							{
-								output << it->first.get(0) << sep << it->first.get(1) << sep << it->second[0] << sep << it->second[2] << sep << 0 << "\n";
-								output << it->first.get(1) << sep << it->first.get(0) << sep << it->second[0] << sep << it->second[2] << sep << 0 << "\n";
+								output << it->first.get(0) << sep << it->first.get(1) << sep << it->second[0] << sep << it->second[2] << sep << 0 << sep << 0 << "\n";
+								output << it->first.get(1) << sep << it->first.get(0) << sep << it->second[0] << sep << it->second[2] << sep << 0 << sep << 0 << "\n";
 							}
 						}
 					}
