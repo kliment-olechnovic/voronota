@@ -7,7 +7,8 @@ cat >&2 << 'EOF'
 'voronota-js-fast-iface-data-graph-v2-stats' script analyzes or transform graphs produced by 'voronota-js-fast-iface-data-graph-v2'.
 
 Options:
-    --calculate-columns-statistics                string     output file pathprefix for computed statistics of columns
+    --input-prefix                                string     input path prefix for graph data, default is '_stdin' to read prefixes from stdin
+    --calculate-columns-statistics                string     output file path prefix for computed statistics of columns
     --standardize-columns-using-statistics        string     input file path for statistics of columns to use
     --output-data-prefix                          string     output data files prefix
     --help | -h                                              flag to display help message and exit
@@ -27,6 +28,8 @@ Examples:
     find ./input_complexes/ -type f -name '*.pdb' \
     | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps.txt --input _list --processors 8 --output-data-prefix ./data_graphs_raw/ \
     | voronota-js-fast-iface-data-graph-v2-stats --standardize-columns-using-statistics ./data_graph_statistics_ --output-data-prefix ./data_graphs_standardized/
+    
+    voronota-js-fast-iface-data-graph-v2-stats --input-prefix ./data_graphs_raw/model1.pdb_ --standardize-columns-using-statistics ./data_graph_statistics_ --output-data-prefix ./data_graphs_standardized/
 
 EOF
 exit 1
@@ -46,6 +49,7 @@ export LC_ALL=C
 
 command -v R &> /dev/null || { echo >&2 "Error: 'R' executable not in binaries path"; exit 1; }
 
+INPREFIXSOURCE="_stdin"
 OUTSTATSFILEPREFIX=""
 INSTATSFILEPREFIX=""
 OUTPREFIX=""
@@ -57,6 +61,10 @@ do
 	OPTARG="$2"
 	shift
 	case $OPTION in
+	--input-prefix)
+		INPREFIXSOURCE="$OPTARG"
+		shift
+		;;
 	--calculate-columns-statistics)
 		OUTSTATSFILEPREFIX="$OPTARG"
 		shift
@@ -107,7 +115,12 @@ fi
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
-cat | egrep . | sort | uniq > "$TMPLDIR/input_list"
+if [ "$INPREFIXSOURCE" == "_stdin" ]
+then
+	cat | egrep . | sort | uniq > "$TMPLDIR/input_list"
+else
+	echo "$INPREFIXSOURCE" | tr ' ' '\n' | tr '\t' '\n' | egrep '.' > "$TMPLDIR/input_list"
+fi
 
 if [ ! -s "$TMPLDIR/input_list" ]
 then
