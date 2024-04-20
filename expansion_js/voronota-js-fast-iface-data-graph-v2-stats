@@ -164,6 +164,15 @@ for(obj in c("nodes", "links"))
 {
 	dt=read.table(obj, header=TRUE, stringsAsFactors=FALSE);
 	valcolnames=setdiff(colnames(dt), c("ID1", "ID2", "contact_index", "ir_contact_index", "ir_contact_index1", "ir_contact_index2"));
+	if(is.element("area", valcolnames))
+	{
+		normalizeable_valcolnames=setdiff(valcolnames, c("area", "distance", "IRCAD_sum", "IRCAD_goodness"));
+		for(normalizeable_valcolname in normalizeable_valcolnames)
+		{
+			dt[,paste0(normalizeable_valcolname, "_coeff")]=dt[,normalizeable_valcolname]/dt$area;
+		}
+		valcolnames=c(valcolnames, paste0(normalizeable_valcolnames, "_coeff"));
+	}
 	M=length(valcolnames);
 	summary=data.frame(name=valcolnames, mean=rep(0, M), sd=rep(0, M), median=rep(0, M), min=rep(0, M), max=rep(0, M));
 	for(i in 1:M)
@@ -183,6 +192,15 @@ EOF
 R --vanilla << 'EOF' > /dev/null
 dt=read.table("nodes", header=TRUE, stringsAsFactors=FALSE);
 valcolnames=setdiff(colnames(dt), c("ID1", "ID2", "contact_index", "ir_contact_index", "distance", "IRCAD_sum", "IRCAD_goodness"));
+if(is.element("area", valcolnames))
+{
+	normalizeable_valcolnames=setdiff(valcolnames, c("area", "distance", "IRCAD_sum", "IRCAD_goodness"));
+	for(normalizeable_valcolname in normalizeable_valcolnames)
+	{
+		dt[,paste0(normalizeable_valcolname, "_coeff")]=dt[,normalizeable_valcolname]/dt$area;
+	}
+	valcolnames=c(valcolnames, paste0(normalizeable_valcolnames, "_coeff"));
+}
 dt=dt[,valcolnames];
 dt=scale(dt);
 pca_result=prcomp(dt);
@@ -250,7 +268,17 @@ dt=read.table(infile, header=TRUE, stringsAsFactors=FALSE);
 N=nrow(dt);
 zscore_limit_min=rep(-5, N);
 zscore_limit_max=rep(5, N);
-valcolnames=intersect(colnames(dt), stats$name);
+valcolnames=setdiff(colnames(dt), c("ID1", "ID2", "contact_index", "ir_contact_index", "ir_contact_index1", "ir_contact_index2"));
+if(is.element("area", valcolnames))
+{
+	normalizeable_valcolnames=setdiff(valcolnames, c("area", "distance", "IRCAD_sum", "IRCAD_goodness"));
+	for(normalizeable_valcolname in normalizeable_valcolnames)
+	{
+		dt[,paste0(normalizeable_valcolname, "_coeff")]=dt[,normalizeable_valcolname]/dt$area;
+	}
+	valcolnames=c(valcolnames, paste0(normalizeable_valcolnames, "_coeff"));
+}
+valcolnames=intersect(valcolnames, stats$name);
 for(valcolname in valcolnames)
 {
 	substats=stats[which(stats$name==valcolname),];
@@ -265,7 +293,10 @@ if(is.element("PC1", colnames(stats)))
 	dt_pcs=as.data.frame(dt_pcs);
 	dt=cbind(dt, dt_pcs);
 }
-write.table(dt, file=outfile, quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",");
+orderedcolnames=colnames(dt);
+lastcolnames=c("IRCAD_sum", "IRCAD_goodness");
+orderedcolnames=c(setdiff(orderedcolnames, lastcolnames), intersect(orderedcolnames, lastcolnames));
+write.table(dt[,orderedcolnames], file=outfile, quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",");
 EOF
 
 	done
