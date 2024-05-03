@@ -14,8 +14,24 @@ find "$INPUTDIR/complex/" -type f \
 | $VORONOTAJSDIR/voronota-js-fast-iface-cadscore \
   --target "$INPUTDIR/complex/target.pdb" \
   --model _list \
+  --processors 4 \
+  --lt \
+  --output-table-file "$SUBDIR/global_scores_lt"
+
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-cadscore \
+  --target "$INPUTDIR/complex/target.pdb" \
+  --model _list \
 | column -t \
 > "$SUBDIR/global_scores_formatted"
+
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-cadscore \
+  --target "$INPUTDIR/complex/target.pdb" \
+  --model _list \
+  --lt \
+| column -t \
+> "$SUBDIR/global_scores_formatted_lt"
 
 find "$INPUTDIR/complex/" -type f \
 | $VORONOTAJSDIR/voronota-js-fast-iface-cadscore \
@@ -24,6 +40,15 @@ find "$INPUTDIR/complex/" -type f \
   --subselect-site '[-chain A]' \
 | column -t \
 > "$SUBDIR/global_scores_with_site_sel_formatted"
+
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-cadscore \
+  --target "$INPUTDIR/complex/target.pdb" \
+  --model _list \
+  --subselect-site '[-chain A]' \
+  --lt \
+| column -t \
+> "$SUBDIR/global_scores_with_site_sel_formatted_lt"
 
 find "$INPUTDIR/complex/" -type f \
 | $VORONOTAJSDIR/voronota-js-fast-iface-cadscore \
@@ -41,6 +66,30 @@ find "$INPUTDIR/complex/" -type f \
   --model _list \
   --processors 4 \
   --remap-chains \
+  --subselect-site '[-chain A]' \
+  --lt \
+| column -t \
+> "$SUBDIR/global_scores_with_site_sel_remapped_formatted_lt"
+
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-cadscore \
+  --target "$INPUTDIR/complex/target.pdb" \
+  --model _list \
+  --processors 4 \
+  --remap-chains \
   --crude \
 | column -t \
 > "$SUBDIR/global_scores_crude_remapped_formatted"
+
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-cadscore \
+  --target "$INPUTDIR/complex/target.pdb" \
+  --model _list \
+  --processors 4 \
+  --remap-chains \
+  --crude \
+  --lt \
+| column -t \
+> "$SUBDIR/global_scores_crude_remapped_formatted_lt"
+
+

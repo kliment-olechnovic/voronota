@@ -98,6 +98,7 @@ public:
 		params.model_adjunct_inter_residue_scores=input.get_value_or_default<std::string>("m-adj-inter-residue", "");
 		params.model_adjunct_inter_residue_relevant_areas=input.get_value_or_default<std::string>("m-adj-inter-residue-relevant-areas", "");
 		params.depth=input.get_value_or_default<int>("depth", 0);
+		params.max_chains_to_fully_permute=input.get_value_or_default<int>("max-chains-to-fully-permute", 6);
 		params.smoothing_window=input.get_value_or_default<unsigned int>("smoothing-window", 0);
 		params.ignore_residue_names=input.get_flag("ignore-residue-names");
 		params.binarize=input.get_flag("binarize");
@@ -141,6 +142,7 @@ public:
 		doc.set_option_decription(CDOD("m-adj-inter-residue", CDOD::DATATYPE_STRING, "model adjunct name for inter-residue scores", ""));
 		doc.set_option_decription(CDOD("m-adj-inter-residue-relevant-areas", CDOD::DATATYPE_STRING, "model adjunct name for inter-residue relevant areas", ""));
 		doc.set_option_decription(CDOD("depth", CDOD::DATATYPE_INT, "local neighborhood depth", 0));
+		doc.set_option_decription(CDOD("max-chains-to-fully-permute", CDOD::DATATYPE_INT, "maximum number of chains for switching to exhaustive remapping", 6));
 		doc.set_option_decription(CDOD("smoothing-window", CDOD::DATATYPE_INT, "smoothing window size", 0));
 		doc.set_option_decription(CDOD("ignore-residue-names", CDOD::DATATYPE_BOOL, "flag to ignore residue names"));
 		doc.set_option_decription(CDOD("binarize", CDOD::DATATYPE_BOOL, "flag to use binary contact description"));

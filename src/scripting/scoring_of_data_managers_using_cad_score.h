@@ -20,6 +20,7 @@ public:
 		bool ignore_residue_names;
 		bool binarize;
 		int depth;
+		int max_chains_to_fully_permute;
 		unsigned int smoothing_window;
 		bool also_site_based;
 		bool remap_chains;
@@ -45,6 +46,7 @@ public:
 			ignore_residue_names(false),
 			binarize(false),
 			depth(0),
+			max_chains_to_fully_permute(6),
 			smoothing_window(0),
 			also_site_based(false),
 			remap_chains(false),
@@ -99,6 +101,7 @@ public:
 		parameters_for_cad_score.ignore_residue_names=params.ignore_residue_names;
 		parameters_for_cad_score.binarize=params.binarize;
 		parameters_for_cad_score.depth=params.depth;
+		parameters_for_cad_score.max_chains_to_fully_permute=params.max_chains_to_fully_permute;
 		parameters_for_cad_score.atom_level=!(
 				params.target_adjunct_atom_scores.empty()
 				&& params.model_adjunct_atom_scores.empty()

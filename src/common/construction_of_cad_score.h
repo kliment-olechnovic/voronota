@@ -99,6 +99,7 @@ public:
 		bool residue_level;
 		bool binarize;
 		int depth;
+		int max_chains_to_fully_permute;
 		std::map<std::string, std::string> map_of_renamings;
 
 		ParametersToConstructBundleOfCADScoreInformation() :
@@ -108,7 +109,8 @@ public:
 			atom_level(false),
 			residue_level(true),
 			binarize(false),
-			depth(0)
+			depth(0),
+			max_chains_to_fully_permute(6)
 		{
 		}
 	};
@@ -178,7 +180,7 @@ public:
 
 		if(parameters.remap_chains)
 		{
-			remap_chains_optimally(bundle.map_of_target_contacts, parameters.ignore_residue_names, parameters.binarize, parameters.remap_chains_logging, bundle.map_of_renamings_from_remapping, bundle.map_of_contacts);
+			remap_chains_optimally(bundle.map_of_target_contacts, parameters.ignore_residue_names, parameters.binarize, parameters.remap_chains_logging, parameters.max_chains_to_fully_permute, bundle.map_of_renamings_from_remapping, bundle.map_of_contacts);
 		}
 
 		if(parameters.atom_level)
@@ -412,6 +414,7 @@ private:
 			const bool ignore_residue_names,
 			const bool binarize,
 			const bool write_log_to_stderr,
+			const int max_chains_to_fully_permute,
 			std::map<std::string, std::string>& final_map_of_renamings,
 			std::map<CRADsPair, double>& map_of_contacts_in_model)
 	{
@@ -423,7 +426,8 @@ private:
 		{
 			return;
 		}
-		if(chain_names_in_model.size()<=6 && chain_names_in_target.size()<=6)
+		if(max_chains_to_fully_permute>1 && max_chains_to_fully_permute<7 &&
+				chain_names_in_model.size()<=static_cast<std::size_t>(max_chains_to_fully_permute) && chain_names_in_target.size()<=static_cast<std::size_t>(max_chains_to_fully_permute))
 		{
 			std::pair<std::map<std::string, std::string>, double> best_renaming(generate_map_of_renamings_from_two_lists_with_padding(chain_names_in_model, chain_names_in_target), 0.0);
 			{

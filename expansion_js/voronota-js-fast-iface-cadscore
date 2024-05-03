@@ -17,12 +17,14 @@ Options:
     --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
     --stdin-file              string     input file path to replace stdin
     --run-faspr               string     path to FASPR binary to rebuild side-chains
+    --permuting-allowance     number     maximum number of chains for exhaustive remapping, default is 4
     --as-assembly                        flag to treat input files as biological assemblies
     --remap-chains                       flag to calculate and use optimal chains remapping
     --remap-chains-logging               flag to print log of chains remapping to stderr
     --ignore-residue-names               flag to ignore residue names in residue identifiers
     --test-common-ids                    flag to fail quickly if there are no common residues
     --crude                              flag to enable very crude faster mode
+    --lt                                 flag to enable voronota-lt faster mode
     --help | -h                          flag to display help message and exit
 
 Standard output:
@@ -78,6 +80,7 @@ MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
 STDIN_FILE="_stream"
 RUN_FASPR=""
+PERMUTATION_ALLOWANCE="4"
 SHUFFLE_CHAINS=""
 INVERT_CASE_OF_CHAINS="false"
 TARGET_INPUT_IS_SCRIPT="false"
@@ -88,6 +91,7 @@ REMAP_CHAINS_LOGGING="false"
 IGNORE_RESIDUE_NAMES="false"
 TEST_COMMON_IDS="false"
 CRUDE_MODE="false"
+VORONOTALT_MODE="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -136,6 +140,10 @@ do
 		RUN_FASPR="$OPTARG"
 		shift
 		;;
+	--permuting-allowance)
+		PERMUTATION_ALLOWANCE="$OPTARG"
+		shift
+		;;
 	--shuffle-chains)
 		SHUFFLE_CHAINS="$OPTARG"
 		shift
@@ -166,6 +174,9 @@ do
 		;;
 	--crude)
 		CRUDE_MODE="true"
+		;;
+	--lt)
+		VORONOTALT_MODE="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -395,7 +406,9 @@ common_params.contacts_subselection='$SUBSELECT_CONTACTS';
 common_params.site_subselection='$SUBSELECT_SITE';
 common_params.remap_chains='$REMAP_CHAINS';
 common_params.remap_chains_logging='$REMAP_CHAINS_LOGGING';
-common_params.crude_mode='$CRUDE_MODE'
+common_params.crude_mode='$CRUDE_MODE';
+common_params.lt_mode='$VORONOTALT_MODE';
+common_params.max_chains_to_fully_permute='$PERMUTATION_ALLOWANCE';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 common_model_mod_params={}
 common_model_mod_params.run_faspr='$RUN_FASPR';
@@ -461,31 +474,48 @@ prepare_atoms=function(params, model_mod_params)
 	voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
 	var initial_number_of_accepted_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
 	
-	if(params.crude_mode=="true")
+	if(params.lt_mode!="true")
 	{
-		voronota_select_atoms_close_to_interchain_interface("-name", "actii", "-probe", 4.5);
-	}
-	else
-	{
-		voronota_select_atoms_close_to_interchain_interface("-name", "actii");
-	}
-	voronota_assert_full_success("Failed to select interface atoms");
+		if(params.crude_mode=="true")
+		{
+			voronota_select_atoms_close_to_interchain_interface("-name", "actii", "-probe", 4.5);
+		}
+		else
+		{
+			voronota_select_atoms_close_to_interchain_interface("-name", "actii");
+		}
+		voronota_assert_full_success("Failed to select interface atoms");
 	
-	voronota_restrict_atoms("-use", "[actii]");
-	voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
+		voronota_restrict_atoms("-use", "[actii]");
+		voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
+	}
 	
 	return initial_number_of_accepted_atoms;
 }
 
 prepare_contacts=function(params)
 {
-	if(params.crude_mode=="true")
+	if(params.lt_mode=="true")
 	{
-		voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial -probe 4.5");
+		if(params.crude_mode=="true")
+		{
+			voronota_construct_contacts_radically_fast("-no-intra-chain -probe 4.5");
+		}
+		else
+		{
+			voronota_construct_contacts_radically_fast("-no-intra-chain");
+		}
 	}
 	else
 	{
-		voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
+		if(params.crude_mode=="true")
+		{
+			voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial -probe 4.5");
+		}
+		else
+		{
+			voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
+		}
 	}
 	voronota_assert_full_success("Failed to construct inter-chain contacts");
 	
@@ -495,7 +525,7 @@ prepare_contacts=function(params)
 
 analyze_interface=function(params, target_object, model_object, initial_summary)
 {
-	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based", "-site-sel", params.site_subselection, "-remap-chains", params.remap_chains, "-remap-chains-logging", params.remap_chains_logging, "-ignore-residue-names", params.ignore_residue_names);
+	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based", "-site-sel", params.site_subselection, "-remap-chains", params.remap_chains, "-remap-chains-logging", params.remap_chains_logging, "-ignore-residue-names", params.ignore_residue_names, "-max-chains-to-fully-permute", params.max_chains_to_fully_permute);
 	voronota_assert_full_success("Failed to compute CAD-score");
 	result_cadscore=voronota_last_output().results[0].output.residue_level_result;
 	result_cadscore_site_based=voronota_last_output().results[0].output.site_residue_level_result;

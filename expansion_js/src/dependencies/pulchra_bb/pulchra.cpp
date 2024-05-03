@@ -309,8 +309,6 @@ void add_mol(mol_type* mollist, mol_type* newmol)
 
 void delete_atom(atom_type* atom)
 {
-  atom_type *tmpatom;
-
     if (atom->prev) atom->prev->next=atom->next;
     if (atom->next) atom->next->prev=atom->prev;
     if (atom->name) free(atom->name);
@@ -320,7 +318,6 @@ void delete_atom(atom_type* atom)
 
 void delete_res(res_type* res)
 {
-  res_type *tmpres;
   atom_type *tmpatom;
 
     if (res->prev) res->prev->next=res->next;
@@ -339,7 +336,6 @@ void delete_res(res_type* res)
 
 void delete_mol(mol_type* mol)
 {
-  mol_type *tmpmol;
   res_type *tmpres;
   int i;
 
@@ -493,18 +489,13 @@ int read_pdb_file(FILE *inp, mol_type* molecules, const char *realname)
   char buffer[1000];
   char atmname[10];
   char resname[10];
-  char version;
-  int prevresnum, resnum, atmnum, locatmnum, num, locnum=0, i, j;
-  atom_type *prevatom1, *prevatom2, *prevatom3, *prevatom4;
-  int sgnum, cc, nres, ok, natom;
+  int prevresnum, resnum, atmnum, locatmnum, locnum=0, i;
+  int sgnum;
   real sgx, sgy, sgz;
-  res_type *res, *test1, *test2;
+  res_type *res;
   atom_type *atom;
   real x, y, z;
-  real dist;
-  unsigned char bin;
   int warn=0;
-  real cutoff;
 
     if (!inp) {
       if (_VERBOSE) printf("ERROR: can't openread file\n");
@@ -538,6 +529,7 @@ int read_pdb_file(FILE *inp, mol_type* molecules, const char *realname)
         if (resnum!=prevresnum || !strncmp(atmname, "N ", 2)) {
           prevresnum=resnum;
           if (res)
+          {
             if (sgnum) {
               res->sgx=sgx/(real)sgnum;
               res->sgy=sgy/(real)sgnum;
@@ -545,14 +537,14 @@ int read_pdb_file(FILE *inp, mol_type* molecules, const char *realname)
             } else {
               res->sgx=res->sgy=res->sgz=0.;
             }
+          }
           locatmnum=0;
-          version=' ';
           res = new_res();
           sgnum=0;
           sgx=sgy=sgz=0.;
           molecules->nres++;
           res->name = reinterpret_cast<char*>(calloc(strlen(resname)+1, 1));
-          res->type = AA_NUMS[setseq(resname)];
+          res->type = AA_NUMS[static_cast<int>(setseq(resname))];
           res->locnum=locnum++;
           res->num = resnum;
           res->natoms=0;
@@ -573,7 +565,6 @@ int read_pdb_file(FILE *inp, mol_type* molecules, const char *realname)
         sscanf(&buffer[30], "%lf", &x);
         sscanf(&buffer[38], "%lf", &y);
         sscanf(&buffer[46], "%lf", &z);
-        version = buffer[16];
         atom->name = reinterpret_cast<char*>(calloc(strlen(atmname)+1,1));
         strcpy(atom->name, atmname);
         atom->x=x; atom->y=y; atom->z=z;
@@ -625,6 +616,7 @@ int read_pdb_file(FILE *inp, mol_type* molecules, const char *realname)
     }
 
     if (res)
+    {
       if (sgnum) {
         res->sgx=sgx/(real)sgnum;
         res->sgy=sgy/(real)sgnum;
@@ -632,6 +624,7 @@ int read_pdb_file(FILE *inp, mol_type* molecules, const char *realname)
       } else {
         res->sgx=res->sgy=res->sgz=0.;
       }
+    }
 
     fclose(inp);
 
@@ -652,16 +645,8 @@ real calc_ca_energy(atom_type **c_alpha, real **new_c_alpha, real **init_c_alpha
   real dx, dy, dz;
   real dist, ddist, ddist2;
   real new_e_pot;
-  real theta0, tdif, th, aa, bb, ab;
-  real ff0, ff2, dth, m0, m2, grad, f0[3], f2[3];
-  real adiff[3], bdiff[3];
-  real deriv, theta, dtheta, len1, len2, cos_theta, sin_theta;
-  real dx1, dy1, dz1;
-  real dx2, dy2, dz2;
-  real dx3, dy3, dz3;
-  real vx1, vy1, vz1;
-  real vx2, vy2, vz2;
-  real vx3, vy3, vz3;
+  real grad;
+  real theta, cos_theta, sin_theta;
 
   real r12x, r12y, r12z;
   real r32x, r32y, r32z;
@@ -829,27 +814,25 @@ real calc_ca_energy(atom_type **c_alpha, real **new_c_alpha, real **init_c_alpha
 void ca_optimize(char *tname, char *iname)
 {
   char buf[1000];
-  int i, j, hx, my_iter;
-  real dx, dy, dz, dd, dist, dist2, dist3, ddist, ddist2;
-  real e_pot, new_e_pot, grad, alpha, e_pot1, e_pot2, e_pot3;
+  int i;
+  real dx, dy, dz, dd, dist, ddist;
+  real e_pot, e_pot1, e_pot2, e_pot3;
   real adiff[3], bdiff[3];
-  real ff0, ff2, aa, ab, bb, th, tdif, dth, m0, m2;
-  real theta0, deg_th, maxgrad, sum;
-  real f0[3], f2[3];
+  real aa, ab, bb, th;
+  real theta0, deg_th;
   real x, y, z;
   int numsteps, numsteps2, msteps;
-  int *sec;
-  real **new_c_alpha, **gradient, **init_c_alpha, last_alpha, tmp, last_good_alpha, d_alpha, last_e_pot;
+  real **new_c_alpha, **gradient, **init_c_alpha, last_alpha;
   atom_type *atom, **c_alpha;
   res_type *res;
   FILE *inp, *out;
-  int mnum, init, ok;
+  int mnum, init;
   real alpha1, alpha2, alpha3, a0;
   real ene1, ene2, ene3, e0;
   real energies[4];
-  real w1, w2, w3, eps;
+  real eps;
   real gnorm, last_gnorm;
-  int mode, fcnt;
+  int fcnt;
 
 
     if (_CA_TRAJECTORY) {
@@ -958,7 +941,6 @@ void ca_optimize(char *tname, char *iname)
     }
 
     mnum = 1;
-    mode = 0;
     init = 0;
     numsteps=numsteps2=0;
     last_alpha = 0.0;
@@ -973,8 +955,6 @@ void ca_optimize(char *tname, char *iname)
     last_gnorm = 1000.;
 
     do {
-      last_e_pot = e_pot;
-
       if (_CA_TRAJECTORY) {
         out = fopen(tname,"a");
         if (out) {
@@ -1107,7 +1087,6 @@ void ca_optimize(char *tname, char *iname)
               ddist=CA_DIST-dist;
               if (fabs(ddist)<CA_DIST_TOL) ddist=0.0;
             }
-            ddist2=ddist*ddist;
        	    if (fabs(ddist)>=CA_DIST_TOL) printf("WARNING: distance %d = %.3lf A\n", i, dist);
           }
 #endif
@@ -1619,15 +1598,14 @@ void add_replace(res_type *res, const char *aname, real x, real y, real z, int f
 
 void prepare_rbins(void)
 {
-  int i, j, k, l, m, bin13_1, bin13_2, bin14, found, pro;
-  int b13_1, b13_2, b14;
+  int i, j, k, bin13_1, bin13_2, bin14;
   real x1, y1, z1;
   real x2, y2, z2;
   real x3, y3, z3;
   real x4, y4, z4;
   real r13_1, r13_2, r14;
   real **cacoords, **tmpcoords, **tmpstat;
-  res_type *res, *prevres;
+  res_type *res;
   atom_type *atom;
 
   if (!RBINS) {
@@ -1746,7 +1724,6 @@ void rebuild_backbone(void)
 {
 
   res_type *res, *prevres;
-  atom_type *atom;
   real **cacoords, **tmpcoords, **tmpstat;
   real x1, y1, z1;
   real x2, y2, z2;
@@ -1754,10 +1731,8 @@ void rebuild_backbone(void)
   real x4, y4, z4;
   real besthit, hit;
   int bestpos;
-  int i, j, k, l, m, bin13_1, bin13_2, bin14, found, pro;
-  int b13_1, b13_2, b14;
+  int i, j, k, bin13_1, bin13_2, bin14;
   real rmsd, total, maxrms;
-  FILE *debug, *out;
 
     if (_VERBOSE) printf("Rebuilding backbone...\n");
 
@@ -1815,8 +1790,6 @@ void rebuild_backbone(void)
       bin13_1 = RBINS[i][0];
       bin13_2 = RBINS[i][1];
       bin14 = RBINS[i][2];
-
-      pro = 0;
 
       if (prevres && !strncmp(prevres->name,"PRO",3)) {
         j=0;
@@ -1920,8 +1893,8 @@ void allocate_grid(atom_list *****grid_, int *xgrid_, int *ygrid_, int *zgrid_)
   static atom_list ****grid = NULL;
   atom_list *llist, *alist;
   real min[3], max[3];
-  res_type *res, *worst;
-  atom_type *atom, *atom2;
+  res_type *res;
+  atom_type *atom;
   int i, j, x, y, z;
 
     if (!grid && chain->residua && chain->residua->atoms) {
@@ -2054,11 +2027,10 @@ real calc_torsion(atom_type *a1, atom_type *a2, atom_type *a3, atom_type *a4)
 
 real hb_energy(res_type *res, atom_list ****grid, int xgrid, int ygrid, int zgrid)
 {
-	atom_type *atom, *c_atom1, *o_atom1, *n_atom1, *c_atom2, *o_atom2, *n_atom2, *tmp_atom;
-	atom_type h_atom;
+	atom_type *atom, *c_atom1, *o_atom1, *n_atom1, *c_atom2, *o_atom2, *tmp_atom;
 	int i, j, k, ii, jj, kk;
-  atom_list *llist, *alist;
-  real dx, dy, dz, dist, min_dist1, min_dist2;
+  atom_list *llist;
+  real dx, dy, dz, dist, min_dist2;
   real hx1, hy1, hz1, dd;
   real dno, dnc, dho, dhc;
   real ene, Q;
@@ -2257,11 +2229,9 @@ void optimize_backbone(mol_type *chain)
 {
   int xgrid, ygrid, zgrid;
   atom_list ****grid;
-  atom_type *atom;
 	res_type *res;
   real ene, min_ene, tot1, tot2;
-  int i, k, best;
-FILE *out;
+  int i, best;
    
   	if (_VERBOSE) printf("Optimizing backbone...\n");
 
