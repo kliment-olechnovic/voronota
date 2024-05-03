@@ -27,9 +27,9 @@ Standard output:
     
 Examples:
 
-    voronota-js-fast-iface-data-graph-v2 --config-akbps ./config/akbps.txt --input model.pdb --output-data-prefix ./data_graphs/
+    voronota-js-fast-iface-data-graph-v2 --config-akbps ./config/akbps --input model.pdb --output-data-prefix ./data_graphs/
     
-    ls *.pdb | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps.txt --input _list --processors 8 --output-data-prefix ./data_graphs/
+    ls *.pdb | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps --input _list --processors 8 --output-data-prefix ./data_graphs/
 
 EOF
 exit 1
@@ -318,7 +318,7 @@ then
 		mkdir -p "$TMPLDIR/slurm_logs"
 		
 		find $TMPLDIR/portions/ -type f -not -empty \
-		| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
+		| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ""}' \
 		| xargs -L 1 sbatch -o "$TMPLDIR/slurm_logs/slurmjob-%j.out" -e "$TMPLDIR/slurm_logs/slurmjob-%j.err" $SBATCH_PARAMETERS "$ZEROARG" "${ALLARGS[@]}" --sbatch-parameters '' --processors 1 --input _list \
 		| egrep '^Submitted batch job ' \
 		| awk '{print $4}' \
@@ -335,7 +335,7 @@ then
 		find "$TMPLDIR/slurm_logs/" -type f -not -empty | xargs -L 1 cat >&2
 	else
 		find $TMPLDIR/portions/ -type f -not -empty \
-		| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
+		| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ""}' \
 		| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" --processors 1 --input _list
 	fi
 		
@@ -552,8 +552,8 @@ generate_model_data_graph_files=function(input_name)
 	
 	summary.input_name=input_name;
 	summary.output_files_prefix=common_params.output_prefix+""+input_name+"_";
-	summary.output_nodes_file=summary.output_files_prefix+"nodes.txt";
-	summary.output_links_file=summary.output_files_prefix+"links.txt";
+	summary.output_nodes_file=summary.output_files_prefix+"nodes";
+	summary.output_links_file=summary.output_files_prefix+"links";
 	
 	voronota_export_adjuncts_of_contacts("-inter-residue", "true", "-file", summary.output_nodes_file, "-contacts-use", "[inter_chain_contacts]", "-no-serial", "-adjuncts", adjuncts_to_output, "-adjacency-file", summary.output_links_file, "-saturate-adjacency");
 	voronota_assert_full_success("Failed to export contacts data");

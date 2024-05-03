@@ -22,11 +22,11 @@ Standard output:
 Examples:
 
     find ./input_complexes/ -type f -name '*.pdb' \
-    | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps.txt --input _list --processors 8 --output-data-prefix ./data_graphs_raw/ \
+    | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps --input _list --processors 8 --output-data-prefix ./data_graphs_raw/ \
     | voronota-js-fast-iface-data-graph-v2-stats --calculate-columns-statistics ./data_graph_statistics_
 
     find ./input_complexes/ -type f -name '*.pdb' \
-    | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps.txt --input _list --processors 8 --output-data-prefix ./data_graphs_raw/ \
+    | voronota-js-fast-iface-data-graph-v2 --config ./config/akbps --input _list --processors 8 --output-data-prefix ./data_graphs_raw/ \
     | voronota-js-fast-iface-data-graph-v2-stats --standardize-columns-using-statistics ./data_graph_statistics_ --output-data-prefix ./data_graphs_standardized/
     
     voronota-js-fast-iface-data-graph-v2-stats --input-prefix ./data_graphs_raw/model1.pdb_ --standardize-columns-using-statistics ./data_graph_statistics_ --output-data-prefix ./data_graphs_standardized/
@@ -130,15 +130,15 @@ fi
 
 while read -r INPREFIX
 do
-	if [ ! -s "${INPREFIX}nodes.txt" ]
+	if [ ! -s "${INPREFIX}nodes" ]
 	then
-		echo >&2 "Error: input graph nodes file '${INPREFIX}nodes.txt' does not exist"
+		echo >&2 "Error: input graph nodes file '${INPREFIX}nodes' does not exist"
 		exit 1
 	fi
 	
-	if [ ! -s "${INPREFIX}links.txt" ]
+	if [ ! -s "${INPREFIX}links" ]
 	then
-		echo >&2 "Error: input graph links file '${INPREFIX}links.txt' does not exist"
+		echo >&2 "Error: input graph links file '${INPREFIX}links' does not exist"
 		exit 1
 	fi
 done \
@@ -149,21 +149,30 @@ done \
 if [ -n "$OUTSTATSFILEPREFIX" ]
 then
 
-cat "$TMPLDIR/input_list" | sed 's|$|nodes.txt|' | xargs -L 100 cat \
+cat "$TMPLDIR/input_list" | sed 's|$|nodes|' | xargs -L 100 cat \
 | awk '{if(NR==1 || $1!="ID1"){print $0}}' \
-> $TMPLDIR/nodes.txt
+> $TMPLDIR/nodes
 
-cat "$TMPLDIR/input_list" | sed 's|$|links.txt|' | xargs -L 100 cat \
+cat "$TMPLDIR/input_list" | sed 's|$|links|' | xargs -L 100 cat \
 | awk '{if(NR==1 || $1!="ir_contact_index1"){print $0}}' \
-> $TMPLDIR/links.txt
+> $TMPLDIR/links
 
 cd "$TMPLDIR"
 
 R --vanilla << 'EOF' > /dev/null
-for(obj in c("nodes.txt", "links.txt"))
+for(obj in c("nodes", "links"))
 {
 	dt=read.table(obj, header=TRUE, stringsAsFactors=FALSE);
 	valcolnames=setdiff(colnames(dt), c("ID1", "ID2", "contact_index", "ir_contact_index", "ir_contact_index1", "ir_contact_index2"));
+	if(is.element("area", valcolnames))
+	{
+		normalizeable_valcolnames=setdiff(valcolnames, c("area", "distance", "IRCAD_sum", "IRCAD_goodness"));
+		for(normalizeable_valcolname in normalizeable_valcolnames)
+		{
+			dt[,paste0(normalizeable_valcolname, "_coeff")]=dt[,normalizeable_valcolname]/dt$area;
+		}
+		valcolnames=c(valcolnames, paste0(normalizeable_valcolnames, "_coeff"));
+	}
 	M=length(valcolnames);
 	summary=data.frame(name=valcolnames, mean=rep(0, M), sd=rep(0, M), median=rep(0, M), min=rep(0, M), max=rep(0, M));
 	for(i in 1:M)
@@ -181,8 +190,17 @@ for(obj in c("nodes.txt", "links.txt"))
 EOF
 
 R --vanilla << 'EOF' > /dev/null
-dt=read.table("nodes.txt", header=TRUE, stringsAsFactors=FALSE);
+dt=read.table("nodes", header=TRUE, stringsAsFactors=FALSE);
 valcolnames=setdiff(colnames(dt), c("ID1", "ID2", "contact_index", "ir_contact_index", "distance", "IRCAD_sum", "IRCAD_goodness"));
+if(is.element("area", valcolnames))
+{
+	normalizeable_valcolnames=setdiff(valcolnames, c("area", "distance", "IRCAD_sum", "IRCAD_goodness"));
+	for(normalizeable_valcolname in normalizeable_valcolnames)
+	{
+		dt[,paste0(normalizeable_valcolname, "_coeff")]=dt[,normalizeable_valcolname]/dt$area;
+	}
+	valcolnames=c(valcolnames, paste0(normalizeable_valcolnames, "_coeff"));
+}
 dt=dt[,valcolnames];
 dt=scale(dt);
 pca_result=prcomp(dt);
@@ -191,7 +209,7 @@ pca_rotation_matrix=pca_result$rotation[,1:NComp];
 pca_rotation_dt=as.data.frame(pca_rotation_matrix);
 pca_rotation_dt$name=rownames(pca_rotation_dt);
 pca_rotation_dt=pca_rotation_dt[,c("name", setdiff(colnames(pca_rotation_dt), "name"))];
-stats=read.table("stats_of_nodes.txt", header=TRUE, stringsAsFactors=FALSE);
+stats=read.table("stats_of_nodes", header=TRUE, stringsAsFactors=FALSE);
 stats$orig_order=1:nrow(stats);
 summary=merge(stats, pca_rotation_dt, all.x=TRUE);
 summary=summary[order(summary$orig_order), setdiff(colnames(summary), "orig_order")];
@@ -199,15 +217,15 @@ for(pccolname in paste0("PC", 1:NComp))
 {
 	summary[is.na(summary[,pccolname]), pccolname]=0;
 }
-write.table(summary, file="stats_of_nodes.txt", quote=FALSE, row.names=FALSE, col.names=TRUE, sep=" ");
+write.table(summary, file="stats_of_nodes", quote=FALSE, row.names=FALSE, col.names=TRUE, sep=" ");
 EOF
 
 cd - &> /dev/null
 
 mkdir -p "$(dirname ${OUTSTATSFILEPREFIX}file)"
 
-cat "${TMPLDIR}/stats_of_nodes.txt" | column -t > "${OUTSTATSFILEPREFIX}nodes.txt"
-cat "${TMPLDIR}/stats_of_links.txt" | column -t > "${OUTSTATSFILEPREFIX}links.txt"
+cat "${TMPLDIR}/stats_of_nodes" | column -t > "${OUTSTATSFILEPREFIX}nodes"
+cat "${TMPLDIR}/stats_of_links" | column -t > "${OUTSTATSFILEPREFIX}links"
 
 fi
 
@@ -216,15 +234,15 @@ fi
 if [ -n "$INSTATSFILEPREFIX" ]
 then
 
-if [ ! -s "${INSTATSFILEPREFIX}nodes.txt" ]
+if [ ! -s "${INSTATSFILEPREFIX}nodes" ]
 then
-	echo >&2 "Error: input file '${INSTATSFILEPREFIX}nodes.txt' does not exist"
+	echo >&2 "Error: input file '${INSTATSFILEPREFIX}nodes' does not exist"
 	exit 1
 fi
 
-if [ ! -s "${INSTATSFILEPREFIX}links.txt" ]
+if [ ! -s "${INSTATSFILEPREFIX}links" ]
 then
-	echo >&2 "Error: input file '${INSTATSFILEPREFIX}links.txt' does not exist"
+	echo >&2 "Error: input file '${INSTATSFILEPREFIX}links' does not exist"
 	exit 1
 fi
 
@@ -233,12 +251,12 @@ mkdir -p "$(dirname ${OUTPREFIX}file)"
 cat "$TMPLDIR/input_list" \
 | while read -r INPREFIX
 do
-	for OBJNAME in nodes.txt links.txt
+	for OBJNAME in nodes links
 do
 	STATSFILE="${INSTATSFILEPREFIX}${OBJNAME}"
 	INFILE="${INPREFIX}${OBJNAME}"
 	INFILEBASENAME="$(basename $INFILE)"
-	OUTFILE="${OUTPREFIX}${INFILEBASENAME}"
+	OUTFILE="${OUTPREFIX}${INFILEBASENAME}.csv"
 
 R --vanilla --args "$STATSFILE" "$INFILE" "$OUTFILE" << 'EOF' > /dev/null
 args=commandArgs(TRUE);
@@ -250,7 +268,17 @@ dt=read.table(infile, header=TRUE, stringsAsFactors=FALSE);
 N=nrow(dt);
 zscore_limit_min=rep(-5, N);
 zscore_limit_max=rep(5, N);
-valcolnames=intersect(colnames(dt), stats$name);
+valcolnames=setdiff(colnames(dt), c("ID1", "ID2", "contact_index", "ir_contact_index", "ir_contact_index1", "ir_contact_index2"));
+if(is.element("area", valcolnames))
+{
+	normalizeable_valcolnames=setdiff(valcolnames, c("area", "distance", "IRCAD_sum", "IRCAD_goodness"));
+	for(normalizeable_valcolname in normalizeable_valcolnames)
+	{
+		dt[,paste0(normalizeable_valcolname, "_coeff")]=dt[,normalizeable_valcolname]/dt$area;
+	}
+	valcolnames=c(valcolnames, paste0(normalizeable_valcolnames, "_coeff"));
+}
+valcolnames=intersect(valcolnames, stats$name);
 for(valcolname in valcolnames)
 {
 	substats=stats[which(stats$name==valcolname),];
@@ -265,7 +293,10 @@ if(is.element("PC1", colnames(stats)))
 	dt_pcs=as.data.frame(dt_pcs);
 	dt=cbind(dt, dt_pcs);
 }
-write.table(dt, file=outfile, quote=FALSE, row.names=FALSE, col.names=TRUE, sep=" ");
+orderedcolnames=colnames(dt);
+lastcolnames=c("IRCAD_sum", "IRCAD_goodness");
+orderedcolnames=c(setdiff(orderedcolnames, lastcolnames), intersect(orderedcolnames, lastcolnames));
+write.table(dt[,orderedcolnames], file=outfile, quote=FALSE, row.names=FALSE, col.names=TRUE, sep=",");
 EOF
 
 	done
