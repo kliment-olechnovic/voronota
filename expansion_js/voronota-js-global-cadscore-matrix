@@ -1,0 +1,520 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-global-cadscore-matrix' script computes CAD-score between sctuctures.
+
+Options:
+    --restrict-input          string     query to restrict input atoms, default is '[]'
+    --subselect-contacts      string     query to subselect contacts, default is '[]'
+    --output-table-file       string     output table file path, default is '_stdout' to print to stdout
+    --processors              number     maximum number of processors to run in parallel, default is 1
+    --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
+    --stdin-file              string     input file path to replace stdin
+    --permuting-allowance     number     maximum number of chains for exhaustive remapping, default is 4
+    --as-assembly                        flag to treat input files as biological assemblies
+    --remap-chains                       flag to calculate and use optimal chains remapping
+    --ignore-residue-names               flag to ignore residue names in residue identifiers
+    --crude                              flag to enable very crude faster mode
+    --lt                                 flag to enable voronota-lt faster mode
+    --help | -h                          flag to display help message and exit
+
+Standard output:
+    space-separated table of scores
+    
+Examples:
+
+    ls *.pdb | voronota-js-global-cadscore-matrix --lt | column -t
+    
+    find ./complexes/ -type f -name '*.pdb' | voronota-js-global-cadscore-matrix --lt > "full_matrix.txt"
+
+EOF
+exit 1
+}
+
+function cat_stdin
+{
+	STDIN_SOURCE="$1"
+	if [ "$STDIN_SOURCE" == "_stream" ]
+	then
+		cat
+	else
+		cat "$STDIN_SOURCE"
+	fi
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd "$(dirname ${ZEROARG})"
+	export PATH="$(pwd):${PATH}"
+	cd - &> /dev/null
+fi
+
+export LC_ALL=C
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+RESTRICT_INPUT="[]"
+SUBSELECT_CONTACTS="[]"
+OUTPUT_TABLE_FILE="_stdout"
+MAX_PROCESSORS="1"
+SBATCH_PARAMETERS=""
+STDIN_FILE="_stream"
+PERMUTATION_ALLOWANCE="4"
+MODEL_INPUT_IS_SCRIPT="false"
+AS_ASSEMBLY="false"
+REMAP_CHAINS="false"
+IGNORE_RESIDUE_NAMES="false"
+CRUDE_MODE="false"
+VORONOTALT_MODE="false"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	--restrict-input)
+		RESTRICT_INPUT="$OPTARG"
+		shift
+		;;
+	--subselect-contacts)
+		SUBSELECT_CONTACTS="$OPTARG"
+		shift
+		;;
+	--output-table-file)
+		OUTPUT_TABLE_FILE="$OPTARG"
+		shift
+		;;
+	--processors)
+		MAX_PROCESSORS="$OPTARG"
+		shift
+		;;
+	--sbatch-parameters)
+		SBATCH_PARAMETERS="$OPTARG"
+		shift
+		;;
+	--stdin-file)
+		STDIN_FILE="$OPTARG"
+		shift
+		;;
+	--permuting-allowance)
+		PERMUTATION_ALLOWANCE="$OPTARG"
+		shift
+		;;
+	--model-input-is-script)
+		MODEL_INPUT_IS_SCRIPT="true"
+		;;
+	--as-assembly)
+		AS_ASSEMBLY="true"
+		;;
+	--remap-chains)
+		REMAP_CHAINS="true"
+		;;
+	--ignore-residue-names)
+		IGNORE_RESIDUE_NAMES="true"
+		;;	
+	--crude)
+		CRUDE_MODE="true"
+		;;
+	--lt)
+		VORONOTALT_MODE="true"
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ -z "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -ne "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -lt "1" ]
+then
+	echo >&2 "Error: invalid number of processors '$MAX_PROCESSORS', must be a positive number"
+	exit 1
+fi
+
+if [ -n "$SBATCH_PARAMETERS" ]
+then
+	command -v sbatch &> /dev/null || { echo >&2 "Error: 'sbatch' executable not in binaries path"; exit 1; }
+	command -v squeue &> /dev/null || { echo >&2 "Error: 'squeue' executable not in binaries path"; exit 1; }
+		
+	if [ "$MAX_PROCESSORS" -lt "2" ]
+	then
+		echo >&2 "Error: sbatch usage requested, but requested number of processors is less than 2"
+		exit 1
+	fi
+fi
+
+if [ "$MAX_PROCESSORS" -gt "1" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat_stdin "$STDIN_FILE" | egrep . | sort | uniq > "$TMPLDIR/input_list"
+	
+	if [ ! -s "$TMPLDIR/input_list" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	mkdir -p "$TMPLDIR/portions"
+	mkdir -p "$TMPLDIR/portions_pairs"
+	
+	NUM_OF_INPUT_GROUPS="$(cat $TMPLDIR/input_list | awk '{print $2}' | sort | uniq | egrep . | wc -l)"
+	
+	if [ "$NUM_OF_INPUT_GROUPS" == "0" ]
+	then
+		NUM_OF_SPLITS="$(echo $MAX_PROCESSORS | awk '{v=(1+(sqrt(1+8*$1)/2)); print int(v);}')"
+		
+		NUM_OF_INPUTS="$(cat $TMPLDIR/input_list | wc -l)"
+		
+		SIZE_OF_PORTION="$(echo "a=$NUM_OF_INPUTS; b=$NUM_OF_SPLITS; if(a%b) a/b+1 else a/b" | bc)"
+		
+		if [ "$SIZE_OF_PORTION" -gt "19997" ]
+		then
+			SIZE_OF_PORTION="19997"
+		fi
+		
+		split -l "$SIZE_OF_PORTION" "$TMPLDIR/input_list" "$TMPLDIR/portions/portion_"
+		
+		find $TMPLDIR/portions/ -type f -not -empty | sort | while read -r PORTIONFILE1
+		do
+			cat "$PORTIONFILE1" | awk '{print $1 " self"}' > "$TMPLDIR/portions_pairs/$(basename $PORTIONFILE1)_$(basename $PORTIONFILE1)"
+			find $TMPLDIR/portions/ -type f -not -empty | sort | while read -r PORTIONFILE2
+			do
+				if [[ "$PORTIONFILE1" < "$PORTIONFILE2" ]]
+				then
+					{
+						cat "$PORTIONFILE1" | awk '{print $1 " a"}'
+						cat "$PORTIONFILE2" | awk '{print $1 " b"}'
+					} > "$TMPLDIR/portions_pairs/$(basename $PORTIONFILE1)_$(basename $PORTIONFILE2)"
+				fi
+			done
+		done
+	else
+		cat "$TMPLDIR/input_list" | awk '{print $1 " _" $2 "_"}' > "$TMPLDIR/input_list_grouped"
+		mv "$TMPLDIR/input_list_grouped" "$TMPLDIR/input_list"
+		
+		SMALLEST_GROUP="$(cat $TMPLDIR/input_list | awk '{print $2}' | sort | uniq -c | sort | head -1 | awk '{print $2}')"
+		cat $TMPLDIR/input_list | awk -v sgroup="$SMALLEST_GROUP" '{if($2==sgroup){print $0}}' > $TMPLDIR/input_list_a
+		cat $TMPLDIR/input_list | awk -v sgroup="$SMALLEST_GROUP" '{if($2!=sgroup){print $0}}' > $TMPLDIR/input_list_b
+		
+		NUM_OF_SPLITS="$MAX_PROCESSORS"
+		
+		NUM_OF_INPUTS="$(cat $TMPLDIR/input_list_b | wc -l)"
+		
+		SIZE_OF_PORTION="$(echo "a=$NUM_OF_INPUTS; b=$NUM_OF_SPLITS; if(a%b) a/b+1 else a/b" | bc)"
+		
+		if [ "$SIZE_OF_PORTION" -gt "19997" ]
+		then
+			SIZE_OF_PORTION="19997"
+		fi
+		
+		split -l "$SIZE_OF_PORTION" "$TMPLDIR/input_list_b" "$TMPLDIR/portions/portion_"
+		
+		find $TMPLDIR/portions/ -type f -not -empty | sort | while read -r PORTIONFILE
+		do
+			{
+				cat "$TMPLDIR/input_list_a"
+				cat "$PORTIONFILE"
+			} > "$TMPLDIR/portions_pairs/grouped_$(basename $PORTIONFILE)"
+		done
+	fi
+	
+	mkdir -p "$TMPLDIR/children_tables"
+	
+	if [ -n "$SBATCH_PARAMETERS" ]
+	then
+		mkdir -p "$TMPLDIR/slurm_logs"
+		
+		find $TMPLDIR/portions_pairs/ -type f -not -empty \
+		| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
+		| xargs -L 1 sbatch -o "$TMPLDIR/slurm_logs/slurmjob-%j.out" -e "$TMPLDIR/slurm_logs/slurmjob-%j.err" $SBATCH_PARAMETERS "$ZEROARG" "${ALLARGS[@]}" --sbatch-parameters '' --processors 1 \
+		| egrep '^Submitted batch job ' \
+		| awk '{print $4}' \
+		> "$TMPLDIR/slurm_job_ids"
+		
+		sleep 1
+		REMAINING_SLURM_JOBS="$(squeue | grep -f "$TMPLDIR/slurm_job_ids" | wc -l)"
+		while [ "$REMAINING_SLURM_JOBS" -gt "0" ]
+		do
+			sleep 5
+			REMAINING_SLURM_JOBS="$(squeue | grep -f "$TMPLDIR/slurm_job_ids" | wc -l)"
+		done
+		
+		find "$TMPLDIR/slurm_logs/" -type f -not -empty | xargs -L 1 cat >&2
+	else
+		find $TMPLDIR/portions_pairs/ -type f -not -empty \
+		| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
+		| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" --processors 1
+	fi
+	
+	find "$TMPLDIR/children_tables" -type f -not -empty \
+	| sort \
+	| xargs -L 1 cat \
+	| awk '{if(NR==1 || $1!="target") print $0}' \
+	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns cadscore model_area target_area -multipliers 1 1 1 -tolerances 0.0 0.0 0.0 -no-tournament');" \
+	> "$TMPLDIR/full_output_table"
+	
+	if [ -n "$OUTPUT_TABLE_FILE" ] && [ "$OUTPUT_TABLE_FILE" != "_stdout" ]
+	then
+		mkdir -p "$(dirname "$OUTPUT_TABLE_FILE")"
+		cat "$TMPLDIR/full_output_table" > "$OUTPUT_TABLE_FILE"
+	else
+		cat "$TMPLDIR/full_output_table"
+	fi
+	
+	exit 0
+fi
+
+{
+cat << EOF
+var common_params={}
+common_params.model_input_is_script='$MODEL_INPUT_IS_SCRIPT';
+common_params.input_as_assembly='$AS_ASSEMBLY';
+common_params.restrict_input_atoms='$RESTRICT_INPUT';
+common_params.contacts_subselection='$SUBSELECT_CONTACTS';
+common_params.remap_chains='$REMAP_CHAINS';
+common_params.ignore_residue_names='$IGNORE_RESIDUE_NAMES';
+common_params.crude_mode='$CRUDE_MODE';
+common_params.lt_mode='$VORONOTALT_MODE';
+common_params.max_chains_to_fully_permute='$PERMUTATION_ALLOWANCE';
+common_params.output_table_file='$OUTPUT_TABLE_FILE';
+var input_info_array=[];
+EOF
+
+cat_stdin "$STDIN_FILE" | egrep . | sort | uniq | awk '{print $0 " self"}' | awk '{print $1 " " $2}' \
+| while read -r SUBINFILE SETID
+do
+SUBINFILE_BASENAME="$(basename "$SUBINFILE")"
+cat << EOF
+input_info_array.push({"model_input_file": "$SUBINFILE", "model_input_file_name": "$SUBINFILE_BASENAME", "set_id": "$SETID"});
+EOF
+done
+
+cat << 'EOF'
+analyze_interface=function(params, target_object, model_object, initial_summary)
+{
+	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[relevant_contacts]", "-remap-chains", params.remap_chains, "-ignore-residue-names", params.ignore_residue_names, "-max-chains-to-fully-permute", params.max_chains_to_fully_permute);
+	voronota_assert_full_success("Failed to compute CAD-score");
+	result_cadscore=voronota_last_output().results[0].output.residue_level_result;
+	
+	summary=initial_summary;
+	
+	summary.cadscore=result_cadscore.score;
+	summary.target_area=result_cadscore.target_area_sum;
+	summary.model_area=result_cadscore.model_target_area_sum;
+	
+	var summary_table={}
+	summary_table.header="";
+	summary_table.row="";
+	
+	Object.keys(summary).forEach(function(key)
+	{
+			summary_table.header+=key+" ";
+	});
+	
+	Object.keys(summary).forEach(function(key)
+	{
+		value=summary[key];
+		if(typeof value === 'number')
+		{
+			summary_table.row+=parseFloat(value.toFixed(5))+" ";
+		}
+		else
+		{
+			summary_table.row+=value+" ";
+		}
+	});
+	
+	summary_table.header=summary_table.header.trim();
+	summary_table.row=summary_table.row.trim();
+	
+	return summary_table;
+}
+
+voronota_setup_defaults("-no-load-voromqa-potentials -no-load-alt-voromqa-potential -no-load-more-atom-types -no-load-mock-voromqa-potential");
+
+if(common_params.model_input_is_script===undefined || common_params.model_input_is_script==="")
+{
+	common_params.model_input_is_script="false";
+}
+
+if(common_params.input_as_assembly===undefined || common_params.input_as_assembly==="")
+{
+	common_params.input_as_assembly="false";
+}
+
+if(common_params.restrict_input_atoms===undefined || common_params.restrict_input_atoms==="")
+{
+	common_params.restrict_input_atoms='[]';
+}
+
+if(common_params.contacts_subselection===undefined || common_params.contacts_subselection==="")
+{
+	common_params.contacts_subselection='[]';
+}
+
+if(common_params.remap_chains===undefined || common_params.remap_chains==="")
+{
+	common_params.remap_chains="false";
+}
+
+if(common_params.ignore_residue_names===undefined || common_params.ignore_residue_names==="")
+{
+	common_params.ignore_residue_names="false";
+}
+
+if(common_params.output_table_file===undefined || common_params.output_table_file==="")
+{
+	common_params.output_table_file="_stdout";
+}
+
+var model_objects_array=[];
+
+for(var i=0;i<input_info_array.length;i++)
+{
+	var subinput=input_info_array[i];
+	var model_object="";
+	
+	try
+	{
+		voronota_unpick_objects();
+		
+		var prev_number_of_objects=0;
+		if(i>0)
+		{
+			voronota_list_objects();
+			if(voronota_last_output().results_summary.full_success)
+			{
+				prev_number_of_objects=voronota_last_output().results[0].output.objects.length;
+			}
+		}
+		
+		if(common_params.model_input_is_script=="true")
+		{
+			voronota_source("-file", subinput.model_input_file);
+			voronota_assert_full_success("Failed when running provided model input script");
+		}
+		else
+		{
+			voronota_import("-file", subinput.model_input_file, "-as-assembly", common_params.input_as_assembly);
+			voronota_assert_full_success("Failed to import model file");
+		}
+		
+		voronota_list_objects();
+		voronota_assert_full_success("Failed to list objects");
+		var current_number_of_objects=voronota_last_output().results[0].output.objects.length;
+		if(current_number_of_objects!=(prev_number_of_objects+1))
+		{
+			throw ("Not exactly one structure loaded as model from "+subinput.model_input_file);
+		}
+		model_object=voronota_last_output().results[0].output.objects[current_number_of_objects-1].name;
+		
+		voronota_pick_objects("-names", model_object);
+		
+		voronota_restrict_atoms("-use", common_params.restrict_input_atoms);
+		voronota_assert_full_success("Failed to restrict input atoms by the input query");
+		
+		if(common_params.crude_mode=="true")
+		{
+			voronota_restrict_atoms("-use", "([-protein -aname CA] or [-nucleic])");
+		}
+		else
+		{
+			voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
+		}
+		voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
+		
+		if(common_params.lt_mode!="true")
+		{		
+			if(common_params.crude_mode=="true")
+			{
+				voronota_construct_contacts("-skip-sas -no-calculate-volumes -no-tag-peripherial -probe 4.5");
+			}
+			else
+			{
+				voronota_construct_contacts("-skip-sas -no-calculate-volumes -no-tag-peripherial");
+			}
+		}
+		else
+		{
+			if(common_params.crude_mode=="true")
+			{
+				voronota_construct_contacts_radically_fast("-no-intra-residue -probe 4.5");
+			}
+			else
+			{
+				voronota_construct_contacts_radically_fast("-no-intra-residue");
+			}
+		}
+		voronota_assert_full_success("Failed to construct contacts");
+		
+		voronota_select_contacts("-use", "([-min-seq-sep 1] and "+common_params.contacts_subselection+")", "-name", "relevant_contacts");
+		voronota_assert_full_success("Failed to select inter-chain contacts");
+		
+		model_objects_array.push({"model_object": model_object, "model_input_file_name": subinput.model_input_file_name, "set_id": subinput.set_id});
+	}
+	catch(error)
+	{
+		log("Failed with '"+subinput.model_input_file_name+"': "+error);
+		
+		if(model_object!="")
+		{
+			voronota_delete_objects('-names', model_object);
+			voronota_assert_full_success("Failed to delete object");
+			model_object="";
+		}
+	}
+}
+
+var full_summary_table="";
+
+for(var i=0;i<model_objects_array.length;i++)
+{
+	for(var j=0;j<model_objects_array.length;j++)
+	{
+		if(i!=j && (model_objects_array[i].set_id!=model_objects_array[j].set_id || model_objects_array[i].set_id=="self"))
+		{
+			var initial_summary={};
+			initial_summary.target=model_objects_array[i].model_input_file_name;
+			initial_summary.model=model_objects_array[j].model_input_file_name;
+			var summary_table=analyze_interface(common_params, model_objects_array[i].model_object, model_objects_array[j].model_object, initial_summary);
+			if(full_summary_table=="")
+			{
+				full_summary_table+=summary_table.header+"\n";
+			}
+			full_summary_table+=summary_table.row+"\n";
+		}
+	}
+}
+
+fwrite('_virtual/summary', full_summary_table);
+
+if(common_params.output_table_file!=="_stdout")
+{
+	shell('mkdir -p "$(dirname '+common_params.output_table_file+')"');
+}
+
+voronota_tournament_sort('-input-file', '_virtual/summary', '-output-file', common_params.output_table_file, '-columns', ['cadscore', 'model_area', 'target_area'], '-multipliers', [1, 1, 1], '-tolerances', [0.0, 0.0, 0.0], '-no-tournament');
+
+EOF
+
+} \
+| voronota-js --no-setup-defaults
+
