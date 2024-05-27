@@ -76,6 +76,25 @@ struct SimpleQuaternion
 	}
 };
 
+struct ValuedID
+{
+	Float value;
+	UnsignedInt index;
+
+	ValuedID() : value(FLOATCONST(0.0)), index(0)
+	{
+	}
+
+	ValuedID(const Float value, const UnsignedInt index) : value(value), index(index)
+	{
+	}
+
+	bool operator<(const ValuedID& cid) const
+	{
+		return (value<cid.value || (value==cid.value && index<cid.index));
+	}
+};
+
 inline bool equal(const Float a, const Float b, const Float e)
 {
 	return (((a-b)<=e) && ((b-a)<=e));

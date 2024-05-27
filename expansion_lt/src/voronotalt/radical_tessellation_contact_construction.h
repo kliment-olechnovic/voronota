@@ -100,7 +100,7 @@ public:
 			const std::vector<int>& spheres_exclusion_statuses,
 			const UnsignedInt a_id,
 			const UnsignedInt b_id,
-			const std::vector<UnsignedInt>& a_neighbor_collisions,
+			const std::vector<ValuedID>& a_neighbor_collisions,
 			ContactDescriptor& result_contact_descriptor)
 	{
 		result_contact_descriptor.clear();
@@ -121,7 +121,7 @@ public:
 					{
 						for(UnsignedInt i=0;i<a_neighbor_collisions.size() && !discarded && nostop;i++)
 						{
-							const UnsignedInt neighbor_id=a_neighbor_collisions[i];
+							const UnsignedInt neighbor_id=a_neighbor_collisions[i].index;
 							if(neighbor_id!=b_id && (neighbor_id>=spheres_exclusion_statuses.size() || spheres_exclusion_statuses[neighbor_id]==0))
 							{
 								const SimpleSphere& c=spheres[neighbor_id];

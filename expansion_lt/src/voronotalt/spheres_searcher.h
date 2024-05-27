@@ -68,7 +68,7 @@ public:
 		return box_size;
 	}
 
-	bool find_colliding_ids(const UnsignedInt& central_id, std::vector<UnsignedInt>& colliding_ids, const bool discard_hidden, int& exclusion_status) const
+	bool find_colliding_ids(const UnsignedInt& central_id, std::vector<ValuedID>& colliding_ids, const bool discard_hidden, int& exclusion_status) const
 	{
 		colliding_ids.clear();
 		exclusion_status=0;
@@ -110,7 +110,7 @@ public:
 										else if(!discard_hidden
 												|| !sphere_contains_sphere(central_sphere, candidate_sphere))
 										{
-											colliding_ids.push_back(id);
+											colliding_ids.push_back(ValuedID(distance_to_center_of_intersection_circle_of_two_spheres(central_sphere, candidate_sphere), id));
 										}
 									}
 								}
@@ -119,6 +119,10 @@ public:
 					}
 				}
 			}
+		}
+		if(!colliding_ids.empty())
+		{
+			std::sort(colliding_ids.begin(), colliding_ids.end());
 		}
 		return (!colliding_ids.empty());
 	}

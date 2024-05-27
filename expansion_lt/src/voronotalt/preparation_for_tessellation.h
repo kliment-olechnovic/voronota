@@ -17,7 +17,7 @@ public:
 		std::vector<SimpleSphere> spheres_with_periodic_instances;
 		std::vector<UnsignedInt> periodic_links_of_spheres;
 		std::vector<int> all_exclusion_statuses;
-		std::vector< std::vector<UnsignedInt> > all_colliding_ids;
+		std::vector< std::vector<ValuedID> > all_colliding_ids;
 		std::vector< std::pair<UnsignedInt, UnsignedInt> > relevant_collision_ids;
 		UnsignedInt total_input_spheres;
 		UnsignedInt total_spheres;
@@ -114,40 +114,14 @@ public:
 		result.all_exclusion_statuses.resize(N, 0);
 
 		result.all_colliding_ids.resize(N);
-		for(UnsignedInt i=0;i<N;i++)
-		{
-			result.all_colliding_ids[i].reserve(100);
-		}
-
-		time_recorder.record_elapsed_miliseconds_and_reset("pre-allocate colliding IDs");
 
 		#pragma omp parallel
 		{
-			std::vector<UnsignedInt> colliding_ids;
-			colliding_ids.reserve(100);
-
-			std::vector< std::pair<Float, UnsignedInt> > distances_of_colliding_ids;
-			distances_of_colliding_ids.reserve(100);
-
 			#pragma omp for
 			for(UnsignedInt i=0;i<N;i++)
 			{
-				spheres_searcher.find_colliding_ids(i, colliding_ids, true, result.all_exclusion_statuses[i]);
-				if(!colliding_ids.empty())
-				{
-					distances_of_colliding_ids.resize(colliding_ids.size());
-					for(std::size_t j=0;j<colliding_ids.size();j++)
-					{
-						distances_of_colliding_ids[j].first=distance_to_center_of_intersection_circle_of_two_spheres(spheres[i], spheres[colliding_ids[j]]);
-						distances_of_colliding_ids[j].second=colliding_ids[j];
-					}
-					std::sort(distances_of_colliding_ids.begin(), distances_of_colliding_ids.end());
-					for(std::size_t j=0;j<colliding_ids.size();j++)
-					{
-						colliding_ids[j]=distances_of_colliding_ids[j].second;
-					}
-					result.all_colliding_ids[i]=colliding_ids;
-				}
+				result.all_colliding_ids[i].reserve(100);
+				spheres_searcher.find_colliding_ids(i, result.all_colliding_ids[i], true, result.all_exclusion_statuses[i]);
 			}
 		}
 
@@ -169,7 +143,7 @@ public:
 			{
 				for(UnsignedInt j=0;j<result.all_colliding_ids[id_a].size();j++)
 				{
-					const UnsignedInt id_b=result.all_colliding_ids[id_a][j];
+					const UnsignedInt id_b=result.all_colliding_ids[id_a][j].index;
 					if((result.all_exclusion_statuses[id_b]==0 && result.all_colliding_ids[id_a].size()<result.all_colliding_ids[id_b].size()) || (id_a<id_b && result.all_colliding_ids[id_a].size()==result.all_colliding_ids[id_b].size()))
 					{
 						if(grouping_of_spheres.empty() || id_a>=grouping_of_spheres.size() || id_b>=grouping_of_spheres.size() || grouping_of_spheres[id_a]!=grouping_of_spheres[id_b])
