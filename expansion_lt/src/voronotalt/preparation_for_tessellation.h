@@ -54,6 +54,7 @@ public:
 		{
 			SimplePoint corner_a=periodic_box_corners[0];
 			SimplePoint corner_b=periodic_box_corners[0];
+
 			for(UnsignedInt i=1;i<periodic_box_corners.size();i++)
 			{
 				const SimplePoint& corner=periodic_box_corners[i];
@@ -64,37 +65,35 @@ public:
 				corner_b.y=std::max(corner_b.y, corner.y);
 				corner_b.z=std::max(corner_b.z, corner.z);
 			}
+
 			const SimplePoint shift=sub_of_points(corner_b, corner_a);
 
-			Float buffer_distance=SpheresSearcher::calculate_grid_box_size(input_spheres, FLOATCONST(0.1));
-
-			result.spheres_with_periodic_instances=input_spheres;
-			result.periodic_links_of_spheres.resize(input_spheres.size());
+			result.spheres_with_periodic_instances.reserve(input_spheres.size()*27);
+			result.periodic_links_of_spheres.reserve(input_spheres.size()*27);
 
 			for(UnsignedInt i=0;i<input_spheres.size();i++)
 			{
-				result.periodic_links_of_spheres[i]=i;
+				result.spheres_with_periodic_instances.push_back(input_spheres[i]);
+				result.periodic_links_of_spheres.push_back(i);
+			}
+
+			for(UnsignedInt i=0;i<input_spheres.size();i++)
+			{
 				const SimpleSphere& o=input_spheres[i];
 				SimpleSphere m=o;
 				for(int sx=-1;sx<=1;sx++)
 				{
 					m.p.x=o.p.x+(shift.x*static_cast<Float>(sx));
-					const bool useful_x=((sx<0 && (corner_a.x-m.p.x)<=buffer_distance) || (sx>0 && (m.p.x-corner_b.x)<=buffer_distance));
 					for(int sy=-1;sy<=1;sy++)
 					{
 						m.p.y=o.p.y+(shift.y*static_cast<Float>(sy));
-						const bool useful_y=((sy<0 && (corner_a.y-m.p.y)<=buffer_distance) || (sy>0 && (m.p.y-corner_b.y)<=buffer_distance));
 						for(int sz=-1;sz<=1;sz++)
 						{
 							if(sx!=0 || sy!=0 || sz!=0)
 							{
 								m.p.z=o.p.z+(shift.z*static_cast<Float>(sz));
-								const bool useful_z=((sz<0 && (corner_a.z-m.p.z)<=buffer_distance) || (sz>0 && (m.p.z-corner_b.z)<=buffer_distance));
-								if(useful_x || useful_y || useful_z)
-								{
-									result.spheres_with_periodic_instances.push_back(m);
-									result.periodic_links_of_spheres.push_back(i);
-								}
+								result.spheres_with_periodic_instances.push_back(m);
+								result.periodic_links_of_spheres.push_back(i);
 							}
 						}
 					}
@@ -104,21 +103,20 @@ public:
 
 		const std::vector<SimpleSphere>& spheres=(result.spheres_with_periodic_instances.empty() ? input_spheres : result.spheres_with_periodic_instances);
 
-		const UnsignedInt N=spheres.size();
-		result.total_spheres=N;
+		result.total_spheres=spheres.size();
 
 		SpheresSearcher spheres_searcher(spheres);
 
 		time_recorder.record_elapsed_miliseconds_and_reset("init spheres searcher");
 
-		result.all_exclusion_statuses.resize(N, 0);
+		result.all_exclusion_statuses.resize(result.total_input_spheres, 0);
 
-		result.all_colliding_ids.resize(N);
+		result.all_colliding_ids.resize(result.total_input_spheres);
 
 		#pragma omp parallel
 		{
 			#pragma omp for
-			for(UnsignedInt i=0;i<N;i++)
+			for(UnsignedInt i=0;i<result.total_input_spheres;i++)
 			{
 				result.all_colliding_ids[i].reserve(100);
 				spheres_searcher.find_colliding_ids(i, result.all_colliding_ids[i], true, result.all_exclusion_statuses[i]);
@@ -137,20 +135,23 @@ public:
 		time_recorder.record_elapsed_miliseconds_and_reset("count all collisions");
 
 		result.relevant_collision_ids.reserve(result.total_collisions);
-		for(UnsignedInt id_a=0;id_a<N;id_a++)
+		for(UnsignedInt id_a=0;id_a<result.total_input_spheres;id_a++)
 		{
 			if(result.all_exclusion_statuses[id_a]==0)
 			{
 				for(UnsignedInt j=0;j<result.all_colliding_ids[id_a].size();j++)
 				{
 					const UnsignedInt id_b=result.all_colliding_ids[id_a][j].index;
-					if((result.all_exclusion_statuses[id_b]==0 && result.all_colliding_ids[id_a].size()<result.all_colliding_ids[id_b].size()) || (id_a<id_b && result.all_colliding_ids[id_a].size()==result.all_colliding_ids[id_b].size()))
+					if(result.all_exclusion_statuses[id_b%result.total_input_spheres]==0)
 					{
-						if(grouping_of_spheres.empty() || id_a>=grouping_of_spheres.size() || id_b>=grouping_of_spheres.size() || grouping_of_spheres[id_a]!=grouping_of_spheres[id_b])
+						if(id_b>=result.total_input_spheres || (result.all_colliding_ids[id_a].size()<result.all_colliding_ids[id_b].size()) || (id_a<id_b && result.all_colliding_ids[id_a].size()==result.all_colliding_ids[id_b].size()))
 						{
-							if(result.periodic_links_of_spheres.empty() || id_a>=result.periodic_links_of_spheres.size() || id_b>=result.periodic_links_of_spheres.size() || result.periodic_links_of_spheres[id_a]==id_a || result.periodic_links_of_spheres[id_b]==id_b)
+							if(grouping_of_spheres.empty() || id_a>=grouping_of_spheres.size() || id_b>=grouping_of_spheres.size() || grouping_of_spheres[id_a]!=grouping_of_spheres[id_b])
 							{
-								result.relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
+								if(result.periodic_links_of_spheres.empty() || id_a>=result.periodic_links_of_spheres.size() || id_b>=result.periodic_links_of_spheres.size() || result.periodic_links_of_spheres[id_a]==id_a || result.periodic_links_of_spheres[id_b]==id_b)
+								{
+									result.relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
+								}
 							}
 						}
 					}

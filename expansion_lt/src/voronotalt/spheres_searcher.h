@@ -57,17 +57,6 @@ public:
 		}
 	}
 
-	static Float calculate_grid_box_size(const std::vector<SimpleSphere>& spheres, const Float min_box_size)
-	{
-		Float box_size=min_box_size;
-		for(UnsignedInt i=0;i<spheres.size();i++)
-		{
-			const SimpleSphere& s=spheres[i];
-			box_size=std::max(box_size, s.r*FLOATCONST(2.0)+FLOATCONST(0.25));
-		}
-		return box_size;
-	}
-
 	bool find_colliding_ids(const UnsignedInt& central_id, std::vector<ValuedID>& colliding_ids, const bool discard_hidden, int& exclusion_status) const
 	{
 		colliding_ids.clear();
@@ -172,6 +161,17 @@ private:
 			return (x<gp.x || (x==gp.x && y<gp.y) || (x==gp.x && y==gp.y && z<gp.z));
 		}
 	};
+
+	static Float calculate_grid_box_size(const std::vector<SimpleSphere>& spheres, const Float min_box_size)
+	{
+		Float box_size=min_box_size;
+		for(UnsignedInt i=0;i<spheres.size();i++)
+		{
+			const SimpleSphere& s=spheres[i];
+			box_size=std::max(box_size, s.r*FLOATCONST(2.0)+FLOATCONST(0.25));
+		}
+		return box_size;
+	}
 
 	const std::vector<SimpleSphere>& spheres_;
 	GridPoint grid_offset_;
