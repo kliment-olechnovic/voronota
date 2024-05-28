@@ -15,7 +15,6 @@ public:
 	struct Result
 	{
 		std::vector<SimpleSphere> spheres_with_periodic_instances;
-		std::vector<UnsignedInt> periodic_links_of_spheres;
 		std::vector<int> all_exclusion_statuses;
 		std::vector< std::vector<ValuedID> > all_colliding_ids;
 		std::vector< std::pair<UnsignedInt, UnsignedInt> > relevant_collision_ids;
@@ -68,19 +67,18 @@ public:
 
 			const SimplePoint shift=sub_of_points(corner_b, corner_a);
 
-			result.spheres_with_periodic_instances.reserve(input_spheres.size()*27);
-			result.periodic_links_of_spheres.reserve(input_spheres.size()*27);
+			result.spheres_with_periodic_instances.resize(result.total_input_spheres*27);
 
 			for(UnsignedInt i=0;i<input_spheres.size();i++)
 			{
-				result.spheres_with_periodic_instances.push_back(input_spheres[i]);
-				result.periodic_links_of_spheres.push_back(i);
+				result.spheres_with_periodic_instances[i]=input_spheres[i];
 			}
 
 			for(UnsignedInt i=0;i<input_spheres.size();i++)
 			{
 				const SimpleSphere& o=input_spheres[i];
 				SimpleSphere m=o;
+				UnsignedInt g=1;
 				for(int sx=-1;sx<=1;sx++)
 				{
 					m.p.x=o.p.x+(shift.x*static_cast<Float>(sx));
@@ -92,8 +90,8 @@ public:
 							if(sx!=0 || sy!=0 || sz!=0)
 							{
 								m.p.z=o.p.z+(shift.z*static_cast<Float>(sz));
-								result.spheres_with_periodic_instances.push_back(m);
-								result.periodic_links_of_spheres.push_back(i);
+								result.spheres_with_periodic_instances[g*result.total_input_spheres+i]=m;
+								g++;
 							}
 						}
 					}
@@ -148,10 +146,7 @@ public:
 						{
 							if(grouping_of_spheres.empty() || id_a>=grouping_of_spheres.size() || id_b>=grouping_of_spheres.size() || grouping_of_spheres[id_a]!=grouping_of_spheres[id_b])
 							{
-								if(result.periodic_links_of_spheres.empty() || id_a>=result.periodic_links_of_spheres.size() || id_b>=result.periodic_links_of_spheres.size() || result.periodic_links_of_spheres[id_a]==id_a || result.periodic_links_of_spheres[id_b]==id_b)
-								{
-									result.relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
-								}
+								result.relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
 							}
 						}
 					}

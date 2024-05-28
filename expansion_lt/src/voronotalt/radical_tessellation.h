@@ -412,17 +412,17 @@ public:
 			time_recorder.record_elapsed_miliseconds_and_reset("accumulate total cells summary");
 		}
 
-		if(!preparation_result.periodic_links_of_spheres.empty())
+		if(result.total_spheres<preparation_result.total_spheres)
 		{
 			std::vector< std::vector<UnsignedInt> > map_of_spheres_to_boundary_contacts(result.total_spheres);
 
 			for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
 			{
 				const ContactDescriptorSummary& cds=result.contacts_summaries[i];
-				if((cds.id_a>=result.total_spheres || cds.id_b>=result.total_spheres) && cds.id_a<preparation_result.periodic_links_of_spheres.size() && cds.id_b<preparation_result.periodic_links_of_spheres.size())
+				if(cds.id_a>=result.total_spheres || cds.id_b>=result.total_spheres)
 				{
-					map_of_spheres_to_boundary_contacts[preparation_result.periodic_links_of_spheres[cds.id_a]].push_back(i);
-					map_of_spheres_to_boundary_contacts[preparation_result.periodic_links_of_spheres[cds.id_b]].push_back(i);
+					map_of_spheres_to_boundary_contacts[cds.id_a%result.total_spheres].push_back(i);
+					map_of_spheres_to_boundary_contacts[cds.id_b%result.total_spheres].push_back(i);
 				}
 			}
 
@@ -434,11 +434,10 @@ public:
 			{
 				result.contacts_with_redundancy_canonical_ids_in_periodic_box[i]=i;
 				const ContactDescriptorSummary& cds=result.contacts_summaries[i];
-				if((cds.id_a>=result.total_spheres || cds.id_b>=result.total_spheres)
-						&& cds.id_a<preparation_result.periodic_links_of_spheres.size() && cds.id_b<preparation_result.periodic_links_of_spheres.size())
+				if(cds.id_a>=result.total_spheres || cds.id_b>=result.total_spheres)
 				{
-					const UnsignedInt sphere_id_a=preparation_result.periodic_links_of_spheres[cds.id_a];
-					const UnsignedInt sphere_id_b=preparation_result.periodic_links_of_spheres[cds.id_b];
+					const UnsignedInt sphere_id_a=(cds.id_a%result.total_spheres);
+					const UnsignedInt sphere_id_b=(cds.id_b%result.total_spheres);
 					const std::vector<UnsignedInt>& candidate_ids_a=map_of_spheres_to_boundary_contacts[sphere_id_a];
 					const std::vector<UnsignedInt>& candidate_ids_b=map_of_spheres_to_boundary_contacts[sphere_id_b];
 					const std::vector<UnsignedInt>& candidate_ids=(candidate_ids_a.size()<=candidate_ids_b.size() ? candidate_ids_a : candidate_ids_b);
@@ -447,16 +446,12 @@ public:
 					{
 						const UnsignedInt candidate_id=candidate_ids[j];
 						const ContactDescriptorSummary& candidate_cds=result.contacts_summaries[candidate_id];
-						if(candidate_cds.id_a<preparation_result.periodic_links_of_spheres.size()
-								&& candidate_cds.id_b<preparation_result.periodic_links_of_spheres.size())
+						const UnsignedInt candidate_sphere_id_a=(candidate_cds.id_a%result.total_spheres);
+						const UnsignedInt candidate_sphere_id_b=(candidate_cds.id_b%result.total_spheres);
+						if((candidate_sphere_id_a==sphere_id_a && candidate_sphere_id_b==sphere_id_b)
+								|| (candidate_sphere_id_a==sphere_id_b && candidate_sphere_id_b==sphere_id_a))
 						{
-							const UnsignedInt candidate_sphere_id_a=preparation_result.periodic_links_of_spheres[candidate_cds.id_a];
-							const UnsignedInt candidate_sphere_id_b=preparation_result.periodic_links_of_spheres[candidate_cds.id_b];
-							if((candidate_sphere_id_a==sphere_id_a && candidate_sphere_id_b==sphere_id_b)
-									|| (candidate_sphere_id_a==sphere_id_b && candidate_sphere_id_b==sphere_id_a))
-							{
-								selected_id=candidate_id;
-							}
+							selected_id=candidate_id;
 						}
 					}
 					if(selected_id<result.contacts_summaries.size())
@@ -477,14 +472,8 @@ public:
 				for(UnsignedInt i=0;i<result.contacts_with_redundancy_summaries_in_periodic_box.size();i++)
 				{
 					ContactDescriptorSummary& cds=result.contacts_with_redundancy_summaries_in_periodic_box[i];
-					if(cds.id_a<preparation_result.periodic_links_of_spheres.size())
-					{
-						cds.id_a=preparation_result.periodic_links_of_spheres[cds.id_a];
-					}
-					if(cds.id_b<preparation_result.periodic_links_of_spheres.size())
-					{
-						cds.id_b=preparation_result.periodic_links_of_spheres[cds.id_b];
-					}
+					cds.id_a=(cds.id_a%result.total_spheres);
+					cds.id_b=(cds.id_b%result.total_spheres);
 					cds.ensure_ids_ordered();
 					if(i>=result.contacts_with_redundancy_canonical_ids_in_periodic_box.size() || result.contacts_with_redundancy_canonical_ids_in_periodic_box[i]==i)
 					{
