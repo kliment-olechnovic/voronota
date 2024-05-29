@@ -1,8 +1,6 @@
 #ifndef VORONOTALT_PREPARATION_FOR_TESSELLATION_H_
 #define VORONOTALT_PREPARATION_FOR_TESSELLATION_H_
 
-#include <algorithm>
-
 #include "spheres_searcher.h"
 #include "time_recorder.h"
 
