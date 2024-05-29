@@ -12,14 +12,20 @@ namespace voronotalt
 class SpheresSearcher
 {
 public:
-	explicit SpheresSearcher(const std::vector<SimpleSphere>& spheres) : spheres_(spheres), grid_parameters_(spheres)
+	SpheresSearcher()
 	{
-		init_boxes();
 	}
 
-	const std::vector<SimpleSphere>& searchable_spheres() const
+	explicit SpheresSearcher(const std::vector<SimpleSphere>& spheres)
 	{
-		return spheres_;
+		init(spheres);
+	}
+
+	void init(const std::vector<SimpleSphere>& spheres)
+	{
+		spheres_=spheres;
+		grid_parameters_=GridParameters(spheres_);
+		init_boxes();
 	}
 
 	void update_spheres(const std::vector<SimpleSphere>& spheres, const bool force_full_rebuild)
@@ -79,9 +85,7 @@ public:
 
 			if(need_full_rebuild)
 			{
-				spheres_=spheres;
-				grid_parameters_=GridParameters(spheres_);
-				init_boxes();
+				init(spheres);
 			}
 		}
 	}
@@ -138,6 +142,11 @@ public:
 			}
 		}
 		return false;
+	}
+
+	const std::vector<SimpleSphere>& searchable_spheres() const
+	{
+		return spheres_;
 	}
 
 	bool find_colliding_ids(const UnsignedInt& central_id, std::vector<ValuedID>& colliding_ids, const bool discard_hidden, int& exclusion_status) const
@@ -256,8 +265,22 @@ private:
 		GridPoint grid_size;
 		Float box_size;
 
+		GridParameters() : box_size(FLOATCONST(1.0))
+		{
+			grid_size.x=1;
+			grid_size.y=1;
+			grid_size.z=1;
+		}
+
 		explicit GridParameters(const std::vector<SimpleSphere>& spheres) : box_size(FLOATCONST(1.0))
 		{
+			init(spheres);
+		}
+
+		void init(const std::vector<SimpleSphere>& spheres)
+		{
+			box_size=FLOATCONST(1.0);
+
 			for(UnsignedInt i=0;i<spheres.size();i++)
 			{
 				const SimpleSphere& s=spheres[i];
