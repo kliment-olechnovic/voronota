@@ -149,6 +149,11 @@ public:
 
 	bool prepare_for_tessellation(const std::vector<int>& grouping_of_spheres, ResultOfPreparationForTessellation& result, TimeRecorder& time_recorder) const
 	{
+		return prepare_for_tessellation(std::vector<int>(), grouping_of_spheres, result, time_recorder);
+	}
+
+	bool prepare_for_tessellation(const std::vector<int>& involvement_of_spheres, const std::vector<int>& grouping_of_spheres, ResultOfPreparationForTessellation& result, TimeRecorder& time_recorder) const
+	{
 		time_recorder.reset();
 
 		result.relevant_collision_ids.clear();
@@ -162,16 +167,17 @@ public:
 
 		for(UnsignedInt id_a=0;id_a<input_spheres_.size();id_a++)
 		{
-			if(all_exclusion_statuses_[id_a]==0)
+			if((involvement_of_spheres.empty() || id_a>=involvement_of_spheres.size() || involvement_of_spheres[id_a]>0) && all_exclusion_statuses_[id_a]==0)
 			{
 				for(UnsignedInt j=0;j<all_colliding_ids_[id_a].size();j++)
 				{
 					const UnsignedInt id_b=all_colliding_ids_[id_a][j].index;
-					if(all_exclusion_statuses_[id_b%input_spheres_.size()]==0)
+					const UnsignedInt id_b_canonical=(id_b%input_spheres_.size());
+					if((involvement_of_spheres.empty() || id_b_canonical>=involvement_of_spheres.size() || involvement_of_spheres[id_b_canonical]>0) && all_exclusion_statuses_[id_b]==0)
 					{
 						if(id_b>=input_spheres_.size() || (all_colliding_ids_[id_a].size()<all_colliding_ids_[id_b].size()) || (id_a<id_b && all_colliding_ids_[id_a].size()==all_colliding_ids_[id_b].size()))
 						{
-							if(grouping_of_spheres.empty() || id_a>=grouping_of_spheres.size() || id_b>=grouping_of_spheres.size() || grouping_of_spheres[id_a]!=grouping_of_spheres[id_b])
+							if(grouping_of_spheres.empty() || id_a>=grouping_of_spheres.size() || id_b_canonical>=grouping_of_spheres.size() || grouping_of_spheres[id_a]!=grouping_of_spheres[id_b_canonical])
 							{
 								result.relevant_collision_ids.push_back(std::pair<UnsignedInt, UnsignedInt>(id_a, id_b));
 							}
