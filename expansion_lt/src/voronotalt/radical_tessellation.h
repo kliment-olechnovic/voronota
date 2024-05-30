@@ -227,8 +227,8 @@ public:
 		TotalContactDescriptorsSummary total_contacts_summary;
 		std::vector<CellContactDescriptorsSummary> cells_summaries;
 		TotalCellContactDescriptorsSummary total_cells_summary;
-		std::vector<ContactDescriptorSummary> contacts_with_redundancy_summaries_in_periodic_box;
-		std::vector<UnsignedInt> contacts_with_redundancy_canonical_ids_in_periodic_box;
+		std::vector<ContactDescriptorSummary> contacts_summaries_with_redundancy_in_periodic_box;
+		std::vector<UnsignedInt> contacts_canonical_ids_with_redundancy_in_periodic_box;
 
 		Result() : total_spheres(0), total_collisions(0), total_relevant_collisions(0)
 		{
@@ -413,7 +413,7 @@ public:
 			time_recorder.record_elapsed_miliseconds_and_reset("accumulate total cells summary");
 		}
 
-		if(result.total_spheres<spheres_container.populated_spheres().size())
+		if(spheres_container.periodic_box().enabled)
 		{
 			std::vector< std::vector<UnsignedInt> > map_of_spheres_to_boundary_contacts(result.total_spheres);
 
@@ -427,13 +427,13 @@ public:
 				}
 			}
 
-			result.contacts_with_redundancy_canonical_ids_in_periodic_box.resize(result.contacts_summaries.size());
+			result.contacts_canonical_ids_with_redundancy_in_periodic_box.resize(result.contacts_summaries.size());
 
 			UnsignedInt count_of_redundant_contacts_in_periodic_box=0;
 
 			for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
 			{
-				result.contacts_with_redundancy_canonical_ids_in_periodic_box[i]=i;
+				result.contacts_canonical_ids_with_redundancy_in_periodic_box[i]=i;
 				const ContactDescriptorSummary& cds=result.contacts_summaries[i];
 				if(cds.id_a>=result.total_spheres || cds.id_b>=result.total_spheres)
 				{
@@ -457,7 +457,7 @@ public:
 					}
 					if(selected_id<result.contacts_summaries.size())
 					{
-						result.contacts_with_redundancy_canonical_ids_in_periodic_box[i]=selected_id;
+						result.contacts_canonical_ids_with_redundancy_in_periodic_box[i]=selected_id;
 						if(i!=selected_id)
 						{
 							count_of_redundant_contacts_in_periodic_box++;
@@ -468,15 +468,15 @@ public:
 
 			if(count_of_redundant_contacts_in_periodic_box>0)
 			{
-				result.contacts_with_redundancy_summaries_in_periodic_box.swap(result.contacts_summaries);
-				result.contacts_summaries.reserve(result.contacts_with_redundancy_summaries_in_periodic_box.size()+1-count_of_redundant_contacts_in_periodic_box);
-				for(UnsignedInt i=0;i<result.contacts_with_redundancy_summaries_in_periodic_box.size();i++)
+				result.contacts_summaries_with_redundancy_in_periodic_box.swap(result.contacts_summaries);
+				result.contacts_summaries.reserve(result.contacts_summaries_with_redundancy_in_periodic_box.size()+1-count_of_redundant_contacts_in_periodic_box);
+				for(UnsignedInt i=0;i<result.contacts_summaries_with_redundancy_in_periodic_box.size();i++)
 				{
-					ContactDescriptorSummary& cds=result.contacts_with_redundancy_summaries_in_periodic_box[i];
+					ContactDescriptorSummary& cds=result.contacts_summaries_with_redundancy_in_periodic_box[i];
 					cds.id_a=(cds.id_a%result.total_spheres);
 					cds.id_b=(cds.id_b%result.total_spheres);
 					cds.ensure_ids_ordered();
-					if(i>=result.contacts_with_redundancy_canonical_ids_in_periodic_box.size() || result.contacts_with_redundancy_canonical_ids_in_periodic_box[i]==i)
+					if(i>=result.contacts_canonical_ids_with_redundancy_in_periodic_box.size() || result.contacts_canonical_ids_with_redundancy_in_periodic_box[i]==i)
 					{
 						result.contacts_summaries.push_back(cds);
 					}
