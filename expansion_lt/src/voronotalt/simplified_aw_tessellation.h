@@ -3,7 +3,7 @@
 
 #include <map>
 
-#include "preparation_for_tessellation.h"
+#include "spheres_container.h"
 #include "simplified_aw_tessellation_contact_construction.h"
 #include "time_recorder.h"
 
@@ -119,16 +119,19 @@ public:
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder)
 	{
-		PreparationForTessellation::Result preparation_result;
-		PreparationForTessellation::prepare_for_tessellation(spheres, grouping_of_spheres, preparation_result, time_recorder);
+		SpheresContainer spheres_container;
+		spheres_container.init(spheres, time_recorder);
+
+		SpheresContainer::ResultOfPreparationForTessellation preparation_result;
+		spheres_container.prepare_for_tessellation(grouping_of_spheres, preparation_result, time_recorder);
 
 		time_recorder.reset();
 
 		result=Result();
 		result_graphics=ResultGraphics();
 
-		result.total_spheres=preparation_result.total_spheres;
-		result.total_collisions=preparation_result.total_collisions;
+		result.total_spheres=spheres_container.input_spheres().size();
+		result.total_collisions=spheres_container.total_collisions();
 		result.total_relevant_collisions=preparation_result.relevant_collision_ids.size();
 
 		std::vector<ContactDescriptorSummary> possible_contacts_summaries(preparation_result.relevant_collision_ids.size());
@@ -151,7 +154,7 @@ public:
 			{
 				const UnsignedInt id_a=preparation_result.relevant_collision_ids[i].first;
 				const UnsignedInt id_b=preparation_result.relevant_collision_ids[i].second;
-				if(SimplifiedAWTessellationContactConstruction::construct_contact_descriptor(spheres, preparation_result.all_exclusion_statuses, id_a, id_b, preparation_result.all_colliding_ids[id_a], 0.2, 5, with_graphics, cd))
+				if(SimplifiedAWTessellationContactConstruction::construct_contact_descriptor(spheres_container.populated_spheres(), spheres_container.all_exclusion_statuses(), id_a, id_b, spheres_container.all_colliding_ids()[id_a], 0.2, 5, with_graphics, cd))
 				{
 					possible_contacts_summaries[i].set(cd);
 					if(with_graphics)
