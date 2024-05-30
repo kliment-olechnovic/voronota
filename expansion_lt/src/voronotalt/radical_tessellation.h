@@ -253,8 +253,10 @@ public:
 			Result& result)
 	{
 		TimeRecorder time_recorder;
+		SpheresContainer spheres_container;
+		spheres_container.init(input_spheres, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(input_spheres, std::vector<int>(), std::vector<SimplePoint>(), false, true, result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), false, true, result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -263,23 +265,21 @@ public:
 			Result& result)
 	{
 		TimeRecorder time_recorder;
+		SpheresContainer spheres_container;
+		spheres_container.init(input_spheres, periodic_box_corners, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(input_spheres, std::vector<int>(), periodic_box_corners, false, true, result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), false, true, result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
-			const std::vector<SimpleSphere>& input_spheres,
+			const SpheresContainer& spheres_container,
 			const std::vector<int>& grouping_of_spheres,
-			const std::vector<SimplePoint>& periodic_box_corners,
 			const bool with_graphics,
 			const bool summarize_cells,
 			Result& result,
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder)
 	{
-		SpheresContainer spheres_container;
-		spheres_container.init(input_spheres, periodic_box_corners, time_recorder);
-
 		SpheresContainer::ResultOfPreparationForTessellation preparation_result;
 		spheres_container.prepare_for_tessellation(grouping_of_spheres, preparation_result, time_recorder);
 
