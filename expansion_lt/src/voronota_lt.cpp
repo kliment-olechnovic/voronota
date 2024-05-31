@@ -374,7 +374,7 @@ int main(const int argc, const char** argv)
 
 		voronotalt::RadicalTessellation::Result result;
 		voronotalt::RadicalTessellation::ResultGraphics result_graphics;
-		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, graphics_writer.enabled(), summarize_cells, result, result_graphics, time_recoder_for_tessellation);
+		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, std::vector<int>(), grouping_for_filtering, graphics_writer.enabled(), summarize_cells, result, result_graphics, time_recoder_for_tessellation);
 
 		voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;
 		if(need_summaries_on_residue_level)
