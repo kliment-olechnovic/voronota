@@ -371,46 +371,8 @@ public:
 			{
 				result_graphics.contacts_graphics[i]=possible_contacts_graphics[ids_of_valid_pairs[i]];
 			}
-		}
 
-		time_recorder.record_elapsed_miliseconds_and_reset("copy valid contacts graphics");
-
-		if(summarize_cells)
-		{
-			result.cells_summaries.resize(result.total_spheres);
-
-			for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
-			{
-				const ContactDescriptorSummary& cds=result.contacts_summaries[i];
-				if(cds.id_a<result.total_spheres)
-				{
-					result.cells_summaries[cds.id_a].add(cds.id_a, cds);
-				}
-				if(cds.id_b<result.total_spheres)
-				{
-					result.cells_summaries[cds.id_b].add(cds.id_b, cds);
-				}
-			}
-
-			time_recorder.record_elapsed_miliseconds_and_reset("accumulate cell summaries");
-
-			for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
-			{
-				result.cells_summaries[i].compute_sas(spheres_container.populated_spheres()[i].r);
-				if(result.cells_summaries[i].stage==0 && spheres_container.all_exclusion_statuses()[i]==0 && spheres_container.all_colliding_ids()[i].empty())
-				{
-					result.cells_summaries[i].compute_sas_detached(i, spheres_container.populated_spheres()[i].r);
-				}
-			}
-
-			time_recorder.record_elapsed_miliseconds_and_reset("compute sas for cell summaries");
-
-			for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
-			{
-				result.total_cells_summary.add(result.cells_summaries[i]);
-			}
-
-			time_recorder.record_elapsed_miliseconds_and_reset("accumulate total cells summary");
+			time_recorder.record_elapsed_miliseconds_and_reset("copy valid contacts graphics");
 		}
 
 		if(spheres_container.periodic_box().enabled)
@@ -472,13 +434,13 @@ public:
 				result.contacts_summaries.reserve(result.contacts_summaries_with_redundancy_in_periodic_box.size()+1-count_of_redundant_contacts_in_periodic_box);
 				for(UnsignedInt i=0;i<result.contacts_summaries_with_redundancy_in_periodic_box.size();i++)
 				{
-					ContactDescriptorSummary& cds=result.contacts_summaries_with_redundancy_in_periodic_box[i];
-					cds.id_a=(cds.id_a%result.total_spheres);
-					cds.id_b=(cds.id_b%result.total_spheres);
-					cds.ensure_ids_ordered();
 					if(i>=result.contacts_canonical_ids_with_redundancy_in_periodic_box.size() || result.contacts_canonical_ids_with_redundancy_in_periodic_box[i]==i)
 					{
-						result.contacts_summaries.push_back(cds);
+						result.contacts_summaries.push_back(result.contacts_summaries_with_redundancy_in_periodic_box[i]);
+						ContactDescriptorSummary& cds=result.contacts_summaries.back();
+						cds.id_a=(cds.id_a%result.total_spheres);
+						cds.id_b=(cds.id_b%result.total_spheres);
+						cds.ensure_ids_ordered();
 					}
 				}
 			}
@@ -492,6 +454,46 @@ public:
 		}
 
 		time_recorder.record_elapsed_miliseconds_and_reset("accumulate total contacts summary");
+
+		if(summarize_cells)
+		{
+			const std::vector<ContactDescriptorSummary>& all_contacts_summaries=(result.contacts_summaries_with_redundancy_in_periodic_box.empty() ? result.contacts_summaries : result.contacts_summaries_with_redundancy_in_periodic_box);
+
+			result.cells_summaries.resize(result.total_spheres);
+
+			for(UnsignedInt i=0;i<all_contacts_summaries.size();i++)
+			{
+				const ContactDescriptorSummary& cds=all_contacts_summaries[i];
+				if(cds.id_a<result.total_spheres)
+				{
+					result.cells_summaries[cds.id_a].add(cds.id_a, cds);
+				}
+				if(cds.id_b<result.total_spheres)
+				{
+					result.cells_summaries[cds.id_b].add(cds.id_b, cds);
+				}
+			}
+
+			time_recorder.record_elapsed_miliseconds_and_reset("accumulate cell summaries");
+
+			for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
+			{
+				result.cells_summaries[i].compute_sas(spheres_container.populated_spheres()[i].r);
+				if(result.cells_summaries[i].stage==0 && spheres_container.all_exclusion_statuses()[i]==0 && spheres_container.all_colliding_ids()[i].empty())
+				{
+					result.cells_summaries[i].compute_sas_detached(i, spheres_container.populated_spheres()[i].r);
+				}
+			}
+
+			time_recorder.record_elapsed_miliseconds_and_reset("compute sas for cell summaries");
+
+			for(UnsignedInt i=0;i<result.cells_summaries.size();i++)
+			{
+				result.total_cells_summary.add(result.cells_summaries[i]);
+			}
+
+			time_recorder.record_elapsed_miliseconds_and_reset("accumulate total cells summary");
+		}
 	}
 
 	static bool group_results(
