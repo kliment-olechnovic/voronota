@@ -233,6 +233,19 @@ public:
 		Result() : total_spheres(0), total_collisions(0), total_relevant_collisions(0)
 		{
 		}
+
+		void clear()
+		{
+			total_spheres=0;
+			total_collisions=0;
+			total_relevant_collisions=0;
+			contacts_summaries.clear();
+			total_contacts_summary=TotalContactDescriptorsSummary();
+			cells_summaries.clear();
+			total_cells_summary=TotalCellContactDescriptorsSummary();
+			contacts_summaries_with_redundancy_in_periodic_box.clear();
+			contacts_canonical_ids_with_redundancy_in_periodic_box.clear();
+		}
 	};
 
 	struct ResultGraphics
@@ -246,6 +259,14 @@ public:
 		std::vector<TotalContactDescriptorsSummary> grouped_contacts_summaries;
 		std::vector<UnsignedInt> grouped_cells_representative_ids;
 		std::vector<TotalCellContactDescriptorsSummary> grouped_cells_summaries;
+
+		void clear()
+		{
+			grouped_contacts_representative_ids.clear();
+			grouped_contacts_summaries.clear();
+			grouped_cells_representative_ids.clear();
+			grouped_cells_summaries.clear();
+		}
 	};
 
 	static void construct_full_tessellation(
@@ -281,12 +302,13 @@ public:
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder)
 	{
+		time_recorder.reset();
+
+		result.clear();
+
 		SpheresContainer::ResultOfPreparationForTessellation preparation_result;
 		spheres_container.prepare_for_tessellation(involvement_of_spheres, grouping_of_spheres, preparation_result, time_recorder);
 
-		time_recorder.reset();
-
-		result=Result();
 		result_graphics=ResultGraphics();
 
 		result.total_spheres=spheres_container.input_spheres().size();
@@ -514,7 +536,7 @@ public:
 	{
 		time_recorder.reset();
 
-		grouped_result=GroupedResult();
+		grouped_result.clear();
 
 		if(!grouping_of_spheres.empty() && grouping_of_spheres.size()==full_result.total_spheres)
 		{

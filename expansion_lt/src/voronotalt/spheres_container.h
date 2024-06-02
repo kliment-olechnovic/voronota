@@ -73,9 +73,10 @@ public:
 		if(periodic_box_.enabled)
 		{
 			populated_spheres_.resize(input_spheres_.size()*27);
+			std::vector<UnsignedInt> collected_indices;
 			for(UnsignedInt i=0;i<input_spheres_.size();i++)
 			{
-				set_sphere_periodic_instances(i);
+				set_sphere_periodic_instances(i, false, collected_indices);
 			}
 		}
 		else
@@ -115,6 +116,164 @@ public:
 		total_collisions_=total_collisions_/2;
 
 		time_recorder.record_elapsed_miliseconds_and_reset("count all collisions");
+	}
+
+	void update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres, std::vector<UnsignedInt>& ids_of_affected_input_spheres, TimeRecorder& time_recorder)
+	{
+		time_recorder.reset();
+
+		ids_of_affected_input_spheres.clear();
+
+		if(ids_of_changed_input_spheres.empty())
+		{
+			return;
+		}
+
+		bool full_reinit_needed=(new_input_spheres.size()!=input_spheres_.size() || ids_of_changed_input_spheres.size()>input_spheres_.size()/10);
+
+		for(UnsignedInt i=0;!full_reinit_needed && i<ids_of_changed_input_spheres.size();i++)
+		{
+			if(ids_of_changed_input_spheres.size()>=input_spheres_.size())
+			{
+				full_reinit_needed=true;;
+			}
+		}
+
+		if(!full_reinit_needed)
+		{
+			ids_of_affected_input_spheres=ids_of_changed_input_spheres;
+			std::sort(ids_of_affected_input_spheres.begin(), ids_of_affected_input_spheres.end());
+
+			for(UnsignedInt i=0;!full_reinit_needed && i<ids_of_changed_input_spheres.size();i++)
+			{
+				const UnsignedInt sphere_id=ids_of_changed_input_spheres[i];
+				for(UnsignedInt j=0;!full_reinit_needed && j<all_colliding_ids_[sphere_id].size();j++)
+				{
+					if(ids_of_affected_input_spheres.size()<input_spheres_.size()/5)
+					{
+						const UnsignedInt affected_sphere_id=all_colliding_ids_[sphere_id][j].index%input_spheres_.size();
+						std::vector<UnsignedInt>::iterator it=std::lower_bound(ids_of_affected_input_spheres.begin(), ids_of_affected_input_spheres.end(), affected_sphere_id);
+						if(it==ids_of_affected_input_spheres.end() || (*it)!=affected_sphere_id)
+						{
+							ids_of_affected_input_spheres.insert(it, affected_sphere_id);
+						}
+					}
+					else
+					{
+						full_reinit_needed=true;
+					}
+				}
+			}
+		}
+
+		time_recorder.record_elapsed_miliseconds_and_reset("gather affected spheres ids for update");
+
+		if(full_reinit_needed)
+		{
+			std::vector<SimplePoint> periodic_box_corners;
+			if(periodic_box_.enabled)
+			{
+				periodic_box_corners.reserve(2);
+				periodic_box_corners.push_back(periodic_box_.corner_a);
+				periodic_box_corners.push_back(periodic_box_.corner_b);
+			}
+			init(new_input_spheres, periodic_box_corners, time_recorder);
+			ids_of_affected_input_spheres.clear();
+		}
+		else
+		{
+			if(periodic_box_.enabled)
+			{
+				std::vector<UnsignedInt> ids_of_changed_populated_spheres;
+				ids_of_changed_populated_spheres.reserve(ids_of_changed_input_spheres.size()*27);
+				for(UnsignedInt i=0;i<ids_of_changed_input_spheres.size();i++)
+				{
+					const UnsignedInt sphere_id=ids_of_changed_input_spheres[i];
+					input_spheres_[sphere_id]=new_input_spheres[sphere_id];
+					if(periodic_box_.enabled)
+					{
+						set_sphere_periodic_instances(sphere_id, true, ids_of_changed_populated_spheres);
+					}
+				}
+				spheres_searcher_.update_spheres(populated_spheres_, ids_of_changed_populated_spheres);
+			}
+			else
+			{
+				for(UnsignedInt i=0;i<ids_of_changed_input_spheres.size();i++)
+				{
+					const UnsignedInt sphere_id=ids_of_changed_input_spheres[i];
+					input_spheres_[sphere_id]=new_input_spheres[sphere_id];
+					populated_spheres_[sphere_id]=input_spheres_[sphere_id];
+				}
+				spheres_searcher_.update_spheres(input_spheres_, ids_of_changed_input_spheres);
+			}
+
+			time_recorder.record_elapsed_miliseconds_and_reset("update spheres searcher");
+
+			#pragma omp parallel
+			{
+				#pragma omp for
+				for(UnsignedInt i=0;i<ids_of_affected_input_spheres.size();i++)
+				{
+					const UnsignedInt sphere_id=ids_of_affected_input_spheres[i];
+					all_colliding_ids_[sphere_id].clear();
+					spheres_searcher_.find_colliding_ids(sphere_id, all_colliding_ids_[sphere_id], true, all_exclusion_statuses_[sphere_id]);
+				}
+			}
+
+			std::vector<UnsignedInt> more_ids_of_affected_input_spheres;
+
+			for(UnsignedInt i=0;i<ids_of_changed_input_spheres.size();i++)
+			{
+				const UnsignedInt sphere_id=ids_of_changed_input_spheres[i];
+				for(UnsignedInt j=0;j<all_colliding_ids_[sphere_id].size();j++)
+				{
+					const UnsignedInt affected_sphere_id=all_colliding_ids_[sphere_id][j].index%input_spheres_.size();
+					std::vector<UnsignedInt>::iterator it=std::lower_bound(more_ids_of_affected_input_spheres.begin(), more_ids_of_affected_input_spheres.end(), affected_sphere_id);
+					if(it==more_ids_of_affected_input_spheres.end() || (*it)!=affected_sphere_id)
+					{
+						if(!std::binary_search(ids_of_affected_input_spheres.begin(), ids_of_affected_input_spheres.end(), affected_sphere_id))
+						{
+							more_ids_of_affected_input_spheres.insert(it, affected_sphere_id);
+						}
+					}
+				}
+			}
+
+			if(!more_ids_of_affected_input_spheres.empty())
+			{
+				#pragma omp parallel
+				{
+					#pragma omp for
+					for(UnsignedInt i=0;i<more_ids_of_affected_input_spheres.size();i++)
+					{
+						const UnsignedInt sphere_id=more_ids_of_affected_input_spheres[i];
+						all_colliding_ids_[sphere_id].clear();
+						spheres_searcher_.find_colliding_ids(sphere_id, all_colliding_ids_[sphere_id], true, all_exclusion_statuses_[sphere_id]);
+					}
+				}
+
+				std::vector<UnsignedInt> merged_ids_of_affected_input_spheres(ids_of_affected_input_spheres.size()+more_ids_of_affected_input_spheres.size());
+				std::merge(ids_of_affected_input_spheres.begin(), ids_of_affected_input_spheres.end(),
+						more_ids_of_affected_input_spheres.begin(), more_ids_of_affected_input_spheres.end(),
+						merged_ids_of_affected_input_spheres.begin());
+
+				ids_of_affected_input_spheres.swap(merged_ids_of_affected_input_spheres);
+			}
+
+			time_recorder.record_elapsed_miliseconds_and_reset("update relevant collisions");
+
+			total_collisions_=0;
+
+			for(UnsignedInt i=0;i<all_colliding_ids_.size();i++)
+			{
+				total_collisions_+=all_colliding_ids_[i].size();
+			}
+
+			total_collisions_=total_collisions_/2;
+
+			time_recorder.record_elapsed_miliseconds_and_reset("recount all collisions");
+		}
 	}
 
 	const PeriodicBox& periodic_box() const
@@ -193,7 +352,7 @@ public:
 	}
 
 private:
-	void set_sphere_periodic_instances(const UnsignedInt i)
+	void set_sphere_periodic_instances(const UnsignedInt i, const bool collect_indices, std::vector<UnsignedInt>& collected_indices)
 	{
 		if(i<input_spheres_.size())
 		{
@@ -205,6 +364,10 @@ private:
 					populated_spheres_.resize(input_spheres_.size());
 				}
 				populated_spheres_[i]=o;
+				if(collect_indices)
+				{
+					collected_indices.push_back(i);
+				}
 			}
 			else
 			{
@@ -213,6 +376,10 @@ private:
 					populated_spheres_.resize(input_spheres_.size()*27);
 				}
 				populated_spheres_[i]=o;
+				if(collect_indices)
+				{
+					collected_indices.push_back(i);
+				}
 				SimpleSphere m=o;
 				UnsignedInt g=1;
 				for(int sx=-1;sx<=1;sx++)
@@ -226,7 +393,12 @@ private:
 							if(sx!=0 || sy!=0 || sz!=0)
 							{
 								m.p.z=o.p.z+(periodic_box_.shift.z*static_cast<Float>(sz));
-								populated_spheres_[g*input_spheres_.size()+i]=m;
+								const UnsignedInt mi=(g*input_spheres_.size()+i);
+								populated_spheres_[mi]=m;
+								if(collect_indices)
+								{
+									collected_indices.push_back(mi);
+								}
 								g++;
 							}
 						}

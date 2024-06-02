@@ -28,120 +28,24 @@ public:
 		init_boxes();
 	}
 
-	void update_spheres(const std::vector<SimpleSphere>& spheres, const bool force_full_rebuild)
+	void update_spheres(const std::vector<SimpleSphere>& spheres, const std::vector<UnsignedInt>& ids_to_update)
 	{
-		bool need_full_rebuild=force_full_rebuild || (spheres.size()!=spheres_.size());
-
-		std::vector<UnsignedInt> ids_to_update;
-		UnsignedInt count_compatible_spheres=0;
-
-		for(UnsignedInt i=0;!need_full_rebuild && i<spheres.size();i++)
+		if(ids_to_update.empty())
 		{
-			const GridPoint gp1(spheres[i], grid_parameters_.box_size, grid_parameters_.grid_offset);
-			const int index1=gp1.index(grid_parameters_.grid_size);
-			if(index1<0)
-			{
-				need_full_rebuild=true;
-			}
-			else
-			{
-				const GridPoint gp0(spheres_[i], grid_parameters_.box_size, grid_parameters_.grid_offset);
-				const int index0=gp0.index(grid_parameters_.grid_size);
-				if(index0<0)
-				{
-					need_full_rebuild=true;
-				}
-				else
-				{
-					if(index1==index0)
-					{
-						count_compatible_spheres++;
-					}
-					else
-					{
-						if(ids_to_update.size()>=spheres_.size()/10)
-						{
-							need_full_rebuild=true;
-						}
-						else
-						{
-							ids_to_update.push_back(i);
-						}
-					}
-				}
-			}
+			return;
 		}
 
-		if(!need_full_rebuild && count_compatible_spheres==spheres_.size())
-		{
-			spheres_=spheres;
-		}
-		else
-		{
-			for(UnsignedInt i=0;!need_full_rebuild && i<ids_to_update.size();i++)
-			{
-				need_full_rebuild=need_full_rebuild || !update_sphere(ids_to_update[i], spheres[ids_to_update[i]]);
-			}
+		bool need_full_rebuild=(ids_to_update.size()>(spheres_.size()/10));
 
-			if(need_full_rebuild)
-			{
-				init(spheres);
-			}
-		}
-	}
-
-	bool update_sphere(const UnsignedInt& sphere_id, const SimpleSphere& moved_sphere)
-	{
-		if(sphere_id<spheres_.size())
+		for(UnsignedInt i=0;!need_full_rebuild && i<ids_to_update.size();i++)
 		{
-			const GridPoint gp1(moved_sphere, grid_parameters_.box_size, grid_parameters_.grid_offset);
-			const int index1=gp1.index(grid_parameters_.grid_size);
-			if(index1>=0)
-			{
-				const GridPoint gp0(spheres_[sphere_id], grid_parameters_.box_size, grid_parameters_.grid_offset);
-				const int index0=gp0.index(grid_parameters_.grid_size);
-				if(index0>=0)
-				{
-					if(index1!=index0)
-					{
-						{
-							const int box_id0=map_of_boxes_[index0];
-							if(box_id0<0)
-							{
-								return false;
-							}
-							else
-							{
-								std::vector<UnsignedInt>& v0=boxes_[box_id0];
-								std::vector<UnsignedInt>::iterator it=std::lower_bound(v0.begin(), v0.end(), sphere_id);
-								if(it!=v0.end() && (*it)==sphere_id)
-								{
-									v0.erase(it);
-								}
-							}
-						}
-
-						{
-							const int box_id1=map_of_boxes_[index1];
-							if(box_id1<0)
-							{
-								map_of_boxes_[index1]=static_cast<int>(boxes_.size());
-								boxes_.push_back(std::vector<UnsignedInt>(1, sphere_id));
-							}
-							else
-							{
-								std::vector<UnsignedInt>& v1=boxes_[box_id1];
-								std::vector<UnsignedInt>::iterator it=std::lower_bound(v1.begin(), v1.end(), sphere_id);
-								v1.insert(it, sphere_id);
-							}
-						}
-					}
-					spheres_[sphere_id]=moved_sphere;
-					return true;
-				}
-			}
+			need_full_rebuild=need_full_rebuild || !update_sphere(ids_to_update[i], spheres[ids_to_update[i]]);
 		}
-		return false;
+
+		if(need_full_rebuild)
+		{
+			init(spheres);
+		}
 	}
 
 	const std::vector<SimpleSphere>& searchable_spheres() const
@@ -339,6 +243,63 @@ private:
 				boxes_[box_id].push_back(i);
 			}
 		}
+	}
+
+	bool update_sphere(const UnsignedInt& sphere_id, const SimpleSphere& moved_sphere)
+	{
+		if(sphere_id<spheres_.size())
+		{
+			const GridPoint gp1(moved_sphere, grid_parameters_.box_size, grid_parameters_.grid_offset);
+			const int index1=gp1.index(grid_parameters_.grid_size);
+			if(index1>=0)
+			{
+				const GridPoint gp0(spheres_[sphere_id], grid_parameters_.box_size, grid_parameters_.grid_offset);
+				const int index0=gp0.index(grid_parameters_.grid_size);
+				if(index0>=0)
+				{
+					if(index1!=index0)
+					{
+						{
+							const int box_id0=map_of_boxes_[index0];
+							if(box_id0<0)
+							{
+								return false;
+							}
+							else
+							{
+								std::vector<UnsignedInt>& v0=boxes_[box_id0];
+								std::vector<UnsignedInt>::iterator it=std::lower_bound(v0.begin(), v0.end(), sphere_id);
+								if(it!=v0.end() && (*it)==sphere_id)
+								{
+									v0.erase(it);
+								}
+							}
+						}
+
+						{
+							const int box_id1=map_of_boxes_[index1];
+							if(box_id1<0)
+							{
+								map_of_boxes_[index1]=static_cast<int>(boxes_.size());
+								boxes_.push_back(std::vector<UnsignedInt>(1, sphere_id));
+							}
+							else
+							{
+								std::vector<UnsignedInt>& v1=boxes_[box_id1];
+								std::vector<UnsignedInt>::iterator it=std::lower_bound(v1.begin(), v1.end(), sphere_id);
+								if(it==v1.end() || (*it)!=sphere_id)
+								{
+									v1.insert(it, sphere_id);
+								}
+							}
+						}
+					}
+					spheres_[sphere_id]=moved_sphere;
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	std::vector<SimpleSphere> spheres_;
