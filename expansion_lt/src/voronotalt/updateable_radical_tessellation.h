@@ -37,6 +37,11 @@ public:
 	void init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners)
 	{
 		TimeRecorder time_recorder;
+		init(input_spheres, periodic_box_corners, time_recorder);
+	}
+
+	void init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners, TimeRecorder& time_recorder)
+	{
 		spheres_container_.init(input_spheres, periodic_box_corners, time_recorder);
 		RadicalTessellation::ResultGraphics result_graphics;
 		RadicalTessellation::construct_full_tessellation(spheres_container_, std::vector<int>(), std::vector<int>(), false, true, tessellation_result_, result_graphics, time_recorder);
@@ -79,19 +84,23 @@ public:
 			RadicalTessellation::ResultGraphics result_graphics;
 			RadicalTessellation::construct_full_tessellation(spheres_container_, involvement_of_spheres_for_update_, std::vector<int>(), false, false, tessellation_result_, result_graphics, time_recorder);
 
-			for(UnsignedInt i=0;i<ids_of_affected_input_spheres_.size();i++)
 			{
-				const UnsignedInt sphere_id=ids_of_affected_input_spheres_[i];
+				ConditionToRemoveContact condition_to_remove_contact(involvement_of_spheres_for_update_);
+
+				for(UnsignedInt i=0;i<ids_of_affected_input_spheres_.size();i++)
 				{
-					std::vector<RadicalTessellation::ContactDescriptorSummary>& v=result_.contacts_summaries[sphere_id];
-					std::vector<RadicalTessellation::ContactDescriptorSummary>::iterator it=std::remove_if(v.begin(), v.end(), ConditionToRemoveContact(involvement_of_spheres_for_update_));
-					v.erase(it, v.end());
-				}
-				if(!result_.contacts_summaries_with_redundancy_in_periodic_box.empty())
-				{
-					std::vector<RadicalTessellation::ContactDescriptorSummary>& v=result_.contacts_summaries_with_redundancy_in_periodic_box[sphere_id];
-					std::vector<RadicalTessellation::ContactDescriptorSummary>::iterator it=std::remove_if(v.begin(), v.end(), ConditionToRemoveContact(involvement_of_spheres_for_update_));
-					v.erase(it, v.end());
+					const UnsignedInt sphere_id=ids_of_affected_input_spheres_[i];
+					{
+						std::vector<RadicalTessellation::ContactDescriptorSummary>& v=result_.contacts_summaries[sphere_id];
+						std::vector<RadicalTessellation::ContactDescriptorSummary>::iterator it=std::remove_if(v.begin(), v.end(), condition_to_remove_contact);
+						v.erase(it, v.end());
+					}
+					if(!result_.contacts_summaries_with_redundancy_in_periodic_box.empty())
+					{
+						std::vector<RadicalTessellation::ContactDescriptorSummary>& v=result_.contacts_summaries_with_redundancy_in_periodic_box[sphere_id];
+						std::vector<RadicalTessellation::ContactDescriptorSummary>::iterator it=std::remove_if(v.begin(), v.end(), condition_to_remove_contact);
+						v.erase(it, v.end());
+					}
 				}
 			}
 
@@ -129,13 +138,13 @@ public:
 
 			for(UnsignedInt i=0;i<ids_of_affected_input_spheres_.size();i++)
 			{
-				const UnsignedInt sphere_id=ids_of_affected_input_spheres_[sphere_id];
+				const UnsignedInt sphere_id=ids_of_affected_input_spheres_[i];
 				RadicalTessellation::CellContactDescriptorsSummary& cs=result_.cells_summaries[sphere_id];
 				cs=RadicalTessellation::CellContactDescriptorsSummary();
 				const std::vector<RadicalTessellation::ContactDescriptorSummary>& v=all_contacts_summaries[sphere_id];
 				for(UnsignedInt j=0;j<v.size();j++)
 				{
-					cs.add(v[j]);
+					cs.add(sphere_id, v[j]);
 				}
 				cs.compute_sas(spheres_container_.input_spheres()[sphere_id].r);
 				if(cs.stage==0 && spheres_container_.all_exclusion_statuses()[sphere_id]==0 && spheres_container_.all_colliding_ids()[sphere_id].empty())

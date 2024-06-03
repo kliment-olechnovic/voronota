@@ -35,7 +35,7 @@ public:
 			return;
 		}
 
-		bool need_full_rebuild=(ids_to_update.size()>(spheres_.size()/10));
+		bool need_full_rebuild=(ids_to_update.size()>size_threshold_for_full_rebuild());
 
 		for(UnsignedInt i=0;!need_full_rebuild && i<ids_to_update.size();i++)
 		{
@@ -227,6 +227,11 @@ private:
 			return (box_size==gp.box_size && grid_offset==gp.grid_offset && grid_size==gp.grid_size);
 		}
 	};
+
+	UnsignedInt size_threshold_for_full_rebuild() const
+	{
+		return static_cast<UnsignedInt>(spheres_.size()/2);
+	}
 
 	void init_boxes()
 	{

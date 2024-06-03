@@ -129,7 +129,7 @@ public:
 			return;
 		}
 
-		bool full_reinit_needed=(new_input_spheres.size()!=input_spheres_.size() || ids_of_changed_input_spheres.size()>input_spheres_.size()/10);
+		bool full_reinit_needed=(new_input_spheres.size()!=input_spheres_.size() || ids_of_changed_input_spheres.size()>size_threshold_for_full_reinit());
 
 		for(UnsignedInt i=0;!full_reinit_needed && i<ids_of_changed_input_spheres.size();i++)
 		{
@@ -149,7 +149,7 @@ public:
 				const UnsignedInt sphere_id=ids_of_changed_input_spheres[i];
 				for(UnsignedInt j=0;!full_reinit_needed && j<all_colliding_ids_[sphere_id].size();j++)
 				{
-					if(ids_of_affected_input_spheres.size()<input_spheres_.size()/5)
+					if(ids_of_affected_input_spheres.size()<size_threshold_for_full_reinit())
 					{
 						const UnsignedInt affected_sphere_id=all_colliding_ids_[sphere_id][j].index%input_spheres_.size();
 						std::vector<UnsignedInt>::iterator it=std::lower_bound(ids_of_affected_input_spheres.begin(), ids_of_affected_input_spheres.end(), affected_sphere_id);
@@ -352,6 +352,11 @@ public:
 	}
 
 private:
+	UnsignedInt size_threshold_for_full_reinit() const
+	{
+		return static_cast<UnsignedInt>(input_spheres_.size()/2);
+	}
+
 	void set_sphere_periodic_instances(const UnsignedInt i, const bool collect_indices, std::vector<UnsignedInt>& collected_indices)
 	{
 		if(i<input_spheres_.size())

@@ -132,6 +132,7 @@ int main(const int argc, const char** argv)
 	std::string graphics_title;
 	std::string write_log_to_file;
 	bool help=false;
+	bool test_updateable_tessellation=false;
 	std::ostringstream error_log_for_options_parsing;
 
 	{
@@ -254,6 +255,10 @@ int main(const int argc, const char** argv)
 			{
 				help=opt.is_flag_and_true();
 			}
+			else if((opt.name=="test-updateable-tessellation") && opt.is_flag())
+			{
+				test_updateable_tessellation=opt.is_flag_and_true();
+			}
 			else if(opt.name.empty())
 			{
 				error_log_for_options_parsing << "Error: unnamed command line arguments detected.\n";
@@ -363,7 +368,22 @@ int main(const int argc, const char** argv)
 
 	voronotalt::GraphicsWriter graphics_writer(!write_contacts_graphics_to_file.empty());
 
-	if(!run_in_simplified_aw_diagram_regime)
+	const int running_mode_radical=0;
+	const int running_mode_simplified_aw=1;
+	const int running_mode_test_updateable=2;
+
+	int selected_running_mode=running_mode_radical;
+
+	if(run_in_simplified_aw_diagram_regime)
+	{
+		selected_running_mode=running_mode_simplified_aw;
+	}
+	else if(test_updateable_tessellation)
+	{
+		selected_running_mode=running_mode_test_updateable;
+	}
+
+	if(selected_running_mode==running_mode_radical)
 	{
 		time_recoder_for_tessellation.reset();
 
@@ -537,7 +557,8 @@ int main(const int argc, const char** argv)
 			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
 		}
 	}
-	else
+
+	if(selected_running_mode==running_mode_simplified_aw)
 	{
 		time_recoder_for_tessellation.reset();
 
@@ -653,6 +674,88 @@ int main(const int argc, const char** argv)
 				graphics_writer.add_sphere(name_ball("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
 			}
 			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
+		}
+	}
+
+	if(selected_running_mode==running_mode_test_updateable)
+	{
+		time_recoder_for_tessellation.reset();
+
+		voronotalt::UpdateableRadicalTessellation urt;
+		urt.init(spheres_input_result.spheres, periodic_box_corners, time_recoder_for_tessellation);
+
+		{
+			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+			log_output << "log_urt_init_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+			log_output << "log_urt_init_total_contacts_count\t" << result_summary.total_contacts_summary.count << "\n";
+			log_output << "log_urt_init_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+			log_output << "log_urt_init_total_cells_count\t" << result_summary.total_cells_summary.count << "\n";
+			log_output << "log_urt_init_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n";
+			log_output << "log_urt_init_total_cells_sas_inside_volume\t" << result_summary.total_cells_summary.sas_inside_volume << "\n\n";
+		}
+
+		{
+			std::vector<voronotalt::UnsignedInt> ids_of_changed_input_spheres;
+			for(voronotalt::UnsignedInt i=0;i<spheres_input_result.spheres.size()/20+1;i++)
+			{
+				ids_of_changed_input_spheres.push_back(i);
+			}
+
+			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_first;
+			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last;
+
+			{
+				urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres, time_recoder_for_tessellation);
+				voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+				log_output << "log_urt_upd0_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+				log_output << "log_urt_upd0_total_contacts_count\t" << result_summary.total_contacts_summary.count << "\n";
+				log_output << "log_urt_upd0_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+				log_output << "log_urt_upd0_total_cells_count\t" << result_summary.total_cells_summary.count << "\n";
+				log_output << "log_urt_upd0_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n";
+				log_output << "log_urt_upd0_total_cells_sas_inside_volume\t" << result_summary.total_cells_summary.sas_inside_volume << "\n\n";
+				result_summary_first=result_summary;
+			}
+
+			for(int a=0;a<5;a++)
+			{
+				for(voronotalt::UnsignedInt i=0;i<ids_of_changed_input_spheres.size();i++)
+				{
+					voronotalt::SimpleSphere& sphere_to_move=spheres_input_result.spheres[ids_of_changed_input_spheres[i]];
+					sphere_to_move.p=voronotalt::sum_of_points(sphere_to_move.p, voronotalt::SimplePoint(1.0, 1.0, 1.0));
+				}
+				urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres, time_recoder_for_tessellation);
+				voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+				log_output << "log_urt_upd1_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+				log_output << "log_urt_upd1_total_contacts_count\t" << result_summary.total_contacts_summary.count << "\n";
+				log_output << "log_urt_upd1_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+				log_output << "log_urt_upd1_total_cells_count\t" << result_summary.total_cells_summary.count << "\n";
+				log_output << "log_urt_upd1_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n";
+				log_output << "log_urt_upd1_total_cells_sas_inside_volume\t" << result_summary.total_cells_summary.sas_inside_volume << "\n\n";
+			}
+
+			for(int a=0;a<5;a++)
+			{
+				for(voronotalt::UnsignedInt i=0;i<ids_of_changed_input_spheres.size();i++)
+				{
+					voronotalt::SimpleSphere& sphere_to_move=spheres_input_result.spheres[ids_of_changed_input_spheres[i]];
+					sphere_to_move.p=voronotalt::sum_of_points(sphere_to_move.p, voronotalt::SimplePoint(-1.0, -1.0, -1.0));
+				}
+				urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres, time_recoder_for_tessellation);
+				voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+				log_output << "log_urt_upd2_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+				log_output << "log_urt_upd2_total_contacts_count\t" << result_summary.total_contacts_summary.count << "\n";
+				log_output << "log_urt_upd2_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+				log_output << "log_urt_upd2_total_cells_count\t" << result_summary.total_cells_summary.count << "\n";
+				log_output << "log_urt_upd2_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n";
+				log_output << "log_urt_upd2_total_cells_sas_inside_volume\t" << result_summary.total_cells_summary.sas_inside_volume << "\n\n";
+				result_summary_last=result_summary;
+			}
+
+			log_output << "log_urt_diff_total_contacts_count\t" << (result_summary_first.total_contacts_summary.count-result_summary_last.total_contacts_summary.count) << "\n";
+			log_output << "log_urt_diff_total_contacts_area\t" << (result_summary_first.total_contacts_summary.area-result_summary_last.total_contacts_summary.area) << "\n";
+			log_output << "log_urt_diff_total_cells_count\t" << (result_summary_first.total_cells_summary.count-result_summary_last.total_cells_summary.count) << "\n";
+			log_output << "log_urt_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area-result_summary_last.total_cells_summary.sas_area) << "\n";
+			log_output << "log_urt_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume-result_summary_last.total_cells_summary.sas_inside_volume) << "\n\n";
 		}
 	}
 
