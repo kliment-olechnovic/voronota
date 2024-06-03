@@ -241,20 +241,17 @@ private:
 			}
 		}
 
-		if(tessellation_result_.contacts_summaries_with_redundancy_in_periodic_box.empty())
-		{
-			result_.contacts_summaries_with_redundancy_in_periodic_box.clear();
-		}
-		else
+		if(spheres_container_.periodic_box().enabled)
 		{
 			result_.contacts_summaries_with_redundancy_in_periodic_box.resize(spheres_container_.input_spheres().size());
 			for(UnsignedInt i=0;i<result_.contacts_summaries_with_redundancy_in_periodic_box.size();i++)
 			{
 				result_.contacts_summaries_with_redundancy_in_periodic_box[i].clear();
 			}
-			for(UnsignedInt i=0;i<tessellation_result_.contacts_summaries_with_redundancy_in_periodic_box.size();i++)
+			const std::vector<RadicalTessellation::ContactDescriptorSummary>& all_contacts_summaries=(tessellation_result_.contacts_summaries_with_redundancy_in_periodic_box.empty() ? tessellation_result_.contacts_summaries : tessellation_result_.contacts_summaries_with_redundancy_in_periodic_box);
+			for(UnsignedInt i=0;i<all_contacts_summaries.size();i++)
 			{
-				const RadicalTessellation::ContactDescriptorSummary& cds=tessellation_result_.contacts_summaries_with_redundancy_in_periodic_box[i];
+				const RadicalTessellation::ContactDescriptorSummary& cds=all_contacts_summaries[i];
 				if(cds.id_a<result_.contacts_summaries_with_redundancy_in_periodic_box.size())
 				{
 					result_.contacts_summaries_with_redundancy_in_periodic_box[cds.id_a].push_back(cds);
@@ -264,6 +261,10 @@ private:
 					result_.contacts_summaries_with_redundancy_in_periodic_box[cds.id_b].push_back(cds);
 				}
 			}
+		}
+		else
+		{
+			result_.contacts_summaries_with_redundancy_in_periodic_box.clear();
 		}
 	}
 
