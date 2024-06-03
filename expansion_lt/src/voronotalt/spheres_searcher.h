@@ -168,15 +168,21 @@ private:
 		GridPoint grid_offset;
 		GridPoint grid_size;
 		Float box_size;
+		int padding_;
 
-		GridParameters() : box_size(FLOATCONST(1.0))
+		GridParameters() : box_size(FLOATCONST(1.0)), padding_(1)
 		{
 			grid_size.x=1;
 			grid_size.y=1;
 			grid_size.z=1;
 		}
 
-		explicit GridParameters(const std::vector<SimpleSphere>& spheres) : box_size(FLOATCONST(1.0))
+		explicit GridParameters(const std::vector<SimpleSphere>& spheres) : box_size(FLOATCONST(1.0)), padding_(1)
+		{
+			init(spheres);
+		}
+
+		GridParameters(const std::vector<SimpleSphere>& spheres, const int padding) : box_size(FLOATCONST(1.0)), padding_(padding)
 		{
 			init(spheres);
 		}
@@ -184,6 +190,7 @@ private:
 		void init(const std::vector<SimpleSphere>& spheres)
 		{
 			box_size=FLOATCONST(1.0);
+			padding_=std::max(0, padding_);
 
 			for(UnsignedInt i=0;i<spheres.size();i++)
 			{
@@ -201,12 +208,12 @@ private:
 				}
 				else
 				{
-					grid_offset.x=std::min(grid_offset.x, gp.x);
-					grid_offset.y=std::min(grid_offset.y, gp.y);
-					grid_offset.z=std::min(grid_offset.z, gp.z);
-					grid_size.x=std::max(grid_size.x, gp.x);
-					grid_size.y=std::max(grid_size.y, gp.y);
-					grid_size.z=std::max(grid_size.z, gp.z);
+					grid_offset.x=std::min(grid_offset.x, gp.x-padding_);
+					grid_offset.y=std::min(grid_offset.y, gp.y-padding_);
+					grid_offset.z=std::min(grid_offset.z, gp.z-padding_);
+					grid_size.x=std::max(grid_size.x, gp.x+padding_);
+					grid_size.y=std::max(grid_size.y, gp.y+padding_);
+					grid_size.z=std::max(grid_size.z, gp.z+padding_);
 				}
 			}
 
