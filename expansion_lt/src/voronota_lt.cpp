@@ -697,7 +697,7 @@ int main(const int argc, const char** argv)
 
 		{
 			std::vector<voronotalt::UnsignedInt> ids_of_changed_input_spheres;
-			for(voronotalt::UnsignedInt i=0;i<10 && i<spheres_input_result.spheres.size();i++)
+			for(voronotalt::UnsignedInt i=0;i<25 && i<spheres_input_result.spheres.size();i++)
 			{
 				ids_of_changed_input_spheres.push_back(i);
 			}

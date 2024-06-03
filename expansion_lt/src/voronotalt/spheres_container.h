@@ -332,9 +332,9 @@ public:
 				{
 					const UnsignedInt id_b=all_colliding_ids_[id_a][j].index;
 					const UnsignedInt id_b_canonical=(id_b%input_spheres_.size());
-					if((involvement_of_spheres.empty() || id_b_canonical>=involvement_of_spheres.size() || involvement_of_spheres[id_b_canonical]>0) && all_exclusion_statuses_[id_b]==0)
+					if((involvement_of_spheres.empty() || id_b_canonical>=involvement_of_spheres.size() || involvement_of_spheres[id_b_canonical]>0) && all_exclusion_statuses_[id_b_canonical]==0)
 					{
-						if(id_b>=input_spheres_.size() || (all_colliding_ids_[id_a].size()<all_colliding_ids_[id_b].size()) || (id_a<id_b && all_colliding_ids_[id_a].size()==all_colliding_ids_[id_b].size()))
+						if(id_b>=input_spheres_.size() || (all_colliding_ids_[id_a].size()<all_colliding_ids_[id_b_canonical].size()) || (id_a<id_b && all_colliding_ids_[id_a].size()==all_colliding_ids_[id_b_canonical].size()))
 						{
 							if(grouping_of_spheres.empty() || id_a>=grouping_of_spheres.size() || id_b_canonical>=grouping_of_spheres.size() || grouping_of_spheres[id_a]!=grouping_of_spheres[id_b_canonical])
 							{

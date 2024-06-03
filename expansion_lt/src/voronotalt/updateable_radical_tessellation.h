@@ -115,9 +115,11 @@ public:
 
 				if(!result_.contacts_summaries_with_redundancy_in_periodic_box.empty())
 				{
-					for(UnsignedInt i=0;i<tessellation_result_.contacts_summaries_with_redundancy_in_periodic_box.size();i++)
+					const std::vector<RadicalTessellation::ContactDescriptorSummary>& all_contacts_summaries=(tessellation_result_.contacts_summaries_with_redundancy_in_periodic_box.empty() ? tessellation_result_.contacts_summaries : tessellation_result_.contacts_summaries_with_redundancy_in_periodic_box);
+
+					for(UnsignedInt i=0;i<all_contacts_summaries.size();i++)
 					{
-						const RadicalTessellation::ContactDescriptorSummary& cds=tessellation_result_.contacts_summaries_with_redundancy_in_periodic_box[i];
+						const RadicalTessellation::ContactDescriptorSummary& cds=all_contacts_summaries[i];
 						if(cds.id_a<result_.contacts_summaries_with_redundancy_in_periodic_box.size())
 						{
 							result_.contacts_summaries_with_redundancy_in_periodic_box[cds.id_a].push_back(cds);
