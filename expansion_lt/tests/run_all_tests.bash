@@ -68,12 +68,14 @@ voronota-lt -processors 40 -probe 2  < "./input/balls_cs_3x3.xyzr" -write-cells-
 
 ####################################################################
 
-voronota-lt -processors 1 -probe 1.4 -test-updateable-tessellation < "./input/balls_2zsk.xyzr" 2> "./output/contacts_2zsk_summary_updateable_test.txt"
+voronota-lt -processors 40 -probe 1.4 -test-updateable-tessellation < "./input/balls_2zsk.xyzr" 2> "./output/contacts_2zsk_summary_updateable_test.txt"
 
-voronota-lt -processors 1 -probe 1.4 -test-updateable-tessellation < "./input/balls_3dlb.xyzr" 2> "./output/contacts_3dlb_summary_updateable_test.txt"
+voronota-lt -processors 40 -probe 1.4 -test-updateable-tessellation < "./input/balls_3dlb.xyzr" 2> "./output/contacts_3dlb_summary_updateable_test.txt"
+
+voronota-lt -processors 40 -probe 1.4 -test-updateable-tessellation < "./input/balls_7br8.xyzr" 2> "./output/contacts_7br8_summary_updateable_test.txt"
 
 voronota-lt \
-  -processors 1 \
+  -processors 40 \
   -probe 2 \
   -periodic-box-corners 0 0 0 200 250 300 \
   -test-updateable-tessellation \
