@@ -68,6 +68,20 @@ voronota-lt -processors 40 -probe 2  < "./input/balls_cs_3x3.xyzr" -write-cells-
 
 ####################################################################
 
+voronota-lt -processors 1 -probe 1.4 -test-updateable-tessellation < "./input/balls_2zsk.xyzr" 2> "./output/contacts_2zsk_summary_updateable_test.txt"
+
+voronota-lt -processors 1 -probe 1.4 -test-updateable-tessellation < "./input/balls_3dlb.xyzr" 2> "./output/contacts_3dlb_summary_updateable_test.txt"
+
+voronota-lt \
+  -processors 1 \
+  -probe 2 \
+  -periodic-box-corners 0 0 0 200 250 300 \
+  -test-updateable-tessellation \
+< "./input/balls_cs_1x1.xyzr" \
+2> "./output/contacts_cs_1x1_periodic_summary_updateable_test.txt"
+
+####################################################################
+
 mkdir -p "./output/api_usage_examples"
 
 g++ -O3 -I../src/voronotalt -o "./output/api_usage_examples/example_basic_and_periodic" "./input/api_usage_example_basic_and_periodic.cpp"
