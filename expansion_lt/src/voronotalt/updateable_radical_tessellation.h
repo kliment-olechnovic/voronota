@@ -85,7 +85,7 @@ public:
 			RadicalTessellation::construct_full_tessellation(spheres_container_, involvement_of_spheres_for_update_, std::vector<int>(), false, false, tessellation_result_, result_graphics, time_recorder);
 
 			{
-				ConditionToRemoveContact condition_to_remove_contact(involvement_of_spheres_for_update_);
+				const ConditionToRemoveContact condition_to_remove_contact(involvement_of_spheres_for_update_);
 
 				for(UnsignedInt i=0;i<ids_of_affected_input_spheres_.size();i++)
 				{
@@ -204,23 +204,17 @@ private:
 	class ConditionToRemoveContact
 	{
 	public:
-		ConditionToRemoveContact(const std::vector<int>& involvement) : involvement_(&involvement)
+		ConditionToRemoveContact(const std::vector<int>& involvement) : involvement_(involvement)
 		{
 		}
 
 		bool operator()(const RadicalTessellation::ContactDescriptorSummary& cds)
 		{
-			if(involvement_==0)
-			{
-				return false;
-			}
-			const std::vector<int>& involvement=(*involvement_);
-			return (involvement.empty() || (involvement[cds.id_a%involvement.size()]>0 && involvement[cds.id_b%involvement.size()]>0));
+			return (involvement_.empty() || (involvement_[cds.id_a%involvement_.size()]>0 && involvement_[cds.id_b%involvement_.size()]>0));
 		}
 
 	private:
-		const std::vector<int>* involvement_;
-
+		const std::vector<int>& involvement_;
 	};
 
 	void init_result_from_tessellation_result()
