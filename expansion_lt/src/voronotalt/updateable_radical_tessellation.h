@@ -50,6 +50,12 @@ public:
 		init_result_from_tessellation_result();
 	}
 
+	void update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres)
+	{
+		TimeRecorder time_recorder;
+		update(new_input_spheres, ids_of_changed_input_spheres, time_recorder);
+	}
+
 	void update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres, TimeRecorder& time_recorder)
 	{
 		time_recorder.reset();
