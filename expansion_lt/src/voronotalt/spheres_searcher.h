@@ -35,16 +35,19 @@ public:
 			return false;
 		}
 
-		bool need_full_rebuild=(ids_to_update.size()>size_threshold_for_full_rebuild());
-
-		for(UnsignedInt i=0;!need_full_rebuild && i<ids_to_update.size();i++)
-		{
-			need_full_rebuild=need_full_rebuild || !update_sphere(ids_to_update[i], spheres[ids_to_update[i]]);
-		}
-
-		if(need_full_rebuild)
+		if(ids_to_update.size()>size_threshold_for_full_rebuild())
 		{
 			init(spheres);
+			return true;
+		}
+
+		for(UnsignedInt i=0;i<ids_to_update.size();i++)
+		{
+			if(ids_to_update[i]>=spheres.size() || !update_sphere(ids_to_update[i], spheres[ids_to_update[i]]))
+			{
+				init(spheres);
+				return true;
+			}
 		}
 
 		return true;

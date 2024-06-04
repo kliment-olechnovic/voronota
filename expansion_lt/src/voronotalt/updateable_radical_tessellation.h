@@ -34,6 +34,17 @@ public:
 	{
 	}
 
+	void init(const std::vector<SimpleSphere>& input_spheres)
+	{
+		TimeRecorder time_recorder;
+		init(input_spheres, std::vector<SimplePoint>(), time_recorder);
+	}
+
+	void init(const std::vector<SimpleSphere>& input_spheres, TimeRecorder& time_recorder)
+	{
+		init(input_spheres, std::vector<SimplePoint>(), time_recorder);
+	}
+
 	void init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners)
 	{
 		TimeRecorder time_recorder;
@@ -50,22 +61,38 @@ public:
 		init_result_from_tessellation_result();
 	}
 
+	bool update(const std::vector<SimpleSphere>& new_input_spheres)
+	{
+		TimeRecorder time_recorder;
+		return update(new_input_spheres, std::vector<UnsignedInt>(), false, time_recorder);
+	}
+
+	bool update(const std::vector<SimpleSphere>& new_input_spheres, TimeRecorder& time_recorder)
+	{
+		return update(new_input_spheres, std::vector<UnsignedInt>(), false, time_recorder);
+	}
+
 	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres)
 	{
 		TimeRecorder time_recorder;
-		return update(new_input_spheres, ids_of_changed_input_spheres, time_recorder);
+		return update(new_input_spheres, ids_of_changed_input_spheres, true, time_recorder);
 	}
 
 	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres, TimeRecorder& time_recorder)
 	{
+		return update(new_input_spheres, ids_of_changed_input_spheres, true, time_recorder);
+	}
+
+	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres, const bool trust_provided_ids_of_changed_input_spheres, TimeRecorder& time_recorder)
+	{
 		time_recorder.reset();
 
-		if(ids_of_changed_input_spheres.empty())
+		if(trust_provided_ids_of_changed_input_spheres && ids_of_changed_input_spheres.empty())
 		{
 			return false;
 		}
 
-		if(!spheres_container_.update(new_input_spheres, ids_of_changed_input_spheres, ids_of_affected_input_spheres_, time_recorder))
+		if(!spheres_container_.update(new_input_spheres, ids_of_changed_input_spheres, trust_provided_ids_of_changed_input_spheres, ids_of_affected_input_spheres_, time_recorder))
 		{
 			return false;
 		}
