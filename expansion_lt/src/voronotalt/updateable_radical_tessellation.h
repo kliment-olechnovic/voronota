@@ -50,29 +50,32 @@ public:
 		init_result_from_tessellation_result();
 	}
 
-	void update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres)
+	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres)
 	{
 		TimeRecorder time_recorder;
-		update(new_input_spheres, ids_of_changed_input_spheres, time_recorder);
+		return update(new_input_spheres, ids_of_changed_input_spheres, time_recorder);
 	}
 
-	void update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres, TimeRecorder& time_recorder)
+	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres, TimeRecorder& time_recorder)
 	{
 		time_recorder.reset();
 
 		if(ids_of_changed_input_spheres.empty())
 		{
-			return;
+			return false;
 		}
 
-		spheres_container_.update(new_input_spheres, ids_of_changed_input_spheres, ids_of_affected_input_spheres_, time_recorder);
+		if(!spheres_container_.update(new_input_spheres, ids_of_changed_input_spheres, ids_of_affected_input_spheres_, time_recorder))
+		{
+			return false;
+		}
 
 		if(ids_of_affected_input_spheres_.empty())
 		{
 			RadicalTessellation::ResultGraphics result_graphics;
 			RadicalTessellation::construct_full_tessellation(spheres_container_, std::vector<int>(), std::vector<int>(), false, true, tessellation_result_, result_graphics, time_recorder);
 			init_result_from_tessellation_result();
-			return;
+			return true;
 		}
 
 		if(involvement_of_spheres_for_update_.size()!=spheres_container_.input_spheres().size())
@@ -168,6 +171,8 @@ public:
 		{
 			involvement_of_spheres_for_update_[ids_of_affected_input_spheres_[i]]=0;
 		}
+
+		return true;
 	}
 
 	const SpheresContainer& spheres_container() const

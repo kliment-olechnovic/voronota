@@ -2,7 +2,7 @@ log_urt_init_local_update_balls_count	0
 log_urt_init_total_contacts_area	75956.7
 log_urt_init_total_cells_sas_area	18649.9
 
-log_urt_upd0_local_update_balls_count	137
+log_urt_upd0_local_update_balls_count	0
 log_urt_upd0_total_contacts_area	75956.7
 log_urt_upd0_total_cells_sas_area	18649.9
 

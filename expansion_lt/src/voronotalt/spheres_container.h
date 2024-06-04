@@ -118,7 +118,7 @@ public:
 		time_recorder.record_elapsed_miliseconds_and_reset("count all collisions");
 	}
 
-	void update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres, std::vector<UnsignedInt>& ids_of_affected_input_spheres, TimeRecorder& time_recorder)
+	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres, std::vector<UnsignedInt>& ids_of_affected_input_spheres, TimeRecorder& time_recorder)
 	{
 		time_recorder.reset();
 
@@ -126,7 +126,7 @@ public:
 
 		if(ids_of_changed_input_spheres.empty())
 		{
-			return;
+			return false;
 		}
 
 		bool full_reinit_needed=(new_input_spheres.size()!=input_spheres_.size() || ids_of_changed_input_spheres.size()>size_threshold_for_full_reinit());
@@ -135,7 +135,24 @@ public:
 		{
 			if(ids_of_changed_input_spheres.size()>=input_spheres_.size())
 			{
-				full_reinit_needed=true;;
+				full_reinit_needed=true;
+			}
+		}
+
+		if(!full_reinit_needed)
+		{
+			bool update_needed=false;
+			for(UnsignedInt i=0;!update_needed && i<ids_of_changed_input_spheres.size();i++)
+			{
+				const UnsignedInt sphere_id=ids_of_changed_input_spheres[i];
+				if(!sphere_equals_sphere(new_input_spheres[sphere_id], input_spheres_[sphere_id]))
+				{
+					update_needed=true;
+				}
+			}
+			if(!update_needed)
+			{
+				return false;
 			}
 		}
 
@@ -195,7 +212,7 @@ public:
 						set_sphere_periodic_instances(sphere_id, true, ids_of_changed_populated_spheres);
 					}
 				}
-				spheres_searcher_.update_spheres(populated_spheres_, ids_of_changed_populated_spheres);
+				spheres_searcher_.update(populated_spheres_, ids_of_changed_populated_spheres);
 			}
 			else
 			{
@@ -205,7 +222,7 @@ public:
 					input_spheres_[sphere_id]=new_input_spheres[sphere_id];
 					populated_spheres_[sphere_id]=input_spheres_[sphere_id];
 				}
-				spheres_searcher_.update_spheres(input_spheres_, ids_of_changed_input_spheres);
+				spheres_searcher_.update(input_spheres_, ids_of_changed_input_spheres);
 			}
 
 			time_recorder.record_elapsed_miliseconds_and_reset("update spheres searcher");
@@ -274,6 +291,8 @@ public:
 
 			time_recorder.record_elapsed_miliseconds_and_reset("recount all collisions");
 		}
+
+		return true;
 	}
 
 	const PeriodicBox& periodic_box() const

@@ -28,11 +28,11 @@ public:
 		init_boxes();
 	}
 
-	void update_spheres(const std::vector<SimpleSphere>& spheres, const std::vector<UnsignedInt>& ids_to_update)
+	bool update(const std::vector<SimpleSphere>& spheres, const std::vector<UnsignedInt>& ids_to_update)
 	{
 		if(ids_to_update.empty())
 		{
-			return;
+			return false;
 		}
 
 		bool need_full_rebuild=(ids_to_update.size()>size_threshold_for_full_rebuild());
@@ -46,6 +46,8 @@ public:
 		{
 			init(spheres);
 		}
+
+		return true;
 	}
 
 	const std::vector<SimpleSphere>& searchable_spheres() const
