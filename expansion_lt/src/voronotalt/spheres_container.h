@@ -260,7 +260,7 @@ public:
 				}
 			}
 
-			std::vector<UnsignedInt> more_ids_of_affected_input_spheres;
+			buffered_temporary_storage_.clear();
 
 			for(UnsignedInt i=0;i<ids_of_changed_input_spheres.size();i++)
 			{
@@ -268,36 +268,37 @@ public:
 				for(UnsignedInt j=0;j<all_colliding_ids_[sphere_id].size();j++)
 				{
 					const UnsignedInt affected_sphere_id=all_colliding_ids_[sphere_id][j].index%input_spheres_.size();
-					std::vector<UnsignedInt>::iterator it=std::lower_bound(more_ids_of_affected_input_spheres.begin(), more_ids_of_affected_input_spheres.end(), affected_sphere_id);
-					if(it==more_ids_of_affected_input_spheres.end() || (*it)!=affected_sphere_id)
+					std::vector<UnsignedInt>::iterator it=std::lower_bound(buffered_temporary_storage_.more_ids_of_affected_input_spheres.begin(), buffered_temporary_storage_.more_ids_of_affected_input_spheres.end(), affected_sphere_id);
+					if(it==buffered_temporary_storage_.more_ids_of_affected_input_spheres.end() || (*it)!=affected_sphere_id)
 					{
 						if(!std::binary_search(ids_of_affected_input_spheres.begin(), ids_of_affected_input_spheres.end(), affected_sphere_id))
 						{
-							more_ids_of_affected_input_spheres.insert(it, affected_sphere_id);
+							buffered_temporary_storage_.more_ids_of_affected_input_spheres.insert(it, affected_sphere_id);
 						}
 					}
 				}
 			}
 
-			if(!more_ids_of_affected_input_spheres.empty())
+			if(!buffered_temporary_storage_.more_ids_of_affected_input_spheres.empty())
 			{
 				#pragma omp parallel
 				{
 					#pragma omp for
-					for(UnsignedInt i=0;i<more_ids_of_affected_input_spheres.size();i++)
+					for(UnsignedInt i=0;i<buffered_temporary_storage_.more_ids_of_affected_input_spheres.size();i++)
 					{
-						const UnsignedInt sphere_id=more_ids_of_affected_input_spheres[i];
+						const UnsignedInt sphere_id=buffered_temporary_storage_.more_ids_of_affected_input_spheres[i];
 						all_colliding_ids_[sphere_id].clear();
 						spheres_searcher_.find_colliding_ids(sphere_id, all_colliding_ids_[sphere_id], true, all_exclusion_statuses_[sphere_id]);
 					}
 				}
 
-				std::vector<UnsignedInt> merged_ids_of_affected_input_spheres(ids_of_affected_input_spheres.size()+more_ids_of_affected_input_spheres.size());
-				std::merge(ids_of_affected_input_spheres.begin(), ids_of_affected_input_spheres.end(),
-						more_ids_of_affected_input_spheres.begin(), more_ids_of_affected_input_spheres.end(),
-						merged_ids_of_affected_input_spheres.begin());
+				buffered_temporary_storage_.merged_ids_of_affected_input_spheres.resize(ids_of_affected_input_spheres.size()+buffered_temporary_storage_.more_ids_of_affected_input_spheres.size());
 
-				ids_of_affected_input_spheres.swap(merged_ids_of_affected_input_spheres);
+				std::merge(ids_of_affected_input_spheres.begin(), ids_of_affected_input_spheres.end(),
+						buffered_temporary_storage_.more_ids_of_affected_input_spheres.begin(), buffered_temporary_storage_.more_ids_of_affected_input_spheres.end(),
+						buffered_temporary_storage_.merged_ids_of_affected_input_spheres.begin());
+
+				ids_of_affected_input_spheres.swap(buffered_temporary_storage_.merged_ids_of_affected_input_spheres);
 			}
 
 			time_recorder.record_elapsed_miliseconds_and_reset("update relevant collisions");
@@ -393,6 +394,18 @@ public:
 	}
 
 private:
+	struct BufferedTemporaryStorage
+	{
+		std::vector<UnsignedInt> more_ids_of_affected_input_spheres;
+		std::vector<UnsignedInt> merged_ids_of_affected_input_spheres;
+
+		void clear()
+		{
+			more_ids_of_affected_input_spheres.clear();
+			merged_ids_of_affected_input_spheres.clear();
+		}
+	};
+
 	UnsignedInt size_threshold_for_full_reinit() const
 	{
 		return static_cast<UnsignedInt>(input_spheres_.size()/2);
@@ -474,6 +487,7 @@ private:
 	SpheresSearcher spheres_searcher_;
 	std::vector< std::vector<ValuedID> > all_colliding_ids_;
 	UnsignedInt total_collisions_;
+	BufferedTemporaryStorage buffered_temporary_storage_;
 };
 
 }
