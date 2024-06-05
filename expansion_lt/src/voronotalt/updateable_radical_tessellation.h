@@ -202,6 +202,49 @@ public:
 		return true;
 	}
 
+	void assign(const UpdateableRadicalTessellation& obj)
+	{
+		spheres_container_.assign(obj.spheres_container_);
+
+		ids_of_affected_input_spheres_.resize(obj.ids_of_affected_input_spheres_.size());
+		result_.cells_summaries.resize(obj.result_.cells_summaries.size());
+		result_.contacts_summaries.resize(obj.result_.contacts_summaries.size());
+		result_.contacts_summaries_with_redundancy_in_periodic_box.resize(obj.result_.contacts_summaries_with_redundancy_in_periodic_box.size());
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.ids_of_affected_input_spheres_.size();i++)
+			{
+				ids_of_affected_input_spheres_[i]=obj.ids_of_affected_input_spheres_[i];
+			}
+		}
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.result_.cells_summaries.size();i++)
+			{
+				result_.cells_summaries[i]=obj.result_.cells_summaries[i];
+			}
+		}
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.result_.contacts_summaries.size();i++)
+			{
+				result_.contacts_summaries[i]=obj.result_.contacts_summaries[i];
+			}
+		}
+
+		if(!obj.result_.contacts_summaries_with_redundancy_in_periodic_box.empty())
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.result_.contacts_summaries_with_redundancy_in_periodic_box.size();i++)
+			{
+				result_.contacts_summaries_with_redundancy_in_periodic_box[i]=obj.result_.contacts_summaries_with_redundancy_in_periodic_box[i];
+			}
+		}
+	}
+
 	const SpheresContainer& spheres_container() const
 	{
 		return spheres_container_;

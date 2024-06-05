@@ -53,6 +53,39 @@ public:
 		return true;
 	}
 
+	void assign(const SpheresSearcher& obj)
+	{
+		grid_parameters_=obj.grid_parameters_;
+
+		spheres_.resize(obj.spheres_.size());
+		map_of_boxes_.resize(obj.map_of_boxes_.size());
+		boxes_.resize(obj.boxes_.size());
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.spheres_.size();i++)
+			{
+				spheres_[i]=obj.spheres_[i];
+			}
+		}
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.map_of_boxes_.size();i++)
+			{
+				map_of_boxes_[i]=obj.map_of_boxes_[i];
+			}
+		}
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.boxes_.size();i++)
+			{
+				boxes_[i]=obj.boxes_[i];
+			}
+		}
+	}
+
 	const std::vector<SimpleSphere>& searchable_spheres() const
 	{
 		return spheres_;

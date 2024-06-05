@@ -318,6 +318,51 @@ public:
 		return true;
 	}
 
+	void assign(const SpheresContainer& obj)
+	{
+		periodic_box_=obj.periodic_box_;
+		total_collisions_=obj.total_collisions_;
+
+		spheres_searcher_.assign(obj.spheres_searcher_);
+
+		input_spheres_.resize(obj.input_spheres_.size());
+		populated_spheres_.resize(obj.populated_spheres_.size());
+		all_exclusion_statuses_.resize(obj.all_exclusion_statuses_.size());
+		all_colliding_ids_.resize(obj.all_colliding_ids_.size());
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.input_spheres_.size();i++)
+			{
+				input_spheres_[i]=obj.input_spheres_[i];
+			}
+		}
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.populated_spheres_.size();i++)
+			{
+				populated_spheres_[i]=obj.populated_spheres_[i];
+			}
+		}
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.all_exclusion_statuses_.size();i++)
+			{
+				all_exclusion_statuses_[i]=obj.all_exclusion_statuses_[i];
+			}
+		}
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.all_colliding_ids_.size();i++)
+			{
+				all_colliding_ids_[i]=obj.all_colliding_ids_[i];
+			}
+		}
+	}
+
 	const PeriodicBox& periodic_box() const
 	{
 		return periodic_box_;
