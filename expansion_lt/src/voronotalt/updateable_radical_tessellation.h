@@ -56,7 +56,6 @@ public:
 		spheres_container_.init(input_spheres, periodic_box_corners, time_recorder);
 		RadicalTessellation::ResultGraphics result_graphics;
 		RadicalTessellation::construct_full_tessellation(spheres_container_, std::vector<int>(), std::vector<int>(), false, true, buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
-		ids_of_affected_input_spheres_.clear();
 		involvement_of_spheres_for_update_.clear();
 		init_result_from_tessellation_result();
 	}
@@ -83,16 +82,19 @@ public:
 		return update(new_input_spheres, ids_of_changed_input_spheres, true, time_recorder);
 	}
 
-	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres, const bool trust_provided_ids_of_changed_input_spheres, TimeRecorder& time_recorder)
+	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& provided_ids_of_changed_input_spheres, const bool trust_provided_ids_of_changed_input_spheres, TimeRecorder& time_recorder)
 	{
 		time_recorder.reset();
 
-		if(trust_provided_ids_of_changed_input_spheres && ids_of_changed_input_spheres.empty())
+		ids_of_changed_input_spheres_.clear();
+		ids_of_affected_input_spheres_.clear();
+
+		if(trust_provided_ids_of_changed_input_spheres && provided_ids_of_changed_input_spheres.empty())
 		{
 			return false;
 		}
 
-		if(!spheres_container_.update(new_input_spheres, ids_of_changed_input_spheres, trust_provided_ids_of_changed_input_spheres, ids_of_affected_input_spheres_, time_recorder))
+		if(!spheres_container_.update(new_input_spheres, provided_ids_of_changed_input_spheres, trust_provided_ids_of_changed_input_spheres, ids_of_changed_input_spheres_, ids_of_affected_input_spheres_, time_recorder))
 		{
 			return false;
 		}
@@ -276,6 +278,12 @@ public:
 		return result_summary;
 	}
 
+
+	const std::vector<UnsignedInt>& last_update_ids_of_changed_input_spheres() const
+	{
+		return ids_of_changed_input_spheres_;
+	}
+
 	const std::vector<UnsignedInt>& last_update_ids_of_affected_input_spheres() const
 	{
 		return ids_of_affected_input_spheres_;
@@ -310,6 +318,9 @@ private:
 
 	void init_result_from_tessellation_result()
 	{
+		ids_of_changed_input_spheres_.clear();
+		ids_of_affected_input_spheres_.clear();
+
 		result_.cells_summaries.swap(buffered_temporary_storage_.tessellation_result.cells_summaries);
 
 		{
@@ -354,6 +365,7 @@ private:
 	}
 
 	SpheresContainer spheres_container_;
+	std::vector<UnsignedInt> ids_of_changed_input_spheres_;
 	std::vector<UnsignedInt> ids_of_affected_input_spheres_;
 	std::vector<int> involvement_of_spheres_for_update_;
 	Result result_;

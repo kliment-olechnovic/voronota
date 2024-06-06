@@ -131,33 +131,42 @@ public:
 		time_recorder.record_elapsed_miliseconds_and_reset("count all collisions");
 	}
 
-	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& provided_ids_of_changed_input_spheres, const bool trust_provided_ids_of_changed_input_spheres, std::vector<UnsignedInt>& ids_of_affected_input_spheres, TimeRecorder& time_recorder)
+	bool update(
+			const std::vector<SimpleSphere>& new_input_spheres,
+			const std::vector<UnsignedInt>& provided_ids_of_changed_input_spheres,
+			const bool trust_provided_ids_of_changed_input_spheres,
+			std::vector<UnsignedInt>& ids_of_changed_input_spheres,
+			std::vector<UnsignedInt>& ids_of_affected_input_spheres,
+			TimeRecorder& time_recorder)
 	{
 		time_recorder.reset();
 
+		ids_of_changed_input_spheres.clear();
 		ids_of_affected_input_spheres.clear();
 
 		if(new_input_spheres.size()!=input_spheres_.size())
 		{
-			reinit(new_input_spheres, ids_of_affected_input_spheres, time_recorder);
+			reinit(new_input_spheres, ids_of_changed_input_spheres, ids_of_affected_input_spheres, time_recorder);
 			return true;
 		}
 
-		std::vector<UnsignedInt> identified_ids_of_changed_input_spheres;
-
-		if(!trust_provided_ids_of_changed_input_spheres)
+		if(trust_provided_ids_of_changed_input_spheres)
+		{
+			ids_of_changed_input_spheres=provided_ids_of_changed_input_spheres;
+		}
+		else
 		{
 			for(UnsignedInt i=0;i<new_input_spheres.size();i++)
 			{
 				if(!sphere_equals_sphere(new_input_spheres[i], input_spheres_[i]))
 				{
-					if(identified_ids_of_changed_input_spheres.size()<size_threshold_for_full_reinit())
+					if(ids_of_changed_input_spheres.size()<size_threshold_for_full_reinit())
 					{
-						identified_ids_of_changed_input_spheres.push_back(i);
+						ids_of_changed_input_spheres.push_back(i);
 					}
 					else
 					{
-						reinit(new_input_spheres, ids_of_affected_input_spheres, time_recorder);
+						reinit(new_input_spheres, ids_of_changed_input_spheres, ids_of_affected_input_spheres, time_recorder);
 						return true;
 					}
 				}
@@ -166,8 +175,6 @@ public:
 			time_recorder.record_elapsed_miliseconds_and_reset("identify changed spheres ids for update");
 		}
 
-		const std::vector<UnsignedInt>& ids_of_changed_input_spheres=(trust_provided_ids_of_changed_input_spheres ? provided_ids_of_changed_input_spheres : identified_ids_of_changed_input_spheres);
-
 		if(ids_of_changed_input_spheres.empty())
 		{
 			return false;
@@ -175,7 +182,7 @@ public:
 
 		if(ids_of_changed_input_spheres.size()>size_threshold_for_full_reinit())
 		{
-			reinit(new_input_spheres, ids_of_affected_input_spheres, time_recorder);
+			reinit(new_input_spheres, ids_of_changed_input_spheres, ids_of_affected_input_spheres, time_recorder);
 			return true;
 		}
 
@@ -183,7 +190,7 @@ public:
 		{
 			if(ids_of_changed_input_spheres[i]>=input_spheres_.size())
 			{
-				reinit(new_input_spheres, ids_of_affected_input_spheres, time_recorder);
+				reinit(new_input_spheres, ids_of_changed_input_spheres, ids_of_affected_input_spheres, time_recorder);
 				return true;
 			}
 		}
@@ -224,7 +231,7 @@ public:
 					}
 					else
 					{
-						reinit(new_input_spheres, ids_of_affected_input_spheres, time_recorder);
+						reinit(new_input_spheres, ids_of_changed_input_spheres, ids_of_affected_input_spheres, time_recorder);
 						return true;
 					}
 				}
@@ -546,7 +553,7 @@ private:
 		return static_cast<UnsignedInt>(input_spheres_.size()/2);
 	}
 
-	void reinit(const std::vector<SimpleSphere>& new_input_spheres, std::vector<UnsignedInt>& ids_of_affected_input_spheres, TimeRecorder& time_recorder)
+	void reinit(const std::vector<SimpleSphere>& new_input_spheres, std::vector<UnsignedInt>& ids_of_changed_input_spheres, std::vector<UnsignedInt>& ids_of_affected_input_spheres, TimeRecorder& time_recorder)
 	{
 		std::vector<SimplePoint> periodic_box_corners;
 		if(periodic_box_.enabled)
@@ -556,6 +563,7 @@ private:
 			periodic_box_corners.push_back(periodic_box_.corner_b);
 		}
 		init(new_input_spheres, periodic_box_corners, time_recorder);
+		ids_of_changed_input_spheres.clear();
 		ids_of_affected_input_spheres.clear();
 	}
 
