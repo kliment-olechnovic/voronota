@@ -30,7 +30,7 @@ public:
 		}
 	};
 
-	UpdateableRadicalTessellation()
+	UpdateableRadicalTessellation() : last_update_was_full_reinit_(true)
 	{
 	}
 
@@ -88,6 +88,7 @@ public:
 
 		ids_of_changed_input_spheres_.clear();
 		ids_of_affected_input_spheres_.clear();
+		last_update_was_full_reinit_=false;
 
 		if(trust_provided_ids_of_changed_input_spheres && provided_ids_of_changed_input_spheres.empty())
 		{
@@ -278,7 +279,6 @@ public:
 		return result_summary;
 	}
 
-
 	const std::vector<UnsignedInt>& last_update_ids_of_changed_input_spheres() const
 	{
 		return ids_of_changed_input_spheres_;
@@ -287,6 +287,11 @@ public:
 	const std::vector<UnsignedInt>& last_update_ids_of_affected_input_spheres() const
 	{
 		return ids_of_affected_input_spheres_;
+	}
+
+	bool last_update_was_full_reinit() const
+	{
+		return last_update_was_full_reinit_;
 	}
 
 private:
@@ -320,6 +325,7 @@ private:
 	{
 		ids_of_changed_input_spheres_.clear();
 		ids_of_affected_input_spheres_.clear();
+		last_update_was_full_reinit_=true;
 
 		result_.cells_summaries.swap(buffered_temporary_storage_.tessellation_result.cells_summaries);
 
@@ -367,6 +373,7 @@ private:
 	SpheresContainer spheres_container_;
 	std::vector<UnsignedInt> ids_of_changed_input_spheres_;
 	std::vector<UnsignedInt> ids_of_affected_input_spheres_;
+	bool last_update_was_full_reinit_;
 	std::vector<int> involvement_of_spheres_for_update_;
 	Result result_;
 	BufferedTemporaryStorage buffered_temporary_storage_;
