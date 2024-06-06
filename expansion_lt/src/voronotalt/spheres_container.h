@@ -43,6 +43,11 @@ public:
 				shift=sub_of_points(corner_b, corner_a);
 			}
 		}
+
+		bool equals(const PeriodicBox& pb) const
+		{
+			return (enabled==pb.enabled && point_equals_point(corner_a, pb.corner_a) && point_equals_point(corner_b, pb.corner_b) && point_equals_point(shift, pb.shift));
+		}
 	};
 
 	struct ResultOfPreparationForTessellation
@@ -101,6 +106,14 @@ public:
 			{
 				all_colliding_ids_[i].reserve(100);
 				spheres_searcher_.find_colliding_ids(i, all_colliding_ids_[i], true, all_exclusion_statuses_[i]);
+			}
+		}
+
+		if(periodic_box_.enabled)
+		{
+			for(UnsignedInt i=0;i<input_spheres_.size();i++)
+			{
+				set_exclusion_status_periodic_instances(i);
 			}
 		}
 
@@ -260,6 +273,15 @@ public:
 				}
 			}
 
+			if(periodic_box_.enabled)
+			{
+				for(UnsignedInt i=0;i<ids_of_affected_input_spheres.size();i++)
+				{
+					const UnsignedInt sphere_id=ids_of_affected_input_spheres[i];
+					set_exclusion_status_periodic_instances(sphere_id);
+				}
+			}
+
 			buffered_temporary_storage_.clear();
 
 			for(UnsignedInt i=0;i<ids_of_changed_input_spheres.size();i++)
@@ -289,6 +311,15 @@ public:
 						const UnsignedInt sphere_id=buffered_temporary_storage_.more_ids_of_affected_input_spheres[i];
 						all_colliding_ids_[sphere_id].clear();
 						spheres_searcher_.find_colliding_ids(sphere_id, all_colliding_ids_[sphere_id], true, all_exclusion_statuses_[sphere_id]);
+					}
+				}
+
+				if(periodic_box_.enabled)
+				{
+					for(UnsignedInt i=0;i<ids_of_affected_input_spheres.size();i++)
+					{
+						const UnsignedInt sphere_id=ids_of_affected_input_spheres[i];
+						set_exclusion_status_periodic_instances(sphere_id);
 					}
 				}
 
@@ -359,6 +390,65 @@ public:
 			for(UnsignedInt i=0;i<obj.all_colliding_ids_.size();i++)
 			{
 				all_colliding_ids_[i]=obj.all_colliding_ids_[i];
+			}
+		}
+	}
+
+	void assign(const SpheresContainer& obj, const std::vector<UnsignedInt>& subset_of_ids)
+	{
+		if(subset_of_ids.empty()
+				|| obj.input_spheres_.empty()
+				|| !periodic_box_.equals(obj.periodic_box_)
+				|| input_spheres_.size()!=obj.input_spheres_.size()
+				|| populated_spheres_.size()!=obj.populated_spheres_.size()
+				|| all_exclusion_statuses_.size()!=obj.all_exclusion_statuses_.size()
+				|| all_colliding_ids_.size()!=obj.all_colliding_ids_.size()
+				|| subset_of_ids.size()>=size_threshold_for_full_reinit())
+		{
+			assign(obj);
+		}
+		else
+		{
+			for(UnsignedInt i=0;i<subset_of_ids.size();i++)
+			{
+				const UnsignedInt sphere_id=subset_of_ids[i];
+				if(sphere_id>=input_spheres_.size())
+				{
+					assign(obj);
+					return;
+				}
+			}
+
+			periodic_box_=obj.periodic_box_;
+			total_collisions_=obj.total_collisions_;
+
+			spheres_searcher_.assign(obj.spheres_searcher_);
+
+			{
+				#pragma omp parallel for
+				for(UnsignedInt i=0;i<subset_of_ids.size();i++)
+				{
+					const UnsignedInt sphere_id=subset_of_ids[i];
+					input_spheres_[sphere_id]=obj.input_spheres_[sphere_id];
+					populated_spheres_[sphere_id]=obj.populated_spheres_[sphere_id];
+					all_exclusion_statuses_[sphere_id]=obj.all_exclusion_statuses_[sphere_id];
+					all_colliding_ids_[sphere_id]=obj.all_colliding_ids_[sphere_id];
+				}
+			}
+
+			if(periodic_box_.enabled && populated_spheres_.size()==input_spheres_.size()*27 && all_exclusion_statuses_.size()==all_exclusion_statuses_.size()*27)
+			{
+				#pragma omp parallel for
+				for(UnsignedInt i=0;i<subset_of_ids.size();i++)
+				{
+					const UnsignedInt sphere_id=subset_of_ids[i];
+					for(UnsignedInt m=1;m<27;m++)
+					{
+						const UnsignedInt shifted_sphere_id=(m*input_spheres_.size()+sphere_id);
+						populated_spheres_[shifted_sphere_id]=obj.populated_spheres_[sphere_id];
+						all_exclusion_statuses_[shifted_sphere_id]=all_exclusion_statuses_[sphere_id];
+					}
+				}
 			}
 		}
 	}
@@ -521,6 +611,17 @@ private:
 						}
 					}
 				}
+			}
+		}
+	}
+
+	void set_exclusion_status_periodic_instances(const UnsignedInt i)
+	{
+		if(i<input_spheres_.size() && all_exclusion_statuses_.size()==input_spheres_.size()*27)
+		{
+			for(UnsignedInt m=1;m<27;m++)
+			{
+				all_exclusion_statuses_[m*input_spheres_.size()+i]=all_exclusion_statuses_[i];
 			}
 		}
 	}

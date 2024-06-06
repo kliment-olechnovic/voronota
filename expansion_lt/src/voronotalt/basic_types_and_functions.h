@@ -146,6 +146,11 @@ inline Float distance_from_point_to_point(const SimplePoint& a, const SimplePoin
 	return sqrt(squared_distance_from_point_to_point(a, b));
 }
 
+inline bool point_equals_point(const SimplePoint& a, const SimplePoint& b)
+{
+	return (equal(a.x, b.x) && equal(a.y, b.y) && equal(a.z, b.z));
+}
+
 inline Float squared_point_module(const SimplePoint& a)
 {
 	return (a.x*a.x+a.y*a.y+a.z*a.z);
