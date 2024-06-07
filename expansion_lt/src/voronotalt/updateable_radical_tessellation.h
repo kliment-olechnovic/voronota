@@ -30,7 +30,11 @@ public:
 		}
 	};
 
-	UpdateableRadicalTessellation()
+	UpdateableRadicalTessellation() : undoable_(false), undone_(false)
+	{
+	}
+
+	UpdateableRadicalTessellation(const bool undoable) : undoable_(undoable), undone_(false)
 	{
 	}
 
@@ -53,10 +57,23 @@ public:
 
 	void init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners, TimeRecorder& time_recorder)
 	{
+		time_recorder.reset();
+
+		if(undoable_)
+		{
+			state_backup_.assign_to_apply_update(state_);
+			undone_=false;
+		}
+
+		time_recorder.record_elapsed_miliseconds_and_reset("backup state");
+
 		state_.spheres_container.init(input_spheres, periodic_box_corners, time_recorder);
+
 		RadicalTessellation::ResultGraphics result_graphics;
 		RadicalTessellation::construct_full_tessellation(state_.spheres_container, std::vector<int>(), std::vector<int>(), false, true, buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
+
 		involvement_of_spheres_for_update_.clear();
+
 		init_result_from_tessellation_result();
 	}
 
@@ -85,6 +102,14 @@ public:
 	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& provided_ids_of_changed_input_spheres, const bool trust_provided_ids_of_changed_input_spheres, TimeRecorder& time_recorder)
 	{
 		time_recorder.reset();
+
+		if(undoable_)
+		{
+			state_backup_.assign_to_apply_update(state_);
+			undone_=false;
+		}
+
+		time_recorder.record_elapsed_miliseconds_and_reset("backup state");
 
 		state_.ids_of_changed_input_spheres.clear();
 		state_.ids_of_affected_input_spheres.clear();
@@ -205,9 +230,23 @@ public:
 		return true;
 	}
 
-	void assign(const UpdateableRadicalTessellation& obj)
+	void undo()
 	{
-		state_.assign(obj.state_);
+		if(undoable_ && !undone_)
+		{
+			state_.assign_to_undo_update(state_backup_);
+			undone_=true;
+		}
+	}
+
+	bool undoable() const
+	{
+		return undoable_;
+	}
+
+	bool undone() const
+	{
+		return undone_;
 	}
 
 	const SpheresContainer& spheres_container() const
@@ -476,6 +515,9 @@ private:
 	};
 
 	State state_;
+	State state_backup_;
+	bool undoable_;
+	bool undone_;
 	std::vector<int> involvement_of_spheres_for_update_;
 	BufferedTemporaryStorage buffered_temporary_storage_;
 };

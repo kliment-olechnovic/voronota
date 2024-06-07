@@ -687,8 +687,7 @@ int main(const int argc, const char** argv)
 	{
 		time_recoder_for_tessellation.reset();
 
-		voronotalt::UpdateableRadicalTessellation urt;
-		voronotalt::UpdateableRadicalTessellation urt_backup;
+		voronotalt::UpdateableRadicalTessellation urt(test_updateable_tessellation_with_copying);
 
 		urt.init(spheres_input_result.spheres, periodic_box_corners, time_recoder_for_tessellation);
 
@@ -711,10 +710,6 @@ int main(const int argc, const char** argv)
 			}
 
 			{
-				if(test_updateable_tessellation_with_copying)
-				{
-					urt_backup.assign(urt);
-				}
 				urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres, time_recoder_for_tessellation);
 				voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
 				log_output << "log_urt_upd0_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
@@ -731,10 +726,6 @@ int main(const int argc, const char** argv)
 					voronotalt::SimpleSphere& sphere_to_move=spheres_input_result.spheres[ids_of_changed_input_spheres[i]];
 					sphere_to_move.p=voronotalt::sum_of_points(sphere_to_move.p, move);
 				}
-				if(test_updateable_tessellation_with_copying)
-				{
-					urt_backup.assign(urt);
-				}
 				urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres, time_recoder_for_tessellation);
 				voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
 				log_output << "log_urt_upd" << a << "_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
@@ -750,16 +741,16 @@ int main(const int argc, const char** argv)
 		log_output << "log_urt_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area-result_summary_last.total_cells_summary.sas_area) << "\n";
 		log_output << "log_urt_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume-result_summary_last.total_cells_summary.sas_inside_volume) << "\n\n";
 
-		if(test_updateable_tessellation_with_copying)
+		if(urt.undoable())
 		{
-			result_summary_first=urt_backup.result_summary();
-			urt.assign(urt_backup);
+			result_summary_first=urt.result_summary();
+			urt.undo();
 			result_summary_last=urt.result_summary();
-			log_output << "log_urt_backup_diff_total_contacts_count\t" << (result_summary_first.total_contacts_summary.count-result_summary_last.total_contacts_summary.count) << "\n";
-			log_output << "log_urt_backup_diff_total_contacts_area\t" << (result_summary_first.total_contacts_summary.area-result_summary_last.total_contacts_summary.area) << "\n";
-			log_output << "log_urt_backup_diff_total_cells_count\t" << (result_summary_first.total_cells_summary.count-result_summary_last.total_cells_summary.count) << "\n";
-			log_output << "log_urt_backup_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area-result_summary_last.total_cells_summary.sas_area) << "\n";
-			log_output << "log_urt_backup_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume-result_summary_last.total_cells_summary.sas_inside_volume) << "\n\n";
+			log_output << "log_urt_backup_diff_total_contacts_count\t" << (result_summary_first.total_contacts_summary.count) << "\t" << (result_summary_last.total_contacts_summary.count) << "\n";
+			log_output << "log_urt_backup_diff_total_contacts_area\t" << (result_summary_first.total_contacts_summary.area) << "\t" << (result_summary_last.total_contacts_summary.area) << "\n";
+			log_output << "log_urt_backup_diff_total_cells_count\t" << (result_summary_first.total_cells_summary.count) << "\t" << (result_summary_last.total_cells_summary.count) << "\n";
+			log_output << "log_urt_backup_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area) << "\t" << (result_summary_last.total_cells_summary.sas_area) << "\n";
+			log_output << "log_urt_backup_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume) << "\t" << (result_summary_last.total_cells_summary.sas_inside_volume) << "\n\n";
 		}
 	}
 
