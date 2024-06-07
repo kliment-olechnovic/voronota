@@ -209,18 +209,11 @@ public:
 	{
 		spheres_container_.assign(obj.spheres_container_);
 
-		ids_of_affected_input_spheres_.resize(obj.ids_of_affected_input_spheres_.size());
 		result_.cells_summaries.resize(obj.result_.cells_summaries.size());
 		result_.contacts_summaries.resize(obj.result_.contacts_summaries.size());
 		result_.contacts_summaries_with_redundancy_in_periodic_box.resize(obj.result_.contacts_summaries_with_redundancy_in_periodic_box.size());
-
-		{
-			#pragma omp parallel for
-			for(UnsignedInt i=0;i<obj.ids_of_affected_input_spheres_.size();i++)
-			{
-				ids_of_affected_input_spheres_[i]=obj.ids_of_affected_input_spheres_[i];
-			}
-		}
+		ids_of_changed_input_spheres_.resize(obj.ids_of_changed_input_spheres_.size());
+		ids_of_affected_input_spheres_.resize(obj.ids_of_affected_input_spheres_.size());
 
 		{
 			#pragma omp parallel for
@@ -246,6 +239,34 @@ public:
 				result_.contacts_summaries_with_redundancy_in_periodic_box[i]=obj.result_.contacts_summaries_with_redundancy_in_periodic_box[i];
 			}
 		}
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.ids_of_changed_input_spheres_.size();i++)
+			{
+				ids_of_changed_input_spheres_[i]=obj.ids_of_changed_input_spheres_[i];
+			}
+		}
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.ids_of_affected_input_spheres_.size();i++)
+			{
+				ids_of_affected_input_spheres_[i]=obj.ids_of_affected_input_spheres_[i];
+			}
+		}
+
+		last_update_was_full_reinit_=obj.last_update_was_full_reinit_;
+	}
+
+	void assign_to_undo_update(const UpdateableRadicalTessellation& obj)
+	{
+		assign(obj, last_update_was_full_reinit_, ids_of_affected_input_spheres_);
+	}
+
+	void assign_to_apply_update(const UpdateableRadicalTessellation& obj)
+	{
+		assign(obj, obj.last_update_was_full_reinit_, obj.ids_of_affected_input_spheres_);
 	}
 
 	const SpheresContainer& spheres_container() const
@@ -370,12 +391,78 @@ private:
 		}
 	}
 
+	void assign(const UpdateableRadicalTessellation& obj, const bool assign_everything, const std::vector<UnsignedInt>& subset_of_ids_of_spheres)
+	{
+		if(!assign_everything && subset_of_ids_of_spheres.empty())
+		{
+			return;
+		}
+
+		if(assign_everything
+				|| result_.cells_summaries.size()!=obj.result_.cells_summaries.size()
+				|| result_.contacts_summaries.size()!=obj.result_.contacts_summaries.size()
+				|| result_.contacts_summaries_with_redundancy_in_periodic_box.size()!=obj.result_.contacts_summaries_with_redundancy_in_periodic_box.size())
+		{
+			assign(obj);
+			return;
+		}
+
+		const bool periodic=!obj.result_.contacts_summaries_with_redundancy_in_periodic_box.empty();
+
+		for(UnsignedInt i=0;i<subset_of_ids_of_spheres.size();i++)
+		{
+			const UnsignedInt sphere_id=subset_of_ids_of_spheres[i];
+			if(sphere_id>=result_.cells_summaries.size() || sphere_id>=result_.cells_summaries.size() || (periodic && sphere_id>=result_.contacts_summaries_with_redundancy_in_periodic_box.size()))
+			{
+				assign(obj);
+				return;
+			}
+		}
+
+		spheres_container_.assign(obj.spheres_container_, ids_of_changed_input_spheres_);
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<subset_of_ids_of_spheres.size();i++)
+			{
+				const UnsignedInt sphere_id=subset_of_ids_of_spheres[i];
+				result_.cells_summaries[sphere_id]=obj.result_.cells_summaries[sphere_id];
+				result_.contacts_summaries[sphere_id]=obj.result_.contacts_summaries[sphere_id];
+				if(periodic)
+				{
+					result_.contacts_summaries_with_redundancy_in_periodic_box[sphere_id]=obj.result_.contacts_summaries_with_redundancy_in_periodic_box[sphere_id];
+				}
+			}
+		}
+
+		ids_of_changed_input_spheres_.resize(obj.ids_of_changed_input_spheres_.size());
+		ids_of_affected_input_spheres_.resize(obj.ids_of_affected_input_spheres_.size());
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.ids_of_changed_input_spheres_.size();i++)
+			{
+				ids_of_changed_input_spheres_[i]=obj.ids_of_changed_input_spheres_[i];
+			}
+		}
+
+		{
+			#pragma omp parallel for
+			for(UnsignedInt i=0;i<obj.ids_of_affected_input_spheres_.size();i++)
+			{
+				ids_of_affected_input_spheres_[i]=obj.ids_of_affected_input_spheres_[i];
+			}
+		}
+
+		last_update_was_full_reinit_=obj.last_update_was_full_reinit_;
+	}
+
 	SpheresContainer spheres_container_;
+	Result result_;
 	std::vector<UnsignedInt> ids_of_changed_input_spheres_;
 	std::vector<UnsignedInt> ids_of_affected_input_spheres_;
 	bool last_update_was_full_reinit_;
 	std::vector<int> involvement_of_spheres_for_update_;
-	Result result_;
 	BufferedTemporaryStorage buffered_temporary_storage_;
 };
 
