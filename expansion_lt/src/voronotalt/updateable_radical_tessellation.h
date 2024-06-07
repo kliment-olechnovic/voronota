@@ -30,7 +30,7 @@ public:
 		}
 	};
 
-	UpdateableRadicalTessellation() : last_update_was_full_reinit_(true)
+	UpdateableRadicalTessellation()
 	{
 	}
 
@@ -53,9 +53,9 @@ public:
 
 	void init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners, TimeRecorder& time_recorder)
 	{
-		spheres_container_.init(input_spheres, periodic_box_corners, time_recorder);
+		state_.spheres_container.init(input_spheres, periodic_box_corners, time_recorder);
 		RadicalTessellation::ResultGraphics result_graphics;
-		RadicalTessellation::construct_full_tessellation(spheres_container_, std::vector<int>(), std::vector<int>(), false, true, buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
+		RadicalTessellation::construct_full_tessellation(state_.spheres_container, std::vector<int>(), std::vector<int>(), false, true, buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
 		involvement_of_spheres_for_update_.clear();
 		init_result_from_tessellation_result();
 	}
@@ -86,57 +86,57 @@ public:
 	{
 		time_recorder.reset();
 
-		ids_of_changed_input_spheres_.clear();
-		ids_of_affected_input_spheres_.clear();
-		last_update_was_full_reinit_=false;
+		state_.ids_of_changed_input_spheres.clear();
+		state_.ids_of_affected_input_spheres.clear();
+		state_.last_update_was_full_reinit=false;
 
 		if(trust_provided_ids_of_changed_input_spheres && provided_ids_of_changed_input_spheres.empty())
 		{
 			return false;
 		}
 
-		if(!spheres_container_.update(new_input_spheres, provided_ids_of_changed_input_spheres, trust_provided_ids_of_changed_input_spheres, ids_of_changed_input_spheres_, ids_of_affected_input_spheres_, time_recorder))
+		if(!state_.spheres_container.update(new_input_spheres, provided_ids_of_changed_input_spheres, trust_provided_ids_of_changed_input_spheres, state_.ids_of_changed_input_spheres, state_.ids_of_affected_input_spheres, time_recorder))
 		{
 			return false;
 		}
 
-		if(ids_of_affected_input_spheres_.empty())
+		if(state_.ids_of_affected_input_spheres.empty())
 		{
 			RadicalTessellation::ResultGraphics result_graphics;
-			RadicalTessellation::construct_full_tessellation(spheres_container_, std::vector<int>(), std::vector<int>(), false, true, buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
+			RadicalTessellation::construct_full_tessellation(state_.spheres_container, std::vector<int>(), std::vector<int>(), false, true, buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
 			init_result_from_tessellation_result();
 			return true;
 		}
 
-		if(involvement_of_spheres_for_update_.size()!=spheres_container_.input_spheres().size())
+		if(involvement_of_spheres_for_update_.size()!=state_.spheres_container.input_spheres().size())
 		{
 			involvement_of_spheres_for_update_.clear();
-			involvement_of_spheres_for_update_.resize(spheres_container_.input_spheres().size(), 0);
+			involvement_of_spheres_for_update_.resize(state_.spheres_container.input_spheres().size(), 0);
 		}
 
-		for(UnsignedInt i=0;i<ids_of_affected_input_spheres_.size();i++)
+		for(UnsignedInt i=0;i<state_.ids_of_affected_input_spheres.size();i++)
 		{
-			involvement_of_spheres_for_update_[ids_of_affected_input_spheres_[i]]=1;
+			involvement_of_spheres_for_update_[state_.ids_of_affected_input_spheres[i]]=1;
 		}
 
 		{
 			RadicalTessellation::ResultGraphics result_graphics;
-			RadicalTessellation::construct_full_tessellation(spheres_container_, involvement_of_spheres_for_update_, std::vector<int>(), false, false, buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
+			RadicalTessellation::construct_full_tessellation(state_.spheres_container, involvement_of_spheres_for_update_, std::vector<int>(), false, false, buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
 
 			{
 				const ConditionToRemoveContact condition_to_remove_contact(involvement_of_spheres_for_update_);
 
-				for(UnsignedInt i=0;i<ids_of_affected_input_spheres_.size();i++)
+				for(UnsignedInt i=0;i<state_.ids_of_affected_input_spheres.size();i++)
 				{
-					const UnsignedInt sphere_id=ids_of_affected_input_spheres_[i];
+					const UnsignedInt sphere_id=state_.ids_of_affected_input_spheres[i];
 					{
-						std::vector<RadicalTessellation::ContactDescriptorSummary>& v=result_.contacts_summaries[sphere_id];
+						std::vector<RadicalTessellation::ContactDescriptorSummary>& v=state_.result.contacts_summaries[sphere_id];
 						std::vector<RadicalTessellation::ContactDescriptorSummary>::iterator it=std::remove_if(v.begin(), v.end(), condition_to_remove_contact);
 						v.erase(it, v.end());
 					}
-					if(!result_.contacts_summaries_with_redundancy_in_periodic_box.empty())
+					if(!state_.result.contacts_summaries_with_redundancy_in_periodic_box.empty())
 					{
-						std::vector<RadicalTessellation::ContactDescriptorSummary>& v=result_.contacts_summaries_with_redundancy_in_periodic_box[sphere_id];
+						std::vector<RadicalTessellation::ContactDescriptorSummary>& v=state_.result.contacts_summaries_with_redundancy_in_periodic_box[sphere_id];
 						std::vector<RadicalTessellation::ContactDescriptorSummary>::iterator it=std::remove_if(v.begin(), v.end(), condition_to_remove_contact);
 						v.erase(it, v.end());
 					}
@@ -148,24 +148,24 @@ public:
 				for(UnsignedInt i=0;i<buffered_temporary_storage_.tessellation_result.contacts_summaries.size();i++)
 				{
 					const RadicalTessellation::ContactDescriptorSummary& cds=buffered_temporary_storage_.tessellation_result.contacts_summaries[i];
-					result_.contacts_summaries[cds.id_a].push_back(cds);
-					result_.contacts_summaries[cds.id_b].push_back(cds);
+					state_.result.contacts_summaries[cds.id_a].push_back(cds);
+					state_.result.contacts_summaries[cds.id_b].push_back(cds);
 				}
 
-				if(!result_.contacts_summaries_with_redundancy_in_periodic_box.empty())
+				if(!state_.result.contacts_summaries_with_redundancy_in_periodic_box.empty())
 				{
 					const std::vector<RadicalTessellation::ContactDescriptorSummary>& all_contacts_summaries=(buffered_temporary_storage_.tessellation_result.contacts_summaries_with_redundancy_in_periodic_box.empty() ? buffered_temporary_storage_.tessellation_result.contacts_summaries : buffered_temporary_storage_.tessellation_result.contacts_summaries_with_redundancy_in_periodic_box);
 
 					for(UnsignedInt i=0;i<all_contacts_summaries.size();i++)
 					{
 						const RadicalTessellation::ContactDescriptorSummary& cds=all_contacts_summaries[i];
-						if(cds.id_a<result_.contacts_summaries_with_redundancy_in_periodic_box.size())
+						if(cds.id_a<state_.result.contacts_summaries_with_redundancy_in_periodic_box.size())
 						{
-							result_.contacts_summaries_with_redundancy_in_periodic_box[cds.id_a].push_back(cds);
+							state_.result.contacts_summaries_with_redundancy_in_periodic_box[cds.id_a].push_back(cds);
 						}
-						if(cds.id_b<result_.contacts_summaries_with_redundancy_in_periodic_box.size())
+						if(cds.id_b<state_.result.contacts_summaries_with_redundancy_in_periodic_box.size())
 						{
-							result_.contacts_summaries_with_redundancy_in_periodic_box[cds.id_b].push_back(cds);
+							state_.result.contacts_summaries_with_redundancy_in_periodic_box[cds.id_b].push_back(cds);
 						}
 					}
 				}
@@ -175,31 +175,31 @@ public:
 		}
 
 		{
-			const std::vector< std::vector<RadicalTessellation::ContactDescriptorSummary> >& all_contacts_summaries=(result_.contacts_summaries_with_redundancy_in_periodic_box.empty() ? result_.contacts_summaries : result_.contacts_summaries_with_redundancy_in_periodic_box);
+			const std::vector< std::vector<RadicalTessellation::ContactDescriptorSummary> >& all_contacts_summaries=(state_.result.contacts_summaries_with_redundancy_in_periodic_box.empty() ? state_.result.contacts_summaries : state_.result.contacts_summaries_with_redundancy_in_periodic_box);
 
-			for(UnsignedInt i=0;i<ids_of_affected_input_spheres_.size();i++)
+			for(UnsignedInt i=0;i<state_.ids_of_affected_input_spheres.size();i++)
 			{
-				const UnsignedInt sphere_id=ids_of_affected_input_spheres_[i];
-				RadicalTessellation::CellContactDescriptorsSummary& cs=result_.cells_summaries[sphere_id];
+				const UnsignedInt sphere_id=state_.ids_of_affected_input_spheres[i];
+				RadicalTessellation::CellContactDescriptorsSummary& cs=state_.result.cells_summaries[sphere_id];
 				cs=RadicalTessellation::CellContactDescriptorsSummary();
 				const std::vector<RadicalTessellation::ContactDescriptorSummary>& v=all_contacts_summaries[sphere_id];
 				for(UnsignedInt j=0;j<v.size();j++)
 				{
 					cs.add(sphere_id, v[j]);
 				}
-				cs.compute_sas(spheres_container_.input_spheres()[sphere_id].r);
-				if(cs.stage==0 && spheres_container_.all_exclusion_statuses()[sphere_id]==0 && spheres_container_.all_colliding_ids()[sphere_id].empty())
+				cs.compute_sas(state_.spheres_container.input_spheres()[sphere_id].r);
+				if(cs.stage==0 && state_.spheres_container.all_exclusion_statuses()[sphere_id]==0 && state_.spheres_container.all_colliding_ids()[sphere_id].empty())
 				{
-					cs.compute_sas_detached(sphere_id, spheres_container_.input_spheres()[sphere_id].r);
+					cs.compute_sas_detached(sphere_id, state_.spheres_container.input_spheres()[sphere_id].r);
 				}
 			}
 
 			time_recorder.record_elapsed_miliseconds_and_reset("update cell summaries");
 		}
 
-		for(UnsignedInt i=0;i<ids_of_affected_input_spheres_.size();i++)
+		for(UnsignedInt i=0;i<state_.ids_of_affected_input_spheres.size();i++)
 		{
-			involvement_of_spheres_for_update_[ids_of_affected_input_spheres_[i]]=0;
+			involvement_of_spheres_for_update_[state_.ids_of_affected_input_spheres[i]]=0;
 		}
 
 		return true;
@@ -207,112 +207,53 @@ public:
 
 	void assign(const UpdateableRadicalTessellation& obj)
 	{
-		spheres_container_.assign(obj.spheres_container_);
-
-		result_.cells_summaries.resize(obj.result_.cells_summaries.size());
-		result_.contacts_summaries.resize(obj.result_.contacts_summaries.size());
-		result_.contacts_summaries_with_redundancy_in_periodic_box.resize(obj.result_.contacts_summaries_with_redundancy_in_periodic_box.size());
-		ids_of_changed_input_spheres_.resize(obj.ids_of_changed_input_spheres_.size());
-		ids_of_affected_input_spheres_.resize(obj.ids_of_affected_input_spheres_.size());
-
-		{
-			#pragma omp parallel for
-			for(UnsignedInt i=0;i<obj.result_.cells_summaries.size();i++)
-			{
-				result_.cells_summaries[i]=obj.result_.cells_summaries[i];
-			}
-		}
-
-		{
-			#pragma omp parallel for
-			for(UnsignedInt i=0;i<obj.result_.contacts_summaries.size();i++)
-			{
-				result_.contacts_summaries[i]=obj.result_.contacts_summaries[i];
-			}
-		}
-
-		if(!obj.result_.contacts_summaries_with_redundancy_in_periodic_box.empty())
-		{
-			#pragma omp parallel for
-			for(UnsignedInt i=0;i<obj.result_.contacts_summaries_with_redundancy_in_periodic_box.size();i++)
-			{
-				result_.contacts_summaries_with_redundancy_in_periodic_box[i]=obj.result_.contacts_summaries_with_redundancy_in_periodic_box[i];
-			}
-		}
-
-		{
-			#pragma omp parallel for
-			for(UnsignedInt i=0;i<obj.ids_of_changed_input_spheres_.size();i++)
-			{
-				ids_of_changed_input_spheres_[i]=obj.ids_of_changed_input_spheres_[i];
-			}
-		}
-
-		{
-			#pragma omp parallel for
-			for(UnsignedInt i=0;i<obj.ids_of_affected_input_spheres_.size();i++)
-			{
-				ids_of_affected_input_spheres_[i]=obj.ids_of_affected_input_spheres_[i];
-			}
-		}
-
-		last_update_was_full_reinit_=obj.last_update_was_full_reinit_;
-	}
-
-	void assign_to_undo_update(const UpdateableRadicalTessellation& obj)
-	{
-		assign(obj, last_update_was_full_reinit_, ids_of_affected_input_spheres_);
-	}
-
-	void assign_to_apply_update(const UpdateableRadicalTessellation& obj)
-	{
-		assign(obj, obj.last_update_was_full_reinit_, obj.ids_of_affected_input_spheres_);
+		state_.assign(obj.state_);
 	}
 
 	const SpheresContainer& spheres_container() const
 	{
-		return spheres_container_;
+		return state_.spheres_container;
 	}
 
 	const Result& result() const
 	{
-		return result_;
+		return state_.result;
 	}
 
 	ResultSummary result_summary() const
 	{
 		ResultSummary result_summary;
-		for(UnsignedInt i=0;i<result_.contacts_summaries.size();i++)
+		for(UnsignedInt i=0;i<state_.result.contacts_summaries.size();i++)
 		{
-			for(UnsignedInt j=0;j<result_.contacts_summaries[i].size();j++)
+			for(UnsignedInt j=0;j<state_.result.contacts_summaries[i].size();j++)
 			{
-				const RadicalTessellation::ContactDescriptorSummary& cds=result_.contacts_summaries[i][j];
+				const RadicalTessellation::ContactDescriptorSummary& cds=state_.result.contacts_summaries[i][j];
 				if(cds.id_a==i)
 				{
 					result_summary.total_contacts_summary.add(cds);
 				}
 			}
 		}
-		for(UnsignedInt i=0;i<result_.cells_summaries.size();i++)
+		for(UnsignedInt i=0;i<state_.result.cells_summaries.size();i++)
 		{
-			result_summary.total_cells_summary.add(result_.cells_summaries[i]);
+			result_summary.total_cells_summary.add(state_.result.cells_summaries[i]);
 		}
 		return result_summary;
 	}
 
 	const std::vector<UnsignedInt>& last_update_ids_of_changed_input_spheres() const
 	{
-		return ids_of_changed_input_spheres_;
+		return state_.ids_of_changed_input_spheres;
 	}
 
 	const std::vector<UnsignedInt>& last_update_ids_of_affected_input_spheres() const
 	{
-		return ids_of_affected_input_spheres_;
+		return state_.ids_of_affected_input_spheres;
 	}
 
 	bool last_update_was_full_reinit() const
 	{
-		return last_update_was_full_reinit_;
+		return state_.last_update_was_full_reinit;
 	}
 
 private:
@@ -344,124 +285,197 @@ private:
 
 	void init_result_from_tessellation_result()
 	{
-		ids_of_changed_input_spheres_.clear();
-		ids_of_affected_input_spheres_.clear();
-		last_update_was_full_reinit_=true;
+		state_.ids_of_changed_input_spheres.clear();
+		state_.ids_of_affected_input_spheres.clear();
+		state_.last_update_was_full_reinit=true;
 
-		result_.cells_summaries.swap(buffered_temporary_storage_.tessellation_result.cells_summaries);
+		state_.result.cells_summaries.swap(buffered_temporary_storage_.tessellation_result.cells_summaries);
 
 		{
-			result_.contacts_summaries.resize(spheres_container_.input_spheres().size());
-			for(UnsignedInt i=0;i<result_.contacts_summaries.size();i++)
+			state_.result.contacts_summaries.resize(state_.spheres_container.input_spheres().size());
+			for(UnsignedInt i=0;i<state_.result.contacts_summaries.size();i++)
 			{
-				result_.contacts_summaries[i].clear();
+				state_.result.contacts_summaries[i].clear();
 			}
 			for(UnsignedInt i=0;i<buffered_temporary_storage_.tessellation_result.contacts_summaries.size();i++)
 			{
 				const RadicalTessellation::ContactDescriptorSummary& cds=buffered_temporary_storage_.tessellation_result.contacts_summaries[i];
-				result_.contacts_summaries[cds.id_a].push_back(cds);
-				result_.contacts_summaries[cds.id_b].push_back(cds);
+				state_.result.contacts_summaries[cds.id_a].push_back(cds);
+				state_.result.contacts_summaries[cds.id_b].push_back(cds);
 			}
 		}
 
-		if(spheres_container_.periodic_box().enabled)
+		if(state_.spheres_container.periodic_box().enabled)
 		{
-			result_.contacts_summaries_with_redundancy_in_periodic_box.resize(spheres_container_.input_spheres().size());
-			for(UnsignedInt i=0;i<result_.contacts_summaries_with_redundancy_in_periodic_box.size();i++)
+			state_.result.contacts_summaries_with_redundancy_in_periodic_box.resize(state_.spheres_container.input_spheres().size());
+			for(UnsignedInt i=0;i<state_.result.contacts_summaries_with_redundancy_in_periodic_box.size();i++)
 			{
-				result_.contacts_summaries_with_redundancy_in_periodic_box[i].clear();
+				state_.result.contacts_summaries_with_redundancy_in_periodic_box[i].clear();
 			}
 			const std::vector<RadicalTessellation::ContactDescriptorSummary>& all_contacts_summaries=(buffered_temporary_storage_.tessellation_result.contacts_summaries_with_redundancy_in_periodic_box.empty() ? buffered_temporary_storage_.tessellation_result.contacts_summaries : buffered_temporary_storage_.tessellation_result.contacts_summaries_with_redundancy_in_periodic_box);
 			for(UnsignedInt i=0;i<all_contacts_summaries.size();i++)
 			{
 				const RadicalTessellation::ContactDescriptorSummary& cds=all_contacts_summaries[i];
-				if(cds.id_a<result_.contacts_summaries_with_redundancy_in_periodic_box.size())
+				if(cds.id_a<state_.result.contacts_summaries_with_redundancy_in_periodic_box.size())
 				{
-					result_.contacts_summaries_with_redundancy_in_periodic_box[cds.id_a].push_back(cds);
+					state_.result.contacts_summaries_with_redundancy_in_periodic_box[cds.id_a].push_back(cds);
 				}
-				if(cds.id_b<result_.contacts_summaries_with_redundancy_in_periodic_box.size())
+				if(cds.id_b<state_.result.contacts_summaries_with_redundancy_in_periodic_box.size())
 				{
-					result_.contacts_summaries_with_redundancy_in_periodic_box[cds.id_b].push_back(cds);
+					state_.result.contacts_summaries_with_redundancy_in_periodic_box[cds.id_b].push_back(cds);
 				}
 			}
 		}
 		else
 		{
-			result_.contacts_summaries_with_redundancy_in_periodic_box.clear();
+			state_.result.contacts_summaries_with_redundancy_in_periodic_box.clear();
 		}
 	}
 
-	void assign(const UpdateableRadicalTessellation& obj, const bool assign_everything, const std::vector<UnsignedInt>& subset_of_ids_of_spheres)
+	struct State
 	{
-		if(!assign_everything && subset_of_ids_of_spheres.empty())
+		SpheresContainer spheres_container;
+		Result result;
+		std::vector<UnsignedInt> ids_of_changed_input_spheres;
+		std::vector<UnsignedInt> ids_of_affected_input_spheres;
+		bool last_update_was_full_reinit;
+
+		State() : last_update_was_full_reinit(true)
 		{
-			return;
 		}
 
-		if(assign_everything
-				|| result_.cells_summaries.size()!=obj.result_.cells_summaries.size()
-				|| result_.contacts_summaries.size()!=obj.result_.contacts_summaries.size()
-				|| result_.contacts_summaries_with_redundancy_in_periodic_box.size()!=obj.result_.contacts_summaries_with_redundancy_in_periodic_box.size())
+		void assign(const State& obj)
 		{
-			assign(obj);
-			return;
+			spheres_container.assign(obj.spheres_container);
+
+			result.cells_summaries.resize(obj.result.cells_summaries.size());
+			result.contacts_summaries.resize(obj.result.contacts_summaries.size());
+			result.contacts_summaries_with_redundancy_in_periodic_box.resize(obj.result.contacts_summaries_with_redundancy_in_periodic_box.size());
+			ids_of_changed_input_spheres.resize(obj.ids_of_changed_input_spheres.size());
+			ids_of_affected_input_spheres.resize(obj.ids_of_affected_input_spheres.size());
+
+			{
+				#pragma omp parallel for
+				for(UnsignedInt i=0;i<obj.result.cells_summaries.size();i++)
+				{
+					result.cells_summaries[i]=obj.result.cells_summaries[i];
+				}
+			}
+
+			{
+				#pragma omp parallel for
+				for(UnsignedInt i=0;i<obj.result.contacts_summaries.size();i++)
+				{
+					result.contacts_summaries[i]=obj.result.contacts_summaries[i];
+				}
+			}
+
+			if(!obj.result.contacts_summaries_with_redundancy_in_periodic_box.empty())
+			{
+				#pragma omp parallel for
+				for(UnsignedInt i=0;i<obj.result.contacts_summaries_with_redundancy_in_periodic_box.size();i++)
+				{
+					result.contacts_summaries_with_redundancy_in_periodic_box[i]=obj.result.contacts_summaries_with_redundancy_in_periodic_box[i];
+				}
+			}
+
+			{
+				#pragma omp parallel for
+				for(UnsignedInt i=0;i<obj.ids_of_changed_input_spheres.size();i++)
+				{
+					ids_of_changed_input_spheres[i]=obj.ids_of_changed_input_spheres[i];
+				}
+			}
+
+			{
+				#pragma omp parallel for
+				for(UnsignedInt i=0;i<obj.ids_of_affected_input_spheres.size();i++)
+				{
+					ids_of_affected_input_spheres[i]=obj.ids_of_affected_input_spheres[i];
+				}
+			}
+
+			last_update_was_full_reinit=obj.last_update_was_full_reinit;
 		}
 
-		const bool periodic=!obj.result_.contacts_summaries_with_redundancy_in_periodic_box.empty();
-
-		for(UnsignedInt i=0;i<subset_of_ids_of_spheres.size();i++)
+		void assign(const State& obj, const bool assign_everything, const std::vector<UnsignedInt>& subset_of_ids_of_spheres)
 		{
-			const UnsignedInt sphere_id=subset_of_ids_of_spheres[i];
-			if(sphere_id>=result_.cells_summaries.size() || sphere_id>=result_.cells_summaries.size() || (periodic && sphere_id>=result_.contacts_summaries_with_redundancy_in_periodic_box.size()))
+			if(!assign_everything && subset_of_ids_of_spheres.empty())
+			{
+				return;
+			}
+
+			if(assign_everything
+					|| result.cells_summaries.size()!=obj.result.cells_summaries.size()
+					|| result.contacts_summaries.size()!=obj.result.contacts_summaries.size()
+					|| result.contacts_summaries_with_redundancy_in_periodic_box.size()!=obj.result.contacts_summaries_with_redundancy_in_periodic_box.size())
 			{
 				assign(obj);
 				return;
 			}
-		}
 
-		spheres_container_.assign(obj.spheres_container_, ids_of_changed_input_spheres_);
+			const bool periodic=!obj.result.contacts_summaries_with_redundancy_in_periodic_box.empty();
 
-		{
-			#pragma omp parallel for
 			for(UnsignedInt i=0;i<subset_of_ids_of_spheres.size();i++)
 			{
 				const UnsignedInt sphere_id=subset_of_ids_of_spheres[i];
-				result_.cells_summaries[sphere_id]=obj.result_.cells_summaries[sphere_id];
-				result_.contacts_summaries[sphere_id]=obj.result_.contacts_summaries[sphere_id];
-				if(periodic)
+				if(sphere_id>=result.cells_summaries.size() || sphere_id>=result.cells_summaries.size() || (periodic && sphere_id>=result.contacts_summaries_with_redundancy_in_periodic_box.size()))
 				{
-					result_.contacts_summaries_with_redundancy_in_periodic_box[sphere_id]=obj.result_.contacts_summaries_with_redundancy_in_periodic_box[sphere_id];
+					assign(obj);
+					return;
 				}
 			}
-		}
 
-		ids_of_changed_input_spheres_.resize(obj.ids_of_changed_input_spheres_.size());
-		ids_of_affected_input_spheres_.resize(obj.ids_of_affected_input_spheres_.size());
+			spheres_container.assign(obj.spheres_container, ids_of_changed_input_spheres);
 
-		{
-			#pragma omp parallel for
-			for(UnsignedInt i=0;i<obj.ids_of_changed_input_spheres_.size();i++)
 			{
-				ids_of_changed_input_spheres_[i]=obj.ids_of_changed_input_spheres_[i];
+				#pragma omp parallel for
+				for(UnsignedInt i=0;i<subset_of_ids_of_spheres.size();i++)
+				{
+					const UnsignedInt sphere_id=subset_of_ids_of_spheres[i];
+					result.cells_summaries[sphere_id]=obj.result.cells_summaries[sphere_id];
+					result.contacts_summaries[sphere_id]=obj.result.contacts_summaries[sphere_id];
+					if(periodic)
+					{
+						result.contacts_summaries_with_redundancy_in_periodic_box[sphere_id]=obj.result.contacts_summaries_with_redundancy_in_periodic_box[sphere_id];
+					}
+				}
 			}
-		}
 
-		{
-			#pragma omp parallel for
-			for(UnsignedInt i=0;i<obj.ids_of_affected_input_spheres_.size();i++)
+			ids_of_changed_input_spheres.resize(obj.ids_of_changed_input_spheres.size());
+			ids_of_affected_input_spheres.resize(obj.ids_of_affected_input_spheres.size());
+
 			{
-				ids_of_affected_input_spheres_[i]=obj.ids_of_affected_input_spheres_[i];
+				#pragma omp parallel for
+				for(UnsignedInt i=0;i<obj.ids_of_changed_input_spheres.size();i++)
+				{
+					ids_of_changed_input_spheres[i]=obj.ids_of_changed_input_spheres[i];
+				}
 			}
+
+			{
+				#pragma omp parallel for
+				for(UnsignedInt i=0;i<obj.ids_of_affected_input_spheres.size();i++)
+				{
+					ids_of_affected_input_spheres[i]=obj.ids_of_affected_input_spheres[i];
+				}
+			}
+
+			last_update_was_full_reinit=obj.last_update_was_full_reinit;
 		}
 
-		last_update_was_full_reinit_=obj.last_update_was_full_reinit_;
-	}
+		void assign_to_undo_update(const State& obj)
+		{
+			assign(obj, last_update_was_full_reinit, ids_of_affected_input_spheres);
+		}
 
-	SpheresContainer spheres_container_;
-	Result result_;
-	std::vector<UnsignedInt> ids_of_changed_input_spheres_;
-	std::vector<UnsignedInt> ids_of_affected_input_spheres_;
-	bool last_update_was_full_reinit_;
+		void assign_to_apply_update(const State& obj)
+		{
+			assign(obj, obj.last_update_was_full_reinit, obj.ids_of_affected_input_spheres);
+		}
+	};
+
+	State state_;
 	std::vector<int> involvement_of_spheres_for_update_;
 	BufferedTemporaryStorage buffered_temporary_storage_;
 };

@@ -713,7 +713,7 @@ int main(const int argc, const char** argv)
 			{
 				if(test_updateable_tessellation_with_copying)
 				{
-					urt_backup.assign_to_apply_update(urt);
+					urt_backup.assign(urt);
 				}
 				urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres, time_recoder_for_tessellation);
 				voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
@@ -733,7 +733,7 @@ int main(const int argc, const char** argv)
 				}
 				if(test_updateable_tessellation_with_copying)
 				{
-					urt_backup.assign_to_apply_update(urt);
+					urt_backup.assign(urt);
 				}
 				urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres, time_recoder_for_tessellation);
 				voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
@@ -753,7 +753,7 @@ int main(const int argc, const char** argv)
 		if(test_updateable_tessellation_with_copying)
 		{
 			result_summary_first=urt_backup.result_summary();
-			urt.assign_to_undo_update(urt_backup);
+			urt.assign(urt_backup);
 			result_summary_last=urt.result_summary();
 			log_output << "log_urt_backup_diff_total_contacts_count\t" << (result_summary_first.total_contacts_summary.count-result_summary_last.total_contacts_summary.count) << "\n";
 			log_output << "log_urt_backup_diff_total_contacts_area\t" << (result_summary_first.total_contacts_summary.area-result_summary_last.total_contacts_summary.area) << "\n";
