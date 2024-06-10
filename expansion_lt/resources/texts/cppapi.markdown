@@ -1,4 +1,4 @@
-# Using Voronota-LT as a C++ library: stateless API
+## Stateless C++ API
 
 Voronota-LT can be used as a header-only C++ library.
 The needed headers are all in "./src/voronotalt" folder.

@@ -21,6 +21,10 @@ cat ./src/voronota_lt.cpp | egrep '^Voronota-LT' -A 999 | egrep '^\)\"' -B 999 |
 
 echo
 
+echo "# Using Voronota-LT as a C++ library"
+
+echo
+
 cat ./resources/texts/cppapi.markdown
 
 echo

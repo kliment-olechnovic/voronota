@@ -51,6 +51,8 @@ void print_tessellation_result_summary(const voronotalt::UpdateableRadicalTessel
 
 int main(const int, const char**)
 {
+	//Input raw balls
+
 	std::vector<voronotalt::SimpleSphere> input_spheres;
 
 	input_spheres.push_back(voronotalt::SimpleSphere(0, 0, 2, 1));
@@ -71,6 +73,8 @@ int main(const int, const char**)
 	input_spheres.push_back(voronotalt::SimpleSphere(-0.707107, 0.707107, 0, 0.5));
 	input_spheres.push_back(voronotalt::SimpleSphere(-0.382683, 0.92388, 0, 0.5));
 
+	//Prepare input spheres by augmenting the radii of the raw balls
+
 	const double probe=1.0;
 
 	for(std::size_t i=0;i<input_spheres.size();i++)
@@ -78,19 +82,24 @@ int main(const int, const char**)
 		input_spheres[i].r+=probe;
 	}
 
+	//Print prepared input spheres
+
 	std::cout << "Input:\n\n";
 
 	print_spheres(input_spheres);
+
+	//Initialize a periodic box description
 
 	std::vector<voronotalt::SimplePoint> periodic_box_corners;
 	periodic_box_corners.push_back(voronotalt::SimplePoint(-1.6, -1.6, -0.6));
 	periodic_box_corners.push_back(voronotalt::SimplePoint(1.6, 1.6, 3.1));
 
+	//Initialize an updateable tessellation controller object with automatic backup enabled
+
 	const bool backup_enabled=true;
-
-	std::vector<voronotalt::UpdateableRadicalTessellation::ResultSummary> result_summaries;
-
 	voronotalt::UpdateableRadicalTessellation updateable_tessellation(backup_enabled);
+
+	//Compute a tessellation from the input spheres
 
 	if(updateable_tessellation.init(input_spheres, periodic_box_corners))
 	{
@@ -102,22 +111,36 @@ int main(const int, const char**)
 		return 1;
 	}
 
+	//Save the tessellation result summary after init
+
+	std::vector<voronotalt::UpdateableRadicalTessellation::ResultSummary> result_summaries;
+
 	result_summaries.push_back(updateable_tessellation.result_summary());
+
+	//Print the tessellation results
 
 	std::cout << "\nResults after init:\n\n";
 
 	print_tessellation_result_contacts_and_cells(updateable_tessellation.result());
 
+	//Iteratively change the input spheres and update the tessellation
+
 	for(int n=1;n<=5;n++)
 	{
+		//Specify the updated indices of spheres
+
 		std::vector<voronotalt::UnsignedInt> ids_to_update;
 		ids_to_update.push_back(0);
 		ids_to_update.push_back(1);
+
+		//Update the coordinated of the chosen input spheres
 
 		for(const voronotalt::UnsignedInt& id : ids_to_update)
 		{
 			input_spheres[id].p.x+=0.1;
 		}
+
+		//Update the tessellation
 
 		if(updateable_tessellation.update(input_spheres, ids_to_update))
 		{
@@ -129,12 +152,18 @@ int main(const int, const char**)
 			return 1;
 		}
 
+		//Save the tessellation result summary after update
+
 		result_summaries.push_back(updateable_tessellation.result_summary());
 	}
+
+	//Print the tessellation results
 
 	std::cout << "\nResults after last update:\n\n";
 
 	print_tessellation_result_contacts_and_cells(updateable_tessellation.result());
+
+	//Print all the save tessellation result summaries
 
 	std::cout << "\nResult summaries for all stages:\n\n";
 
@@ -144,8 +173,12 @@ int main(const int, const char**)
 		print_tessellation_result_summary(rs);
 	}
 
+	//Restore the tessellation from the last backup, i.e. cancel the last update
+
 	if(updateable_tessellation.restore_from_backup())
 	{
+		//Print the tessellation result summary after restoring the tessellation
+
 		std::cout << "\nResult summary after restoring from backup:\n\n";
 		print_tessellation_result_summary(updateable_tessellation.result_summary());
 	}
