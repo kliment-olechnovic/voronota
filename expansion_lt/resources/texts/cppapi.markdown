@@ -1,7 +1,7 @@
-# Using Voronota-LT as a C++ library
+# Using Voronota-LT as a C++ library: stateless API
 
 Voronota-LT can be used as a header-only C++ library.
-The need headers are all in "./src/voronotalt" folder.
+The needed headers are all in "./src/voronotalt" folder.
 The only header file needed to be included is "voronotalt.h".
 
 Below is a detailed example for both basic and periodic box modes:

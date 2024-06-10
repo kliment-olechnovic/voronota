@@ -44,7 +44,8 @@ void print_tessellation_result_contacts_and_cells(const voronotalt::UpdateableRa
 void print_tessellation_result_summary(const voronotalt::UpdateableRadicalTessellation::ResultSummary& result_summary)
 {
 	std::cout << "result_summary (summary contacts_area contacts_count cells_sas_area cells_volume):\n";
-	std::cout << "summary " << result_summary.total_contacts_summary.area << " " << result_summary.total_contacts_summary.count << " " << result_summary.total_cells_summary.sas_area << " " << result_summary.total_cells_summary.sas_inside_volume << "\n";
+	std::cout << "summary " << result_summary.total_contacts_summary.area << " " << result_summary.total_contacts_summary.count << " ";
+	std::cout << result_summary.total_cells_summary.sas_area << " " << result_summary.total_cells_summary.sas_inside_volume << "\n";
 	std::cout << "\n";
 }
 

@@ -25,6 +25,10 @@ cat ./resources/texts/cppapi.markdown
 
 echo
 
+cat ./resources/texts/cppapi_stateful.markdown
+
+echo
+
 cat ./resources/texts/pyapi.markdown
 
 } > $TMPLDIR/documentation.markdown
