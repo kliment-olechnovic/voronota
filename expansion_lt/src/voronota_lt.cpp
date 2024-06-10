@@ -14,7 +14,7 @@ namespace
 void print_help()
 {
 	const std::string message=R"(
-Voronota-LT version 0.9.2
+Voronota-LT version 0.9.3
 
 'voronota-lt' executable constructs a radical Voronoi tessellation (also known as a Laguerre-Voronoi diagram or a power diagram)
 of atomic balls of van der Waals radii constrained inside a solvent-accessible surface defined by a rolling probe.
