@@ -297,7 +297,7 @@ private:
 
 	bool update_sphere(const UnsignedInt& sphere_id, const SimpleSphere& moved_sphere)
 	{
-		if(sphere_id<spheres_.size())
+		if(sphere_id<spheres_.size() && moved_sphere.r<=spheres_[sphere_id].r)
 		{
 			const GridPoint gp1(moved_sphere, grid_parameters_.box_size, grid_parameters_.grid_offset);
 			const int index1=gp1.index(grid_parameters_.grid_size);

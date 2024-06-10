@@ -30,11 +30,11 @@ public:
 		}
 	};
 
-	UpdateableRadicalTessellation() : undoable_(false), undone_(false)
+	UpdateableRadicalTessellation() : backup_enabled_(false), in_sync_with_backup_(false)
 	{
 	}
 
-	UpdateableRadicalTessellation(const bool undoable) : undoable_(undoable), undone_(false)
+	UpdateableRadicalTessellation(const bool backup_enabled) : backup_enabled_(backup_enabled), in_sync_with_backup_(false)
 	{
 	}
 
@@ -59,13 +59,15 @@ public:
 	{
 		time_recorder.reset();
 
-		if(undoable_)
+		if(backup_enabled_ && !in_sync_with_backup_)
 		{
 			state_backup_.assign_to_apply_update(state_);
-			undone_=false;
+			in_sync_with_backup_=true;
 		}
 
 		time_recorder.record_elapsed_miliseconds_and_reset("backup state");
+
+		in_sync_with_backup_=false;
 
 		state_.spheres_container.init(input_spheres, periodic_box_corners, time_recorder);
 
@@ -103,10 +105,10 @@ public:
 	{
 		time_recorder.reset();
 
-		if(undoable_)
+		if(backup_enabled_ && !in_sync_with_backup_)
 		{
 			state_backup_.assign_to_apply_update(state_);
-			undone_=false;
+			in_sync_with_backup_=true;
 		}
 
 		time_recorder.record_elapsed_miliseconds_and_reset("backup state");
@@ -124,6 +126,8 @@ public:
 		{
 			return false;
 		}
+
+		in_sync_with_backup_=false;
 
 		if(state_.ids_of_affected_input_spheres.empty())
 		{
@@ -230,23 +234,25 @@ public:
 		return true;
 	}
 
-	void undo()
+	bool restore_from_backup()
 	{
-		if(undoable_ && !undone_)
+		if(backup_enabled_ && !in_sync_with_backup_)
 		{
 			state_.assign_to_undo_update(state_backup_);
-			undone_=true;
+			in_sync_with_backup_=true;
 		}
+
+		return in_sync_with_backup_;
 	}
 
-	bool undoable() const
+	bool backup_enabled() const
 	{
-		return undoable_;
+		return backup_enabled_;
 	}
 
-	bool undone() const
+	bool in_sync_with_backup() const
 	{
-		return undone_;
+		return in_sync_with_backup_;
 	}
 
 	const SpheresContainer& spheres_container() const
@@ -516,8 +522,8 @@ private:
 
 	State state_;
 	State state_backup_;
-	bool undoable_;
-	bool undone_;
+	bool backup_enabled_;
+	bool in_sync_with_backup_;
 	std::vector<int> involvement_of_spheres_for_update_;
 	BufferedTemporaryStorage buffered_temporary_storage_;
 };

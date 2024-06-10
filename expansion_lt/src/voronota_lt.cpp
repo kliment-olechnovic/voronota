@@ -133,7 +133,7 @@ int main(const int argc, const char** argv)
 	std::string write_log_to_file;
 	bool help=false;
 	bool test_updateable_tessellation=false;
-	bool test_updateable_tessellation_with_copying=false;
+	bool test_updateable_tessellation_with_backup=false;
 	std::ostringstream error_log_for_options_parsing;
 
 	{
@@ -260,10 +260,10 @@ int main(const int argc, const char** argv)
 			{
 				test_updateable_tessellation=opt.is_flag_and_true();
 			}
-			else if((opt.name=="test-updateable-tessellation-with-copying") && opt.is_flag())
+			else if((opt.name=="test-updateable-tessellation-with-backup") && opt.is_flag())
 			{
-				test_updateable_tessellation_with_copying=opt.is_flag_and_true();
-				test_updateable_tessellation=test_updateable_tessellation || test_updateable_tessellation_with_copying;
+				test_updateable_tessellation_with_backup=opt.is_flag_and_true();
+				test_updateable_tessellation=test_updateable_tessellation || test_updateable_tessellation_with_backup;
 			}
 			else if(opt.name.empty())
 			{
@@ -687,11 +687,12 @@ int main(const int argc, const char** argv)
 	{
 		time_recoder_for_tessellation.reset();
 
-		voronotalt::UpdateableRadicalTessellation urt(test_updateable_tessellation_with_copying);
+		voronotalt::UpdateableRadicalTessellation urt(test_updateable_tessellation_with_backup);
 
 		urt.init(spheres_input_result.spheres, periodic_box_corners, time_recoder_for_tessellation);
 
 		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_first;
+		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last_before_last;
 		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last;
 
 		{
@@ -731,6 +732,7 @@ int main(const int argc, const char** argv)
 				log_output << "log_urt_upd" << a << "_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
 				log_output << "log_urt_upd" << a << "_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
 				log_output << "log_urt_upd" << a << "_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
+				result_summary_last_before_last=result_summary_last;
 				result_summary_last=result_summary;
 			}
 		}
@@ -741,16 +743,15 @@ int main(const int argc, const char** argv)
 		log_output << "log_urt_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area-result_summary_last.total_cells_summary.sas_area) << "\n";
 		log_output << "log_urt_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume-result_summary_last.total_cells_summary.sas_inside_volume) << "\n\n";
 
-		if(urt.undoable())
+		if(urt.backup_enabled())
 		{
-			result_summary_first=urt.result_summary();
-			urt.undo();
-			result_summary_last=urt.result_summary();
-			log_output << "log_urt_backup_diff_total_contacts_count\t" << (result_summary_first.total_contacts_summary.count) << "\t" << (result_summary_last.total_contacts_summary.count) << "\n";
-			log_output << "log_urt_backup_diff_total_contacts_area\t" << (result_summary_first.total_contacts_summary.area) << "\t" << (result_summary_last.total_contacts_summary.area) << "\n";
-			log_output << "log_urt_backup_diff_total_cells_count\t" << (result_summary_first.total_cells_summary.count) << "\t" << (result_summary_last.total_cells_summary.count) << "\n";
-			log_output << "log_urt_backup_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area) << "\t" << (result_summary_last.total_cells_summary.sas_area) << "\n";
-			log_output << "log_urt_backup_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume) << "\t" << (result_summary_last.total_cells_summary.sas_inside_volume) << "\n\n";
+			log_output << "log_urt_backup_done\t" << urt.restore_from_backup() << "\n";
+			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_after_restoring=urt.result_summary();
+			log_output << "log_urt_backup_diff_total_contacts_count\t" << (result_summary_last_before_last.total_contacts_summary.count-result_summary_after_restoring.total_contacts_summary.count) << "\n";
+			log_output << "log_urt_backup_diff_total_contacts_area\t" << (result_summary_last_before_last.total_contacts_summary.area-result_summary_after_restoring.total_contacts_summary.area) << "\n";
+			log_output << "log_urt_backup_diff_total_cells_count\t" << (result_summary_last_before_last.total_cells_summary.count-result_summary_after_restoring.total_cells_summary.count) << "\n";
+			log_output << "log_urt_backup_diff_total_cells_sas_area\t" << (result_summary_last_before_last.total_cells_summary.sas_area-result_summary_after_restoring.total_cells_summary.sas_area) << "\n";
+			log_output << "log_urt_backup_diff_total_cells_sas_inside_volume\t" << (result_summary_last_before_last.total_cells_summary.sas_inside_volume-result_summary_after_restoring.total_cells_summary.sas_inside_volume) << "\n\n";
 		}
 	}
 
