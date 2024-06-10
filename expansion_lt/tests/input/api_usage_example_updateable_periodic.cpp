@@ -107,12 +107,12 @@ int main(const int, const char**)
 
 	print_tessellation_result_contacts_and_cells(updateable_tessellation.result());
 
-	std::vector<voronotalt::UnsignedInt> ids_to_update;
-	ids_to_update.push_back(0);
-	ids_to_update.push_back(1);
-
 	for(int n=1;n<=5;n++)
 	{
+		std::vector<voronotalt::UnsignedInt> ids_to_update;
+		ids_to_update.push_back(0);
+		ids_to_update.push_back(1);
+
 		for(const voronotalt::UnsignedInt& id : ids_to_update)
 		{
 			input_spheres[id].p.x+=0.1;
