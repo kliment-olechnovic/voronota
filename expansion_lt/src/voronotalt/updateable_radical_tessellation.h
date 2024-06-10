@@ -255,9 +255,9 @@ public:
 		return in_sync_with_backup_;
 	}
 
-	const SpheresContainer& spheres_container() const
+	const std::vector<SimpleSphere>& input_spheres() const
 	{
-		return state_.spheres_container;
+		return state_.spheres_container.input_spheres();
 	}
 
 	const Result& result() const
