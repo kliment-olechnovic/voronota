@@ -110,6 +110,16 @@ rm "./output/api_usage_examples/example_basic_and_periodic"
 
 ####################################################################
 
+mkdir -p "./output/api_usage_examples"
+
+g++ -O3 -I../src/voronotalt -o "./output/api_usage_examples/example_updateable_periodic" "./input/api_usage_example_updateable_periodic.cpp"
+
+./output/api_usage_examples/example_updateable_periodic &> "./output/api_usage_examples/example_updateable_periodic_output.txt"
+
+rm "./output/api_usage_examples/example_updateable_periodic"
+
+####################################################################
+
 mkdir -p "./output/tricky_cases_graphics"
 
 ########################################

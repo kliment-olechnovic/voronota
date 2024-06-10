@@ -1,0 +1,241 @@
+Input:
+
+spheres (sphere id x y z r):
+sphere 0 0 0 2 2
+sphere 1 0 1 0 1.5
+sphere 2 0.382683 0.92388 0 1.5
+sphere 3 0.707107 0.707107 0 1.5
+sphere 4 0.92388 0.382683 0 1.5
+sphere 5 1 0 0 1.5
+sphere 6 0.92388 -0.382683 0 1.5
+sphere 7 0.707107 -0.707107 0 1.5
+sphere 8 0.382683 -0.92388 0 1.5
+sphere 9 0 -1 0 1.5
+sphere 10 -0.382683 -0.92388 0 1.5
+sphere 11 -0.707107 -0.707107 0 1.5
+sphere 12 -0.92388 -0.382683 0 1.5
+sphere 13 -1 0 0 1.5
+sphere 14 -0.92388 0.382683 0 1.5
+sphere 15 -0.707107 0.707107 0 1.5
+sphere 16 -0.382683 0.92388 0 1.5
+
+Initialized tessellation.
+
+Results after init:
+
+contacts (contact id_a id_b area arc_length):
+contact 0 1 0.590782 0
+contact 0 5 0.590782 0
+contact 0 9 0.590782 0
+contact 0 13 0.590782 0
+contact 0 2 0.696874 0.00175092
+contact 0 4 0.696874 0.00175092
+contact 0 6 0.696874 0.00175092
+contact 0 8 0.696874 0.00175092
+contact 0 10 0.696874 0.00175092
+contact 0 12 0.696874 0.00175092
+contact 0 14 0.696874 0.00175092
+contact 0 16 0.696874 0.00175092
+contact 0 3 0.846715 0.759654
+contact 0 7 0.846715 0.759654
+contact 0 11 0.846715 0.759654
+contact 0 15 0.846715 0.759654
+contact 0 0 3.36258 2.81979
+contact 0 0 3.36258 2.81979
+contact 0 1 0.569318 0
+contact 0 2 0.665719 0.126251
+contact 0 3 0.747722 0.72691
+contact 0 4 0.665719 0.126251
+contact 0 5 0.569318 0
+contact 0 6 0.665719 0.126251
+contact 0 7 0.747722 0.72691
+contact 0 8 0.665719 0.126251
+contact 0 9 0.569318 0
+contact 0 10 0.665719 0.126251
+contact 0 11 0.747722 0.72691
+contact 0 12 0.665719 0.126251
+contact 0 13 0.569318 0
+contact 0 14 0.665719 0.126251
+contact 0 15 0.747722 0.72691
+contact 0 16 0.665719 0.126251
+contact 1 2 1.9972 0
+contact 1 16 1.9972 0
+contact 1 15 2.59338e-08 0
+contact 1 9 1.33341 0
+contact 1 13 2.21956e-23 0
+contact 2 3 2.65224 0.108518
+contact 2 8 1.68252 0.172314
+contact 3 4 2.65224 0.108518
+contact 3 5 1.8198e-23 0
+contact 3 7 1.0756 1.27578
+contact 3 15 1.0756 1.27578
+contact 4 5 1.9972 0
+contact 4 14 1.68252 0.172314
+contact 5 6 1.9972 0
+contact 5 13 1.33341 0
+contact 6 7 2.65224 0.108518
+contact 6 12 1.68252 0.172314
+contact 7 8 2.65224 0.108518
+contact 7 9 1.8198e-23 0
+contact 7 11 1.0756 1.27578
+contact 8 9 1.9972 0
+contact 9 10 1.9972 0
+contact 10 11 2.65224 0.108518
+contact 10 16 1.68252 0.172314
+contact 11 12 2.65224 0.108518
+contact 11 13 1.8198e-23 0
+contact 11 15 1.0756 1.27578
+contact 12 13 1.9972 0
+contact 13 14 1.9972 0
+contact 14 15 2.65224 0.108518
+contact 15 16 2.65224 0.108518
+
+cells (cell id area volume):
+cell 0 3.56578 20.2781
+cell 1 0 0.771185
+cell 2 0.00653924 0.972103
+cell 3 0.412922 1.52592
+cell 4 0.00653924 0.972103
+cell 5 0 0.771185
+cell 6 0.00653924 0.972103
+cell 7 0.412922 1.52592
+cell 8 0.00653924 0.972103
+cell 9 0 0.771185
+cell 10 0.00653924 0.972103
+cell 11 0.412922 1.52592
+cell 12 0.00653924 0.972103
+cell 13 0 0.771185
+cell 14 0.00653924 0.972103
+cell 15 0.412922 1.52592
+cell 16 0.00653924 0.972103
+
+Updated tessellation.
+Updated tessellation.
+Updated tessellation.
+Updated tessellation.
+Updated tessellation.
+
+Results after last update:
+
+contacts (contact id_a id_b area arc_length):
+contact 0 5 0.530781 0
+contact 0 4 0.633645 0
+contact 0 6 0.633645 0
+contact 0 3 0.670647 0.0672921
+contact 0 7 0.889857 0.156586
+contact 0 2 0.500218 0
+contact 0 8 0.635656 0
+contact 0 1 0.730522 0.125667
+contact 0 9 0.608397 0
+contact 0 10 0.691184 0.363461
+contact 0 16 0.990692 0.363461
+contact 0 11 0.591159 0.285985
+contact 0 15 0.591159 0.285985
+contact 0 12 0.375809 0
+contact 0 14 0.375809 0
+contact 0 13 0.320982 0
+contact 0 0 2.85799 1.89361
+contact 0 0 2.85799 1.89361
+contact 0 1 0.686801 0.220889
+contact 0 2 0.483932 0
+contact 0 3 0.643854 0.175673
+contact 0 4 0.624667 0
+contact 0 5 0.524885 0
+contact 0 6 0.624667 0
+contact 0 7 0.846041 0.335389
+contact 0 8 0.61496 0
+contact 0 9 0.582351 0
+contact 0 10 0.620952 0.479816
+contact 0 11 0.531345 0.351427
+contact 0 12 0.352714 0
+contact 0 13 0.300854 0
+contact 0 14 0.352714 0
+contact 0 15 0.531345 0.351427
+contact 0 16 0.905063 0.479816
+contact 1 2 1.39051 0
+contact 1 8 1.36623 0
+contact 1 9 0.531128 0
+contact 1 7 1.13642 0.541171
+contact 1 15 0.0706629 0.112612
+contact 1 11 0.0167733 0.0209984
+contact 1 3 2.10882 0.353962
+contact 2 16 1.87475 0
+contact 2 5 1.32349e-23 0
+contact 2 9 0.156723 0
+contact 2 3 0.838613 0
+contact 3 4 2.08083 0
+contact 3 5 2.64698e-23 0
+contact 3 15 0.882904 0.371183
+contact 4 14 1.13873 0
+contact 4 5 1.50899 0
+contact 5 13 0.865851 0
+contact 5 9 4.67924e-24 0
+contact 5 13 1.65436e-24 0
+contact 5 6 1.50899 0
+contact 6 12 1.13873 0
+contact 6 7 2.08083 0
+contact 7 8 2.15038 0
+contact 7 9 2.64698e-23 0
+contact 7 11 0.93917 0.468166
+contact 8 9 2.0231 0
+contact 9 10 2.36036 0
+contact 9 16 0.732045 0
+contact 9 11 5.91882e-23 0
+contact 9 13 1.8717e-23 0
+contact 10 16 1.88684 1.0704
+contact 10 11 3.35274 0.748829
+contact 11 13 3.51722e-23 0
+contact 11 15 1.0656 1.25755
+contact 11 12 3.23258 0
+contact 12 13 2.4854 0
+contact 13 16 8.14678e-24 0
+contact 13 14 2.4854 0
+contact 14 15 3.23258 0
+contact 15 16 3.35274 0.748829
+
+cells (cell id area volume):
+cell 0 3.17135 20.3605
+cell 1 0.0590723 1.2867
+cell 2 0 0.561189
+cell 3 0.0235082 0.832601
+cell 4 0 0.705371
+cell 5 0 0.544909
+cell 6 0 0.705371
+cell 7 0.0560277 1.18764
+cell 8 0 0.817739
+cell 9 0 0.898929
+cell 10 0.145786 1.18916
+cell 11 0.5217 1.80479
+cell 12 0 1.10982
+cell 13 0 0.887787
+cell 14 0 1.10982
+cell 15 0.521325 1.80462
+cell 16 0.145788 1.57991
+
+
+Result summaries for all stages:
+
+result_summary (summary contacts_area contacts_count cells_sas_area cells_volume):
+summary 79.5389 65 5.26978 37.2434
+
+result_summary (summary contacts_area contacts_count cells_sas_area cells_volume):
+summary 78.3747 68 5.24206 37.2526
+
+result_summary (summary contacts_area contacts_count cells_sas_area cells_volume):
+summary 77.3053 69 5.15657 37.2764
+
+result_summary (summary contacts_area contacts_count cells_sas_area cells_volume):
+summary 76.509 70 5.02173 37.3092
+
+result_summary (summary contacts_area contacts_count cells_sas_area cells_volume):
+summary 74.5911 70 4.85483 37.3468
+
+result_summary (summary contacts_area contacts_count cells_sas_area cells_volume):
+summary 74.7087 74 4.64456 37.3869
+
+
+Result summary after restoring from backup:
+
+result_summary (summary contacts_area contacts_count cells_sas_area cells_volume):
+summary 74.5911 70 4.85483 37.3468
+

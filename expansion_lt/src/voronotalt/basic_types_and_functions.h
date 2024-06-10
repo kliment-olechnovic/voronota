@@ -58,6 +58,10 @@ struct SimpleSphere
 	SimpleSphere(const SimplePoint& p, const Float r) : p(p), r(r)
 	{
 	}
+
+	SimpleSphere(const Float x, const Float y, const Float z, const Float r) : p(x, y, z), r(r)
+	{
+	}
 };
 
 struct SimpleQuaternion

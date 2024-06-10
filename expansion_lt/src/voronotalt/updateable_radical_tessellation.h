@@ -18,6 +18,11 @@ public:
 		Result()
 		{
 		}
+
+		bool empty()
+		{
+			return (cells_summaries.empty() || contacts_summaries.empty());
+		}
 	};
 
 	struct ResultSummary
@@ -38,24 +43,24 @@ public:
 	{
 	}
 
-	void init(const std::vector<SimpleSphere>& input_spheres)
+	bool init(const std::vector<SimpleSphere>& input_spheres)
 	{
 		TimeRecorder time_recorder;
-		init(input_spheres, std::vector<SimplePoint>(), time_recorder);
+		return init(input_spheres, std::vector<SimplePoint>(), time_recorder);
 	}
 
-	void init(const std::vector<SimpleSphere>& input_spheres, TimeRecorder& time_recorder)
+	bool init(const std::vector<SimpleSphere>& input_spheres, TimeRecorder& time_recorder)
 	{
-		init(input_spheres, std::vector<SimplePoint>(), time_recorder);
+		return init(input_spheres, std::vector<SimplePoint>(), time_recorder);
 	}
 
-	void init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners)
+	bool init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners)
 	{
 		TimeRecorder time_recorder;
-		init(input_spheres, periodic_box_corners, time_recorder);
+		return init(input_spheres, periodic_box_corners, time_recorder);
 	}
 
-	void init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners, TimeRecorder& time_recorder)
+	bool init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners, TimeRecorder& time_recorder)
 	{
 		time_recorder.reset();
 
@@ -77,6 +82,8 @@ public:
 		involvement_of_spheres_for_update_.clear();
 
 		init_result_from_tessellation_result();
+
+		return !state_.result.empty();
 	}
 
 	bool update(const std::vector<SimpleSphere>& new_input_spheres)
