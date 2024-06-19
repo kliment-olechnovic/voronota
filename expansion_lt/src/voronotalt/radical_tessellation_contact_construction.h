@@ -659,14 +659,23 @@ private:
 
 	static bool check_if_contour_is_central(const SimplePoint& center, const Contour& contour, const SimplePoint& contour_barycenter)
 	{
-		bool central=true;
-		for(UnsignedInt i=0;i<contour.size() && central;i++)
+		bool central=false;
+		for(UnsignedInt i=0;i<contour.size() && !central;i++)
 		{
-			const UnsignedInt j=((i+1)<contour.size() ? (i+1) : 0);
-			const SimplePoint sidepoint=point_and_number_product(sum_of_points(contour[i].p, contour[j].p), FLOATCONST(0.5));
-			if(dot_product(sub_of_points(contour_barycenter, sidepoint), sub_of_points(center, sidepoint))<FLOATCONST(0.0))
+			central=central || greater(contour[i].angle, PIVALUE);
+		}
+		if(!central)
+		{
+			central=true;
+			for(UnsignedInt i=0;i<contour.size() && central;i++)
 			{
-				central=false;
+				const UnsignedInt j=((i+1)<contour.size() ? (i+1) : 0);
+				const SimplePoint u_ij=unit_point(sub_of_points(contour[j].p, contour[i].p));
+				const SimplePoint n_ijb=sub_of_points(contour_barycenter, sum_of_points(contour[i].p, point_and_number_product(u_ij, dot_product(u_ij, sub_of_points(contour_barycenter, contour[i].p)))));
+				if(dot_product(n_ijb, sub_of_points(center, contour[i].p))<FLOATCONST(0.0))
+				{
+					central=false;
+				}
 			}
 		}
 		return central;
