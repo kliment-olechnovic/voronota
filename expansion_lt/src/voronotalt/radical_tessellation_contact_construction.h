@@ -101,6 +101,7 @@ public:
 			const UnsignedInt a_id,
 			const UnsignedInt b_id,
 			const std::vector<ValuedID>& a_neighbor_collisions,
+			const Float max_circle_radius_restriction,
 			ContactDescriptor& result_contact_descriptor)
 	{
 		result_contact_descriptor.clear();
@@ -113,6 +114,10 @@ public:
 			if(sphere_intersects_sphere(a, b) && !sphere_contains_sphere(a, b) && !sphere_contains_sphere(b, a))
 			{
 				result_contact_descriptor.intersection_circle_sphere=intersection_circle_of_two_spheres(a, b);
+				if(max_circle_radius_restriction>FLOATCONST(0.0))
+				{
+					result_contact_descriptor.intersection_circle_sphere.r=std::min(result_contact_descriptor.intersection_circle_sphere.r, max_circle_radius_restriction);
+				}
 				if(result_contact_descriptor.intersection_circle_sphere.r>FLOATCONST(0.0))
 				{
 					bool discarded=false;

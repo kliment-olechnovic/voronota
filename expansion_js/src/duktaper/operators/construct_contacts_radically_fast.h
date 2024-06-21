@@ -30,18 +30,20 @@ public:
 	};
 
 	double probe;
+	double restrict_circle;
 	bool no_intra_chain;
 	bool no_intra_residue;
 	bool generate_graphics;
 	bool no_remove_triangulation_info;
 
-	ConstructContactsRadicallyFast() : probe(1.4), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), no_remove_triangulation_info(false)
+	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), no_remove_triangulation_info(false)
 	{
 	}
 
 	void initialize(scripting::CommandInput& input)
 	{
 		probe=input.get_value_or_default<double>("probe", 1.4);
+		restrict_circle=input.get_value_or_default<double>("restrict-circle", 0.0);
 		no_intra_chain=input.get_flag("no-intra-chain");
 		no_intra_residue=input.get_flag("no-intra-residue");
 		generate_graphics=input.get_flag("generate-graphics");
@@ -51,6 +53,7 @@ public:
 	void document(scripting::CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("probe", CDOD::DATATYPE_FLOAT, "probe radius", 1.4));
+		doc.set_option_decription(CDOD("restrict-circle", CDOD::DATATYPE_FLOAT, "max circle restriction radius", 1.4));
 		doc.set_option_decription(CDOD("no-intra-chain", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-chain contacts"));
 		doc.set_option_decription(CDOD("no-intra-residue", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-residue contacts"));
 		doc.set_option_decription(CDOD("generate-graphics", CDOD::DATATYPE_BOOL, "flag to generate graphics"));
@@ -107,6 +110,7 @@ public:
 				grouping_for_filtering,
 				generate_graphics,
 				summarize_cells,
+				restrict_circle,
 				radical_tessellation_result,
 				radical_tessellation_result_graphics,
 				mock_time_recorder);

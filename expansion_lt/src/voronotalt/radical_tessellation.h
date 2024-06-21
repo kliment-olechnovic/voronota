@@ -277,7 +277,7 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, true, result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -289,7 +289,19 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, periodic_box_corners, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, true, result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), result, result_graphics, time_recorder);
+	}
+
+	static void construct_full_tessellation(
+			const SpheresContainer& spheres_container,
+			const std::vector<int>& grouping_of_spheres,
+			const bool with_graphics,
+			const bool summarize_cells,
+			Result& result,
+			ResultGraphics& result_graphics,
+			TimeRecorder& time_recorder)
+	{
+		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, with_graphics, summarize_cells, FLOATCONST(0.0), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -298,6 +310,7 @@ public:
 			const std::vector<int>& grouping_of_spheres,
 			const bool with_graphics,
 			const bool summarize_cells,
+			const Float max_circle_radius_restriction,
 			Result& result,
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder)
@@ -335,7 +348,7 @@ public:
 			{
 				const UnsignedInt id_a=preparation_result.relevant_collision_ids[i].first;
 				const UnsignedInt id_b=preparation_result.relevant_collision_ids[i].second;
-				if(RadicalTessellationContactConstruction::construct_contact_descriptor(spheres_container.populated_spheres(), spheres_container.all_exclusion_statuses(), id_a, id_b, spheres_container.all_colliding_ids()[id_a], cd))
+				if(RadicalTessellationContactConstruction::construct_contact_descriptor(spheres_container.populated_spheres(), spheres_container.all_exclusion_statuses(), id_a, id_b, spheres_container.all_colliding_ids()[id_a], max_circle_radius_restriction, cd))
 				{
 					possible_contacts_summaries[i].set(cd);
 					if(with_graphics)
