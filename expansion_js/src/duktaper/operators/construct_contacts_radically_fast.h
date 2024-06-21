@@ -35,6 +35,7 @@ public:
 	bool no_intra_residue;
 	bool generate_graphics;
 	bool no_remove_triangulation_info;
+	std::vector<double> adjunct_circle_restrictions;
 
 	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), no_remove_triangulation_info(false)
 	{
@@ -48,6 +49,7 @@ public:
 		no_intra_residue=input.get_flag("no-intra-residue");
 		generate_graphics=input.get_flag("generate-graphics");
 		no_remove_triangulation_info=input.get_flag("no-remove-triangulation-info");
+		adjunct_circle_restrictions=input.get_value_vector_or_default<double>("adjunct-circle-resctrictions", std::vector<double>());
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -58,6 +60,7 @@ public:
 		doc.set_option_decription(CDOD("no-intra-residue", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-residue contacts"));
 		doc.set_option_decription(CDOD("generate-graphics", CDOD::DATATYPE_BOOL, "flag to generate graphics"));
 		doc.set_option_decription(CDOD("no-remove-triangulation-info", CDOD::DATATYPE_BOOL, "flag to not remove triangulation info"));
+		doc.set_option_decription(CDOD("adjunct-circle-resctrictions", CDOD::DATATYPE_FLOAT_ARRAY, "adjunct circle restriction radii", ""));
 	}
 
 	Result run(scripting::DataManager& data_manager) const
@@ -111,6 +114,7 @@ public:
 				generate_graphics,
 				summarize_cells,
 				restrict_circle,
+				adjunct_circle_restrictions,
 				radical_tessellation_result,
 				radical_tessellation_result_graphics,
 				mock_time_recorder);
@@ -124,6 +128,18 @@ public:
 		if(summarize_cells && radical_tessellation_result.cells_summaries.empty())
 		{
 			throw std::runtime_error("No cells constructed for the provided atoms and probe.");
+		}
+
+		std::vector<std::string> names_for_adjunct_circle_resctrictions;
+		if(!adjunct_circle_restrictions.empty())
+		{
+			names_for_adjunct_circle_resctrictions.resize(adjunct_circle_restrictions.size());
+			for(std::size_t j=0;j<names_for_adjunct_circle_resctrictions.size();j++)
+			{
+				std::ostringstream name_output;
+				name_output << "subarea" << j;
+				names_for_adjunct_circle_resctrictions[j]=name_output.str();
+			}
 		}
 
 		std::vector<scripting::Contact> contacts;
@@ -142,6 +158,14 @@ public:
 			if(cds.flags>0)
 			{
 				contact.value.props.tags.insert("central");
+			}
+			if(!adjunct_circle_restrictions.empty() && i<radical_tessellation_result.adjuncts_for_contacts_summaries.size())
+			{
+				const voronotalt::RadicalTessellation::ContactDescriptorSummaryAdjunct& cdsa=radical_tessellation_result.adjuncts_for_contacts_summaries[i];
+				for(std::size_t j=0;j<cdsa.level_areas.size() && j<names_for_adjunct_circle_resctrictions.size();j++)
+				{
+					contact.value.props.adjuncts[names_for_adjunct_circle_resctrictions[j]]=cdsa.level_areas[j];
+				}
 			}
 			if(generate_graphics && i<radical_tessellation_result_graphics.contacts_graphics.size())
 			{

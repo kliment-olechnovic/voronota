@@ -68,6 +68,19 @@ public:
 		}
 	};
 
+	struct ContactDescriptorSummaryAdjunct
+	{
+		ContactDescriptorSummaryAdjunct()
+		{
+		}
+
+		ContactDescriptorSummaryAdjunct(const UnsignedInt levels) : level_areas(levels, FLOATCONST(0.0))
+		{
+		}
+
+		std::vector<Float> level_areas;
+	};
+
 	struct CellContactDescriptorsSummary
 	{
 		Float area;
@@ -224,6 +237,7 @@ public:
 		UnsignedInt total_collisions;
 		UnsignedInt total_relevant_collisions;
 		std::vector<ContactDescriptorSummary> contacts_summaries;
+		std::vector<ContactDescriptorSummaryAdjunct> adjuncts_for_contacts_summaries;
 		TotalContactDescriptorsSummary total_contacts_summary;
 		std::vector<CellContactDescriptorsSummary> cells_summaries;
 		TotalCellContactDescriptorsSummary total_cells_summary;
@@ -240,6 +254,7 @@ public:
 			total_collisions=0;
 			total_relevant_collisions=0;
 			contacts_summaries.clear();
+			adjuncts_for_contacts_summaries.clear();
 			total_contacts_summary=TotalContactDescriptorsSummary();
 			cells_summaries.clear();
 			total_cells_summary=TotalCellContactDescriptorsSummary();
@@ -277,7 +292,7 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -289,7 +304,7 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, periodic_box_corners, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -301,7 +316,7 @@ public:
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder)
 	{
-		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, with_graphics, summarize_cells, FLOATCONST(0.0), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, with_graphics, summarize_cells, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -311,6 +326,7 @@ public:
 			const bool with_graphics,
 			const bool summarize_cells,
 			const Float max_circle_radius_restriction,
+			const std::vector<Float> adjunct_max_circle_radius_restrictions,
 			Result& result,
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder)
@@ -348,7 +364,14 @@ public:
 			{
 				const UnsignedInt id_a=preparation_result.relevant_collision_ids[i].first;
 				const UnsignedInt id_b=preparation_result.relevant_collision_ids[i].second;
-				if(RadicalTessellationContactConstruction::construct_contact_descriptor(spheres_container.populated_spheres(), spheres_container.all_exclusion_statuses(), id_a, id_b, spheres_container.all_colliding_ids()[id_a], max_circle_radius_restriction, cd))
+				if(RadicalTessellationContactConstruction::construct_contact_descriptor(
+						spheres_container.populated_spheres(),
+						spheres_container.all_exclusion_statuses(),
+						id_a,
+						id_b,
+						spheres_container.all_colliding_ids()[id_a],
+						max_circle_radius_restriction,
+						cd))
 				{
 					possible_contacts_summaries[i].set(cd);
 					if(with_graphics)
@@ -394,6 +417,49 @@ public:
 			{
 				result.contacts_summaries[i]=possible_contacts_summaries[ids_of_valid_pairs[i]];
 				result.contacts_summaries[i].ensure_ids_ordered();
+			}
+		}
+
+		if(!adjunct_max_circle_radius_restrictions.empty())
+		{
+			result.adjuncts_for_contacts_summaries.clear();
+			result.adjuncts_for_contacts_summaries.resize(result.contacts_summaries.size(), ContactDescriptorSummaryAdjunct(adjunct_max_circle_radius_restrictions.size()));
+
+			#pragma omp parallel
+			{
+				RadicalTessellationContactConstruction::ContactDescriptor cd;
+				cd.contour.reserve(12);
+
+				#pragma omp for
+				for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
+				{
+					const ContactDescriptorSummary& cds=result.contacts_summaries[i];
+					if(cds.area>FLOATCONST(0.0))
+					{
+						ContactDescriptorSummaryAdjunct& cdsa=result.adjuncts_for_contacts_summaries[i];
+						Float prev_circle_radius_restriction=0.0;
+						for(UnsignedInt j=0;j<adjunct_max_circle_radius_restrictions.size();j++)
+						{
+							const Float circle_radius_restriction=(max_circle_radius_restriction>FLOATCONST(0.0) ? std::min(adjunct_max_circle_radius_restrictions[j], max_circle_radius_restriction) : adjunct_max_circle_radius_restrictions[j]);
+							if(j==0 || (circle_radius_restriction>=prev_circle_radius_restriction)
+									|| (circle_radius_restriction<prev_circle_radius_restriction && cdsa.level_areas[j-1]>FLOATCONST(0.0)))
+							{
+								if(RadicalTessellationContactConstruction::construct_contact_descriptor(
+										spheres_container.populated_spheres(),
+										spheres_container.all_exclusion_statuses(),
+										cds.id_a,
+										cds.id_b,
+										spheres_container.all_colliding_ids()[cds.id_a],
+										circle_radius_restriction,
+										cd))
+								{
+									cdsa.level_areas[j]=cd.area;
+								}
+							}
+							prev_circle_radius_restriction=circle_radius_restriction;
+						}
+					}
+				}
 			}
 		}
 

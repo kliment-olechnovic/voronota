@@ -77,7 +77,7 @@ public:
 		state_.spheres_container.init(input_spheres, periodic_box_corners, time_recorder);
 
 		RadicalTessellation::ResultGraphics result_graphics;
-		RadicalTessellation::construct_full_tessellation(state_.spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
+		RadicalTessellation::construct_full_tessellation(state_.spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), std::vector<Float>(), buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
 
 		involvement_of_spheres_for_update_.clear();
 
@@ -139,7 +139,7 @@ public:
 		if(state_.ids_of_affected_input_spheres.empty())
 		{
 			RadicalTessellation::ResultGraphics result_graphics;
-			RadicalTessellation::construct_full_tessellation(state_.spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
+			RadicalTessellation::construct_full_tessellation(state_.spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), std::vector<Float>(), buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
 			init_result_from_tessellation_result();
 			return true;
 		}
@@ -157,7 +157,7 @@ public:
 
 		{
 			RadicalTessellation::ResultGraphics result_graphics;
-			RadicalTessellation::construct_full_tessellation(state_.spheres_container, involvement_of_spheres_for_update_, std::vector<int>(), false, false, FLOATCONST(0.0), buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
+			RadicalTessellation::construct_full_tessellation(state_.spheres_container, involvement_of_spheres_for_update_, std::vector<int>(), false, false, FLOATCONST(0.0), std::vector<Float>(), buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
 
 			{
 				const ConditionToRemoveContact condition_to_remove_contact(involvement_of_spheres_for_update_);
