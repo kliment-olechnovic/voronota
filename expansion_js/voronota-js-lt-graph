@@ -133,14 +133,15 @@ fi
 
 DATA_DESCRIPTION="input '$INFILE'"
 
-mkdir -p "$(dirname ${OUTPREFIX}name)"
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
 
 {
 cat << EOF
 var params={}
 params.input_structure_file='$INFILE';
 params.probe=$PROBE;
-params.output_prefix='$OUTPREFIX';
+params.output_prefix='${TMPLDIR}/';
 EOF
 
 cat << 'EOF'
@@ -157,20 +158,41 @@ voronota_set_adjunct_of_atoms_by_contact_areas("-use [-solvent] -name sas_area")
 
 voronota_auto_assert_full_success=false;
 voronota_set_adjunct_of_atoms("-use [-v! sas_area] -name sas_area -value 0");
+voronota_set_adjunct_of_atoms("-use [-v! volume] -name volume -value 0");
 voronota_auto_assert_full_success=true;
+
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name sas_area -destination-name residue_sas_area -pooling-mode sum');
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name volume -destination-name residue_volume -pooling-mode sum');
 
 voronota_export_adjuncts_of_atoms('-file', params.output_prefix+'graph_nodes.csv', '-use', '[]', '-no-serial', '-adjuncts', ['atom_index', 'residue_index', 'atom_type', 'residue_type', 'center_x', 'center_y', 'center_z', 'radius', 'sas_area', 'volume'], '-sep', ',', '-expand-ids', true);
 
 voronota_export_adjuncts_of_contacts('-file', params.output_prefix+'graph_links.csv', '-atoms-use', '[]', '-contacts-use', '[-no-solvent]', '-no-serial', '-adjuncts', ['atom_index1', 'atom_index2', 'area', 'boundary', 'distance'], '-sep', ',', '-expand-ids', true);
+
+voronota_export_adjuncts_of_atoms('-file', params.output_prefix+'coarse_graph_nodes.csv', '-use', '[]', '-no-serial', '-no-name', '-adjuncts', ['residue_type', 'residue_sas_area', 'residue_volume'], '-sep', ',', '-expand-ids', true);
+
+voronota_export_adjuncts_of_contacts('-inter-residue', true, '-file', params.output_prefix+'coarse_graph_links.csv', '-atoms-use', '[]', '-contacts-use', '[-no-solvent -min-seq-sep 1]', '-no-serial', '-adjuncts', ['area', 'boundary', 'distance'], '-sep', ',', '-expand-ids', true);
 EOF
 } \
 | voronota-js
 
-if [ ! -s "${OUTPREFIX}graph_nodes.csv" ] || [ ! -s "${OUTPREFIX}graph_links.csv" ]
+if [ ! -s "${TMPLDIR}/graph_nodes.csv" ] || [ ! -s "${TMPLDIR}/graph_links.csv" ] || [ ! -s "${TMPLDIR}/coarse_graph_nodes.csv" ] || [ ! -s "${TMPLDIR}/coarse_graph_links.csv" ]
 then
 	echo >&2 "Failed: graph data for $DATA_DESCRIPTION"
 	exit 1
 fi
 
-echo "Finished: graph data for $DATA_DESCRIPTION"
+mkdir -p "$(dirname ${OUTPREFIX}name)"
+
+cat "${TMPLDIR}/graph_links.csv" | tr ',' '\t' > "${OUTPREFIX}atom_graph_links.tsv"
+
+cat "${TMPLDIR}/graph_nodes.csv" | tr ',' '\t' > "${OUTPREFIX}atom_graph_nodes.tsv"
+
+cat "${TMPLDIR}/coarse_graph_links.csv" | tr ',' '\t' > "${OUTPREFIX}residue_graph_links.tsv"
+
+{
+cat "${TMPLDIR}/coarse_graph_nodes.csv" | head -1
+cat "${TMPLDIR}/coarse_graph_nodes.csv" | tail -n +2 | sort -V | uniq
+} | tr ',' '\t' > "${OUTPREFIX}residue_graph_nodes.tsv"
+
+exit 0
 
