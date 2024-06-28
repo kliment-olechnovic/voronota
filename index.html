@@ -8,12 +8,22 @@
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span { line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -75,7 +85,6 @@
     code span.va { color: #19177c; } /* Variable */
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style type="text/css">
   a { color: #0000CC; }
@@ -97,59 +106,59 @@
 <h2>Table of contents</h2>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#about-voronota">About Voronota</a></li>
-<li><a href="#quick-install-guide">Quick install guide</a></li>
-<li><a href="#about-voronota-expansions">About Voronota expansions</a>
+<li><a href="#about-voronota" id="toc-about-voronota">About Voronota</a></li>
+<li><a href="#quick-install-guide" id="toc-quick-install-guide">Quick install guide</a></li>
+<li><a href="#about-voronota-expansions" id="toc-about-voronota-expansions">About Voronota expansions</a>
 <ul>
-<li><a href="#voronota-js">Voronota-JS</a></li>
-<li><a href="#voronota-lt">Voronota-LT</a></li>
-<li><a href="#voronota-gl">Voronota-GL</a></li>
+<li><a href="#voronota-js" id="toc-voronota-js">Voronota-JS</a></li>
+<li><a href="#voronota-lt" id="toc-voronota-lt">Voronota-LT</a></li>
+<li><a href="#voronota-gl" id="toc-voronota-gl">Voronota-GL</a></li>
 </ul></li>
-<li><a href="#getting-the-latest-version">Getting the latest version</a></li>
-<li><a href="#building-from-source-code">Building from source code</a>
+<li><a href="#getting-the-latest-version" id="toc-getting-the-latest-version">Getting the latest version</a></li>
+<li><a href="#building-from-source-code" id="toc-building-from-source-code">Building from source code</a>
 <ul>
-<li><a href="#requirements">Requirements</a></li>
-<li><a href="#using-cmake">Using CMake</a></li>
-<li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
-<li><a href="#enabling-openmp">Enabling OpenMP</a></li>
-<li><a href="#enabling-mpi">Enabling MPI</a></li>
-<li><a href="#tr1-usage-switch">TR1 usage switch</a></li>
+<li><a href="#requirements" id="toc-requirements">Requirements</a></li>
+<li><a href="#using-cmake" id="toc-using-cmake">Using CMake</a></li>
+<li><a href="#using-c-compiler-directly" id="toc-using-c-compiler-directly">Using C++ compiler directly</a></li>
+<li><a href="#enabling-openmp" id="toc-enabling-openmp">Enabling OpenMP</a></li>
+<li><a href="#enabling-mpi" id="toc-enabling-mpi">Enabling MPI</a></li>
+<li><a href="#tr1-usage-switch" id="toc-tr1-usage-switch">TR1 usage switch</a></li>
 </ul></li>
-<li><a href="#basic-usage-example">Basic usage example</a>
+<li><a href="#basic-usage-example" id="toc-basic-usage-example">Basic usage example</a>
 <ul>
-<li><a href="#computing-voronoi-vertices">Computing Voronoi vertices</a></li>
-<li><a href="#computing-inter-atom-contacts">Computing inter-atom contacts</a></li>
-<li><a href="#computing-annotated-inter-atom-contacts">Computing annotated inter-atom contacts</a></li>
-<li><a href="#querying-annotated-inter-atom-contacts">Querying annotated inter-atom contacts</a></li>
-<li><a href="#getting-help-in-command-line">Getting help in command line</a></li>
+<li><a href="#computing-voronoi-vertices" id="toc-computing-voronoi-vertices">Computing Voronoi vertices</a></li>
+<li><a href="#computing-inter-atom-contacts" id="toc-computing-inter-atom-contacts">Computing inter-atom contacts</a></li>
+<li><a href="#computing-annotated-inter-atom-contacts" id="toc-computing-annotated-inter-atom-contacts">Computing annotated inter-atom contacts</a></li>
+<li><a href="#querying-annotated-inter-atom-contacts" id="toc-querying-annotated-inter-atom-contacts">Querying annotated inter-atom contacts</a></li>
+<li><a href="#getting-help-in-command-line" id="toc-getting-help-in-command-line">Getting help in command line</a></li>
 </ul></li>
-<li><a href="#command-reference">Command reference</a>
+<li><a href="#command-reference" id="toc-command-reference">Command reference</a>
 <ul>
-<li><a href="#list-of-all-commands">List of all commands</a></li>
-<li><a href="#command-get-balls-from-atoms-file">Command ‘get-balls-from-atoms-file’</a></li>
-<li><a href="#command-calculate-vertices">Command ‘calculate-vertices’</a></li>
-<li><a href="#command-calculate-vertices-in-parallel">Command ‘calculate-vertices-in-parallel’</a></li>
-<li><a href="#command-calculate-contacts">Command ‘calculate-contacts’</a></li>
-<li><a href="#command-query-balls">Command ‘query-balls’</a></li>
-<li><a href="#command-query-contacts">Command ‘query-contacts’</a></li>
-<li><a href="#command-draw-contacts">Command ‘draw-contacts’</a></li>
-<li><a href="#command-score-contacts-energy">Command ‘score-contacts-energy’</a></li>
-<li><a href="#command-score-contacts-quality">Command ‘score-contacts-quality’</a></li>
-<li><a href="#command-score-contacts-potential">Command ‘score-contacts-potential’</a></li>
-<li><a href="#command-compare-contacts">Command ‘compare-contacts’</a></li>
-<li><a href="#command-write-balls-to-atoms-file">Command ‘write-balls-to-atoms-file’</a></li>
-<li><a href="#command-query-balls-clashes">Command ‘query-balls-clashes’</a></li>
-<li><a href="#command-run-script">Command ‘run-script’</a></li>
-<li><a href="#command-expand-descriptors">Command ‘expand-descriptors’</a></li>
+<li><a href="#list-of-all-commands" id="toc-list-of-all-commands">List of all commands</a></li>
+<li><a href="#command-get-balls-from-atoms-file" id="toc-command-get-balls-from-atoms-file">Command ‘get-balls-from-atoms-file’</a></li>
+<li><a href="#command-calculate-vertices" id="toc-command-calculate-vertices">Command ‘calculate-vertices’</a></li>
+<li><a href="#command-calculate-vertices-in-parallel" id="toc-command-calculate-vertices-in-parallel">Command ‘calculate-vertices-in-parallel’</a></li>
+<li><a href="#command-calculate-contacts" id="toc-command-calculate-contacts">Command ‘calculate-contacts’</a></li>
+<li><a href="#command-query-balls" id="toc-command-query-balls">Command ‘query-balls’</a></li>
+<li><a href="#command-query-contacts" id="toc-command-query-contacts">Command ‘query-contacts’</a></li>
+<li><a href="#command-draw-contacts" id="toc-command-draw-contacts">Command ‘draw-contacts’</a></li>
+<li><a href="#command-score-contacts-energy" id="toc-command-score-contacts-energy">Command ‘score-contacts-energy’</a></li>
+<li><a href="#command-score-contacts-quality" id="toc-command-score-contacts-quality">Command ‘score-contacts-quality’</a></li>
+<li><a href="#command-score-contacts-potential" id="toc-command-score-contacts-potential">Command ‘score-contacts-potential’</a></li>
+<li><a href="#command-compare-contacts" id="toc-command-compare-contacts">Command ‘compare-contacts’</a></li>
+<li><a href="#command-write-balls-to-atoms-file" id="toc-command-write-balls-to-atoms-file">Command ‘write-balls-to-atoms-file’</a></li>
+<li><a href="#command-query-balls-clashes" id="toc-command-query-balls-clashes">Command ‘query-balls-clashes’</a></li>
+<li><a href="#command-run-script" id="toc-command-run-script">Command ‘run-script’</a></li>
+<li><a href="#command-expand-descriptors" id="toc-command-expand-descriptors">Command ‘expand-descriptors’</a></li>
 </ul></li>
-<li><a href="#wrapper-scripts">Wrapper scripts</a>
+<li><a href="#wrapper-scripts" id="toc-wrapper-scripts">Wrapper scripts</a>
 <ul>
-<li><a href="#voromqa-method-script">VoroMQA method script</a></li>
-<li><a href="#cad-score-method-script">CAD-score method script</a></li>
-<li><a href="#contacts-calculation-convenience-script">Contacts calculation convenience script</a></li>
-<li><a href="#volumes-calculation-convenience-script">Volumes calculation convenience script</a></li>
-<li><a href="#pocket-analysis-script">Pocket analysis script</a></li>
-<li><a href="#membrane-fitting-script">Membrane fitting script</a></li>
+<li><a href="#voromqa-method-script" id="toc-voromqa-method-script">VoroMQA method script</a></li>
+<li><a href="#cad-score-method-script" id="toc-cad-score-method-script">CAD-score method script</a></li>
+<li><a href="#contacts-calculation-convenience-script" id="toc-contacts-calculation-convenience-script">Contacts calculation convenience script</a></li>
+<li><a href="#volumes-calculation-convenience-script" id="toc-volumes-calculation-convenience-script">Volumes calculation convenience script</a></li>
+<li><a href="#pocket-analysis-script" id="toc-pocket-analysis-script">Pocket analysis script</a></li>
+<li><a href="#membrane-fitting-script" id="toc-membrane-fitting-script">Membrane fitting script</a></li>
 </ul></li>
 </ul>
 </nav>

@@ -8,10 +8,18 @@
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style type="text/css">
@@ -27,18 +35,18 @@
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#about-voronota-gl-expansion">About Voronota-GL expansion</a>
+<li><a href="#about-voronota-gl-expansion" id="toc-about-voronota-gl-expansion">About Voronota-GL expansion</a>
 <ul>
-<li><a href="#usage-of-externally-developed-software">Usage of externally developed software</a></li>
+<li><a href="#usage-of-externally-developed-software" id="toc-usage-of-externally-developed-software">Usage of externally developed software</a></li>
 </ul></li>
-<li><a href="#getting-the-latest-version">Getting the latest version</a></li>
-<li><a href="#building-from-source-code-on-linux">Building from source code on Linux</a>
+<li><a href="#getting-the-latest-version" id="toc-getting-the-latest-version">Getting the latest version</a></li>
+<li><a href="#building-from-source-code-on-linux" id="toc-building-from-source-code-on-linux">Building from source code on Linux</a>
 <ul>
-<li><a href="#requirements">Requirements</a></li>
-<li><a href="#using-cmake">Using CMake</a></li>
-<li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
+<li><a href="#requirements" id="toc-requirements">Requirements</a></li>
+<li><a href="#using-cmake" id="toc-using-cmake">Using CMake</a></li>
+<li><a href="#using-c-compiler-directly" id="toc-using-c-compiler-directly">Using C++ compiler directly</a></li>
 </ul></li>
-<li><a href="#building-from-source-code-on-mac-os">Building from source code on Mac OS</a></li>
+<li><a href="#building-from-source-code-on-mac-os" id="toc-building-from-source-code-on-mac-os">Building from source code on Mac OS</a></li>
 </ul>
 </nav>
 <h1 id="about-voronota-gl-expansion">About Voronota-GL expansion</h1>

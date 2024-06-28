@@ -8,10 +8,18 @@
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style type="text/css">
@@ -27,36 +35,36 @@
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#about-voronota-js-expansion">About Voronota-JS expansion</a>
+<li><a href="#about-voronota-js-expansion" id="toc-about-voronota-js-expansion">About Voronota-JS expansion</a>
 <ul>
-<li><a href="#usage-of-externally-developed-software">Usage of externally developed software</a></li>
+<li><a href="#usage-of-externally-developed-software" id="toc-usage-of-externally-developed-software">Usage of externally developed software</a></li>
 </ul></li>
-<li><a href="#quick-install-guide">Quick install guide</a></li>
-<li><a href="#getting-the-latest-version">Getting the latest version</a></li>
-<li><a href="#building-from-source-code">Building from source code</a>
+<li><a href="#quick-install-guide" id="toc-quick-install-guide">Quick install guide</a></li>
+<li><a href="#getting-the-latest-version" id="toc-getting-the-latest-version">Getting the latest version</a></li>
+<li><a href="#building-from-source-code" id="toc-building-from-source-code">Building from source code</a>
 <ul>
-<li><a href="#requirements">Requirements</a></li>
-<li><a href="#using-cmake">Using CMake</a></li>
-<li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
+<li><a href="#requirements" id="toc-requirements">Requirements</a></li>
+<li><a href="#using-cmake" id="toc-using-cmake">Using CMake</a></li>
+<li><a href="#using-c-compiler-directly" id="toc-using-c-compiler-directly">Using C++ compiler directly</a></li>
 </ul></li>
-<li><a href="#more-about-protein-ligand-variation-of-cad-score">More about protein-ligand variation of CAD-score</a>
+<li><a href="#more-about-protein-ligand-variation-of-cad-score" id="toc-more-about-protein-ligand-variation-of-cad-score">More about protein-ligand variation of CAD-score</a>
 <ul>
-<li><a href="#example-of-how-it-works-for-casp15-models">Example of how it works for CASP15 models</a></li>
-<li><a href="#more-info-about-the-involved-contacts">More info about the involved contacts</a></li>
+<li><a href="#example-of-how-it-works-for-casp15-models" id="toc-example-of-how-it-works-for-casp15-models">Example of how it works for CASP15 models</a></li>
+<li><a href="#more-info-about-the-involved-contacts" id="toc-more-info-about-the-involved-contacts">More info about the involved contacts</a></li>
 </ul></li>
-<li><a href="#wrapper-scripts">Wrapper scripts</a>
+<li><a href="#wrapper-scripts" id="toc-wrapper-scripts">Wrapper scripts</a>
 <ul>
-<li><a href="#voromqa-dark-and-light-methods">VoroMQA dark and light methods</a></li>
-<li><a href="#voromqa-for-only-global-scores-with-fast-caching">VoroMQA for only global scores with fast caching</a></li>
-<li><a href="#voromqa-based-membrane-protein-structure-assessment">VoroMQA-based membrane protein structure assessment</a></li>
-<li><a href="#voromqa-based-collection-of-protein-protein-complex-features">VoroMQA-based collection of protein-protein complex features</a></li>
-<li><a href="#fast-inter-chain-interface-voromqa-energy">Fast inter-chain interface VoroMQA energy</a></li>
-<li><a href="#fast-inter-chain-interface-cad-score">Fast inter-chain interface CAD-score</a></li>
-<li><a href="#fast-inter-chain-interface-cad-score-matrix">Fast inter-chain interface CAD-score matrix</a></li>
-<li><a href="#fast-inter-chain-interface-contacts">Fast inter-chain interface contacts</a></li>
-<li><a href="#computation-of-inter-chain-interface-graphs">Computation of inter-chain interface graphs</a></li>
-<li><a href="#voroif-gnn-method-for-scoring-models-of-protein-protein-complexes">VoroIF-GNN method for scoring models of protein-protein complexes</a></li>
-<li><a href="#protein-ligand-interface-variation-of-cad-score">Protein-ligand interface variation of CAD-score</a></li>
+<li><a href="#voromqa-dark-and-light-methods" id="toc-voromqa-dark-and-light-methods">VoroMQA dark and light methods</a></li>
+<li><a href="#voromqa-for-only-global-scores-with-fast-caching" id="toc-voromqa-for-only-global-scores-with-fast-caching">VoroMQA for only global scores with fast caching</a></li>
+<li><a href="#voromqa-based-membrane-protein-structure-assessment" id="toc-voromqa-based-membrane-protein-structure-assessment">VoroMQA-based membrane protein structure assessment</a></li>
+<li><a href="#voromqa-based-collection-of-protein-protein-complex-features" id="toc-voromqa-based-collection-of-protein-protein-complex-features">VoroMQA-based collection of protein-protein complex features</a></li>
+<li><a href="#fast-inter-chain-interface-voromqa-energy" id="toc-fast-inter-chain-interface-voromqa-energy">Fast inter-chain interface VoroMQA energy</a></li>
+<li><a href="#fast-inter-chain-interface-cad-score" id="toc-fast-inter-chain-interface-cad-score">Fast inter-chain interface CAD-score</a></li>
+<li><a href="#fast-inter-chain-interface-cad-score-matrix" id="toc-fast-inter-chain-interface-cad-score-matrix">Fast inter-chain interface CAD-score matrix</a></li>
+<li><a href="#fast-inter-chain-interface-contacts" id="toc-fast-inter-chain-interface-contacts">Fast inter-chain interface contacts</a></li>
+<li><a href="#computation-of-inter-chain-interface-graphs" id="toc-computation-of-inter-chain-interface-graphs">Computation of inter-chain interface graphs</a></li>
+<li><a href="#voroif-gnn-method-for-scoring-models-of-protein-protein-complexes" id="toc-voroif-gnn-method-for-scoring-models-of-protein-protein-complexes">VoroIF-GNN method for scoring models of protein-protein complexes</a></li>
+<li><a href="#protein-ligand-interface-variation-of-cad-score" id="toc-protein-ligand-interface-variation-of-cad-score">Protein-ligand interface variation of CAD-score</a></li>
 </ul></li>
 </ul>
 </nav>
