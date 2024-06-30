@@ -49,7 +49,7 @@ public:
 		no_intra_residue=input.get_flag("no-intra-residue");
 		generate_graphics=input.get_flag("generate-graphics");
 		no_remove_triangulation_info=input.get_flag("no-remove-triangulation-info");
-		adjunct_circle_restrictions=input.get_value_vector_or_default<double>("adjunct-circle-resctrictions", std::vector<double>());
+		adjunct_circle_restrictions=input.get_value_vector_or_default<double>("adjunct-circle-restrictions", std::vector<double>());
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -60,7 +60,7 @@ public:
 		doc.set_option_decription(CDOD("no-intra-residue", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-residue contacts"));
 		doc.set_option_decription(CDOD("generate-graphics", CDOD::DATATYPE_BOOL, "flag to generate graphics"));
 		doc.set_option_decription(CDOD("no-remove-triangulation-info", CDOD::DATATYPE_BOOL, "flag to not remove triangulation info"));
-		doc.set_option_decription(CDOD("adjunct-circle-resctrictions", CDOD::DATATYPE_FLOAT_ARRAY, "adjunct circle restriction radii", ""));
+		doc.set_option_decription(CDOD("adjunct-circle-restrictions", CDOD::DATATYPE_FLOAT_ARRAY, "adjunct circle restriction radii", ""));
 	}
 
 	Result run(scripting::DataManager& data_manager) const
@@ -73,6 +73,28 @@ public:
 		if(with_grouping_for_filtering)
 		{
 			data_manager.assert_primary_structure_info_valid();
+		}
+
+		if(!adjunct_circle_restrictions.empty())
+		{
+			for(std::size_t i=0;i<adjunct_circle_restrictions.size();i++)
+			{
+				if(adjunct_circle_restrictions[i]<=0.0)
+				{
+					throw std::runtime_error("Invalid circle restrictions, must be all positive.");
+				}
+				if(i>0 && adjunct_circle_restrictions[i-1]>=adjunct_circle_restrictions[i])
+				{
+					throw std::runtime_error("Invalid order of circle restrictions, must be ascending.");
+				}
+			}
+		}
+
+		std::vector<double> descending_adjunct_circle_restrictions;
+		if(!adjunct_circle_restrictions.empty())
+		{
+			descending_adjunct_circle_restrictions=adjunct_circle_restrictions;
+			std::reverse(descending_adjunct_circle_restrictions.begin(), descending_adjunct_circle_restrictions.end());
 		}
 
 		std::vector<voronotalt::SimpleSphere> spheres(data_manager.atoms().size());
@@ -114,7 +136,7 @@ public:
 				generate_graphics,
 				summarize_cells,
 				restrict_circle,
-				adjunct_circle_restrictions,
+				descending_adjunct_circle_restrictions,
 				radical_tessellation_result,
 				radical_tessellation_result_graphics,
 				mock_time_recorder);
@@ -130,15 +152,28 @@ public:
 			throw std::runtime_error("No cells constructed for the provided atoms and probe.");
 		}
 
-		std::vector<std::string> names_for_adjunct_circle_resctrictions;
+		std::vector<std::string> names_for_adjunct_subareas;
+		std::vector<std::string> names_for_adjunct_levelareas;
 		if(!adjunct_circle_restrictions.empty())
 		{
-			names_for_adjunct_circle_resctrictions.resize(adjunct_circle_restrictions.size());
-			for(std::size_t j=0;j<names_for_adjunct_circle_resctrictions.size();j++)
+			names_for_adjunct_subareas.resize(adjunct_circle_restrictions.size());
+			names_for_adjunct_levelareas.resize(adjunct_circle_restrictions.size());
+			for(std::size_t j=0;j<adjunct_circle_restrictions.size();j++)
 			{
-				std::ostringstream name_output;
-				name_output << "subarea" << j;
-				names_for_adjunct_circle_resctrictions[j]=name_output.str();
+				{
+					std::ostringstream name_output;
+					name_output << "subarea";
+					print_pretty_number((j==0 ? 0.0 : adjunct_circle_restrictions[j-1]), name_output);
+					name_output << "to";
+					print_pretty_number(adjunct_circle_restrictions[j], name_output);
+					names_for_adjunct_subareas[j]=name_output.str();
+				}
+				{
+					std::ostringstream name_output;
+					name_output << "levelarea";
+					print_pretty_number(adjunct_circle_restrictions[j], name_output);
+					names_for_adjunct_levelareas[j]=name_output.str();
+				}
 			}
 		}
 
@@ -162,9 +197,22 @@ public:
 			if(!adjunct_circle_restrictions.empty() && i<radical_tessellation_result.adjuncts_for_contacts_summaries.size())
 			{
 				const voronotalt::RadicalTessellation::ContactDescriptorSummaryAdjunct& cdsa=radical_tessellation_result.adjuncts_for_contacts_summaries[i];
-				for(std::size_t j=0;j<cdsa.level_areas.size() && j<names_for_adjunct_circle_resctrictions.size();j++)
+
+				for(std::size_t j=0;j<adjunct_circle_restrictions.size();j++)
 				{
-					contact.value.props.adjuncts[names_for_adjunct_circle_resctrictions[j]]=cdsa.level_areas[j];
+					std::size_t rj=(adjunct_circle_restrictions.size()-1-j);
+					double& subarea=contact.value.props.adjuncts[names_for_adjunct_subareas[j]];
+					double& levelarea=contact.value.props.adjuncts[names_for_adjunct_levelareas[j]];
+					if(rj<cdsa.level_areas.size())
+					{
+						subarea=(((rj+1)<cdsa.level_areas.size()) ? (cdsa.level_areas[rj]-cdsa.level_areas[rj+1]) : cdsa.level_areas[rj]);
+						levelarea=cdsa.level_areas[rj];
+					}
+					else
+					{
+						subarea=0.0;
+						levelarea=0.0;
+					}
 				}
 			}
 			if(generate_graphics && i<radical_tessellation_result_graphics.contacts_graphics.size())
@@ -204,6 +252,13 @@ public:
 		result.contacts_summary=scripting::SummaryOfContacts(data_manager.contacts());
 
 		return result;
+	}
+
+private:
+	static void print_pretty_number(const double val, std::ostream& output)
+	{
+		const int ival=static_cast<int>(std::floor(val*100.0+0.5));
+		output << (ival<10 ? "0000" : (ival<100 ? "000" : (ival<1000 ? "00" : (ival<10000 ? "0" : "")))) << ival;
 	}
 };
 
