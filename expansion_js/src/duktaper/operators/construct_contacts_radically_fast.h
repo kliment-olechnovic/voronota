@@ -31,13 +31,14 @@ public:
 
 	double probe;
 	double restrict_circle;
+	double thicken_graphics;
 	bool no_intra_chain;
 	bool no_intra_residue;
 	bool generate_graphics;
 	bool no_remove_triangulation_info;
 	std::vector<double> adjunct_circle_restrictions;
 
-	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), no_remove_triangulation_info(false)
+	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), no_remove_triangulation_info(false)
 	{
 	}
 
@@ -45,6 +46,7 @@ public:
 	{
 		probe=input.get_value_or_default<double>("probe", 1.4);
 		restrict_circle=input.get_value_or_default<double>("restrict-circle", 0.0);
+		thicken_graphics=input.get_value_or_default<double>("thicken-graphics", 0.0);
 		no_intra_chain=input.get_flag("no-intra-chain");
 		no_intra_residue=input.get_flag("no-intra-residue");
 		generate_graphics=input.get_flag("generate-graphics");
@@ -56,6 +58,7 @@ public:
 	{
 		doc.set_option_decription(CDOD("probe", CDOD::DATATYPE_FLOAT, "probe radius", 1.4));
 		doc.set_option_decription(CDOD("restrict-circle", CDOD::DATATYPE_FLOAT, "max circle restriction radius", 1.4));
+		doc.set_option_decription(CDOD("thicken-graphics", CDOD::DATATYPE_FLOAT, "thickness of generated graphics", 0.0));
 		doc.set_option_decription(CDOD("no-intra-chain", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-chain contacts"));
 		doc.set_option_decription(CDOD("no-intra-residue", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-residue contacts"));
 		doc.set_option_decription(CDOD("generate-graphics", CDOD::DATATYPE_BOOL, "flag to generate graphics"));
@@ -217,11 +220,30 @@ public:
 			}
 			if(generate_graphics && i<radical_tessellation_result_graphics.contacts_graphics.size())
 			{
+				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& cdg=radical_tessellation_result_graphics.contacts_graphics[i];
 				auxiliaries::OpenGLPrinter opengl_printer;
-				opengl_printer.add_triangle_fan(
-						radical_tessellation_result_graphics.contacts_graphics[i].barycenter,
-						radical_tessellation_result_graphics.contacts_graphics[i].outer_points,
-						voronotalt::unit_point(voronotalt::sub_of_points(spheres[cds.id_b].p, spheres[cds.id_a].p)));
+				if(thicken_graphics>0.0)
+				{
+					for(int j=0;j<2;j++)
+					{
+						voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics cdg_mod=cdg;
+						if(j>0)
+						{
+							cdg_mod.plane_normal=voronotalt::point_and_number_product(cdg.plane_normal, -1.0);
+						}
+						const voronotalt::SimplePoint pos_shift=voronotalt::point_and_number_product(cdg_mod.plane_normal, thicken_graphics);
+						cdg_mod.barycenter=voronotalt::sum_of_points(cdg_mod.barycenter, pos_shift);
+						for(std::size_t l=0;l<cdg_mod.outer_points.size();l++)
+						{
+							cdg_mod.outer_points[l]=voronotalt::sum_of_points(cdg_mod.outer_points[l], pos_shift);
+						}
+						opengl_printer.add_triangle_fan(cdg_mod.barycenter, cdg_mod.outer_points, cdg_mod.plane_normal);
+					}
+				}
+				else
+				{
+					opengl_printer.add_triangle_fan(cdg.barycenter, cdg.outer_points, cdg.plane_normal);
+				}
 				contact.value.graphics=opengl_printer.str();
 			}
 		}
