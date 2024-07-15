@@ -51,6 +51,11 @@ public:
 			throw std::runtime_error(std::string("No objects selected."));
 		}
 
+		if(!congregation_of_data_managers.check_if_saveable_to_stream(query))
+		{
+			throw std::runtime_error(std::string("Selected objects cannot be exported."));
+		}
+
 		OutputSelector output_selector(file);
 		std::ostream& output=output_selector.stream();
 		assert_io_stream(file, output);

@@ -2,6 +2,12 @@
 
 cd $(dirname "$0")
 
+if [[ "$1" != "clean" && "$1" != "noclean" ]] || [[ -n "$2" ]]
+then
+	echo "Please provide a single argument - either 'clean' or 'noclean'"
+	exit 1
+fi
+
 if [ "$1" == "clean" ]
 then
 	rm -f ./voronota

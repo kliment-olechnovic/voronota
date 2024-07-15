@@ -24,7 +24,7 @@ public:
 		std::map< std::string, std::set<std::string> > selections_to_objects;
 		std::map< std::string, std::set<std::string> > objects_to_selections;
 
-		const bool empty() const
+		bool empty() const
 		{
 			return selections_to_objects.empty();
 		}
@@ -86,7 +86,7 @@ public:
 	{
 	}
 
-	const bool empty() const
+	bool empty() const
 	{
 		return (atoms_mapping_of_names.empty() && contacts_mapping_of_names.empty());
 	}

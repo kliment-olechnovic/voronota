@@ -55,23 +55,29 @@ public:
 		}
 	};
 
+
+#ifdef _OPENMP
 	static bool possible()
 	{
-#ifdef _OPENMP
 		return true;
-#else
-		return false;
-#endif
 	}
 
 	static void apply_configuration(const Configuration& configuration)
 	{
-#ifdef _OPENMP
 		omp_set_num_threads(configuration.processors);
 		omp_set_dynamic(configuration.dynamic_adjustment ? 1 : 0);
 		omp_set_nested(0);
-#endif
 	}
+#else
+	static bool possible()
+	{
+		return false;
+	}
+
+	static void apply_configuration(const Configuration& /*configuration*/)
+	{
+	}
+#endif
 
 	static void setup_and_apply_default_configuration(const Configuration& new_configuration)
 	{

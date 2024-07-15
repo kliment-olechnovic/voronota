@@ -547,12 +547,36 @@ public:
 		return false;
 	}
 
+	bool check_if_saveable_to_stream(const ObjectQuery& query)
+	{
+		std::vector<DataManager*> objects=get_objects(query);
+		if(objects.empty())
+		{
+			return false;
+		}
+		for(std::size_t i=0;i<objects.size();i++)
+		{
+			if(!(objects[i]->is_saveable_to_stream()))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	bool save_to_stream(const ObjectQuery& query, std::ostream& output)
 	{
 		std::vector<DataManager*> objects=get_objects(query);
 		if(objects.empty())
 		{
 			return false;
+		}
+		for(std::size_t i=0;i<objects.size();i++)
+		{
+			if(!(objects[i]->is_saveable_to_stream()))
+			{
+				return false;
+			}
 		}
 
 		output << "SCRIPTING_CONGREGATION_OF_DATA_MANAGERS_EXPORTED\n";

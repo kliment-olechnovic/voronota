@@ -6,6 +6,14 @@
 
 #pragma once
 
+#if defined(__clang__)
+#pragma clang system_header
+#endif
+
+#if defined(__GNUC__)
+#pragma GCC system_header
+#endif
+
 #if defined(__GNUC__) || defined(__GNUG__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wctor-dtor-privacy"

@@ -760,9 +760,10 @@ private:
 		}
 	}
 
+
+#ifdef FOR_WEB
 	void initiate_files_forwarding_if_requested(const GenericCommandRecord& cr)
 	{
-#ifdef FOR_WEB
 		if(cr.successful)
 		{
 			std::map< std::string, std::vector<std::string> >::const_iterator it=cr.heterostorage.forwarding_strings.find("download");
@@ -779,8 +780,13 @@ private:
 				}
 			}
 		}
-#endif
 	}
+#else
+	void initiate_files_forwarding_if_requested(const GenericCommandRecord& /*cr*/)
+	{
+	}
+#endif
+
 
 	bool zoom_if_requested(const GenericCommandRecord& cr)
 	{

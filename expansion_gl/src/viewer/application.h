@@ -139,7 +139,7 @@ protected:
 		return (ImGui::GetIO().WantCaptureMouse || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow));
 	}
 
-	void on_mouse_cursor_moved(double xpos, double ypos)
+	void on_mouse_cursor_moved(double /*xpos*/, double /*ypos*/)
 	{
 		cursor_label_.clear();
 	}
@@ -178,7 +178,7 @@ protected:
 		script_execution_manager_.draw(shading_mode, grid_id);
 	}
 
-	void on_draw_overlay_start(const int box_x, const int box_y, const int box_w, const int box_h)
+	void on_draw_overlay_start(const int /*box_x*/, const int /*box_y*/, const int /*box_w*/, const int /*box_h*/)
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -203,7 +203,7 @@ protected:
 		}
 	}
 
-	void on_draw_overlay_middle(const int box_x, const int box_y, const int box_w, const int box_h, const bool stereo, const bool grid, const int id)
+	void on_draw_overlay_middle(const int /*box_x*/, const int /*box_y*/, const int /*box_w*/, const int /*box_h*/, const bool /*stereo*/, const bool /*grid*/, const int /*id*/)
 	{
 	}
 

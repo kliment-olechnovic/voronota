@@ -779,62 +779,62 @@ protected:
 	{
 	}
 
-	virtual void on_window_resized(int width, int height)
+	virtual void on_window_resized(int /*width*/, int /*height*/)
 	{
 	}
 
-	virtual void on_framebuffer_resized(int width, int height)
+	virtual void on_framebuffer_resized(int /*width*/, int /*height*/)
 	{
 	}
 
-	virtual bool check_window_scroll_intercepted(double xoffset, double yoffset)
-	{
-		return false;
-	}
-
-	virtual void on_window_scrolled(double xoffset, double yoffset)
-	{
-	}
-
-	virtual bool check_mouse_button_use_intercepted(int button, int action, int mods)
+	virtual bool check_window_scroll_intercepted(double /*xoffset*/, double /*yoffset*/)
 	{
 		return false;
 	}
 
-	virtual void on_mouse_button_used(int button, int action, int mods)
+	virtual void on_window_scrolled(double /*xoffset*/, double /*yoffset*/)
 	{
 	}
 
-	virtual bool check_mouse_cursor_move_intercepted(double xpos, double ypos)
+	virtual bool check_mouse_button_use_intercepted(int /*button*/, int /*action*/, int /*mods*/)
 	{
 		return false;
 	}
 
-	virtual void on_mouse_cursor_moved(double xpos, double ypos)
+	virtual void on_mouse_button_used(int /*button*/, int /*action*/, int /*mods*/)
 	{
 	}
 
-	virtual void on_key_used(int key, int scancode, int action, int mods)
+	virtual bool check_mouse_cursor_move_intercepted(double /*xpos*/, double /*ypos*/)
+	{
+		return false;
+	}
+
+	virtual void on_mouse_cursor_moved(double /*xpos*/, double /*ypos*/)
 	{
 	}
 
-	virtual void on_character_used(unsigned int codepoint)
+	virtual void on_key_used(int /*key*/, int /*scancode*/, int /*action*/, int /*mods*/)
 	{
 	}
 
-	virtual void on_draw(const ShadingMode::Mode shading_mode, const int grid_id)
+	virtual void on_character_used(unsigned int /*codepoint*/)
 	{
 	}
 
-	virtual void on_draw_overlay_start(const int box_x, const int box_y, const int box_w, const int box_h)
+	virtual void on_draw(const ShadingMode::Mode /*shading_mode*/, const int /*grid_id*/)
 	{
 	}
 
-	virtual void on_draw_overlay_middle(const int box_x, const int box_y, const int box_w, const int box_h, const bool stereo, const bool grid, const int id)
+	virtual void on_draw_overlay_start(const int /*box_x*/, const int /*box_y*/, const int /*box_w*/, const int /*box_h*/)
 	{
 	}
 
-	virtual void on_draw_overlay_end(const int box_x, const int box_y, const int box_w, const int box_h)
+	virtual void on_draw_overlay_middle(const int /*box_x*/, const int /*box_y*/, const int /*box_w*/, const int /*box_h*/, const bool /*stereo*/, const bool /*grid*/, const int /*id*/)
+	{
+	}
+
+	virtual void on_draw_overlay_end(const int /*box_x*/, const int /*box_y*/, const int /*box_w*/, const int /*box_h*/)
 	{
 	}
 
@@ -846,7 +846,7 @@ protected:
 	{
 	}
 
-	virtual void on_selection(const unsigned int color, const int button_code, const bool mod_ctrl_left, const bool mod_shift_left, const bool mod_ctrl_right, const bool mod_shift_right)
+	virtual void on_selection(const unsigned int /*color*/, const int /*button_code*/, const bool /*mod_ctrl_left*/, const bool /*mod_shift_left*/, const bool /*mod_ctrl_right*/, const bool /*mod_shift_right*/)
 	{
 	}
 
@@ -877,7 +877,7 @@ private:
 			return (ctrl_left || ctrl_right);
 		}
 
-		void update(int key, int scancode, int action, int mods)
+		void update(int key, int /*scancode*/, int action, int /*mods*/)
 		{
 			if(key==GLFW_KEY_LEFT_SHIFT)
 			{

@@ -2034,8 +2034,22 @@ public:
 		}
 	}
 
+	bool is_saveable_to_stream() const
+	{
+		if(atoms_.empty() || (!contacts_.empty() && history_of_actions_on_contacts_.constructing.empty()))
+		{
+			return false;
+		}
+		return true;
+	}
+
 	void save_to_stream(std::ostream& output) const
 	{
+		if(!is_saveable_to_stream())
+		{
+			throw std::runtime_error(std::string("Object is not saveable to stream."));
+		}
+
 		output << atoms_.size() << "\n";
 		for(std::size_t i=0;i<atoms_.size();i++)
 		{
