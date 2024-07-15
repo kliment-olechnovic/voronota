@@ -40,3 +40,7 @@ cat "$INPUTDIR/complex/target.pdb" \
 | $VORONOTAJSDIR/voronota-js-pdb-utensil-print-sequence-from-structure '[-rnum 30:50]' \
 > "${SUBDIR}/sequences_of_selection.fasta"
 
+$VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
+  --input-directory "$INPUTDIR/complex" \
+  --atom-atom-output-file "${SUBDIR}/ensemble_summary_inter_atom.txt" \
+> "${SUBDIR}/ensemble_summary_inter_residue.txt"
