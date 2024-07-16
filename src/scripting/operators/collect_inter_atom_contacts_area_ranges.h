@@ -33,6 +33,7 @@ public:
 
 	SelectionManager::Query parameters_for_selecting_contacts;
 	CongregationOfDataManagers::ObjectQuery objects_query;
+	std::vector<std::string> area_value_names;
 	std::string stats_output_file;
 
 	CollectInterAtomContactAreaRanges()
@@ -43,6 +44,7 @@ public:
 	{
 		parameters_for_selecting_contacts=OperatorsUtilities::read_generic_selecting_query(input);
 		objects_query=OperatorsUtilities::read_congregation_of_data_managers_object_query(input);
+		area_value_names=input.get_value_vector_or_default<std::string>("area-value-names", std::vector<std::string>(1, "area"));
 		stats_output_file=input.get_value_or_default<std::string>("stats-output-file", "");
 	}
 
@@ -50,6 +52,7 @@ public:
 	{
 		OperatorsUtilities::document_read_congregation_of_data_managers_object_query(doc);
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
+		doc.set_option_decription(CDOD("area-value-names", CDOD::DATATYPE_STRING_ARRAY, "vector of contact value names", "area"));
 		doc.set_option_decription(CDOD("stats-output-file", CDOD::DATATYPE_STRING, "file path to output stats", ""));
 	}
 
@@ -103,7 +106,7 @@ public:
 						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(1));
 						if(is_residue_standard(aaid.asc_a.crad.resName))
 						{
-							inter_atom_contacts_realizations[aaid][i].add(contact.value);
+							inter_atom_contacts_realizations[aaid][i].add(contact.value, area_value_names);
 							if(!solvent_encountered)
 							{
 								all_atom_availabilities[i].insert(aaid.asc_b);
@@ -116,7 +119,7 @@ public:
 						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
 						if(is_residue_standard(aaid.asc_a.crad.resName) && is_residue_standard(aaid.asc_b.crad.resName))
 						{
-							inter_atom_contacts_realizations[aaid][i].add(contact.value);
+							inter_atom_contacts_realizations[aaid][i].add(contact.value, area_value_names);
 						}
 					}
 				}
@@ -177,8 +180,12 @@ public:
 					output << aaid.asc_a.crad.resName << " " << aaid.asc_a.crad.name << " ";
 					output << aaid.asc_b.crad.resName << " " << aaid.asc_b.crad.name << " ";
 					output << seq_sep << " ";
-					output << stat.min_area << " " << stat.max_area << " ";
-					output << stat.count << " " << stat.mean_area << " " << stat.sample_standard_deviation_of_area() << "\n";
+					for(std::size_t i=0;i<stat.area_value_statistics.size();i++)
+					{
+						const ValueStatistics& vstat=stat.area_value_statistics[i];
+						output << " " << vstat.min_area << " " << vstat.max_area << " " << stat.count << " " << vstat.mean_area;
+					}
+					output << "\n";
 				}
 			}
 		}
@@ -237,60 +244,90 @@ private:
 
 	struct AAContactValue
 	{
-		double area;
+		std::vector<double> area_values;
 		double dist;
 		bool accumulated;
 
-		AAContactValue() : area(0.0), dist(0.0), accumulated(false)
+		AAContactValue() : dist(0.0), accumulated(false)
 		{
 		}
 
-		void add(const common::ContactValue& v)
+		void add(const common::ContactValue& v, const std::vector<std::string>& area_value_names)
 		{
-			area+=v.area;
+			if(area_values.size()!=area_value_names.size())
+			{
+				area_values.resize(area_value_names.size(), 0.0);
+			}
+			for(std::size_t i=0;i<area_value_names.size();i++)
+			{
+				if(area_value_names[i]=="area")
+				{
+					area_values[i]+=v.area;
+				}
+				else
+				{
+					std::map<std::string, double>::const_iterator adjunct_it=v.props.adjuncts.find(area_value_names[i]);
+					if(adjunct_it!=v.props.adjuncts.end())
+					{
+						area_values[i]+=adjunct_it->second;
+					}
+				}
+			}
+
+
 			dist=(!accumulated ? v.dist : std::min(dist, v.dist));
 			accumulated=true;
 		}
 	};
 
-	struct AAContactValueStatistics
+	struct ValueStatistics
 	{
 		double min_area;
 		double max_area;
 		double mean_area;
-		double aggregate_for_variance_of_area;
+
+		ValueStatistics() : min_area(0.0), max_area(0.0), mean_area(0.0)
+		{
+		}
+	};
+
+	struct AAContactValueStatistics
+	{
+		std::vector<ValueStatistics> area_value_statistics;
 		int count;
 
-		AAContactValueStatistics() : min_area(0.0), max_area(0.0), mean_area(0.0), aggregate_for_variance_of_area(0.0), count(0)
+		AAContactValueStatistics() : count(0)
 		{
 		}
 
 		void add(const AAContactValue& v)
 		{
-			min_area=(count>0 ? std::min(min_area, v.area) : v.area);
-			max_area=(count>0 ? std::max(max_area, v.area) : v.area);
+			if(area_value_statistics.size()!=v.area_values.size())
+			{
+				area_value_statistics.resize(v.area_values.size(), ValueStatistics());
+			}
+			for(std::size_t i=0;i<v.area_values.size();i++)
+			{
+				area_value_statistics[i].min_area=(count>0 ? std::min(area_value_statistics[i].min_area, v.area_values[i]) : v.area_values[i]);
+				area_value_statistics[i].max_area=(count>0 ? std::max(area_value_statistics[i].max_area, v.area_values[i]) : v.area_values[i]);
+			}
+
 			count++;
+
 			if(count==1)
 			{
-				mean_area=v.area;
-				aggregate_for_variance_of_area=0.0;
+				for(std::size_t i=0;i<v.area_values.size();i++)
+				{
+					area_value_statistics[i].mean_area=v.area_values[i];
+				}
 			}
 			else
 			{
-				const double old_mean_area=mean_area;
-				mean_area+=(v.area-mean_area)/static_cast<double>(count);
-				aggregate_for_variance_of_area+=(v.area-mean_area)*(v.area-old_mean_area);
+				for(std::size_t i=0;i<v.area_values.size();i++)
+				{
+					area_value_statistics[i].mean_area+=(v.area_values[i]-area_value_statistics[i].mean_area)/static_cast<double>(count);
+				}
 			}
-		}
-
-		inline double sample_variance_of_area() const
-		{
-			return (count>1 ? (aggregate_for_variance_of_area/static_cast<double>(count-1)) : 0.0);
-		}
-
-		inline double sample_standard_deviation_of_area() const
-		{
-			return std::sqrt(sample_variance_of_area());
 		}
 	};
 
