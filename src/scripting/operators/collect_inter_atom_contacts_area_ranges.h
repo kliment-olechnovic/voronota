@@ -170,6 +170,16 @@ public:
 			std::ostream& output=output_selector.stream();
 			assert_io_stream(stats_output_file, output);
 
+			{
+				output << "residue_name1 atom_name1 residue_name2 atom_name2 seq_sep";
+				for(std::size_t i=0;i<area_value_names.size();i++)
+				{
+					const std::string vname=area_value_names[i];
+					output << " " << vname << "_min" << " " << vname << "_max" << " " << vname << "_count" << " " << vname << "_mean";
+				}
+				output << "\n";
+			}
+
 			for(std::map<AAIdentifier, AAContactValueStatistics>::const_iterator it=inter_atom_contacts_statistics.begin();it!=inter_atom_contacts_statistics.end();++it)
 			{
 				const AAIdentifier& aaid=it->first;
