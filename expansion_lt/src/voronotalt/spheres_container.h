@@ -356,6 +356,39 @@ public:
 		return true;
 	}
 
+	bool update_by_setting_exclusion_status(const UnsignedInt id_of_masked_input_sphere, const bool new_exclusion_status, std::vector<UnsignedInt>& ids_of_changed_input_spheres, std::vector<UnsignedInt>& ids_of_affected_input_spheres)
+	{
+		ids_of_changed_input_spheres.clear();
+		ids_of_affected_input_spheres.clear();
+
+        if(id_of_masked_input_sphere>=input_spheres_.size() || id_of_masked_input_sphere>=all_exclusion_statuses_.size() || (new_exclusion_status ? all_exclusion_statuses_[id_of_masked_input_sphere]>0 : all_exclusion_statuses_[id_of_masked_input_sphere]<1))
+		{
+			return false;
+		}
+
+        ids_of_changed_input_spheres.push_back(id_of_masked_input_sphere);
+		ids_of_affected_input_spheres.push_back(id_of_masked_input_sphere);
+
+		for(std::size_t j=0;j<all_colliding_ids_[id_of_masked_input_sphere].size();j++)
+		{
+			const UnsignedInt affected_sphere_id=all_colliding_ids_[id_of_masked_input_sphere][j].index%input_spheres_.size();
+			std::vector<UnsignedInt>::iterator it=std::lower_bound(ids_of_affected_input_spheres.begin(), ids_of_affected_input_spheres.end(), affected_sphere_id);
+			if(it==ids_of_affected_input_spheres.end() || (*it)!=affected_sphere_id)
+			{
+				ids_of_affected_input_spheres.insert(it, affected_sphere_id);
+			}
+		}
+
+        all_exclusion_statuses_[id_of_masked_input_sphere]=(new_exclusion_status ? 1 : 0);
+
+		if(periodic_box_.enabled)
+		{
+			set_exclusion_status_periodic_instances(id_of_masked_input_sphere);
+		}
+
+		return true;
+	}
+
 	void assign(const SpheresContainer& obj)
 	{
 		periodic_box_=obj.periodic_box_;

@@ -134,6 +134,7 @@ int main(const int argc, const char** argv)
 	bool help=false;
 	bool test_updateable_tessellation=false;
 	bool test_updateable_tessellation_with_backup=false;
+	bool test_maskable_tessellation=false;
 	std::ostringstream error_log_for_options_parsing;
 
 	{
@@ -265,6 +266,10 @@ int main(const int argc, const char** argv)
 				test_updateable_tessellation_with_backup=opt.is_flag_and_true();
 				test_updateable_tessellation=test_updateable_tessellation || test_updateable_tessellation_with_backup;
 			}
+			else if((opt.name=="test-maskable-tessellation") && opt.is_flag())
+			{
+				test_maskable_tessellation=opt.is_flag_and_true();
+			}
 			else if(opt.name.empty())
 			{
 				error_log_for_options_parsing << "Error: unnamed command line arguments detected.\n";
@@ -377,6 +382,7 @@ int main(const int argc, const char** argv)
 	const int running_mode_radical=0;
 	const int running_mode_simplified_aw=1;
 	const int running_mode_test_updateable=2;
+	const int running_mode_test_maskable=3;
 
 	int selected_running_mode=running_mode_radical;
 
@@ -387,6 +393,10 @@ int main(const int argc, const char** argv)
 	else if(test_updateable_tessellation)
 	{
 		selected_running_mode=running_mode_test_updateable;
+	}
+	else if(test_maskable_tessellation)
+	{
+		selected_running_mode=running_mode_test_maskable;
 	}
 
 	if(selected_running_mode==running_mode_radical)
@@ -753,6 +763,53 @@ int main(const int argc, const char** argv)
 			log_output << "log_urt_backup_diff_total_cells_sas_area\t" << (result_summary_last_before_last.total_cells_summary.sas_area-result_summary_after_restoring.total_cells_summary.sas_area) << "\n";
 			log_output << "log_urt_backup_diff_total_cells_sas_inside_volume\t" << (result_summary_last_before_last.total_cells_summary.sas_inside_volume-result_summary_after_restoring.total_cells_summary.sas_inside_volume) << "\n\n";
 		}
+	}
+
+	if(selected_running_mode==running_mode_test_maskable)
+	{
+		time_recoder_for_tessellation.reset();
+
+		voronotalt::UpdateableRadicalTessellation urt(false);
+
+		urt.init(spheres_input_result.spheres, periodic_box_corners, time_recoder_for_tessellation);
+
+		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_first;
+
+		{
+			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+			log_output << "log_urt_init_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+			log_output << "log_urt_init_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+			log_output << "log_urt_init_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
+			result_summary_first=result_summary;
+		}
+
+		for(voronotalt::UnsignedInt i=0;i<10 && i<spheres_input_result.spheres.size();i++)
+		{
+			if(urt.update_by_setting_exclusion_status(i, true, time_recoder_for_tessellation))
+			{
+				voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+				log_output << "log_urt_upd" << i << "_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+				log_output << "log_urt_upd" << i << "_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+				log_output << "log_urt_upd" << i << "_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
+				urt.update_by_setting_exclusion_status(i, false, time_recoder_for_tessellation);
+			}
+		}
+
+		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last;
+
+		{
+			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+			log_output << "log_urt_final_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+			log_output << "log_urt_final_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+			log_output << "log_urt_final_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
+			result_summary_last=result_summary;
+		}
+
+		log_output << "log_urt_diff_total_contacts_count\t" << (result_summary_first.total_contacts_summary.count-result_summary_last.total_contacts_summary.count) << "\n";
+		log_output << "log_urt_diff_total_contacts_area\t" << (result_summary_first.total_contacts_summary.area-result_summary_last.total_contacts_summary.area) << "\n";
+		log_output << "log_urt_diff_total_cells_count\t" << (result_summary_first.total_cells_summary.count-result_summary_last.total_cells_summary.count) << "\n";
+		log_output << "log_urt_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area-result_summary_last.total_cells_summary.sas_area) << "\n";
+		log_output << "log_urt_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume-result_summary_last.total_cells_summary.sas_inside_volume) << "\n\n";
 	}
 
 	if(graphics_writer.enabled())
