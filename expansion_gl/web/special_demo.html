@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Voronota-GL</title>
+		
+		<style>
+			html
+			{
+				width: 100%;
+				height: 100%;
+				margin: 0px;
+				padding: 0px;
+				background-color: #333333
+			}
+			
+			body
+			{
+				font-family: arial;
+				width: 100%;
+				height: 100%;
+				margin: 0px;
+				padding: 0px;
+				border: 0px none;
+				display: block;
+				overflow: hidden;
+			}
+			
+			button
+			{
+				background-color: #555555;
+				border: none;
+				color: white;
+				text-align: center;
+				text-decoration: none;
+				display: inline-block;
+				padding-top: 5px;
+				padding-bottom: 5px; padding-left: 10px; padding-right: 10px;
+				margin-top: 0px; margin-bottom: 0px; margin-left: 5px; margin-right: 5px;
+				height: 22px;
+				font-size: 12px;
+			}
+			
+			button:hover
+			{
+				background-color: #777777;
+			}
+		</style>
+	</head>
+	
+	<body>
+		<div id="loadscreen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #CCCCCC; z-index: 9999;">
+			<h2 style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">Loading Voronota-GL ...</h2>
+		</div>
+		
+		<script src="voronota_viewer_app/voronota-viewer-app.js"></script>
+				
+		<script>
+			special_demo_script1=`
+configure-gui-disable-sequence-view
+fetch 2zsk
+`;
+			special_demo_script2=`
+rename-object 2zsk_as_1 obj0
+copy-object obj0 obj1
+copy-object obj0 obj2
+copy-object obj0 obj3
+
+pick-objects obj1
+restrict-atoms (not ([-chain B -rnum 39 -aname CG2]))
+
+pick-objects obj2
+restrict-atoms (not ([-chain A -rnum 39 -aname CG2]))
+
+pick-objects obj0 obj1 obj2
+
+construct-contacts
+
+pick-objects obj3
+
+add-figure-of-nth-order-cell -use ([-chain A -rnum 39 -aname CG2] or [-chain B -rnum 39 -aname CG2]) -figure-name socell -voxel-diameter 0.05
+
+show-figures
+
+color-figures 0xBB2299 -name socell
+
+pick-objects
+
+show-contacts [-a1[-rnum 39 -aname CG2]] -rep edges -on-objects obj0
+show-contacts [-a1[-rnum 39 -aname CG2]] -rep faces -on-objects obj1 obj2
+
+color-contacts -col 0x111111 -on-objects obj0
+color-contacts -col 0xFFFF00 -on-objects obj1
+color-contacts -col 0x00FFFF -on-objects obj2
+
+hide-atoms
+show-atoms [-rnum 39 -aname CG2] -rep sticks
+color-atoms [-chain A] -col 0xEE0000
+color-atoms [-chain B] -col 0x00EE00
+
+zoom-by-atoms [-rnum 39] -on-objects obj0
+grid-by-object
+`;
+			
+			voronota_viewer_init({
+				width: function(){return window.innerWidth;},
+				height: function(){return window.innerHeight;},
+				bottom_margin: 30,
+				post_init_operations: [
+					"background 0xCCCCCC",
+					"configure-gui-enable-sequence-view",
+					"configure-gui-enable-console"],
+				add_buttons: [
+					{action: "configure-gui-toggle-console", label: "Toggle console"},
+					{action: "_hspace", size: 15},
+					{action: "_input_file"},
+					{action: "_input_session"},
+					{action: "_hspace", size: 15},
+					{action: "_paste_and_run", label: "Paste and run command"},
+					{action: "_hspace", size: 30},
+					{action: special_demo_script1, label: "Load data for special demo"},
+					{action: special_demo_script2, label: "Run special demo"},],
+				loadscreen_id: "loadscreen",
+				canvas_container_id: null,
+				buttons_container_id: null,
+				buttons_style_class: null
+			});
+		</script>
+
+	</body>
+</html>
+
