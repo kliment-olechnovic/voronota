@@ -769,7 +769,7 @@ int main(const int argc, const char** argv)
 	{
 		time_recoder_for_tessellation.reset();
 
-		voronotalt::UpdateableRadicalTessellation urt(false);
+		voronotalt::UpdateableRadicalTessellation urt(true);
 
 		urt.init(spheres_input_result.spheres, periodic_box_corners, time_recoder_for_tessellation);
 
@@ -785,13 +785,13 @@ int main(const int argc, const char** argv)
 
 		for(voronotalt::UnsignedInt i=0;i<10 && i<spheres_input_result.spheres.size();i++)
 		{
-			if(urt.update_by_masking(i, time_recoder_for_tessellation))
+			if(urt.update_by_setting_exclusion_mask(i, true, time_recoder_for_tessellation))
 			{
 				voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
 				log_output << "log_urt_upd" << i << "_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
 				log_output << "log_urt_upd" << i << "_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
 				log_output << "log_urt_upd" << i << "_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
-				urt.update_by_canceling_last_masking(time_recoder_for_tessellation);
+				urt.restore_from_backup();
 			}
 		}
 

@@ -130,72 +130,55 @@ public:
 		return true;
 	}
 
-	bool update_by_masking(const UnsignedInt id_of_targeted_input_sphere, TimeRecorder& time_recorder)
+	bool update_by_setting_exclusion_mask(const UnsignedInt id_of_targeted_input_sphere, const bool new_exclusion_status)
 	{
-		if(state_.result.empty() || id_of_targeted_input_sphere>=state_.result.contacts_summaries.size())
-		{
-			return false;
-		}
-
-		prepare_for_possible_init_or_update(time_recorder);
-
-		if(!state_.spheres_container.update_by_setting_exclusion_status(id_of_targeted_input_sphere, true))
-		{
-			return false;
-		}
-
-		in_sync_with_backup_=false;
-
-		state_.ids_of_changed_input_spheres.push_back(id_of_targeted_input_sphere);
-		state_.ids_of_affected_input_spheres.push_back(id_of_targeted_input_sphere);
-
-		for(UnsignedInt i=0;i<state_.result.contacts_summaries[id_of_targeted_input_sphere].size();i++)
-		{
-			const RadicalTessellation::ContactDescriptorSummary& cds=state_.result.contacts_summaries[id_of_targeted_input_sphere][i];
-			if(cds.id_a!=id_of_targeted_input_sphere)
-			{
-				state_.ids_of_affected_input_spheres.push_back(cds.id_a);
-			}
-			else if(cds.id_b!=id_of_targeted_input_sphere)
-			{
-				state_.ids_of_affected_input_spheres.push_back(cds.id_b);
-			}
-		}
-
-		std::sort(state_.ids_of_affected_input_spheres.begin(), state_.ids_of_affected_input_spheres.end());
-
-		update_using_current_state(time_recorder);
-
-		return true;
+		TimeRecorder time_recorder;
+		return update_by_setting_exclusion_mask(id_of_targeted_input_sphere, new_exclusion_status, time_recorder);
 	}
 
-	bool update_by_canceling_last_masking(TimeRecorder& time_recorder)
+	bool update_by_setting_exclusion_mask(const UnsignedInt id_of_targeted_input_sphere, const bool new_exclusion_status, TimeRecorder& time_recorder)
 	{
-		if(state_.ids_of_changed_input_spheres.size()!=1)
+		if(state_.result.empty() || id_of_targeted_input_sphere>=state_.result.contacts_summaries.size()
+				|| id_of_targeted_input_sphere>=state_.spheres_container.all_exclusion_statuses().size()
+				|| (new_exclusion_status ? state_.spheres_container.all_exclusion_statuses()[id_of_targeted_input_sphere]>0 : state_.spheres_container.all_exclusion_statuses()[id_of_targeted_input_sphere]<1))
 		{
 			return false;
 		}
-
-		const UnsignedInt id_of_targeted_input_sphere=state_.ids_of_changed_input_spheres[0];
-
-		if(state_.result.empty() || id_of_targeted_input_sphere>=state_.result.contacts_summaries.size())
-		{
-			return false;
-		}
-
-		const std::vector<UnsignedInt> input_ids_of_affected_input_spheres=state_.ids_of_affected_input_spheres;
 
 		prepare_for_possible_init_or_update(time_recorder);
 
-		if(!state_.spheres_container.update_by_setting_exclusion_status(id_of_targeted_input_sphere, false))
+		if(new_exclusion_status)
 		{
-			return false;
+			if(!state_.spheres_container.update_by_setting_exclusion_status(id_of_targeted_input_sphere, true))
+			{
+				return false;
+			}
+
+			state_.ids_of_changed_input_spheres.push_back(id_of_targeted_input_sphere);
+			state_.ids_of_affected_input_spheres.push_back(id_of_targeted_input_sphere);
+
+			for(UnsignedInt i=0;i<state_.result.contacts_summaries[id_of_targeted_input_sphere].size();i++)
+			{
+				const RadicalTessellation::ContactDescriptorSummary& cds=state_.result.contacts_summaries[id_of_targeted_input_sphere][i];
+				if(cds.id_a!=id_of_targeted_input_sphere)
+				{
+					state_.ids_of_affected_input_spheres.push_back(cds.id_a);
+				}
+				else if(cds.id_b!=id_of_targeted_input_sphere)
+				{
+					state_.ids_of_affected_input_spheres.push_back(cds.id_b);
+				}
+			}
+		}
+		else
+		{
+			if(!state_.spheres_container.update_by_setting_exclusion_status(id_of_targeted_input_sphere, false, state_.ids_of_changed_input_spheres, state_.ids_of_affected_input_spheres))
+			{
+				return false;
+			}
 		}
 
 		in_sync_with_backup_=false;
-
-		state_.ids_of_changed_input_spheres.push_back(id_of_targeted_input_sphere);
-		state_.ids_of_affected_input_spheres=input_ids_of_affected_input_spheres;
 
 		update_using_current_state(time_recorder);
 
