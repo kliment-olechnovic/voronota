@@ -144,12 +144,16 @@ public:
 
 		time_recorder.record_elapsed_miliseconds_and_reset("allocate possible contact summaries");
 
-		#pragma omp parallel
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel
+#endif
 		{
 			SimplifiedAWTessellationContactConstruction::ContactDescriptor cd;
 			cd.neighbor_descriptors.reserve(24);
 
-			#pragma omp for
+#ifdef VORONOTALT_OPENMP
+#pragma omp for
+#endif
 			for(UnsignedInt i=0;i<preparation_result.relevant_collision_ids.size();i++)
 			{
 				const UnsignedInt id_a=preparation_result.relevant_collision_ids[i].first;
@@ -193,9 +197,10 @@ public:
 
 		result.contacts_summaries.resize(ids_of_valid_pairs.size());
 
-		#pragma omp parallel
 		{
-			#pragma omp for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 			for(UnsignedInt i=0;i<ids_of_valid_pairs.size();i++)
 			{
 				result.contacts_summaries[i]=possible_contacts_summaries[ids_of_valid_pairs[i]];

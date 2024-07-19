@@ -354,12 +354,16 @@ public:
 
 		time_recorder.record_elapsed_miliseconds_and_reset("allocate possible contact summaries");
 
-		#pragma omp parallel
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel
+#endif
 		{
 			RadicalTessellationContactConstruction::ContactDescriptor cd;
 			cd.contour.reserve(12);
 
-			#pragma omp for
+#ifdef VORONOTALT_OPENMP
+#pragma omp for
+#endif
 			for(UnsignedInt i=0;i<preparation_result.relevant_collision_ids.size();i++)
 			{
 				const UnsignedInt id_a=preparation_result.relevant_collision_ids[i].first;
@@ -410,9 +414,10 @@ public:
 
 		result.contacts_summaries.resize(ids_of_valid_pairs.size());
 
-		#pragma omp parallel
 		{
-			#pragma omp for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 			for(UnsignedInt i=0;i<ids_of_valid_pairs.size();i++)
 			{
 				result.contacts_summaries[i]=possible_contacts_summaries[ids_of_valid_pairs[i]];
@@ -425,12 +430,16 @@ public:
 			result.adjuncts_for_contacts_summaries.clear();
 			result.adjuncts_for_contacts_summaries.resize(result.contacts_summaries.size(), ContactDescriptorSummaryAdjunct(adjunct_max_circle_radius_restrictions.size()));
 
-			#pragma omp parallel
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel
+#endif
 			{
 				RadicalTessellationContactConstruction::ContactDescriptor cd;
 				cd.contour.reserve(12);
 
-				#pragma omp for
+#ifdef VORONOTALT_OPENMP
+#pragma omp for
+#endif
 				for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
 				{
 					const ContactDescriptorSummary& cds=result.contacts_summaries[i];

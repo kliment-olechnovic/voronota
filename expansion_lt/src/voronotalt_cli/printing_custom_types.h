@@ -3,7 +3,7 @@
 
 #include <sstream>
 
-#ifdef _OPENMP
+#ifdef VORONOTALT_OPENMP
 #include <omp.h>
 #endif
 
@@ -50,7 +50,7 @@ public:
 				output << "ca_header\tID1_index\tID2_index\tarea\tarc_legth\tdistance\n";
 			}
 			bool printed_in_parallel=false;
-#ifdef _OPENMP
+#ifdef VORONOTALT_OPENMP
 			if(contacts.size()>1000)
 			{
 				const int data_size=static_cast<int>(contacts.size());
@@ -68,9 +68,8 @@ public:
 
 						std::vector<std::ostringstream> suboutputs(n_threads);
 
-						#pragma omp parallel
 						{
-							#pragma omp for schedule(static,1)
+							#pragma omp parallel for schedule(static,1)
 							for(int i=0;i<n_threads;i++)
 							{
 								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
@@ -132,7 +131,7 @@ public:
 				output << "sa_header\tID_index\tsas_area\tvolume\n";
 			}
 			bool printed_in_parallel=false;
-#ifdef _OPENMP
+#ifdef VORONOTALT_OPENMP
 			if(cells.size()>1000)
 			{
 				const int data_size=static_cast<int>(cells.size());
@@ -150,9 +149,8 @@ public:
 
 						std::vector<std::ostringstream> suboutputs(n_threads);
 
-						#pragma omp parallel
 						{
-							#pragma omp for schedule(static,1)
+							#pragma omp parallel for schedule(static,1)
 							for(int i=0;i<n_threads;i++)
 							{
 								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
@@ -235,7 +233,7 @@ private:
 		{
 			output << (chain_level ? "cu" : "cr") << "_header\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom\tarea\tarc_legth\tdistance\tcount\n";
 			bool printed_in_parallel=false;
-#ifdef _OPENMP
+#ifdef VORONOTALT_OPENMP
 			if(grouped_contacts.size()>1000)
 			{
 				const int data_size=static_cast<int>(grouped_contacts.size());
@@ -253,9 +251,8 @@ private:
 
 						std::vector<std::ostringstream> suboutputs(n_threads);
 
-						#pragma omp parallel
 						{
-							#pragma omp for schedule(static,1)
+							#pragma omp parallel for schedule(static,1)
 							for(int i=0;i<n_threads;i++)
 							{
 								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
@@ -299,7 +296,7 @@ private:
 		{
 			output << (chain_level ? "su" : "sr") << "_header\tID_chain\tID_residue\tID_atom\tsas_area\tvolume\tcount\n";
 			bool printed_in_parallel=false;
-#ifdef _OPENMP
+#ifdef VORONOTALT_OPENMP
 			if(grouped_cells.size()>1000)
 			{
 				const int data_size=static_cast<int>(grouped_cells.size());
@@ -317,9 +314,8 @@ private:
 
 						std::vector<std::ostringstream> suboutputs(n_threads);
 
-						#pragma omp parallel
 						{
-							#pragma omp for schedule(static,1)
+							#pragma omp parallel for schedule(static,1)
 							for(int i=0;i<n_threads;i++)
 							{
 								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)

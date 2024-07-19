@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <vector>
 
-#ifdef _OPENMP
+#ifdef VORONOTALT_OPENMP
 #include <omp.h>
 #endif
 
@@ -20,7 +20,7 @@ inline bool read_double_values_from_text_string(const std::string& input_data, s
 	if(!input_data.empty())
 	{
 		bool read_in_parallel=false;
-#ifdef _OPENMP
+#ifdef VORONOTALT_OPENMP
 		if(input_data.size()>100000)
 		{
 			const int n_threads=omp_get_max_threads();
@@ -43,9 +43,8 @@ inline bool read_double_values_from_text_string(const std::string& input_data, s
 						thread_data_starts[i]=thread_data_start;
 					}
 
-					#pragma omp parallel
 					{
-						#pragma omp for schedule(static,1)
+						#pragma omp parallel for schedule(static,1)
 						for(int i=0;i<n_threads;i++)
 						{
 							if(thread_data_starts[i]<input_data_size)

@@ -1,6 +1,8 @@
 #include <iostream>
 
-#ifdef _OPENMP
+#include "voronotalt/parallelization_configuration.h"
+
+#ifdef VORONOTALT_OPENMP
 #include <omp.h>
 #endif
 
@@ -311,7 +313,7 @@ int main(const int argc, const char** argv)
 		return 1;
 	}
 
-#ifdef _OPENMP
+#ifdef VORONOTALT_OPENMP
 	omp_set_num_threads(max_number_of_processors);
 #else
 	if(max_number_of_processors>1)
@@ -824,7 +826,7 @@ int main(const int argc, const char** argv)
 
 	if(measure_running_time)
 	{
-#ifdef _OPENMP
+#ifdef VORONOTALT_OPENMP
 		log_output << "log_openmp_threads\t" << omp_get_max_threads() << "\n";
 #endif
 		time_recoder_for_input.print_recordings(log_output, "log time input stage", true);

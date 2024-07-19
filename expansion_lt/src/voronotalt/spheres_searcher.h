@@ -62,7 +62,9 @@ public:
 		boxes_.resize(obj.boxes_.size());
 
 		{
-			#pragma omp parallel for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 			for(UnsignedInt i=0;i<obj.spheres_.size();i++)
 			{
 				spheres_[i]=obj.spheres_[i];
@@ -70,7 +72,9 @@ public:
 		}
 
 		{
-			#pragma omp parallel for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 			for(UnsignedInt i=0;i<obj.map_of_boxes_.size();i++)
 			{
 				map_of_boxes_[i]=obj.map_of_boxes_[i];
@@ -78,7 +82,9 @@ public:
 		}
 
 		{
-			#pragma omp parallel for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 			for(UnsignedInt i=0;i<obj.boxes_.size();i++)
 			{
 				boxes_[i]=obj.boxes_[i];

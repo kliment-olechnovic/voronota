@@ -99,9 +99,10 @@ public:
 
 		all_colliding_ids_.resize(input_spheres_.size());
 
-		#pragma omp parallel
 		{
-			#pragma omp for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 			for(UnsignedInt i=0;i<input_spheres_.size();i++)
 			{
 				all_colliding_ids_[i].reserve(100);
@@ -269,9 +270,10 @@ public:
 
 			time_recorder.record_elapsed_miliseconds_and_reset("update spheres searcher");
 
-			#pragma omp parallel
 			{
-				#pragma omp for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 				for(UnsignedInt i=0;i<ids_of_affected_input_spheres.size();i++)
 				{
 					const UnsignedInt sphere_id=ids_of_affected_input_spheres[i];
@@ -310,9 +312,10 @@ public:
 
 			if(!buffered_temporary_storage_.more_ids_of_affected_input_spheres.empty())
 			{
-				#pragma omp parallel
 				{
-					#pragma omp for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 					for(UnsignedInt i=0;i<buffered_temporary_storage_.more_ids_of_affected_input_spheres.size();i++)
 					{
 						const UnsignedInt sphere_id=buffered_temporary_storage_.more_ids_of_affected_input_spheres[i];
@@ -419,7 +422,9 @@ public:
 		all_colliding_ids_.resize(obj.all_colliding_ids_.size());
 
 		{
-			#pragma omp parallel for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 			for(UnsignedInt i=0;i<obj.input_spheres_.size();i++)
 			{
 				input_spheres_[i]=obj.input_spheres_[i];
@@ -427,7 +432,9 @@ public:
 		}
 
 		{
-			#pragma omp parallel for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 			for(UnsignedInt i=0;i<obj.populated_spheres_.size();i++)
 			{
 				populated_spheres_[i]=obj.populated_spheres_[i];
@@ -435,7 +442,9 @@ public:
 		}
 
 		{
-			#pragma omp parallel for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 			for(UnsignedInt i=0;i<obj.all_exclusion_statuses_.size();i++)
 			{
 				all_exclusion_statuses_[i]=obj.all_exclusion_statuses_[i];
@@ -443,7 +452,9 @@ public:
 		}
 
 		{
-			#pragma omp parallel for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 			for(UnsignedInt i=0;i<obj.all_colliding_ids_.size();i++)
 			{
 				all_colliding_ids_[i]=obj.all_colliding_ids_[i];
@@ -482,7 +493,9 @@ public:
 			spheres_searcher_.assign(obj.spheres_searcher_);
 
 			{
-				#pragma omp parallel for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 				for(UnsignedInt i=0;i<subset_of_ids.size();i++)
 				{
 					const UnsignedInt sphere_id=subset_of_ids[i];
@@ -495,7 +508,9 @@ public:
 
 			if(periodic_box_.enabled && populated_spheres_.size()==input_spheres_.size()*27 && all_exclusion_statuses_.size()==all_exclusion_statuses_.size()*27)
 			{
-				#pragma omp parallel for
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel for
+#endif
 				for(UnsignedInt i=0;i<subset_of_ids.size();i++)
 				{
 					const UnsignedInt sphere_id=subset_of_ids[i];
