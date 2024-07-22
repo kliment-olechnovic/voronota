@@ -218,6 +218,39 @@ public:
 		output << "log_total_chain_level_cells_count\t" << result_grouped_by_chain.grouped_cells_summaries.size() << "\n";
 	}
 
+	inline static void print_label(const SpheresInput::SphereLabel& obj, const bool no_atom, const bool no_residue, std::ostream& output)
+	{
+		if(obj.chain_id.empty())
+		{
+			output << ".";
+		}
+		else
+		{
+			output << obj.chain_id;
+		}
+
+		output << "\t";
+
+		if(no_residue || obj.residue_id.empty())
+		{
+			output << ".";
+		}
+		else
+		{
+			output << obj.residue_id;
+		}
+
+		output << "\t";
+
+		if(no_atom || obj.atom_name.empty())
+		{
+			output << ".";
+		}
+		else
+		{
+			output << obj.atom_name;
+		}
+	}
 private:
 	template<class ContactsContainer, class GroupedContactsContainer>
 	static void print_contacts_residue_level_or_chain_level_to_stream(
@@ -429,40 +462,6 @@ private:
 		output << "\t";
 		print(grouped_cells[i], output);
 		output << "\n";
-	}
-
-	inline static void print_label(const SpheresInput::SphereLabel& obj, const bool no_atom, const bool no_residue, std::ostream& output)
-	{
-		if(obj.chain_id.empty())
-		{
-			output << ".";
-		}
-		else
-		{
-			output << obj.chain_id;
-		}
-
-		output << "\t";
-
-		if(no_residue || obj.residue_id.empty())
-		{
-			output << ".";
-		}
-		else
-		{
-			output << obj.residue_id;
-		}
-
-		output << "\t";
-
-		if(no_atom || obj.atom_name.empty())
-		{
-			output << ".";
-		}
-		else
-		{
-			output << obj.atom_name;
-		}
 	}
 
 	inline static void print(const RadicalTessellation::ContactDescriptorSummary& obj, std::ostream& output)

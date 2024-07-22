@@ -116,6 +116,10 @@ voronota-lt \
 
 ####################################################################
 
+voronota-lt -processors 1 -probe 1.4 -test-second-order-cell-volumes-calculation < "./input/balls_2zsk.xyzr" > "./output/contacts_2zsk_second_order_cell_volumes_test.txt"
+
+####################################################################
+
 mkdir -p "./output/api_usage_examples"
 
 g++ -O3 -I../src/voronotalt -o "./output/api_usage_examples/example_basic_and_periodic" "./input/api_usage_example_basic_and_periodic.cpp"

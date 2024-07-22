@@ -196,6 +196,72 @@ public:
 		return in_sync_with_backup_;
 	}
 
+	bool calculate_second_order_cell_volumes(std::vector< std::vector<Float> >& all_result_volumes_for_contacts_summaries)
+	{
+		all_result_volumes_for_contacts_summaries.clear();
+
+		if(!backup_enabled_ || state_.result.empty())
+		{
+			return false;
+		}
+
+		const UnsignedInt N=state_.result.contacts_summaries.size();
+
+		std::vector< std::vector<UnsignedInt> > all_neighbor_ids(N);
+		std::vector< std::vector<Float> > all_volumes_after_masking(N);
+
+		for(UnsignedInt i=0;i<N;i++)
+		{
+			std::vector<UnsignedInt>& i_neighbor_ids=all_neighbor_ids[i];
+
+			{
+				const std::vector<RadicalTessellation::ContactDescriptorSummary>& cdss=state_.result.contacts_summaries[i];
+				i_neighbor_ids.resize(cdss.size());
+				for(UnsignedInt j=0;j<cdss.size();j++)
+				{
+					i_neighbor_ids[j]=(cdss[j].id_a!=i ? cdss[j].id_a : cdss[j].id_b);
+				}
+			}
+
+			std::vector<Float>& i_volumes_after_masking=all_volumes_after_masking[i];
+			i_volumes_after_masking.resize(i_neighbor_ids.size(), FLOATCONST(0.0));
+
+			if(update_by_setting_exclusion_mask(i, true))
+			{
+				for(UnsignedInt j=0;j<i_neighbor_ids.size();j++)
+				{
+					i_volumes_after_masking[j]=state_.result.cells_summaries[i_neighbor_ids[j]].sas_inside_volume;
+				}
+				restore_from_backup();
+			}
+		}
+
+		all_result_volumes_for_contacts_summaries.resize(N);
+
+		for(UnsignedInt i=0;i<N;i++)
+		{
+			all_result_volumes_for_contacts_summaries[i].resize(all_neighbor_ids[i].size());
+			const Float i_volume_before_masking=state_.result.cells_summaries[i].sas_inside_volume;
+			for(UnsignedInt j=0;j<all_neighbor_ids[i].size();j++)
+			{
+				const UnsignedInt neighbor_id=all_neighbor_ids[i][j];
+				const Float neighbor_volume_before_masking=state_.result.cells_summaries[neighbor_id].sas_inside_volume;
+				const Float neighbor_volume_after_masking_i=all_volumes_after_masking[i][j];
+				Float i_volume_after_masking_neighbor=FLOATCONST(0.0);
+				for(UnsignedInt relative_i=0;relative_i<all_volumes_after_masking[neighbor_id].size() && i_volume_after_masking_neighbor<=FLOATCONST(0.0);relative_i++)
+				{
+					if(all_neighbor_ids[neighbor_id][relative_i]==i)
+					{
+						i_volume_after_masking_neighbor=all_volumes_after_masking[neighbor_id][relative_i];
+					}
+				}
+				all_result_volumes_for_contacts_summaries[i][j]=(i_volume_after_masking_neighbor+neighbor_volume_after_masking_i)-(i_volume_before_masking+neighbor_volume_before_masking);
+			}
+		}
+
+		return true;
+	}
+
 	bool backup_enabled() const
 	{
 		return backup_enabled_;

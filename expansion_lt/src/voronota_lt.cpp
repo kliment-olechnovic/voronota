@@ -137,6 +137,7 @@ int main(const int argc, const char** argv)
 	bool test_updateable_tessellation=false;
 	bool test_updateable_tessellation_with_backup=false;
 	bool test_maskable_tessellation=false;
+	bool test_second_order_cell_volumes_calculation=false;
 	std::ostringstream error_log_for_options_parsing;
 
 	{
@@ -272,6 +273,10 @@ int main(const int argc, const char** argv)
 			{
 				test_maskable_tessellation=opt.is_flag_and_true();
 			}
+			else if((opt.name=="test-second-order-cell-volumes-calculation") && opt.is_flag())
+			{
+				test_second_order_cell_volumes_calculation=opt.is_flag_and_true();
+			}
 			else if(opt.name.empty())
 			{
 				error_log_for_options_parsing << "Error: unnamed command line arguments detected.\n";
@@ -385,6 +390,7 @@ int main(const int argc, const char** argv)
 	const int running_mode_simplified_aw=1;
 	const int running_mode_test_updateable=2;
 	const int running_mode_test_maskable=3;
+	const int running_mode_test_second_order_cell_volumes_calculation=4;
 
 	int selected_running_mode=running_mode_radical;
 
@@ -399,6 +405,10 @@ int main(const int argc, const char** argv)
 	else if(test_maskable_tessellation)
 	{
 		selected_running_mode=running_mode_test_maskable;
+	}
+	else if(test_second_order_cell_volumes_calculation)
+	{
+		selected_running_mode=running_mode_test_second_order_cell_volumes_calculation;
 	}
 
 	if(selected_running_mode==running_mode_radical)
@@ -812,6 +822,49 @@ int main(const int argc, const char** argv)
 		log_output << "log_urt_diff_total_cells_count\t" << (result_summary_first.total_cells_summary.count-result_summary_last.total_cells_summary.count) << "\n";
 		log_output << "log_urt_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area-result_summary_last.total_cells_summary.sas_area) << "\n";
 		log_output << "log_urt_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume-result_summary_last.total_cells_summary.sas_inside_volume) << "\n\n";
+	}
+
+	if(selected_running_mode==running_mode_test_second_order_cell_volumes_calculation)
+	{
+		time_recoder_for_tessellation.reset();
+
+		voronotalt::UpdateableRadicalTessellation urt(true);
+
+		urt.init(spheres_input_result.spheres, periodic_box_corners, time_recoder_for_tessellation);
+
+		std::vector< std::vector<voronotalt::Float> > all_result_volumes_for_contacts_summaries;
+
+		if(urt.calculate_second_order_cell_volumes(all_result_volumes_for_contacts_summaries))
+		{
+			std::cout << "socv_header";
+			if(!spheres_input_result.sphere_labels.empty())
+			{
+				std::cout << "\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom";
+			}
+			std::cout << "\tID1_index\tID2_index\tarea\tarc_legth\tdistance\tsolid_angle_a\tsolid_angle_b\tpyramid_volume_a\tpyramid_volume_b\tsecond_order_cell_volume\n";
+			for(voronotalt::UnsignedInt i=0;i<urt.result().contacts_summaries.size();i++)
+			{
+				for(voronotalt::UnsignedInt j=0;j<urt.result().contacts_summaries[i].size();j++)
+				{
+					const voronotalt::RadicalTessellation::ContactDescriptorSummary& cds=urt.result().contacts_summaries[i][j];
+					if(std::min(cds.id_a, cds.id_b)==i)
+					{
+						std::cout << "socv";
+						if(!spheres_input_result.sphere_labels.empty())
+						{
+							std::cout << "\t";
+							voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[cds.id_a], false, false, std::cout);
+							std::cout << "\t";
+							voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[cds.id_b], false, false, std::cout);
+						}
+						std::cout << "\t" << cds.id_a << "\t" << cds.id_b << "\t" << cds.area << "\t" << cds.arc_length << "\t" << cds.distance;
+						std::cout << "\t" << cds.solid_angle_a << "\t" << cds.solid_angle_b << "\t" << cds.pyramid_volume_a << "\t" << cds.pyramid_volume_b;
+						std::cout << "\t" << ((i<all_result_volumes_for_contacts_summaries.size() && j<all_result_volumes_for_contacts_summaries[i].size()) ? all_result_volumes_for_contacts_summaries[i][j] : FLOATCONST(0.0));
+						std::cout << "\n";
+					}
+				}
+			}
+		}
 	}
 
 	if(graphics_writer.enabled())
