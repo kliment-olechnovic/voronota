@@ -171,7 +171,7 @@ public:
 			assert_io_stream(stats_output_file, output);
 
 			{
-				output << "residue_name1 atom_name1 residue_name2 atom_name2 seq_sep";
+				output << "residue_seqnum1 residue_name1 atom_name1 residue_seqnum2 residue_name2 atom_name2 seq_sep";
 				for(std::size_t i=0;i<area_value_names.size();i++)
 				{
 					const std::string vname=area_value_names[i];
@@ -186,10 +186,9 @@ public:
 				const AAContactValueStatistics& stat=it->second;
 				if(stat.count>1)
 				{
-					const int seq_sep=std::abs(aaid.asc_a.crad.resSeq-aaid.asc_b.crad.resSeq);
-					output << aaid.asc_a.crad.resName << " " << aaid.asc_a.crad.name << " ";
-					output << aaid.asc_b.crad.resName << " " << aaid.asc_b.crad.name << " ";
-					output << seq_sep << " ";
+					output << aaid.asc_a.crad.resSeq << " " << aaid.asc_a.crad.resName << " " << aaid.asc_a.crad.name << " ";
+					output << aaid.asc_b.crad.resSeq << " " << aaid.asc_b.crad.resName << " " << aaid.asc_b.crad.name << " ";
+					output << std::abs(aaid.asc_a.crad.resSeq-aaid.asc_b.crad.resSeq) << " ";
 					for(std::size_t i=0;i<stat.area_value_statistics.size();i++)
 					{
 						const ValueStatistics& vstat=stat.area_value_statistics[i];
