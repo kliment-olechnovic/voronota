@@ -20,7 +20,7 @@ public:
 		int indicator;
 
 
-		ContourPoint(const SimplePoint& p, const UnsignedInt left_id, const UnsignedInt right_id) :
+		ContourPoint(const SimplePoint& p, const UnsignedInt left_id, const UnsignedInt right_id) noexcept :
 			p(p),
 			angle(FLOATCONST(0.0)),
 			left_id(left_id),
@@ -49,7 +49,7 @@ public:
 		UnsignedInt id_a;
 		UnsignedInt id_b;
 
-		ContactDescriptor() :
+		ContactDescriptor() noexcept :
 			sum_of_arc_angles(FLOATCONST(0.0)),
 			area(FLOATCONST(0.0)),
 			solid_angle_a(FLOATCONST(0.0)),
@@ -63,7 +63,7 @@ public:
 		{
 		}
 
-		void clear()
+		void clear() noexcept
 		{
 			id_a=0;
 			id_b=0;
@@ -85,11 +85,11 @@ public:
 		SimplePoint barycenter;
 		SimplePoint plane_normal;
 
-		ContactDescriptorGraphics()
+		ContactDescriptorGraphics() noexcept
 		{
 		}
 
-		void clear()
+		void clear() noexcept
 		{
 			outer_points.clear();
 		}
@@ -102,7 +102,7 @@ public:
 			const UnsignedInt b_id,
 			const std::vector<ValuedID>& a_neighbor_collisions,
 			const Float max_circle_radius_restriction,
-			ContactDescriptor& result_contact_descriptor)
+			ContactDescriptor& result_contact_descriptor) noexcept
 	{
 		result_contact_descriptor.clear();
 		if(a_id<spheres.size() && b_id<spheres.size())
@@ -224,7 +224,7 @@ public:
 		return (result_contact_descriptor.area>FLOATCONST(0.0));
 	}
 
-	static bool construct_contact_descriptor_graphics(const ContactDescriptor& contact_descriptor, const Float length_step, ContactDescriptorGraphics& result_contact_descriptor_graphics)
+	static bool construct_contact_descriptor_graphics(const ContactDescriptor& contact_descriptor, const Float length_step, ContactDescriptorGraphics& result_contact_descriptor_graphics) noexcept
 	{
 		result_contact_descriptor_graphics.clear();
 		if(contact_descriptor.area>FLOATCONST(0.0))
@@ -296,7 +296,7 @@ private:
 			const UnsignedInt a_id,
 			const SimpleSphere& base,
 			const SimplePoint& axis,
-			Contour& result)
+			Contour& result) noexcept
 	{
 		const SimplePoint first_point=point_and_number_product(any_normal_of_vector(axis), base.r*FLOATCONST(1.19));
 		const Float angle_step=PIVALUE/FLOATCONST(3.0);
@@ -311,7 +311,7 @@ private:
 			const SimplePoint& ac_plane_center,
 			const SimplePoint& ac_plane_normal,
 			const UnsignedInt c_id,
-			Contour& contour)
+			Contour& contour) noexcept
 	{
 		const UnsignedInt outsiders_count=mark_contour(ac_plane_center, ac_plane_normal, c_id, contour);
 		if(outsiders_count>0)
@@ -333,7 +333,7 @@ private:
 			const SimplePoint& ac_plane_center,
 			const SimplePoint& ac_plane_normal,
 			const UnsignedInt c_id,
-			Contour& contour)
+			Contour& contour) noexcept
 	{
 		UnsignedInt outsiders_count=0;
 		for(Contour::iterator it=contour.begin();it!=contour.end();++it)
@@ -352,7 +352,7 @@ private:
 			const SimplePoint& ac_plane_center,
 			const SimplePoint& ac_plane_normal,
 			const UnsignedInt c_id,
-			Contour& contour)
+			Contour& contour) noexcept
 	{
 		if(contour.size()<3)
 		{
@@ -436,7 +436,7 @@ private:
 		}
 	}
 
-	static bool test_if_contour_is_still_cuttable(const SimplePoint& a_center, const SimplePoint& closest_possible_cut_point, const Contour& contour)
+	static bool test_if_contour_is_still_cuttable(const SimplePoint& a_center, const SimplePoint& closest_possible_cut_point, const Contour& contour) noexcept
 	{
 		bool cuttable=false;
 		const Float dist_threshold=squared_distance_from_point_to_point(a_center, closest_possible_cut_point);
@@ -452,7 +452,7 @@ private:
 			const SimplePoint& ic_axis,
 			const UnsignedInt a_id,
 			Contour& contour,
-			Float& sum_of_arc_angles)
+			Float& sum_of_arc_angles) noexcept
 	{
 		UnsignedInt outsiders_count=0;
 		for(UnsignedInt i=0;i<contour.size();i++)
@@ -579,7 +579,7 @@ private:
 		return (outsiders_count>0);
 	}
 
-	static Float calculate_contour_area(const SimpleSphere& ic_sphere, const Contour& contour, SimplePoint& contour_barycenter)
+	static Float calculate_contour_area(const SimpleSphere& ic_sphere, const Contour& contour, SimplePoint& contour_barycenter) noexcept
 	{
 		Float area=FLOATCONST(0.0);
 
@@ -610,7 +610,7 @@ private:
 		return area;
 	}
 
-	static Float calculate_contour_solid_angle(const SimpleSphere& a, const SimpleSphere& b, const SimpleSphere& ic_sphere, const Contour& contour)
+	static Float calculate_contour_solid_angle(const SimpleSphere& a, const SimpleSphere& b, const SimpleSphere& ic_sphere, const Contour& contour) noexcept
 	{
 		Float turn_angle=FLOATCONST(0.0);
 
@@ -662,7 +662,7 @@ private:
 		return solid_angle;
 	}
 
-	static bool check_if_contour_is_central(const SimplePoint& center, const Contour& contour, const SimplePoint& contour_barycenter)
+	static bool check_if_contour_is_central(const SimplePoint& center, const Contour& contour, const SimplePoint& contour_barycenter) noexcept
 	{
 		bool central=false;
 		for(UnsignedInt i=0;i<contour.size() && !central;i++)

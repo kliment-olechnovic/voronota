@@ -19,18 +19,18 @@ public:
 		std::vector<double> args_doubles;
 		std::vector<int> args_ints;
 
-		bool is_flag() const
+		bool is_flag() const noexcept
 		{
 			return (args_strings.empty() || (args_strings.size()==1 && (args_strings.front()=="true" || args_strings.front()=="false")));
 		}
 
-		bool is_flag_and_true() const
+		bool is_flag_and_true() const noexcept
 		{
 			return (args_strings.empty() || (args_strings.size()==1 && args_strings.front()=="true"));
 		}
 	};
 
-	static void print_options(const std::vector<Option>& options, std::ostream& output)
+	static void print_options(const std::vector<Option>& options, std::ostream& output) noexcept
 	{
 		output << "Command Line Options (" << options.size() << "):\n";
 		for(std::size_t i=0;i<options.size();i++)
@@ -61,7 +61,7 @@ public:
 		}
 	}
 
-	static std::vector<Option> read_options(const int argc, const char** argv)
+	static std::vector<Option> read_options(const int argc, const char** argv) noexcept
 	{
 		std::vector<Option> options;
 

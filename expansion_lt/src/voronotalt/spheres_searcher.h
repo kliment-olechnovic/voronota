@@ -12,23 +12,23 @@ namespace voronotalt
 class SpheresSearcher
 {
 public:
-	SpheresSearcher()
+	SpheresSearcher() noexcept
 	{
 	}
 
-	explicit SpheresSearcher(const std::vector<SimpleSphere>& spheres)
+	explicit SpheresSearcher(const std::vector<SimpleSphere>& spheres) noexcept
 	{
 		init(spheres);
 	}
 
-	void init(const std::vector<SimpleSphere>& spheres)
+	void init(const std::vector<SimpleSphere>& spheres) noexcept
 	{
 		spheres_=spheres;
 		grid_parameters_=GridParameters(spheres_);
 		init_boxes();
 	}
 
-	bool update(const std::vector<SimpleSphere>& spheres, const std::vector<UnsignedInt>& ids_to_update)
+	bool update(const std::vector<SimpleSphere>& spheres, const std::vector<UnsignedInt>& ids_to_update) noexcept
 	{
 		if(ids_to_update.empty())
 		{
@@ -53,7 +53,7 @@ public:
 		return true;
 	}
 
-	void assign(const SpheresSearcher& obj)
+	void assign(const SpheresSearcher& obj) noexcept
 	{
 		grid_parameters_=obj.grid_parameters_;
 
@@ -92,12 +92,12 @@ public:
 		}
 	}
 
-	const std::vector<SimpleSphere>& searchable_spheres() const
+	const std::vector<SimpleSphere>& searchable_spheres() const noexcept
 	{
 		return spheres_;
 	}
 
-	bool find_colliding_ids(const UnsignedInt& central_id, std::vector<ValuedID>& colliding_ids, const bool discard_hidden, int& exclusion_status) const
+	bool find_colliding_ids(const UnsignedInt& central_id, std::vector<ValuedID>& colliding_ids, const bool discard_hidden, int& exclusion_status) const noexcept
 	{
 		colliding_ids.clear();
 		exclusion_status=0;
@@ -163,45 +163,45 @@ private:
 		int y;
 		int z;
 
-		GridPoint() : x(0), y(0), z(0)
+		GridPoint()  noexcept: x(0), y(0), z(0)
 		{
 		}
 
-		GridPoint(const SimpleSphere& s, const Float grid_step)
+		GridPoint(const SimpleSphere& s, const Float grid_step) noexcept
 		{
 			init(s, grid_step);
 		}
 
-		GridPoint(const SimpleSphere& s, const Float grid_step, const GridPoint& grid_offset)
+		GridPoint(const SimpleSphere& s, const Float grid_step, const GridPoint& grid_offset) noexcept
 		{
 			init(s, grid_step, grid_offset);
 		}
 
-		void init(const SimpleSphere& s, const Float grid_step)
+		void init(const SimpleSphere& s, const Float grid_step) noexcept
 		{
 			x=static_cast<int>(s.p.x/grid_step);
 			y=static_cast<int>(s.p.y/grid_step);
 			z=static_cast<int>(s.p.z/grid_step);
 		}
 
-		void init(const SimpleSphere& s, const Float grid_step, const GridPoint& grid_offset)
+		void init(const SimpleSphere& s, const Float grid_step, const GridPoint& grid_offset) noexcept
 		{
 			x=static_cast<int>(s.p.x/grid_step)-grid_offset.x;
 			y=static_cast<int>(s.p.y/grid_step)-grid_offset.y;
 			z=static_cast<int>(s.p.z/grid_step)-grid_offset.z;
 		}
 
-		int index(const GridPoint& grid_size) const
+		int index(const GridPoint& grid_size) const noexcept
 		{
 			return ((x>=0 && y>=0 && z>=0 && x<grid_size.x && y<grid_size.y && z<grid_size.z) ? (z*grid_size.x*grid_size.y+y*grid_size.x+x) : (-1));
 		}
 
-		bool operator<(const GridPoint& gp) const
+		bool operator<(const GridPoint& gp) const noexcept
 		{
 			return (x<gp.x || (x==gp.x && y<gp.y) || (x==gp.x && y==gp.y && z<gp.z));
 		}
 
-		bool operator==(const GridPoint& gp) const
+		bool operator==(const GridPoint& gp) const noexcept
 		{
 			return (x==gp.x && y==gp.y && z==gp.z);
 		}
@@ -214,24 +214,24 @@ private:
 		Float box_size;
 		int padding_;
 
-		GridParameters() : box_size(FLOATCONST(1.0)), padding_(1)
+		GridParameters() noexcept : box_size(FLOATCONST(1.0)), padding_(1)
 		{
 			grid_size.x=1;
 			grid_size.y=1;
 			grid_size.z=1;
 		}
 
-		explicit GridParameters(const std::vector<SimpleSphere>& spheres) : box_size(FLOATCONST(1.0)), padding_(1)
+		explicit GridParameters(const std::vector<SimpleSphere>& spheres) noexcept : box_size(FLOATCONST(1.0)), padding_(1)
 		{
 			init(spheres);
 		}
 
-		GridParameters(const std::vector<SimpleSphere>& spheres, const int padding) : box_size(FLOATCONST(1.0)), padding_(padding)
+		GridParameters(const std::vector<SimpleSphere>& spheres, const int padding) noexcept : box_size(FLOATCONST(1.0)), padding_(padding)
 		{
 			init(spheres);
 		}
 
-		void init(const std::vector<SimpleSphere>& spheres)
+		void init(const std::vector<SimpleSphere>& spheres) noexcept
 		{
 			box_size=FLOATCONST(1.0);
 			padding_=std::max(0, padding_);
@@ -266,18 +266,18 @@ private:
 			grid_size.z=grid_size.z-grid_offset.z+1;
 		}
 
-		bool operator==(const GridParameters& gp) const
+		bool operator==(const GridParameters& gp) const noexcept
 		{
 			return (box_size==gp.box_size && grid_offset==gp.grid_offset && grid_size==gp.grid_size);
 		}
 	};
 
-	UnsignedInt size_threshold_for_full_rebuild() const
+	UnsignedInt size_threshold_for_full_rebuild() const noexcept
 	{
 		return static_cast<UnsignedInt>(spheres_.size()/2);
 	}
 
-	void init_boxes()
+	void init_boxes() noexcept
 	{
 		map_of_boxes_.clear();
 		boxes_.clear();
@@ -301,7 +301,7 @@ private:
 		}
 	}
 
-	bool update_sphere(const UnsignedInt& sphere_id, const SimpleSphere& moved_sphere)
+	bool update_sphere(const UnsignedInt& sphere_id, const SimpleSphere& moved_sphere) noexcept
 	{
 		if(sphere_id<spheres_.size() && moved_sphere.r<=spheres_[sphere_id].r)
 		{

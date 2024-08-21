@@ -14,12 +14,12 @@ namespace voronotalt
 class TimeRecorderChrono : public TimeRecorder
 {
 public:
-	explicit TimeRecorderChrono(const bool enabled) : enabled_(enabled)
+	explicit TimeRecorderChrono(const bool enabled) noexcept : enabled_(enabled)
 	{
 		reset();
 	}
 
-	void reset()
+	void reset() noexcept
 	{
 		if(!enabled_)
 		{
@@ -28,7 +28,7 @@ public:
 		start_=std::chrono::steady_clock::now();
 	}
 
-	void record_elapsed_miliseconds_and_reset(const char* message)
+	void record_elapsed_miliseconds_and_reset(const char* message) noexcept
 	{
 		if(!enabled_ || message==0)
 		{
@@ -37,7 +37,7 @@ public:
 		recordings_.push_back(std::pair<std::string, double>(std::string(message), get_elapsed_miliseconds_and_reset()));
 	}
 
-	double get_elapsed_miliseconds() const
+	double get_elapsed_miliseconds() const noexcept
 	{
 		if(!enabled_)
 		{
@@ -48,7 +48,7 @@ public:
 		return diff.count();
 	}
 
-	double get_elapsed_miliseconds_and_reset()
+	double get_elapsed_miliseconds_and_reset() noexcept
 	{
 		if(!enabled_)
 		{
@@ -59,7 +59,7 @@ public:
 		return value;
 	}
 
-	void print_elapsed_time(std::ostream& output, const std::string& prefix)
+	void print_elapsed_time(std::ostream& output, const std::string& prefix) noexcept
 	{
 		if(!enabled_)
 		{
@@ -68,7 +68,7 @@ public:
 		output << string_without_whitespaces(prefix) << "_elapsed\t" << get_elapsed_miliseconds() << "\n";
 	}
 
-	void print_recordings(std::ostream& output, const std::string& prefix, const bool with_sum)
+	void print_recordings(std::ostream& output, const std::string& prefix, const bool with_sum) noexcept
 	{
 		if(!enabled_)
 		{
@@ -91,7 +91,7 @@ public:
 	}
 
 private:
-	static std::string string_without_whitespaces(const std::string& input)
+	static std::string string_without_whitespaces(const std::string& input) noexcept
 	{
 		std::string output=input;
 		for(std::size_t i=0;i<output.size();i++)

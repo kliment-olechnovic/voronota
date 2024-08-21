@@ -16,16 +16,16 @@ namespace voronotalt
 class GraphicsWriter
 {
 public:
-	explicit GraphicsWriter(const bool enabled) : enabled_(enabled)
+	explicit GraphicsWriter(const bool enabled) noexcept : enabled_(enabled)
 	{
 	}
 
-	bool enabled() const
+	bool enabled() const noexcept
 	{
 		return enabled_;
 	}
 
-	void add_triangle_fan(const std::string& group_name, const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal)
+	void add_triangle_fan(const std::string& group_name, const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal) noexcept
 	{
 		if(!enabled_)
 		{
@@ -34,7 +34,7 @@ public:
 		parts_.push_back(std::pair<std::string, std::string>(group_name, print_triangle_fan_for_pymol(outer_points, center, normal, "", ", \n")));
 	}
 
-	void add_triangle_fan(const std::string& group_name, const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal_direction_start, const SimplePoint& normal_direction_end)
+	void add_triangle_fan(const std::string& group_name, const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal_direction_start, const SimplePoint& normal_direction_end) noexcept
 	{
 		if(!enabled_)
 		{
@@ -43,7 +43,7 @@ public:
 		add_triangle_fan(group_name, outer_points, center, unit_point(sub_of_points(normal_direction_end, normal_direction_start)));
 	}
 
-	void add_line_loop(const std::string& group_name, const std::vector<SimplePoint>& outer_points)
+	void add_line_loop(const std::string& group_name, const std::vector<SimplePoint>& outer_points) noexcept
 	{
 		if(!enabled_)
 		{
@@ -52,7 +52,7 @@ public:
 		parts_.push_back(std::pair<std::string, std::string>(group_name, print_line_loop_for_pymol(outer_points, "", ", \n")));
 	}
 
-	void add_sphere(const std::string& group_name, const SimpleSphere& sphere, const Float& radius_change)
+	void add_sphere(const std::string& group_name, const SimpleSphere& sphere, const Float& radius_change) noexcept
 	{
 		if(!enabled_)
 		{
@@ -61,7 +61,7 @@ public:
 		parts_.push_back(std::pair<std::string, std::string>(group_name, print_sphere(sphere, radius_change, "", ",\n")));
 	}
 
-	void add_color(const double r, const double g, const double b)
+	void add_color(const double r, const double g, const double b) noexcept
 	{
 		if(!enabled_)
 		{
@@ -72,7 +72,7 @@ public:
 		parts_.push_back(std::pair<std::string, std::string>("", output.str()));
 	}
 
-	void add_alpha(const double a)
+	void add_alpha(const double a) noexcept
 	{
 		if(!enabled_)
 		{
@@ -83,7 +83,7 @@ public:
 		parts_.push_back(std::pair<std::string, std::string>("", output.str()));
 	}
 
-	bool write_to_file(const std::string& title, const std::string& filename)
+	bool write_to_file(const std::string& title, const std::string& filename) noexcept
 	{
 		if(!enabled_)
 		{
@@ -143,7 +143,7 @@ public:
 	}
 
 private:
-	static std::string print_triangle_fan_for_pymol(const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal, const std::string& prefix, const std::string& postfix)
+	static std::string print_triangle_fan_for_pymol(const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal, const std::string& prefix, const std::string& postfix) noexcept
 	{
 		std::ostringstream output;
 		output << prefix << "BEGIN, TRIANGLE_FAN";
@@ -163,7 +163,7 @@ private:
 		return output.str();
 	}
 
-	static std::string print_line_loop_for_pymol(const std::vector<SimplePoint>& outer_points, const std::string& prefix, const std::string& postfix)
+	static std::string print_line_loop_for_pymol(const std::vector<SimplePoint>& outer_points, const std::string& prefix, const std::string& postfix) noexcept
 	{
 		std::ostringstream output;
 		output << prefix << "BEGIN, LINE_LOOP";
@@ -178,7 +178,7 @@ private:
 		return output.str();
 	}
 
-	static std::string print_sphere(const SimpleSphere& sphere, const Float& radius_change, const std::string& prefix, const std::string& postfix)
+	static std::string print_sphere(const SimpleSphere& sphere, const Float& radius_change, const std::string& prefix, const std::string& postfix) noexcept
 	{
 		std::ostringstream output;
 		output << prefix << "SPHERE" << ", " << sphere.p.x << ", " << sphere.p.y << ", " << sphere.p.z << ", " << (sphere.r-radius_change) << postfix;

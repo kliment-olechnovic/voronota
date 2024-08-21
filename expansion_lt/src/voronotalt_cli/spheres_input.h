@@ -33,7 +33,7 @@ public:
 		int number_of_chain_groups;
 		int number_of_residue_groups;
 
-		Result() : label_size(0), number_of_chain_groups(0), number_of_residue_groups(0)
+		Result() noexcept : label_size(0), number_of_chain_groups(0), number_of_residue_groups(0)
 		{
 		}
 	};
@@ -43,7 +43,7 @@ public:
 			const Float probe,
 			Result& result,
 			std::ostream& error_message_output_stream,
-			TimeRecorder& time_recorder)
+			TimeRecorder& time_recorder) noexcept
 	{
 		time_recorder.reset();
 
@@ -128,7 +128,7 @@ public:
 	}
 
 private:
-	static int assign_groups_to_sphere_labels_by_chain(const std::vector<SphereLabel>& sphere_labels, std::vector<int>& groups)
+	static int assign_groups_to_sphere_labels_by_chain(const std::vector<SphereLabel>& sphere_labels, std::vector<int>& groups) noexcept
 	{
 		groups.clear();
 		groups.resize(sphere_labels.size(), 0);
@@ -157,7 +157,7 @@ private:
 		return static_cast<int>(map_of_chains_to_groups.size());
 	}
 
-	static int assign_groups_to_sphere_labels_by_residue(const std::vector<SphereLabel>& sphere_labels, std::vector<int>& groups)
+	static int assign_groups_to_sphere_labels_by_residue(const std::vector<SphereLabel>& sphere_labels, std::vector<int>& groups) noexcept
 	{
 		groups.clear();
 		groups.resize(sphere_labels.size(), 0);

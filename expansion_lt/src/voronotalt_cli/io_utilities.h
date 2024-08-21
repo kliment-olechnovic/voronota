@@ -13,7 +13,7 @@
 namespace voronotalt
 {
 
-inline bool read_double_values_from_text_string(const std::string& input_data, std::vector<double>& values)
+inline bool read_double_values_from_text_string(const std::string& input_data, std::vector<double>& values) noexcept
 {
 	const std::size_t initial_number_of_values=values.size();
 
@@ -113,7 +113,7 @@ inline bool read_double_values_from_text_string(const std::string& input_data, s
 	return (values.size()>initial_number_of_values);
 }
 
-inline bool read_double_values_from_text_stream(std::istream& input, std::vector<double>& values)
+inline bool read_double_values_from_text_stream(std::istream& input, std::vector<double>& values) noexcept
 {
 	std::istreambuf_iterator<char> input_eos;
 	std::string input_data(std::istreambuf_iterator<char>(input), input_eos);
@@ -121,7 +121,7 @@ inline bool read_double_values_from_text_stream(std::istream& input, std::vector
 	return read_double_values_from_text_string(input_data, values);
 }
 
-inline bool read_lines_from_text_stream(std::istream& input, std::vector<std::string>& lines)
+inline bool read_lines_from_text_stream(std::istream& input, std::vector<std::string>& lines) noexcept
 {
 	const std::size_t initial_number_of_lines=lines.size();
 
@@ -146,7 +146,7 @@ inline bool read_lines_from_text_stream(std::istream& input, std::vector<std::st
 	return (lines.size()>initial_number_of_lines);
 }
 
-inline bool read_string_ids_and_double_values_from_text_stream(const std::size_t number_of_double_values_per_line, std::istream& input, std::vector<std::string>& string_ids, std::vector<double>& values)
+inline bool read_string_ids_and_double_values_from_text_stream(const std::size_t number_of_double_values_per_line, std::istream& input, std::vector<std::string>& string_ids, std::vector<double>& values) noexcept
 {
 	string_ids.clear();
 	values.clear();

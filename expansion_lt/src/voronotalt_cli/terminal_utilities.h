@@ -9,7 +9,7 @@
 namespace voronotalt
 {
 
-inline bool is_stdin_from_terminal()
+inline bool is_stdin_from_terminal() noexcept
 {
 #ifdef ISATTY_AVAILABLE
 	return (isatty(fileno(stdin))==1);

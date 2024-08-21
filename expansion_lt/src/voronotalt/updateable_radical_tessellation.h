@@ -15,11 +15,11 @@ public:
 		std::vector< std::vector<RadicalTessellation::ContactDescriptorSummary> > contacts_summaries;
 		std::vector< std::vector<RadicalTessellation::ContactDescriptorSummary> > contacts_summaries_with_redundancy_in_periodic_box;
 
-		Result()
+		Result() noexcept
 		{
 		}
 
-		bool empty()
+		bool empty() noexcept
 		{
 			return (cells_summaries.empty() || contacts_summaries.empty());
 		}
@@ -30,37 +30,37 @@ public:
 		RadicalTessellation::TotalContactDescriptorsSummary total_contacts_summary;
 		RadicalTessellation::TotalCellContactDescriptorsSummary total_cells_summary;
 
-		ResultSummary()
+		ResultSummary() noexcept
 		{
 		}
 	};
 
-	UpdateableRadicalTessellation() : backup_enabled_(false), in_sync_with_backup_(false)
+	UpdateableRadicalTessellation() noexcept : backup_enabled_(false), in_sync_with_backup_(false)
 	{
 	}
 
-	UpdateableRadicalTessellation(const bool backup_enabled) : backup_enabled_(backup_enabled), in_sync_with_backup_(false)
+	UpdateableRadicalTessellation(const bool backup_enabled) noexcept : backup_enabled_(backup_enabled), in_sync_with_backup_(false)
 	{
 	}
 
-	bool init(const std::vector<SimpleSphere>& input_spheres)
+	bool init(const std::vector<SimpleSphere>& input_spheres) noexcept
 	{
 		TimeRecorder time_recorder;
 		return init(input_spheres, std::vector<SimplePoint>(), time_recorder);
 	}
 
-	bool init(const std::vector<SimpleSphere>& input_spheres, TimeRecorder& time_recorder)
+	bool init(const std::vector<SimpleSphere>& input_spheres, TimeRecorder& time_recorder) noexcept
 	{
 		return init(input_spheres, std::vector<SimplePoint>(), time_recorder);
 	}
 
-	bool init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners)
+	bool init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners) noexcept
 	{
 		TimeRecorder time_recorder;
 		return init(input_spheres, periodic_box_corners, time_recorder);
 	}
 
-	bool init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners, TimeRecorder& time_recorder)
+	bool init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners, TimeRecorder& time_recorder) noexcept
 	{
 		prepare_for_possible_init_or_update(time_recorder);
 
@@ -78,29 +78,29 @@ public:
 		return !state_.result.empty();
 	}
 
-	bool update(const std::vector<SimpleSphere>& new_input_spheres)
+	bool update(const std::vector<SimpleSphere>& new_input_spheres) noexcept
 	{
 		TimeRecorder time_recorder;
 		return update(new_input_spheres, std::vector<UnsignedInt>(), false, time_recorder);
 	}
 
-	bool update(const std::vector<SimpleSphere>& new_input_spheres, TimeRecorder& time_recorder)
+	bool update(const std::vector<SimpleSphere>& new_input_spheres, TimeRecorder& time_recorder) noexcept
 	{
 		return update(new_input_spheres, std::vector<UnsignedInt>(), false, time_recorder);
 	}
 
-	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres)
+	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres) noexcept
 	{
 		TimeRecorder time_recorder;
 		return update(new_input_spheres, ids_of_changed_input_spheres, true, time_recorder);
 	}
 
-	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres, TimeRecorder& time_recorder)
+	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& ids_of_changed_input_spheres, TimeRecorder& time_recorder) noexcept
 	{
 		return update(new_input_spheres, ids_of_changed_input_spheres, true, time_recorder);
 	}
 
-	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& provided_ids_of_changed_input_spheres, const bool trust_provided_ids_of_changed_input_spheres, TimeRecorder& time_recorder)
+	bool update(const std::vector<SimpleSphere>& new_input_spheres, const std::vector<UnsignedInt>& provided_ids_of_changed_input_spheres, const bool trust_provided_ids_of_changed_input_spheres, TimeRecorder& time_recorder) noexcept
 	{
 		prepare_for_possible_init_or_update(time_recorder);
 
@@ -130,13 +130,13 @@ public:
 		return true;
 	}
 
-	bool update_by_setting_exclusion_mask(const UnsignedInt id_of_targeted_input_sphere, const bool new_exclusion_status)
+	bool update_by_setting_exclusion_mask(const UnsignedInt id_of_targeted_input_sphere, const bool new_exclusion_status) noexcept
 	{
 		TimeRecorder time_recorder;
 		return update_by_setting_exclusion_mask(id_of_targeted_input_sphere, new_exclusion_status, time_recorder);
 	}
 
-	bool update_by_setting_exclusion_mask(const UnsignedInt id_of_targeted_input_sphere, const bool new_exclusion_status, TimeRecorder& time_recorder)
+	bool update_by_setting_exclusion_mask(const UnsignedInt id_of_targeted_input_sphere, const bool new_exclusion_status, TimeRecorder& time_recorder) noexcept
 	{
 		if(state_.result.empty() || id_of_targeted_input_sphere>=state_.result.contacts_summaries.size()
 				|| id_of_targeted_input_sphere>=state_.spheres_container.all_exclusion_statuses().size()
@@ -185,7 +185,7 @@ public:
 		return true;
 	}
 
-	bool restore_from_backup()
+	bool restore_from_backup() noexcept
 	{
 		if(backup_enabled_ && !in_sync_with_backup_)
 		{
@@ -196,7 +196,7 @@ public:
 		return in_sync_with_backup_;
 	}
 
-	bool calculate_second_order_cell_volumes(std::vector< std::vector<Float> >& all_result_volumes_for_contacts_summaries)
+	bool calculate_second_order_cell_volumes(std::vector< std::vector<Float> >& all_result_volumes_for_contacts_summaries) noexcept
 	{
 		all_result_volumes_for_contacts_summaries.clear();
 
@@ -262,32 +262,32 @@ public:
 		return true;
 	}
 
-	bool backup_enabled() const
+	bool backup_enabled() const noexcept
 	{
 		return backup_enabled_;
 	}
 
-	bool in_sync_with_backup() const
+	bool in_sync_with_backup() const noexcept
 	{
 		return in_sync_with_backup_;
 	}
 
-	const std::vector<SimpleSphere>& input_spheres() const
+	const std::vector<SimpleSphere>& input_spheres() const noexcept
 	{
 		return state_.spheres_container.input_spheres();
 	}
 
-	bool exclusion_status_of_input_sphere(const UnsignedInt id_of_input_sphere) const
+	bool exclusion_status_of_input_sphere(const UnsignedInt id_of_input_sphere) const noexcept
 	{
 		return (id_of_input_sphere<state_.spheres_container.all_exclusion_statuses().size() && state_.spheres_container.all_exclusion_statuses()[id_of_input_sphere]>0);
 	}
 
-	const Result& result() const
+	const Result& result() const noexcept
 	{
 		return state_.result;
 	}
 
-	ResultSummary result_summary() const
+	ResultSummary result_summary() const noexcept
 	{
 		ResultSummary result_summary;
 		for(UnsignedInt i=0;i<state_.result.contacts_summaries.size();i++)
@@ -308,17 +308,17 @@ public:
 		return result_summary;
 	}
 
-	const std::vector<UnsignedInt>& last_update_ids_of_changed_input_spheres() const
+	const std::vector<UnsignedInt>& last_update_ids_of_changed_input_spheres() const noexcept
 	{
 		return state_.ids_of_changed_input_spheres;
 	}
 
-	const std::vector<UnsignedInt>& last_update_ids_of_affected_input_spheres() const
+	const std::vector<UnsignedInt>& last_update_ids_of_affected_input_spheres() const noexcept
 	{
 		return state_.ids_of_affected_input_spheres;
 	}
 
-	bool last_update_was_full_reinit() const
+	bool last_update_was_full_reinit() const noexcept
 	{
 		return state_.last_update_was_full_reinit;
 	}
@@ -328,7 +328,7 @@ private:
 	{
 		RadicalTessellation::Result tessellation_result;
 
-		void clear()
+		void clear() noexcept
 		{
 			tessellation_result.clear();
 		}
@@ -337,11 +337,11 @@ private:
 	class ConditionToRemoveContact
 	{
 	public:
-		ConditionToRemoveContact(const std::vector<int>& involvement) : involvement_(involvement)
+		ConditionToRemoveContact(const std::vector<int>& involvement) noexcept : involvement_(involvement)
 		{
 		}
 
-		bool operator()(const RadicalTessellation::ContactDescriptorSummary& cds)
+		bool operator()(const RadicalTessellation::ContactDescriptorSummary& cds) noexcept
 		{
 			return (involvement_.empty() || (involvement_[cds.id_a%involvement_.size()]>0 && involvement_[cds.id_b%involvement_.size()]>0));
 		}
@@ -358,11 +358,11 @@ private:
 		std::vector<UnsignedInt> ids_of_affected_input_spheres;
 		bool last_update_was_full_reinit;
 
-		State() : last_update_was_full_reinit(true)
+		State() noexcept : last_update_was_full_reinit(true)
 		{
 		}
 
-		void assign(const State& obj)
+		void assign(const State& obj) noexcept
 		{
 			spheres_container.assign(obj.spheres_container);
 
@@ -416,7 +416,7 @@ private:
 			last_update_was_full_reinit=obj.last_update_was_full_reinit;
 		}
 
-		void assign(const State& obj, const bool assign_everything, const std::vector<UnsignedInt>& subset_of_ids_of_spheres)
+		void assign(const State& obj, const bool assign_everything, const std::vector<UnsignedInt>& subset_of_ids_of_spheres) noexcept
 		{
 			if(!assign_everything && subset_of_ids_of_spheres.empty())
 			{
@@ -482,18 +482,18 @@ private:
 			last_update_was_full_reinit=obj.last_update_was_full_reinit;
 		}
 
-		void assign_to_undo_update(const State& obj)
+		void assign_to_undo_update(const State& obj) noexcept
 		{
 			assign(obj, last_update_was_full_reinit, ids_of_affected_input_spheres);
 		}
 
-		void assign_to_apply_update(const State& obj)
+		void assign_to_apply_update(const State& obj) noexcept
 		{
 			assign(obj, obj.last_update_was_full_reinit, obj.ids_of_affected_input_spheres);
 		}
 	};
 
-	void init_result_from_tessellation_result()
+	void init_result_from_tessellation_result() noexcept
 	{
 		state_.ids_of_changed_input_spheres.clear();
 		state_.ids_of_affected_input_spheres.clear();
@@ -542,7 +542,7 @@ private:
 		}
 	}
 
-	void prepare_for_possible_init_or_update(TimeRecorder& time_recorder)
+	void prepare_for_possible_init_or_update(TimeRecorder& time_recorder) noexcept
 	{
 		time_recorder.reset();
 
@@ -559,7 +559,7 @@ private:
 		state_.last_update_was_full_reinit=false;
 	}
 
-	void update_using_current_state(TimeRecorder& time_recorder)
+	void update_using_current_state(TimeRecorder& time_recorder) noexcept
 	{
 		time_recorder.reset();
 

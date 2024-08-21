@@ -22,7 +22,7 @@ public:
 			std::vector<SimpleSphere>& spheres,
 			const std::vector<SpheresInput::SphereLabel>& sphere_labels,
 			const double probe,
-			std::ostream& output)
+			std::ostream& output) noexcept
 	{
 		const SpheresInput::SphereLabel null_label;
 		for(std::size_t i=0;i<spheres.size();i++)
@@ -36,7 +36,7 @@ public:
 
 	template<class ContactsContainer>
 	static void print_contacts_to_stream(
-			const ContactsContainer& contacts, const std::vector<SpheresInput::SphereLabel>& sphere_labels, const bool labels_enabled, std::ostream& output)
+			const ContactsContainer& contacts, const std::vector<SpheresInput::SphereLabel>& sphere_labels, const bool labels_enabled, std::ostream& output) noexcept
 	{
 		const SpheresInput::SphereLabel null_label;
 		if(!contacts.empty())
@@ -102,7 +102,7 @@ public:
 	template<class ContactsContainer, class GroupedContactsContainer>
 	static void print_contacts_residue_level_to_stream(
 			const ContactsContainer& contacts, const std::vector<SpheresInput::SphereLabel>& sphere_labels,
-			const std::vector<UnsignedInt>& grouped_contacts_representative_ids, const GroupedContactsContainer& grouped_contacts, std::ostream& output)
+			const std::vector<UnsignedInt>& grouped_contacts_representative_ids, const GroupedContactsContainer& grouped_contacts, std::ostream& output) noexcept
 	{
 		print_contacts_residue_level_or_chain_level_to_stream(false, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, output);
 	}
@@ -110,14 +110,14 @@ public:
 	template<class ContactsContainer, class GroupedContactsContainer>
 	static void print_contacts_chain_level_to_stream(
 			const ContactsContainer& contacts, const std::vector<SpheresInput::SphereLabel>& sphere_labels,
-			const std::vector<UnsignedInt>& grouped_contacts_representative_ids, const GroupedContactsContainer& grouped_contacts, std::ostream& output)
+			const std::vector<UnsignedInt>& grouped_contacts_representative_ids, const GroupedContactsContainer& grouped_contacts, std::ostream& output) noexcept
 	{
 		print_contacts_residue_level_or_chain_level_to_stream(true, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, output);
 	}
 
 	template<class CellsContainer>
 	static void print_cells_to_stream(
-			const CellsContainer& cells, const std::vector<SpheresInput::SphereLabel>& sphere_labels, const bool labels_enabled, std::ostream& output)
+			const CellsContainer& cells, const std::vector<SpheresInput::SphereLabel>& sphere_labels, const bool labels_enabled, std::ostream& output) noexcept
 	{
 		const SpheresInput::SphereLabel null_label;
 		if(!cells.empty())
@@ -183,7 +183,7 @@ public:
 	template<class CellsContainer, class GroupedCellsContainer>
 	static void print_cells_residue_level_to_stream(
 			const CellsContainer& cells, const std::vector<SpheresInput::SphereLabel>& sphere_labels,
-			const std::vector<UnsignedInt>& grouped_cells_representative_ids, const GroupedCellsContainer& grouped_cells, std::ostream& output)
+			const std::vector<UnsignedInt>& grouped_cells_representative_ids, const GroupedCellsContainer& grouped_cells, std::ostream& output) noexcept
 	{
 		print_cells_residue_level_or_chain_level_to_stream(false,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, output);
 	}
@@ -191,13 +191,13 @@ public:
 	template<class CellsContainer, class GroupedCellsContainer>
 	static void print_cells_chain_level_to_stream(
 			const CellsContainer& cells, const std::vector<SpheresInput::SphereLabel>& sphere_labels,
-			const std::vector<UnsignedInt>& grouped_cells_representative_ids, const GroupedCellsContainer& grouped_cells, std::ostream& output)
+			const std::vector<UnsignedInt>& grouped_cells_representative_ids, const GroupedCellsContainer& grouped_cells, std::ostream& output) noexcept
 	{
 		print_cells_residue_level_or_chain_level_to_stream(true,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, output);
 	}
 
 	template<class Result, class GroupedResult>
-	static void print_tessellation_full_construction_result_log_basic(const Result& result, const GroupedResult& result_grouped_by_residue, const GroupedResult& result_grouped_by_chain, std::ostream& output)
+	static void print_tessellation_full_construction_result_log_basic(const Result& result, const GroupedResult& result_grouped_by_residue, const GroupedResult& result_grouped_by_chain, std::ostream& output) noexcept
 	{
 		output << "log_total_input_balls\t" << result.total_spheres << "\n";
 		output << "log_total_collisions\t" << result.total_collisions << "\n";
@@ -209,7 +209,7 @@ public:
 	}
 
 	template<class Result, class GroupedResult>
-	static void print_tessellation_full_construction_result_log_about_cells(const Result& result, const GroupedResult& result_grouped_by_residue, const GroupedResult& result_grouped_by_chain, std::ostream& output)
+	static void print_tessellation_full_construction_result_log_about_cells(const Result& result, const GroupedResult& result_grouped_by_residue, const GroupedResult& result_grouped_by_chain, std::ostream& output) noexcept
 	{
 		output << "log_total_cells_count\t" << result.total_cells_summary.count << "\n";
 		output << "log_total_cells_sas_area\t" << result.total_cells_summary.sas_area << "\n";
@@ -218,7 +218,7 @@ public:
 		output << "log_total_chain_level_cells_count\t" << result_grouped_by_chain.grouped_cells_summaries.size() << "\n";
 	}
 
-	inline static void print_label(const SpheresInput::SphereLabel& obj, const bool no_atom, const bool no_residue, std::ostream& output)
+	inline static void print_label(const SpheresInput::SphereLabel& obj, const bool no_atom, const bool no_residue, std::ostream& output) noexcept
 	{
 		if(obj.chain_id.empty())
 		{
@@ -259,7 +259,7 @@ private:
 			const std::vector<SpheresInput::SphereLabel>& sphere_labels,
 			const std::vector<UnsignedInt>& grouped_contacts_representative_ids,
 			const GroupedContactsContainer& grouped_contacts,
-			std::ostream& output)
+			std::ostream& output) noexcept
 	{
 		const SpheresInput::SphereLabel null_label;
 		if(!grouped_contacts.empty())
@@ -322,7 +322,7 @@ private:
 			const std::vector<SpheresInput::SphereLabel>& sphere_labels,
 			const std::vector<UnsignedInt>& grouped_cells_representative_ids,
 			const GroupedCellsContainer& grouped_cells,
-			std::ostream& output)
+			std::ostream& output) noexcept
 	{
 		const SpheresInput::SphereLabel null_label;
 		if(!grouped_cells.empty())
@@ -385,7 +385,7 @@ private:
 			const std::vector<SpheresInput::SphereLabel>& sphere_labels,
 			const SpheresInput::SphereLabel& null_label,
 			const bool labels_enabled,
-			std::ostream& output)
+			std::ostream& output) noexcept
 	{
 		output << "ca\t";
 		if(labels_enabled)
@@ -408,7 +408,7 @@ private:
 			const std::vector<UnsignedInt>& grouped_contacts_representative_ids,
 			const GroupedContactsContainer& grouped_contacts,
 			const SpheresInput::SphereLabel& null_label,
-			std::ostream& output)
+			std::ostream& output) noexcept
 	{
 		const std::size_t j=grouped_contacts_representative_ids[i];
 		output << (chain_level ? "cu\t" : "cr\t");
@@ -430,7 +430,7 @@ private:
 			const std::vector<SpheresInput::SphereLabel>& sphere_labels,
 			const bool labels_enabled,
 			const SpheresInput::SphereLabel& null_label,
-			std::ostream& output)
+			std::ostream& output) noexcept
 	{
 		if(cells[i].stage>0)
 		{
@@ -454,7 +454,7 @@ private:
 			const std::vector<UnsignedInt>& grouped_cells_representative_ids,
 			const GroupedCellsContainer& grouped_cells,
 			const SpheresInput::SphereLabel& null_label,
-			std::ostream& output)
+			std::ostream& output) noexcept
 	{
 		const std::size_t j=grouped_cells_representative_ids[i];
 		output << (chain_level ? "su\t" : "sr\t");
@@ -464,32 +464,32 @@ private:
 		output << "\n";
 	}
 
-	inline static void print(const RadicalTessellation::ContactDescriptorSummary& obj, std::ostream& output)
+	inline static void print(const RadicalTessellation::ContactDescriptorSummary& obj, std::ostream& output) noexcept
 	{
 		output << obj.id_a << "\t" <<  obj.id_b << "\t" << obj.area << "\t" << obj.arc_length << "\t" << obj.distance;
 	}
 
-	inline static void print(const RadicalTessellation::TotalContactDescriptorsSummary& obj, std::ostream& output)
+	inline static void print(const RadicalTessellation::TotalContactDescriptorsSummary& obj, std::ostream& output) noexcept
 	{
 		output << obj.area << "\t" << obj.arc_length << "\t" << obj.distance << "\t" << obj.count;
 	}
 
-	inline static void print(const RadicalTessellation::CellContactDescriptorsSummary& obj, std::ostream& output)
+	inline static void print(const RadicalTessellation::CellContactDescriptorsSummary& obj, std::ostream& output) noexcept
 	{
 		output << obj.id << "\t" << obj.sas_area << "\t" << obj.sas_inside_volume;
 	}
 
-	inline static void print(const RadicalTessellation::TotalCellContactDescriptorsSummary& obj, std::ostream& output)
+	inline static void print(const RadicalTessellation::TotalCellContactDescriptorsSummary& obj, std::ostream& output) noexcept
 	{
 		output << obj.sas_area << "\t" << obj.sas_inside_volume << "\t" << obj.count;
 	}
 
-	inline static void print(const SimplifiedAWTessellation::ContactDescriptorSummary& obj, std::ostream& output)
+	inline static void print(const SimplifiedAWTessellation::ContactDescriptorSummary& obj, std::ostream& output) noexcept
 	{
 		output << obj.id_a << "\t" <<  obj.id_b << "\t" << obj.area << "\t" << obj.arc_length << "\t" << obj.distance;
 	}
 
-	inline static void print(const SimplifiedAWTessellation::TotalContactDescriptorsSummary& obj, std::ostream& output)
+	inline static void print(const SimplifiedAWTessellation::TotalContactDescriptorsSummary& obj, std::ostream& output) noexcept
 	{
 		output << obj.area << "\t" << obj.arc_length << "\t" << obj.distance << "\t" << obj.count;
 	}

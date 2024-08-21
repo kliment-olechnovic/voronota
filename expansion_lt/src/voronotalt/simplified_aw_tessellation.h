@@ -21,7 +21,7 @@ public:
 		UnsignedInt id_a;
 		UnsignedInt id_b;
 
-		ContactDescriptorSummary() :
+		ContactDescriptorSummary() noexcept :
 			area(FLOATCONST(0.0)),
 			arc_length(FLOATCONST(0.0)),
 			distance(FLOATCONST(0.0)),
@@ -30,7 +30,7 @@ public:
 		{
 		}
 
-		void set(const SimplifiedAWTessellationContactConstruction::ContactDescriptor& cd)
+		void set(const SimplifiedAWTessellationContactConstruction::ContactDescriptor& cd) noexcept
 		{
 			if(cd.area>FLOATCONST(0.0))
 			{
@@ -42,7 +42,7 @@ public:
 			}
 		}
 
-		void ensure_ids_ordered()
+		void ensure_ids_ordered() noexcept
 		{
 			if(id_a>id_b)
 			{
@@ -58,7 +58,7 @@ public:
 		Float distance;
 		UnsignedInt count;
 
-		TotalContactDescriptorsSummary() :
+		TotalContactDescriptorsSummary() noexcept :
 			area(FLOATCONST(0.0)),
 			arc_length(FLOATCONST(0.0)),
 			distance(FLOATCONST(-1.0)),
@@ -66,7 +66,7 @@ public:
 		{
 		}
 
-		void add(const ContactDescriptorSummary& cds)
+		void add(const ContactDescriptorSummary& cds) noexcept
 		{
 			if(cds.area>FLOATCONST(0.0))
 			{
@@ -86,7 +86,7 @@ public:
 		std::vector<ContactDescriptorSummary> contacts_summaries;
 		TotalContactDescriptorsSummary total_contacts_summary;
 
-		Result() : total_spheres(0), total_collisions(0), total_relevant_collisions(0)
+		Result() noexcept : total_spheres(0), total_collisions(0), total_relevant_collisions(0)
 		{
 		}
 	};
@@ -104,7 +104,7 @@ public:
 
 	static void construct_full_tessellation(
 			const std::vector<SimpleSphere>& spheres,
-			Result& result)
+			Result& result) noexcept
 	{
 		TimeRecorder time_recorder;
 		ResultGraphics result_graphics;
@@ -117,7 +117,7 @@ public:
 			const bool with_graphics,
 			Result& result,
 			ResultGraphics& result_graphics,
-			TimeRecorder& time_recorder)
+			TimeRecorder& time_recorder) noexcept
 	{
 		SpheresContainer spheres_container;
 		spheres_container.init(spheres, time_recorder);
@@ -233,7 +233,7 @@ public:
 	static bool group_results(
 			const Result& full_result,
 			const std::vector<int>& grouping_of_spheres,
-			GroupedResult& grouped_result)
+			GroupedResult& grouped_result) noexcept
 	{
 		TimeRecorder time_recorder;
 		return group_results(full_result, grouping_of_spheres, grouped_result, time_recorder);
@@ -243,7 +243,7 @@ public:
 			const Result& full_result,
 			const std::vector<int>& grouping_of_spheres,
 			GroupedResult& grouped_result,
-			TimeRecorder& time_recorder)
+			TimeRecorder& time_recorder) noexcept
 	{
 		time_recorder.reset();
 

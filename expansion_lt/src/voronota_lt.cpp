@@ -13,7 +13,7 @@
 namespace
 {
 
-void print_help()
+void print_help() noexcept
 {
 	const std::string message=R"(
 Voronota-LT version 0.9.3
@@ -79,7 +79,7 @@ Usage examples:
 	std::cerr << message << std::endl;
 }
 
-std::string name_ball(const std::string& prefix, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index)
+std::string name_ball(const std::string& prefix, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index) noexcept
 {
 	std::ostringstream output;
 	output << prefix;
@@ -90,7 +90,7 @@ std::string name_ball(const std::string& prefix, const voronotalt::SpheresInput:
 	return output.str();
 }
 
-std::string name_contact(const std::string& prefix, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index1, const std::size_t index2)
+std::string name_contact(const std::string& prefix, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index1, const std::size_t index2) noexcept
 {
 	std::ostringstream output;
 	output << prefix;

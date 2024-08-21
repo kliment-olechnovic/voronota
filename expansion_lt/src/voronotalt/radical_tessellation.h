@@ -26,7 +26,7 @@ public:
 		UnsignedInt id_a;
 		UnsignedInt id_b;
 
-		ContactDescriptorSummary() :
+		ContactDescriptorSummary() noexcept :
 			area(FLOATCONST(0.0)),
 			arc_length(FLOATCONST(0.0)),
 			solid_angle_a(FLOATCONST(0.0)),
@@ -40,7 +40,7 @@ public:
 		{
 		}
 
-		void set(const RadicalTessellationContactConstruction::ContactDescriptor& cd)
+		void set(const RadicalTessellationContactConstruction::ContactDescriptor& cd) noexcept
 		{
 			if(cd.area>FLOATCONST(0.0))
 			{
@@ -57,7 +57,7 @@ public:
 			}
 		}
 
-		void ensure_ids_ordered()
+		void ensure_ids_ordered() noexcept
 		{
 			if(id_a>id_b)
 			{
@@ -70,11 +70,11 @@ public:
 
 	struct ContactDescriptorSummaryAdjunct
 	{
-		ContactDescriptorSummaryAdjunct()
+		ContactDescriptorSummaryAdjunct() noexcept
 		{
 		}
 
-		ContactDescriptorSummaryAdjunct(const UnsignedInt levels) : level_areas(levels, FLOATCONST(0.0))
+		ContactDescriptorSummaryAdjunct(const UnsignedInt levels) noexcept : level_areas(levels, FLOATCONST(0.0))
 		{
 		}
 
@@ -95,7 +95,7 @@ public:
 		UnsignedInt count;
 		int stage;
 
-		CellContactDescriptorsSummary() :
+		CellContactDescriptorsSummary() noexcept :
 			area(FLOATCONST(0.0)),
 			arc_length(FLOATCONST(0.0)),
 			explained_solid_angle_positive(FLOATCONST(0.0)),
@@ -110,7 +110,7 @@ public:
 		{
 		}
 
-		void add(const ContactDescriptorSummary& cds)
+		void add(const ContactDescriptorSummary& cds) noexcept
 		{
 			if(cds.area>FLOATCONST(0.0) && (cds.id_a==id || cds.id_b==id))
 			{
@@ -125,7 +125,7 @@ public:
 			}
 		}
 
-		void add(const UnsignedInt new_id, const ContactDescriptorSummary& cds)
+		void add(const UnsignedInt new_id, const ContactDescriptorSummary& cds) noexcept
 		{
 			if(cds.area>FLOATCONST(0.0))
 			{
@@ -137,7 +137,7 @@ public:
 			}
 		}
 
-		void compute_sas(const Float r)
+		void compute_sas(const Float r) noexcept
 		{
 			if(stage==1)
 			{
@@ -168,7 +168,7 @@ public:
 			}
 		}
 
-		void compute_sas_detached(const UnsignedInt new_id, const Float r)
+		void compute_sas_detached(const UnsignedInt new_id, const Float r) noexcept
 		{
 			if(stage==0)
 			{
@@ -187,7 +187,7 @@ public:
 		Float distance;
 		UnsignedInt count;
 
-		TotalContactDescriptorsSummary() :
+		TotalContactDescriptorsSummary() noexcept :
 			area(FLOATCONST(0.0)),
 			arc_length(FLOATCONST(0.0)),
 			distance(FLOATCONST(-1.0)),
@@ -195,7 +195,7 @@ public:
 		{
 		}
 
-		void add(const ContactDescriptorSummary& cds)
+		void add(const ContactDescriptorSummary& cds) noexcept
 		{
 			if(cds.area>FLOATCONST(0.0))
 			{
@@ -213,14 +213,14 @@ public:
 		Float sas_inside_volume;
 		UnsignedInt count;
 
-		TotalCellContactDescriptorsSummary() :
+		TotalCellContactDescriptorsSummary() noexcept :
 			sas_area(FLOATCONST(0.0)),
 			sas_inside_volume(FLOATCONST(0.0)),
 			count(0)
 		{
 		}
 
-		void add(const CellContactDescriptorsSummary& ccds)
+		void add(const CellContactDescriptorsSummary& ccds) noexcept
 		{
 			if(ccds.stage==2)
 			{
@@ -244,11 +244,11 @@ public:
 		std::vector<ContactDescriptorSummary> contacts_summaries_with_redundancy_in_periodic_box;
 		std::vector<UnsignedInt> contacts_canonical_ids_with_redundancy_in_periodic_box;
 
-		Result() : total_spheres(0), total_collisions(0), total_relevant_collisions(0)
+		Result() noexcept : total_spheres(0), total_collisions(0), total_relevant_collisions(0)
 		{
 		}
 
-		void clear()
+		void clear() noexcept
 		{
 			total_spheres=0;
 			total_collisions=0;
@@ -275,7 +275,7 @@ public:
 		std::vector<UnsignedInt> grouped_cells_representative_ids;
 		std::vector<TotalCellContactDescriptorsSummary> grouped_cells_summaries;
 
-		void clear()
+		void clear() noexcept
 		{
 			grouped_contacts_representative_ids.clear();
 			grouped_contacts_summaries.clear();
@@ -286,7 +286,7 @@ public:
 
 	static void construct_full_tessellation(
 			const std::vector<SimpleSphere>& input_spheres,
-			Result& result)
+			Result& result) noexcept
 	{
 		TimeRecorder time_recorder;
 		SpheresContainer spheres_container;
@@ -298,7 +298,7 @@ public:
 	static void construct_full_tessellation(
 			const std::vector<SimpleSphere>& input_spheres,
 			const std::vector<SimplePoint>& periodic_box_corners,
-			Result& result)
+			Result& result) noexcept
 	{
 		TimeRecorder time_recorder;
 		SpheresContainer spheres_container;
@@ -314,7 +314,7 @@ public:
 			const bool summarize_cells,
 			Result& result,
 			ResultGraphics& result_graphics,
-			TimeRecorder& time_recorder)
+			TimeRecorder& time_recorder) noexcept
 	{
 		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, with_graphics, summarize_cells, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
 	}
@@ -329,7 +329,7 @@ public:
 			const std::vector<Float> adjunct_max_circle_radius_restrictions,
 			Result& result,
 			ResultGraphics& result_graphics,
-			TimeRecorder& time_recorder)
+			TimeRecorder& time_recorder) noexcept
 	{
 		time_recorder.reset();
 
@@ -610,7 +610,7 @@ public:
 	static bool group_results(
 			const Result& full_result,
 			const std::vector<int>& grouping_of_spheres,
-			GroupedResult& grouped_result)
+			GroupedResult& grouped_result) noexcept
 	{
 		TimeRecorder time_recorder;
 		return group_results(full_result, grouping_of_spheres, grouped_result, time_recorder);
@@ -620,7 +620,7 @@ public:
 			const Result& full_result,
 			const std::vector<int>& grouping_of_spheres,
 			GroupedResult& grouped_result,
-			TimeRecorder& time_recorder)
+			TimeRecorder& time_recorder) noexcept
 	{
 		time_recorder.reset();
 

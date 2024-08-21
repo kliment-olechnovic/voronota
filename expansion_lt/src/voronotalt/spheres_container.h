@@ -17,11 +17,11 @@ public:
 		SimplePoint shift;
 		bool enabled;
 
-		PeriodicBox() : enabled(false)
+		PeriodicBox() noexcept : enabled(false)
 		{
 		}
 
-		void init(const std::vector<SimplePoint>& periodic_box_corners)
+		void init(const std::vector<SimplePoint>& periodic_box_corners) noexcept
 		{
 			enabled=(periodic_box_corners.size()>=2);
 			if(enabled)
@@ -44,7 +44,7 @@ public:
 			}
 		}
 
-		bool equals(const PeriodicBox& pb) const
+		bool equals(const PeriodicBox& pb) const noexcept
 		{
 			return (enabled==pb.enabled && point_equals_point(corner_a, pb.corner_a) && point_equals_point(corner_b, pb.corner_b) && point_equals_point(shift, pb.shift));
 		}
@@ -54,21 +54,21 @@ public:
 	{
 		std::vector< std::pair<UnsignedInt, UnsignedInt> > relevant_collision_ids;
 
-		ResultOfPreparationForTessellation()
+		ResultOfPreparationForTessellation() noexcept
 		{
 		}
 	};
 
-	SpheresContainer() : total_collisions_(0)
+	SpheresContainer() noexcept : total_collisions_(0)
 	{
 	}
 
-	void init(const std::vector<SimpleSphere>& input_spheres, TimeRecorder& time_recorder)
+	void init(const std::vector<SimpleSphere>& input_spheres, TimeRecorder& time_recorder) noexcept
 	{
 		init(input_spheres, std::vector<SimplePoint>(), time_recorder);
 	}
 
-	void init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners, TimeRecorder& time_recorder)
+	void init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners, TimeRecorder& time_recorder) noexcept
 	{
 		time_recorder.reset();
 
@@ -138,7 +138,7 @@ public:
 			const bool trust_provided_ids_of_changed_input_spheres,
 			std::vector<UnsignedInt>& ids_of_changed_input_spheres,
 			std::vector<UnsignedInt>& ids_of_affected_input_spheres,
-			TimeRecorder& time_recorder)
+			TimeRecorder& time_recorder) noexcept
 	{
 		time_recorder.reset();
 
@@ -359,7 +359,7 @@ public:
 		return true;
 	}
 
-	bool update_by_setting_exclusion_status(const UnsignedInt id_of_masked_input_sphere, const bool new_exclusion_status)
+	bool update_by_setting_exclusion_status(const UnsignedInt id_of_masked_input_sphere, const bool new_exclusion_status) noexcept
 	{
         if(id_of_masked_input_sphere>=input_spheres_.size() || id_of_masked_input_sphere>=all_exclusion_statuses_.size() || (new_exclusion_status ? all_exclusion_statuses_[id_of_masked_input_sphere]>0 : all_exclusion_statuses_[id_of_masked_input_sphere]<1))
 		{
@@ -376,7 +376,7 @@ public:
 		return true;
 	}
 
-	bool update_by_setting_exclusion_status(const UnsignedInt id_of_masked_input_sphere, const bool new_exclusion_status, std::vector<UnsignedInt>& ids_of_changed_input_spheres, std::vector<UnsignedInt>& ids_of_affected_input_spheres)
+	bool update_by_setting_exclusion_status(const UnsignedInt id_of_masked_input_sphere, const bool new_exclusion_status, std::vector<UnsignedInt>& ids_of_changed_input_spheres, std::vector<UnsignedInt>& ids_of_affected_input_spheres) noexcept
 	{
 	    ids_of_changed_input_spheres.clear();
 	    ids_of_affected_input_spheres.clear();
@@ -409,7 +409,7 @@ public:
 	    return true;
 	}
 
-	void assign(const SpheresContainer& obj)
+	void assign(const SpheresContainer& obj) noexcept
 	{
 		periodic_box_=obj.periodic_box_;
 		total_collisions_=obj.total_collisions_;
@@ -462,7 +462,7 @@ public:
 		}
 	}
 
-	void assign(const SpheresContainer& obj, const std::vector<UnsignedInt>& subset_of_ids)
+	void assign(const SpheresContainer& obj, const std::vector<UnsignedInt>& subset_of_ids) noexcept
 	{
 		if(subset_of_ids.empty()
 				|| obj.input_spheres_.empty()
@@ -525,42 +525,42 @@ public:
 		}
 	}
 
-	const PeriodicBox& periodic_box() const
+	const PeriodicBox& periodic_box() const noexcept
 	{
 		return periodic_box_;
 	}
 
-	const std::vector<SimpleSphere>& input_spheres() const
+	const std::vector<SimpleSphere>& input_spheres() const noexcept
 	{
 		return input_spheres_;
 	}
 
-	const std::vector<SimpleSphere>& populated_spheres() const
+	const std::vector<SimpleSphere>& populated_spheres() const noexcept
 	{
 		return populated_spheres_;
 	}
 
-	const std::vector<int>& all_exclusion_statuses() const
+	const std::vector<int>& all_exclusion_statuses() const noexcept
 	{
 		return all_exclusion_statuses_;
 	}
 
-	const std::vector< std::vector<ValuedID> >& all_colliding_ids() const
+	const std::vector< std::vector<ValuedID> >& all_colliding_ids() const noexcept
 	{
 		return all_colliding_ids_;
 	}
 
-	UnsignedInt total_collisions() const
+	UnsignedInt total_collisions() const noexcept
 	{
 		return total_collisions_;
 	}
 
-	bool prepare_for_tessellation(const std::vector<int>& grouping_of_spheres, ResultOfPreparationForTessellation& result, TimeRecorder& time_recorder) const
+	bool prepare_for_tessellation(const std::vector<int>& grouping_of_spheres, ResultOfPreparationForTessellation& result, TimeRecorder& time_recorder) const noexcept
 	{
 		return prepare_for_tessellation(std::vector<int>(), grouping_of_spheres, result, time_recorder);
 	}
 
-	bool prepare_for_tessellation(const std::vector<int>& involvement_of_spheres, const std::vector<int>& grouping_of_spheres, ResultOfPreparationForTessellation& result, TimeRecorder& time_recorder) const
+	bool prepare_for_tessellation(const std::vector<int>& involvement_of_spheres, const std::vector<int>& grouping_of_spheres, ResultOfPreparationForTessellation& result, TimeRecorder& time_recorder) const noexcept
 	{
 		time_recorder.reset();
 
@@ -606,19 +606,19 @@ private:
 		std::vector<UnsignedInt> more_ids_of_affected_input_spheres;
 		std::vector<UnsignedInt> merged_ids_of_affected_input_spheres;
 
-		void clear()
+		void clear() noexcept
 		{
 			more_ids_of_affected_input_spheres.clear();
 			merged_ids_of_affected_input_spheres.clear();
 		}
 	};
 
-	UnsignedInt size_threshold_for_full_reinit() const
+	UnsignedInt size_threshold_for_full_reinit() const noexcept
 	{
 		return static_cast<UnsignedInt>(input_spheres_.size()/2);
 	}
 
-	void reinit(const std::vector<SimpleSphere>& new_input_spheres, std::vector<UnsignedInt>& ids_of_changed_input_spheres, std::vector<UnsignedInt>& ids_of_affected_input_spheres, TimeRecorder& time_recorder)
+	void reinit(const std::vector<SimpleSphere>& new_input_spheres, std::vector<UnsignedInt>& ids_of_changed_input_spheres, std::vector<UnsignedInt>& ids_of_affected_input_spheres, TimeRecorder& time_recorder) noexcept
 	{
 		std::vector<SimplePoint> periodic_box_corners;
 		if(periodic_box_.enabled)
@@ -632,7 +632,7 @@ private:
 		ids_of_affected_input_spheres.clear();
 	}
 
-	void set_sphere_periodic_instances(const UnsignedInt i, const bool collect_indices, std::vector<UnsignedInt>& collected_indices)
+	void set_sphere_periodic_instances(const UnsignedInt i, const bool collect_indices, std::vector<UnsignedInt>& collected_indices) noexcept
 	{
 		if(i<input_spheres_.size())
 		{
@@ -688,7 +688,7 @@ private:
 		}
 	}
 
-	void set_exclusion_status_periodic_instances(const UnsignedInt i)
+	void set_exclusion_status_periodic_instances(const UnsignedInt i) noexcept
 	{
 		if(i<input_spheres_.size() && all_exclusion_statuses_.size()==input_spheres_.size()*27)
 		{
