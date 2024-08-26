@@ -1,4 +1,6 @@
-## Table files
+## Benchmarking with comparison to vanilla Voronota
+
+### Input and output data
 
 [Voronota-LT](../README.md) command-line tool was benchmarked on a diverse set of structures of multi-chain biological assemblies downloaded from the Protein Data Bank.
 
@@ -9,9 +11,9 @@ are in the table
 All the encountered inter-chain interfaces and their areas are liste in the table
 "[pdb_ids_chain_chain_areas.tsv](pdb_ids_chain_chain_areas.tsv)".
 
-## Plots
+### Plots
 
-### Running time
+#### Running time
 
 Below are plots summarizing the time efficiency of constructing contacts using vanilla Voronota (Vanilla-AW) and various modes of Voronota-LT (LT-*).
 Total running times (including input, computation and output routines) were used for every plot.
@@ -19,7 +21,7 @@ All the software was compiled and run on the same machine (20-core Intel(R) Xeon
 
 ![](wall_running_times.png)
 
-### Summary of correllations of areas computed by Voronota-LT and vanilla Voronota
+#### Summary of correllations of areas computed by Voronota-LT and vanilla Voronota
 
 Below are the Pearson correlation coefficients between differently produced sets of areas for every input structure.
 For a more convenient display, the values were rounded up to four significant digits.
@@ -31,11 +33,31 @@ For a more convenient display, the values were rounded up to four significant di
     Voronota-Vanilla-AW residue-residue area                 Voronota-LT-Radical residue-residue area                 0.9947                 0.999
     Voronota-Vanilla-AW SAS area                             Voronota-LT-Radical SAS area                             0.9997                 1
 
-### Correlation between contact areas computed by vanilla Voronota and Voronota-LT on atom-atom and residue-residue levels
+#### Correlation between contact areas computed by vanilla Voronota and Voronota-LT on atom-atom and residue-residue levels
 
 ![](histograms_of_pearson_cor_coeffs.png)
 
-### Differences between inter-chain interface contact areas computed by vanilla Voronota and Voronota-LT
+#### Differences between inter-chain interface contact areas computed by vanilla Voronota and Voronota-LT
 
 ![](comparison_of_chain_chain_areas.png)
+
+
+## Benchmarking with comparison to SBL-Vorlume
+
+### Input and output data
+
+[Voronota-LT](../README.md) was also compared with the [SBL-Vorlume software from the "Structural Bioinformatics Library"](https://sbl.inria.fr/doc/Space_filling_model_surface_volume-user-manual.html).
+
+The comparison was done for the 12402 PDB IDs that resulted in exactly the same sets of atoms read by both Voronota-LT and SBL-Vorlume.
+
+The input atomic radii for Voronota-LT were the same as the radii assigned by SBL-Vorlume.
+
+The summary values (total volumes, total SASA, calculation times, statistics of per-atom volume and SASA differences) for the used PDB IDs
+are in the table
+"[volumes_and_sasa_and_calculation_times_in_comparison_with_sbl_vorlume.tsv](volumes_and_sasa_and_calculation_times_in_comparison_with_sbl_vorlume.tsv)".
+
+### Plots
+
+![](calculation_times_in_comparison_with_sbl_vorlume.png)
+
 
