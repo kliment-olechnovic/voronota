@@ -13,7 +13,7 @@
 namespace
 {
 
-void print_help() noexcept
+void print_help(std::ostream& output) noexcept
 {
 	const std::string message=R"(
 Voronota-LT version 0.9.3
@@ -76,7 +76,7 @@ Usage examples:
     cat ./balls.xyzr | voronota-lt --probe 2 --periodic-box-corners 0 0 0 100 100 300 --processors 8 --write-cells-to-file ./cells.tsv
 )";
 
-	std::cerr << message << std::endl;
+	output << message;
 }
 
 std::string name_ball(const std::string& prefix, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index) noexcept
@@ -103,26 +103,38 @@ std::string name_contact(const std::string& prefix, const voronotalt::SpheresInp
 	return output.str();
 }
 
-}
-
-int main(const int argc, const char** argv)
+class ApplicationParameters
 {
-	std::ios_base::sync_with_stdio(false);
+public:
+	struct RunningMode
+	{
+		enum ID
+		{
+			radical,
+			simplified_aw,
+			test_updateable,
+			test_updateable_with_backup,
+			test_maskable,
+			test_second_order_cell_volumes_calculation
+		};
+	};
 
 	unsigned int max_number_of_processors=1;
 	voronotalt::Float probe=1.4;
+	bool compute_only_inter_residue_contacts;
+	bool compute_only_inter_chain_contacts;
+	bool measure_running_time;
+	bool print_contacts;
+	bool print_contacts_residue_level;
+	bool print_contacts_chain_level;
+	bool print_cells;
+	bool print_cells_residue_level;
+	bool print_cells_chain_level;
+	bool need_summaries_on_residue_level;
+	bool need_summaries_on_chain_level;
+	RunningMode::ID running_mode;
+	bool read_successfuly;
 	std::vector<voronotalt::SimplePoint> periodic_box_corners;
-	bool compute_only_inter_residue_contacts=false;
-	bool compute_only_inter_chain_contacts=false;
-	bool run_in_simplified_aw_diagram_regime=false;
-	bool measure_running_time=false;
-	bool print_contacts=false;
-	bool print_contacts_residue_level=false;
-	bool print_contacts_chain_level=false;
-	bool print_cells=false;
-	bool print_cells_residue_level=false;
-	bool print_cells_chain_level=false;
-	bool print_everything=false;
 	std::string write_input_balls_to_file;
 	std::string write_contacts_to_file;
 	std::string write_contacts_residue_level_to_file;
@@ -133,773 +145,862 @@ int main(const int argc, const char** argv)
 	std::string write_contacts_graphics_to_file;
 	std::string graphics_title;
 	std::string write_log_to_file;
-	bool help=false;
-	bool test_updateable_tessellation=false;
-	bool test_updateable_tessellation_with_backup=false;
-	bool test_maskable_tessellation=false;
-	bool test_second_order_cell_volumes_calculation=false;
 	std::ostringstream error_log_for_options_parsing;
 
+	ApplicationParameters() noexcept :
+		max_number_of_processors(1),
+		probe(1.4),
+		compute_only_inter_residue_contacts(false),
+		compute_only_inter_chain_contacts(false),
+		measure_running_time(false),
+		print_contacts(false),
+		print_contacts_residue_level(false),
+		print_contacts_chain_level(false),
+		print_cells(false),
+		print_cells_residue_level(false),
+		print_cells_chain_level(false),
+		need_summaries_on_residue_level(false),
+		need_summaries_on_chain_level(false),
+		running_mode(RunningMode::radical),
+		read_successfuly(false)
 	{
-		const std::vector<voronotalt::CLOParser::Option> cloptions=voronotalt::CLOParser::read_options(argc, argv);
+	}
 
-		for(std::size_t i=0;i<cloptions.size();i++)
+	bool read_from_command_line_args(const int argc, const char** argv) noexcept
+	{
+		read_successfuly=false;
+
 		{
-			const voronotalt::CLOParser::Option& opt=cloptions[i];
-			if(opt.name=="processors" && opt.args_ints.size()==1)
+			const std::vector<voronotalt::CLOParser::Option> cloptions=voronotalt::CLOParser::read_options(argc, argv);
+
+			for(std::size_t i=0;i<cloptions.size();i++)
 			{
-				max_number_of_processors=static_cast<unsigned int>(opt.args_ints.front());
-				if(!(max_number_of_processors>=1 && max_number_of_processors<=1000))
+				const voronotalt::CLOParser::Option& opt=cloptions[i];
+				if((opt.name=="help" || opt.name=="h") && opt.is_flag_and_true())
 				{
-					error_log_for_options_parsing << "Error: invalid command line argument for the maximum number of processors, must be an integer from 1 to 1000.\n";
+					print_help(error_log_for_options_parsing);
+					return false;
 				}
 			}
-			else if(opt.name=="probe" && opt.args_doubles.size()==1)
+
+			for(std::size_t i=0;i<cloptions.size();i++)
 			{
-				probe=static_cast<voronotalt::Float>(opt.args_doubles.front());
-				if(!(probe>=0.0 && probe<=30.0))
+				const voronotalt::CLOParser::Option& opt=cloptions[i];
+				if(opt.name=="processors" && opt.args_ints.size()==1)
 				{
-					error_log_for_options_parsing << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.0 to 30.0.\n";
+					max_number_of_processors=static_cast<unsigned int>(opt.args_ints.front());
+					if(!(max_number_of_processors>=1 && max_number_of_processors<=1000))
+					{
+						error_log_for_options_parsing << "Error: invalid command line argument for the maximum number of processors, must be an integer from 1 to 1000.\n";
+					}
+				}
+				else if(opt.name=="probe" && opt.args_doubles.size()==1)
+				{
+					probe=static_cast<voronotalt::Float>(opt.args_doubles.front());
+					if(!(probe>=0.0 && probe<=30.0))
+					{
+						error_log_for_options_parsing << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.0 to 30.0.\n";
+					}
+				}
+				else if(opt.name=="periodic-box-corners" && opt.args_doubles.size()==6)
+				{
+					periodic_box_corners.resize(2);
+					periodic_box_corners[0].x=opt.args_doubles[0];
+					periodic_box_corners[0].y=opt.args_doubles[1];
+					periodic_box_corners[0].z=opt.args_doubles[2];
+					periodic_box_corners[1].x=opt.args_doubles[3];
+					periodic_box_corners[1].y=opt.args_doubles[4];
+					periodic_box_corners[1].z=opt.args_doubles[5];
+				}
+				else if(opt.name=="compute-only-inter-residue-contacts" && opt.is_flag())
+				{
+					compute_only_inter_residue_contacts=opt.is_flag_and_true();
+				}
+				else if(opt.name=="compute-only-inter-chain-contacts" && opt.is_flag())
+				{
+					compute_only_inter_chain_contacts=opt.is_flag_and_true();
+				}
+				else if(opt.name=="run-in-aw-diagram-regime" && opt.is_flag())
+				{
+					if(opt.is_flag_and_true())
+					{
+						running_mode=RunningMode::simplified_aw;
+					}
+				}
+				else if(opt.name=="measure-running-time" && opt.is_flag())
+				{
+					measure_running_time=opt.is_flag_and_true();
+				}
+				else if(opt.name=="print-contacts" && opt.is_flag())
+				{
+					print_contacts=opt.is_flag_and_true();
+				}
+				else if(opt.name=="print-contacts-residue-level" && opt.is_flag())
+				{
+					print_contacts_residue_level=opt.is_flag_and_true();
+				}
+				else if(opt.name=="print-contacts-chain-level" && opt.is_flag())
+				{
+					print_contacts_chain_level=opt.is_flag_and_true();
+				}
+				else if(opt.name=="print-cells" && opt.is_flag())
+				{
+					print_cells=opt.is_flag_and_true();
+				}
+				else if(opt.name=="print-cells-residue-level" && opt.is_flag())
+				{
+					print_cells_residue_level=opt.is_flag_and_true();
+				}
+				else if(opt.name=="print-cells-chain-level" && opt.is_flag())
+				{
+					print_cells_chain_level=opt.is_flag_and_true();
+				}
+				else if(opt.name=="print-everything" && opt.is_flag())
+				{
+					if(opt.is_flag_and_true())
+					{
+						print_contacts=true;
+						print_contacts_residue_level=true;
+						print_contacts_chain_level=true;
+						print_cells=true;
+						print_cells_residue_level=true;
+						print_cells_chain_level=true;
+					}
+				}
+				else if(opt.name=="write-input-balls-to-file" && opt.args_strings.size()==1)
+				{
+					write_input_balls_to_file=opt.args_strings.front();
+				}
+				else if(opt.name=="write-contacts-to-file" && opt.args_strings.size()==1)
+				{
+					write_contacts_to_file=opt.args_strings.front();
+				}
+				else if(opt.name=="write-contacts-residue-level-to-file" && opt.args_strings.size()==1)
+				{
+					write_contacts_residue_level_to_file=opt.args_strings.front();
+				}
+				else if(opt.name=="write-contacts-chain-level-to-file" && opt.args_strings.size()==1)
+				{
+					write_contacts_chain_level_to_file=opt.args_strings.front();
+				}
+				else if(opt.name=="write-cells-to-file" && opt.args_strings.size()==1)
+				{
+					write_cells_to_file=opt.args_strings.front();
+				}
+				else if(opt.name=="write-cells-residue-level-to-file" && opt.args_strings.size()==1)
+				{
+					write_cells_residue_level_to_file=opt.args_strings.front();
+				}
+				else if(opt.name=="write-cells-chain-level-to-file" && opt.args_strings.size()==1)
+				{
+					write_cells_chain_level_to_file=opt.args_strings.front();
+				}
+				else if(opt.name=="write-contacts-graphics-to-file" && opt.args_strings.size()==1)
+				{
+					write_contacts_graphics_to_file=opt.args_strings.front();
+				}
+				else if(opt.name=="graphics-title" && opt.args_strings.size()==1)
+				{
+					graphics_title=opt.args_strings.front();
+				}
+				else if(opt.name=="write-log-to-file" && opt.args_strings.size()==1)
+				{
+					write_log_to_file=opt.args_strings.front();
+				}
+				else if((opt.name=="test-updateable-tessellation") && opt.is_flag())
+				{
+					if(opt.is_flag_and_true())
+					{
+						running_mode=RunningMode::test_updateable;
+					}
+				}
+				else if((opt.name=="test-updateable-tessellation-with-backup") && opt.is_flag())
+				{
+					if(opt.is_flag_and_true())
+					{
+						running_mode=RunningMode::test_updateable_with_backup;
+					}
+				}
+				else if((opt.name=="test-maskable-tessellation") && opt.is_flag())
+				{
+					if(opt.is_flag_and_true())
+					{
+						running_mode=RunningMode::test_maskable;
+					}
+				}
+				else if((opt.name=="test-second-order-cell-volumes-calculation") && opt.is_flag())
+				{
+					if(opt.is_flag_and_true())
+					{
+						running_mode=RunningMode::test_second_order_cell_volumes_calculation;
+					}
+				}
+				else if(opt.name.empty())
+				{
+					error_log_for_options_parsing << "Error: unnamed command line arguments detected.\n";
+				}
+				else
+				{
+					error_log_for_options_parsing << "Error: invalid command line option '" << opt.name << "'.\n";
 				}
 			}
-			else if(opt.name=="periodic-box-corners" && opt.args_doubles.size()==6)
-			{
-				periodic_box_corners.resize(2);
-				periodic_box_corners[0].x=opt.args_doubles[0];
-				periodic_box_corners[0].y=opt.args_doubles[1];
-				periodic_box_corners[0].z=opt.args_doubles[2];
-				periodic_box_corners[1].x=opt.args_doubles[3];
-				periodic_box_corners[1].y=opt.args_doubles[4];
-				periodic_box_corners[1].z=opt.args_doubles[5];
-			}
-			else if(opt.name=="compute-only-inter-residue-contacts" && opt.is_flag())
-			{
-				compute_only_inter_residue_contacts=opt.is_flag_and_true();
-			}
-			else if(opt.name=="compute-only-inter-chain-contacts" && opt.is_flag())
-			{
-				compute_only_inter_chain_contacts=opt.is_flag_and_true();
-			}
-			else if(opt.name=="run-in-aw-diagram-regime" && opt.is_flag())
-			{
-				run_in_simplified_aw_diagram_regime=opt.is_flag_and_true();
-			}
-			else if(opt.name=="measure-running-time" && opt.is_flag())
-			{
-				measure_running_time=opt.is_flag_and_true();
-			}
-			else if(opt.name=="print-contacts" && opt.is_flag())
-			{
-				print_contacts=opt.is_flag_and_true();
-			}
-			else if(opt.name=="print-contacts-residue-level" && opt.is_flag())
-			{
-				print_contacts_residue_level=opt.is_flag_and_true();
-			}
-			else if(opt.name=="print-contacts-chain-level" && opt.is_flag())
-			{
-				print_contacts_chain_level=opt.is_flag_and_true();
-			}
-			else if(opt.name=="print-cells" && opt.is_flag())
-			{
-				print_cells=opt.is_flag_and_true();
-			}
-			else if(opt.name=="print-cells-residue-level" && opt.is_flag())
-			{
-				print_cells_residue_level=opt.is_flag_and_true();
-			}
-			else if(opt.name=="print-cells-chain-level" && opt.is_flag())
-			{
-				print_cells_chain_level=opt.is_flag_and_true();
-			}
-			else if(opt.name=="print-everything" && opt.is_flag())
-			{
-				print_everything=opt.is_flag_and_true();
-			}
-			else if(opt.name=="write-input-balls-to-file" && opt.args_strings.size()==1)
-			{
-				write_input_balls_to_file=opt.args_strings.front();
-			}
-			else if(opt.name=="write-contacts-to-file" && opt.args_strings.size()==1)
-			{
-				write_contacts_to_file=opt.args_strings.front();
-			}
-			else if(opt.name=="write-contacts-residue-level-to-file" && opt.args_strings.size()==1)
-			{
-				write_contacts_residue_level_to_file=opt.args_strings.front();
-			}
-			else if(opt.name=="write-contacts-chain-level-to-file" && opt.args_strings.size()==1)
-			{
-				write_contacts_chain_level_to_file=opt.args_strings.front();
-			}
-			else if(opt.name=="write-cells-to-file" && opt.args_strings.size()==1)
-			{
-				write_cells_to_file=opt.args_strings.front();
-			}
-			else if(opt.name=="write-cells-residue-level-to-file" && opt.args_strings.size()==1)
-			{
-				write_cells_residue_level_to_file=opt.args_strings.front();
-			}
-			else if(opt.name=="write-cells-chain-level-to-file" && opt.args_strings.size()==1)
-			{
-				write_cells_chain_level_to_file=opt.args_strings.front();
-			}
-			else if(opt.name=="write-contacts-graphics-to-file" && opt.args_strings.size()==1)
-			{
-				write_contacts_graphics_to_file=opt.args_strings.front();
-			}
-			else if(opt.name=="graphics-title" && opt.args_strings.size()==1)
-			{
-				graphics_title=opt.args_strings.front();
-			}
-			else if(opt.name=="write-log-to-file" && opt.args_strings.size()==1)
-			{
-				write_log_to_file=opt.args_strings.front();
-			}
-			else if((opt.name=="help" || opt.name=="h") && opt.is_flag())
-			{
-				help=opt.is_flag_and_true();
-			}
-			else if((opt.name=="test-updateable-tessellation") && opt.is_flag())
-			{
-				test_updateable_tessellation=opt.is_flag_and_true();
-			}
-			else if((opt.name=="test-updateable-tessellation-with-backup") && opt.is_flag())
-			{
-				test_updateable_tessellation_with_backup=opt.is_flag_and_true();
-				test_updateable_tessellation=test_updateable_tessellation || test_updateable_tessellation_with_backup;
-			}
-			else if((opt.name=="test-maskable-tessellation") && opt.is_flag())
-			{
-				test_maskable_tessellation=opt.is_flag_and_true();
-			}
-			else if((opt.name=="test-second-order-cell-volumes-calculation") && opt.is_flag())
-			{
-				test_second_order_cell_volumes_calculation=opt.is_flag_and_true();
-			}
-			else if(opt.name.empty())
-			{
-				error_log_for_options_parsing << "Error: unnamed command line arguments detected.\n";
-			}
-			else
-			{
-				error_log_for_options_parsing << "Error: invalid command line option '" << opt.name << "'.\n";
-			}
+		}
+
+		if(voronotalt::is_stdin_from_terminal())
+		{
+			error_log_for_options_parsing << "Error: no input provided to stdin, please provide it or run with an -h or --help flag to see documentation and examples.\n";
+		}
+
+		if(!periodic_box_corners.empty() && running_mode==RunningMode::simplified_aw)
+		{
+			error_log_for_options_parsing << "Error: in this version a periodic box cannot be used in the simplified additively weighted Voronoi diagram regime.\n";
+		}
+
+		if(!periodic_box_corners.empty() && periodic_box_corners.size()<2)
+		{
+			error_log_for_options_parsing << "Error: less than two periodic box corners provided.\n";
+		}
+
+#ifdef VORONOTALT_OPENMP
+		omp_set_num_threads(max_number_of_processors);
+#else
+		if(max_number_of_processors>1)
+		{
+			error_log_for_options_parsing << "Error: this executable was not compiled to use OpenMP, therefore using more than 1 processor is not supported.\n";
+		}
+#endif
+
+		read_successfuly=error_log_for_options_parsing.str().empty();
+
+		if(read_successfuly)
+		{
+			need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty());
+			need_summaries_on_chain_level=(print_contacts_chain_level || print_cells_chain_level || !write_contacts_chain_level_to_file.empty() || !write_cells_chain_level_to_file.empty());
+		}
+
+		return read_successfuly;
+	}
+};
+
+class ApplicationLogRecorders
+{
+public:
+	voronotalt::TimeRecorderChrono time_recoder_for_all;
+	voronotalt::TimeRecorderChrono time_recoder_for_input;
+	voronotalt::TimeRecorderChrono time_recoder_for_tessellation;
+	voronotalt::TimeRecorderChrono time_recoder_for_output;
+	std::ostringstream log_output;
+
+	ApplicationLogRecorders(const bool measure_running_time) noexcept :
+		time_recoder_for_all(measure_running_time),
+		time_recoder_for_input(measure_running_time),
+		time_recoder_for_tessellation(measure_running_time),
+		time_recoder_for_output(measure_running_time)
+	{
+	}
+};
+
+void run_mode_radical(
+		const ApplicationParameters& app_params,
+		const voronotalt::SpheresInput::Result& spheres_input_result,
+		voronotalt::GraphicsWriter& graphics_writer,
+		ApplicationLogRecorders& app_log_recorders) noexcept
+{
+	app_log_recorders.time_recoder_for_tessellation.reset();
+
+	voronotalt::SpheresContainer spheres_container;
+	spheres_container.init(spheres_input_result.spheres, app_params.periodic_box_corners, app_log_recorders.time_recoder_for_tessellation);
+
+	voronotalt::RadicalTessellation::Result result;
+	voronotalt::RadicalTessellation::ResultGraphics result_graphics;
+
+	{
+		const std::vector<int> null_grouping;
+		const std::vector<int>& grouping_for_filtering=(app_params.compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (app_params.compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
+		const bool summarize_cells=grouping_for_filtering.empty();
+
+		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, graphics_writer.enabled(), summarize_cells, result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
+	}
+
+	voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;
+	if(app_params.need_summaries_on_residue_level)
+	{
+		voronotalt::RadicalTessellation::group_results(result, spheres_input_result.grouping_by_residue, result_grouped_by_residue, app_log_recorders.time_recoder_for_tessellation);
+	}
+
+	voronotalt::RadicalTessellation::GroupedResult result_grouped_by_chain;
+	if(app_params.need_summaries_on_chain_level)
+	{
+		voronotalt::RadicalTessellation::group_results(result, spheres_input_result.grouping_by_chain, result_grouped_by_chain, app_log_recorders.time_recoder_for_tessellation);
+	}
+
+	app_log_recorders.time_recoder_for_output.reset();
+
+	voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_basic(result, result_grouped_by_residue, result_grouped_by_chain, app_log_recorders.log_output);
+	voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_about_cells(result, result_grouped_by_residue, result_grouped_by_chain, app_log_recorders.log_output);
+
+	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print total numbers");
+
+	if(app_params.print_contacts)
+	{
+		voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, std::cout);
+	}
+
+	if(!app_params.write_contacts_to_file.empty())
+	{
+		std::ofstream foutput(app_params.write_contacts_to_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, foutput);
+		}
+		else
+		{
+			std::cerr << "Error (non-terminating): failed to write contacts to file '" << app_params.write_contacts_to_file << "'\n";
 		}
 	}
 
-	if(help)
+	if(app_params.print_contacts_residue_level)
 	{
-		print_help();
-		return 0;
+		voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, std::cout);
 	}
 
-	if(!error_log_for_options_parsing.str().empty())
+	if(!app_params.write_contacts_residue_level_to_file.empty())
 	{
-		std::cerr << error_log_for_options_parsing.str() << "\n";
+		std::ofstream foutput(app_params.write_contacts_residue_level_to_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, foutput);
+		}
+		else
+		{
+			std::cerr << "Error (non-terminating): failed to write contacts on residue level to file '" << app_params.write_contacts_residue_level_to_file << "'\n";
+		}
+	}
+
+	if(app_params.print_contacts_chain_level)
+	{
+		voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, std::cout);
+	}
+
+	if(!app_params.write_contacts_chain_level_to_file.empty())
+	{
+		std::ofstream foutput(app_params.write_contacts_chain_level_to_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, foutput);
+		}
+		else
+		{
+			std::cerr << "Error (non-terminating): failed to write contacts on chain level to file '" << app_params.write_contacts_chain_level_to_file << "'\n";
+		}
+	}
+
+	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result contacts");
+
+	if(app_params.print_cells)
+	{
+		voronotalt::PrintingCustomTypes::print_cells_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, true, std::cout);
+	}
+
+	if(!app_params.write_cells_to_file.empty())
+	{
+		std::ofstream foutput(app_params.write_cells_to_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			voronotalt::PrintingCustomTypes::print_cells_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, true, foutput);
+		}
+		else
+		{
+			std::cerr << "Error (non-terminating): failed to write cells to file '" << app_params.write_cells_to_file << "'\n";
+		}
+	}
+
+	if(app_params.print_cells_residue_level)
+	{
+		voronotalt::PrintingCustomTypes::print_cells_residue_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, std::cout);
+	}
+
+	if(!app_params.write_cells_residue_level_to_file.empty())
+	{
+		std::ofstream foutput(app_params.write_cells_residue_level_to_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			voronotalt::PrintingCustomTypes::print_cells_residue_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, foutput);
+		}
+		else
+		{
+			std::cerr << "Error (non-terminating): failed to write cells on residue level to file '" << app_params.write_cells_residue_level_to_file << "'\n";
+		}
+	}
+
+	if(app_params.print_cells_chain_level)
+	{
+		voronotalt::PrintingCustomTypes::print_cells_chain_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, std::cout);
+	}
+
+	if(!app_params.write_cells_chain_level_to_file.empty())
+	{
+		std::ofstream foutput(app_params.write_cells_chain_level_to_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			voronotalt::PrintingCustomTypes::print_cells_chain_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, foutput);
+		}
+		else
+		{
+			std::cerr << "Error (non-terminating): failed to write cells on chain level to file '" << app_params.write_cells_chain_level_to_file << "'\n";
+		}
+	}
+
+	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result sas and volumes");
+
+	if(graphics_writer.enabled())
+	{
+		graphics_writer.add_color(0.0, 1.0, 1.0);
+		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+		{
+			graphics_writer.add_sphere(name_ball("balls", spheres_input_result, i), spheres_input_result.spheres[i], app_params.probe);
+		}
+		graphics_writer.add_color(1.0, 1.0, 0.0);
+		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
+		{
+			const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
+			const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
+			graphics_writer.add_triangle_fan(name_contact("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
+		}
+		graphics_writer.add_color(0.5, 0.5, 0.5);
+		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
+		{
+			const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
+			const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
+			graphics_writer.add_line_loop(name_contact("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points);
+		}
+		graphics_writer.add_alpha(0.5);
+		graphics_writer.add_color(0.0, 1.0, 0.0);
+		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+		{
+			graphics_writer.add_sphere(name_ball("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
+		}
+		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
+	}
+}
+
+void run_mode_simplified_aw(
+		const ApplicationParameters& app_params,
+		const voronotalt::SpheresInput::Result& spheres_input_result,
+		voronotalt::GraphicsWriter& graphics_writer,
+		ApplicationLogRecorders& app_log_recorders) noexcept
+{
+	app_log_recorders.time_recoder_for_tessellation.reset();
+
+	voronotalt::SimplifiedAWTessellation::Result result;
+	voronotalt::SimplifiedAWTessellation::ResultGraphics result_graphics;
+
+	{
+		const std::vector<int> null_grouping;
+		const std::vector<int>& grouping_for_filtering=(app_params.compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (app_params.compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
+
+		voronotalt::SimplifiedAWTessellation::construct_full_tessellation(spheres_input_result.spheres, grouping_for_filtering, graphics_writer.enabled(), result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
+	}
+
+	voronotalt::SimplifiedAWTessellation::GroupedResult result_grouped_by_residue;
+	if(app_params.need_summaries_on_residue_level)
+	{
+		voronotalt::SimplifiedAWTessellation::group_results(result, spheres_input_result.grouping_by_residue, result_grouped_by_residue, app_log_recorders.time_recoder_for_tessellation);
+	}
+
+	voronotalt::SimplifiedAWTessellation::GroupedResult result_grouped_by_chain;
+	if(app_params.need_summaries_on_chain_level)
+	{
+		voronotalt::SimplifiedAWTessellation::group_results(result, spheres_input_result.grouping_by_chain, result_grouped_by_chain, app_log_recorders.time_recoder_for_tessellation);
+	}
+
+	app_log_recorders.time_recoder_for_output.reset();
+
+	voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_basic(result, result_grouped_by_residue, result_grouped_by_chain, app_log_recorders.log_output);
+
+	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print total numbers");
+
+	if(app_params.print_contacts)
+	{
+		voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, std::cout);
+	}
+
+	if(!app_params.write_contacts_to_file.empty())
+	{
+		std::ofstream foutput(app_params.write_contacts_to_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, foutput);
+		}
+		else
+		{
+			std::cerr << "Error (non-terminating): failed to write contacts to file '" << app_params.write_contacts_to_file << "'\n";
+		}
+	}
+
+	if(app_params.print_contacts_residue_level)
+	{
+		voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, std::cout);
+	}
+
+	if(!app_params.write_contacts_residue_level_to_file.empty())
+	{
+		std::ofstream foutput(app_params.write_contacts_residue_level_to_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, foutput);
+		}
+		else
+		{
+			std::cerr << "Error (non-terminating): failed to write contacts on residue level to file '" << app_params.write_contacts_residue_level_to_file << "'\n";
+		}
+	}
+
+	if(app_params.print_contacts_chain_level)
+	{
+		voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, std::cout);
+	}
+
+	if(!app_params.write_contacts_chain_level_to_file.empty())
+	{
+		std::ofstream foutput(app_params.write_contacts_chain_level_to_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, foutput);
+		}
+		else
+		{
+			std::cerr << "Error (non-terminating): failed to write contacts on chain level to file '" << app_params.write_contacts_chain_level_to_file << "'\n";
+		}
+	}
+
+	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result contacts");
+
+	if(graphics_writer.enabled())
+	{
+		graphics_writer.add_color(0.0, 1.0, 1.0);
+		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+		{
+			graphics_writer.add_sphere(name_ball("balls", spheres_input_result, i), spheres_input_result.spheres[i], app_params.probe);
+		}
+		graphics_writer.add_color(1.0, 1.0, 0.0);
+		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
+		{
+			const voronotalt::SimplifiedAWTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
+			const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
+			for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
+			{
+				graphics_writer.add_triangle_fan(name_contact("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
+			}
+		}
+		graphics_writer.add_color(0.5, 0.5, 0.5);
+		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
+		{
+			const voronotalt::SimplifiedAWTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
+			const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
+			for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
+			{
+				graphics_writer.add_line_loop(name_contact("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points);
+			}
+		}
+		graphics_writer.add_alpha(0.5);
+		graphics_writer.add_color(0.0, 1.0, 0.0);
+		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+		{
+			graphics_writer.add_sphere(name_ball("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
+		}
+		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
+	}
+}
+
+void run_mode_test_updateable(
+		const ApplicationParameters& app_params,
+		voronotalt::SpheresInput::Result& spheres_input_result,
+		ApplicationLogRecorders& app_log_recorders) noexcept
+{
+	app_log_recorders.time_recoder_for_tessellation.reset();
+
+	voronotalt::UpdateableRadicalTessellation urt(app_params.running_mode==ApplicationParameters::RunningMode::test_updateable_with_backup);
+
+	urt.init(spheres_input_result.spheres, app_params.periodic_box_corners, app_log_recorders.time_recoder_for_tessellation);
+
+	voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_first;
+	voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last_before_last;
+	voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last;
+
+	{
+		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+		app_log_recorders.log_output << "log_urt_init_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+		app_log_recorders.log_output << "log_urt_init_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+		app_log_recorders.log_output << "log_urt_init_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
+		result_summary_first=result_summary;
+	}
+
+	{
+		std::vector<voronotalt::UnsignedInt> ids_of_changed_input_spheres;
+		for(voronotalt::UnsignedInt i=0;i<25 && i<spheres_input_result.spheres.size();i++)
+		{
+			ids_of_changed_input_spheres.push_back(i);
+		}
+
+		{
+			urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres, app_log_recorders.time_recoder_for_tessellation);
+			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+			app_log_recorders.log_output << "log_urt_upd0_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+			app_log_recorders.log_output << "log_urt_upd0_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+			app_log_recorders.log_output << "log_urt_upd0_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
+		}
+
+		for(int a=1;a<=10;a++)
+		{
+			const double move_direction=(a<=5 ? 1.0 : -1.0);
+			const voronotalt::SimplePoint move(move_direction, move_direction, move_direction);
+			for(voronotalt::UnsignedInt i=0;i<ids_of_changed_input_spheres.size();i++)
+			{
+				voronotalt::SimpleSphere& sphere_to_move=spheres_input_result.spheres[ids_of_changed_input_spheres[i]];
+				sphere_to_move.p=voronotalt::sum_of_points(sphere_to_move.p, move);
+			}
+			urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres, app_log_recorders.time_recoder_for_tessellation);
+			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+			app_log_recorders.log_output << "log_urt_upd" << a << "_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+			app_log_recorders.log_output << "log_urt_upd" << a << "_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+			app_log_recorders.log_output << "log_urt_upd" << a << "_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
+			result_summary_last_before_last=result_summary_last;
+			result_summary_last=result_summary;
+		}
+	}
+
+	app_log_recorders.log_output << "log_urt_diff_total_contacts_count\t" << (result_summary_first.total_contacts_summary.count-result_summary_last.total_contacts_summary.count) << "\n";
+	app_log_recorders.log_output << "log_urt_diff_total_contacts_area\t" << (result_summary_first.total_contacts_summary.area-result_summary_last.total_contacts_summary.area) << "\n";
+	app_log_recorders.log_output << "log_urt_diff_total_cells_count\t" << (result_summary_first.total_cells_summary.count-result_summary_last.total_cells_summary.count) << "\n";
+	app_log_recorders.log_output << "log_urt_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area-result_summary_last.total_cells_summary.sas_area) << "\n";
+	app_log_recorders.log_output << "log_urt_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume-result_summary_last.total_cells_summary.sas_inside_volume) << "\n\n";
+
+	if(urt.backup_enabled())
+	{
+		app_log_recorders.log_output << "log_urt_backup_done\t" << urt.restore_from_backup() << "\n";
+		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_after_restoring=urt.result_summary();
+		app_log_recorders.log_output << "log_urt_backup_diff_total_contacts_count\t" << (result_summary_last_before_last.total_contacts_summary.count-result_summary_after_restoring.total_contacts_summary.count) << "\n";
+		app_log_recorders.log_output << "log_urt_backup_diff_total_contacts_area\t" << (result_summary_last_before_last.total_contacts_summary.area-result_summary_after_restoring.total_contacts_summary.area) << "\n";
+		app_log_recorders.log_output << "log_urt_backup_diff_total_cells_count\t" << (result_summary_last_before_last.total_cells_summary.count-result_summary_after_restoring.total_cells_summary.count) << "\n";
+		app_log_recorders.log_output << "log_urt_backup_diff_total_cells_sas_area\t" << (result_summary_last_before_last.total_cells_summary.sas_area-result_summary_after_restoring.total_cells_summary.sas_area) << "\n";
+		app_log_recorders.log_output << "log_urt_backup_diff_total_cells_sas_inside_volume\t" << (result_summary_last_before_last.total_cells_summary.sas_inside_volume-result_summary_after_restoring.total_cells_summary.sas_inside_volume) << "\n\n";
+	}
+}
+
+void run_mode_test_maskable(
+		const ApplicationParameters& app_params,
+		const voronotalt::SpheresInput::Result& spheres_input_result,
+		ApplicationLogRecorders& app_log_recorders) noexcept
+{
+	app_log_recorders.time_recoder_for_tessellation.reset();
+
+	voronotalt::UpdateableRadicalTessellation urt(true);
+
+	urt.init(spheres_input_result.spheres, app_params.periodic_box_corners, app_log_recorders.time_recoder_for_tessellation);
+
+	voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_first;
+
+	{
+		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+		app_log_recorders.log_output << "log_urt_init_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+		app_log_recorders.log_output << "log_urt_init_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+		app_log_recorders.log_output << "log_urt_init_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
+		result_summary_first=result_summary;
+	}
+
+	for(voronotalt::UnsignedInt i=0;i<10 && i<spheres_input_result.spheres.size();i++)
+	{
+		if(urt.update_by_setting_exclusion_mask(i, true, app_log_recorders.time_recoder_for_tessellation))
+		{
+			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+			app_log_recorders.log_output << "log_urt_upd" << i << "_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+			app_log_recorders.log_output << "log_urt_upd" << i << "_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+			app_log_recorders.log_output << "log_urt_upd" << i << "_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
+			urt.restore_from_backup();
+		}
+	}
+
+	voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last;
+
+	{
+		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
+		app_log_recorders.log_output << "log_urt_final_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
+		app_log_recorders.log_output << "log_urt_final_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
+		app_log_recorders.log_output << "log_urt_final_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
+		result_summary_last=result_summary;
+	}
+
+	app_log_recorders.log_output << "log_urt_diff_total_contacts_count\t" << (result_summary_first.total_contacts_summary.count-result_summary_last.total_contacts_summary.count) << "\n";
+	app_log_recorders.log_output << "log_urt_diff_total_contacts_area\t" << (result_summary_first.total_contacts_summary.area-result_summary_last.total_contacts_summary.area) << "\n";
+	app_log_recorders.log_output << "log_urt_diff_total_cells_count\t" << (result_summary_first.total_cells_summary.count-result_summary_last.total_cells_summary.count) << "\n";
+	app_log_recorders.log_output << "log_urt_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area-result_summary_last.total_cells_summary.sas_area) << "\n";
+	app_log_recorders.log_output << "log_urt_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume-result_summary_last.total_cells_summary.sas_inside_volume) << "\n\n";
+}
+
+void run_mode_test_second_order_cell_volumes_calculation(
+		const ApplicationParameters& app_params,
+		const voronotalt::SpheresInput::Result& spheres_input_result,
+		ApplicationLogRecorders& app_log_recorders) noexcept
+{
+	app_log_recorders.time_recoder_for_tessellation.reset();
+
+	voronotalt::UpdateableRadicalTessellation urt(true);
+
+	urt.init(spheres_input_result.spheres, app_params.periodic_box_corners, app_log_recorders.time_recoder_for_tessellation);
+
+	std::vector< std::vector<voronotalt::Float> > all_result_volumes_for_contacts_summaries;
+
+	if(urt.calculate_second_order_cell_volumes(all_result_volumes_for_contacts_summaries))
+	{
+		std::cout << "socv_header";
+		if(!spheres_input_result.sphere_labels.empty())
+		{
+			std::cout << "\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom";
+		}
+		std::cout << "\tID1_index\tID2_index\tarea\tarc_legth\tdistance\tsolid_angle_a\tsolid_angle_b\tpyramid_volume_a\tpyramid_volume_b\tsecond_order_cell_volume\n";
+		for(voronotalt::UnsignedInt i=0;i<urt.result().contacts_summaries.size();i++)
+		{
+			for(voronotalt::UnsignedInt j=0;j<urt.result().contacts_summaries[i].size();j++)
+			{
+				const voronotalt::RadicalTessellation::ContactDescriptorSummary& cds=urt.result().contacts_summaries[i][j];
+				if(std::min(cds.id_a, cds.id_b)==i)
+				{
+					std::cout << "socv";
+					if(!spheres_input_result.sphere_labels.empty())
+					{
+						std::cout << "\t";
+						voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[cds.id_a], false, false, std::cout);
+						std::cout << "\t";
+						voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[cds.id_b], false, false, std::cout);
+					}
+					std::cout << "\t" << cds.id_a << "\t" << cds.id_b << "\t" << cds.area << "\t" << cds.arc_length << "\t" << cds.distance;
+					std::cout << "\t" << cds.solid_angle_a << "\t" << cds.solid_angle_b << "\t" << cds.pyramid_volume_a << "\t" << cds.pyramid_volume_b;
+					std::cout << "\t" << ((i<all_result_volumes_for_contacts_summaries.size() && j<all_result_volumes_for_contacts_summaries[i].size()) ? all_result_volumes_for_contacts_summaries[i][j] : FLOATCONST(0.0));
+					std::cout << "\n";
+				}
+			}
+		}
+	}
+}
+
+}
+
+int main(const int argc, const char** argv)
+{
+	std::ios_base::sync_with_stdio(false);
+
+	ApplicationParameters app_params;
+
+	if(!app_params.read_from_command_line_args(argc, argv))
+	{
+		if(!app_params.error_log_for_options_parsing.str().empty())
+		{
+			std::cerr << app_params.error_log_for_options_parsing.str() << "\n";
+		}
+		else
+		{
+			std::cerr << "Error: invalid command line arguments.\n";
+		}
 		return 1;
 	}
 
-	if(voronotalt::is_stdin_from_terminal())
-	{
-		std::cerr << "Please provide input, use -h or --help flag to see documentation and examples.\n";
-		return 1;
-	}
-
-	if(!periodic_box_corners.empty() && run_in_simplified_aw_diagram_regime)
-	{
-		std::cerr << "Error: in this version a periodic box cannot be used in the simplified additively weighted Voronoi diagram regime.\n";
-		return 1;
-	}
-
-	if(!periodic_box_corners.empty() && periodic_box_corners.size()<2)
-	{
-		std::cerr << "Error: less than two periodic box corners provided.\n";
-		return 1;
-	}
-
-#ifdef VORONOTALT_OPENMP
-	omp_set_num_threads(max_number_of_processors);
-#else
-	if(max_number_of_processors>1)
-	{
-		std::cerr << "Error: this executable was not compiled to use OpenMP, therefore using more than 1 processor is not supported.\n";
-		return 1;
-	}
-#endif
-
-	if(print_everything)
-	{
-		print_contacts=true;
-		print_contacts_residue_level=true;
-		print_contacts_chain_level=true;
-		print_cells=true;
-		print_cells_residue_level=true;
-		print_cells_chain_level=true;
-	}
-
-	const bool need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty());
-	const bool need_summaries_on_chain_level=(print_contacts_chain_level || print_cells_chain_level || !write_contacts_chain_level_to_file.empty() || !write_cells_chain_level_to_file.empty());
-
-	voronotalt::TimeRecorderChrono time_recoder_for_all(measure_running_time);
-	voronotalt::TimeRecorderChrono time_recoder_for_input(measure_running_time);
-	voronotalt::TimeRecorderChrono time_recoder_for_tessellation(measure_running_time);
-	voronotalt::TimeRecorderChrono time_recoder_for_output(measure_running_time);
+	ApplicationLogRecorders app_log_recorders(app_params.measure_running_time);
 
 	voronotalt::SpheresInput::Result spheres_input_result;
 
-	if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_stream(std::cin, probe, spheres_input_result, std::cerr, time_recoder_for_input))
+	if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_stream(std::cin, app_params.probe, spheres_input_result, std::cerr, app_log_recorders.time_recoder_for_input))
 	{
 		std::cerr << "Error: failed to read input without errors\n";
 		return 1;
 	}
 
-	if(!write_input_balls_to_file.empty())
+	if(!app_params.write_input_balls_to_file.empty())
 	{
-		std::ofstream foutput(write_input_balls_to_file.c_str(), std::ios::out);
+		std::ofstream foutput(app_params.write_input_balls_to_file.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			voronotalt::PrintingCustomTypes::print_balls_to_stream(spheres_input_result.spheres, spheres_input_result.sphere_labels, probe, foutput);
+			voronotalt::PrintingCustomTypes::print_balls_to_stream(spheres_input_result.spheres, spheres_input_result.sphere_labels, app_params.probe, foutput);
 		}
 		else
 		{
-			std::cerr << "Error (non-terminating): failed to write input balls to file '" << write_input_balls_to_file << "'\n";
+			std::cerr << "Error (non-terminating): failed to write input balls to file '" << app_params.write_input_balls_to_file << "'\n";
 		}
 	}
 
-	if((compute_only_inter_chain_contacts || need_summaries_on_chain_level) && spheres_input_result.number_of_chain_groups<2)
+	if((app_params.compute_only_inter_chain_contacts || app_params.need_summaries_on_chain_level) && spheres_input_result.number_of_chain_groups<2)
 	{
 		std::cerr << "Error: inter-chain contact selection not possible - not enough distinct chains derived from labels\n";
 		return 1;
 	}
 
-	if((compute_only_inter_residue_contacts || need_summaries_on_residue_level) && spheres_input_result.number_of_residue_groups<2)
+	if((app_params.compute_only_inter_residue_contacts || app_params.need_summaries_on_residue_level) && spheres_input_result.number_of_residue_groups<2)
 	{
 		std::cerr << "Error: inter-residue contact selection not possible - not enough distinct residues derived from labels\n";
 		return 1;
 	}
 
-	const std::vector<int> null_grouping;
-	const std::vector<int>& grouping_for_filtering=(compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
+	voronotalt::GraphicsWriter graphics_writer(!app_params.write_contacts_graphics_to_file.empty());
 
-	std::ostringstream log_output;
-
-	voronotalt::GraphicsWriter graphics_writer(!write_contacts_graphics_to_file.empty());
-
-	const int running_mode_radical=0;
-	const int running_mode_simplified_aw=1;
-	const int running_mode_test_updateable=2;
-	const int running_mode_test_maskable=3;
-	const int running_mode_test_second_order_cell_volumes_calculation=4;
-
-	int selected_running_mode=running_mode_radical;
-
-	if(run_in_simplified_aw_diagram_regime)
+	if(app_params.running_mode==ApplicationParameters::RunningMode::radical)
 	{
-		selected_running_mode=running_mode_simplified_aw;
+		run_mode_radical(app_params, spheres_input_result, graphics_writer, app_log_recorders);
 	}
-	else if(test_updateable_tessellation)
+	else if(app_params.running_mode==ApplicationParameters::RunningMode::simplified_aw)
 	{
-		selected_running_mode=running_mode_test_updateable;
+		run_mode_simplified_aw(app_params, spheres_input_result, graphics_writer, app_log_recorders);
 	}
-	else if(test_maskable_tessellation)
+	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_updateable || app_params.running_mode==ApplicationParameters::RunningMode::test_updateable_with_backup)
 	{
-		selected_running_mode=running_mode_test_maskable;
+		run_mode_test_updateable(app_params, spheres_input_result, app_log_recorders);
 	}
-	else if(test_second_order_cell_volumes_calculation)
+	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_maskable)
 	{
-		selected_running_mode=running_mode_test_second_order_cell_volumes_calculation;
+		run_mode_test_maskable(app_params, spheres_input_result, app_log_recorders);
 	}
-
-	if(selected_running_mode==running_mode_radical)
+	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_second_order_cell_volumes_calculation)
 	{
-		time_recoder_for_tessellation.reset();
-
-		const bool summarize_cells=grouping_for_filtering.empty();
-
-		voronotalt::SpheresContainer spheres_container;
-		spheres_container.init(spheres_input_result.spheres, periodic_box_corners, time_recoder_for_tessellation);
-
-		voronotalt::RadicalTessellation::Result result;
-		voronotalt::RadicalTessellation::ResultGraphics result_graphics;
-		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, graphics_writer.enabled(), summarize_cells, result, result_graphics, time_recoder_for_tessellation);
-
-		voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;
-		if(need_summaries_on_residue_level)
-		{
-			voronotalt::RadicalTessellation::group_results(result, spheres_input_result.grouping_by_residue, result_grouped_by_residue, time_recoder_for_tessellation);
-		}
-
-		voronotalt::RadicalTessellation::GroupedResult result_grouped_by_chain;
-		if(need_summaries_on_chain_level)
-		{
-			voronotalt::RadicalTessellation::group_results(result, spheres_input_result.grouping_by_chain, result_grouped_by_chain, time_recoder_for_tessellation);
-		}
-
-		time_recoder_for_output.reset();
-
-		voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_basic(result, result_grouped_by_residue, result_grouped_by_chain, log_output);
-		voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_about_cells(result, result_grouped_by_residue, result_grouped_by_chain, log_output);
-
-		time_recoder_for_output.record_elapsed_miliseconds_and_reset("print total numbers");
-
-		if(print_contacts)
-		{
-			voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, std::cout);
-		}
-
-		if(!write_contacts_to_file.empty())
-		{
-			std::ofstream foutput(write_contacts_to_file.c_str(), std::ios::out);
-			if(foutput.good())
-			{
-				voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, foutput);
-			}
-			else
-			{
-				std::cerr << "Error (non-terminating): failed to write contacts to file '" << write_contacts_to_file << "'\n";
-			}
-		}
-
-		if(print_contacts_residue_level)
-		{
-			voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, std::cout);
-		}
-
-		if(!write_contacts_residue_level_to_file.empty())
-		{
-			std::ofstream foutput(write_contacts_residue_level_to_file.c_str(), std::ios::out);
-			if(foutput.good())
-			{
-				voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, foutput);
-			}
-			else
-			{
-				std::cerr << "Error (non-terminating): failed to write contacts on residue level to file '" << write_contacts_residue_level_to_file << "'\n";
-			}
-		}
-
-		if(print_contacts_chain_level)
-		{
-			voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, std::cout);
-		}
-
-		if(!write_contacts_chain_level_to_file.empty())
-		{
-			std::ofstream foutput(write_contacts_chain_level_to_file.c_str(), std::ios::out);
-			if(foutput.good())
-			{
-				voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, foutput);
-			}
-			else
-			{
-				std::cerr << "Error (non-terminating): failed to write contacts on chain level to file '" << write_contacts_chain_level_to_file << "'\n";
-			}
-		}
-
-		time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result contacts");
-
-		if(print_cells)
-		{
-			voronotalt::PrintingCustomTypes::print_cells_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, true, std::cout);
-		}
-
-		if(!write_cells_to_file.empty())
-		{
-			std::ofstream foutput(write_cells_to_file.c_str(), std::ios::out);
-			if(foutput.good())
-			{
-				voronotalt::PrintingCustomTypes::print_cells_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, true, foutput);
-			}
-			else
-			{
-				std::cerr << "Error (non-terminating): failed to write cells to file '" << write_cells_to_file << "'\n";
-			}
-		}
-
-		if(print_cells_residue_level)
-		{
-			voronotalt::PrintingCustomTypes::print_cells_residue_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, std::cout);
-		}
-
-		if(!write_cells_residue_level_to_file.empty())
-		{
-			std::ofstream foutput(write_cells_residue_level_to_file.c_str(), std::ios::out);
-			if(foutput.good())
-			{
-				voronotalt::PrintingCustomTypes::print_cells_residue_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, foutput);
-			}
-			else
-			{
-				std::cerr << "Error (non-terminating): failed to write cells on residue level to file '" << write_cells_residue_level_to_file << "'\n";
-			}
-		}
-
-		if(print_cells_chain_level)
-		{
-			voronotalt::PrintingCustomTypes::print_cells_chain_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, std::cout);
-		}
-
-		if(!write_cells_chain_level_to_file.empty())
-		{
-			std::ofstream foutput(write_cells_chain_level_to_file.c_str(), std::ios::out);
-			if(foutput.good())
-			{
-				voronotalt::PrintingCustomTypes::print_cells_chain_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, foutput);
-			}
-			else
-			{
-				std::cerr << "Error (non-terminating): failed to write cells on chain level to file '" << write_cells_chain_level_to_file << "'\n";
-			}
-		}
-
-		time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result sas and volumes");
-
-		if(graphics_writer.enabled())
-		{
-			graphics_writer.add_color(0.0, 1.0, 1.0);
-			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
-			{
-				graphics_writer.add_sphere(name_ball("balls", spheres_input_result, i), spheres_input_result.spheres[i], probe);
-			}
-			graphics_writer.add_color(1.0, 1.0, 0.0);
-			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
-			{
-				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
-				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-				graphics_writer.add_triangle_fan(name_contact("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
-			}
-			graphics_writer.add_color(0.5, 0.5, 0.5);
-			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
-			{
-				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
-				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-				graphics_writer.add_line_loop(name_contact("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points);
-			}
-			graphics_writer.add_alpha(0.5);
-			graphics_writer.add_color(0.0, 1.0, 0.0);
-			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
-			{
-				graphics_writer.add_sphere(name_ball("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
-			}
-			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
-		}
+		run_mode_test_second_order_cell_volumes_calculation(app_params, spheres_input_result, app_log_recorders);
 	}
-
-	if(selected_running_mode==running_mode_simplified_aw)
+	else
 	{
-		time_recoder_for_tessellation.reset();
-
-		voronotalt::SimplifiedAWTessellation::Result result;
-		voronotalt::SimplifiedAWTessellation::ResultGraphics result_graphics;
-		voronotalt::SimplifiedAWTessellation::construct_full_tessellation(spheres_input_result.spheres, grouping_for_filtering, graphics_writer.enabled(), result, result_graphics, time_recoder_for_tessellation);
-
-		voronotalt::SimplifiedAWTessellation::GroupedResult result_grouped_by_residue;
-		if(need_summaries_on_residue_level)
-		{
-			voronotalt::SimplifiedAWTessellation::group_results(result, spheres_input_result.grouping_by_residue, result_grouped_by_residue, time_recoder_for_tessellation);
-		}
-
-		voronotalt::SimplifiedAWTessellation::GroupedResult result_grouped_by_chain;
-		if(need_summaries_on_chain_level)
-		{
-			voronotalt::SimplifiedAWTessellation::group_results(result, spheres_input_result.grouping_by_chain, result_grouped_by_chain, time_recoder_for_tessellation);
-		}
-
-		time_recoder_for_output.reset();
-
-		voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_basic(result, result_grouped_by_residue, result_grouped_by_chain, log_output);
-
-		time_recoder_for_output.record_elapsed_miliseconds_and_reset("print total numbers");
-
-		if(print_contacts)
-		{
-			voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, std::cout);
-		}
-
-		if(!write_contacts_to_file.empty())
-		{
-			std::ofstream foutput(write_contacts_to_file.c_str(), std::ios::out);
-			if(foutput.good())
-			{
-				voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, foutput);
-			}
-			else
-			{
-				std::cerr << "Error (non-terminating): failed to write contacts to file '" << write_contacts_to_file << "'\n";
-			}
-		}
-
-		if(print_contacts_residue_level)
-		{
-			voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, std::cout);
-		}
-
-		if(!write_contacts_residue_level_to_file.empty())
-		{
-			std::ofstream foutput(write_contacts_residue_level_to_file.c_str(), std::ios::out);
-			if(foutput.good())
-			{
-				voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, foutput);
-			}
-			else
-			{
-				std::cerr << "Error (non-terminating): failed to write contacts on residue level to file '" << write_contacts_residue_level_to_file << "'\n";
-			}
-		}
-
-		if(print_contacts_chain_level)
-		{
-			voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, std::cout);
-		}
-
-		if(!write_contacts_chain_level_to_file.empty())
-		{
-			std::ofstream foutput(write_contacts_chain_level_to_file.c_str(), std::ios::out);
-			if(foutput.good())
-			{
-				voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, foutput);
-			}
-			else
-			{
-				std::cerr << "Error (non-terminating): failed to write contacts on chain level to file '" << write_contacts_chain_level_to_file << "'\n";
-			}
-		}
-
-		time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result contacts");
-
-		if(graphics_writer.enabled())
-		{
-			graphics_writer.add_color(0.0, 1.0, 1.0);
-			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
-			{
-				graphics_writer.add_sphere(name_ball("balls", spheres_input_result, i), spheres_input_result.spheres[i], probe);
-			}
-			graphics_writer.add_color(1.0, 1.0, 0.0);
-			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
-			{
-				const voronotalt::SimplifiedAWTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
-				const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-				for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
-				{
-					graphics_writer.add_triangle_fan(name_contact("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
-				}
-			}
-			graphics_writer.add_color(0.5, 0.5, 0.5);
-			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
-			{
-				const voronotalt::SimplifiedAWTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
-				const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-				for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
-				{
-					graphics_writer.add_line_loop(name_contact("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points);
-				}
-			}
-			graphics_writer.add_alpha(0.5);
-			graphics_writer.add_color(0.0, 1.0, 0.0);
-			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
-			{
-				graphics_writer.add_sphere(name_ball("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
-			}
-			time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
-		}
-	}
-
-	if(selected_running_mode==running_mode_test_updateable)
-	{
-		time_recoder_for_tessellation.reset();
-
-		voronotalt::UpdateableRadicalTessellation urt(test_updateable_tessellation_with_backup);
-
-		urt.init(spheres_input_result.spheres, periodic_box_corners, time_recoder_for_tessellation);
-
-		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_first;
-		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last_before_last;
-		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last;
-
-		{
-			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
-			log_output << "log_urt_init_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
-			log_output << "log_urt_init_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
-			log_output << "log_urt_init_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
-			result_summary_first=result_summary;
-		}
-
-		{
-			std::vector<voronotalt::UnsignedInt> ids_of_changed_input_spheres;
-			for(voronotalt::UnsignedInt i=0;i<25 && i<spheres_input_result.spheres.size();i++)
-			{
-				ids_of_changed_input_spheres.push_back(i);
-			}
-
-			{
-				urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres, time_recoder_for_tessellation);
-				voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
-				log_output << "log_urt_upd0_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
-				log_output << "log_urt_upd0_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
-				log_output << "log_urt_upd0_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
-			}
-
-			for(int a=1;a<=10;a++)
-			{
-				const double move_direction=(a<=5 ? 1.0 : -1.0);
-				const voronotalt::SimplePoint move(move_direction, move_direction, move_direction);
-				for(voronotalt::UnsignedInt i=0;i<ids_of_changed_input_spheres.size();i++)
-				{
-					voronotalt::SimpleSphere& sphere_to_move=spheres_input_result.spheres[ids_of_changed_input_spheres[i]];
-					sphere_to_move.p=voronotalt::sum_of_points(sphere_to_move.p, move);
-				}
-				urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres, time_recoder_for_tessellation);
-				voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
-				log_output << "log_urt_upd" << a << "_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
-				log_output << "log_urt_upd" << a << "_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
-				log_output << "log_urt_upd" << a << "_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
-				result_summary_last_before_last=result_summary_last;
-				result_summary_last=result_summary;
-			}
-		}
-
-		log_output << "log_urt_diff_total_contacts_count\t" << (result_summary_first.total_contacts_summary.count-result_summary_last.total_contacts_summary.count) << "\n";
-		log_output << "log_urt_diff_total_contacts_area\t" << (result_summary_first.total_contacts_summary.area-result_summary_last.total_contacts_summary.area) << "\n";
-		log_output << "log_urt_diff_total_cells_count\t" << (result_summary_first.total_cells_summary.count-result_summary_last.total_cells_summary.count) << "\n";
-		log_output << "log_urt_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area-result_summary_last.total_cells_summary.sas_area) << "\n";
-		log_output << "log_urt_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume-result_summary_last.total_cells_summary.sas_inside_volume) << "\n\n";
-
-		if(urt.backup_enabled())
-		{
-			log_output << "log_urt_backup_done\t" << urt.restore_from_backup() << "\n";
-			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_after_restoring=urt.result_summary();
-			log_output << "log_urt_backup_diff_total_contacts_count\t" << (result_summary_last_before_last.total_contacts_summary.count-result_summary_after_restoring.total_contacts_summary.count) << "\n";
-			log_output << "log_urt_backup_diff_total_contacts_area\t" << (result_summary_last_before_last.total_contacts_summary.area-result_summary_after_restoring.total_contacts_summary.area) << "\n";
-			log_output << "log_urt_backup_diff_total_cells_count\t" << (result_summary_last_before_last.total_cells_summary.count-result_summary_after_restoring.total_cells_summary.count) << "\n";
-			log_output << "log_urt_backup_diff_total_cells_sas_area\t" << (result_summary_last_before_last.total_cells_summary.sas_area-result_summary_after_restoring.total_cells_summary.sas_area) << "\n";
-			log_output << "log_urt_backup_diff_total_cells_sas_inside_volume\t" << (result_summary_last_before_last.total_cells_summary.sas_inside_volume-result_summary_after_restoring.total_cells_summary.sas_inside_volume) << "\n\n";
-		}
-	}
-
-	if(selected_running_mode==running_mode_test_maskable)
-	{
-		time_recoder_for_tessellation.reset();
-
-		voronotalt::UpdateableRadicalTessellation urt(true);
-
-		urt.init(spheres_input_result.spheres, periodic_box_corners, time_recoder_for_tessellation);
-
-		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_first;
-
-		{
-			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
-			log_output << "log_urt_init_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
-			log_output << "log_urt_init_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
-			log_output << "log_urt_init_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
-			result_summary_first=result_summary;
-		}
-
-		for(voronotalt::UnsignedInt i=0;i<10 && i<spheres_input_result.spheres.size();i++)
-		{
-			if(urt.update_by_setting_exclusion_mask(i, true, time_recoder_for_tessellation))
-			{
-				voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
-				log_output << "log_urt_upd" << i << "_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
-				log_output << "log_urt_upd" << i << "_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
-				log_output << "log_urt_upd" << i << "_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
-				urt.restore_from_backup();
-			}
-		}
-
-		voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last;
-
-		{
-			voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary=urt.result_summary();
-			log_output << "log_urt_final_local_update_balls_count\t" << urt.last_update_ids_of_affected_input_spheres().size() << "\n";
-			log_output << "log_urt_final_total_contacts_area\t" << result_summary.total_contacts_summary.area << "\n";
-			log_output << "log_urt_final_total_cells_sas_area\t" << result_summary.total_cells_summary.sas_area << "\n\n";
-			result_summary_last=result_summary;
-		}
-
-		log_output << "log_urt_diff_total_contacts_count\t" << (result_summary_first.total_contacts_summary.count-result_summary_last.total_contacts_summary.count) << "\n";
-		log_output << "log_urt_diff_total_contacts_area\t" << (result_summary_first.total_contacts_summary.area-result_summary_last.total_contacts_summary.area) << "\n";
-		log_output << "log_urt_diff_total_cells_count\t" << (result_summary_first.total_cells_summary.count-result_summary_last.total_cells_summary.count) << "\n";
-		log_output << "log_urt_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area-result_summary_last.total_cells_summary.sas_area) << "\n";
-		log_output << "log_urt_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume-result_summary_last.total_cells_summary.sas_inside_volume) << "\n\n";
-	}
-
-	if(selected_running_mode==running_mode_test_second_order_cell_volumes_calculation)
-	{
-		time_recoder_for_tessellation.reset();
-
-		voronotalt::UpdateableRadicalTessellation urt(true);
-
-		urt.init(spheres_input_result.spheres, periodic_box_corners, time_recoder_for_tessellation);
-
-		std::vector< std::vector<voronotalt::Float> > all_result_volumes_for_contacts_summaries;
-
-		if(urt.calculate_second_order_cell_volumes(all_result_volumes_for_contacts_summaries))
-		{
-			std::cout << "socv_header";
-			if(!spheres_input_result.sphere_labels.empty())
-			{
-				std::cout << "\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom";
-			}
-			std::cout << "\tID1_index\tID2_index\tarea\tarc_legth\tdistance\tsolid_angle_a\tsolid_angle_b\tpyramid_volume_a\tpyramid_volume_b\tsecond_order_cell_volume\n";
-			for(voronotalt::UnsignedInt i=0;i<urt.result().contacts_summaries.size();i++)
-			{
-				for(voronotalt::UnsignedInt j=0;j<urt.result().contacts_summaries[i].size();j++)
-				{
-					const voronotalt::RadicalTessellation::ContactDescriptorSummary& cds=urt.result().contacts_summaries[i][j];
-					if(std::min(cds.id_a, cds.id_b)==i)
-					{
-						std::cout << "socv";
-						if(!spheres_input_result.sphere_labels.empty())
-						{
-							std::cout << "\t";
-							voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[cds.id_a], false, false, std::cout);
-							std::cout << "\t";
-							voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[cds.id_b], false, false, std::cout);
-						}
-						std::cout << "\t" << cds.id_a << "\t" << cds.id_b << "\t" << cds.area << "\t" << cds.arc_length << "\t" << cds.distance;
-						std::cout << "\t" << cds.solid_angle_a << "\t" << cds.solid_angle_b << "\t" << cds.pyramid_volume_a << "\t" << cds.pyramid_volume_b;
-						std::cout << "\t" << ((i<all_result_volumes_for_contacts_summaries.size() && j<all_result_volumes_for_contacts_summaries[i].size()) ? all_result_volumes_for_contacts_summaries[i][j] : FLOATCONST(0.0));
-						std::cout << "\n";
-					}
-				}
-			}
-		}
+		std::cerr << "Error: unrecognized running mode.\n";
+		return 1;
 	}
 
 	if(graphics_writer.enabled())
 	{
-		time_recoder_for_output.reset();
-		if(!graphics_writer.write_to_file(graphics_title, write_contacts_graphics_to_file))
+		app_log_recorders.time_recoder_for_output.reset();
+		if(!graphics_writer.write_to_file(app_params.graphics_title, app_params.write_contacts_graphics_to_file))
 		{
-			std::cerr << "Error (non-terminating): failed to write graphics to file '" << write_contacts_graphics_to_file << "'\n";
+			std::cerr << "Error (non-terminating): failed to write graphics to file '" << app_params.write_contacts_graphics_to_file << "'\n";
 		}
-		time_recoder_for_output.record_elapsed_miliseconds_and_reset("write printed graphics to file");
+		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("write printed graphics to file");
 	}
 
-	if(measure_running_time)
+	if(app_params.measure_running_time)
 	{
 #ifdef VORONOTALT_OPENMP
-		log_output << "log_openmp_threads\t" << omp_get_max_threads() << "\n";
+		app_log_recorders.log_output << "log_openmp_threads\t" << omp_get_max_threads() << "\n";
 #endif
-		time_recoder_for_input.print_recordings(log_output, "log time input stage", true);
-		time_recoder_for_tessellation.print_recordings(log_output, "log time tessellation stage", true);
-		time_recoder_for_output.print_recordings(log_output, "log time output stage", true);
-		time_recoder_for_all.print_elapsed_time(log_output, "log time full program");
+		app_log_recorders.time_recoder_for_input.print_recordings(app_log_recorders.log_output, "log time input stage", true);
+		app_log_recorders.time_recoder_for_tessellation.print_recordings(app_log_recorders.log_output, "log time tessellation stage", true);
+		app_log_recorders.time_recoder_for_output.print_recordings(app_log_recorders.log_output, "log time output stage", true);
+		app_log_recorders.time_recoder_for_all.print_elapsed_time(app_log_recorders.log_output, "log time full program");
 	}
 
-	std::cerr << log_output.str();
+	std::cerr << app_log_recorders.log_output.str();
 
-	if(!write_log_to_file.empty())
+	if(!app_params.write_log_to_file.empty())
 	{
-		std::ofstream foutput(write_log_to_file.c_str(), std::ios::out);
+		std::ofstream foutput(app_params.write_log_to_file.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			foutput << log_output.str();
+			foutput << app_log_recorders.log_output.str();
 		}
 		else
 		{
-			std::cerr << "Error (non-terminating): failed to write log to file '" << write_log_to_file << "'\n";
+			std::cerr << "Error (non-terminating): failed to write log to file '" << app_params.write_log_to_file << "'\n";
 		}
 	}
 
