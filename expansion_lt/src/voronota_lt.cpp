@@ -79,30 +79,6 @@ Usage examples:
 	output << message;
 }
 
-std::string name_ball(const std::string& prefix, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index) noexcept
-{
-	std::ostringstream output;
-	output << prefix;
-	if(index<spheres_input_result.sphere_labels.size())
-	{
-		output << "_" << spheres_input_result.sphere_labels[index].chain_id;
-	}
-	return output.str();
-}
-
-std::string name_contact(const std::string& prefix, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index1, const std::size_t index2) noexcept
-{
-	std::ostringstream output;
-	output << prefix;
-	if(index1<spheres_input_result.sphere_labels.size() && index2<spheres_input_result.sphere_labels.size())
-	{
-		const bool need_to_swap=(spheres_input_result.sphere_labels[index2].chain_id<spheres_input_result.sphere_labels[index1].chain_id);
-		output << "_" << spheres_input_result.sphere_labels[need_to_swap? index2 : index1].chain_id;
-		output << "_" << spheres_input_result.sphere_labels[need_to_swap? index1 : index2].chain_id;
-	}
-	return output.str();
-}
-
 class ApplicationParameters
 {
 public:
@@ -391,20 +367,96 @@ public:
 	voronotalt::TimeRecorderChrono time_recoder_for_output;
 	std::ostringstream log_output;
 
-	ApplicationLogRecorders(const bool measure_running_time) noexcept :
-		time_recoder_for_all(measure_running_time),
-		time_recoder_for_input(measure_running_time),
-		time_recoder_for_tessellation(measure_running_time),
-		time_recoder_for_output(measure_running_time)
+	ApplicationLogRecorders(const ApplicationParameters& app_params) noexcept :
+		time_recoder_for_all(app_params.measure_running_time),
+		time_recoder_for_input(app_params.measure_running_time),
+		time_recoder_for_tessellation(app_params.measure_running_time),
+		time_recoder_for_output(app_params.measure_running_time)
 	{
+	}
+
+	void finalize_and_output(const ApplicationParameters& app_params) noexcept
+	{
+		if(app_params.measure_running_time)
+		{
+#ifdef VORONOTALT_OPENMP
+			log_output << "log_openmp_threads\t" << omp_get_max_threads() << "\n";
+#endif
+			time_recoder_for_input.print_recordings(log_output, "log time input stage", true);
+			time_recoder_for_tessellation.print_recordings(log_output, "log time tessellation stage", true);
+			time_recoder_for_output.print_recordings(log_output, "log time output stage", true);
+			time_recoder_for_all.print_elapsed_time(log_output, "log time full program");
+		}
+
+		std::cerr << log_output.str();
+
+		if(!app_params.write_log_to_file.empty())
+		{
+			std::ofstream foutput(app_params.write_log_to_file.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				foutput << log_output.str();
+			}
+			else
+			{
+				std::cerr << "Error (non-terminating): failed to write log to file '" << app_params.write_log_to_file << "'\n";
+			}
+		}
+	}
+};
+
+class ApplicationGraphicsRecorder
+{
+public:
+	static inline std::string name_ball_group(const std::string& prefix, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index) noexcept
+	{
+		std::ostringstream output;
+		output << prefix;
+		if(index<spheres_input_result.sphere_labels.size())
+		{
+			output << "_" << spheres_input_result.sphere_labels[index].chain_id;
+		}
+		return output.str();
+	}
+
+	static inline std::string name_contact_group(const std::string& prefix, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index1, const std::size_t index2) noexcept
+	{
+		std::ostringstream output;
+		output << prefix;
+		if(index1<spheres_input_result.sphere_labels.size() && index2<spheres_input_result.sphere_labels.size())
+		{
+			const bool need_to_swap=(spheres_input_result.sphere_labels[index2].chain_id<spheres_input_result.sphere_labels[index1].chain_id);
+			output << "_" << spheres_input_result.sphere_labels[need_to_swap? index2 : index1].chain_id;
+			output << "_" << spheres_input_result.sphere_labels[need_to_swap? index1 : index2].chain_id;
+		}
+		return output.str();
+	}
+
+	voronotalt::GraphicsWriter graphics_writer;
+
+	ApplicationGraphicsRecorder(const ApplicationParameters& app_params) noexcept : graphics_writer(!app_params.write_contacts_graphics_to_file.empty())
+	{
+	}
+
+	void finalize_and_output(const ApplicationParameters& app_params, ApplicationLogRecorders& app_log_recorders) const noexcept
+	{
+		if(graphics_writer.enabled())
+		{
+			app_log_recorders.time_recoder_for_output.reset();
+			if(!graphics_writer.write_to_file(app_params.graphics_title, app_params.write_contacts_graphics_to_file))
+			{
+				std::cerr << "Error (non-terminating): failed to write graphics to file '" << app_params.write_contacts_graphics_to_file << "'\n";
+			}
+			app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("write printed graphics to file");
+		}
 	}
 };
 
 void run_mode_radical(
 		const ApplicationParameters& app_params,
 		const voronotalt::SpheresInput::Result& spheres_input_result,
-		voronotalt::GraphicsWriter& graphics_writer,
-		ApplicationLogRecorders& app_log_recorders) noexcept
+		ApplicationLogRecorders& app_log_recorders,
+		ApplicationGraphicsRecorder& app_graphics_recorder) noexcept
 {
 	app_log_recorders.time_recoder_for_tessellation.reset();
 
@@ -419,7 +471,7 @@ void run_mode_radical(
 		const std::vector<int>& grouping_for_filtering=(app_params.compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (app_params.compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
 		const bool summarize_cells=grouping_for_filtering.empty();
 
-		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, graphics_writer.enabled(), summarize_cells, result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
+		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, app_graphics_recorder.graphics_writer.enabled(), summarize_cells, result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
 	}
 
 	voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;
@@ -553,32 +605,32 @@ void run_mode_radical(
 
 	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result sas and volumes");
 
-	if(graphics_writer.enabled())
+	if(app_graphics_recorder.graphics_writer.enabled())
 	{
-		graphics_writer.add_color(0.0, 1.0, 1.0);
+		app_graphics_recorder.graphics_writer.add_color(0.0, 1.0, 1.0);
 		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
 		{
-			graphics_writer.add_sphere(name_ball("balls", spheres_input_result, i), spheres_input_result.spheres[i], app_params.probe);
+			app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("balls", spheres_input_result, i), spheres_input_result.spheres[i], app_params.probe);
 		}
-		graphics_writer.add_color(1.0, 1.0, 0.0);
+		app_graphics_recorder.graphics_writer.add_color(1.0, 1.0, 0.0);
 		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 		{
 			const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 			const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-			graphics_writer.add_triangle_fan(name_contact("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
+			app_graphics_recorder.graphics_writer.add_triangle_fan(ApplicationGraphicsRecorder::name_contact_group("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
 		}
-		graphics_writer.add_color(0.5, 0.5, 0.5);
+		app_graphics_recorder.graphics_writer.add_color(0.5, 0.5, 0.5);
 		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 		{
 			const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 			const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-			graphics_writer.add_line_loop(name_contact("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points);
+			app_graphics_recorder.graphics_writer.add_line_loop(ApplicationGraphicsRecorder::name_contact_group("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points);
 		}
-		graphics_writer.add_alpha(0.5);
-		graphics_writer.add_color(0.0, 1.0, 0.0);
+		app_graphics_recorder.graphics_writer.add_alpha(0.5);
+		app_graphics_recorder.graphics_writer.add_color(0.0, 1.0, 0.0);
 		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
 		{
-			graphics_writer.add_sphere(name_ball("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
+			app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
 		}
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
 	}
@@ -587,8 +639,8 @@ void run_mode_radical(
 void run_mode_simplified_aw(
 		const ApplicationParameters& app_params,
 		const voronotalt::SpheresInput::Result& spheres_input_result,
-		voronotalt::GraphicsWriter& graphics_writer,
-		ApplicationLogRecorders& app_log_recorders) noexcept
+		ApplicationLogRecorders& app_log_recorders,
+		ApplicationGraphicsRecorder& app_graphics_recorder) noexcept
 {
 	app_log_recorders.time_recoder_for_tessellation.reset();
 
@@ -599,7 +651,7 @@ void run_mode_simplified_aw(
 		const std::vector<int> null_grouping;
 		const std::vector<int>& grouping_for_filtering=(app_params.compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (app_params.compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
 
-		voronotalt::SimplifiedAWTessellation::construct_full_tessellation(spheres_input_result.spheres, grouping_for_filtering, graphics_writer.enabled(), result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
+		voronotalt::SimplifiedAWTessellation::construct_full_tessellation(spheres_input_result.spheres, grouping_for_filtering, app_graphics_recorder.graphics_writer.enabled(), result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
 	}
 
 	voronotalt::SimplifiedAWTessellation::GroupedResult result_grouped_by_residue;
@@ -676,38 +728,38 @@ void run_mode_simplified_aw(
 
 	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result contacts");
 
-	if(graphics_writer.enabled())
+	if(app_graphics_recorder.graphics_writer.enabled())
 	{
-		graphics_writer.add_color(0.0, 1.0, 1.0);
+		app_graphics_recorder.graphics_writer.add_color(0.0, 1.0, 1.0);
 		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
 		{
-			graphics_writer.add_sphere(name_ball("balls", spheres_input_result, i), spheres_input_result.spheres[i], app_params.probe);
+			app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("balls", spheres_input_result, i), spheres_input_result.spheres[i], app_params.probe);
 		}
-		graphics_writer.add_color(1.0, 1.0, 0.0);
+		app_graphics_recorder.graphics_writer.add_color(1.0, 1.0, 0.0);
 		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 		{
 			const voronotalt::SimplifiedAWTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 			const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 			for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
 			{
-				graphics_writer.add_triangle_fan(name_contact("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
+				app_graphics_recorder.graphics_writer.add_triangle_fan(ApplicationGraphicsRecorder::name_contact_group("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
 			}
 		}
-		graphics_writer.add_color(0.5, 0.5, 0.5);
+		app_graphics_recorder.graphics_writer.add_color(0.5, 0.5, 0.5);
 		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 		{
 			const voronotalt::SimplifiedAWTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 			const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 			for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
 			{
-				graphics_writer.add_line_loop(name_contact("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points);
+				app_graphics_recorder.graphics_writer.add_line_loop(ApplicationGraphicsRecorder::name_contact_group("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points);
 			}
 		}
-		graphics_writer.add_alpha(0.5);
-		graphics_writer.add_color(0.0, 1.0, 0.0);
+		app_graphics_recorder.graphics_writer.add_alpha(0.5);
+		app_graphics_recorder.graphics_writer.add_color(0.0, 1.0, 0.0);
 		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
 		{
-			graphics_writer.add_sphere(name_ball("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
+			app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
 		}
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
 	}
@@ -905,7 +957,7 @@ int main(const int argc, const char** argv)
 		return 1;
 	}
 
-	ApplicationLogRecorders app_log_recorders(app_params.measure_running_time);
+	ApplicationLogRecorders app_log_recorders(app_params);
 
 	voronotalt::SpheresInput::Result spheres_input_result;
 
@@ -940,15 +992,15 @@ int main(const int argc, const char** argv)
 		return 1;
 	}
 
-	voronotalt::GraphicsWriter graphics_writer(!app_params.write_contacts_graphics_to_file.empty());
+	ApplicationGraphicsRecorder app_graphics_recorder(app_params);
 
 	if(app_params.running_mode==ApplicationParameters::RunningMode::radical)
 	{
-		run_mode_radical(app_params, spheres_input_result, graphics_writer, app_log_recorders);
+		run_mode_radical(app_params, spheres_input_result, app_log_recorders, app_graphics_recorder);
 	}
 	else if(app_params.running_mode==ApplicationParameters::RunningMode::simplified_aw)
 	{
-		run_mode_simplified_aw(app_params, spheres_input_result, graphics_writer, app_log_recorders);
+		run_mode_simplified_aw(app_params, spheres_input_result, app_log_recorders, app_graphics_recorder);
 	}
 	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_updateable || app_params.running_mode==ApplicationParameters::RunningMode::test_updateable_with_backup)
 	{
@@ -968,41 +1020,9 @@ int main(const int argc, const char** argv)
 		return 1;
 	}
 
-	if(graphics_writer.enabled())
-	{
-		app_log_recorders.time_recoder_for_output.reset();
-		if(!graphics_writer.write_to_file(app_params.graphics_title, app_params.write_contacts_graphics_to_file))
-		{
-			std::cerr << "Error (non-terminating): failed to write graphics to file '" << app_params.write_contacts_graphics_to_file << "'\n";
-		}
-		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("write printed graphics to file");
-	}
+	app_graphics_recorder.finalize_and_output(app_params, app_log_recorders);
 
-	if(app_params.measure_running_time)
-	{
-#ifdef VORONOTALT_OPENMP
-		app_log_recorders.log_output << "log_openmp_threads\t" << omp_get_max_threads() << "\n";
-#endif
-		app_log_recorders.time_recoder_for_input.print_recordings(app_log_recorders.log_output, "log time input stage", true);
-		app_log_recorders.time_recoder_for_tessellation.print_recordings(app_log_recorders.log_output, "log time tessellation stage", true);
-		app_log_recorders.time_recoder_for_output.print_recordings(app_log_recorders.log_output, "log time output stage", true);
-		app_log_recorders.time_recoder_for_all.print_elapsed_time(app_log_recorders.log_output, "log time full program");
-	}
-
-	std::cerr << app_log_recorders.log_output.str();
-
-	if(!app_params.write_log_to_file.empty())
-	{
-		std::ofstream foutput(app_params.write_log_to_file.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			foutput << app_log_recorders.log_output.str();
-		}
-		else
-		{
-			std::cerr << "Error (non-terminating): failed to write log to file '" << app_params.write_log_to_file << "'\n";
-		}
-	}
+	app_log_recorders.finalize_and_output(app_params);
 
 	return 0;
 }

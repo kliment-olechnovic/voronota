@@ -83,7 +83,7 @@ public:
 		parts_.push_back(std::pair<std::string, std::string>("", output.str()));
 	}
 
-	bool write_to_file(const std::string& title, const std::string& filename) noexcept
+	bool write_to_file(const std::string& title, const std::string& filename) const noexcept
 	{
 		if(!enabled_)
 		{

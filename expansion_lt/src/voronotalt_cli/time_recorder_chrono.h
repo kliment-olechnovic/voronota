@@ -59,7 +59,7 @@ public:
 		return value;
 	}
 
-	void print_elapsed_time(std::ostream& output, const std::string& prefix) noexcept
+	void print_elapsed_time(std::ostream& output, const std::string& prefix) const noexcept
 	{
 		if(!enabled_)
 		{
@@ -68,7 +68,7 @@ public:
 		output << string_without_whitespaces(prefix) << "_elapsed\t" << get_elapsed_miliseconds() << "\n";
 	}
 
-	void print_recordings(std::ostream& output, const std::string& prefix, const bool with_sum) noexcept
+	void print_recordings(std::ostream& output, const std::string& prefix, const bool with_sum) const noexcept
 	{
 		if(!enabled_)
 		{
