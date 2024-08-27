@@ -91,7 +91,8 @@ public:
 			test_updateable,
 			test_updateable_with_backup,
 			test_maskable,
-			test_second_order_cell_volumes_calculation
+			test_second_order_cell_volumes_calculation,
+			test_raw_collisions
 		};
 	};
 
@@ -309,6 +310,13 @@ public:
 					if(opt.is_flag_and_true())
 					{
 						running_mode=RunningMode::test_second_order_cell_volumes_calculation;
+					}
+				}
+				else if((opt.name=="test-raw-collisions") && opt.is_flag())
+				{
+					if(opt.is_flag_and_true())
+					{
+						running_mode=RunningMode::test_raw_collisions;
 					}
 				}
 				else if(opt.name.empty())
@@ -936,6 +944,54 @@ void run_mode_test_second_order_cell_volumes_calculation(
 	}
 }
 
+void run_mode_test_raw_collisions(
+		const ApplicationParameters& app_params,
+		const voronotalt::SpheresInput::Result& spheres_input_result,
+		ApplicationLogRecorders& app_log_recorders) noexcept
+{
+	app_log_recorders.time_recoder_for_tessellation.reset();
+
+	voronotalt::SpheresContainer spheres_container;
+	spheres_container.init(spheres_input_result.spheres, app_log_recorders.time_recoder_for_tessellation);
+
+	voronotalt::SpheresContainer::ResultOfPreparationForTessellation preparation_result;
+
+	{
+		const std::vector<int> null_grouping;
+		const std::vector<int>& grouping_for_filtering=(app_params.compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (app_params.compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
+
+		spheres_container.prepare_for_tessellation(std::vector<int>(), grouping_for_filtering, preparation_result, app_log_recorders.time_recoder_for_tessellation);
+	}
+
+	std::cout << "rdca_header";
+	if(!spheres_input_result.sphere_labels.empty())
+	{
+		std::cout << "\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom";
+	}
+	std::cout << "\tID1_index\tID2_index\tdistance\tdistance_vdw\n";
+
+	for(voronotalt::UnsignedInt i=0;i<preparation_result.relevant_collision_ids.size();i++)
+	{
+		voronotalt::UnsignedInt a=preparation_result.relevant_collision_ids[i].first;
+		voronotalt::UnsignedInt b=preparation_result.relevant_collision_ids[i].second;
+		if(a>b)
+		{
+			std::swap(a, b);
+		}
+		const voronotalt::Float distance=voronotalt::distance_from_point_to_point(spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
+		const voronotalt::Float distance_vdw=distance-(spheres_input_result.spheres[a].r-app_params.probe)-(spheres_input_result.spheres[b].r-app_params.probe);
+		std::cout << "rdca";
+		if(!spheres_input_result.sphere_labels.empty())
+		{
+			std::cout << "\t";
+			voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[a], false, false, std::cout);
+			std::cout << "\t";
+			voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[b], false, false, std::cout);
+		}
+		std::cout << "\t" << a << "\t" << b << "\t" << distance << "\t" << distance_vdw << "\n";
+	}
+}
+
 }
 
 int main(const int argc, const char** argv)
@@ -1013,6 +1069,10 @@ int main(const int argc, const char** argv)
 	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_second_order_cell_volumes_calculation)
 	{
 		run_mode_test_second_order_cell_volumes_calculation(app_params, spheres_input_result, app_log_recorders);
+	}
+	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_raw_collisions)
+	{
+		run_mode_test_raw_collisions(app_params, spheres_input_result, app_log_recorders);
 	}
 	else
 	{
