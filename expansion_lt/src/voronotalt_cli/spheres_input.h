@@ -99,7 +99,11 @@ public:
 							sphere_label.atom_name=string_ids[i*label_size+5];
 							if(string_ids[i*label_size+7]!=".")
 							{
-								sphere_label.residue_id+=string_ids[i*label_size+7];
+								sphere_label.residue_id+=std::string("/")+string_ids[i*label_size+7];
+							}
+							if(string_ids[i*label_size+4]!=".")
+							{
+								sphere_label.residue_id+=std::string("|")+string_ids[i*label_size+4];
 							}
 						}
 						result.label_size=std::min(static_cast<int>(label_size), 3);
