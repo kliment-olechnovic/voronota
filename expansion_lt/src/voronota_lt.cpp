@@ -956,31 +956,64 @@ void run_mode_test_raw_collisions(
 
 	voronotalt::SpheresContainer::ResultOfPreparationForTessellation preparation_result;
 
+	voronotalt::RadicalTessellation::Result tessellation_result;
+
 	{
 		const std::vector<int> null_grouping;
 		const std::vector<int>& grouping_for_filtering=(app_params.compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (app_params.compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
 
-		spheres_container.prepare_for_tessellation(std::vector<int>(), grouping_for_filtering, preparation_result, app_log_recorders.time_recoder_for_tessellation);
+		{
+			spheres_container.prepare_for_tessellation(std::vector<int>(), grouping_for_filtering, preparation_result, app_log_recorders.time_recoder_for_tessellation);
+		}
+
+		{
+			voronotalt::RadicalTessellation::ResultGraphics result_graphics;
+
+			voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, false, false, tessellation_result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
+		}
 	}
 
-	std::cout << "rdca_header";
+	std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> > map_of_collisions_to_contacts;
+
+	for(voronotalt::UnsignedInt i=0;i<preparation_result.relevant_collision_ids.size();i++)
+	{
+		std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt> collision_id=preparation_result.relevant_collision_ids[i];
+		if(collision_id.first>collision_id.second)
+		{
+			std::swap(collision_id.first, collision_id.second);
+		}
+		std::pair<bool, voronotalt::UnsignedInt>& contact_id=map_of_collisions_to_contacts[collision_id];
+		contact_id.first=false;
+		contact_id.second=0;
+	}
+
+	for(voronotalt::UnsignedInt i=0;i<tessellation_result.contacts_summaries.size();i++)
+	{
+		const voronotalt::RadicalTessellation::ContactDescriptorSummary& cd=tessellation_result.contacts_summaries[i];
+		std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt> collision_id(cd.id_a, cd.id_b);
+		if(collision_id.first>collision_id.second)
+		{
+			std::swap(collision_id.first, collision_id.second);
+		}
+		std::pair<bool, voronotalt::UnsignedInt>& contact_id=map_of_collisions_to_contacts[collision_id];
+		contact_id.first=true;
+		contact_id.second=i;
+	}
+
+	std::cout << "trc_header";
 	if(!spheres_input_result.sphere_labels.empty())
 	{
 		std::cout << "\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom";
 	}
-	std::cout << "\tID1_index\tID2_index\tdistance\tdistance_vdw\n";
+	std::cout << "\tID1_index\tID2_index\tdistance\tdistance_vdw\tarea\tarc_length\n";
 
-	for(voronotalt::UnsignedInt i=0;i<preparation_result.relevant_collision_ids.size();i++)
+	for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_collisions_to_contacts.begin();it!=map_of_collisions_to_contacts.end();++it)
 	{
-		voronotalt::UnsignedInt a=preparation_result.relevant_collision_ids[i].first;
-		voronotalt::UnsignedInt b=preparation_result.relevant_collision_ids[i].second;
-		if(a>b)
-		{
-			std::swap(a, b);
-		}
+		const voronotalt::UnsignedInt a=it->first.first;
+		const voronotalt::UnsignedInt b=it->first.second;
 		const voronotalt::Float distance=voronotalt::distance_from_point_to_point(spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
 		const voronotalt::Float distance_vdw=distance-(spheres_input_result.spheres[a].r-app_params.probe)-(spheres_input_result.spheres[b].r-app_params.probe);
-		std::cout << "rdca";
+		std::cout << "trc";
 		if(!spheres_input_result.sphere_labels.empty())
 		{
 			std::cout << "\t";
@@ -988,7 +1021,18 @@ void run_mode_test_raw_collisions(
 			std::cout << "\t";
 			voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[b], false, false, std::cout);
 		}
-		std::cout << "\t" << a << "\t" << b << "\t" << distance << "\t" << distance_vdw << "\n";
+		std::cout << "\t" << a << "\t" << b << "\t" << distance << "\t" << distance_vdw;
+		const std::pair<bool, voronotalt::UnsignedInt>& contact_id=it->second;
+		if(contact_id.first)
+		{
+			const voronotalt::RadicalTessellation::ContactDescriptorSummary& cd=tessellation_result.contacts_summaries[contact_id.second];
+			std::cout << "\t" << cd.area << "\t" << cd.arc_length;
+		}
+		else
+		{
+			std::cout << "\t0\t0";
+		}
+		std::cout << "\n";
 	}
 }
 
