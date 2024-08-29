@@ -947,7 +947,8 @@ void run_mode_test_second_order_cell_volumes_calculation(
 void run_mode_test_raw_collisions(
 		const ApplicationParameters& app_params,
 		const voronotalt::SpheresInput::Result& spheres_input_result,
-		ApplicationLogRecorders& app_log_recorders) noexcept
+		ApplicationLogRecorders& app_log_recorders,
+		ApplicationGraphicsRecorder& app_graphics_recorder) noexcept
 {
 	app_log_recorders.time_recoder_for_tessellation.reset();
 
@@ -1034,6 +1035,70 @@ void run_mode_test_raw_collisions(
 		}
 		std::cout << "\n";
 	}
+
+	if(app_graphics_recorder.graphics_writer.enabled())
+	{
+		std::map< std::string, std::set<voronotalt::UnsignedInt> > atom_ids[3];
+		for(int v=0;v<3;v++)
+		{
+			for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_collisions_to_contacts.begin();it!=map_of_collisions_to_contacts.end();++it)
+			{
+				const voronotalt::UnsignedInt a=it->first.first;
+				const voronotalt::UnsignedInt b=it->first.second;
+				if(v==0 || (v==1 && !it->second.first) || (v==2 && it->second.first))
+				{
+					atom_ids[v][spheres_input_result.sphere_labels[a].chain_id].insert(a);
+					atom_ids[v][spheres_input_result.sphere_labels[b].chain_id].insert(b);
+				}
+			}
+		}
+
+		std::map<std::string, unsigned int> chain_colors[3];
+		for(int v=0;v<3;v++)
+		{
+			for(std::map< std::string, std::set<voronotalt::UnsignedInt> >::const_iterator it=atom_ids[v].begin();it!=atom_ids[v].end();++it)
+			{
+				chain_colors[v][it->first]=0x222222;
+			}
+			int i=0;
+			for(std::map<std::string, unsigned int>::iterator it=chain_colors[v].begin();it!=chain_colors[v].end();++it)
+			{
+				if(i==0)
+				{
+					it->second=(v==0 ? 0xFF00FF : (v==1 ? 0xFF7744 : 0x0077FF));
+				}
+				else if(i==1)
+				{
+					it->second=(v==0 ? 0x00FFFF : (v==1 ? 0xFF7744 : 0x0077FF));
+				}
+				i++;
+			}
+		}
+
+		for(int v=0;v<3;v++)
+		{
+			app_graphics_recorder.graphics_writer.add_color(v==0 ? 0xDDDDDD : (v==1 ? 0xFF7744 : 0x0077FF));
+			for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_collisions_to_contacts.begin();it!=map_of_collisions_to_contacts.end();++it)
+			{
+				const voronotalt::UnsignedInt a=it->first.first;
+				const voronotalt::UnsignedInt b=it->first.second;
+				if(v==0 || (v==1 && !it->second.first) || (v==2 && it->second.first))
+				{
+					app_graphics_recorder.graphics_writer.add_line((v==0 ? "collisions0" : (v==1 ? "collisions1" : "collisions2")), spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
+				}
+			}
+			for(std::map< std::string, std::set<voronotalt::UnsignedInt> >::const_iterator it=atom_ids[v].begin();it!=atom_ids[v].end();++it)
+			{
+				app_graphics_recorder.graphics_writer.add_color(chain_colors[v][it->first]);
+				const std::string group_name=std::string(v==0 ? "atoms0" : (v==1 ? "atoms1" : "atoms2"))+"_chain_"+it->first;
+				const double r=(v==0 ? 0.48 : (v==1 ? 0.49 : 0.50));
+				for(std::set<voronotalt::UnsignedInt>::const_iterator jt=it->second.begin();jt!=it->second.end();++jt)
+				{
+					app_graphics_recorder.graphics_writer.add_sphere(group_name, voronotalt::SimpleSphere(spheres_input_result.spheres[*jt].p, r), 0.0);
+				}
+			}
+		}
+	}
 }
 
 }
@@ -1116,7 +1181,7 @@ int main(const int argc, const char** argv)
 	}
 	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_raw_collisions)
 	{
-		run_mode_test_raw_collisions(app_params, spheres_input_result, app_log_recorders);
+		run_mode_test_raw_collisions(app_params, spheres_input_result, app_log_recorders, app_graphics_recorder);
 	}
 	else
 	{

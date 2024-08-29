@@ -52,6 +52,27 @@ public:
 		parts_.push_back(std::pair<std::string, std::string>(group_name, print_line_loop_for_pymol(outer_points, "", ", \n")));
 	}
 
+	void add_line_strip(const std::string& group_name, const std::vector<SimplePoint>& points) noexcept
+	{
+		if(!enabled_)
+		{
+			return;
+		}
+		parts_.push_back(std::pair<std::string, std::string>(group_name, print_line_strip_for_pymol(points, "", ", \n")));
+	}
+
+	void add_line(const std::string& group_name, const SimplePoint& point_a, const SimplePoint& point_b) noexcept
+	{
+		if(!enabled_)
+		{
+			return;
+		}
+		std::vector<SimplePoint> points(2);
+		points[0]=point_a;
+		points[1]=point_b;
+		add_line_strip(group_name, points);
+	}
+
 	void add_sphere(const std::string& group_name, const SimpleSphere& sphere, const Float& radius_change) noexcept
 	{
 		if(!enabled_)
@@ -70,6 +91,15 @@ public:
 		std::ostringstream output;
 		output << "COLOR, " << r << ", " << g << ", " << b << ",\n";
 		parts_.push_back(std::pair<std::string, std::string>("", output.str()));
+	}
+
+	void add_color(const unsigned int rgb) noexcept
+	{
+		if(!enabled_)
+		{
+			return;
+		}
+		add_color(static_cast<double>((rgb&0xFF0000) >> 16)/static_cast<double>(0xFF), static_cast<double>((rgb&0x00FF00) >> 8)/static_cast<double>(0xFF), static_cast<double>(rgb&0x0000FF)/static_cast<double>(0xFF));
 	}
 
 	void add_alpha(const double a) noexcept
@@ -172,6 +202,21 @@ private:
 			for(std::size_t j=0;j<outer_points.size();j++)
 			{
 				output << ", \nVERTEX, " << outer_points[j].x << ", " << outer_points[j].y << ", " << outer_points[j].z;
+			}
+		}
+		output << ", \nEND" << postfix;
+		return output.str();
+	}
+
+	static std::string print_line_strip_for_pymol(const std::vector<SimplePoint>& points, const std::string& prefix, const std::string& postfix) noexcept
+	{
+		std::ostringstream output;
+		output << prefix << "BEGIN, LINE_STRIP";
+		if(!points.empty())
+		{
+			for(std::size_t j=0;j<points.size();j++)
+			{
+				output << ", \nVERTEX, " << points[j].x << ", " << points[j].y << ", " << points[j].z;
 			}
 		}
 		output << ", \nEND" << postfix;
