@@ -63,5 +63,15 @@ are in the table
 
 ## Comparing tessellation-based vs simple distance cutoff-based identification of interactions in protein-protein interfaces
 
+__(a)__ Tessellation-derived inter-chain interface contacts.
+
+__(b)__ Distance cutoff-derived pairs of atoms in inter-chain interface.
+
+__(c)__ Tessellation-derived pairs of atoms in inter-chain interface.
+
+__(d)__ Histogram of distances between atoms in inter-chain interfaces observed in the processed PDB structures.
+
+__(e)__ Areas and distances of tessellation-derived contacts in inter-chain interfaces observed in the processed PDB structures.
+
 ![](interface_areas_vs_distances.png)
 
