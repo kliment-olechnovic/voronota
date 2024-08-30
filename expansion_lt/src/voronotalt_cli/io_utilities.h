@@ -20,93 +20,21 @@ inline bool read_double_values_from_text_string(const std::string& input_data, s
 
 	if(!input_data.empty())
 	{
-		bool read_in_parallel=false;
-#ifdef VORONOTALT_OPENMP
-		if(input_data.size()>100000)
+		const char* data=input_data.c_str();
+		const char* end=data+input_data.size();
+		values.reserve(input_data.size()/5);
+		while(data<end)
 		{
-			const int n_threads=omp_get_max_threads();
-			if(n_threads>1)
+			char* next=0;
+			const double value=std::strtod(data, &next);
+			if(data==next)
 			{
-				const int input_data_size=static_cast<int>(input_data.size());
-				const int approximate_portion_size=(input_data_size/n_threads);
-				if(approximate_portion_size>1000)
-				{
-					std::vector< std::vector<double> > thread_values(n_threads);
-					std::vector<int> thread_data_starts(n_threads, 0);
-					for(int i=0;i<n_threads;i++)
-					{
-						thread_values[i].reserve(approximate_portion_size/5);
-						int thread_data_start=(i>0 ? std::max(approximate_portion_size*i, thread_data_starts[i-1]+1) : 0);
-						while(i!=0 && thread_data_start<input_data_size && input_data[thread_data_start]>' ')
-						{
-							thread_data_start++;
-						}
-						thread_data_starts[i]=thread_data_start;
-					}
-
-					{
-						#pragma omp parallel for schedule(static,1)
-						for(int i=0;i<n_threads;i++)
-						{
-							if(thread_data_starts[i]<input_data_size)
-							{
-								const char* data=input_data.c_str()+thread_data_starts[i];
-								const char* end=input_data.c_str()+((i+1)<n_threads ? std::min(thread_data_starts[i+1], input_data_size) : input_data_size);
-								while(data<end)
-								{
-									char* next=0;
-									const double value=std::strtod(data, &next);
-									if(data==next)
-									{
-										++data;
-									}
-									else
-									{
-										thread_values[i].push_back(value);
-										data=next;
-									}
-								}
-							}
-						}
-					}
-
-					std::size_t total_values_count=0;
-
-					for(std::size_t i=0;i<thread_values.size();i++)
-					{
-						total_values_count+=thread_values[i].size();
-					}
-
-					values.reserve(total_values_count);
-
-					for(std::size_t i=0;i<thread_values.size();i++)
-					{
-						values.insert(values.end(), thread_values[i].begin(), thread_values[i].end());
-					}
-
-					read_in_parallel=true;
-				}
+				++data;
 			}
-		}
-#endif
-		if(!read_in_parallel)
-		{
-			const char* data=input_data.c_str();
-			const char* end=data+input_data.size();
-			values.reserve(input_data.size()/5);
-			while(data<end)
+			else
 			{
-				char* next=0;
-				const double value=std::strtod(data, &next);
-				if(data==next)
-				{
-					++data;
-				}
-				else
-				{
-					values.push_back(value);
-					data=next;
-				}
+				values.push_back(value);
+				data=next;
 			}
 		}
 	}
@@ -197,14 +125,20 @@ inline bool read_string_ids_and_double_values_from_text_string(const std::size_t
 		return false;
 	}
 
-	if(number_of_tokens_in_first_line==number_of_double_values_per_line)
+	const std::size_t number_of_string_ids_per_line=(number_of_tokens_in_first_line-number_of_double_values_per_line);
+
+	bool switch_to_raw_parsing_of_double_values=(number_of_string_ids_per_line==0);
+
+#ifdef VORONOTALT_OPENMP
+	switch_to_raw_parsing_of_double_values=(switch_to_raw_parsing_of_double_values && omp_get_max_threads()<2);
+#endif
+
+	if(switch_to_raw_parsing_of_double_values)
 	{
 		return (read_double_values_from_text_string(input_data, values) && values.size()%number_of_double_values_per_line==0);
 	}
 
-	const std::size_t number_of_string_ids_per_line=(number_of_tokens_in_first_line-number_of_double_values_per_line);
-
-	const bool string_ids_tailing=(first_line_tokens[number_of_double_values_per_line]=="#");
+	const bool string_ids_tailing=((number_of_string_ids_per_line>0) && (first_line_tokens[number_of_double_values_per_line]=="#"));
 
 	std::vector< std::pair<std::size_t, std::size_t> > line_ranges;
 
@@ -213,7 +147,11 @@ inline bool read_string_ids_and_double_values_from_text_string(const std::size_t
 		return false;
 	}
 
-	string_ids.resize(line_ranges.size()*number_of_string_ids_per_line);
+	if(number_of_string_ids_per_line>0)
+	{
+		string_ids.resize(line_ranges.size()*number_of_string_ids_per_line);
+	}
+
 	values.resize(line_ranges.size()*number_of_double_values_per_line, 0.0);
 
 	std::vector<int> failures(line_ranges.size(), 0);
