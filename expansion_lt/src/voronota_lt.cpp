@@ -1065,11 +1065,11 @@ void run_mode_test_raw_collisions(
 			{
 				if(i==0)
 				{
-					it->second=(v==0 ? 0xFF00FF : (v==1 ? 0xFF7744 : 0x0077FF));
+					it->second=(v==0 ? 0xFF00FF : (v==1 ? 0xFF01FF : 0xFF02FF));
 				}
 				else if(i==1)
 				{
-					it->second=(v==0 ? 0x00FFFF : (v==1 ? 0xFF7744 : 0x0077FF));
+					it->second=(v==0 ? 0x00FFFF : (v==1 ? 0x01FFFF : 0x02FFFF));
 				}
 				i++;
 			}
@@ -1077,7 +1077,7 @@ void run_mode_test_raw_collisions(
 
 		for(int v=0;v<3;v++)
 		{
-			app_graphics_recorder.graphics_writer.add_color(v==0 ? 0xDDDDDD : (v==1 ? 0xFF7744 : 0x0077FF));
+			app_graphics_recorder.graphics_writer.add_color(v==0 ? 0xFFFF00 : (v==1 ? 0xFFFF01 : 0xFFFF02));
 			for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_collisions_to_contacts.begin();it!=map_of_collisions_to_contacts.end();++it)
 			{
 				const voronotalt::UnsignedInt a=it->first.first;
