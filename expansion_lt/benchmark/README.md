@@ -61,3 +61,7 @@ are in the table
 ![](calculation_times_in_comparison_with_sbl_vorlume.png)
 
 
+## Comparing tessellation-based vs simple distance cutoff-based identification of interactions in protein-protein interfaces
+
+![](interface_areas_vs_distances.png)
+
