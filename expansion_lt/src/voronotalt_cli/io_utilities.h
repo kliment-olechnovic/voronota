@@ -29,7 +29,15 @@ inline bool read_double_values_from_text_string(const std::string& input_data, s
 			const double value=std::strtod(data, &next);
 			if(data==next)
 			{
-				++data;
+				if(next!=0 && std::strcspn(next, " \t\v\n\r")==0)
+				{
+					data=end;
+				}
+				else
+				{
+					values.clear();
+					return false;
+				}
 			}
 			else
 			{
@@ -162,49 +170,78 @@ inline bool read_string_ids_and_double_values_from_text_string(const std::size_t
 			#pragma omp for
 			for(std::size_t i=0;i<line_ranges.size();i++)
 			{
-				std::pair<std::size_t, std::size_t> search_range=line_ranges[i];
-				std::pair<std::size_t, std::size_t> token_range;
-
-				for(int block=0;block<2 && failures[i]==0;block++)
+				if(number_of_string_ids_per_line>0)
 				{
-					if((block==0 && !string_ids_tailing) || (block==1 && string_ids_tailing))
+					std::pair<std::size_t, std::size_t> search_range=line_ranges[i];
+					std::pair<std::size_t, std::size_t> token_range;
+
+					for(int block=0;block<2 && failures[i]==0;block++)
 					{
-						for(std::size_t j=0;j<number_of_string_ids_per_line && failures[i]==0;j++)
+						if((block==0 && !string_ids_tailing) || (block==1 && string_ids_tailing))
 						{
-							if(read_token_from_text_string(input_data, search_range, token_range))
+							for(std::size_t j=0;j<number_of_string_ids_per_line && failures[i]==0;j++)
 							{
-								search_range.first=token_range.second;
-								string_ids[i*number_of_string_ids_per_line+j]=input_data.substr(token_range.first, token_range.second-token_range.first);
-							}
-							else
-							{
-								failures[i]++;
-							}
-						}
-					}
-					else
-					{
-						for(std::size_t j=0;j<number_of_double_values_per_line && failures[i]==0;j++)
-						{
-							if(read_token_from_text_string(input_data, search_range, token_range))
-							{
-								search_range.first=token_range.second;
-								const char* str=&input_data[token_range.first];
-								char* str_end=0;
-								const double value=std::strtod(str, &str_end);
-								if(str==str_end)
+								if(read_token_from_text_string(input_data, search_range, token_range))
 								{
-									failures[i]++;
+									search_range.first=token_range.second;
+									string_ids[i*number_of_string_ids_per_line+j]=input_data.substr(token_range.first, token_range.second-token_range.first);
 								}
 								else
 								{
-									values[i*number_of_double_values_per_line+j]=value;
+									failures[i]++;
 								}
 							}
-							else
+						}
+						else
+						{
+							for(std::size_t j=0;j<number_of_double_values_per_line && failures[i]==0;j++)
+							{
+								if(read_token_from_text_string(input_data, search_range, token_range))
+								{
+									search_range.first=token_range.second;
+									const char* str=&input_data[token_range.first];
+									char* str_next=0;
+									const double value=std::strtod(str, &str_next);
+									if(str==str_next)
+									{
+										failures[i]++;
+									}
+									else
+									{
+										values[i*number_of_double_values_per_line+j]=value;
+									}
+								}
+								else
+								{
+									failures[i]++;
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					const char* str=&input_data[line_ranges[i].first];
+					const char* str_limit=str+(line_ranges[i].second-line_ranges[i].first);
+					for(std::size_t j=0;j<number_of_double_values_per_line && failures[i]==0;j++)
+					{
+						if(str<str_limit)
+						{
+							char* str_next=0;
+							const double value=std::strtod(str, &str_next);
+							if(str==str_next)
 							{
 								failures[i]++;
 							}
+							else
+							{
+								values[i*number_of_double_values_per_line+j]=value;
+								str=str_next;
+							}
+						}
+						else
+						{
+							failures[i]++;
 						}
 					}
 				}
