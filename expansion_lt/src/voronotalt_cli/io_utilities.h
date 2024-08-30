@@ -1,11 +1,11 @@
 #ifndef VORONOTALT_IO_UTILITIES_H_
 #define VORONOTALT_IO_UTILITIES_H_
 
-#include <iostream>
-#include <sstream>
+#include <string>
+#include <vector>
 #include <cstdlib>
 #include <cctype>
-#include <vector>
+#include <cstring>
 
 #ifdef VORONOTALT_OPENMP
 #include <omp.h>
@@ -114,9 +114,9 @@ inline bool read_double_values_from_text_string(const std::string& input_data, s
 	return (!values.empty());
 }
 
-inline bool read_non_empty_lines_from_text_string(const std::string& input_data, const std::size_t max_num_of_lines, std::vector<std::string>& lines) noexcept
+inline bool read_non_empty_lines_from_text_string(const std::string& input_data, const std::size_t max_num_of_lines, std::vector< std::pair<std::size_t, std::size_t> >& line_ranges) noexcept
 {
-	lines.clear();
+	line_ranges.clear();
 
 	if(!input_data.empty())
 	{
@@ -139,8 +139,8 @@ inline bool read_non_empty_lines_from_text_string(const std::string& input_data,
 			}
 			if(end_of_line>start)
 			{
-				lines.push_back(input_data.substr(start, end_of_line-start));
-				if(max_num_of_lines>0 && lines.size()==max_num_of_lines)
+				line_ranges.push_back(std::pair<std::size_t, std::size_t>(start, end_of_line));
+				if(max_num_of_lines>0 && line_ranges.size()==max_num_of_lines)
 				{
 					return true;
 				}
@@ -149,7 +149,23 @@ inline bool read_non_empty_lines_from_text_string(const std::string& input_data,
 		}
 	}
 
-	return (!lines.empty());
+	return (!line_ranges.empty());
+}
+
+bool read_token_from_text_string(const std::string& input_data, const std::pair<std::size_t, std::size_t>& search_range, std::pair<std::size_t, std::size_t>& token_range) noexcept
+{
+	if(search_range.first<search_range.second && search_range.first<input_data.size())
+	{
+		const std::size_t start=search_range.first+std::strspn(&input_data[search_range.first], " \t\v\n\r");
+		const std::size_t end=std::min(start+std::strcspn(&input_data[start], " \t\v\n\r"), search_range.second);
+		if(end>start)
+		{
+			token_range.first=start;
+			token_range.second=end;
+			return true;
+		}
+	}
+	return false;
 }
 
 inline bool read_string_ids_and_double_values_from_text_string(const std::size_t number_of_double_values_per_line, const std::string& input_data, std::vector<std::string>& string_ids, std::vector<double>& values) noexcept
@@ -160,21 +176,17 @@ inline bool read_string_ids_and_double_values_from_text_string(const std::size_t
 	std::vector<std::string> first_line_tokens;
 
 	{
-		std::vector<std::string> first_lines;
-		if(!read_non_empty_lines_from_text_string(input_data, 1, first_lines) || first_lines.empty() || first_lines[0].empty())
+		std::vector< std::pair<std::size_t, std::size_t> > first_line_ranges;
+		if(!read_non_empty_lines_from_text_string(input_data, 1, first_line_ranges))
 		{
 			return false;
 		}
-		std::istringstream lineinput(first_lines[0]);
-		std::string token;
-		while(lineinput.good())
+		std::pair<std::size_t, std::size_t> search_range=first_line_ranges[0];
+		std::pair<std::size_t, std::size_t> token_range;
+		while(read_token_from_text_string(input_data, search_range, token_range))
 		{
-			token.clear();
-			lineinput >> token;
-			if(!lineinput.fail() && !token.empty())
-			{
-				first_line_tokens.push_back(token);
-			}
+			search_range.first=token_range.second;
+			first_line_tokens.push_back(input_data.substr(token_range.first, token_range.second-token_range.first));
 		}
 	}
 
@@ -194,33 +206,39 @@ inline bool read_string_ids_and_double_values_from_text_string(const std::size_t
 
 	const bool string_ids_tailing=(first_line_tokens[number_of_double_values_per_line]=="#");
 
-	std::vector<std::string> lines;
+	std::vector< std::pair<std::size_t, std::size_t> > line_ranges;
 
-	if(!read_non_empty_lines_from_text_string(input_data, 0, lines))
+	if(!read_non_empty_lines_from_text_string(input_data, 0, line_ranges))
 	{
 		return false;
 	}
 
-	string_ids.resize(lines.size()*number_of_string_ids_per_line);
-	values.resize(lines.size()*number_of_double_values_per_line, 0.0);
+	string_ids.resize(line_ranges.size()*number_of_string_ids_per_line);
+	values.resize(line_ranges.size()*number_of_double_values_per_line, 0.0);
 
-	std::vector<int> failures(lines.size(), 0);
+	std::vector<int> failures(line_ranges.size(), 0);
 
 	{
 		#pragma omp parallel
 		{
 			#pragma omp for
-			for(std::size_t i=0;i<lines.size();i++)
+			for(std::size_t i=0;i<line_ranges.size();i++)
 			{
-				std::istringstream lineinput(lines[i]);
-				for(int block=0;block<2;block++)
+				std::pair<std::size_t, std::size_t> search_range=line_ranges[i];
+				std::pair<std::size_t, std::size_t> token_range;
+
+				for(int block=0;block<2 && failures[i]==0;block++)
 				{
 					if((block==0 && !string_ids_tailing) || (block==1 && string_ids_tailing))
 					{
-						for(std::size_t j=0;j<number_of_string_ids_per_line;j++)
+						for(std::size_t j=0;j<number_of_string_ids_per_line && failures[i]==0;j++)
 						{
-							lineinput >> string_ids[i*number_of_string_ids_per_line+j];
-							if(lineinput.fail())
+							if(read_token_from_text_string(input_data, search_range, token_range))
+							{
+								search_range.first=token_range.second;
+								string_ids[i*number_of_string_ids_per_line+j]=input_data.substr(token_range.first, token_range.second-token_range.first);
+							}
+							else
 							{
 								failures[i]++;
 							}
@@ -228,10 +246,24 @@ inline bool read_string_ids_and_double_values_from_text_string(const std::size_t
 					}
 					else
 					{
-						for(std::size_t j=0;j<number_of_double_values_per_line;j++)
+						for(std::size_t j=0;j<number_of_double_values_per_line && failures[i]==0;j++)
 						{
-							lineinput >> values[i*number_of_double_values_per_line+j];
-							if(lineinput.fail())
+							if(read_token_from_text_string(input_data, search_range, token_range))
+							{
+								search_range.first=token_range.second;
+								const char* str=&input_data[token_range.first];
+								char* str_end=0;
+								const double value=std::strtod(str, &str_end);
+								if(str==str_end)
+								{
+									failures[i]++;
+								}
+								else
+								{
+									values[i*number_of_double_values_per_line+j]=value;
+								}
+							}
+							else
 							{
 								failures[i]++;
 							}
