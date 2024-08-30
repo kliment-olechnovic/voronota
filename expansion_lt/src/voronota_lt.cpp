@@ -1126,10 +1126,19 @@ int main(const int argc, const char** argv)
 
 	voronotalt::SpheresInput::Result spheres_input_result;
 
-	if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_stream(std::cin, app_params.probe, spheres_input_result, std::cerr, app_log_recorders.time_recoder_for_input))
 	{
-		std::cerr << "Error: failed to read input without errors\n";
-		return 1;
+		app_log_recorders.time_recoder_for_input.reset();
+
+		std::istreambuf_iterator<char> stdin_eos;
+		const std::string stdin_data(std::istreambuf_iterator<char>(std::cin), stdin_eos);
+
+		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("read stdin data to memory");
+
+		if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_string(stdin_data, app_params.probe, spheres_input_result, std::cerr, app_log_recorders.time_recoder_for_input))
+		{
+			std::cerr << "Error: failed to read input without errors\n";
+			return 1;
+		}
 	}
 
 	if(!app_params.write_input_balls_to_file.empty())

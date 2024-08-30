@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include <cctype>
 #include <vector>
 
 #ifdef VORONOTALT_OPENMP
@@ -15,7 +16,7 @@ namespace voronotalt
 
 inline bool read_double_values_from_text_string(const std::string& input_data, std::vector<double>& values) noexcept
 {
-	const std::size_t initial_number_of_values=values.size();
+	values.clear();
 
 	if(!input_data.empty())
 	{
@@ -110,64 +111,61 @@ inline bool read_double_values_from_text_string(const std::string& input_data, s
 		}
 	}
 
-	return (values.size()>initial_number_of_values);
+	return (!values.empty());
 }
 
-inline bool read_double_values_from_text_stream(std::istream& input, std::vector<double>& values) noexcept
+inline bool read_non_empty_lines_from_text_string(const std::string& input_data, const std::size_t max_num_of_lines, std::vector<std::string>& lines) noexcept
 {
-	std::istreambuf_iterator<char> input_eos;
-	std::string input_data(std::istreambuf_iterator<char>(input), input_eos);
+	lines.clear();
 
-	return read_double_values_from_text_string(input_data, values);
-}
-
-inline bool read_lines_from_text_stream(std::istream& input, std::vector<std::string>& lines) noexcept
-{
-	const std::size_t initial_number_of_lines=lines.size();
-
-	while(input.good())
+	if(!input_data.empty())
 	{
-		std::string line;
-		std::getline(input, line);
-		if(!line.empty())
+		std::size_t start=input_data.find_first_not_of(" \t\v\n\r");
+		while(start!=std::string::npos)
 		{
-			std::size_t last_content_pos=line.find_last_not_of(" \t\n\r\f\v");
-			if(last_content_pos!=std::string::npos)
+			std::size_t end_of_line=input_data.find_first_of("\n\r", start);
+			std::size_t next_start=std::string::npos;
+			if(end_of_line==std::string::npos)
 			{
-				if(last_content_pos+1<line.size())
-				{
-					line=line.substr(0, last_content_pos+1);
-				}
-				lines.push_back(line);
+				end_of_line=input_data.size();
 			}
+			else
+			{
+				next_start=input_data.find_first_not_of(" \n\r\t\v", end_of_line);
+			}
+			while(end_of_line>start && std::isspace(static_cast<unsigned char>(input_data[end_of_line-1])))
+			{
+				end_of_line--;
+			}
+			if(end_of_line>start)
+			{
+				lines.push_back(input_data.substr(start, end_of_line-start));
+				if(max_num_of_lines>0 && lines.size()==max_num_of_lines)
+				{
+					return true;
+				}
+			}
+			start=next_start;
 		}
 	}
 
-	return (lines.size()>initial_number_of_lines);
+	return (!lines.empty());
 }
 
-inline bool read_string_ids_and_double_values_from_text_stream(const std::size_t number_of_double_values_per_line, std::istream& input, std::vector<std::string>& string_ids, std::vector<double>& values) noexcept
+inline bool read_string_ids_and_double_values_from_text_string(const std::size_t number_of_double_values_per_line, const std::string& input_data, std::vector<std::string>& string_ids, std::vector<double>& values) noexcept
 {
 	string_ids.clear();
 	values.clear();
 
-	std::string first_line;
-
-	do
-	{
-		std::getline(input, first_line);
-	}
-	while(first_line.empty() && input.good());
-
-	if(first_line.empty())
-	{
-		return false;
-	}
-
 	std::vector<std::string> first_line_tokens;
 
 	{
-		std::istringstream lineinput(first_line);
+		std::vector<std::string> first_lines;
+		if(!read_non_empty_lines_from_text_string(input_data, 1, first_lines) || first_lines.empty() || first_lines[0].empty())
+		{
+			return false;
+		}
+		std::istringstream lineinput(first_lines[0]);
 		std::string token;
 		while(lineinput.good())
 		{
@@ -189,12 +187,7 @@ inline bool read_string_ids_and_double_values_from_text_stream(const std::size_t
 
 	if(number_of_tokens_in_first_line==number_of_double_values_per_line)
 	{
-		const bool valid_values_read=(read_double_values_from_text_string(first_line, values) && read_double_values_from_text_stream(input, values) && values.size()%number_of_double_values_per_line==0);
-		if(!valid_values_read)
-		{
-			values.clear();
-		}
-		return valid_values_read;
+		return (read_double_values_from_text_string(input_data, values) && values.size()%number_of_double_values_per_line==0);
 	}
 
 	const std::size_t number_of_string_ids_per_line=(number_of_tokens_in_first_line-number_of_double_values_per_line);
@@ -202,8 +195,11 @@ inline bool read_string_ids_and_double_values_from_text_stream(const std::size_t
 	const bool string_ids_tailing=(first_line_tokens[number_of_double_values_per_line]=="#");
 
 	std::vector<std::string> lines;
-	lines.push_back(first_line);
-	read_lines_from_text_stream(input, lines);
+
+	if(!read_non_empty_lines_from_text_string(input_data, 0, lines))
+	{
+		return false;
+	}
 
 	string_ids.resize(lines.size()*number_of_string_ids_per_line);
 	values.resize(lines.size()*number_of_double_values_per_line, 0.0);

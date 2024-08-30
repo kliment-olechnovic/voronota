@@ -38,8 +38,8 @@ public:
 		}
 	};
 
-	static bool read_labeled_or_unlabeled_spheres_from_stream(
-			std::istream& input_stream,
+	static bool read_labeled_or_unlabeled_spheres_from_string(
+			const std::string& input_string,
 			const Float probe,
 			Result& result,
 			std::ostream& error_message_output_stream,
@@ -52,7 +52,7 @@ public:
 		{
 			std::vector<std::string> string_ids;
 			std::vector<double> values;
-			if(read_string_ids_and_double_values_from_text_stream(4, input_stream, string_ids, values))
+			if(read_string_ids_and_double_values_from_text_string(4, input_string, string_ids, values))
 			{
 				const std::size_t N=(values.size()/4);
 				const std::size_t label_size=(string_ids.size()/N);
