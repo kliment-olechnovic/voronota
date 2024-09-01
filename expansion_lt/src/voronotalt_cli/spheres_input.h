@@ -135,6 +135,8 @@ public:
 
 		const InputDataFormat::ID input_format=detect_input_data_format(input_string);
 
+		time_recorder.record_elapsed_miliseconds_and_reset("detect input format");
+
 		if(input_format==InputDataFormat::xyzr
 				|| input_format==InputDataFormat::l1xyzr || input_format==InputDataFormat::l2xyzr
 				|| input_format==InputDataFormat::l3xyzr || input_format==InputDataFormat::xyzrl8)
