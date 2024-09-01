@@ -9,6 +9,7 @@
 #include "../voronotalt/time_recorder.h"
 
 #include "io_utilities.h"
+#include "molecular_file_reading.h"
 
 namespace voronotalt
 {
@@ -38,6 +39,89 @@ public:
 		}
 	};
 
+	struct InputDataFormat
+	{
+		enum ID
+		{
+			xyzr,
+			l1xyzr,
+			l2xyzr,
+			l3xyzr,
+			xyzrl8,
+			pdb,
+			mmcif,
+			unknown
+		};
+	};
+
+	static InputDataFormat::ID detect_input_data_format(const std::string& input_string) noexcept
+	{
+		InputDataFormat::ID result=InputDataFormat::unknown;
+
+		{
+			std::vector<std::string> string_ids;
+			std::vector<double> values;
+			if(read_string_ids_and_double_values_from_text_string(4, input_string, 2, string_ids, values))
+			{
+				const std::size_t N=(values.size()/4);
+				const std::size_t label_size=(string_ids.size()/N);
+				if(string_ids.size()==N*label_size)
+				{
+					const bool labels_tailing=(!string_ids.empty() && string_ids.front()=="#");
+					if(labels_tailing)
+					{
+						if(label_size==8)
+						{
+							result=InputDataFormat::xyzrl8;
+						}
+					}
+					else
+					{
+						if(label_size==0)
+						{
+							result=InputDataFormat::xyzr;
+						}
+						else if(label_size==1)
+						{
+							result=InputDataFormat::l1xyzr;
+						}
+						else if(label_size==2)
+						{
+							result=InputDataFormat::l2xyzr;
+						}
+						else if(label_size==3)
+						{
+							result=InputDataFormat::l3xyzr;
+						}
+					}
+				}
+			}
+		}
+
+		if(result==InputDataFormat::unknown)
+		{
+			const std::size_t first_loop_pos=input_string.find("loop_");
+			if(first_loop_pos!=std::string::npos)
+			{
+				const std::size_t prefix_pos=input_string.find("\n_atom_site.", first_loop_pos);
+				if(prefix_pos!=std::string::npos)
+				{
+					result=InputDataFormat::mmcif;
+				}
+			}
+		}
+
+		if(result==InputDataFormat::unknown)
+		{
+			if(input_string.find("\nATOM  ")!=std::string::npos || input_string.find("\nHETATM")!=std::string::npos)
+			{
+				result=InputDataFormat::pdb;
+			}
+		}
+
+		return result;
+	}
+
 	static bool read_labeled_or_unlabeled_spheres_from_string(
 			const std::string& input_string,
 			const Float probe,
@@ -49,81 +133,145 @@ public:
 
 		result=Result();
 
+		const InputDataFormat::ID input_format=detect_input_data_format(input_string);
+
+		if(input_format==InputDataFormat::xyzr
+				|| input_format==InputDataFormat::l1xyzr || input_format==InputDataFormat::l2xyzr
+				|| input_format==InputDataFormat::l3xyzr || input_format==InputDataFormat::xyzrl8)
 		{
 			std::vector<std::string> string_ids;
 			std::vector<double> values;
-			if(read_string_ids_and_double_values_from_text_string(4, input_string, string_ids, values))
+			if(read_string_ids_and_double_values_from_text_string(4, input_string, 0, string_ids, values))
 			{
 				const std::size_t N=(values.size()/4);
 				const std::size_t label_size=(string_ids.size()/N);
 				const bool labels_tailing=(!string_ids.empty() && string_ids.front()=="#");
-				if(!(label_size<=3 || (labels_tailing && label_size==8)) || string_ids.size()!=N*label_size)
+				if((label_size<=3 || (labels_tailing && label_size==8)) && string_ids.size()==N*label_size)
 				{
-					error_message_output_stream << "Error: invalid input format, must be exactly 0, 1, 2, or 3 front string IDs or 8 tailing string IDs per line\n";
-					return false;
-				}
-				result.spheres.resize(N);
-				for(std::size_t i=0;i<N;i++)
-				{
-					SimpleSphere& sphere=result.spheres[i];
-					sphere.p.x=static_cast<Float>(values[i*4+0]);
-					sphere.p.y=static_cast<Float>(values[i*4+1]);
-					sphere.p.z=static_cast<Float>(values[i*4+2]);
-					sphere.r=static_cast<Float>(values[i*4+3])+probe;
-				}
-				if(label_size>0)
-				{
-					result.sphere_labels.resize(N);
+					result.spheres.resize(N);
 					for(std::size_t i=0;i<N;i++)
 					{
-						SphereLabel& sphere_label=result.sphere_labels[i];
-						if(label_size==1)
+						SimpleSphere& sphere=result.spheres[i];
+						sphere.p.x=static_cast<Float>(values[i*4+0]);
+						sphere.p.y=static_cast<Float>(values[i*4+1]);
+						sphere.p.z=static_cast<Float>(values[i*4+2]);
+						sphere.r=static_cast<Float>(values[i*4+3])+probe;
+					}
+					if(label_size>0)
+					{
+						result.sphere_labels.resize(N);
+						for(std::size_t i=0;i<N;i++)
 						{
-							sphere_label.chain_id=string_ids[i];
-						}
-						else if(label_size==2)
-						{
-							sphere_label.chain_id=string_ids[i*label_size+0];
-							sphere_label.residue_id=string_ids[i*label_size+1];
-						}
-						else if(label_size==3)
-						{
-							sphere_label.chain_id=string_ids[i*label_size+0];
-							sphere_label.residue_id=string_ids[i*label_size+1];
-							sphere_label.atom_name=string_ids[i*label_size+2];
-						}
-						else if(label_size==8)
-						{
-							sphere_label.chain_id=string_ids[i*label_size+2];
-							sphere_label.residue_id=string_ids[i*label_size+3];
-							sphere_label.atom_name=string_ids[i*label_size+5];
-							if(string_ids[i*label_size+7]!=".")
+							SphereLabel& sphere_label=result.sphere_labels[i];
+							if(label_size==1)
 							{
-								sphere_label.residue_id+=std::string("/")+string_ids[i*label_size+7];
+								sphere_label.chain_id=string_ids[i];
 							}
-							if(string_ids[i*label_size+4]!=".")
+							else if(label_size==2)
 							{
-								sphere_label.residue_id+=std::string("|")+string_ids[i*label_size+4];
+								sphere_label.chain_id=string_ids[i*label_size+0];
+								sphere_label.residue_id=string_ids[i*label_size+1];
 							}
+							else if(label_size==3)
+							{
+								sphere_label.chain_id=string_ids[i*label_size+0];
+								sphere_label.residue_id=string_ids[i*label_size+1];
+								sphere_label.atom_name=string_ids[i*label_size+2];
+							}
+							else if(label_size==8)
+							{
+								sphere_label.chain_id=string_ids[i*label_size+2];
+								sphere_label.residue_id=string_ids[i*label_size+3];
+								sphere_label.atom_name=string_ids[i*label_size+5];
+								if(string_ids[i*label_size+7]!=".")
+								{
+									sphere_label.residue_id+=std::string("/")+string_ids[i*label_size+7];
+								}
+								if(string_ids[i*label_size+4]!=".")
+								{
+									sphere_label.residue_id+=std::string("|")+string_ids[i*label_size+4];
+								}
+							}
+							result.label_size=std::min(static_cast<int>(label_size), 3);
 						}
-						result.label_size=std::min(static_cast<int>(label_size), 3);
 					}
 				}
 			}
-			else
+			if(result.spheres.empty())
 			{
-				error_message_output_stream << "Error: invalid data in stdin, must be a text table with exactly 0, 1, 2, or 3 string IDs and exactly 4 floating point values (x, y, z, r) per line\n";
+				error_message_output_stream << "Error: invalid input data, expected a text table with exactly 0, 1, 2, or 3 string IDs and exactly 4 floating point values (x, y, z, r) per line\n";
 				return false;
 			}
 		}
+		else if(input_format==InputDataFormat::pdb || input_format==InputDataFormat::mmcif)
+		{
+			MolecularFileReading::Data mol_data;
+			MolecularFileReading::Parameters params;
+			std::istringstream input_stream(input_string);
+			if(input_format==InputDataFormat::pdb)
+			{
+				if(!MolecularFileReading::PDBReader::read_data_from_file_stream(input_stream, params, mol_data, error_message_output_stream))
+				{
+					error_message_output_stream << "Error: failed to read data in PDB format\n";
+					return false;
+				}
+			}
+			else if(input_format==InputDataFormat::mmcif)
+			{
+				if(!MolecularFileReading::MMCIFReader::read_data_from_file_stream(input_stream, params, mol_data, error_message_output_stream))
+				{
+					error_message_output_stream << "Error: failed to read data in mmCIF format\n";
+					return false;
+				}
+			}
+			const std::size_t N=mol_data.atom_records.size();
+			result.spheres.resize(N);
+			result.sphere_labels.resize(N);
+			result.label_size=3;
+			static const std::string default_chain_id=".";
+			static const std::string default_atom_name=".";
+			for(std::size_t i=0;i<N;i++)
+			{
+				const MolecularFileReading::AtomRecord& ar=mol_data.atom_records[i];
+				{
+					SimpleSphere& sphere=result.spheres[i];
+					sphere.p.x=static_cast<Float>(ar.x);
+					sphere.p.y=static_cast<Float>(ar.y);
+					sphere.p.z=static_cast<Float>(ar.z);
+					sphere.r=MolecularFileReading::get_standard_atom_vdw_radius_based_on_element_or_atom_name(ar)+probe;
+				}
+				{
+					SphereLabel& sphere_label=result.sphere_labels[i];
+					sphere_label.chain_id=(ar.chainID.empty() ? default_chain_id : ar.chainID);
+					sphere_label.residue_id=std::to_string(ar.resSeq);
+					if(!ar.iCode.empty())
+					{
+						sphere_label.residue_id+=std::string("/")+ar.iCode;
+					}
+					if(!ar.resName.empty())
+					{
+						sphere_label.residue_id+=std::string("|")+ar.resName;
+					}
+					sphere_label.atom_name=(ar.name.empty() ? default_atom_name : ar.name);
+				}
+			}
+		}
+		else
+		{
+			error_message_output_stream << "Error: unrecognized input data format for reading spheres, see documentation for descriptions of supported input formats\n";
+			return false;
+		}
 
-		time_recorder.record_elapsed_miliseconds_and_reset("read spheres data from stream");
+		time_recorder.record_elapsed_miliseconds_and_reset("read spheres");
 
-		if(result.label_size>1)
+		if(result.label_size>0)
 		{
 			result.number_of_chain_groups=assign_groups_to_sphere_labels_by_chain(result.sphere_labels, result.grouping_by_chain);
 
-			result.number_of_residue_groups=assign_groups_to_sphere_labels_by_residue(result.sphere_labels, result.grouping_by_residue);
+			if(result.label_size>1)
+			{
+				result.number_of_residue_groups=assign_groups_to_sphere_labels_by_residue(result.sphere_labels, result.grouping_by_residue);
+			}
 
 			time_recorder.record_elapsed_miliseconds_and_reset("assign groups based on labels");
 		}

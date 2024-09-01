@@ -104,7 +104,7 @@ bool read_token_from_text_string(const std::string& input_data, const std::pair<
 	return false;
 }
 
-inline bool read_string_ids_and_double_values_from_text_string(const std::size_t number_of_double_values_per_line, const std::string& input_data, std::vector<std::string>& string_ids, std::vector<double>& values) noexcept
+inline bool read_string_ids_and_double_values_from_text_string(const std::size_t number_of_double_values_per_line, const std::string& input_data, const std::size_t max_num_of_lines, std::vector<std::string>& string_ids, std::vector<double>& values) noexcept
 {
 	string_ids.clear();
 	values.clear();
@@ -135,7 +135,7 @@ inline bool read_string_ids_and_double_values_from_text_string(const std::size_t
 
 	const std::size_t number_of_string_ids_per_line=(number_of_tokens_in_first_line-number_of_double_values_per_line);
 
-	bool switch_to_raw_parsing_of_double_values=(number_of_string_ids_per_line==0);
+	bool switch_to_raw_parsing_of_double_values=(number_of_string_ids_per_line==0 && max_num_of_lines==0);
 
 #ifdef VORONOTALT_OPENMP
 	switch_to_raw_parsing_of_double_values=(switch_to_raw_parsing_of_double_values && omp_get_max_threads()<2);
@@ -150,7 +150,7 @@ inline bool read_string_ids_and_double_values_from_text_string(const std::size_t
 
 	std::vector< std::pair<std::size_t, std::size_t> > line_ranges;
 
-	if(!read_non_empty_lines_from_text_string(input_data, 0, line_ranges))
+	if(!read_non_empty_lines_from_text_string(input_data, max_num_of_lines, line_ranges))
 	{
 		return false;
 	}
