@@ -74,7 +74,7 @@ public:
 		{
 		}
 
-		ContactDescriptorSummaryAdjunct(const UnsignedInt levels) noexcept : level_areas(levels, FLOATCONST(0.0))
+		explicit ContactDescriptorSummaryAdjunct(const UnsignedInt levels) noexcept : level_areas(levels, FLOATCONST(0.0))
 		{
 		}
 
@@ -326,7 +326,7 @@ public:
 			const bool with_graphics,
 			const bool summarize_cells,
 			const Float max_circle_radius_restriction,
-			const std::vector<Float> adjunct_max_circle_radius_restrictions,
+			const std::vector<Float>& adjunct_max_circle_radius_restrictions,
 			Result& result,
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder) noexcept

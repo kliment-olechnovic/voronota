@@ -122,8 +122,8 @@ public:
 				{
 					bool discarded=false;
 					bool contour_initialized=false;
-					bool nostop=true;
 					{
+						bool nostop=true;
 						for(UnsignedInt i=0;i<a_neighbor_collisions.size() && !discarded && nostop;i++)
 						{
 							const UnsignedInt neighbor_id=a_neighbor_collisions[i].index;

@@ -375,7 +375,7 @@ public:
 	voronotalt::TimeRecorderChrono time_recoder_for_output;
 	std::ostringstream log_output;
 
-	ApplicationLogRecorders(const ApplicationParameters& app_params) noexcept :
+	explicit ApplicationLogRecorders(const ApplicationParameters& app_params) noexcept :
 		time_recoder_for_all(app_params.measure_running_time),
 		time_recoder_for_input(app_params.measure_running_time),
 		time_recoder_for_tessellation(app_params.measure_running_time),
@@ -442,7 +442,7 @@ public:
 
 	voronotalt::GraphicsWriter graphics_writer;
 
-	ApplicationGraphicsRecorder(const ApplicationParameters& app_params) noexcept : graphics_writer(!app_params.write_contacts_graphics_to_file.empty())
+	explicit ApplicationGraphicsRecorder(const ApplicationParameters& app_params) noexcept : graphics_writer(!app_params.write_contacts_graphics_to_file.empty())
 	{
 	}
 

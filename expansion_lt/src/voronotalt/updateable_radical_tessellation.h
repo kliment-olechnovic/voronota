@@ -39,7 +39,7 @@ public:
 	{
 	}
 
-	UpdateableRadicalTessellation(const bool backup_enabled) noexcept : backup_enabled_(backup_enabled), in_sync_with_backup_(false)
+	explicit UpdateableRadicalTessellation(const bool backup_enabled) noexcept : backup_enabled_(backup_enabled), in_sync_with_backup_(false)
 	{
 	}
 
@@ -337,7 +337,7 @@ private:
 	class ConditionToRemoveContact
 	{
 	public:
-		ConditionToRemoveContact(const std::vector<int>& involvement) noexcept : involvement_(involvement)
+		explicit ConditionToRemoveContact(const std::vector<int>& involvement) noexcept : involvement_(involvement)
 		{
 		}
 
@@ -437,7 +437,7 @@ private:
 			for(UnsignedInt i=0;i<subset_of_ids_of_spheres.size();i++)
 			{
 				const UnsignedInt sphere_id=subset_of_ids_of_spheres[i];
-				if(sphere_id>=result.cells_summaries.size() || sphere_id>=result.cells_summaries.size() || (periodic && sphere_id>=result.contacts_summaries_with_redundancy_in_periodic_box.size()))
+				if(sphere_id>=result.cells_summaries.size() || (periodic && sphere_id>=result.contacts_summaries_with_redundancy_in_periodic_box.size()))
 				{
 					assign(obj);
 					return;
