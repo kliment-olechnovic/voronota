@@ -49,6 +49,10 @@ public:
 		Parameters() noexcept : include_heteroatoms(false), include_hydrogens(false), as_assembly(false)
 		{
 		}
+
+		Parameters(const bool include_heteroatoms, const bool include_hydrogens, const bool as_assembly) noexcept : include_heteroatoms(include_heteroatoms), include_hydrogens(include_hydrogens), as_assembly(as_assembly)
+		{
+		}
 	};
 
 	struct Data

@@ -124,6 +124,7 @@ public:
 
 	static bool read_labeled_or_unlabeled_spheres_from_string(
 			const std::string& input_string,
+			const MolecularFileReading::Parameters& molecular_file_reading_parameters,
 			const Float probe,
 			Result& result,
 			std::ostream& error_message_output_stream,
@@ -208,11 +209,10 @@ public:
 		else if(input_format==InputDataFormat::pdb || input_format==InputDataFormat::mmcif)
 		{
 			MolecularFileReading::Data mol_data;
-			MolecularFileReading::Parameters params;
 			std::istringstream input_stream(input_string);
 			if(input_format==InputDataFormat::pdb)
 			{
-				if(!MolecularFileReading::PDBReader::read_data_from_file_stream(input_stream, params, mol_data, error_message_output_stream))
+				if(!MolecularFileReading::PDBReader::read_data_from_file_stream(input_stream, molecular_file_reading_parameters, mol_data, error_message_output_stream))
 				{
 					error_message_output_stream << "Error: failed to read data in PDB format\n";
 					return false;
@@ -220,7 +220,7 @@ public:
 			}
 			else if(input_format==InputDataFormat::mmcif)
 			{
-				if(!MolecularFileReading::MMCIFReader::read_data_from_file_stream(input_stream, params, mol_data, error_message_output_stream))
+				if(!MolecularFileReading::MMCIFReader::read_data_from_file_stream(input_stream, molecular_file_reading_parameters, mol_data, error_message_output_stream))
 				{
 					error_message_output_stream << "Error: failed to read data in mmCIF format\n";
 					return false;

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "voronotalt/parallelization_configuration.h"
 
@@ -31,6 +32,10 @@ Options:
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
     --periodic-box-corners                           numbers    coordinates of a periodic bounding box corners, by default no periodicity is applied
+    --input-from-file                                string     input file path to use instead of the standard input
+    --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-as-assembly                                  flag to combine multiple models into an assembly when reading input in PDB or mmCIF format
     --measure-running-time                                      flag to measure and output running times
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
@@ -39,6 +44,7 @@ Options:
     --print-cells-residue-level                                 flag to print residue-level grouped per-cell summaries to stdout
     --print-cells-chain-level                                   flag to print chain-level grouped per-cell summaries to stdout
     --print-everything                                          flag to print everything to stdout, terminate if printing everything is not possible
+    --write-input-balls-to-file                                 output file path to write input balls to file
     --write-contacts-to-file                         string     output file path to write table of contacts
     --write-contacts-residue-level-to-file           string     output file path to write residue-level grouped contacts
     --write-contacts-chain-level-to-file             string     output file path to write chain-level grouped contacts
@@ -51,13 +57,16 @@ Options:
     --help | -h                                                 flag to print help to stderr and exit
 
 Standard input stream:
-    Space-separated or tab-separated header-less table of balls, one of the following line formats possible:
-        x y z radius
-        chainID x y z radius
-        chainID residueID x y z radius
-        chainID residueID atomName x y z radius
-    Alternatively, output of 'voronota get-balls-from-atoms-file' is acceptable, where line format is:
-        x y z radius # atomSerial chainID resSeq resName atomName altLoc iCode
+    Several input formats are supported:
+      a) Space-separated or tab-separated header-less table of balls, one of the following line formats possible:
+             x y z radius
+             chainID x y z radius
+             chainID residueID x y z radius
+             chainID residueID atomName x y z radius
+      b) Output of 'voronota get-balls-from-atoms-file' is acceptable, where line format is:
+             x y z radius # atomSerial chainID resSeq resName atomName altLoc iCode
+      c) PDB file
+      d) mmCIF file
 
 Standard output stream:
     Requested tables with headers, with column values tab-separated
@@ -67,13 +76,13 @@ Standard error output stream:
 
 Usage examples:
 
-    cat ./2zsk.pdb | voronota get-balls-from-atoms-file | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
+    cat ./2zsk.pdb | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
 
-    cat ./2zsk.pdb | voronota get-balls-from-atoms-file --radii-file ../radii | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
+    voronota-lt --input-from-file ./2zsk.pdb --print-contacts-residue-level --compute-only-inter-residue-contacts
 
-    cat ./balls.xyzr | voronota-lt --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
+    voronota-lt --input-from-file ./balls.xyzr --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
 
-    cat ./balls.xyzr | voronota-lt --probe 2 --periodic-box-corners 0 0 0 100 100 300 --processors 8 --write-cells-to-file ./cells.tsv
+    voronota-lt --input-from-file ./balls.xyzr --probe 2 --periodic-box-corners 0 0 0 100 100 300 --processors 8 --write-cells-to-file ./cells.tsv
 )";
 
 	output << message;
@@ -100,6 +109,9 @@ public:
 	voronotalt::Float probe=1.4;
 	bool compute_only_inter_residue_contacts;
 	bool compute_only_inter_chain_contacts;
+	bool pdb_or_mmcif_heteroatoms;
+	bool pdb_or_mmcif_hydrogens;
+	bool pdb_or_mmcif_as_assembly;
 	bool measure_running_time;
 	bool print_contacts;
 	bool print_contacts_residue_level;
@@ -111,6 +123,7 @@ public:
 	bool need_summaries_on_chain_level;
 	RunningMode::ID running_mode;
 	bool read_successfuly;
+	std::string input_from_file;
 	std::vector<voronotalt::SimplePoint> periodic_box_corners;
 	std::string write_input_balls_to_file;
 	std::string write_contacts_to_file;
@@ -129,6 +142,9 @@ public:
 		probe(1.4),
 		compute_only_inter_residue_contacts(false),
 		compute_only_inter_chain_contacts(false),
+		pdb_or_mmcif_heteroatoms(false),
+		pdb_or_mmcif_hydrogens(false),
+		pdb_or_mmcif_as_assembly(false),
 		measure_running_time(false),
 		print_contacts(false),
 		print_contacts_residue_level(false),
@@ -179,6 +195,10 @@ public:
 						error_log_for_options_parsing << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.0 to 30.0.\n";
 					}
 				}
+				else if(opt.name=="input-from-file" && opt.args_strings.size()==1)
+				{
+					input_from_file=opt.args_strings.front();
+				}
 				else if(opt.name=="periodic-box-corners" && opt.args_doubles.size()==6)
 				{
 					periodic_box_corners.resize(2);
@@ -203,6 +223,18 @@ public:
 					{
 						running_mode=RunningMode::simplified_aw;
 					}
+				}
+				else if(opt.name=="pdb-or-mmcif-heteroatoms" && opt.is_flag())
+				{
+					pdb_or_mmcif_heteroatoms=opt.is_flag_and_true();
+				}
+				else if(opt.name=="pdb-or-mmcif-hydrogens" && opt.is_flag())
+				{
+					pdb_or_mmcif_hydrogens=opt.is_flag_and_true();
+				}
+				else if(opt.name=="pdb-or-mmcif-as-assembly" && opt.is_flag())
+				{
+					pdb_or_mmcif_as_assembly=opt.is_flag_and_true();
 				}
 				else if(opt.name=="measure-running-time" && opt.is_flag())
 				{
@@ -330,9 +362,9 @@ public:
 			}
 		}
 
-		if(voronotalt::is_stdin_from_terminal())
+		if(input_from_file.empty() && voronotalt::is_stdin_from_terminal())
 		{
-			error_log_for_options_parsing << "Error: no input provided to stdin, please provide it or run with an -h or --help flag to see documentation and examples.\n";
+			error_log_for_options_parsing << "Error: no input provided to stdin or from a file, please provide input or run with an -h or --help flag to see documentation and examples.\n";
 		}
 
 		if(!periodic_box_corners.empty() && running_mode==RunningMode::simplified_aw)
@@ -1129,12 +1161,45 @@ int main(const int argc, const char** argv)
 	{
 		app_log_recorders.time_recoder_for_input.reset();
 
-		std::istreambuf_iterator<char> stdin_eos;
-		const std::string stdin_data(std::istreambuf_iterator<char>(std::cin), stdin_eos);
+		std::string input_data;
 
-		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("read stdin data to memory");
+		if(app_params.input_from_file.empty())
+		{
+			std::istreambuf_iterator<char> stdin_eos;
+			std::string stdin_data(std::istreambuf_iterator<char>(std::cin), stdin_eos);
+			input_data.swap(stdin_data);
+			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("read stdin data to memory");
+		}
+		else
+		{
+			std::ifstream infile(app_params.input_from_file.c_str(), std::ios::in|std::ios::binary);
+			if(infile.is_open())
+			{
+				std::string file_data;
+				infile.seekg(0, std::ios::end);
+				file_data.resize(infile.tellg());
+				infile.seekg(0, std::ios::beg);
+				infile.read(&file_data[0], file_data.size());
+				infile.close();
+				input_data.swap(file_data);
+				app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("read file data to memory");
+			}
+			else
+			{
+				std::cerr << "Error: failed to open file '" << app_params.input_from_file << "' without errors\n";
+				return 1;
+			}
+		}
 
-		if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_string(stdin_data, app_params.probe, spheres_input_result, std::cerr, app_log_recorders.time_recoder_for_input))
+		if(input_data.empty())
+		{
+			std::cerr << "Error: empty input provided\n";
+			return 1;
+		}
+
+		const voronotalt::MolecularFileReading::Parameters molecular_file_reading_parameters(app_params.pdb_or_mmcif_heteroatoms, app_params.pdb_or_mmcif_hydrogens, app_params.pdb_or_mmcif_as_assembly);
+
+		if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_string(input_data, molecular_file_reading_parameters, app_params.probe, spheres_input_result, std::cerr, app_log_recorders.time_recoder_for_input))
 		{
 			std::cerr << "Error: failed to read input without errors\n";
 			return 1;
