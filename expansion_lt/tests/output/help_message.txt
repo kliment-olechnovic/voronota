@@ -14,6 +14,10 @@ Options:
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
     --periodic-box-corners                           numbers    coordinates of a periodic bounding box corners, by default no periodicity is applied
+    --input-from-file                                string     input file path to use instead of the standard input
+    --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-as-assembly                                  flag to combine multiple models into an assembly when reading input in PDB or mmCIF format
     --measure-running-time                                      flag to measure and output running times
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
@@ -22,6 +26,7 @@ Options:
     --print-cells-residue-level                                 flag to print residue-level grouped per-cell summaries to stdout
     --print-cells-chain-level                                   flag to print chain-level grouped per-cell summaries to stdout
     --print-everything                                          flag to print everything to stdout, terminate if printing everything is not possible
+    --write-input-balls-to-file                                 output file path to write input balls to file
     --write-contacts-to-file                         string     output file path to write table of contacts
     --write-contacts-residue-level-to-file           string     output file path to write residue-level grouped contacts
     --write-contacts-chain-level-to-file             string     output file path to write chain-level grouped contacts
@@ -34,13 +39,16 @@ Options:
     --help | -h                                                 flag to print help to stderr and exit
 
 Standard input stream:
-    Space-separated or tab-separated header-less table of balls, one of the following line formats possible:
-        x y z radius
-        chainID x y z radius
-        chainID residueID x y z radius
-        chainID residueID atomName x y z radius
-    Alternatively, output of 'voronota get-balls-from-atoms-file' is acceptable, where line format is:
-        x y z radius # atomSerial chainID resSeq resName atomName altLoc iCode
+    Several input formats are supported:
+      a) Space-separated or tab-separated header-less table of balls, one of the following line formats possible:
+             x y z radius
+             chainID x y z radius
+             chainID residueID x y z radius
+             chainID residueID atomName x y z radius
+      b) Output of 'voronota get-balls-from-atoms-file' is acceptable, where line format is:
+             x y z radius # atomSerial chainID resSeq resName atomName altLoc iCode
+      c) PDB file
+      d) mmCIF file
 
 Standard output stream:
     Requested tables with headers, with column values tab-separated
@@ -50,11 +58,11 @@ Standard error output stream:
 
 Usage examples:
 
-    cat ./2zsk.pdb | voronota get-balls-from-atoms-file | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
+    cat ./2zsk.pdb | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
 
-    cat ./2zsk.pdb | voronota get-balls-from-atoms-file --radii-file ../radii | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
+    voronota-lt --input-from-file ./2zsk.pdb --print-contacts-residue-level --compute-only-inter-residue-contacts
 
-    cat ./balls.xyzr | voronota-lt --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
+    voronota-lt --input-from-file ./balls.xyzr --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
 
-    cat ./balls.xyzr | voronota-lt --probe 2 --periodic-box-corners 0 0 0 100 100 300 --processors 8 --write-cells-to-file ./cells.tsv
+    voronota-lt --input-from-file ./balls.xyzr --probe 2 --periodic-box-corners 0 0 0 100 100 300 --processors 8 --write-cells-to-file ./cells.tsv
 

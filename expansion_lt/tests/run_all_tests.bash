@@ -29,6 +29,14 @@ voronota-lt -processors 40 -probe 1.4  < "./input/balls_7br8.xyzr" 2> "./output/
 
 ####################################################################
 
+voronota-lt -processors 40 -print-everything --input-from-file "./input/balls_2zsk.xyzr" 2> "./output/contacts_2zsk_from_file_summary.txt" > /dev/null
+
+voronota-lt -processors 40 --input-from-file "./input/balls_3dlb.xyzr" 2> "./output/contacts_3dlb_from_file_summary.txt"
+
+voronota-lt -processors 40 --input-from-file "./input/balls_7br8.xyzr" 2> "./output/contacts_7br8_from_file_summary.txt"
+
+####################################################################
+
 mkdir -p "./output/written_files"
 
 voronota-lt \
