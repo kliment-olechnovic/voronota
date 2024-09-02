@@ -8,10 +8,8 @@ Like Voronota, Voronota-LT can compute contact areas derived from the additively
 but the main increase in speed comes when utilizing a simpler, radical tessellation variant, also known as Laguerre-Laguerre tessellation or power diagram.
 This is the default tessellation variant in Voronota-LT. It considers radii of atoms together with the rolling probe radius to define radical planes as bisectors between atoms.
 
-Voronota-LT is distributed an expansion part of [the Voronota software package](../index.html) for two reasons:
-to enable other Voronota expansions to easily use the Voronota-LT library;
-to bundle the Voronota-LT command-line tool with the vanilla Voronota command-line tools that can produce input for Voronota-LT
-by parsing molecular structure files and assigning van der Waals radii to atoms.
+Voronota-LT is distributed as an expansion part of [the Voronota software package](../index.html),
+mainly to enable other Voronota expansions to easily use the Voronota-LT library.
 
 ## Benchmarking data and results
 

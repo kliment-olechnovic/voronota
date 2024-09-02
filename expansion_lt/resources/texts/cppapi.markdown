@@ -81,7 +81,7 @@ Below is a detailed example for both basic and periodic box modes:
         voronotalt::RadicalTessellation::Result result;
         voronotalt::RadicalTessellation::construct_full_tessellation(
                 voronotalt::get_spheres_from_balls(balls, probe),
-                voronotalt::get_simple_points_from_points(periodic_box_corners),
+                voronotalt::PeriodicBox::create_periodic_box_from_corners(voronotalt::get_simple_points_from_points(periodic_box_corners)),
                 result);
 
         if(result.contacts_summaries.empty())

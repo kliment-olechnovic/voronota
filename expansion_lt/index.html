@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Voronota-LT version 0.9.3</title>
+  <title>Voronota-LT version 0.9.4</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -95,7 +95,7 @@
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">Voronota-LT version 0.9.3</h1>
+<h1 class="title">Voronota-LT version 0.9.4</h1>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
@@ -128,7 +128,7 @@
 <h1 id="about-voronota-lt">About Voronota-LT</h1>
 <p>Voronota-LT (pronounced ‘voronota lite’) is an alternative version of <a href="../index.html">Voronota</a> for constructing tessellation-derived atomic contact areas and volumes. Voronota-LT was written from scratch and does not use any external code, even from the core Voronota. The primary motivation for creating Voronota-LT was drastically increasing the speed of computing tessellation-based atom-atom contact areas and atom solvent-accessible surface areas.</p>
 <p>Like Voronota, Voronota-LT can compute contact areas derived from the additively weighted Voronoi tessellation, but the main increase in speed comes when utilizing a simpler, radical tessellation variant, also known as Laguerre-Laguerre tessellation or power diagram. This is the default tessellation variant in Voronota-LT. It considers radii of atoms together with the rolling probe radius to define radical planes as bisectors between atoms.</p>
-<p>Voronota-LT is distributed an expansion part of <a href="../index.html">the Voronota software package</a> for two reasons: to enable other Voronota expansions to easily use the Voronota-LT library; to bundle the Voronota-LT command-line tool with the vanilla Voronota command-line tools that can produce input for Voronota-LT by parsing molecular structure files and assigning van der Waals radii to atoms.</p>
+<p>Voronota-LT is distributed as an expansion part of <a href="../index.html">the Voronota software package</a>, mainly to enable other Voronota expansions to easily use the Voronota-LT library.</p>
 <h2 id="benchmarking-data-and-results">Benchmarking data and results</h2>
 <p>Benchmarking data and results are available <a href="./benchmark/index.html">here</a>.</p>
 <h1 id="quick-install-guide">Quick install guide</h1>
@@ -173,7 +173,7 @@
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">voronota-lt</span> <span class="at">-h</span></span></code></pre></div>
 <p>The overview text is the following:</p>
-<pre><code>Voronota-LT version 0.9.3
+<pre><code>Voronota-LT version 0.9.4
 
 &#39;voronota-lt&#39; executable constructs a radical Voronoi tessellation (also known as a Laguerre-Voronoi diagram or a power diagram)
 of atomic balls of van der Waals radii constrained inside a solvent-accessible surface defined by a rolling probe.
@@ -187,8 +187,12 @@ Options:
     --compute-only-inter-residue-contacts                       flag to only compute inter-residue contacts, turns off per-cell summaries
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
-    --periodic-box-corners                           numbers    coordinates of a periodic bounding box corners, by default no periodicity is applied
-    --measure-running-time                                      flag to measure and output running times
+    --input | -i                                     string     input file path to use instead of standard input, or &#39;_stdin&#39; to still use standard input
+    --periodic-box-directions                        numbers    coordinates of three vectors (x1 y1 z1 x2 y2 z2 x3 y3 z3) to define and use a periodic box
+    --periodic-box-corners                           numbers    coordinates of two corners (x1 y1 z1 x2 y2 z2) to define and use a periodic box
+    --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
     --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout
@@ -196,6 +200,7 @@ Options:
     --print-cells-residue-level                                 flag to print residue-level grouped per-cell summaries to stdout
     --print-cells-chain-level                                   flag to print chain-level grouped per-cell summaries to stdout
     --print-everything                                          flag to print everything to stdout, terminate if printing everything is not possible
+    --write-input-balls-to-file                                 output file path to write input balls to file
     --write-contacts-to-file                         string     output file path to write table of contacts
     --write-contacts-residue-level-to-file           string     output file path to write residue-level grouped contacts
     --write-contacts-chain-level-to-file             string     output file path to write chain-level grouped contacts
@@ -204,17 +209,21 @@ Options:
     --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
     --write-contacts-graphics-to-file                string     output file path to write contacts drawing .py script to run in PyMol
     --graphics-title                                 string     title to use for the graphics object generated by the contacts drawing script
+    --measure-running-time                                      flag to measure and output running times
     --write-log-to-file                              string     output file path to write global log, does not turn off printing log to stderr
     --help | -h                                                 flag to print help to stderr and exit
 
 Standard input stream:
-    Space-separated or tab-separated header-less table of balls, one of the following line formats possible:
-        x y z radius
-        chainID x y z radius
-        chainID residueID x y z radius
-        chainID residueID atomName x y z radius
-    Alternatively, output of &#39;voronota get-balls-from-atoms-file&#39; is acceptable, where line format is:
-        x y z radius # atomSerial chainID resSeq resName atomName altLoc iCode
+    Several input formats are supported:
+      a) Space-separated or tab-separated header-less table of balls, one of the following line formats possible:
+             x y z radius
+             chainID x y z radius
+             chainID residueID x y z radius
+             chainID residueID atomName x y z radius
+      b) Output of &#39;voronota get-balls-from-atoms-file&#39; is acceptable, where line format is:
+             x y z radius # atomSerial chainID resSeq resName atomName altLoc iCode
+      c) PDB file
+      d) mmCIF file
 
 Standard output stream:
     Requested tables with headers, with column values tab-separated
@@ -224,13 +233,15 @@ Standard error output stream:
 
 Usage examples:
 
-    cat ./2zsk.pdb | voronota get-balls-from-atoms-file | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
+    cat ./2zsk.pdb | voronota-lt --print-contacts
 
-    cat ./2zsk.pdb | voronota get-balls-from-atoms-file --radii-file ../radii | voronota-lt --print-contacts-residue-level --compute-only-inter-residue-contacts
+    voronota-lt -i ./2zsk.pdb --print-contacts
 
-    cat ./balls.xyzr | voronota-lt --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
+    voronota-lt --input ./2zsk.pdb --print-contacts-residue-level --compute-only-inter-residue-contacts
 
-    cat ./balls.xyzr | voronota-lt --probe 2 --periodic-box-corners 0 0 0 100 100 300 --processors 8 --write-cells-to-file ./cells.tsv</code></pre>
+    voronota-lt --input ./balls.xyzr --processors 8 --write-contacts-to-file ./contacts.tsv --write-cells-to-file ./cells.tsv
+
+    voronota-lt -i ./balls.xyzr --probe 2 --periodic-box-corners 0 0 0 100 100 300 --processors 8 --write-cells-to-file ./cells.tsv</code></pre>
 <h1 id="using-voronota-lt-as-a-c-library">Using Voronota-LT as a C++ library</h1>
 <h2 id="stateless-c-api">Stateless C++ API</h2>
 <p>Voronota-LT can be used as a header-only C++ library. The needed headers are all in “./src/voronotalt” folder. The only header file needed to be included is “voronotalt.h”.</p>
@@ -309,7 +320,7 @@ Usage examples:
 <span id="cb10-72"><a href="#cb10-72" aria-hidden="true" tabindex="-1"></a>        voronotalt<span class="op">::</span>RadicalTessellation<span class="op">::</span>Result result<span class="op">;</span></span>
 <span id="cb10-73"><a href="#cb10-73" aria-hidden="true" tabindex="-1"></a>        voronotalt<span class="op">::</span>RadicalTessellation<span class="op">::</span>construct_full_tessellation<span class="op">(</span></span>
 <span id="cb10-74"><a href="#cb10-74" aria-hidden="true" tabindex="-1"></a>                voronotalt<span class="op">::</span>get_spheres_from_balls<span class="op">(</span>balls<span class="op">,</span> probe<span class="op">),</span></span>
-<span id="cb10-75"><a href="#cb10-75" aria-hidden="true" tabindex="-1"></a>                voronotalt<span class="op">::</span>get_simple_points_from_points<span class="op">(</span>periodic_box_corners<span class="op">),</span></span>
+<span id="cb10-75"><a href="#cb10-75" aria-hidden="true" tabindex="-1"></a>                voronotalt<span class="op">::</span>PeriodicBox<span class="op">::</span>create_periodic_box_from_corners<span class="op">(</span>voronotalt<span class="op">::</span>get_simple_points_from_points<span class="op">(</span>periodic_box_corners<span class="op">)),</span></span>
 <span id="cb10-76"><a href="#cb10-76" aria-hidden="true" tabindex="-1"></a>                result<span class="op">);</span></span>
 <span id="cb10-77"><a href="#cb10-77" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-78"><a href="#cb10-78" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span><span class="op">(</span>result<span class="op">.</span>contacts_summaries<span class="op">.</span>empty<span class="op">())</span></span>
@@ -565,7 +576,7 @@ Usage examples:
 <span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a>        <span class="co">//Compute a tessellation from the input spheres</span></span>
 <span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span><span class="op">(</span>updateable_tessellation<span class="op">.</span>init<span class="op">(</span>input_spheres<span class="op">,</span> periodic_box_corners<span class="op">))</span></span>
+<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span><span class="op">(</span>updateable_tessellation<span class="op">.</span>init<span class="op">(</span>input_spheres<span class="op">,</span> voronotalt<span class="op">::</span>PeriodicBox<span class="op">::</span>create_periodic_box_from_corners<span class="op">(</span>periodic_box_corners<span class="op">)))</span></span>
 <span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span></span>
 <span id="cb11-106"><a href="#cb11-106" aria-hidden="true" tabindex="-1"></a>            <span class="bu">std::</span>cout <span class="op">&lt;&lt;</span> <span class="st">&quot;Initialized tessellation.&quot;</span> <span class="op">&lt;&lt;</span> <span class="bu">std::</span>endl<span class="op">;</span></span>
 <span id="cb11-107"><a href="#cb11-107" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
