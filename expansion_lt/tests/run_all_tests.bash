@@ -107,6 +107,13 @@ voronota-lt \
 < "./input/balls_cs_1x1.xyzr" \
 2> "./output/contacts_cs_1x1_periodic_summary.txt"
 
+voronota-lt \
+  -processors 40 \
+  -probe 2 \
+  -periodic-box-directions  200 0 0  0 250 0  0 0 300 \
+< "./input/balls_cs_1x1.xyzr" \
+2> "./output/contacts_cs_1x1_periodic_by_directions_summary.txt"
+
 voronota-lt -processors 40 -probe 2  < "./input/balls_cs_3x3.xyzr" -write-cells-chain-level-to-file ./output/written_files/output_cs_3x3_cells_chain_level.txt 2> "./output/contacts_cs_3x3_summary.txt"
 
 ####################################################################

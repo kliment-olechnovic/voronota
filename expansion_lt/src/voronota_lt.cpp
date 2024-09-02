@@ -32,7 +32,8 @@ Options:
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
     --input | -i                                     string     input file path to use instead of standard input, or '_stdin' to still use standard input
-    --periodic-box-corners                           numbers    coordinates of a periodic bounding box corners, by default no periodicity is applied
+    --periodic-box-directions                        numbers    coordinates of three vectors (x1 y1 z1 x2 y2 z2 x3 y3 z3) to define and use a periodic box
+    --periodic-box-corners                           numbers    coordinates of two corners (x1 y1 z1 x2 y2 z2) to define and use a periodic box
     --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
@@ -126,6 +127,7 @@ public:
 	RunningMode::ID running_mode;
 	bool read_successfuly;
 	std::string input_from_file;
+	std::vector<voronotalt::SimplePoint> periodic_box_directions;
 	std::vector<voronotalt::SimplePoint> periodic_box_corners;
 	std::string write_input_balls_to_file;
 	std::string write_contacts_to_file;
@@ -200,6 +202,19 @@ public:
 				else if((opt.name=="input" || opt.name=="i")  && opt.args_strings.size()==1)
 				{
 					input_from_file=opt.args_strings.front();
+				}
+				else if(opt.name=="periodic-box-directions" && opt.args_doubles.size()==9)
+				{
+					periodic_box_directions.resize(3);
+					periodic_box_directions[0].x=opt.args_doubles[0];
+					periodic_box_directions[0].y=opt.args_doubles[1];
+					periodic_box_directions[0].z=opt.args_doubles[2];
+					periodic_box_directions[1].x=opt.args_doubles[3];
+					periodic_box_directions[1].y=opt.args_doubles[4];
+					periodic_box_directions[1].z=opt.args_doubles[5];
+					periodic_box_directions[2].x=opt.args_doubles[6];
+					periodic_box_directions[2].y=opt.args_doubles[7];
+					periodic_box_directions[2].z=opt.args_doubles[8];
 				}
 				else if(opt.name=="periodic-box-corners" && opt.args_doubles.size()==6)
 				{
@@ -369,14 +384,24 @@ public:
 			error_log_for_options_parsing << "Error: no input provided to stdin or from a file, please provide input or run with an -h or --help flag to see documentation and examples.\n";
 		}
 
-		if(!periodic_box_corners.empty() && running_mode==RunningMode::simplified_aw)
+		if(running_mode==RunningMode::simplified_aw && !(periodic_box_directions.empty() && periodic_box_corners.empty()))
 		{
 			error_log_for_options_parsing << "Error: in this version a periodic box cannot be used in the simplified additively weighted Voronoi diagram regime.\n";
 		}
 
-		if(!periodic_box_corners.empty() && periodic_box_corners.size()<2)
+		if(!periodic_box_directions.empty() && !periodic_box_corners.empty())
 		{
-			error_log_for_options_parsing << "Error: less than two periodic box corners provided.\n";
+			error_log_for_options_parsing << "Error: cannot use both the periodic box directions and the periodic box corners.\n";
+		}
+
+		if(!periodic_box_directions.empty() && periodic_box_directions.size()!=3)
+		{
+			error_log_for_options_parsing << "Error: not exactly three periodic box directions provided.\n";
+		}
+
+		if(!periodic_box_corners.empty() && periodic_box_corners.size()!=2)
+		{
+			error_log_for_options_parsing << "Error: not exactly two periodic box corners provided.\n";
 		}
 
 #ifdef VORONOTALT_OPENMP
@@ -502,8 +527,11 @@ void run_mode_radical(
 {
 	app_log_recorders.time_recoder_for_tessellation.reset();
 
+	const voronotalt::PeriodicBox periodic_box=voronotalt::PeriodicBox::create_periodic_box_from_shift_directions_or_from_corners(app_params.periodic_box_directions, app_params.periodic_box_corners);
+
 	voronotalt::SpheresContainer spheres_container;
-	spheres_container.init(spheres_input_result.spheres, app_params.periodic_box_corners, app_log_recorders.time_recoder_for_tessellation);
+
+	spheres_container.init(spheres_input_result.spheres, periodic_box, app_log_recorders.time_recoder_for_tessellation);
 
 	voronotalt::RadicalTessellation::Result result;
 	voronotalt::RadicalTessellation::ResultGraphics result_graphics;
@@ -814,9 +842,11 @@ void run_mode_test_updateable(
 {
 	app_log_recorders.time_recoder_for_tessellation.reset();
 
+	const voronotalt::PeriodicBox periodic_box=voronotalt::PeriodicBox::create_periodic_box_from_shift_directions_or_from_corners(app_params.periodic_box_directions, app_params.periodic_box_corners);
+
 	voronotalt::UpdateableRadicalTessellation urt(app_params.running_mode==ApplicationParameters::RunningMode::test_updateable_with_backup);
 
-	urt.init(spheres_input_result.spheres, app_params.periodic_box_corners, app_log_recorders.time_recoder_for_tessellation);
+	urt.init(spheres_input_result.spheres, periodic_box, app_log_recorders.time_recoder_for_tessellation);
 
 	voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_first;
 	voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last_before_last;
@@ -889,9 +919,11 @@ void run_mode_test_maskable(
 {
 	app_log_recorders.time_recoder_for_tessellation.reset();
 
+	const voronotalt::PeriodicBox periodic_box=voronotalt::PeriodicBox::create_periodic_box_from_shift_directions_or_from_corners(app_params.periodic_box_directions, app_params.periodic_box_corners);
+
 	voronotalt::UpdateableRadicalTessellation urt(true);
 
-	urt.init(spheres_input_result.spheres, app_params.periodic_box_corners, app_log_recorders.time_recoder_for_tessellation);
+	urt.init(spheres_input_result.spheres, periodic_box, app_log_recorders.time_recoder_for_tessellation);
 
 	voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_first;
 
@@ -939,9 +971,11 @@ void run_mode_test_second_order_cell_volumes_calculation(
 {
 	app_log_recorders.time_recoder_for_tessellation.reset();
 
+	const voronotalt::PeriodicBox periodic_box=voronotalt::PeriodicBox::create_periodic_box_from_shift_directions_or_from_corners(app_params.periodic_box_directions, app_params.periodic_box_corners);
+
 	voronotalt::UpdateableRadicalTessellation urt(true);
 
-	urt.init(spheres_input_result.spheres, app_params.periodic_box_corners, app_log_recorders.time_recoder_for_tessellation);
+	urt.init(spheres_input_result.spheres, periodic_box, app_log_recorders.time_recoder_for_tessellation);
 
 	std::vector< std::vector<voronotalt::Float> > all_result_volumes_for_contacts_summaries;
 

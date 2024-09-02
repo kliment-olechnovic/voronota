@@ -297,12 +297,12 @@ public:
 
 	static void construct_full_tessellation(
 			const std::vector<SimpleSphere>& input_spheres,
-			const std::vector<SimplePoint>& periodic_box_corners,
+			const PeriodicBox& periodic_box,
 			Result& result) noexcept
 	{
 		TimeRecorder time_recorder;
 		SpheresContainer spheres_container;
-		spheres_container.init(input_spheres, periodic_box_corners, time_recorder);
+		spheres_container.init(input_spheres, periodic_box, time_recorder);
 		ResultGraphics result_graphics;
 		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
 	}
@@ -486,7 +486,7 @@ public:
 			time_recorder.record_elapsed_miliseconds_and_reset("copy valid contacts graphics");
 		}
 
-		if(spheres_container.periodic_box().enabled)
+		if(spheres_container.periodic_box().enabled())
 		{
 			std::vector< std::vector<UnsignedInt> > map_of_spheres_to_boundary_contacts(result.total_spheres);
 

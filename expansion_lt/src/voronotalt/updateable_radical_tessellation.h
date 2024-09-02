@@ -46,25 +46,25 @@ public:
 	bool init(const std::vector<SimpleSphere>& input_spheres) noexcept
 	{
 		TimeRecorder time_recorder;
-		return init(input_spheres, std::vector<SimplePoint>(), time_recorder);
+		return init(input_spheres, time_recorder);
 	}
 
 	bool init(const std::vector<SimpleSphere>& input_spheres, TimeRecorder& time_recorder) noexcept
 	{
-		return init(input_spheres, std::vector<SimplePoint>(), time_recorder);
+		return init(input_spheres, PeriodicBox(), time_recorder);
 	}
 
-	bool init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners) noexcept
+	bool init(const std::vector<SimpleSphere>& input_spheres, const PeriodicBox& periodic_box) noexcept
 	{
 		TimeRecorder time_recorder;
-		return init(input_spheres, periodic_box_corners, time_recorder);
+		return init(input_spheres, periodic_box, time_recorder);
 	}
 
-	bool init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners, TimeRecorder& time_recorder) noexcept
+	bool init(const std::vector<SimpleSphere>& input_spheres, const PeriodicBox& periodic_box, TimeRecorder& time_recorder) noexcept
 	{
 		prepare_for_possible_init_or_update(time_recorder);
 
-		state_.spheres_container.init(input_spheres, periodic_box_corners, time_recorder);
+		state_.spheres_container.init(input_spheres, periodic_box, time_recorder);
 
 		in_sync_with_backup_=false;
 
@@ -515,7 +515,7 @@ private:
 			}
 		}
 
-		if(state_.spheres_container.periodic_box().enabled)
+		if(state_.spheres_container.periodic_box().enabled())
 		{
 			state_.result.contacts_summaries_with_redundancy_in_periodic_box.resize(state_.spheres_container.input_spheres().size());
 			for(UnsignedInt i=0;i<state_.result.contacts_summaries_with_redundancy_in_periodic_box.size();i++)

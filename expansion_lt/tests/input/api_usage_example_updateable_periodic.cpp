@@ -101,7 +101,7 @@ int main(const int, const char**)
 
 	//Compute a tessellation from the input spheres
 
-	if(updateable_tessellation.init(input_spheres, periodic_box_corners))
+	if(updateable_tessellation.init(input_spheres, voronotalt::PeriodicBox::create_periodic_box_from_corners(periodic_box_corners)))
 	{
 		std::cout << "Initialized tessellation." << std::endl;
 	}

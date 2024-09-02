@@ -2,6 +2,7 @@
 #define VORONOTALT_SPHERES_CONTAINER_H_
 
 #include "spheres_searcher.h"
+#include "periodic_box.h"
 #include "time_recorder.h"
 
 namespace voronotalt
@@ -10,46 +11,6 @@ namespace voronotalt
 class SpheresContainer
 {
 public:
-	struct PeriodicBox
-	{
-		SimplePoint corner_a;
-		SimplePoint corner_b;
-		SimplePoint shift;
-		bool enabled;
-
-		PeriodicBox() noexcept : enabled(false)
-		{
-		}
-
-		void init(const std::vector<SimplePoint>& periodic_box_corners) noexcept
-		{
-			enabled=(periodic_box_corners.size()>=2);
-			if(enabled)
-			{
-				corner_a=periodic_box_corners[0];
-				corner_b=periodic_box_corners[0];
-
-				for(UnsignedInt i=1;i<periodic_box_corners.size();i++)
-				{
-					const SimplePoint& corner=periodic_box_corners[i];
-					corner_a.x=std::min(corner_a.x, corner.x);
-					corner_a.y=std::min(corner_a.y, corner.y);
-					corner_a.z=std::min(corner_a.z, corner.z);
-					corner_b.x=std::max(corner_b.x, corner.x);
-					corner_b.y=std::max(corner_b.y, corner.y);
-					corner_b.z=std::max(corner_b.z, corner.z);
-				}
-
-				shift=sub_of_points(corner_b, corner_a);
-			}
-		}
-
-		bool equals(const PeriodicBox& pb) const noexcept
-		{
-			return (enabled==pb.enabled && point_equals_point(corner_a, pb.corner_a) && point_equals_point(corner_b, pb.corner_b) && point_equals_point(shift, pb.shift));
-		}
-	};
-
 	struct ResultOfPreparationForTessellation
 	{
 		std::vector< std::pair<UnsignedInt, UnsignedInt> > relevant_collision_ids;
@@ -65,17 +26,17 @@ public:
 
 	void init(const std::vector<SimpleSphere>& input_spheres, TimeRecorder& time_recorder) noexcept
 	{
-		init(input_spheres, std::vector<SimplePoint>(), time_recorder);
+		init(input_spheres, PeriodicBox(), time_recorder);
 	}
 
-	void init(const std::vector<SimpleSphere>& input_spheres, const std::vector<SimplePoint>& periodic_box_corners, TimeRecorder& time_recorder) noexcept
+	void init(const std::vector<SimpleSphere>& input_spheres, const PeriodicBox& periodic_box, TimeRecorder& time_recorder) noexcept
 	{
 		time_recorder.reset();
 
-		periodic_box_.init(periodic_box_corners);
+		periodic_box_=periodic_box;
 		input_spheres_=input_spheres;
 
-		if(periodic_box_.enabled)
+		if(periodic_box_.enabled())
 		{
 			populated_spheres_.resize(input_spheres_.size()*27);
 			std::vector<UnsignedInt> collected_indices;
@@ -110,7 +71,7 @@ public:
 			}
 		}
 
-		if(periodic_box_.enabled)
+		if(periodic_box_.enabled())
 		{
 			for(UnsignedInt i=0;i<input_spheres_.size();i++)
 			{
@@ -242,7 +203,7 @@ public:
 		time_recorder.record_elapsed_miliseconds_and_reset("gather affected spheres ids for update");
 
 		{
-			if(periodic_box_.enabled)
+			if(periodic_box_.enabled())
 			{
 				std::vector<UnsignedInt> ids_of_changed_populated_spheres;
 				ids_of_changed_populated_spheres.reserve(ids_of_changed_input_spheres.size()*27);
@@ -250,7 +211,7 @@ public:
 				{
 					const UnsignedInt sphere_id=ids_of_changed_input_spheres[i];
 					input_spheres_[sphere_id]=new_input_spheres[sphere_id];
-					if(periodic_box_.enabled)
+					if(periodic_box_.enabled())
 					{
 						set_sphere_periodic_instances(sphere_id, true, ids_of_changed_populated_spheres);
 					}
@@ -282,7 +243,7 @@ public:
 				}
 			}
 
-			if(periodic_box_.enabled)
+			if(periodic_box_.enabled())
 			{
 				for(UnsignedInt i=0;i<ids_of_affected_input_spheres.size();i++)
 				{
@@ -324,7 +285,7 @@ public:
 					}
 				}
 
-				if(periodic_box_.enabled)
+				if(periodic_box_.enabled())
 				{
 					for(UnsignedInt i=0;i<ids_of_affected_input_spheres.size();i++)
 					{
@@ -368,7 +329,7 @@ public:
 
         all_exclusion_statuses_[id_of_masked_input_sphere]=(new_exclusion_status ? 1 : 0);
 
-		if(periodic_box_.enabled)
+		if(periodic_box_.enabled())
 		{
 			set_exclusion_status_periodic_instances(id_of_masked_input_sphere);
 		}
@@ -401,7 +362,7 @@ public:
 
 	    all_exclusion_statuses_[id_of_masked_input_sphere]=(new_exclusion_status ? 1 : 0);
 
-	    if(periodic_box_.enabled)
+	    if(periodic_box_.enabled())
 	    {
 	        set_exclusion_status_periodic_instances(id_of_masked_input_sphere);
 	    }
@@ -506,7 +467,7 @@ public:
 				}
 			}
 
-			if(periodic_box_.enabled && populated_spheres_.size()==input_spheres_.size()*27 && all_exclusion_statuses_.size()==all_exclusion_statuses_.size()*27)
+			if(periodic_box_.enabled() && populated_spheres_.size()==input_spheres_.size()*27 && all_exclusion_statuses_.size()==all_exclusion_statuses_.size()*27)
 			{
 #ifdef VORONOTALT_OPENMP
 #pragma omp parallel for
@@ -620,14 +581,7 @@ private:
 
 	void reinit(const std::vector<SimpleSphere>& new_input_spheres, std::vector<UnsignedInt>& ids_of_changed_input_spheres, std::vector<UnsignedInt>& ids_of_affected_input_spheres, TimeRecorder& time_recorder) noexcept
 	{
-		std::vector<SimplePoint> periodic_box_corners;
-		if(periodic_box_.enabled)
-		{
-			periodic_box_corners.reserve(2);
-			periodic_box_corners.push_back(periodic_box_.corner_a);
-			periodic_box_corners.push_back(periodic_box_.corner_b);
-		}
-		init(new_input_spheres, periodic_box_corners, time_recorder);
+		init(new_input_spheres, periodic_box_, time_recorder);
 		ids_of_changed_input_spheres.clear();
 		ids_of_affected_input_spheres.clear();
 	}
@@ -637,7 +591,7 @@ private:
 		if(i<input_spheres_.size())
 		{
 			const SimpleSphere& o=input_spheres_[i];
-			if(!periodic_box_.enabled)
+			if(!periodic_box_.enabled())
 			{
 				if(populated_spheres_.size()!=input_spheres_.size())
 				{
@@ -660,21 +614,17 @@ private:
 				{
 					collected_indices.push_back(i);
 				}
-				SimpleSphere m=o;
 				UnsignedInt g=1;
 				for(int sx=-1;sx<=1;sx++)
 				{
-					m.p.x=o.p.x+(periodic_box_.shift.x*static_cast<Float>(sx));
 					for(int sy=-1;sy<=1;sy++)
 					{
-						m.p.y=o.p.y+(periodic_box_.shift.y*static_cast<Float>(sy));
 						for(int sz=-1;sz<=1;sz++)
 						{
 							if(sx!=0 || sy!=0 || sz!=0)
 							{
-								m.p.z=o.p.z+(periodic_box_.shift.z*static_cast<Float>(sz));
 								const UnsignedInt mi=(g*input_spheres_.size()+i);
-								populated_spheres_[mi]=m;
+								populated_spheres_[mi]=periodic_box_.shift_by_weighted_directions(o, static_cast<Float>(sx), static_cast<Float>(sy), static_cast<Float>(sz));
 								if(collect_indices)
 								{
 									collected_indices.push_back(mi);
