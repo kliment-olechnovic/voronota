@@ -337,50 +337,6 @@ public:
 		}
 	};
 
-	static double get_standard_atom_vdw_radius_based_on_element(const std::string& element) noexcept
-	{
-		double radius=1.7;
-		if(element=="C")
-		{
-			radius=1.70;
-		}
-		else if(element=="N")
-		{
-			radius=1.55;
-		}
-		else if(element=="O")
-		{
-			radius=1.52;
-		}
-		else if(element=="S")
-		{
-			radius=1.8;
-		}
-		else if(element=="P")
-		{
-			radius=1.8;
-		}
-		else if(element=="H")
-		{
-			radius=1.20;
-		}
-		return radius;
-	}
-
-	static double get_standard_atom_vdw_radius_based_on_element_or_atom_name(const AtomRecord& record) noexcept
-	{
-		double radius=1.7;
-		if(!record.element.empty())
-		{
-			radius=get_standard_atom_vdw_radius_based_on_element(record.element);
-		}
-		else if(!record.name.empty())
-		{
-			radius=get_standard_atom_vdw_radius_based_on_element(record.name.substr(0, 1));
-		}
-		return radius;
-	}
-
 private:
 	static bool check_atom_record_validity(const AtomRecord& record) noexcept
 	{

@@ -10,6 +10,7 @@
 
 #include "io_utilities.h"
 #include "molecular_file_reading.h"
+#include "molecular_radii_assignment.h"
 
 namespace voronotalt
 {
@@ -240,7 +241,7 @@ public:
 					sphere.p.x=static_cast<Float>(ar.x);
 					sphere.p.y=static_cast<Float>(ar.y);
 					sphere.p.z=static_cast<Float>(ar.z);
-					sphere.r=MolecularFileReading::get_standard_atom_vdw_radius_based_on_element_or_atom_name(ar)+probe;
+					sphere.r=MolecularRadiiAssignment::get_atom_radius(ar.resName, ar.name)+probe;
 				}
 				{
 					SphereLabel& sphere_label=result.sphere_labels[i];
