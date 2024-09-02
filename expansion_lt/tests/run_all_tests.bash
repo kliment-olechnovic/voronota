@@ -37,6 +37,41 @@ voronota-lt -processors 40 --input-from-file "./input/balls_7br8.xyzr" 2> "./out
 
 ####################################################################
 
+voronota-lt \
+< "./input/assembly_1ctf.pdb1" \
+2> "./output/contacts_1ctf_pdb_summary.txt"
+
+voronota-lt \
+  --pdb-or-mmcif-heteroatoms \
+< "./input/assembly_1ctf.pdb1" \
+2> "./output/contacts_1ctf_pdb_with_heteroatoms_summary.txt"
+
+voronota-lt \
+  --pdb-or-mmcif-as-assembly \
+< "./input/assembly_1ctf.pdb1" \
+2> "./output/contacts_1ctf_pdb_as_assembly_summary.txt"
+
+voronota-lt \
+  --pdb-or-mmcif-as-assembly \
+  --pdb-or-mmcif-heteroatoms \
+  --write-input-balls-to-file "./output/contacts_1ctf_pdb_as_assembly_with_heteroatoms_input_balls.txt" \
+< "./input/assembly_1ctf.pdb1" \
+2> "./output/contacts_1ctf_pdb_as_assembly_with_heteroatoms_summary.txt"
+
+####################################################################
+
+voronota-lt \
+< "./input/assembly_1ctf.cif" \
+2> "./output/contacts_1ctf_mmcif_assembly_summary.txt"
+
+voronota-lt \
+  --pdb-or-mmcif-heteroatoms \
+  --write-input-balls-to-file "./output/contacts_1ctf_mmcif_assembly_with_heteroatoms_input_balls.txt" \
+< "./input/assembly_1ctf.cif" \
+2> "./output/contacts_1ctf_mmcif_assembly_with_heteroatoms_summary.txt"
+
+####################################################################
+
 mkdir -p "./output/written_files"
 
 voronota-lt \
