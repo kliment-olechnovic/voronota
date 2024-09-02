@@ -1,5 +1,5 @@
 
-Voronota-LT version 0.9.3
+Voronota-LT version 0.9.4
 
 'voronota-lt' executable constructs a radical Voronoi tessellation (also known as a Laguerre-Voronoi diagram or a power diagram)
 of atomic balls of van der Waals radii constrained inside a solvent-accessible surface defined by a rolling probe.
@@ -17,7 +17,7 @@ Options:
     --periodic-box-corners                           numbers    coordinates of a periodic bounding box corners, by default no periodicity is applied
     --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
-    --pdb-or-mmcif-as-assembly                                  flag to combine multiple models into an assembly when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
     --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout

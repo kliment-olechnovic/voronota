@@ -47,12 +47,12 @@ voronota-lt \
 2> "./output/contacts_1ctf_pdb_with_heteroatoms_summary.txt"
 
 voronota-lt \
-  --pdb-or-mmcif-as-assembly \
+  --pdb-or-mmcif-join-models \
 < "./input/assembly_1ctf.pdb1" \
 2> "./output/contacts_1ctf_pdb_as_assembly_summary.txt"
 
 voronota-lt \
-  --pdb-or-mmcif-as-assembly \
+  --pdb-or-mmcif-join-models \
   --pdb-or-mmcif-heteroatoms \
   --write-input-balls-to-file "./output/contacts_1ctf_pdb_as_assembly_with_heteroatoms_input_balls.txt" \
 < "./input/assembly_1ctf.pdb1" \
