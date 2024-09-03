@@ -19,7 +19,7 @@ public:
 		reset();
 	}
 
-	void reset() noexcept
+	void reset() noexcept override
 	{
 		if(!enabled_)
 		{
@@ -28,7 +28,7 @@ public:
 		start_=std::chrono::steady_clock::now();
 	}
 
-	void record_elapsed_miliseconds_and_reset(const char* message) noexcept
+	void record_elapsed_miliseconds_and_reset(const char* message) noexcept override
 	{
 		if(!enabled_ || message==0)
 		{

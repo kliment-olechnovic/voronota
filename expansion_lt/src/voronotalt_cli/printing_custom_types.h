@@ -19,7 +19,7 @@ class PrintingCustomTypes
 {
 public:
 	static void print_balls_to_stream(
-			std::vector<SimpleSphere>& spheres,
+			const std::vector<SimpleSphere>& spheres,
 			const std::vector<SpheresInput::SphereLabel>& sphere_labels,
 			const double probe,
 			std::ostream& output) noexcept
