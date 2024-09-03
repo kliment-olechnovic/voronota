@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <random>
 
 #include "voronotalt/parallelization_configuration.h"
 
@@ -102,14 +103,15 @@ public:
 			simplified_aw,
 			test_updateable,
 			test_updateable_with_backup,
+			test_updateable_extensively,
 			test_maskable,
 			test_second_order_cell_volumes_calculation,
 			test_raw_collisions
 		};
 	};
 
-	unsigned int max_number_of_processors=1;
-	voronotalt::Float probe=1.4;
+	unsigned int max_number_of_processors;
+	voronotalt::Float probe;
 	bool compute_only_inter_residue_contacts;
 	bool compute_only_inter_chain_contacts;
 	bool pdb_or_mmcif_heteroatoms;
@@ -345,6 +347,13 @@ public:
 					if(opt.is_flag_and_true())
 					{
 						running_mode=RunningMode::test_updateable_with_backup;
+					}
+				}
+				else if((opt.name=="test-updateable-tessellation-extensively") && opt.is_flag())
+				{
+					if(opt.is_flag_and_true())
+					{
+						running_mode=RunningMode::test_updateable_extensively;
 					}
 				}
 				else if((opt.name=="test-maskable-tessellation") && opt.is_flag())
@@ -912,6 +921,69 @@ void run_mode_test_updateable(
 	}
 }
 
+void run_mode_test_updateable_extensively(
+		const ApplicationParameters& app_params,
+		voronotalt::SpheresInput::Result& spheres_input_result,
+		ApplicationLogRecorders& app_log_recorders) noexcept
+{
+	const voronotalt::PeriodicBox periodic_box=voronotalt::PeriodicBox::create_periodic_box_from_shift_directions_or_from_corners(app_params.periodic_box_directions, app_params.periodic_box_corners);
+
+	std::mt19937 random_gen(0);
+	std::uniform_real_distribution<voronotalt::Float> random_dist(FLOATCONST(-5.0), FLOATCONST(5.0));
+
+	voronotalt::UpdateableRadicalTessellation urt(false);
+
+	app_log_recorders.time_recoder_for_tessellation.reset();
+
+	urt.init(spheres_input_result.spheres, periodic_box);
+
+	const double miliseconds_of_init=app_log_recorders.time_recoder_for_tessellation.get_elapsed_miliseconds();
+
+	app_log_recorders.time_recoder_for_tessellation.record_elapsed_miliseconds_and_reset("initialized_tessellation");
+
+	voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_first=urt.result_summary();
+
+	const voronotalt::UnsignedInt N=spheres_input_result.spheres.size();
+	const voronotalt::UnsignedInt number_of_double_updates=500;
+	const voronotalt::UnsignedInt number_of_single_updates=number_of_double_updates*2;
+
+	{
+		std::vector<voronotalt::UnsignedInt> ids_of_changed_input_spheres(1, 0);
+		for(voronotalt::UnsignedInt j=0;j<number_of_double_updates;j++)
+		{
+			const voronotalt::UnsignedInt i=j%N;
+			ids_of_changed_input_spheres[0]=i;
+			voronotalt::SimpleSphere& s=spheres_input_result.spheres[i];
+
+			const voronotalt::SimplePoint move(random_dist(random_gen), random_dist(random_gen), random_dist(random_gen));
+
+			s.p=voronotalt::sum_of_points(s.p, move);
+			urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres);
+
+			s.p=voronotalt::sub_of_points(s.p, move);
+			urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres);
+		}
+	}
+
+	const double miliseconds_of_all_updates=app_log_recorders.time_recoder_for_tessellation.get_elapsed_miliseconds();
+
+	app_log_recorders.time_recoder_for_tessellation.record_elapsed_miliseconds_and_reset("updated_tessellation_multiple_times");
+
+	voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last=urt.result_summary();
+
+	app_log_recorders.log_output << "log_urt_number_of_balls\t" << N << "\n";
+	app_log_recorders.log_output << "log_urt_number_of_single_updates\t" << number_of_single_updates << "\n";
+	app_log_recorders.log_output << "log_urt_miliseconds_of_init_tessellation\t" << miliseconds_of_init << "\n";
+	app_log_recorders.log_output << "log_urt_miliseconds_of_all_updates\t" << miliseconds_of_all_updates << "\n";
+	app_log_recorders.log_output << "log_urt_miliseconds_per_single_update\t" << (miliseconds_of_all_updates/static_cast<double>(number_of_single_updates)) << "\n";
+
+	app_log_recorders.log_output << "log_urt_diff_total_contacts_count\t" << (result_summary_first.total_contacts_summary.count-result_summary_last.total_contacts_summary.count) << "\n";
+	app_log_recorders.log_output << "log_urt_diff_total_contacts_area\t" << (result_summary_first.total_contacts_summary.area-result_summary_last.total_contacts_summary.area) << "\n";
+	app_log_recorders.log_output << "log_urt_diff_total_cells_count\t" << (result_summary_first.total_cells_summary.count-result_summary_last.total_cells_summary.count) << "\n";
+	app_log_recorders.log_output << "log_urt_diff_total_cells_sas_area\t" << (result_summary_first.total_cells_summary.sas_area-result_summary_last.total_cells_summary.sas_area) << "\n";
+	app_log_recorders.log_output << "log_urt_diff_total_cells_sas_inside_volume\t" << (result_summary_first.total_cells_summary.sas_inside_volume-result_summary_last.total_cells_summary.sas_inside_volume) << "\n";
+}
+
 void run_mode_test_maskable(
 		const ApplicationParameters& app_params,
 		const voronotalt::SpheresInput::Result& spheres_input_result,
@@ -1280,6 +1352,10 @@ int main(const int argc, const char** argv)
 	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_updateable || app_params.running_mode==ApplicationParameters::RunningMode::test_updateable_with_backup)
 	{
 		run_mode_test_updateable(app_params, spheres_input_result, app_log_recorders);
+	}
+	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_updateable_extensively)
+	{
+		run_mode_test_updateable_extensively(app_params, spheres_input_result, app_log_recorders);
 	}
 	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_maskable)
 	{
