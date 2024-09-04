@@ -500,7 +500,7 @@ public:
 	{
 		std::ostringstream output;
 		output << prefix;
-		if(spheres_input_result.sphere_labels.empty())
+		if(!spheres_input_result.sphere_labels.empty())
 		{
 			const voronotalt::UnsignedInt N=spheres_input_result.sphere_labels.size();
 			const bool need_to_swap=(spheres_input_result.sphere_labels[index2%N].chain_id<spheres_input_result.sphere_labels[index1%N].chain_id);
