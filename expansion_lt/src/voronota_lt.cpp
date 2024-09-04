@@ -488,9 +488,10 @@ public:
 	{
 		std::ostringstream output;
 		output << prefix;
-		if(index<spheres_input_result.sphere_labels.size())
+		if(!spheres_input_result.sphere_labels.empty())
 		{
-			output << "_" << spheres_input_result.sphere_labels[index].chain_id;
+			const voronotalt::UnsignedInt N=spheres_input_result.sphere_labels.size();
+			output << "_" << spheres_input_result.sphere_labels[index%N].chain_id;
 		}
 		return output.str();
 	}
@@ -499,11 +500,12 @@ public:
 	{
 		std::ostringstream output;
 		output << prefix;
-		if(index1<spheres_input_result.sphere_labels.size() && index2<spheres_input_result.sphere_labels.size())
+		if(spheres_input_result.sphere_labels.empty())
 		{
-			const bool need_to_swap=(spheres_input_result.sphere_labels[index2].chain_id<spheres_input_result.sphere_labels[index1].chain_id);
-			output << "_" << spheres_input_result.sphere_labels[need_to_swap? index2 : index1].chain_id;
-			output << "_" << spheres_input_result.sphere_labels[need_to_swap? index1 : index2].chain_id;
+			const voronotalt::UnsignedInt N=spheres_input_result.sphere_labels.size();
+			const bool need_to_swap=(spheres_input_result.sphere_labels[index2%N].chain_id<spheres_input_result.sphere_labels[index1%N].chain_id);
+			output << "_" << spheres_input_result.sphere_labels[(need_to_swap? index2 : index1)%N].chain_id;
+			output << "_" << spheres_input_result.sphere_labels[(need_to_swap? index1 : index2)%N].chain_id;
 		}
 		return output.str();
 	}
