@@ -926,14 +926,36 @@ void run_mode_test_updateable_extensively(
 		voronotalt::SpheresInput::Result& spheres_input_result,
 		ApplicationLogRecorders& app_log_recorders) noexcept
 {
+	if(spheres_input_result.grouping_by_residue.size()!=spheres_input_result.spheres.size())
+	{
+		std::cerr << "Error: no atom-to-residue mapping provided.\n";
+		return;
+	}
+
+	std::vector< std::vector<voronotalt::UnsignedInt> > list_of_residue_atoms;
+	{
+		std::map< int, std::vector<voronotalt::UnsignedInt> > map_of_residues_to_atoms;
+		for(voronotalt::UnsignedInt i=0;i<spheres_input_result.grouping_by_residue.size();i++)
+		{
+			map_of_residues_to_atoms[spheres_input_result.grouping_by_residue[i]].push_back(i);
+		}
+
+		list_of_residue_atoms.reserve(map_of_residues_to_atoms.size());
+		for(std::map< int, std::vector<voronotalt::UnsignedInt> >::const_iterator it=map_of_residues_to_atoms.begin();it!=map_of_residues_to_atoms.end();++it)
+		{
+			list_of_residue_atoms.push_back(it->second);
+		}
+	}
+
 	const voronotalt::PeriodicBox periodic_box=voronotalt::PeriodicBox::create_periodic_box_from_shift_directions_or_from_corners(app_params.periodic_box_directions, app_params.periodic_box_corners);
 
 	std::mt19937 random_gen(0);
-	std::uniform_real_distribution<voronotalt::Float> random_dist(FLOATCONST(-5.0), FLOATCONST(5.0));
-
-	voronotalt::UpdateableRadicalTessellation urt(false);
+	std::uniform_real_distribution<voronotalt::Float> random_coord(FLOATCONST(-1.0), FLOATCONST(1.0));
+	std::uniform_real_distribution<voronotalt::Float> random_shift(FLOATCONST(1.0), FLOATCONST(5.0));
 
 	app_log_recorders.time_recoder_for_tessellation.reset();
+
+	voronotalt::UpdateableRadicalTessellation urt(false);
 
 	urt.init(spheres_input_result.spheres, periodic_box);
 
@@ -943,25 +965,41 @@ void run_mode_test_updateable_extensively(
 
 	voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_first=urt.result_summary();
 
-	const voronotalt::UnsignedInt N=spheres_input_result.spheres.size();
+	const voronotalt::UnsignedInt number_of_residues=list_of_residue_atoms.size();
 	const voronotalt::UnsignedInt number_of_double_updates=500;
 	const voronotalt::UnsignedInt number_of_single_updates=number_of_double_updates*2;
+	voronotalt::UnsignedInt number_of_moved_atoms=0;
 
 	{
 		std::vector<voronotalt::UnsignedInt> ids_of_changed_input_spheres(1, 0);
 		for(voronotalt::UnsignedInt j=0;j<number_of_double_updates;j++)
 		{
-			const voronotalt::UnsignedInt i=j%N;
-			ids_of_changed_input_spheres[0]=i;
-			voronotalt::SimpleSphere& s=spheres_input_result.spheres[i];
+			const std::vector<voronotalt::UnsignedInt>& ids_of_changed_input_spheres=list_of_residue_atoms[j%number_of_residues];
 
-			const voronotalt::SimplePoint move(random_dist(random_gen), random_dist(random_gen), random_dist(random_gen));
+			voronotalt::SimplePoint move(random_coord(random_gen), random_coord(random_gen), random_coord(random_gen));
+			if(voronotalt::squared_point_module(move)<=FLOATCONST(0.0))
+			{
+				move=voronotalt::SimplePoint(FLOATCONST(1.0), FLOATCONST(1.0), FLOATCONST(1.0));
+			}
+			move=voronotalt::point_and_number_product(voronotalt::unit_point(move), random_shift(random_gen));
 
-			s.p=voronotalt::sum_of_points(s.p, move);
+			for(voronotalt::UnsignedInt i=0;i<ids_of_changed_input_spheres.size();i++)
+			{
+				voronotalt::SimpleSphere& s=spheres_input_result.spheres[ids_of_changed_input_spheres[i]];
+				s.p=voronotalt::sum_of_points(s.p, move);
+			}
+
 			urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres);
+			number_of_moved_atoms+=ids_of_changed_input_spheres.size();
 
-			s.p=voronotalt::sub_of_points(s.p, move);
+			for(voronotalt::UnsignedInt i=0;i<ids_of_changed_input_spheres.size();i++)
+			{
+				voronotalt::SimpleSphere& s=spheres_input_result.spheres[ids_of_changed_input_spheres[i]];
+				s.p=voronotalt::sub_of_points(s.p, move);
+			}
+
 			urt.update(spheres_input_result.spheres, ids_of_changed_input_spheres);
+			number_of_moved_atoms+=ids_of_changed_input_spheres.size();
 		}
 	}
 
@@ -971,8 +1009,10 @@ void run_mode_test_updateable_extensively(
 
 	voronotalt::UpdateableRadicalTessellation::ResultSummary result_summary_last=urt.result_summary();
 
-	app_log_recorders.log_output << "log_urt_number_of_balls\t" << N << "\n";
+	app_log_recorders.log_output << "log_urt_number_of_atoms\t" << spheres_input_result.spheres.size() << "\n";
+	app_log_recorders.log_output << "log_urt_number_of_residues\t" << number_of_residues << "\n";
 	app_log_recorders.log_output << "log_urt_number_of_single_updates\t" << number_of_single_updates << "\n";
+	app_log_recorders.log_output << "log_urt_number_of_moved_atoms\t" << number_of_moved_atoms << "\n";
 	app_log_recorders.log_output << "log_urt_miliseconds_of_init_tessellation\t" << miliseconds_of_init << "\n";
 	app_log_recorders.log_output << "log_urt_miliseconds_of_all_updates\t" << miliseconds_of_all_updates << "\n";
 	app_log_recorders.log_output << "log_urt_miliseconds_per_single_update\t" << (miliseconds_of_all_updates/static_cast<double>(number_of_single_updates)) << "\n";
