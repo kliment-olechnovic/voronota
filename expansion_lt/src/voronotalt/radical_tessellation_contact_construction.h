@@ -573,7 +573,7 @@ private:
 						i++;
 					}
 				}
-				if(greater_or_equal(sum_of_arc_angles, PIVALUE*FLOATCONST(2.0)))
+				if(greater_or_equal(sum_of_arc_angles, PIVALUE*FLOATCONST(2.0)) || (contour.size()>2 && equal(sum_of_arc_angles, PIVALUE*FLOATCONST(2.0), 0.001)))
 				{
 					sum_of_arc_angles=FLOATCONST(2.0);
 					contour.clear();
