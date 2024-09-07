@@ -127,6 +127,9 @@ public:
 	bool need_summaries_on_residue_level;
 	bool need_summaries_on_chain_level;
 	RunningMode::ID running_mode;
+	unsigned int graphics_color_balls;
+	unsigned int graphics_color_faces;
+	unsigned int graphics_color_wireframe;
 	bool read_successfuly;
 	std::string input_from_file;
 	std::vector<voronotalt::SimplePoint> periodic_box_directions;
@@ -140,6 +143,9 @@ public:
 	std::string write_cells_chain_level_to_file;
 	std::string write_contacts_graphics_to_file;
 	std::string graphics_title;
+	std::set<std::string> graphics_restrict_representations;
+	std::set<std::string> graphics_restrict_chains;
+	std::set< std::pair<std::string, std::string> > graphics_restrict_chain_pairs;
 	std::string write_log_to_file;
 	std::ostringstream error_log_for_options_parsing;
 
@@ -161,6 +167,9 @@ public:
 		need_summaries_on_residue_level(false),
 		need_summaries_on_chain_level(false),
 		running_mode(RunningMode::radical),
+		graphics_color_balls(0x00FFFF),
+		graphics_color_faces(0xFFFF00),
+		graphics_color_wireframe(0x808080),
 		read_successfuly(false)
 	{
 	}
@@ -331,6 +340,34 @@ public:
 				{
 					graphics_title=opt.args_strings.front();
 				}
+				else if(opt.name=="graphics-restrict-representations" && !opt.args_strings.empty())
+				{
+					graphics_restrict_representations=std::set<std::string>(opt.args_strings.begin(), opt.args_strings.end());
+				}
+				else if(opt.name=="graphics-restrict-chains" && !opt.args_strings.empty())
+				{
+					graphics_restrict_chains=std::set<std::string>(opt.args_strings.begin(), opt.args_strings.end());
+				}
+				else if(opt.name=="graphics-restrict-chain-pairs" && !opt.args_strings.empty() && opt.args_strings.size()%2==0)
+				{
+					for(std::size_t j=0;j<opt.args_strings.size();j+=2)
+					{
+						graphics_restrict_chain_pairs.insert(std::make_pair(opt.args_strings[j], opt.args_strings[j+1]));
+						graphics_restrict_chain_pairs.insert(std::make_pair(opt.args_strings[j+1], opt.args_strings[j]));
+					}
+				}
+				else if(opt.name=="graphics-color-balls" && opt.args_hexints.size()==1)
+				{
+					graphics_color_balls=opt.args_hexints.front();
+				}
+				else if(opt.name=="graphics-color-faces" && opt.args_hexints.size()==1)
+				{
+					graphics_color_faces=opt.args_hexints.front();
+				}
+				else if(opt.name=="graphics-color-wireframe" && opt.args_hexints.size()==1)
+				{
+					graphics_color_wireframe=opt.args_hexints.front();
+				}
 				else if(opt.name=="write-log-to-file" && opt.args_strings.size()==1)
 				{
 					write_log_to_file=opt.args_strings.front();
@@ -484,6 +521,38 @@ public:
 class ApplicationGraphicsRecorder
 {
 public:
+	static inline bool allow_representation(const std::set<std::string>& restrict_representations, const std::string& representation)
+	{
+		return (restrict_representations.empty() || restrict_representations.count(representation)>0);
+	}
+
+	static inline bool allow_ball_group(const std::set<std::string>& restrict_chains, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index)
+	{
+		if(!spheres_input_result.sphere_labels.empty() && !restrict_chains.empty())
+		{
+			const voronotalt::UnsignedInt N=spheres_input_result.sphere_labels.size();
+			return (restrict_chains.count(spheres_input_result.sphere_labels[index%N].chain_id)>0);
+		}
+		return true;
+	}
+
+	static inline bool allow_contact_group(const std::set<std::string>& restrict_chains, const std::set< std::pair<std::string, std::string> >& restrict_chain_pairs, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index1, const std::size_t index2)
+	{
+		if(!spheres_input_result.sphere_labels.empty() && (!restrict_chains.empty() || !restrict_chain_pairs.empty()))
+		{
+			const voronotalt::UnsignedInt N=spheres_input_result.sphere_labels.size();
+			if(restrict_chain_pairs.empty())
+			{
+				return (restrict_chains.count(spheres_input_result.sphere_labels[index1%N].chain_id)>0 || restrict_chains.count(spheres_input_result.sphere_labels[index2%N].chain_id)>0);
+			}
+			else
+			{
+				return (restrict_chain_pairs.count(std::make_pair(spheres_input_result.sphere_labels[index1%N].chain_id, spheres_input_result.sphere_labels[index2%N].chain_id))>0);
+			}
+		}
+		return true;
+	}
+
 	static inline std::string name_ball_group(const std::string& prefix, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index) noexcept
 	{
 		std::ostringstream output;
@@ -688,30 +757,54 @@ void run_mode_radical(
 
 	if(app_graphics_recorder.graphics_writer.enabled())
 	{
-		app_graphics_recorder.graphics_writer.add_color(0.0, 1.0, 1.0);
-		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "balls"))
 		{
-			app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("balls", spheres_input_result, i), spheres_input_result.spheres[i], app_params.probe);
+			app_graphics_recorder.graphics_writer.add_color(app_params.graphics_color_balls);
+			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+			{
+				if(ApplicationGraphicsRecorder::allow_ball_group(app_params.graphics_restrict_chains, spheres_input_result, i))
+				{
+					app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("balls", spheres_input_result, i), spheres_input_result.spheres[i], app_params.probe);
+				}
+			}
 		}
-		app_graphics_recorder.graphics_writer.add_color(1.0, 1.0, 0.0);
-		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
+		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "faces"))
 		{
-			const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
-			const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-			app_graphics_recorder.graphics_writer.add_triangle_fan(ApplicationGraphicsRecorder::name_contact_group("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
+			app_graphics_recorder.graphics_writer.add_color(app_params.graphics_color_faces);
+			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
+			{
+				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
+				if(ApplicationGraphicsRecorder::allow_contact_group(app_params.graphics_restrict_chains, app_params.graphics_restrict_chain_pairs, spheres_input_result, pair_summary.id_a, pair_summary.id_b))
+				{
+					const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
+					app_graphics_recorder.graphics_writer.add_triangle_fan(ApplicationGraphicsRecorder::name_contact_group("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
+				}
+			}
 		}
-		app_graphics_recorder.graphics_writer.add_color(0.5, 0.5, 0.5);
-		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
+		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "wireframe"))
 		{
-			const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
-			const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-			app_graphics_recorder.graphics_writer.add_line_loop(ApplicationGraphicsRecorder::name_contact_group("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points);
+			app_graphics_recorder.graphics_writer.add_color(app_params.graphics_color_wireframe);
+			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
+			{
+				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
+				if(ApplicationGraphicsRecorder::allow_contact_group(app_params.graphics_restrict_chains, app_params.graphics_restrict_chain_pairs, spheres_input_result, pair_summary.id_a, pair_summary.id_b))
+				{
+					const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
+					app_graphics_recorder.graphics_writer.add_line_loop(ApplicationGraphicsRecorder::name_contact_group("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points);
+				}
+			}
 		}
-		app_graphics_recorder.graphics_writer.add_alpha(0.5);
-		app_graphics_recorder.graphics_writer.add_color(0.0, 1.0, 0.0);
-		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "xspheres"))
 		{
-			app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
+			app_graphics_recorder.graphics_writer.add_alpha(0.5);
+			app_graphics_recorder.graphics_writer.add_color(0.0, 1.0, 0.0);
+			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+			{
+				if(ApplicationGraphicsRecorder::allow_ball_group(app_params.graphics_restrict_chains, spheres_input_result, i))
+				{
+					app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
+				}
+			}
 		}
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
 	}

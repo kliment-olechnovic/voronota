@@ -18,6 +18,7 @@ public:
 		std::vector<std::string> args_strings;
 		std::vector<double> args_doubles;
 		std::vector<int> args_ints;
+		std::vector<unsigned int> args_hexints;
 
 		bool is_flag() const noexcept
 		{
@@ -121,7 +122,7 @@ public:
 			for(std::size_t j=0;j<option.args_strings.size() && !cancel;j++)
 			{
 				std::istringstream input(option.args_strings[j]);
-				int value=0.0;
+				int value=0;
 				input >> value;
 				if(input.fail())
 				{
@@ -135,6 +136,38 @@ public:
 			if(cancel)
 			{
 				option.args_ints.clear();
+			}
+		}
+
+		for(std::size_t i=0;i<options.size();i++)
+		{
+			Option& option=options[i];
+			bool cancel=false;
+			for(std::size_t j=0;j<option.args_strings.size() && !cancel;j++)
+			{
+				const std::string& value_string=option.args_strings[j];
+				if(value_string.rfind("0x", 0)==0 && value_string.find_first_not_of("0123456789ABCDEF", 2)==std::string::npos)
+				{
+					std::istringstream input(value_string);
+					unsigned int value=0;
+					input >> std::hex >> value;
+					if(input.fail())
+					{
+						cancel=true;
+					}
+					else
+					{
+						option.args_hexints.push_back(value);
+					}
+				}
+				else
+				{
+					cancel=true;
+				}
+			}
+			if(cancel)
+			{
+				option.args_hexints.clear();
 			}
 		}
 
