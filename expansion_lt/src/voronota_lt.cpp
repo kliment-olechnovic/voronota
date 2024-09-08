@@ -521,12 +521,12 @@ public:
 class ApplicationGraphicsRecorder
 {
 public:
-	static inline bool allow_representation(const std::set<std::string>& restrict_representations, const std::string& representation)
+	static inline bool allow_representation(const std::set<std::string>& restrict_representations, const std::string& representation) noexcept
 	{
 		return (restrict_representations.empty() || restrict_representations.count(representation)>0);
 	}
 
-	static inline bool allow_ball_group(const std::set<std::string>& restrict_chains, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index)
+	static inline bool allow_ball_group(const std::set<std::string>& restrict_chains, const voronotalt::SpheresInput::Result& spheres_input_result, const std::size_t index) noexcept
 	{
 		if(!spheres_input_result.sphere_labels.empty() && !restrict_chains.empty())
 		{
@@ -776,6 +776,10 @@ void run_mode_radical(
 				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 				if(ApplicationGraphicsRecorder::allow_contact_group(app_params.graphics_restrict_chains, app_params.graphics_restrict_chain_pairs, spheres_input_result, pair_summary.id_a, pair_summary.id_b))
 				{
+					if(app_params.graphics_color_faces==0)
+					{
+						app_graphics_recorder.graphics_writer.add_random_color();
+					}
 					const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 					app_graphics_recorder.graphics_writer.add_triangle_fan(ApplicationGraphicsRecorder::name_contact_group("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
 				}

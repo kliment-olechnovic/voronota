@@ -7,6 +7,7 @@
 #include <set>
 #include <sstream>
 #include <fstream>
+#include <cstdint>
 
 #include "../voronotalt/basic_types_and_functions.h"
 
@@ -100,6 +101,21 @@ public:
 			return;
 		}
 		add_color(static_cast<double>((rgb&0xFF0000) >> 16)/static_cast<double>(0xFF), static_cast<double>((rgb&0x00FF00) >> 8)/static_cast<double>(0xFF), static_cast<double>(rgb&0x0000FF)/static_cast<double>(0xFF));
+	}
+
+	void add_random_color() noexcept
+	{
+		if(!enabled_)
+		{
+			return;
+		}
+		static uint64_t state=static_cast<uint64_t>(42);
+		uint32_t x=state;
+		x ^= x << 13;
+		x ^= x >> 17;
+		x ^= x << 5;
+		state=x;
+		add_color(static_cast<unsigned int>(x%static_cast<uint64_t>(0xFFFFFF)));
 	}
 
 	void add_alpha(const double a) noexcept
