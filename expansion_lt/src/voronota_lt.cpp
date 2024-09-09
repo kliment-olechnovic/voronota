@@ -1,11 +1,14 @@
 #include <iostream>
 #include <fstream>
-#include <random>
 
 #include "voronotalt/parallelization_configuration.h"
 
 #ifdef VORONOTALT_OPENMP
 #include <omp.h>
+#endif
+
+#ifdef VORONOTALT_WITH_TEST_MODES
+#include <random>
 #endif
 
 #include "voronotalt/voronotalt.h"
@@ -119,12 +122,14 @@ public:
 		{
 			radical,
 			simplified_aw,
+#ifdef VORONOTALT_WITH_TEST_MODES
 			test_updateable,
 			test_updateable_with_backup,
 			test_updateable_extensively,
 			test_maskable,
 			test_second_order_cell_volumes_calculation,
-			test_raw_collisions
+			test_raw_collisions,
+#endif
 		};
 	};
 
@@ -397,6 +402,7 @@ public:
 				{
 					write_log_to_file=opt.args_strings.front();
 				}
+#ifdef VORONOTALT_WITH_TEST_MODES
 				else if((opt.name=="test-updateable-tessellation") && opt.is_flag())
 				{
 					if(opt.is_flag_and_true())
@@ -439,6 +445,7 @@ public:
 						running_mode=RunningMode::test_raw_collisions;
 					}
 				}
+#endif /* VORONOTALT_WITH_TEST_MODES */
 				else if(opt.name.empty())
 				{
 					error_log_for_options_parsing << "Error: unnamed command line arguments detected.\n";
@@ -981,6 +988,8 @@ void run_mode_simplified_aw(
 	}
 }
 
+#ifdef VORONOTALT_WITH_TEST_MODES
+
 void run_mode_test_updateable(
 		const ApplicationParameters& app_params,
 		voronotalt::SpheresInput::Result& spheres_input_result,
@@ -1418,6 +1427,8 @@ void run_mode_test_raw_collisions(
 	}
 }
 
+#endif /* VORONOTALT_WITH_TEST_MODES */
+
 }
 
 int main(const int argc, const char** argv)
@@ -1526,30 +1537,38 @@ int main(const int argc, const char** argv)
 	{
 		run_mode_simplified_aw(app_params, spheres_input_result, app_log_recorders, app_graphics_recorder);
 	}
-	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_updateable || app_params.running_mode==ApplicationParameters::RunningMode::test_updateable_with_backup)
-	{
-		run_mode_test_updateable(app_params, spheres_input_result, app_log_recorders);
-	}
-	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_updateable_extensively)
-	{
-		run_mode_test_updateable_extensively(app_params, spheres_input_result, app_log_recorders);
-	}
-	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_maskable)
-	{
-		run_mode_test_maskable(app_params, spheres_input_result, app_log_recorders);
-	}
-	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_second_order_cell_volumes_calculation)
-	{
-		run_mode_test_second_order_cell_volumes_calculation(app_params, spheres_input_result, app_log_recorders);
-	}
-	else if(app_params.running_mode==ApplicationParameters::RunningMode::test_raw_collisions)
-	{
-		run_mode_test_raw_collisions(app_params, spheres_input_result, app_log_recorders, app_graphics_recorder);
-	}
 	else
 	{
-		std::cerr << "Error: unrecognized running mode.\n";
+#ifdef VORONOTALT_WITH_TEST_MODES
+		if(app_params.running_mode==ApplicationParameters::RunningMode::test_updateable || app_params.running_mode==ApplicationParameters::RunningMode::test_updateable_with_backup)
+		{
+			run_mode_test_updateable(app_params, spheres_input_result, app_log_recorders);
+		}
+		else if(app_params.running_mode==ApplicationParameters::RunningMode::test_updateable_extensively)
+		{
+			run_mode_test_updateable_extensively(app_params, spheres_input_result, app_log_recorders);
+		}
+		else if(app_params.running_mode==ApplicationParameters::RunningMode::test_maskable)
+		{
+			run_mode_test_maskable(app_params, spheres_input_result, app_log_recorders);
+		}
+		else if(app_params.running_mode==ApplicationParameters::RunningMode::test_second_order_cell_volumes_calculation)
+		{
+			run_mode_test_second_order_cell_volumes_calculation(app_params, spheres_input_result, app_log_recorders);
+		}
+		else if(app_params.running_mode==ApplicationParameters::RunningMode::test_raw_collisions)
+		{
+			run_mode_test_raw_collisions(app_params, spheres_input_result, app_log_recorders, app_graphics_recorder);
+		}
+		else
+		{
+			std::cerr << "Error: invalid running mode.\n";
+			return 1;
+		}
+#else
+		std::cerr << "Error: invalid running mode (test modes are disabled in this build).\n";
 		return 1;
+#endif
 	}
 
 	app_graphics_recorder.finalize_and_output(app_params, app_log_recorders);
