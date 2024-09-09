@@ -1,18 +1,13 @@
 from pymol.cgo import *
 from pymol import cmd
-cgo_graphics_list_balls = [COLOR, 0, 1, 1,
+cgo_graphics_list_balls_atoms = [COLOR, 0, 1, 1,
 SPHERE, 0, 0, 0, 1,
 SPHERE, 0, 0, 1, 1,
 SPHERE, 0, 1, 0, 1,
 SPHERE, 0, 1, 1, 1,
-COLOR, 1, 1, 0,
-COLOR, 0.501961, 0.501961, 0.501961,
-ALPHA, 0.5,
-COLOR, 0, 1, 0,
 ]
-cmd.load_cgo(cgo_graphics_list_balls, 'case_2_balls')
-cgo_graphics_list_faces = [COLOR, 0, 1, 1,
-COLOR, 1, 1, 0,
+cmd.load_cgo(cgo_graphics_list_balls_atoms, 'case_2_balls_atoms')
+cgo_graphics_list_faces_contacts = [COLOR, 1, 1, 0,
 BEGIN, TRIANGLE_FAN, 
 NORMAL, 0, 0, 1, VERTEX, 0.00768544, -1.61546, 0.5, 
 NORMAL, 0, 0, 1, VERTEX, 2.91548, 0.5, 0.5, 
@@ -193,14 +188,9 @@ NORMAL, 0, 0, 1, VERTEX, -2.95801, 0.986137, 0.5,
 NORMAL, 0, 0, 1, VERTEX, -2.94554, 0.728382, 0.5, 
 NORMAL, 0, 0, 1, VERTEX, -2.91548, 0.5, 0.5, 
 END, 
-COLOR, 0.501961, 0.501961, 0.501961,
-ALPHA, 0.5,
-COLOR, 0, 1, 0,
 ]
-cmd.load_cgo(cgo_graphics_list_faces, 'case_2_faces')
-cgo_graphics_list_wireframe = [COLOR, 0, 1, 1,
-COLOR, 1, 1, 0,
-COLOR, 0.501961, 0.501961, 0.501961,
+cmd.load_cgo(cgo_graphics_list_faces_contacts, 'case_2_faces_contacts')
+cgo_graphics_list_wireframe_contacts = [COLOR, 0.501961, 0.501961, 0.501961,
 BEGIN, LINE_LOOP, 
 VERTEX, 2.91548, 0.5, 0.5, 
 VERTEX, -2.91548, 0.5, 0.5, 
@@ -373,20 +363,15 @@ VERTEX, -2.94796, 1.244, 0.5,
 VERTEX, -2.95801, 0.986137, 0.5, 
 VERTEX, -2.94554, 0.728382, 0.5, 
 END, 
-ALPHA, 0.5,
-COLOR, 0, 1, 0,
 ]
-cmd.load_cgo(cgo_graphics_list_wireframe, 'case_2_wireframe')
-cgo_graphics_list_xspheres = [COLOR, 0, 1, 1,
-COLOR, 1, 1, 0,
-COLOR, 0.501961, 0.501961, 0.501961,
-ALPHA, 0.5,
+cmd.load_cgo(cgo_graphics_list_wireframe_contacts, 'case_2_wireframe_contacts')
+cgo_graphics_list_xspheres_atoms = [ALPHA, 0.5,
 COLOR, 0, 1, 0,
 SPHERE, 0, 0, 0, 3,
 SPHERE, 0, 0, 1, 3,
 SPHERE, 0, 1, 0, 3,
 SPHERE, 0, 1, 1, 3,
 ]
-cmd.load_cgo(cgo_graphics_list_xspheres, 'case_2_xspheres')
+cmd.load_cgo(cgo_graphics_list_xspheres_atoms, 'case_2_xspheres_atoms')
 cmd.set('two_sided_lighting', 1)
 cmd.set('cgo_line_width', 3)

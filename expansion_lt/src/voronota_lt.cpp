@@ -791,58 +791,60 @@ void run_mode_radical(
 	{
 		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "balls"))
 		{
-			app_graphics_recorder.graphics_writer.add_color(app_params.graphics_color_balls);
+			app_graphics_recorder.graphics_writer.add_color("balls", "", app_params.graphics_color_balls);
 			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
 			{
 				if(ApplicationGraphicsRecorder::allow_ball_group(app_params.graphics_restrict_chains, spheres_input_result, i))
 				{
+					const std::string group_name=ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i);
 					if(app_params.graphics_color_balls==0)
 					{
-						app_graphics_recorder.graphics_writer.add_random_color();
+						app_graphics_recorder.graphics_writer.add_random_color("balls", group_name);
 					}
-					app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("balls", spheres_input_result, i), spheres_input_result.spheres[i], app_params.probe);
+					app_graphics_recorder.graphics_writer.add_sphere("balls", group_name, spheres_input_result.spheres[i], app_params.probe);
 				}
 			}
 		}
 		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "faces"))
 		{
-			app_graphics_recorder.graphics_writer.add_color(app_params.graphics_color_faces);
+			app_graphics_recorder.graphics_writer.add_color("faces", "", app_params.graphics_color_faces);
 			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 			{
-				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
+				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=(i<result.contacts_summaries_with_redundancy_in_periodic_box.size() ? result.contacts_summaries_with_redundancy_in_periodic_box[i] : result.contacts_summaries[i]);
 				if(ApplicationGraphicsRecorder::allow_contact_group(app_params.graphics_restrict_chains, app_params.graphics_restrict_chain_pairs, spheres_input_result, pair_summary.id_a, pair_summary.id_b))
 				{
+					const std::string group_name=ApplicationGraphicsRecorder::name_contact_group("contacts", spheres_input_result, pair_summary.id_a, pair_summary.id_b);
 					if(app_params.graphics_color_faces==0)
 					{
-						app_graphics_recorder.graphics_writer.add_random_color();
+						app_graphics_recorder.graphics_writer.add_random_color("faces", group_name);
 					}
 					const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-					app_graphics_recorder.graphics_writer.add_triangle_fan(ApplicationGraphicsRecorder::name_contact_group("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
+					app_graphics_recorder.graphics_writer.add_triangle_fan("faces", group_name, pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
 				}
 			}
 		}
 		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "wireframe"))
 		{
-			app_graphics_recorder.graphics_writer.add_color(app_params.graphics_color_wireframe);
+			app_graphics_recorder.graphics_writer.add_color("wireframe", "", app_params.graphics_color_wireframe);
 			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 			{
-				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
+				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=(i<result.contacts_summaries_with_redundancy_in_periodic_box.size() ? result.contacts_summaries_with_redundancy_in_periodic_box[i] : result.contacts_summaries[i]);
 				if(ApplicationGraphicsRecorder::allow_contact_group(app_params.graphics_restrict_chains, app_params.graphics_restrict_chain_pairs, spheres_input_result, pair_summary.id_a, pair_summary.id_b))
 				{
 					const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-					app_graphics_recorder.graphics_writer.add_line_loop(ApplicationGraphicsRecorder::name_contact_group("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points);
+					app_graphics_recorder.graphics_writer.add_line_loop("wireframe", ApplicationGraphicsRecorder::name_contact_group("contacts", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.outer_points);
 				}
 			}
 		}
 		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "xspheres"))
 		{
-			app_graphics_recorder.graphics_writer.add_alpha(0.5);
-			app_graphics_recorder.graphics_writer.add_color(app_params.graphics_color_xspheres);
+			app_graphics_recorder.graphics_writer.add_alpha("xspheres", "", 0.5);
+			app_graphics_recorder.graphics_writer.add_color("xspheres", "", app_params.graphics_color_xspheres);
 			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
 			{
 				if(ApplicationGraphicsRecorder::allow_ball_group(app_params.graphics_restrict_chains, spheres_input_result, i))
 				{
-					app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
+					app_graphics_recorder.graphics_writer.add_sphere("xspheres", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
 				}
 			}
 		}
@@ -944,36 +946,36 @@ void run_mode_simplified_aw(
 
 	if(app_graphics_recorder.graphics_writer.enabled())
 	{
-		app_graphics_recorder.graphics_writer.add_color(0.0, 1.0, 1.0);
+		app_graphics_recorder.graphics_writer.add_color("balls", "", 0.0, 1.0, 1.0);
 		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
 		{
-			app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("balls", spheres_input_result, i), spheres_input_result.spheres[i], app_params.probe);
+			app_graphics_recorder.graphics_writer.add_sphere("balls", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), spheres_input_result.spheres[i], app_params.probe);
 		}
-		app_graphics_recorder.graphics_writer.add_color(1.0, 1.0, 0.0);
+		app_graphics_recorder.graphics_writer.add_color("faces", "", 1.0, 1.0, 0.0);
 		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 		{
 			const voronotalt::SimplifiedAWTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 			const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 			for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
 			{
-				app_graphics_recorder.graphics_writer.add_triangle_fan(ApplicationGraphicsRecorder::name_contact_group("faces", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
+				app_graphics_recorder.graphics_writer.add_triangle_fan("faces", ApplicationGraphicsRecorder::name_contact_group("contacts", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points, pair_graphics.contours_graphics[j].barycenter, spheres_input_result.spheres[pair_summary.id_a].p, spheres_input_result.spheres[pair_summary.id_b].p);
 			}
 		}
-		app_graphics_recorder.graphics_writer.add_color(0.5, 0.5, 0.5);
+		app_graphics_recorder.graphics_writer.add_color("wireframe", "", 0.5, 0.5, 0.5);
 		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 		{
 			const voronotalt::SimplifiedAWTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 			const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 			for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
 			{
-				app_graphics_recorder.graphics_writer.add_line_loop(ApplicationGraphicsRecorder::name_contact_group("wireframe", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points);
+				app_graphics_recorder.graphics_writer.add_line_loop("wireframe", ApplicationGraphicsRecorder::name_contact_group("contacts", spheres_input_result, pair_summary.id_a, pair_summary.id_b), pair_graphics.contours_graphics[j].outer_points);
 			}
 		}
-		app_graphics_recorder.graphics_writer.add_alpha(0.5);
-		app_graphics_recorder.graphics_writer.add_color(0.0, 1.0, 0.0);
+		app_graphics_recorder.graphics_writer.add_alpha("xspheres", "", 0.5);
+		app_graphics_recorder.graphics_writer.add_color("xspheres", "", 0.0, 1.0, 0.0);
 		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
 		{
-			app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("xspheres", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
+			app_graphics_recorder.graphics_writer.add_sphere("xspheres", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
 		}
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
 	}
@@ -1392,24 +1394,24 @@ void run_mode_test_raw_collisions(
 
 		for(int v=0;v<3;v++)
 		{
-			app_graphics_recorder.graphics_writer.add_color(v==0 ? 0xFFFF00 : (v==1 ? 0xFFFF01 : 0xFFFF02));
+			app_graphics_recorder.graphics_writer.add_color("lines", "", v==0 ? 0xFFFF00 : (v==1 ? 0xFFFF01 : 0xFFFF02));
 			for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_collisions_to_contacts.begin();it!=map_of_collisions_to_contacts.end();++it)
 			{
 				const voronotalt::UnsignedInt a=it->first.first;
 				const voronotalt::UnsignedInt b=it->first.second;
 				if(v==0 || (v==1 && !it->second.first) || (v==2 && it->second.first))
 				{
-					app_graphics_recorder.graphics_writer.add_line((v==0 ? "collisions0" : (v==1 ? "collisions1" : "collisions2")), spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
+					app_graphics_recorder.graphics_writer.add_line("lines", (v==0 ? "collisions0" : (v==1 ? "collisions1" : "collisions2")), spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
 				}
 			}
 			for(std::map< std::string, std::set<voronotalt::UnsignedInt> >::const_iterator it=atom_ids[v].begin();it!=atom_ids[v].end();++it)
 			{
-				app_graphics_recorder.graphics_writer.add_color(chain_colors[v][it->first]);
+				app_graphics_recorder.graphics_writer.add_color("balls", "", chain_colors[v][it->first]);
 				const std::string group_name=std::string(v==0 ? "atoms0" : (v==1 ? "atoms1" : "atoms2"))+"_chain_"+it->first;
 				const double r=(v==0 ? 0.48 : (v==1 ? 0.49 : 0.50));
 				for(std::set<voronotalt::UnsignedInt>::const_iterator jt=it->second.begin();jt!=it->second.end();++jt)
 				{
-					app_graphics_recorder.graphics_writer.add_sphere(group_name, voronotalt::SimpleSphere(spheres_input_result.spheres[*jt].p, r), 0.0);
+					app_graphics_recorder.graphics_writer.add_sphere("balls", group_name, voronotalt::SimpleSphere(spheres_input_result.spheres[*jt].p, r), 0.0);
 				}
 			}
 		}

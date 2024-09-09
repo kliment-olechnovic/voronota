@@ -315,6 +315,71 @@ EOF
 | voronota-lt -probe 1.0 -periodic-box-corners -1.6 -1.6 -0.6 1.6 1.6 3.1 -graphics-output-file "./output/tricky_cases_graphics/draw_case_7.py" \
   -graphics-title "case_7" -graphics-restrict-representations balls faces wireframe xspheres 2> /dev/null
 
+########################################
+
+{
+cat << 'EOF'
+big 0 0 2 1
+small 0 1 0 0.5
+small 0.38268343236509 0.923879532511287 0 0.5
+small 0.707106781186547 0.707106781186548 0 0.5
+small 0.923879532511287 0.38268343236509 0 0.5
+small 1 6.12323399573677e-17 0 0.5
+small 0.923879532511287 -0.38268343236509 0 0.5
+small 0.707106781186548 -0.707106781186547 0 0.5
+small 0.38268343236509 -0.923879532511287 0 0.5
+small 1.22464679914735e-16 -1 0 0.5
+small -0.38268343236509 -0.923879532511287 0 0.5
+small -0.707106781186547 -0.707106781186548 0 0.5
+small -0.923879532511287 -0.38268343236509 0 0.5
+small -1 -1.83697019872103e-16 0 0.5
+small -0.923879532511287 0.38268343236509 0 0.5
+small -0.707106781186548 0.707106781186547 0 0.5
+small -0.38268343236509 0.923879532511287 0 0.5
+EOF
+} \
+| voronota-lt \
+  -probe 1.0 \
+  -graphics-output-file "./output/tricky_cases_graphics/draw_case_8.py" \
+  -graphics-title "case_8" \
+  -graphics-restrict-representations balls faces wireframe \
+  -graphics-color-balls 0xC0C0C0 \
+  -graphics-color-faces 0x000000 \
+2> /dev/null
+
+########################################
+
+{
+cat << 'EOF'
+big 0 0 2 1
+small 0 1 0 0.5
+small 0.38268343236509 0.923879532511287 0 0.5
+small 0.707106781186547 0.707106781186548 0 0.5
+small 0.923879532511287 0.38268343236509 0 0.5
+small 1 6.12323399573677e-17 0 0.5
+small 0.923879532511287 -0.38268343236509 0 0.5
+small 0.707106781186548 -0.707106781186547 0 0.5
+small 0.38268343236509 -0.923879532511287 0 0.5
+small 1.22464679914735e-16 -1 0 0.5
+small -0.38268343236509 -0.923879532511287 0 0.5
+small -0.707106781186547 -0.707106781186548 0 0.5
+small -0.923879532511287 -0.38268343236509 0 0.5
+small -1 -1.83697019872103e-16 0 0.5
+small -0.923879532511287 0.38268343236509 0 0.5
+small -0.707106781186548 0.707106781186547 0 0.5
+small -0.38268343236509 0.923879532511287 0 0.5
+EOF
+} \
+| voronota-lt \
+  -probe 1.0 \
+  -periodic-box-corners -1.6 -1.6 -0.6 1.6 1.6 3.1 \
+  -graphics-output-file "./output/tricky_cases_graphics/draw_case_9.py" \
+  -graphics-title "case_9" \
+  -graphics-restrict-representations balls faces wireframe \
+  -graphics-color-balls 0xC0C0C0 \
+  -graphics-color-faces 0x000000 \
+2> /dev/null
+
 ################################################################################
 
 git status -s ./output/

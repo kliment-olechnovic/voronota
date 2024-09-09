@@ -1,17 +1,12 @@
 from pymol.cgo import *
 from pymol import cmd
-cgo_graphics_list_balls = [COLOR, 0, 1, 1,
+cgo_graphics_list_balls_atoms = [COLOR, 0, 1, 1,
 SPHERE, 0, 0, 0, 1,
 SPHERE, 0.5, 0, 0, 1,
 SPHERE, 1, 0, 0, 1,
-COLOR, 1, 1, 0,
-COLOR, 0.501961, 0.501961, 0.501961,
-ALPHA, 0.5,
-COLOR, 0, 1, 0,
 ]
-cmd.load_cgo(cgo_graphics_list_balls, 'case_1_balls')
-cgo_graphics_list_faces = [COLOR, 0, 1, 1,
-COLOR, 1, 1, 0,
+cmd.load_cgo(cgo_graphics_list_balls_atoms, 'case_1_balls_atoms')
+cgo_graphics_list_faces_contacts = [COLOR, 1, 1, 0,
 BEGIN, TRIANGLE_FAN, 
 NORMAL, 1, 0, 0, VERTEX, 0.25, 0, 0, 
 NORMAL, 1, 0, 0, VERTEX, 0.25, 1.98431, 0, 
@@ -146,14 +141,9 @@ NORMAL, 1, 0, 0, VERTEX, 0.75, 1.96627, -0.266997,
 NORMAL, 1, 0, 0, VERTEX, 0.75, 1.98315, -0.0677961, 
 NORMAL, 1, 0, 0, VERTEX, 0.75, 1.98431, 0, 
 END, 
-COLOR, 0.501961, 0.501961, 0.501961,
-ALPHA, 0.5,
-COLOR, 0, 1, 0,
 ]
-cmd.load_cgo(cgo_graphics_list_faces, 'case_1_faces')
-cgo_graphics_list_wireframe = [COLOR, 0, 1, 1,
-COLOR, 1, 1, 0,
-COLOR, 0.501961, 0.501961, 0.501961,
+cmd.load_cgo(cgo_graphics_list_faces_contacts, 'case_1_faces_contacts')
+cgo_graphics_list_wireframe_contacts = [COLOR, 0.501961, 0.501961, 0.501961,
 BEGIN, LINE_LOOP, 
 VERTEX, 0.25, 1.98431, 0, 
 VERTEX, 0.25, 1.97424, 0.199662, 
@@ -284,19 +274,14 @@ VERTEX, 0.75, 1.92942, -0.463488,
 VERTEX, 0.75, 1.96627, -0.266997, 
 VERTEX, 0.75, 1.98315, -0.0677961, 
 END, 
-ALPHA, 0.5,
-COLOR, 0, 1, 0,
 ]
-cmd.load_cgo(cgo_graphics_list_wireframe, 'case_1_wireframe')
-cgo_graphics_list_xspheres = [COLOR, 0, 1, 1,
-COLOR, 1, 1, 0,
-COLOR, 0.501961, 0.501961, 0.501961,
-ALPHA, 0.5,
+cmd.load_cgo(cgo_graphics_list_wireframe_contacts, 'case_1_wireframe_contacts')
+cgo_graphics_list_xspheres_atoms = [ALPHA, 0.5,
 COLOR, 0, 1, 0,
 SPHERE, 0, 0, 0, 2,
 SPHERE, 0.5, 0, 0, 2,
 SPHERE, 1, 0, 0, 2,
 ]
-cmd.load_cgo(cgo_graphics_list_xspheres, 'case_1_xspheres')
+cmd.load_cgo(cgo_graphics_list_xspheres_atoms, 'case_1_xspheres_atoms')
 cmd.set('two_sided_lighting', 1)
 cmd.set('cgo_line_width', 3)
