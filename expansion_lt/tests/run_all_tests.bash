@@ -19,6 +19,8 @@ cd - &> /dev/null
 
 voronota-lt --help &> "./output/help_message.txt"
 
+voronota-lt --help-full &> "./output/help_message_full.txt"
+
 ####################################################################
 
 voronota-lt -processors 40 -probe 1.4 -print-everything < "./input/balls_2zsk.xyzr" 2> "./output/contacts_2zsk_summary.txt" > "./output/contacts_2zsk_tables.txt"
@@ -201,7 +203,7 @@ cat << 'EOF'
 1.0 0.0 0.0 1.0
 EOF
 } \
-| voronota-lt -probe 1.0 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_1.py" -graphics-title "case_1" 2> /dev/null
+| voronota-lt -probe 1.0 -graphics-output-file "./output/tricky_cases_graphics/draw_case_1.py" -graphics-title "case_1" 2> /dev/null
 
 ########################################
 
@@ -213,7 +215,7 @@ cat << 'EOF'
 0 1 1 1
 EOF
 } \
-| voronota-lt -probe 2.0 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_2.py" -graphics-title "case_2" 2> /dev/null
+| voronota-lt -probe 2.0 -graphics-output-file "./output/tricky_cases_graphics/draw_case_2.py" -graphics-title "case_2" 2> /dev/null
 
 ########################################
 
@@ -229,7 +231,7 @@ cat << 'EOF'
 1 1 1 1
 EOF
 } \
-| voronota-lt -probe 2.0 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_3.py" -graphics-title "case_3" 2> /dev/null
+| voronota-lt -probe 2.0 -graphics-output-file "./output/tricky_cases_graphics/draw_case_3.py" -graphics-title "case_3" 2> /dev/null
 
 ########################################
 
@@ -240,7 +242,7 @@ cat << 'EOF'
 1 0 0 1
 EOF
 } \
-| voronota-lt -probe 0.5 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_4.py" -graphics-title "case_4" 2> /dev/null
+| voronota-lt -probe 0.5 -graphics-output-file "./output/tricky_cases_graphics/draw_case_4.py" -graphics-title "case_4" 2> /dev/null
 
 ########################################
 
@@ -265,7 +267,7 @@ cat << 'EOF'
 -0.38268343236509 0.923879532511287 0 0.5
 EOF
 } \
-| voronota-lt -probe 1.0 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_5.py" -graphics-title "case_5" 2> /dev/null
+| voronota-lt -probe 1.0 -graphics-output-file "./output/tricky_cases_graphics/draw_case_5.py" -graphics-title "case_5" 2> /dev/null
 
 ########################################
 
@@ -281,7 +283,7 @@ cat << 'EOF'
 1 1 1 0.5
 EOF
 } \
-| voronota-lt -probe 0.75 -periodic-box-corners -1 -1 -1 2 2 2 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_6.py" -graphics-title "case_6" 2> /dev/null
+| voronota-lt -probe 0.75 -periodic-box-corners -1 -1 -1 2 2 2 -graphics-output-file "./output/tricky_cases_graphics/draw_case_6.py" -graphics-title "case_6" 2> /dev/null
 
 ########################################
 
@@ -306,7 +308,7 @@ cat << 'EOF'
 -0.38268343236509 0.923879532511287 0 0.5
 EOF
 } \
-| voronota-lt -probe 1.0 -periodic-box-corners -1.6 -1.6 -0.6 1.6 1.6 3.1 -write-contacts-graphics-to-file "./output/tricky_cases_graphics/draw_case_7.py" -graphics-title "case_7" 2> /dev/null
+| voronota-lt -probe 1.0 -periodic-box-corners -1.6 -1.6 -0.6 1.6 1.6 3.1 -graphics-output-file "./output/tricky_cases_graphics/draw_case_7.py" -graphics-title "case_7" 2> /dev/null
 
 ################################################################################
 
