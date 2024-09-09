@@ -63,7 +63,8 @@ Options:
     --graphics-restrict-chain-pairs                  strings    space-separated list of pairs of chain IDs to include in the output, e.g. 'A B A C B C'
     --graphics-color-balls                           string     hex-coded color for balls, default is '0x00FFFF'
     --graphics-color-faces                           string     hex-coded color for faces, default is '0xFFFF00'
-    --graphics-color-wireframe                       string     hex-coded color for wireframe, default is '0x808080')";
+    --graphics-color-wireframe                       string     hex-coded color for wireframe, default is '0x808080'
+    --graphics-color-xspheres                        string     hex-coded color for xspheres (expanded spheres), default is '0x00FF00')";
 	}
 	else
 	{
@@ -147,6 +148,7 @@ public:
 	unsigned int graphics_color_balls;
 	unsigned int graphics_color_faces;
 	unsigned int graphics_color_wireframe;
+	unsigned int graphics_color_xspheres;
 	bool read_successfuly;
 	std::string input_from_file;
 	std::vector<voronotalt::SimplePoint> periodic_box_directions;
@@ -187,6 +189,7 @@ public:
 		graphics_color_balls(0x00FFFF),
 		graphics_color_faces(0xFFFF00),
 		graphics_color_wireframe(0x808080),
+		graphics_color_xspheres(0x00FF00),
 		read_successfuly(false)
 	{
 	}
@@ -793,6 +796,10 @@ void run_mode_radical(
 			{
 				if(ApplicationGraphicsRecorder::allow_ball_group(app_params.graphics_restrict_chains, spheres_input_result, i))
 				{
+					if(app_params.graphics_color_balls==0)
+					{
+						app_graphics_recorder.graphics_writer.add_random_color();
+					}
 					app_graphics_recorder.graphics_writer.add_sphere(ApplicationGraphicsRecorder::name_ball_group("balls", spheres_input_result, i), spheres_input_result.spheres[i], app_params.probe);
 				}
 			}
@@ -830,7 +837,7 @@ void run_mode_radical(
 		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "xspheres"))
 		{
 			app_graphics_recorder.graphics_writer.add_alpha(0.5);
-			app_graphics_recorder.graphics_writer.add_color(0.0, 1.0, 0.0);
+			app_graphics_recorder.graphics_writer.add_color(app_params.graphics_color_xspheres);
 			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
 			{
 				if(ApplicationGraphicsRecorder::allow_ball_group(app_params.graphics_restrict_chains, spheres_input_result, i))
