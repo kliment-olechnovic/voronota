@@ -481,6 +481,13 @@ public:
 		}
 #endif
 
+		if(!graphics_output_file.empty() && graphics_restrict_representations.empty())
+		{
+			graphics_restrict_representations.insert("balls");
+			graphics_restrict_representations.insert("faces");
+			graphics_restrict_representations.insert("wireframe");
+		}
+
 		read_successfuly=error_log_for_options_parsing.str().empty();
 
 		if(read_successfuly)
