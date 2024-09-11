@@ -235,7 +235,7 @@ cat << 'EOF'
 EOF
 } \
 | voronota-lt -probe 0.75 -periodic-box-corners -1 -1 -1 2 2 2 -graphics-output-file "./output/tricky_cases_graphics/draw_case_6.py" \
-  -graphics-title "case_6" -graphics-restrict-representations balls faces wireframe xspheres 2> /dev/null
+  -graphics-title "case_6" -graphics-restrict-representations balls faces wireframe xspheres lattice 2> /dev/null
 
 ########################################
 
@@ -261,7 +261,7 @@ cat << 'EOF'
 EOF
 } \
 | voronota-lt -probe 1.0 -periodic-box-corners -1.6 -1.6 -0.6 1.6 1.6 3.1 -graphics-output-file "./output/tricky_cases_graphics/draw_case_7.py" \
-  -graphics-title "case_7" -graphics-restrict-representations balls faces wireframe xspheres 2> /dev/null
+  -graphics-title "case_7" -graphics-restrict-representations balls faces wireframe xspheres lattice 2> /dev/null
 
 ########################################
 
@@ -323,9 +323,10 @@ EOF
   -periodic-box-corners -1.6 -1.6 -0.6 1.6 1.6 3.1 \
   -graphics-output-file "./output/tricky_cases_graphics/draw_case_9.py" \
   -graphics-title "case_9" \
-  -graphics-restrict-representations balls faces wireframe \
+  -graphics-restrict-representations balls faces wireframe lattice \
   -graphics-color-balls 0xC0C0C0 \
   -graphics-color-faces 0x000000 \
+  -graphics-color-lattice 0xFF0000 \
 2> /dev/null
 
 ################################################################################
