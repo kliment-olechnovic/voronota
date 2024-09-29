@@ -297,6 +297,18 @@ public:
 
 	static void construct_full_tessellation(
 			const std::vector<SimpleSphere>& input_spheres,
+			const std::vector<int>& grouping_of_spheres,
+			Result& result) noexcept
+	{
+		TimeRecorder time_recorder;
+		SpheresContainer spheres_container;
+		spheres_container.init(input_spheres, time_recorder);
+		ResultGraphics result_graphics;
+		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, false, grouping_of_spheres.empty(), FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+	}
+
+	static void construct_full_tessellation(
+			const std::vector<SimpleSphere>& input_spheres,
 			const PeriodicBox& periodic_box,
 			Result& result) noexcept
 	{
@@ -305,6 +317,19 @@ public:
 		spheres_container.init(input_spheres, periodic_box, time_recorder);
 		ResultGraphics result_graphics;
 		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+	}
+
+	static void construct_full_tessellation(
+			const std::vector<SimpleSphere>& input_spheres,
+			const std::vector<int>& grouping_of_spheres,
+			const PeriodicBox& periodic_box,
+			Result& result) noexcept
+	{
+		TimeRecorder time_recorder;
+		SpheresContainer spheres_container;
+		spheres_container.init(input_spheres, periodic_box, time_recorder);
+		ResultGraphics result_graphics;
+		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, false, grouping_of_spheres.empty(), FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -566,7 +591,7 @@ public:
 
 		time_recorder.record_elapsed_miliseconds_and_reset("accumulate total contacts summary");
 
-		if(summarize_cells)
+		if(summarize_cells && grouping_of_spheres.empty())
 		{
 			const std::vector<ContactDescriptorSummary>& all_contacts_summaries=(result.contacts_summaries_with_redundancy_in_periodic_box.empty() ? result.contacts_summaries : result.contacts_summaries_with_redundancy_in_periodic_box);
 
