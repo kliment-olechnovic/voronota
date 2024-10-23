@@ -261,16 +261,59 @@ voronota_select_atoms("-use", "[-v pocket_id=1:"+params.pocket_subpockets+"]", "
 voronota_select_atoms_by_triangulation_query("-use", "[pocket_atoms_main]", "-expansion", params.pocket_tangent_leeway, "-min-radius", params.pocket_tangent_radius_min, "-max-edge", params.pocket_tetrahedron_edge_max, "-name", "pocket_atoms_all");
 
 voronota_auto_assert_full_success=false;
-voronota_set_adjunct_of_atoms("-use [-v! buriedness] -name buriedness -value 0");
+voronota_set_adjunct_of_atoms("-use [-v! buriedness] -name buriedness -value 2");
 voronota_set_adjunct_of_atoms("-name pocketness -value 0");
 voronota_set_adjunct_of_atoms("-use [pocket_atoms_all] -name pocketness -value 1");
 voronota_auto_assert_full_success=true;
+
+
+voronota_auto_assert_full_success=false;
+
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name sas_area -destination-name residue_sas_area -pooling-mode sum');
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name volume -destination-name residue_volume -pooling-mode sum');
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name volume_vdw -destination-name residue_volume_vdw -pooling-mode sum');
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name voromqa_sas_energy -destination-name residue_voromqa_sas_energy -pooling-mode sum');
+
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name buriedness -destination-name residue_min_buriedness -pooling-mode min');
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name buriedness -destination-name residue_max_buriedness -pooling-mode max');
+voronota_set_adjunct_of_atoms_by_expression("-use [] -expression _multiply -input-adjuncts buriedness sas_area -output-adjunct weighted_buriedness");
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name weighted_buriedness -destination-name residue_weighted_buriedness -pooling-mode sum');
+voronota_set_adjunct_of_atoms_by_expression("-use [-v! residue_sas_area=0] -expression _divide -input-adjuncts residue_weighted_buriedness residue_sas_area -output-adjunct residue_mean_buriedness");
+voronota_set_adjunct_of_atoms("-use [-v residue_sas_area=0] -name residue_mean_buriedness -value 2");
+
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name ev14 -destination-name residue_min_ev14 -pooling-mode min');
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name ev14 -destination-name residue_max_ev14 -pooling-mode max');
+voronota_set_adjunct_of_atoms_by_expression("-use [] -expression _multiply -input-adjuncts ev14 sas_area -output-adjunct weighted_ev14");
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name weighted_ev14 -destination-name residue_weighted_ev14 -pooling-mode sum');
+voronota_set_adjunct_of_atoms_by_expression("-use [-v! residue_sas_area=0] -expression _divide -input-adjuncts residue_weighted_ev14 residue_sas_area -output-adjunct residue_mean_ev14");
+voronota_set_adjunct_of_atoms("-use [-v residue_sas_area=0] -name residue_mean_ev14 -value 2");
+
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name ev28 -destination-name residue_min_ev28 -pooling-mode min');
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name ev28 -destination-name residue_max_ev28 -pooling-mode max');
+voronota_set_adjunct_of_atoms_by_expression("-use [] -expression _multiply -input-adjuncts ev28 sas_area -output-adjunct weighted_ev28");
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name weighted_ev28 -destination-name residue_weighted_ev28 -pooling-mode sum');
+voronota_set_adjunct_of_atoms_by_expression("-use [-v! residue_sas_area=0] -expression _divide -input-adjuncts residue_weighted_ev28 residue_sas_area -output-adjunct residue_mean_ev28");
+voronota_set_adjunct_of_atoms("-use [-v residue_sas_area=0] -name residue_mean_ev28 -value 2");
+
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name ev56 -destination-name residue_min_ev56 -pooling-mode min');
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name ev56 -destination-name residue_max_ev56 -pooling-mode max');
+voronota_set_adjunct_of_atoms_by_expression("-use [] -expression _multiply -input-adjuncts ev56 sas_area -output-adjunct weighted_ev56");
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name weighted_ev56 -destination-name residue_weighted_ev56 -pooling-mode sum');
+voronota_set_adjunct_of_atoms_by_expression("-use [-v! residue_sas_area=0] -expression _divide -input-adjuncts residue_weighted_ev56 residue_sas_area -output-adjunct residue_mean_ev56");
+voronota_set_adjunct_of_atoms("-use [-v residue_sas_area=0] -name residue_mean_ev56 -value 2");
+
+voronota_auto_assert_full_success=true;
+
 
 voronota_select_atoms('-use', '[-v voromqa_depth]', '-name', 'tessellated'); 
 
 voronota_export_adjuncts_of_atoms('-file', params.output_prefix+'graph_nodes.csv', '-use', '[tessellated]', '-no-serial', '-adjuncts', ['atom_index', 'residue_index', 'atom_type', 'residue_type', 'center_x', 'center_y', 'center_z', 'radius', 'sas_area', 'solvdir_x', 'solvdir_y', 'solvdir_z', 'voromqa_sas_energy', 'voromqa_depth', 'voromqa_score_a', 'voromqa_score_r', 'volume', 'volume_vdw', 'ev14', 'ev28', 'ev56', 'ufsr_a1', 'ufsr_a2', 'ufsr_a3', 'ufsr_b1', 'ufsr_b2', 'ufsr_b3', 'ufsr_c1', 'ufsr_c2', 'ufsr_c3', 'buriedness', 'pocketness'], '-sep', ',', '-expand-ids', true);
 
 voronota_export_adjuncts_of_contacts('-file', params.output_prefix+'graph_links.csv', '-atoms-use', '[tessellated]', '-contacts-use', '[-no-solvent]', '-no-serial', '-adjuncts', ['atom_index1', 'atom_index2', 'area', 'boundary', 'distance', 'voromqa_energy', 'seq_sep_class', 'covalent_bond'], '-sep', ',', '-expand-ids', true);
+
+voronota_export_adjuncts_of_atoms('-file', params.output_prefix+'coarse_graph_nodes.csv', '-use', '(([tessellated]) and ([-aname CA]))', '-no-serial', '-no-name', '-adjuncts', ['residue_index', 'residue_type', 'residue_sas_area', 'residue_volume', 'residue_voromqa_sas_energy', 'voromqa_score_r', 'residue_min_ev14', 'residue_max_ev14', 'residue_mean_ev14', 'residue_min_ev28', 'residue_max_ev28', 'residue_mean_ev28', 'residue_min_ev56', 'residue_max_ev56', 'residue_mean_ev56', 'residue_min_buriedness', 'residue_max_buriedness', 'residue_mean_buriedness'], '-sep', ',', '-expand-ids', true);
+
+voronota_export_adjuncts_of_contacts('-inter-residue', true, '-file', params.output_prefix+'coarse_graph_links.csv', '-atoms-use', '[tessellated]', '-contacts-use', '[-no-solvent -min-seq-sep 1]', '-no-serial', '-adjuncts', ['area', 'boundary', 'distance', 'voromqa_energy'], '-sep', ',', '-expand-ids', true);
 
 voronota_export_atoms("-use", "[tessellated]", "-as-pdb", "-pdb-b-factor", "buriedness", "-file", params.output_prefix+"buriedness.pdb");
 
