@@ -78,19 +78,25 @@ public:
 			data_manager.assert_primary_structure_info_valid();
 		}
 
+		bool restrictions_positive=false;
+		bool restrictions_negative=false;
+
 		if(!adjunct_circle_restrictions.empty())
 		{
 			for(std::size_t i=0;i<adjunct_circle_restrictions.size();i++)
 			{
-				if(adjunct_circle_restrictions[i]<=0.0)
-				{
-					throw std::runtime_error("Invalid circle restrictions, must be all positive.");
-				}
 				if(i>0 && adjunct_circle_restrictions[i-1]>=adjunct_circle_restrictions[i])
 				{
 					throw std::runtime_error("Invalid order of circle restrictions, must be ascending.");
 				}
+				restrictions_positive=restrictions_positive || adjunct_circle_restrictions[i]>0.0;
+				restrictions_negative=restrictions_negative || adjunct_circle_restrictions[i]<0.0;
 			}
+		}
+
+		if(restrictions_positive && restrictions_negative)
+		{
+			throw std::runtime_error("Invalid signs of circle restrictions, must be either all positive or all negative.");
 		}
 
 		std::vector<double> descending_adjunct_circle_restrictions;
@@ -166,7 +172,7 @@ public:
 				{
 					std::ostringstream name_output;
 					name_output << "subarea";
-					print_pretty_number((j==0 ? 0.0 : adjunct_circle_restrictions[j-1]), name_output);
+					print_pretty_number((j==0 ? (restrictions_positive ? 0.0 : -999.0) : adjunct_circle_restrictions[j-1]), name_output);
 					name_output << "to";
 					print_pretty_number(adjunct_circle_restrictions[j], name_output);
 					names_for_adjunct_subareas[j]=name_output.str();
@@ -279,7 +285,11 @@ public:
 private:
 	static void print_pretty_number(const double val, std::ostream& output)
 	{
-		const int ival=static_cast<int>(std::floor(val*100.0+0.5));
+		const int ival=std::abs(static_cast<int>(std::floor(val*100.0+0.5)));
+		if(val<0.0)
+		{
+			output << "M";
+		}
 		output << (ival<10 ? "0000" : (ival<100 ? "000" : (ival<1000 ? "00" : (ival<10000 ? "0" : "")))) << ival;
 	}
 };

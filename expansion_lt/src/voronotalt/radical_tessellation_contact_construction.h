@@ -118,6 +118,10 @@ public:
 				{
 					result_contact_descriptor.intersection_circle_sphere.r=std::min(result_contact_descriptor.intersection_circle_sphere.r, max_circle_radius_restriction);
 				}
+				else if(max_circle_radius_restriction<FLOATCONST(0.0))
+				{
+					result_contact_descriptor.intersection_circle_sphere.r=(result_contact_descriptor.intersection_circle_sphere.r+max_circle_radius_restriction);
+				}
 				if(result_contact_descriptor.intersection_circle_sphere.r>FLOATCONST(0.0))
 				{
 					bool discarded=false;
