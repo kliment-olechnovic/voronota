@@ -273,6 +273,7 @@ voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name sas_area -destina
 voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name volume -destination-name residue_volume -pooling-mode sum');
 voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name volume_vdw -destination-name residue_volume_vdw -pooling-mode sum');
 voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name voromqa_sas_energy -destination-name residue_voromqa_sas_energy -pooling-mode sum');
+voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name voromqa_depth -destination-name residue_mean_voromqa_depth -pooling-mode mean');
 
 voronota_set_adjunct_of_atoms_by_residue_pooling('-source-name buriedness -destination-name residue_min_buriedness -pooling-mode min');
 voronota_set_adjunct_of_atoms_by_residue_pooling('-source-atoms-use [-v buriedness=0:1] -destination-atoms-use [] -source-name buriedness -destination-name residue_max_buriedness -pooling-mode max');
@@ -319,7 +320,7 @@ voronota_export_adjuncts_of_atoms('-file', params.output_prefix+'graph_nodes.csv
 
 voronota_export_adjuncts_of_contacts('-file', params.output_prefix+'graph_links.csv', '-atoms-use', '[tessellated]', '-contacts-use', '[-no-solvent]', '-no-serial', '-adjuncts', ['atom_index1', 'atom_index2', 'area', 'boundary', 'distance', 'voromqa_energy', 'seq_sep_class', 'covalent_bond'], '-sep', ',', '-expand-ids', true);
 
-voronota_export_adjuncts_of_atoms('-file', params.output_prefix+'coarse_graph_nodes.csv', '-use', '(([tessellated]) and ([-aname CA]))', '-no-serial', '-no-name', '-adjuncts', ['residue_index', 'residue_type', 'residue_sas_area', 'residue_volume', 'residue_voromqa_sas_energy', 'voromqa_score_r', 'residue_min_ev14', 'residue_max_ev14', 'residue_mean_ev14', 'residue_min_ev28', 'residue_max_ev28', 'residue_mean_ev28', 'residue_min_ev56', 'residue_max_ev56', 'residue_mean_ev56', 'residue_min_buriedness', 'residue_max_buriedness', 'residue_mean_buriedness'], '-sep', ',', '-expand-ids', true);
+voronota_export_adjuncts_of_atoms('-file', params.output_prefix+'coarse_graph_nodes.csv', '-use', '(([tessellated]) and ([-aname CA]))', '-no-serial', '-no-name', '-adjuncts', ['residue_index', 'residue_type', 'residue_sas_area', 'residue_volume', 'residue_voromqa_sas_energy', 'residue_mean_voromqa_depth', 'voromqa_score_r', 'residue_min_ev14', 'residue_max_ev14', 'residue_mean_ev14', 'residue_min_ev28', 'residue_max_ev28', 'residue_mean_ev28', 'residue_min_ev56', 'residue_max_ev56', 'residue_mean_ev56', 'residue_min_buriedness', 'residue_max_buriedness', 'residue_mean_buriedness'], '-sep', ',', '-expand-ids', true);
 
 voronota_export_adjuncts_of_contacts('-inter-residue', true, '-file', params.output_prefix+'coarse_graph_links.csv', '-atoms-use', '[tessellated]', '-contacts-use', '[-no-solvent -min-seq-sep 1]', '-no-serial', '-adjuncts', ['area', 'boundary', 'distance', 'voromqa_energy'], '-sep', ',', '-expand-ids', true);
 
