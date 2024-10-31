@@ -22,10 +22,21 @@ public:
 	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		scripting::SummaryOfContacts contacts_summary;
+		std::map<std::string, double> map_of_subareas;
 
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
 			scripting::VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
+			if(!map_of_subareas.empty())
+			{
+				std::vector<scripting::VariantValue>& subareas_names=heterostorage.variant_object.values_array("subareas_names");
+				std::vector<scripting::VariantValue>& subareas_values=heterostorage.variant_object.values_array("subareas_values");
+				for(std::map<std::string, double>::const_iterator it=map_of_subareas.begin();it!=map_of_subareas.end();++it)
+				{
+					subareas_names.push_back(scripting::VariantValue(it->first));
+					subareas_values.push_back(scripting::VariantValue(it->second));
+				}
+			}
 		}
 	};
 
@@ -189,6 +200,8 @@ public:
 		std::vector<scripting::Contact> contacts;
 		contacts.reserve(radical_tessellation_result.contacts_summaries.size()+radical_tessellation_result.cells_summaries.size());
 
+		std::map<std::string, double> total_subareas;
+
 		for(std::size_t i=0;i<radical_tessellation_result.contacts_summaries.size();i++)
 		{
 			const voronotalt::RadicalTessellation::ContactDescriptorSummary& cds=radical_tessellation_result.contacts_summaries[i];
@@ -222,6 +235,7 @@ public:
 						subarea=0.0;
 						levelarea=0.0;
 					}
+					total_subareas[names_for_adjunct_subareas[j]]+=subarea;
 				}
 			}
 			if(generate_graphics && i<radical_tessellation_result_graphics.contacts_graphics.size())
@@ -278,6 +292,7 @@ public:
 
 		Result result;
 		result.contacts_summary=scripting::SummaryOfContacts(data_manager.contacts());
+		result.map_of_subareas=total_subareas;
 
 		return result;
 	}
