@@ -38,6 +38,7 @@ emcc --std=c++14 \
   ../../expansion_js/src/dependencies/faspr/*.cpp \
   ../../expansion_js/src/dependencies/qcprot/*.cpp \
   ../../expansion_js/src/dependencies/tinf/*.cpp \
+  ../../expansion_js/src/dependencies/pulchra_bb/*.cpp \
   ../../expansion_js/src/dependencies/utilities/*.cpp \
   ../../expansion_gl/src/dependencies/ImGuiColorTextEdit/TextEditor.cpp \
 -DFOR_WEB \

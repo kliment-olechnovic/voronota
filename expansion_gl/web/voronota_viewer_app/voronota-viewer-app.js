@@ -141,7 +141,7 @@ function voronota_viewer_init(config)
 	
 	(function()
 	{
-		const scripts = ["4ung.js", "dun2010bbdep.js", "voronota_viewer.js"];
+		const scripts = ["4ung.js", "ensemble.js", "dun2010bbdep.js", "voronota_viewer.js"];
 		for (var i = 0; i < scripts.length; i++)
 		{
 			var script = document.createElement('script');

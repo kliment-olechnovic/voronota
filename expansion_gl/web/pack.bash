@@ -1,6 +1,10 @@
 #!/bin/bash
 
-cd "$(dirname "$0")"
+INFILE="$1"
+
+INFILE="$(realpath ${INFILE})"
+
+cd "$(dirname "$0")/voronota_viewer_app"
 
 if [ -z "$EMSDK" ]
 then
@@ -12,8 +16,6 @@ then
 	echo "Error: Emscripten building environment not initialized."
 	exit 1
 fi
-
-INFILE="$1"
 
 if [ ! -s "$INFILE" ]
 then

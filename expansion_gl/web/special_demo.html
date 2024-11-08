@@ -58,49 +58,160 @@
 				
 		<script>
 			special_demo_script1=`
-configure-gui-disable-sequence-view
-fetch 2zsk
+animate-none
+delete-objects
+mono
+background white
+import-session ensemble.vses
+background white
+pick-objects
+construct-contacts-radically-fast -no-intra-residue -generate-graphics
+show-contacts [-min-seq-sep 6 -no-solvent]
+spectrum-contacts -by area -min-val 0 -max-val 15 -scheme wm
+animate-loop-picked-objects -time-step 100
+grid-by-concept
 `;
+
 			special_demo_script2=`
-rename-object 2zsk_as_1 obj0
-copy-object obj0 obj1
-copy-object obj0 obj2
-copy-object obj0 obj3
+animate-none
+delete-objects
+mono
+background white
+import-session ensemble.vses
+background white
+pick-objects
+construct-contacts-radically-fast -no-intra-residue -generate-graphics
+show-contacts [-a1 [-rnum 1:30] -a2 [-rnum 170:9999] -no-solvent]
+spectrum-contacts -by area -min-val 0 -max-val 15 -scheme wm
+animate-loop-picked-objects -time-step 200
+`;
 
-pick-objects obj1
-restrict-atoms (not ([-chain B -rnum 39 -aname CG2]))
+			special_demo_script3=`
+animate-none
+delete-objects
+mono
+background white
 
-pick-objects obj2
-restrict-atoms (not ([-chain A -rnum 39 -aname CG2]))
+import 4ung.pdb -title objA0
 
-pick-objects obj0 obj1 obj2
+copy-object objA0 objA1
+pick-objects objA1
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle 0.4 -thicken-graphics 0.005
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0xFF2222
 
-construct-contacts
+copy-object objA0 objA2
+pick-objects objA2
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle 0.8 -thicken-graphics 0.004
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0xFFFF00
 
-pick-objects obj3
+copy-object objA0 objA3
+pick-objects objA3
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle 1.2  -thicken-graphics 0.003
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0x00AA00
 
-add-figure-of-nth-order-cell -use ([-chain A -rnum 39 -aname CG2] or [-chain B -rnum 39 -aname CG2]) -figure-name socell -voxel-diameter 0.05
+copy-object objA0 objA4
+pick-objects objA4
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle 1.6  -thicken-graphics 0.002
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0x00FFFF
 
-show-figures
+copy-object objA0 objA5
+pick-objects objA5
 
-color-figures 0xBB2299 -name socell
+reset-time
+construct-contacts-radically-fast -generate-graphics -no-intra-chain
+print-time
+
+reset-time
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -adjunct-circle-restrictions 0.4 0.8 1.2 1.6 999.0
+print-time
+
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0xAA22FF
 
 pick-objects
-
-show-contacts [-a1[-rnum 39 -aname CG2]] -rep edges -on-objects obj0
-show-contacts [-a1[-rnum 39 -aname CG2]] -rep faces -on-objects obj1 obj2
-
-color-contacts -col 0x111111 -on-objects obj0
-color-contacts -col 0xFFFF00 -on-objects obj1
-color-contacts -col 0x00FFFF -on-objects obj2
-
 hide-atoms
-show-atoms [-rnum 39 -aname CG2] -rep sticks
-color-atoms [-chain A] -col 0xEE0000
-color-atoms [-chain B] -col 0x00EE00
 
-zoom-by-atoms [-rnum 39] -on-objects obj0
-grid-by-object
+delete-objects objA0
+
+show-contacts [-inter-chain] -rep edges
+color-contacts -rep edges -col 0x000000
+
+select-contacts [-inter-chain] -name iface -on-objects objA5
+orient -atoms [-sel-of-contacts iface]
+rotate -angle -90 -axis 0 0 1
+
+color-atoms [-chain A] -col 0xCCCCCC
+color-atoms [-chain B] -col 0xFFAA88
+show-atoms -rep cartoon sticks -on-objects objA5
+rotate -angle 180 -axis 0 1 0
+`;
+
+			special_demo_script4=`
+animate-none
+delete-objects
+mono
+background white
+
+import 4ung.pdb -title objB0
+
+copy-object objB0 objB1
+pick-objects objB1
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -0.4 -thicken-graphics 0.002
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0x00FFFF
+
+copy-object objB0 objB2
+pick-objects objB2
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -0.8 -thicken-graphics 0.003
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0x00AA00
+
+copy-object objB0 objB3
+pick-objects objB3
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -1.2  -thicken-graphics 0.004
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0xFFFF00
+
+copy-object objB0 objB4
+pick-objects objB4
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -1.6  -thicken-graphics 0.005
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0xFF2222
+
+copy-object objB0 objB5
+pick-objects objB5
+
+reset-time
+construct-contacts-radically-fast -generate-graphics -no-intra-chain
+print-time
+
+reset-time
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -adjunct-circle-restrictions -1.6 -1.2 -0.8 -0.4 -0.0000001
+print-time
+
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0xAA22FF
+
+pick-objects
+hide-atoms
+
+delete-objects objB0
+
+show-contacts [-inter-chain] -rep edges
+color-contacts -rep edges -col 0x000000
+
+select-contacts [-inter-chain] -name iface -on-objects objB5
+orient -atoms [-sel-of-contacts iface]
+rotate -angle -90 -axis 0 0 1
+
+color-atoms [-chain A] -col 0xCCCCCC
+color-atoms [-chain B] -col 0xFFAA88
+show-atoms -rep cartoon sticks -on-objects objB5
+rotate -angle 180 -axis 0 1 0
 `;
 			
 			voronota_viewer_init({
@@ -109,8 +220,7 @@ grid-by-object
 				bottom_margin: 30,
 				post_init_operations: [
 					"background 0xCCCCCC",
-					"configure-gui-enable-sequence-view",
-					"configure-gui-enable-console"],
+					"configure-gui-disable-console"],
 				add_buttons: [
 					{action: "configure-gui-toggle-console", label: "Toggle console"},
 					{action: "_hspace", size: 15},
@@ -119,8 +229,10 @@ grid-by-object
 					{action: "_hspace", size: 15},
 					{action: "_paste_and_run", label: "Paste and run command"},
 					{action: "_hspace", size: 30},
-					{action: special_demo_script1, label: "Load data for special demo"},
-					{action: special_demo_script2, label: "Run special demo"},],
+					{action: special_demo_script1, label: "Demo 1"},
+					{action: special_demo_script2, label: "Demo 2"},
+					{action: special_demo_script3, label: "Demo 3"},
+					{action: special_demo_script4, label: "Demo 4"},],
 				loadscreen_id: "loadscreen",
 				canvas_container_id: null,
 				buttons_container_id: null,
