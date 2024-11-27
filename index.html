@@ -96,17 +96,29 @@
 <body>
 <h1>Voronota version 1.29</h1>
 <h2>Quick links</h2>
+
 <ul>
 <li><a href="./expansion_js/index.html">Voronota-JS</a> (for advanced scripting using JavaScript)</li>
+</ul>
+
+<ul>
 <li><a href="./expansion_lt/index.html">Voronota-LT</a> (for faster and parallelizable computation of tessellation-derived contact areas)</li>
+</ul>
+
+<ul>
 <li><a href="./expansion_gl/index.html">Voronota-GL</a> (for advanced scripting and visualization)</li>
 <li><a href="./expansion_gl/web/index.html">Web Voronota-GL</a> (online version of Voronota-GL)</li>
+</ul>
+
+<ul>
+<li><a href="https://github.com/kliment-olechnovic/voronota/releases">Stable releases on GitHub</a> (to get the latest stable version of Voronota and all its expansions)</li>
 </ul>
 
 <h2>Table of contents</h2>
 <nav id="TOC" role="doc-toc">
 <ul>
 <li><a href="#about-voronota" id="toc-about-voronota">About Voronota</a></li>
+<li><a href="#voronota-on-github" id="toc-voronota-on-github">Voronota on GitHub</a></li>
 <li><a href="#quick-install-guide" id="toc-quick-install-guide">Quick install guide</a></li>
 <li><a href="#about-voronota-expansions" id="toc-about-voronota-expansions">About Voronota expansions</a>
 <ul>
@@ -165,7 +177,12 @@
 <h1 id="about-voronota">About Voronota</h1>
 <p>The analysis of macromolecular structures often requires a comprehensive definition of atomic neighborhoods. Such a definition can be based on the Voronoi diagram of balls, where each ball represents an atom of some van der Waals radius. Voronota is a software tool for finding all the vertices of the Voronoi diagram of balls. Such vertices correspond to the centers of the empty tangent spheres defined by quadruples of balls. Voronota is especially suitable for processing three-dimensional structures of biological macromolecules such as proteins and RNA.</p>
 <p>Since version 1.2 Voronota also uses the Voronoi vertices to construct inter-atom contact surfaces and solvent accessible surfaces. Voronota provides tools to query contacts, generate contacts graphics, compare contacts and evaluate quality of protein structural models using contacts.</p>
-<p>Voronota is developed by Kliment Olechnovic (kliment.olechnovic@bti.vu.lt).</p>
+<p>Most of the new developments are happening in the expansions of Voronota: Voronota-JS, Voronota-LT and Voronota-GL.</p>
+<p>Voronota and its expansions are developed by Kliment Olechnovic (<a href="https://www.kliment.lt">https://www.kliment.lt</a>).</p>
+<h1 id="voronota-on-github">Voronota on GitHub</h1>
+<p>Voronota source code is hosted on GitHub, at <a href="https://github.com/kliment-olechnovic/voronota">https://github.com/kliment-olechnovic/voronota</a>.</p>
+<p>The recommended way to get the latest stable version of Voronota and its expansions is to download the latest archive from the “Releases” page: <a href="https://github.com/kliment-olechnovic/voronota/releases">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
+<p>The release archive contains ready-to-use statically compiled ‘voronota’ program for 64 bit Linux systems. The release archive also contains the source code that can be compiled on any modern Linux, macOS or Windows operating systems.</p>
 <h1 id="quick-install-guide">Quick install guide</h1>
 <p>Below are several commands that install the latest version of Voronota and its expansions for the command line use in Unix-like systems.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download the latest package</span></span>

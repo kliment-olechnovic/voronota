@@ -17,7 +17,9 @@ cat ./resources/texts/intro.markdown
 
 echo
 
-cat ./src/voronota_lt.cpp | egrep '^Voronota-LT' -A 999 | egrep '^\)\"' -B 999 | egrep -v '^\)\"' | sed 's/^/    /'
+g++ -std=c++14 -fopenmp -o ./voronota-lt-for-docs ./src/voronota_lt.cpp
+./voronota-lt-for-docs --help-full 2>&1 | sed 's/^/    /'
+rm ./voronota-lt-for-docs
 
 echo
 

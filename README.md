@@ -15,7 +15,19 @@ inter-atom contact surfaces and solvent accessible surfaces.
 Voronota provides tools to query contacts, generate contacts graphics,
 compare contacts and evaluate quality of protein structural models using contacts.
 
-Voronota is developed by Kliment Olechnovic (kliment.olechnovic@bti.vu.lt).
+Most of the new developments are happening in the expansions of Voronota: Voronota-JS, Voronota-LT and Voronota-GL.
+
+Voronota and its expansions are developed by Kliment Olechnovic ([https://www.kliment.lt](https://www.kliment.lt)).
+
+# Voronota on GitHub
+
+Voronota source code is hosted on GitHub, at [https://github.com/kliment-olechnovic/voronota](https://github.com/kliment-olechnovic/voronota).
+
+The recommended way to get the latest stable version of Voronota and its expansions is to download the latest archive from the "Releases" page:
+[https://github.com/kliment-olechnovic/voronota/releases](https://github.com/kliment-olechnovic/voronota/releases).
+
+The release archive contains ready-to-use statically compiled ‘voronota’ program for 64 bit Linux systems.
+The release archive also contains the source code that can be compiled on any modern Linux, macOS or Windows operating systems.
 
 # Quick install guide
 

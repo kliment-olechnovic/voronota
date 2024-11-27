@@ -97,11 +97,22 @@ echo "<h1>$DOCUMENTTITLE</h1>"
 
 cat << 'EOF'
 <h2>Quick links</h2>
+
 <ul>
 <li><a href="./expansion_js/index.html">Voronota-JS</a> (for advanced scripting using JavaScript)</li>
+</ul>
+
+<ul>
 <li><a href="./expansion_lt/index.html">Voronota-LT</a> (for faster and parallelizable computation of tessellation-derived contact areas)</li>
+</ul>
+
+<ul>
 <li><a href="./expansion_gl/index.html">Voronota-GL</a> (for advanced scripting and visualization)</li>
 <li><a href="./expansion_gl/web/index.html">Web Voronota-GL</a> (online version of Voronota-GL)</li>
+</ul>
+
+<ul>
+<li><a href="https://github.com/kliment-olechnovic/voronota/releases">Stable releases on GitHub</a> (to get the latest stable version of Voronota and all its expansions)</li>
 </ul>
 
 <h2>Table of contents</h2>
