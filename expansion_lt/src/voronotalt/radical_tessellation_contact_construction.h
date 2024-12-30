@@ -82,6 +82,7 @@ public:
 	struct ContactDescriptorGraphics
 	{
 		std::vector<SimplePoint> outer_points;
+		std::vector<int> boundary_mask;
 		SimplePoint barycenter;
 		SimplePoint plane_normal;
 
@@ -92,6 +93,7 @@ public:
 		void clear() noexcept
 		{
 			outer_points.clear();
+			boundary_mask.clear();
 		}
 	};
 
@@ -244,30 +246,35 @@ public:
 				{
 					result_contact_descriptor_graphics.outer_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_point)));
 				}
+				result_contact_descriptor_graphics.boundary_mask.resize(result_contact_descriptor_graphics.outer_points.size(), 1);
 				result_contact_descriptor_graphics.barycenter=contact_descriptor.intersection_circle_sphere.p;
 			}
 			else
 			{
-				if(contact_descriptor.sum_of_arc_angles>FLOATCONST(0.0))
 				{
-					result_contact_descriptor_graphics.outer_points.reserve(static_cast<UnsignedInt>(contact_descriptor.sum_of_arc_angles/angle_step)+contact_descriptor.contour.size()+4);
-				}
-				else
-				{
-					result_contact_descriptor_graphics.outer_points.reserve(contact_descriptor.contour.size());
+					UnsignedInt estimated_size=contact_descriptor.contour.size();
+					if(contact_descriptor.sum_of_arc_angles>FLOATCONST(0.0))
+					{
+						estimated_size=(static_cast<UnsignedInt>(contact_descriptor.sum_of_arc_angles/angle_step)+contact_descriptor.contour.size()+4);
+					}
+					result_contact_descriptor_graphics.outer_points.reserve(estimated_size);
+					result_contact_descriptor_graphics.boundary_mask.reserve(estimated_size);
 				}
 				for(UnsignedInt i=0;i<contact_descriptor.contour.size();i++)
 				{
 					const ContourPoint& pr=contact_descriptor.contour[i];
 					result_contact_descriptor_graphics.outer_points.push_back(pr.p);
+					result_contact_descriptor_graphics.boundary_mask.push_back(0);
 					if(pr.angle>FLOATCONST(0.0))
 					{
+						result_contact_descriptor_graphics.boundary_mask.back()=1;
 						if(pr.angle>angle_step)
 						{
 							const SimplePoint first_v=sub_of_points(pr.p, contact_descriptor.intersection_circle_sphere.p);
 							for(Float rotation_angle=angle_step;rotation_angle<pr.angle;rotation_angle+=angle_step)
 							{
 								result_contact_descriptor_graphics.outer_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_v)));
+								result_contact_descriptor_graphics.boundary_mask.push_back(1);
 							}
 						}
 					}

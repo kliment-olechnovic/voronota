@@ -93,43 +93,35 @@ public:
 		return enabled_;
 	}
 
-	bool add_face(const SimplePoint& a, const SimplePoint& b, const SimplePoint& c) noexcept
+	bool add_triangle_fan(const std::vector<SimplePoint>& outer_points, const std::vector<int>& boundary_mask, const SimplePoint& center) noexcept
 	{
-		if(!enabled_)
+		if(!enabled_ || outer_points.size()<2 || boundary_mask.size()!=outer_points.size())
 		{
 			return false;
 		}
-		faces_.push_back(Face(add_vertex(a), add_vertex(b), add_vertex(c)));
-		return true;
-	}
-
-	bool add_triangle_fan(const std::vector<SimplePoint>& outer_points, const SimplePoint& center) noexcept
-	{
-		if(!enabled_ || outer_points.size()<2)
-		{
-			return false;
-		}
-		const UnsignedInt center_id=add_vertex(center);
-		const UnsignedInt first_id=add_vertex(outer_points.front());
-		faces_.push_back(Face(center_id, first_id, add_vertex(outer_points[1])));
+		const UnsignedInt center_id=add_vertex(center, 1);
+		const UnsignedInt first_id=add_vertex(outer_points.front(), (boundary_mask.front()>0 ? 2 : 0));
+		faces_.push_back(Face(center_id, first_id, add_vertex(outer_points[1], (boundary_mask[1]>0 ? 2 : 0))));
 		for(std::size_t i=1;(i+1)<outer_points.size();i++)
 		{
-			faces_.push_back(Face(center_id, add_vertex(outer_points[i]), add_vertex(outer_points[i+1])));
+			faces_.push_back(Face(center_id, add_vertex(outer_points[i], (boundary_mask[i]>0 ? 2 : 0)), add_vertex(outer_points[i+1], (boundary_mask[i+1]>0 ? 2 : 0))));
 		}
-		faces_.push_back(Face(center_id, add_vertex(outer_points.back()), first_id));
+		faces_.push_back(Face(center_id, add_vertex(outer_points.back(), (boundary_mask.back()>0 ? 2 : 0)), first_id));
 		return true;
 	}
 
-	bool collect_vertex_points(std::vector<SimplePoint>& points) const noexcept
+	bool collect_vertex_points(std::vector<SimplePoint>& points, std::vector<int>& indicators) const noexcept
 	{
 		if(!enabled_)
 		{
 			return false;
 		}
 		points.resize(vertices_.size());
+		indicators.resize(vertices_.size());
 		for(typename Multimap::const_iterator it=vertices_.begin();it!=vertices_.end();++it)
 		{
-			points[it->second]=it->first;
+			points[it->second.id]=it->first;
+			indicators[it->second.id]=it->second.indicator;
 		}
 		return true;
 	}
@@ -214,7 +206,14 @@ public:
 		}
 
 		std::vector<SimplePoint> points;
-		collect_vertex_points(points);
+		std::vector<int> indicators;
+
+		collect_vertex_points(points, indicators);
+
+		if(points.size()!=indicators.size())
+		{
+			return false;
+		}
 
 		for(UnsignedInt i=0;i<points.size();i++)
 		{
@@ -231,6 +230,20 @@ public:
 	}
 
 private:
+	struct VertexInfo
+	{
+		UnsignedInt id;
+		int indicator;
+
+		VertexInfo() noexcept : id(0), indicator(0)
+		{
+		}
+
+		VertexInfo(const UnsignedInt id, const int indicator) noexcept : id(id), indicator(indicator)
+		{
+		}
+	};
+
 	struct Face
 	{
 		UnsignedInt ids[3];
@@ -284,9 +297,9 @@ private:
 		Float mesh_epsilon_;
 	};
 
-	typedef std::multimap<SimplePoint, UnsignedInt, ComparatorOfVertices> Multimap;
+	typedef std::multimap<SimplePoint, VertexInfo, ComparatorOfVertices> Multimap;
 
-	UnsignedInt add_vertex(const SimplePoint& p) noexcept
+	UnsignedInt add_vertex(const SimplePoint& p, const int indicator) noexcept
 	{
 		std::pair<typename Multimap::iterator, typename Multimap::iterator> range=vertices_.equal_range(p);
 		typename Multimap::iterator matched_it=vertices_.end();
@@ -299,9 +312,9 @@ private:
 		}
 		if(matched_it==vertices_.end())
 		{
-			matched_it=vertices_.insert(std::pair<SimplePoint, UnsignedInt>(p, vertices_.size()));
+			matched_it=vertices_.insert(std::pair<SimplePoint, VertexInfo>(p, VertexInfo(vertices_.size(), indicator)));
 		}
-		return matched_it->second;
+		return matched_it->second.id;
 	}
 
 	bool enabled_;

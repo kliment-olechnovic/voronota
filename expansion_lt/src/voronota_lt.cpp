@@ -969,7 +969,7 @@ void run_mode_radical(
 			if(ApplicationGraphicsRecorder::allow_contact_group(app_params.graphics_restrict_chains, app_params.graphics_restrict_chain_pairs, spheres_input_result, pair_summary.id_a, pair_summary.id_b))
 			{
 				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-				app_mesh_recorder.mesh_writer.add_triangle_fan(pair_graphics.outer_points, pair_graphics.barycenter);
+				app_mesh_recorder.mesh_writer.add_triangle_fan(pair_graphics.outer_points, pair_graphics.boundary_mask, pair_graphics.barycenter);
 			}
 		}
 		app_log_recorders.log_output << "log_mesh_euler_characteristic\t" << app_mesh_recorder.mesh_writer.calculate_euler_characteristic() << "\n";
