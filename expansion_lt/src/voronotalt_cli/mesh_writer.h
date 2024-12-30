@@ -76,14 +76,14 @@ public:
 
 	explicit MeshWriter(const bool enabled) noexcept :
 		enabled_(enabled),
-		comparator_of_vertices_(0, FLOATCONST(0.00001)),
+		comparator_of_vertices_(0, FLOATCONST(0.000001)),
 		vertices_(comparator_of_vertices_)
 	{
 	}
 
 	MeshWriter(const bool enabled, const unsigned int coordinate_id) noexcept :
 		enabled_(enabled),
-		comparator_of_vertices_(coordinate_id, FLOATCONST(0.00001)),
+		comparator_of_vertices_(coordinate_id, FLOATCONST(0.000001)),
 		vertices_(comparator_of_vertices_)
 	{
 	}
@@ -281,7 +281,7 @@ private:
 
 	private:
 		unsigned int coordinate_id_;
-		const Float mesh_epsilon_;
+		Float mesh_epsilon_;
 	};
 
 	typedef std::multimap<SimplePoint, UnsignedInt, ComparatorOfVertices> Multimap;
@@ -305,7 +305,7 @@ private:
 	}
 
 	bool enabled_;
-	const ComparatorOfVertices comparator_of_vertices_;
+	ComparatorOfVertices comparator_of_vertices_;
 	Multimap vertices_;
 	std::vector<Face> faces_;
 

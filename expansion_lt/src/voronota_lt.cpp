@@ -951,6 +951,18 @@ void run_mode_radical(
 
 	if(app_mesh_recorder.mesh_writer.enabled())
 	{
+		{
+			voronotalt::MeshWriter::ChooserOfBestCoordinateID chooser;
+			for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
+			{
+				chooser.feed(result_graphics.contacts_graphics[i].barycenter);
+			}
+			const unsigned int chosen_best_coordinate_id=chooser.choose_best_coordinate_id();
+			if(chosen_best_coordinate_id>0)
+			{
+				app_mesh_recorder.mesh_writer=voronotalt::MeshWriter(true, chosen_best_coordinate_id);
+			}
+		}
 		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 		{
 			const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=(i<result.contacts_summaries_with_redundancy_in_periodic_box.size() ? result.contacts_summaries_with_redundancy_in_periodic_box[i] : result.contacts_summaries[i]);
