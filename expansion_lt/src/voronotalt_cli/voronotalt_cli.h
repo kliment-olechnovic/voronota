@@ -5,6 +5,7 @@
 #include "spheres_input.h"
 #include "printing_custom_types.h"
 #include "graphics_writer.h"
+#include "mesh_writer.h"
 #include "time_recorder_chrono.h"
 #include "terminal_utilities.h"
 

@@ -68,7 +68,8 @@ Options:
     --graphics-color-faces                           string     hex-coded color for faces, default is '0xFFFF00'
     --graphics-color-wireframe                       string     hex-coded color for wireframe, default is '0x808080'
     --graphics-color-xspheres                        string     hex-coded color for xspheres (expanded spheres), default is '0x00FF00'
-    --graphics-color-lattice                         string     hex-coded color for lattice (periodic boundaries), default is '0x00FF00')";
+    --graphics-color-lattice                         string     hex-coded color for lattice (periodic boundaries), default is '0x00FF00'
+    --graphics-mesh-obj-output-file                  string     output file path to write contacts surfaces mesh .obj file)";
 	}
 	else
 	{
@@ -172,6 +173,7 @@ public:
 	std::set<std::string> graphics_restrict_representations;
 	std::set<std::string> graphics_restrict_chains;
 	std::set< std::pair<std::string, std::string> > graphics_restrict_chain_pairs;
+	std::string graphics_mesh_obj_output_file;
 	std::string write_log_to_file;
 	std::ostringstream error_log_for_options_parsing;
 
@@ -408,6 +410,10 @@ public:
 				else if(opt.name=="graphics-color-lattice" && opt.args_hexints.size()==1)
 				{
 					graphics_color_lattice=opt.args_hexints.front();
+				}
+				else if(opt.name=="graphics-mesh-obj-output-file" && opt.args_strings.size()==1)
+				{
+					graphics_mesh_obj_output_file=opt.args_strings.front();
 				}
 				else if(opt.name=="write-log-to-file" && opt.args_strings.size()==1)
 				{
@@ -653,11 +659,35 @@ public:
 	}
 };
 
+class ApplicationMeshRecorder
+{
+public:
+	voronotalt::MeshWriter mesh_writer;
+
+	explicit ApplicationMeshRecorder(const ApplicationParameters& app_params) noexcept : mesh_writer(!app_params.graphics_mesh_obj_output_file.empty())
+	{
+	}
+
+	void finalize_and_output(const ApplicationParameters& app_params, ApplicationLogRecorders& app_log_recorders) const noexcept
+	{
+		if(mesh_writer.enabled())
+		{
+			app_log_recorders.time_recoder_for_output.reset();
+			if(!mesh_writer.write_to_obj_file(app_params.graphics_mesh_obj_output_file))
+			{
+				std::cerr << "Error (non-terminating): failed to write mesh to file '" << app_params.graphics_mesh_obj_output_file << "'\n";
+			}
+			app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("write mesh obj to file");
+		}
+	}
+};
+
 void run_mode_radical(
 		const ApplicationParameters& app_params,
 		const voronotalt::SpheresInput::Result& spheres_input_result,
 		ApplicationLogRecorders& app_log_recorders,
-		ApplicationGraphicsRecorder& app_graphics_recorder) noexcept
+		ApplicationGraphicsRecorder& app_graphics_recorder,
+		ApplicationMeshRecorder& app_mesh_recorder) noexcept
 {
 	app_log_recorders.time_recoder_for_tessellation.reset();
 
@@ -675,7 +705,7 @@ void run_mode_radical(
 		const std::vector<int>& grouping_for_filtering=(app_params.compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (app_params.compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
 		const bool summarize_cells=grouping_for_filtering.empty();
 
-		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, app_graphics_recorder.graphics_writer.enabled(), summarize_cells, result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
+		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, (app_graphics_recorder.graphics_writer.enabled() || app_mesh_recorder.mesh_writer.enabled()), summarize_cells, result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
 	}
 
 	voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;
@@ -917,6 +947,21 @@ void run_mode_radical(
 			}
 		}
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print graphics");
+	}
+
+	if(app_mesh_recorder.mesh_writer.enabled())
+	{
+		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
+		{
+			const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=(i<result.contacts_summaries_with_redundancy_in_periodic_box.size() ? result.contacts_summaries_with_redundancy_in_periodic_box[i] : result.contacts_summaries[i]);
+			if(ApplicationGraphicsRecorder::allow_contact_group(app_params.graphics_restrict_chains, app_params.graphics_restrict_chain_pairs, spheres_input_result, pair_summary.id_a, pair_summary.id_b))
+			{
+				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
+				app_mesh_recorder.mesh_writer.add_triangle_fan(pair_graphics.outer_points, pair_graphics.barycenter);
+			}
+		}
+		app_log_recorders.log_output << "log_mesh_euler_characteristic\t" << app_mesh_recorder.mesh_writer.calculate_euler_characteristic() << "\n";
+		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("collect mesh");
 	}
 }
 
@@ -1624,10 +1669,11 @@ int main(const int argc, const char** argv)
 	}
 
 	ApplicationGraphicsRecorder app_graphics_recorder(app_params);
+	ApplicationMeshRecorder app_mesh_recorder(app_params);
 
 	if(app_params.running_mode==ApplicationParameters::RunningMode::radical)
 	{
-		run_mode_radical(app_params, spheres_input_result, app_log_recorders, app_graphics_recorder);
+		run_mode_radical(app_params, spheres_input_result, app_log_recorders, app_graphics_recorder, app_mesh_recorder);
 	}
 	else if(app_params.running_mode==ApplicationParameters::RunningMode::simplified_aw)
 	{
@@ -1668,6 +1714,8 @@ int main(const int argc, const char** argv)
 	}
 
 	app_graphics_recorder.finalize_and_output(app_params, app_log_recorders);
+
+	app_mesh_recorder.finalize_and_output(app_params, app_log_recorders);
 
 	app_log_recorders.finalize_and_output(app_params);
 
