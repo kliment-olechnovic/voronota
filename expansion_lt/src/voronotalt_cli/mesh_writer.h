@@ -101,12 +101,16 @@ public:
 		}
 		const UnsignedInt center_id=add_vertex(center, 1);
 		const UnsignedInt first_id=add_vertex(outer_points.front(), (boundary_mask.front()>0 ? 2 : 0));
-		faces_.push_back(Face(center_id, first_id, add_vertex(outer_points[1], (boundary_mask[1]>0 ? 2 : 0))));
+		const UnsignedInt second_id=add_vertex(outer_points[1], (boundary_mask[1]>0 ? 2 : 0));
+		add_face(Face(center_id, first_id, second_id));
+		UnsignedInt prev_id=second_id;
 		for(std::size_t i=1;(i+1)<outer_points.size();i++)
 		{
-			faces_.push_back(Face(center_id, add_vertex(outer_points[i], (boundary_mask[i]>0 ? 2 : 0)), add_vertex(outer_points[i+1], (boundary_mask[i+1]>0 ? 2 : 0))));
+			const UnsignedInt next_id=add_vertex(outer_points[i+1], (boundary_mask[i+1]>0 ? 2 : 0));
+			add_face(Face(center_id, prev_id, next_id));
+			prev_id=next_id;
 		}
-		faces_.push_back(Face(center_id, add_vertex(outer_points.back(), (boundary_mask.back()>0 ? 2 : 0)), first_id));
+		add_face(Face(center_id, prev_id, first_id));
 		return true;
 	}
 
@@ -122,22 +126,6 @@ public:
 		{
 			points[it->second.id]=it->first;
 			indicators[it->second.id]=it->second.indicator;
-		}
-		return true;
-	}
-
-	bool collect_face_ids(std::vector<UnsignedInt>& ids) const noexcept
-	{
-		if(!enabled_)
-		{
-			return false;
-		}
-		ids.resize(faces_.size()*3);
-		for(UnsignedInt i=0;i<faces_.size();i++)
-		{
-			ids[i*3+0]=faces_[i].ids[0];
-			ids[i*3+1]=faces_[i].ids[1];
-			ids[i*3+2]=faces_[i].ids[2];
 		}
 		return true;
 	}
@@ -160,21 +148,13 @@ public:
 		return faces_.size();
 	}
 
-	UnsignedInt calculate_number_of_edges() const noexcept
+	UnsignedInt get_number_of_edges() const noexcept
 	{
 		if(!enabled_)
 		{
 			return 0;
 		}
-		std::set< std::pair<UnsignedInt, UnsignedInt> > edges;
-		for(UnsignedInt i=0;i<faces_.size();i++)
-		{
-			const Face& f=faces_[i];
-			edges.insert(std::make_pair(f.ids[0], f.ids[1]));
-			edges.insert(std::make_pair(f.ids[0], f.ids[2]));
-			edges.insert(std::make_pair(f.ids[1], f.ids[2]));
-		}
-		return edges.size();
+		return edges_.size();
 	}
 
 	long calculate_euler_characteristic() const noexcept
@@ -183,7 +163,7 @@ public:
 		{
 			return 0;
 		}
-		return (static_cast<long>(get_number_of_vertices())-static_cast<long>(calculate_number_of_edges())+static_cast<long>(get_number_of_faces()));
+		return (static_cast<long>(get_number_of_vertices())-static_cast<long>(get_number_of_edges())+static_cast<long>(get_number_of_faces()));
 	}
 
 	bool write_to_obj_file(const std::string& filename) const noexcept
@@ -241,6 +221,26 @@ private:
 
 		VertexInfo(const UnsignedInt id, const int indicator) noexcept : id(id), indicator(indicator)
 		{
+		}
+	};
+
+	struct Edge
+	{
+		UnsignedInt ids[2];
+
+		Edge(const UnsignedInt a, const UnsignedInt b) noexcept
+		{
+			ids[0]=a;
+			ids[1]=b;
+			if(ids[0]>ids[1])
+			{
+				std::swap(ids[0], ids[1]);
+			}
+		}
+
+		bool operator<(const Edge& e) const noexcept
+		{
+			return (ids[0]<e.ids[0] || (ids[0]==e.ids[0] && ids[1]<e.ids[1]));
 		}
 	};
 
@@ -317,10 +317,19 @@ private:
 		return matched_it->second.id;
 	}
 
+	void add_face(const Face& face) noexcept
+	{
+		faces_.push_back(face);
+		edges_.insert(Edge(face.ids[0], face.ids[1]));
+		edges_.insert(Edge(face.ids[0], face.ids[2]));
+		edges_.insert(Edge(face.ids[1], face.ids[2]));
+	}
+
 	bool enabled_;
 	ComparatorOfVertices comparator_of_vertices_;
 	Multimap vertices_;
 	std::vector<Face> faces_;
+	std::set<Edge> edges_;
 
 };
 
