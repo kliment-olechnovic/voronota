@@ -76,15 +76,17 @@ public:
 
 	explicit MeshWriter(const bool enabled) noexcept :
 		enabled_(enabled),
-		comparator_of_vertices_(0, FLOATCONST(0.000001)),
-		vertices_(comparator_of_vertices_)
+		number_of_vertex_joins_(0),
+		comparator_of_vertices_(0),
+		vertices_map_(comparator_of_vertices_)
 	{
 	}
 
 	MeshWriter(const bool enabled, const unsigned int coordinate_id) noexcept :
 		enabled_(enabled),
-		comparator_of_vertices_(coordinate_id, FLOATCONST(0.000001)),
-		vertices_(comparator_of_vertices_)
+		number_of_vertex_joins_(0),
+		comparator_of_vertices_(coordinate_id),
+		vertices_map_(comparator_of_vertices_)
 	{
 	}
 
@@ -114,29 +116,22 @@ public:
 		return true;
 	}
 
-	bool collect_vertex_points(std::vector<SimplePoint>& points, std::vector<int>& indicators) const noexcept
-	{
-		if(!enabled_)
-		{
-			return false;
-		}
-		points.resize(vertices_.size());
-		indicators.resize(vertices_.size());
-		for(typename Multimap::const_iterator it=vertices_.begin();it!=vertices_.end();++it)
-		{
-			points[it->second.id]=it->first;
-			indicators[it->second.id]=it->second.indicator;
-		}
-		return true;
-	}
-
 	UnsignedInt get_number_of_vertices() const noexcept
 	{
 		if(!enabled_)
 		{
 			return 0;
 		}
-		return vertices_.size();
+		return vertices_map_.size();
+	}
+
+	UnsignedInt get_number_of_vertex_joins() const noexcept
+	{
+		if(!enabled_)
+		{
+			return 0;
+		}
+		return number_of_vertex_joins_;
 	}
 
 	UnsignedInt get_number_of_faces() const noexcept
@@ -185,25 +180,16 @@ public:
 			return false;
 		}
 
-		std::vector<SimplePoint> points;
-		std::vector<int> indicators;
-
-		collect_vertex_points(points, indicators);
-
-		if(points.size()!=indicators.size())
+		for(UnsignedInt i=0;i<vertex_points_.size();i++)
 		{
-			return false;
-		}
-
-		for(UnsignedInt i=0;i<points.size();i++)
-		{
-			const SimplePoint& p=points[i];
+			const SimplePoint& p=vertex_points_[i];
 			output << "v " << p.x << " " << p.y << " " << p.z << "\n";
 		}
 
-		for(UnsignedInt i=0;i<faces_.size();i++)
+		for(std::set<Face>::const_iterator it=faces_.begin();it!=faces_.end();++it)
 		{
-			output << "f " << (faces_[i].ids[0]+1) << " " << (faces_[i].ids[1]+1) << " " << (faces_[i].ids[2]+1) << "\n";
+			const Face& face=(*it);
+			output << "f " << (face.ids[0]+1) << " " << (face.ids[1]+1) << " " << (face.ids[2]+1) << "\n";
 		}
 
 		return true;
@@ -266,12 +252,23 @@ private:
 				std::swap(ids[1], ids[2]);
 			}
 		}
+
+		bool operator<(const Face& f) const noexcept
+		{
+			return (ids[0]<f.ids[0] || (ids[0]==f.ids[0] && ids[1]<f.ids[1]) || (ids[0]==f.ids[0] && ids[1]==f.ids[1] && ids[2]<f.ids[2]));
+		}
 	};
 
 	class ComparatorOfVertices
 	{
 	public:
-		explicit ComparatorOfVertices(const unsigned int coordinate_id, const Float mesh_epsilon) noexcept :
+		explicit ComparatorOfVertices(const unsigned int coordinate_id) noexcept :
+			coordinate_id_(coordinate_id%3),
+			mesh_epsilon_(FLOATEPSILONROUGH)
+		{
+		}
+
+		ComparatorOfVertices(const unsigned int coordinate_id, const Float mesh_epsilon) noexcept :
 			coordinate_id_(coordinate_id%3),
 			mesh_epsilon_(mesh_epsilon)
 		{
@@ -301,34 +298,41 @@ private:
 
 	UnsignedInt add_vertex(const SimplePoint& p, const int indicator) noexcept
 	{
-		std::pair<typename Multimap::iterator, typename Multimap::iterator> range=vertices_.equal_range(p);
-		typename Multimap::iterator matched_it=vertices_.end();
-		for(typename Multimap::iterator it=range.first;it!=vertices_.end() && it!=range.second && matched_it==vertices_.end();++it)
+		std::pair<typename Multimap::iterator, typename Multimap::iterator> range=vertices_map_.equal_range(p);
+		typename Multimap::iterator matched_it=vertices_map_.end();
+		for(typename Multimap::iterator it=range.first;it!=vertices_map_.end() && it!=range.second && matched_it==vertices_map_.end();++it)
 		{
 			if(comparator_of_vertices_.equal(p, it->first))
 			{
 				matched_it=it;
+				number_of_vertex_joins_++;
 			}
 		}
-		if(matched_it==vertices_.end())
+		if(matched_it==vertices_map_.end())
 		{
-			matched_it=vertices_.insert(std::pair<SimplePoint, VertexInfo>(p, VertexInfo(vertices_.size(), indicator)));
+			const VertexInfo new_vertex_info(vertices_map_.size(), indicator);
+			matched_it=vertices_map_.insert(std::pair<SimplePoint, VertexInfo>(p, new_vertex_info));
+			vertex_points_.push_back(p);
+			vertex_infos_.push_back(new_vertex_info);
 		}
 		return matched_it->second.id;
 	}
 
 	void add_face(const Face& face) noexcept
 	{
-		faces_.push_back(face);
+		faces_.insert(face);
 		edges_.insert(Edge(face.ids[0], face.ids[1]));
 		edges_.insert(Edge(face.ids[0], face.ids[2]));
 		edges_.insert(Edge(face.ids[1], face.ids[2]));
 	}
 
 	bool enabled_;
+	UnsignedInt number_of_vertex_joins_;
 	ComparatorOfVertices comparator_of_vertices_;
-	Multimap vertices_;
-	std::vector<Face> faces_;
+	Multimap vertices_map_;
+	std::vector<SimplePoint> vertex_points_;
+	std::vector<VertexInfo> vertex_infos_;
+	std::set<Face> faces_;
 	std::set<Edge> edges_;
 
 };
