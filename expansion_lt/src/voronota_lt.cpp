@@ -975,6 +975,8 @@ void run_mode_radical(
 		app_log_recorders.log_output << "log_mesh_number_of_vertices\t" << app_mesh_recorder.mesh_writer.get_number_of_vertices() << "\n";
 		app_log_recorders.log_output << "log_mesh_number_of_vertex_joins\t" << app_mesh_recorder.mesh_writer.get_number_of_vertex_joins() << "\n";
 		app_log_recorders.log_output << "log_mesh_euler_characteristic\t" << app_mesh_recorder.mesh_writer.calculate_euler_characteristic() << "\n";
+		app_log_recorders.log_output << "log_mesh_boundary_components\t" << app_mesh_recorder.mesh_writer.calculate_boundary_components() << "\n";
+		app_log_recorders.log_output << "log_mesh_genus\t" << app_mesh_recorder.mesh_writer.calculate_genus() << "\n";
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("collect mesh");
 	}
 }

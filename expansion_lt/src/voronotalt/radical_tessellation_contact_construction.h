@@ -264,10 +264,9 @@ public:
 				{
 					const ContourPoint& pr=contact_descriptor.contour[i];
 					result_contact_descriptor_graphics.outer_points.push_back(pr.p);
-					result_contact_descriptor_graphics.boundary_mask.push_back(0);
+					result_contact_descriptor_graphics.boundary_mask.push_back((pr.indicator==2 || pr.indicator==3) ? 1 : 0);
 					if(pr.angle>FLOATCONST(0.0))
 					{
-						result_contact_descriptor_graphics.boundary_mask.back()=1;
 						if(pr.angle>angle_step)
 						{
 							const SimplePoint first_v=sub_of_points(pr.p, contact_descriptor.intersection_circle_sphere.p);

@@ -161,6 +161,62 @@ public:
 		return (static_cast<long>(get_number_of_vertices())-static_cast<long>(get_number_of_edges())+static_cast<long>(get_number_of_faces()));
 	}
 
+	long calculate_boundary_components() const noexcept
+	{
+		if(!enabled_)
+		{
+			return 0;
+		}
+		std::vector< std::vector<UnsignedInt> > graph(vertex_infos_.size());
+		for(std::set<Edge>::const_iterator it=edges_.begin();it!=edges_.end();++it)
+		{
+			const Edge& e=(*it);
+			if(vertex_infos_[e.ids[0]].indicator==2 && vertex_infos_[e.ids[1]].indicator==2)
+			{
+				graph[e.ids[0]].push_back(e.ids[1]);
+				graph[e.ids[1]].push_back(e.ids[0]);
+			}
+		}
+		std::vector<long> coloring(vertex_infos_.size(), 0);
+		long current_boundary_id=0;
+		std::vector<UnsignedInt> searchstack;
+		for(std::size_t i=0;i<vertex_infos_.size();i++)
+		{
+			if(vertex_infos_[i].indicator==2 && coloring[i]==0)
+			{
+				current_boundary_id++;
+				searchstack.push_back(i);
+				while(!searchstack.empty())
+				{
+					const UnsignedInt ci=searchstack.back();
+					searchstack.pop_back();
+					coloring[ci]=current_boundary_id;
+					for(std::size_t j=0;j<graph[ci].size();j++)
+					{
+						const UnsignedInt ni=graph[ci][j];
+						if(vertex_infos_[ni].indicator==2 && coloring[ni]==0)
+						{
+							searchstack.push_back(ni);
+						}
+					}
+				}
+			}
+		}
+		return current_boundary_id;
+	}
+
+	Float calculate_genus() const noexcept
+	{
+		if(!enabled_)
+		{
+			return FLOATCONST(0.0);
+		}
+		const long x=calculate_euler_characteristic();
+		const long b=calculate_boundary_components();
+		const Float raw_g=static_cast<Float>(2-b-x)/FLOATCONST(2.0);
+		return raw_g;
+	}
+
 	bool write_to_obj_file(const std::string& filename) const noexcept
 	{
 		if(!enabled_)
@@ -305,6 +361,7 @@ private:
 			if(comparator_of_vertices_.equal(p, it->first))
 			{
 				matched_it=it;
+				matched_it->second.indicator=std::max(matched_it->second.indicator, indicator);
 				number_of_vertex_joins_++;
 			}
 		}
