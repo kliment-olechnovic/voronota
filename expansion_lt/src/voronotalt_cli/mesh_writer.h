@@ -171,11 +171,8 @@ public:
 		for(std::set<Edge>::const_iterator it=edges_.begin();it!=edges_.end();++it)
 		{
 			const Edge& e=(*it);
-			if(vertex_infos_[e.ids[0]].indicator==1 || vertex_infos_[e.ids[1]].indicator==1)
-			{
-				graph[e.ids[0]].push_back(e.ids[1]);
-				graph[e.ids[1]].push_back(e.ids[0]);
-			}
+			graph[e.ids[0]].push_back(e.ids[1]);
+			graph[e.ids[1]].push_back(e.ids[0]);
 		}
 		std::vector<long> coloring(graph.size(), 0);
 		long current_component_id=0;
