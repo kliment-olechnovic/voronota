@@ -102,17 +102,34 @@ public:
 			return false;
 		}
 		const UnsignedInt center_id=add_vertex(center, 1);
-		const UnsignedInt first_id=add_vertex(outer_points.front(), (boundary_mask.front()>0 ? 2 : 0));
-		const UnsignedInt second_id=add_vertex(outer_points[1], (boundary_mask[1]>0 ? 2 : 0));
+		const int first_bm=boundary_mask.front();
+		const UnsignedInt first_id=add_vertex(outer_points.front(), (first_bm>0 ? 2 : 0));
+		const int second_bm=boundary_mask[1];
+		const UnsignedInt second_id=add_vertex(outer_points[1], (second_bm>0 ? 2 : 0));
 		add_face(Face(center_id, first_id, second_id));
+		if((first_bm==1 || first_bm==3) && (second_bm==2 || second_bm==3))
+		{
+			boundary_edges_.insert(Edge(first_id, second_id));
+		}
+		int prev_bm=second_bm;
 		UnsignedInt prev_id=second_id;
 		for(std::size_t i=1;(i+1)<outer_points.size();i++)
 		{
-			const UnsignedInt next_id=add_vertex(outer_points[i+1], (boundary_mask[i+1]>0 ? 2 : 0));
+			const int next_bm=boundary_mask[i+1];
+			const UnsignedInt next_id=add_vertex(outer_points[i+1], (next_bm>0 ? 2 : 0));
 			add_face(Face(center_id, prev_id, next_id));
+			if((prev_bm==1 || prev_bm==3) && (next_bm==2 || next_bm==3))
+			{
+				boundary_edges_.insert(Edge(prev_id, next_id));
+			}
+			prev_bm=next_bm;
 			prev_id=next_id;
 		}
 		add_face(Face(center_id, prev_id, first_id));
+		if((prev_bm==1 || prev_bm==3) && (first_bm==2 || first_bm==3))
+		{
+			boundary_edges_.insert(Edge(prev_id, first_id));
+		}
 		return true;
 	}
 
@@ -223,6 +240,16 @@ public:
 			{
 				const Face new_face(map_of_old_to_new_ids[face.ids[0]], map_of_old_to_new_ids[face.ids[1]], map_of_old_to_new_ids[face.ids[2]]);
 				output.add_face(new_face);
+			}
+		}
+		for(std::set<Edge>::const_iterator it=boundary_edges_.begin();it!=boundary_edges_.end();++it)
+		{
+			const Edge& edge=(*it);
+			if(vertex_grouping_.coloring_by_connected_components[edge.ids[0]]==selected_component_id
+					&& vertex_grouping_.coloring_by_connected_components[edge.ids[1]]==selected_component_id)
+			{
+				const Edge new_edge(map_of_old_to_new_ids[edge.ids[0]], map_of_old_to_new_ids[edge.ids[1]]);
+				output.boundary_edges_.insert(new_edge);
 			}
 		}
 		return true;
@@ -523,7 +550,7 @@ private:
 		vertex_grouping_.coloring_by_boundary_components.resize(vertex_infos_.size(), 0);
 
 		std::vector< std::vector<UnsignedInt> > graph(vertex_infos_.size());
-		for(std::set<Edge>::const_iterator it=edges_.begin();it!=edges_.end();++it)
+		for(std::set<Edge>::const_iterator it=boundary_edges_.begin();it!=boundary_edges_.end();++it)
 		{
 			const Edge& e=(*it);
 			if(vertex_infos_[e.ids[0]].indicator==2 && vertex_infos_[e.ids[1]].indicator==2)
@@ -566,6 +593,7 @@ private:
 	std::vector<VertexInfo> vertex_infos_;
 	std::set<Face> faces_;
 	std::set<Edge> edges_;
+	std::set<Edge> boundary_edges_;
 	VertexGrouping vertex_grouping_;
 };
 

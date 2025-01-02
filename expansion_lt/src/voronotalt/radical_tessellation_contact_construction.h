@@ -246,7 +246,7 @@ public:
 				{
 					result_contact_descriptor_graphics.outer_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_point)));
 				}
-				result_contact_descriptor_graphics.boundary_mask.resize(result_contact_descriptor_graphics.outer_points.size(), 1);
+				result_contact_descriptor_graphics.boundary_mask.resize(result_contact_descriptor_graphics.outer_points.size(), 3);
 				result_contact_descriptor_graphics.barycenter=contact_descriptor.intersection_circle_sphere.p;
 			}
 			else
@@ -264,7 +264,7 @@ public:
 				{
 					const ContourPoint& pr=contact_descriptor.contour[i];
 					result_contact_descriptor_graphics.outer_points.push_back(pr.p);
-					result_contact_descriptor_graphics.boundary_mask.push_back((pr.indicator==2 || pr.indicator==3) ? 1 : 0);
+					result_contact_descriptor_graphics.boundary_mask.push_back(((pr.right_id==contact_descriptor.id_a) ? 1 : 0)+((pr.left_id==contact_descriptor.id_a) ? 2 : 0));
 					if(pr.angle>FLOATCONST(0.0))
 					{
 						if(pr.angle>angle_step)
@@ -273,7 +273,7 @@ public:
 							for(Float rotation_angle=angle_step;rotation_angle<pr.angle;rotation_angle+=angle_step)
 							{
 								result_contact_descriptor_graphics.outer_points.push_back(sum_of_points(contact_descriptor.intersection_circle_sphere.p, rotate_point_around_axis(contact_descriptor.intersection_circle_axis, rotation_angle, first_v)));
-								result_contact_descriptor_graphics.boundary_mask.push_back(1);
+								result_contact_descriptor_graphics.boundary_mask.push_back(3);
 							}
 						}
 					}
