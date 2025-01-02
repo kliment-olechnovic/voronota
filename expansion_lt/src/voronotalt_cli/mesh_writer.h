@@ -152,7 +152,7 @@ public:
 		return edges_.size();
 	}
 
-	long calculate_euler_characteristic() const noexcept
+	long get_euler_characteristic() const noexcept
 	{
 		if(!enabled_)
 		{
@@ -161,99 +161,40 @@ public:
 		return (static_cast<long>(get_number_of_vertices())-static_cast<long>(get_number_of_edges())+static_cast<long>(get_number_of_faces()));
 	}
 
-	long calculate_connected_components() const noexcept
+	long get_number_of_connected_components() noexcept
 	{
 		if(!enabled_)
 		{
 			return 0;
 		}
-		std::vector< std::vector<UnsignedInt> > graph(vertex_infos_.size());
-		for(std::set<Edge>::const_iterator it=edges_.begin();it!=edges_.end();++it)
+		if(vertex_grouping_.number_of_connected_components<=0)
 		{
-			const Edge& e=(*it);
-			graph[e.ids[0]].push_back(e.ids[1]);
-			graph[e.ids[1]].push_back(e.ids[0]);
+			calculate_connected_components();
 		}
-		std::vector<long> coloring(graph.size(), 0);
-		long current_component_id=0;
-		std::vector<UnsignedInt> searchstack;
-		for(std::size_t i=0;i<graph.size();i++)
-		{
-			if(coloring[i]==0)
-			{
-				current_component_id++;
-				searchstack.push_back(i);
-				while(!searchstack.empty())
-				{
-					const UnsignedInt ci=searchstack.back();
-					searchstack.pop_back();
-					coloring[ci]=current_component_id;
-					for(std::size_t j=0;j<graph[ci].size();j++)
-					{
-						const UnsignedInt ni=graph[ci][j];
-						if(coloring[ni]==0)
-						{
-							searchstack.push_back(ni);
-						}
-					}
-				}
-			}
-		}
-		return current_component_id;
+		return vertex_grouping_.number_of_connected_components;
 	}
 
-	long calculate_boundary_components() const noexcept
+	long get_number_of_boundary_components() noexcept
 	{
 		if(!enabled_)
 		{
 			return 0;
 		}
-		std::vector< std::vector<UnsignedInt> > graph(vertex_infos_.size());
-		for(std::set<Edge>::const_iterator it=edges_.begin();it!=edges_.end();++it)
+		if(vertex_grouping_.number_of_boundary_components<=0)
 		{
-			const Edge& e=(*it);
-			if(vertex_infos_[e.ids[0]].indicator==2 && vertex_infos_[e.ids[1]].indicator==2)
-			{
-				graph[e.ids[0]].push_back(e.ids[1]);
-				graph[e.ids[1]].push_back(e.ids[0]);
-			}
+			calculate_boundary_components();
 		}
-		std::vector<long> coloring(vertex_infos_.size(), 0);
-		long current_boundary_id=0;
-		std::vector<UnsignedInt> searchstack;
-		for(std::size_t i=0;i<vertex_infos_.size();i++)
-		{
-			if(vertex_infos_[i].indicator==2 && coloring[i]==0)
-			{
-				current_boundary_id++;
-				searchstack.push_back(i);
-				while(!searchstack.empty())
-				{
-					const UnsignedInt ci=searchstack.back();
-					searchstack.pop_back();
-					coloring[ci]=current_boundary_id;
-					for(std::size_t j=0;j<graph[ci].size();j++)
-					{
-						const UnsignedInt ni=graph[ci][j];
-						if(vertex_infos_[ni].indicator==2 && coloring[ni]==0)
-						{
-							searchstack.push_back(ni);
-						}
-					}
-				}
-			}
-		}
-		return current_boundary_id;
+		return vertex_grouping_.number_of_boundary_components;
 	}
 
-	Float calculate_genus() const noexcept
+	Float get_genus() noexcept
 	{
 		if(!enabled_)
 		{
 			return FLOATCONST(0.0);
 		}
-		const long x=calculate_euler_characteristic();
-		const long b=calculate_boundary_components();
+		const long x=get_euler_characteristic();
+		const long b=get_number_of_boundary_components();
 		const Float raw_g=static_cast<Float>(2-b-x)/FLOATCONST(2.0);
 		return raw_g;
 	}
@@ -391,10 +332,31 @@ private:
 		Float mesh_epsilon_;
 	};
 
+	struct VertexGrouping
+	{
+		long number_of_connected_components;
+		long number_of_boundary_components;
+		std::vector<long> coloring_by_connected_components;
+		std::vector<long> coloring_by_boundary_components;
+
+		VertexGrouping() noexcept :
+				number_of_connected_components(-1),
+				number_of_boundary_components(-1)
+		{
+		}
+
+		void invalidate() noexcept
+		{
+			number_of_connected_components=-1;
+			number_of_boundary_components=-1;
+		}
+	};
+
 	typedef std::multimap<SimplePoint, VertexInfo, ComparatorOfVertices> Multimap;
 
 	UnsignedInt add_vertex(const SimplePoint& p, const int indicator) noexcept
 	{
+		vertex_grouping_.invalidate();
 		std::pair<typename Multimap::iterator, typename Multimap::iterator> range=vertices_map_.equal_range(p);
 		typename Multimap::iterator matched_it=vertices_map_.end();
 		for(typename Multimap::iterator it=range.first;it!=vertices_map_.end() && it!=range.second && matched_it==vertices_map_.end();++it)
@@ -418,10 +380,92 @@ private:
 
 	void add_face(const Face& face) noexcept
 	{
+		vertex_grouping_.invalidate();
 		faces_.insert(face);
 		edges_.insert(Edge(face.ids[0], face.ids[1]));
 		edges_.insert(Edge(face.ids[0], face.ids[2]));
 		edges_.insert(Edge(face.ids[1], face.ids[2]));
+	}
+
+	void calculate_connected_components() noexcept
+	{
+		vertex_grouping_.number_of_connected_components=0;
+		vertex_grouping_.coloring_by_connected_components.clear();
+		vertex_grouping_.coloring_by_connected_components.resize(vertex_infos_.size(), 0);
+
+		std::vector< std::vector<UnsignedInt> > graph(vertex_infos_.size());
+		for(std::set<Edge>::const_iterator it=edges_.begin();it!=edges_.end();++it)
+		{
+			const Edge& e=(*it);
+			graph[e.ids[0]].push_back(e.ids[1]);
+			graph[e.ids[1]].push_back(e.ids[0]);
+		}
+
+		std::vector<UnsignedInt> searchstack;
+		for(std::size_t i=0;i<graph.size();i++)
+		{
+			if(vertex_grouping_.coloring_by_connected_components[i]==0)
+			{
+				vertex_grouping_.number_of_connected_components++;
+				searchstack.push_back(i);
+				while(!searchstack.empty())
+				{
+					const UnsignedInt ci=searchstack.back();
+					searchstack.pop_back();
+					vertex_grouping_.coloring_by_connected_components[ci]=vertex_grouping_.number_of_connected_components;
+					for(std::size_t j=0;j<graph[ci].size();j++)
+					{
+						const UnsignedInt ni=graph[ci][j];
+						if(vertex_grouping_.coloring_by_connected_components[ni]==0)
+						{
+							searchstack.push_back(ni);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void calculate_boundary_components() noexcept
+	{
+		vertex_grouping_.number_of_boundary_components=0;
+		vertex_grouping_.coloring_by_boundary_components.clear();
+		vertex_grouping_.coloring_by_boundary_components.resize(vertex_infos_.size(), 0);
+
+		std::vector< std::vector<UnsignedInt> > graph(vertex_infos_.size());
+		for(std::set<Edge>::const_iterator it=edges_.begin();it!=edges_.end();++it)
+		{
+			const Edge& e=(*it);
+			if(vertex_infos_[e.ids[0]].indicator==2 && vertex_infos_[e.ids[1]].indicator==2)
+			{
+				graph[e.ids[0]].push_back(e.ids[1]);
+				graph[e.ids[1]].push_back(e.ids[0]);
+			}
+		}
+
+		std::vector<UnsignedInt> searchstack;
+		for(std::size_t i=0;i<vertex_infos_.size();i++)
+		{
+			if(vertex_infos_[i].indicator==2 && vertex_grouping_.coloring_by_boundary_components[i]==0)
+			{
+				vertex_grouping_.number_of_boundary_components++;
+				searchstack.push_back(i);
+				while(!searchstack.empty())
+				{
+					const UnsignedInt ci=searchstack.back();
+					searchstack.pop_back();
+					vertex_grouping_.coloring_by_boundary_components[ci]=vertex_grouping_.number_of_boundary_components;
+					for(std::size_t j=0;j<graph[ci].size();j++)
+					{
+						const UnsignedInt ni=graph[ci][j];
+						if(vertex_infos_[ni].indicator==2 && vertex_grouping_.coloring_by_boundary_components[ni]==0)
+						{
+							searchstack.push_back(ni);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	bool enabled_;
@@ -432,7 +476,7 @@ private:
 	std::vector<VertexInfo> vertex_infos_;
 	std::set<Face> faces_;
 	std::set<Edge> edges_;
-
+	VertexGrouping vertex_grouping_;
 };
 
 }
