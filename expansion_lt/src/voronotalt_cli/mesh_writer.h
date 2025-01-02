@@ -187,16 +187,74 @@ public:
 		return vertex_grouping_.number_of_boundary_components;
 	}
 
-	Float get_genus() noexcept
+	bool extract_connected_component(const long selected_component_id, MeshWriter& output) noexcept
+	{
+		if(!enabled_)
+		{
+			return false;
+		}
+		if(vertex_grouping_.number_of_connected_components<=0)
+		{
+			calculate_connected_components();
+		}
+		if(selected_component_id>vertex_grouping_.number_of_connected_components)
+		{
+			return false;
+		}
+		output=MeshWriter(true, comparator_of_vertices_.get_coordinate_id());
+		std::map<UnsignedInt, UnsignedInt> map_of_old_to_new_ids;
+		for(std::size_t i=0;i<vertex_infos_.size();i++)
+		{
+			if(vertex_grouping_.coloring_by_connected_components[i]==selected_component_id)
+			{
+				const VertexInfo new_vertex_info(output.vertices_map_.size(), vertex_infos_[i].indicator);
+				output.vertices_map_.insert(std::pair<SimplePoint, VertexInfo>(vertex_points_[i], new_vertex_info));
+				output.vertex_points_.push_back(vertex_points_[i]);
+				output.vertex_infos_.push_back(new_vertex_info);
+				map_of_old_to_new_ids[i]=new_vertex_info.id;
+			}
+		}
+		for(std::set<Face>::const_iterator it=faces_.begin();it!=faces_.end();++it)
+		{
+			const Face& face=(*it);
+			if(vertex_grouping_.coloring_by_connected_components[face.ids[0]]==selected_component_id
+					&& vertex_grouping_.coloring_by_connected_components[face.ids[1]]==selected_component_id
+					&& vertex_grouping_.coloring_by_connected_components[face.ids[2]]==selected_component_id)
+			{
+				const Face new_face(map_of_old_to_new_ids[face.ids[0]], map_of_old_to_new_ids[face.ids[1]], map_of_old_to_new_ids[face.ids[2]]);
+				output.add_face(new_face);
+			}
+		}
+		return true;
+	}
+
+	Float calculate_genus() noexcept
 	{
 		if(!enabled_)
 		{
 			return FLOATCONST(0.0);
 		}
-		const long x=get_euler_characteristic();
-		const long b=get_number_of_boundary_components();
-		const Float raw_g=static_cast<Float>(2-b-x)/FLOATCONST(2.0);
-		return raw_g;
+		const long N=get_number_of_connected_components();
+		Float sum_of_genuses=FLOATCONST(0.0);
+		if(N==1)
+		{
+			const long x=get_euler_characteristic();
+			const long b=get_number_of_boundary_components();
+			const Float raw_g=static_cast<Float>(2-b-x)/FLOATCONST(2.0);
+			return raw_g;
+		}
+		else
+		{
+			for(long id=1;id<=N;id++)
+			{
+				MeshWriter submesh(false);
+				if(extract_connected_component(id, submesh) && submesh.get_number_of_connected_components()==1)
+				{
+					sum_of_genuses+=submesh.calculate_genus();
+				}
+			}
+		}
+		return sum_of_genuses;
 	}
 
 	bool write_to_obj_file(const std::string& filename) const noexcept
@@ -310,6 +368,11 @@ private:
 			coordinate_id_(coordinate_id%3),
 			mesh_epsilon_(mesh_epsilon)
 		{
+		}
+
+		unsigned int get_coordinate_id() const
+		{
+			return coordinate_id_;
 		}
 
 		bool equal(const SimplePoint& a, const SimplePoint& b) const noexcept

@@ -157,6 +157,7 @@ public:
 	unsigned int graphics_color_wireframe;
 	unsigned int graphics_color_xspheres;
 	unsigned int graphics_color_lattice;
+	unsigned int graphics_mesh_connected_component;
 	bool read_successfuly;
 	std::string input_from_file;
 	std::vector<voronotalt::SimplePoint> periodic_box_directions;
@@ -200,6 +201,7 @@ public:
 		graphics_color_wireframe(0x808080),
 		graphics_color_xspheres(0x00FF00),
 		graphics_color_lattice(0x00FF00),
+		graphics_mesh_connected_component(0),
 		read_successfuly(false)
 	{
 	}
@@ -414,6 +416,10 @@ public:
 				else if(opt.name=="graphics-mesh-obj-output-file" && opt.args_strings.size()==1)
 				{
 					graphics_mesh_obj_output_file=opt.args_strings.front();
+				}
+				else if(opt.name=="graphics-mesh-connected-component" && opt.args_ints.size()==1)
+				{
+					graphics_mesh_connected_component=static_cast<unsigned int>(opt.args_ints.front());
 				}
 				else if(opt.name=="write-log-to-file" && opt.args_strings.size()==1)
 				{
@@ -972,13 +978,25 @@ void run_mode_radical(
 				app_mesh_recorder.mesh_writer.add_triangle_fan(pair_graphics.outer_points, pair_graphics.boundary_mask, pair_graphics.barycenter);
 			}
 		}
+
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("collect mesh");
+
+		if(app_params.graphics_mesh_connected_component>0)
+		{
+			voronotalt::MeshWriter submesh_writer(false);
+			if(app_mesh_recorder.mesh_writer.extract_connected_component(app_params.graphics_mesh_connected_component, submesh_writer))
+			{
+				app_mesh_recorder.mesh_writer=submesh_writer;
+			}
+		}
+
 		app_log_recorders.log_output << "log_mesh_number_of_vertices\t" << app_mesh_recorder.mesh_writer.get_number_of_vertices() << "\n";
 		app_log_recorders.log_output << "log_mesh_number_of_vertex_joins\t" << app_mesh_recorder.mesh_writer.get_number_of_vertex_joins() << "\n";
 		app_log_recorders.log_output << "log_mesh_euler_characteristic\t" << app_mesh_recorder.mesh_writer.get_euler_characteristic() << "\n";
 		app_log_recorders.log_output << "log_mesh_connected_components\t" << app_mesh_recorder.mesh_writer.get_number_of_connected_components() << "\n";
 		app_log_recorders.log_output << "log_mesh_boundary_components\t" << app_mesh_recorder.mesh_writer.get_number_of_boundary_components() << "\n";
-		app_log_recorders.log_output << "log_mesh_genus\t" << app_mesh_recorder.mesh_writer.get_genus() << "\n";
+		app_log_recorders.log_output << "log_mesh_genus\t" << app_mesh_recorder.mesh_writer.calculate_genus() << "\n";
+
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("analyze mesh");
 	}
 }
