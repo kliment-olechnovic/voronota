@@ -424,6 +424,33 @@ private:
 				}
 			}
 		}
+
+		{
+			std::map<long, long> map_of_component_sizes;
+			for(std::size_t i=0;i<vertex_grouping_.coloring_by_connected_components.size();i++)
+			{
+				map_of_component_sizes[vertex_grouping_.coloring_by_connected_components[i]]++;
+			}
+
+			std::vector< std::pair<long, long> > sizes_of_components;
+			sizes_of_components.reserve(map_of_component_sizes.size());
+			for(std::map<long, long>::const_iterator it=map_of_component_sizes.begin();it!=map_of_component_sizes.end();++it)
+			{
+				sizes_of_components.push_back(std::pair<long, long>(0-it->second, it->first));
+			}
+			std::sort(sizes_of_components.begin(), sizes_of_components.end());
+
+			std::map<long, long> remapping_of_component_ids;
+			for(std::size_t i=0;i<sizes_of_components.size();i++)
+			{
+				remapping_of_component_ids[sizes_of_components[i].second]=static_cast<long>(i+1);
+			}
+
+			for(std::size_t i=0;i<vertex_grouping_.coloring_by_connected_components.size();i++)
+			{
+				vertex_grouping_.coloring_by_connected_components[i]=remapping_of_component_ids[vertex_grouping_.coloring_by_connected_components[i]];
+			}
+		}
 	}
 
 	void calculate_boundary_components() noexcept
