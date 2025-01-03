@@ -19,6 +19,7 @@ Options:
     --run-faspr               string     path to FASPR binary to rebuild side-chains
     --permuting-allowance     number     maximum number of chains for exhaustive remapping, default is 4
     --as-assembly                        flag to treat input files as biological assemblies
+    --include-heteroatoms                flag to not discard heteroatoms
     --remap-chains                       flag to calculate and use optimal chains remapping
     --remap-chains-logging               flag to print log of chains remapping to stderr
     --ignore-residue-names               flag to ignore residue names in residue identifiers
@@ -86,6 +87,7 @@ INVERT_CASE_OF_CHAINS="false"
 TARGET_INPUT_IS_SCRIPT="false"
 MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
+INCLUDE_HETEROATOMS="false"
 REMAP_CHAINS="false"
 REMAP_CHAINS_LOGGING="false"
 IGNORE_RESIDUE_NAMES="false"
@@ -160,6 +162,9 @@ do
 	--as-assembly)
 		AS_ASSEMBLY="true"
 		;;
+	--include-heteroatoms)
+		INCLUDE_HETEROATOMS="true"
+		;;
 	--remap-chains)
 		REMAP_CHAINS="true"
 		;;
@@ -202,6 +207,12 @@ fi
 if [ "$TARGET_INFILE" == "_all_vs_all" ] && [ "$MODEL_INFILE" != "_list" ]
 then
 	echo >&2 "Error: target parameter '_all_vs_all' supported only if model parameter is '_list'"
+	exit 1
+fi
+
+if [ "$INCLUDE_HETEROATOMS" == "true" ] && [ "$CRUDE_MODE" == "true" ]
+then
+	echo >&2 "Error: crude mode is not supported for heteroatoms"
 	exit 1
 fi
 
@@ -399,6 +410,7 @@ common_params.target_input_file_name='$TARGET_INFILE_BASENAME';
 common_params.target_input_is_script='$TARGET_INPUT_IS_SCRIPT';
 common_params.model_input_is_script='$MODEL_INPUT_IS_SCRIPT';
 common_params.input_as_assembly='$AS_ASSEMBLY';
+common_params.input_include_heteroatoms='$INCLUDE_HETEROATOMS';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.ignore_residue_names='$IGNORE_RESIDUE_NAMES';
 common_params.test_common_ids='$TEST_COMMON_IDS';
@@ -463,15 +475,19 @@ prepare_atoms=function(params, model_mod_params)
 		}
 	}
 	
-	if(params.crude_mode=="true")
+	if(params.input_include_heteroatoms!="true")
 	{
-		voronota_restrict_atoms("-use", "([-protein -aname CA] or [-nucleic])");
+		if(params.crude_mode=="true")
+		{
+			voronota_restrict_atoms("-use", "([-protein -aname CA] or [-nucleic])");
+		}
+		else
+		{
+			voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
+		}
+		voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
 	}
-	else
-	{
-		voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
-	}
-	voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
+	
 	var initial_number_of_accepted_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
 	
 	if(params.lt_mode!="true")
@@ -603,6 +619,11 @@ if(common_params.input_as_assembly===undefined || common_params.input_as_assembl
 	common_params.input_as_assembly="false";
 }
 
+if(common_params.input_include_heteroatoms===undefined || common_params.input_include_heteroatoms==="")
+{
+	common_params.input_include_heteroatoms="false";
+}
+
 if(common_params.restrict_input_atoms===undefined || common_params.restrict_input_atoms==="")
 {
 	common_params.restrict_input_atoms='[]';
@@ -640,7 +661,7 @@ if(common_params.target_input_is_script=="true")
 }
 else
 {
-	voronota_import("-file", common_params.target_input_file, "-as-assembly", common_params.input_as_assembly);
+	voronota_import("-file", common_params.target_input_file, "-as-assembly", common_params.input_as_assembly, "-include-heteroatoms", common_params.input_include_heteroatoms);
 	voronota_assert_partial_success("Failed to import target file");
 }
 
@@ -690,7 +711,7 @@ for(var i=0;i<input_info_array.length;i++)
 		}
 		else
 		{
-			voronota_import("-file", subinput.model_input_file, "-as-assembly", common_params.input_as_assembly);
+			voronota_import("-file", subinput.model_input_file, "-as-assembly", common_params.input_as_assembly, "-include-heteroatoms", common_params.input_include_heteroatoms);
 			voronota_assert_full_success("Failed to import model file");
 		}
 		

@@ -362,6 +362,7 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         --run-faspr               string     path to FASPR binary to rebuild side-chains
         --permuting-allowance     number     maximum number of chains for exhaustive remapping, default is 4
         --as-assembly                        flag to treat input files as biological assemblies
+        --include-heteroatoms                flag to not discard heteroatoms
         --remap-chains                       flag to calculate and use optimal chains remapping
         --remap-chains-logging               flag to print log of chains remapping to stderr
         --ignore-residue-names               flag to ignore residue names in residue identifiers
@@ -396,6 +397,7 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         --stdin-file              string     input file path to replace stdin
         --permuting-allowance     number     maximum number of chains for exhaustive remapping, default is 4
         --as-assembly                        flag to treat input files as biological assemblies
+        --include-heteroatoms                flag to not discard heteroatoms
         --remap-chains                       flag to calculate and use optimal chains remapping
         --ignore-residue-names               flag to ignore residue names in residue identifiers
         --crude                              flag to enable very crude faster mode

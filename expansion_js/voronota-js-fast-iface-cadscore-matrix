@@ -15,6 +15,7 @@ Options:
     --stdin-file              string     input file path to replace stdin
     --permuting-allowance     number     maximum number of chains for exhaustive remapping, default is 4
     --as-assembly                        flag to treat input files as biological assemblies
+    --include-heteroatoms                flag to not discard heteroatoms
     --remap-chains                       flag to calculate and use optimal chains remapping
     --ignore-residue-names               flag to ignore residue names in residue identifiers
     --crude                              flag to enable very crude faster mode
@@ -70,6 +71,7 @@ STDIN_FILE="_stream"
 PERMUTATION_ALLOWANCE="4"
 MODEL_INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
+INCLUDE_HETEROATOMS="false"
 REMAP_CHAINS="false"
 IGNORE_RESIDUE_NAMES="false"
 CRUDE_MODE="false"
@@ -116,6 +118,9 @@ do
 	--as-assembly)
 		AS_ASSEMBLY="true"
 		;;
+	--include-heteroatoms)
+		INCLUDE_HETEROATOMS="true"
+		;;
 	--remap-chains)
 		REMAP_CHAINS="true"
 		;;
@@ -141,6 +146,12 @@ done
 if [ "$HELP_MODE" == "true" ]
 then
 	print_help_and_exit
+fi
+
+if [ "$INCLUDE_HETEROATOMS" == "true" ] && [ "$CRUDE_MODE" == "true" ]
+then
+	echo >&2 "Error: crude mode is not supported for heteroatoms"
+	exit 1
 fi
 
 if [ -z "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -ne "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -lt "1" ]
@@ -289,6 +300,7 @@ cat << EOF
 var common_params={}
 common_params.model_input_is_script='$MODEL_INPUT_IS_SCRIPT';
 common_params.input_as_assembly='$AS_ASSEMBLY';
+common_params.input_include_heteroatoms='$INCLUDE_HETEROATOMS';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
 common_params.remap_chains='$REMAP_CHAINS';
@@ -365,6 +377,11 @@ if(common_params.input_as_assembly===undefined || common_params.input_as_assembl
 	common_params.input_as_assembly="false";
 }
 
+if(common_params.input_include_heteroatoms===undefined || common_params.input_include_heteroatoms==="")
+{
+	common_params.input_include_heteroatoms="false";
+}
+
 if(common_params.restrict_input_atoms===undefined || common_params.restrict_input_atoms==="")
 {
 	common_params.restrict_input_atoms='[]';
@@ -418,7 +435,7 @@ for(var i=0;i<input_info_array.length;i++)
 		}
 		else
 		{
-			voronota_import("-file", subinput.model_input_file, "-as-assembly", common_params.input_as_assembly);
+			voronota_import("-file", subinput.model_input_file, "-as-assembly", common_params.input_as_assembly, "-include-heteroatoms", common_params.input_include_heteroatoms);
 			voronota_assert_full_success("Failed to import model file");
 		}
 		
@@ -436,15 +453,18 @@ for(var i=0;i<input_info_array.length;i++)
 		voronota_restrict_atoms("-use", common_params.restrict_input_atoms);
 		voronota_assert_full_success("Failed to restrict input atoms by the input query");
 		
-		if(common_params.crude_mode=="true")
+		if(common_params.input_include_heteroatoms!="true")
 		{
-			voronota_restrict_atoms("-use", "([-protein -aname CA] or [-nucleic])");
+			if(common_params.crude_mode=="true")
+			{
+				voronota_restrict_atoms("-use", "([-protein -aname CA] or [-nucleic])");
+			}
+			else
+			{
+				voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
+			}
+			voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
 		}
-		else
-		{
-			voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
-		}
-		voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
 		
 		if(common_params.lt_mode!="true")
 		{
