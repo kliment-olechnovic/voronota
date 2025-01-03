@@ -160,6 +160,7 @@ The overview text is the following:
         --graphics-color-wireframe                       string     hex-coded color for wireframe, default is '0x808080'
         --graphics-color-xspheres                        string     hex-coded color for xspheres (expanded spheres), default is '0x00FF00'
         --graphics-color-lattice                         string     hex-coded color for lattice (periodic boundaries), default is '0x00FF00'
+        --graphics-mesh-obj-output-file                  string     output file path to write contacts surfaces mesh .obj file
         --measure-running-time                                      flag to measure and output running times
         --write-log-to-file                              string     output file path to write global log, does not turn off printing log to stderr
         --help-full                                                 flag to print full help (for all options) to stderr and exit

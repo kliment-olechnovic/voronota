@@ -956,6 +956,9 @@
             "name":"calculate-akbps",
             "short_description":""},
           {
+            "name":"calculate-akbps-layered",
+            "short_description":""},
+          {
             "name":"calculate-betweenness",
             "short_description":""},
           {
@@ -1362,6 +1365,9 @@
             "short_description":""},
           {
             "name":"setup-akbps",
+            "short_description":""},
+          {
+            "name":"setup-akbps-layered",
             "short_description":""},
           {
             "name":"setup-chemistry-annotating",
