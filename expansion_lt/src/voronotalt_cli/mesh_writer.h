@@ -255,20 +255,24 @@ public:
 		return true;
 	}
 
-	Float calculate_genus() noexcept
+	int calculate_genus() noexcept
 	{
 		if(!enabled_)
 		{
-			return FLOATCONST(0.0);
+			return -1;
 		}
 		const long N=get_number_of_connected_components();
-		Float sum_of_genuses=FLOATCONST(0.0);
+		int sum_of_genuses=0;
 		if(N==1)
 		{
 			const long x=get_euler_characteristic();
 			const long b=get_number_of_boundary_components();
 			const Float raw_g=static_cast<Float>(2-b-x)/FLOATCONST(2.0);
-			return raw_g;
+			if(raw_g<FLOATCONST(0.0) || raw_g!=std::floor(raw_g))
+			{
+				return -1;
+			}
+			return static_cast<int>(std::floor(raw_g));
 		}
 		else
 		{
@@ -277,7 +281,12 @@ public:
 				MeshWriter submesh(false);
 				if(extract_connected_component(id, submesh) && submesh.get_number_of_connected_components()==1)
 				{
-					sum_of_genuses+=submesh.calculate_genus();
+					const Float raw_g=submesh.calculate_genus();
+					if(raw_g<FLOATCONST(0.0) || raw_g!=std::floor(raw_g))
+					{
+						return -1;
+					}
+					sum_of_genuses+=static_cast<int>(std::floor(raw_g));
 				}
 			}
 		}

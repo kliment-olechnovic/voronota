@@ -68,14 +68,17 @@ Options:
     --graphics-color-faces                           string     hex-coded color for faces, default is '0xFFFF00'
     --graphics-color-wireframe                       string     hex-coded color for wireframe, default is '0x808080'
     --graphics-color-xspheres                        string     hex-coded color for xspheres (expanded spheres), default is '0x00FF00'
-    --graphics-color-lattice                         string     hex-coded color for lattice (periodic boundaries), default is '0x00FF00'
-    --graphics-mesh-obj-output-file                  string     output file path to write contacts surfaces mesh .obj file)";
+    --graphics-color-lattice                         string     hex-coded color for lattice (periodic boundaries), default is '0x00FF00')";
 	}
 	else
 	{
 		output << R"(
     --graphics-*                                     various    other graphics output configuration options, can be listed with '--help-full' flag)";
 	}
+
+	output << R"(
+    --mesh-output-obj-file                           string     output file path to write contacts surfaces mesh .obj file
+    --mesh-print-topology-summary                               flag to print mesh topology summary)";
 
 	output << R"(
     --measure-running-time                                      flag to measure and output running times
@@ -157,7 +160,8 @@ public:
 	unsigned int graphics_color_wireframe;
 	unsigned int graphics_color_xspheres;
 	unsigned int graphics_color_lattice;
-	unsigned int graphics_mesh_connected_component;
+	long mesh_extract_connected_component;
+	bool mesh_print_topology_summary;
 	bool read_successfuly;
 	std::string input_from_file;
 	std::vector<voronotalt::SimplePoint> periodic_box_directions;
@@ -174,7 +178,7 @@ public:
 	std::set<std::string> graphics_restrict_representations;
 	std::set<std::string> graphics_restrict_chains;
 	std::set< std::pair<std::string, std::string> > graphics_restrict_chain_pairs;
-	std::string graphics_mesh_obj_output_file;
+	std::string mesh_output_obj_file;
 	std::string write_log_to_file;
 	std::ostringstream error_log_for_options_parsing;
 
@@ -201,7 +205,8 @@ public:
 		graphics_color_wireframe(0x808080),
 		graphics_color_xspheres(0x00FF00),
 		graphics_color_lattice(0x00FF00),
-		graphics_mesh_connected_component(0),
+		mesh_extract_connected_component(0),
+		mesh_print_topology_summary(false),
 		read_successfuly(false)
 	{
 	}
@@ -413,13 +418,17 @@ public:
 				{
 					graphics_color_lattice=opt.args_hexints.front();
 				}
-				else if(opt.name=="graphics-mesh-obj-output-file" && opt.args_strings.size()==1)
+				else if(opt.name=="mesh-output-obj-file" && opt.args_strings.size()==1)
 				{
-					graphics_mesh_obj_output_file=opt.args_strings.front();
+					mesh_output_obj_file=opt.args_strings.front();
 				}
-				else if(opt.name=="graphics-mesh-connected-component" && opt.args_ints.size()==1)
+				else if(opt.name=="mesh-print-topology-summary" && opt.is_flag())
 				{
-					graphics_mesh_connected_component=static_cast<unsigned int>(opt.args_ints.front());
+					mesh_print_topology_summary=opt.is_flag_and_true();
+				}
+				else if(opt.name=="mesh-extract-connected-component" && opt.args_ints.size()==1)
+				{
+					mesh_extract_connected_component=static_cast<long>(opt.args_ints.front());
 				}
 				else if(opt.name=="write-log-to-file" && opt.args_strings.size()==1)
 				{
@@ -488,6 +497,11 @@ public:
 		if(running_mode==RunningMode::simplified_aw && !(periodic_box_directions.empty() && periodic_box_corners.empty()))
 		{
 			error_log_for_options_parsing << "Error: in this version a periodic box cannot be used in the simplified additively weighted Voronoi diagram regime.\n";
+		}
+
+		if(running_mode==RunningMode::simplified_aw && (!mesh_output_obj_file.empty() || mesh_print_topology_summary))
+		{
+			error_log_for_options_parsing << "Error: in this version mesh output and analysis is disabled for the simplified additively weighted Voronoi diagram regime.\n";
 		}
 
 		if(!periodic_box_directions.empty() && !periodic_box_corners.empty())
@@ -670,18 +684,30 @@ class ApplicationMeshRecorder
 public:
 	voronotalt::MeshWriter mesh_writer;
 
-	explicit ApplicationMeshRecorder(const ApplicationParameters& app_params) noexcept : mesh_writer(!app_params.graphics_mesh_obj_output_file.empty())
+	explicit ApplicationMeshRecorder(const ApplicationParameters& app_params) noexcept : mesh_writer(!app_params.mesh_output_obj_file.empty() || app_params.mesh_print_topology_summary)
 	{
 	}
 
-	void finalize_and_output(const ApplicationParameters& app_params, ApplicationLogRecorders& app_log_recorders) const noexcept
+	void finalize_and_output(const ApplicationParameters& app_params, ApplicationLogRecorders& app_log_recorders) noexcept
 	{
 		if(mesh_writer.enabled())
 		{
 			app_log_recorders.time_recoder_for_output.reset();
-			if(!mesh_writer.write_to_obj_file(app_params.graphics_mesh_obj_output_file))
+			if(!app_params.mesh_output_obj_file.empty())
 			{
-				std::cerr << "Error (non-terminating): failed to write mesh to file '" << app_params.graphics_mesh_obj_output_file << "'\n";
+				if(!mesh_writer.write_to_obj_file(app_params.mesh_output_obj_file))
+				{
+					std::cerr << "Error (non-terminating): failed to write mesh to file '" << app_params.mesh_output_obj_file << "'\n";
+				}
+			}
+			if(app_params.mesh_print_topology_summary)
+			{
+				std::cout << "meshinfo_header\tgenus\tconnected_components\tboundary_components\teuler_characteristic\n"
+						<< "meshinfo\t"
+						<< mesh_writer.calculate_genus() << "\t"
+						<< mesh_writer.get_number_of_connected_components() << "\t"
+						<< mesh_writer.get_number_of_boundary_components() << "\t"
+						<< mesh_writer.get_euler_characteristic() << "\n";
 			}
 			app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("write mesh obj to file");
 		}
@@ -981,21 +1007,31 @@ void run_mode_radical(
 
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("collect mesh");
 
-		if(app_params.graphics_mesh_connected_component>0)
+		if(app_params.mesh_extract_connected_component>0)
 		{
 			voronotalt::MeshWriter submesh_writer(false);
-			if(app_mesh_recorder.mesh_writer.extract_connected_component(app_params.graphics_mesh_connected_component, submesh_writer))
+			if(app_params.mesh_extract_connected_component>app_mesh_recorder.mesh_writer.get_number_of_connected_components())
 			{
-				app_mesh_recorder.mesh_writer=submesh_writer;
+				std::cerr << "Error (non-terminating): could not extract mesh connected component " << app_params.mesh_extract_connected_component << " because there are only " << app_mesh_recorder.mesh_writer.get_number_of_connected_components() << " connected components in total\n";
 			}
+			else
+			{
+				if(!app_mesh_recorder.mesh_writer.extract_connected_component(app_params.mesh_extract_connected_component, submesh_writer))
+				{
+					std::cerr << "Error (non-terminating): could not extract mesh connected component " << app_params.mesh_extract_connected_component << "\n";
+				}
+			}
+			app_mesh_recorder.mesh_writer=submesh_writer;
 		}
 
-		app_log_recorders.log_output << "log_mesh_number_of_vertices\t" << app_mesh_recorder.mesh_writer.get_number_of_vertices() << "\n";
-		app_log_recorders.log_output << "log_mesh_number_of_vertex_joins\t" << app_mesh_recorder.mesh_writer.get_number_of_vertex_joins() << "\n";
-		app_log_recorders.log_output << "log_mesh_euler_characteristic\t" << app_mesh_recorder.mesh_writer.get_euler_characteristic() << "\n";
-		app_log_recorders.log_output << "log_mesh_connected_components\t" << app_mesh_recorder.mesh_writer.get_number_of_connected_components() << "\n";
-		app_log_recorders.log_output << "log_mesh_boundary_components\t" << app_mesh_recorder.mesh_writer.get_number_of_boundary_components() << "\n";
-		app_log_recorders.log_output << "log_mesh_genus\t" << app_mesh_recorder.mesh_writer.calculate_genus() << "\n";
+		if(app_mesh_recorder.mesh_writer.enabled())
+		{
+			app_log_recorders.log_output << "log_mesh_number_of_vertices\t" << app_mesh_recorder.mesh_writer.get_number_of_vertices() << "\n";
+			app_log_recorders.log_output << "log_mesh_connected_components\t" << app_mesh_recorder.mesh_writer.get_number_of_connected_components() << "\n";
+			app_log_recorders.log_output << "log_mesh_boundary_components\t" << app_mesh_recorder.mesh_writer.get_number_of_boundary_components() << "\n";
+			app_log_recorders.log_output << "log_mesh_euler_characteristic\t" << app_mesh_recorder.mesh_writer.get_euler_characteristic() << "\n";
+			app_log_recorders.log_output << "log_mesh_genus\t" << app_mesh_recorder.mesh_writer.calculate_genus() << "\n";
+		}
 
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("analyze mesh");
 	}

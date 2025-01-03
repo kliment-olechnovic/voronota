@@ -35,6 +35,8 @@ Options:
     --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
     --graphics-output-file                           string     output file path to write contacts drawing .py script to run in PyMol
     --graphics-*                                     various    other graphics output configuration options, can be listed with '--help-full' flag
+    --mesh-output-obj-file                           string     output file path to write contacts surfaces mesh .obj file
+    --mesh-print-topology-summary                               flag to print mesh topology summary
     --measure-running-time                                      flag to measure and output running times
     --write-log-to-file                              string     output file path to write global log, does not turn off printing log to stderr
     --help-full                                                 flag to print full help (for all options) to stderr and exit

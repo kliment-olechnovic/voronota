@@ -1,0 +1,2 @@
+meshinfo_header	genus	connected_components	boundary_components	euler_characteristic
+meshinfo	0	2	3	1

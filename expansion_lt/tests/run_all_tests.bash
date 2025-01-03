@@ -120,6 +120,17 @@ voronota-lt -processors 40 -probe 2  < "./input/balls_cs_3x3.xyzr" -write-cells-
 
 ####################################################################
 
+voronota-lt \
+  -i "./input/assembly_1ctf.cif" \
+  --compute-only-inter-chain-contacts \
+  --probe 1.4 \
+  --mesh-output-obj-file "./output/written_files/output_1ctf_inter_chain_mesh.obj" \
+  --mesh-print-topology-summary \
+> "./output/contacts_1ctf_mmcif_assembly_inter_chain_mesh_table.txt" \
+2> "./output/contacts_1ctf_mmcif_assembly_inter_chain_mesh_summary.txt"
+
+####################################################################
+
 mkdir -p "./output/api_usage_examples"
 
 g++ -O3 -I../src/voronotalt -o "./output/api_usage_examples/example_basic_and_periodic" "./input/api_usage_example_basic_and_periodic.cpp"
