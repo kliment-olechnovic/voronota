@@ -3,6 +3,8 @@
 
 #include "../../../../expansion_lt/src/voronotalt/voronotalt.h"
 
+#include "../../../../expansion_lt/src/voronotalt_cli/mesh_writer.h"
+
 #include "../../../../src/auxiliaries/opengl_printer.h"
 
 #include "../operators_common.h"
@@ -23,6 +25,16 @@ public:
 	{
 		scripting::SummaryOfContacts contacts_summary;
 		std::map<std::string, double> map_of_subareas;
+		bool mesh_topology_characterized;
+		scripting::SummaryOfContacts mesh_contacts_summary;
+		int mesh_genus;
+		int mesh_euler_characteristic;
+		int mesh_connected_components;
+		int mesh_boundary_components;
+
+		Result() : mesh_topology_characterized(false), mesh_genus(-1), mesh_euler_characteristic(0), mesh_connected_components(0), mesh_boundary_components(0)
+		{
+		}
 
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
@@ -37,6 +49,14 @@ public:
 					subareas_values.push_back(scripting::VariantValue(it->second));
 				}
 			}
+			if(mesh_topology_characterized)
+			{
+				scripting::VariantSerialization::write(mesh_contacts_summary, heterostorage.variant_object.object("mesh_contacts_summary"));
+				heterostorage.variant_object.value("mesh_genus")=mesh_genus;
+				heterostorage.variant_object.value("mesh_euler_characteristic")=mesh_euler_characteristic;
+				heterostorage.variant_object.value("mesh_connected_components")=mesh_connected_components;
+				heterostorage.variant_object.value("mesh_boundary_components")=mesh_boundary_components;
+			}
 		}
 	};
 
@@ -46,10 +66,12 @@ public:
 	bool no_intra_chain;
 	bool no_intra_residue;
 	bool generate_graphics;
+	bool characterize_topology;
 	bool no_remove_triangulation_info;
 	std::vector<double> adjunct_circle_restrictions;
+	std::string initial_selection_expression;
 
-	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), no_remove_triangulation_info(false)
+	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false)
 	{
 	}
 
@@ -61,8 +83,10 @@ public:
 		no_intra_chain=input.get_flag("no-intra-chain");
 		no_intra_residue=input.get_flag("no-intra-residue");
 		generate_graphics=input.get_flag("generate-graphics");
+		characterize_topology=input.get_flag("characterize-topology");
 		no_remove_triangulation_info=input.get_flag("no-remove-triangulation-info");
 		adjunct_circle_restrictions=input.get_value_vector_or_default<double>("adjunct-circle-restrictions", std::vector<double>());
+		initial_selection_expression=input.get_value_or_default<std::string>("initial-sel", "");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -73,8 +97,10 @@ public:
 		doc.set_option_decription(CDOD("no-intra-chain", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-chain contacts"));
 		doc.set_option_decription(CDOD("no-intra-residue", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-residue contacts"));
 		doc.set_option_decription(CDOD("generate-graphics", CDOD::DATATYPE_BOOL, "flag to generate graphics"));
+		doc.set_option_decription(CDOD("characterize-topology", CDOD::DATATYPE_BOOL, "flag to characterize topology of the merged contacts mesh surface"));
 		doc.set_option_decription(CDOD("no-remove-triangulation-info", CDOD::DATATYPE_BOOL, "flag to not remove triangulation info"));
 		doc.set_option_decription(CDOD("adjunct-circle-restrictions", CDOD::DATATYPE_FLOAT_ARRAY, "adjunct circle restriction radii", ""));
+		doc.set_option_decription(CDOD("initial-sel", CDOD::DATATYPE_STRING, "initial selection expression", ""));
 	}
 
 	Result run(scripting::DataManager& data_manager) const
@@ -153,7 +179,7 @@ public:
 				spheres_container,
 				std::vector<int>(),
 				grouping_for_filtering,
-				generate_graphics,
+				(generate_graphics || characterize_topology),
 				summarize_cells,
 				restrict_circle,
 				descending_adjunct_circle_restrictions,
@@ -290,9 +316,54 @@ public:
 
 		data_manager.reset_contacts_by_swapping(contacts);
 
+		std::set<std::size_t> initial_contact_ids;
+		voronotalt::MeshWriter mesh_writer(characterize_topology);
+
+		if(!initial_selection_expression.empty())
+		{
+			initial_contact_ids=data_manager.selection_manager().select_contacts(scripting::SelectionManager::Query(initial_selection_expression, false));
+			if(initial_contact_ids.empty())
+			{
+				throw std::runtime_error(std::string("No initial contacts selected."));
+			}
+
+			if(mesh_writer.enabled())
+			{
+				for(std::set<std::size_t>::const_iterator it_contact_ids=initial_contact_ids.begin();it_contact_ids!=initial_contact_ids.end();++it_contact_ids)
+				{
+					const std::size_t contact_id=(*it_contact_ids);
+					if(contact_id<radical_tessellation_result_graphics.contacts_graphics.size())
+					{
+						const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& cdg=radical_tessellation_result_graphics.contacts_graphics[contact_id];
+						mesh_writer.add_triangle_fan(cdg.outer_points, cdg.boundary_mask, cdg.barycenter);
+					}
+				}
+			}
+		}
+		else
+		{
+			if(mesh_writer.enabled())
+			{
+				for(std::size_t i=0;i<radical_tessellation_result_graphics.contacts_graphics.size();i++)
+				{
+					const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& cdg=radical_tessellation_result_graphics.contacts_graphics[i];
+					mesh_writer.add_triangle_fan(cdg.outer_points, cdg.boundary_mask, cdg.barycenter);
+				}
+			}
+		}
+
 		Result result;
 		result.contacts_summary=scripting::SummaryOfContacts(data_manager.contacts());
 		result.map_of_subareas=total_subareas;
+		if(mesh_writer.enabled())
+		{
+			result.mesh_contacts_summary=scripting::SummaryOfContacts(data_manager.contacts(), initial_contact_ids);
+			result.mesh_topology_characterized=true;
+			result.mesh_genus=mesh_writer.calculate_genus();
+			result.mesh_euler_characteristic=mesh_writer.get_euler_characteristic();
+			result.mesh_connected_components=mesh_writer.get_number_of_connected_components();
+			result.mesh_boundary_components=mesh_writer.get_number_of_boundary_components();
+		}
 
 		return result;
 	}
