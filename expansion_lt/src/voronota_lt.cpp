@@ -993,14 +993,11 @@ void run_mode_radical(
 				app_mesh_recorder.mesh_writer=voronotalt::MeshWriter(true, chosen_best_coordinate_id);
 			}
 		}
+
 		for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 		{
-			const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=(i<result.contacts_summaries_with_redundancy_in_periodic_box.size() ? result.contacts_summaries_with_redundancy_in_periodic_box[i] : result.contacts_summaries[i]);
-			if(ApplicationGraphicsRecorder::allow_contact_group(app_params.graphics_restrict_chains, app_params.graphics_restrict_chain_pairs, spheres_input_result, pair_summary.id_a, pair_summary.id_b))
-			{
-				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
-				app_mesh_recorder.mesh_writer.add_triangle_fan(pair_graphics.outer_points, pair_graphics.boundary_mask, pair_graphics.barycenter);
-			}
+			const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
+			app_mesh_recorder.mesh_writer.add_triangle_fan(pair_graphics.outer_points, pair_graphics.boundary_mask, pair_graphics.barycenter);
 		}
 
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("collect mesh");
