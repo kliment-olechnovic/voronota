@@ -30,8 +30,15 @@ The software computes inter-atom contact areas, per-cell solvent accessible surf
 and can be made even faster by running it using multiple processors.
 
 Options:
-    --probe                                          number     rolling probe radius, default is 1.4
-    --processors                                     number     maximum number of OpenMP threads to use, default is 1
+    --probe                                          number     rolling probe radius, default is 1.4)";
+
+	if(voronotalt::openmp_enabled())
+	{
+		output << R"(
+    --processors                                     number     maximum number of OpenMP threads to use, default is 2)";
+	}
+
+	output << R"(
     --compute-only-inter-residue-contacts                       flag to only compute inter-residue contacts, turns off per-cell summaries
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
@@ -183,7 +190,7 @@ public:
 	std::ostringstream error_log_for_options_parsing;
 
 	ApplicationParameters() noexcept :
-		max_number_of_processors(1),
+		max_number_of_processors(voronotalt::openmp_enabled() ? 2 : 1),
 		probe(1.4),
 		compute_only_inter_residue_contacts(false),
 		compute_only_inter_chain_contacts(false),
@@ -236,20 +243,20 @@ public:
 			for(std::size_t i=0;i<cloptions.size();i++)
 			{
 				const voronotalt::CLOParser::Option& opt=cloptions[i];
-				if(opt.name=="processors" && opt.args_ints.size()==1)
-				{
-					max_number_of_processors=static_cast<unsigned int>(opt.args_ints.front());
-					if(!(max_number_of_processors>=1 && max_number_of_processors<=1000))
-					{
-						error_log_for_options_parsing << "Error: invalid command line argument for the maximum number of processors, must be an integer from 1 to 1000.\n";
-					}
-				}
-				else if(opt.name=="probe" && opt.args_doubles.size()==1)
+				if(opt.name=="probe" && opt.args_doubles.size()==1)
 				{
 					probe=static_cast<voronotalt::Float>(opt.args_doubles.front());
 					if(!(probe>=0.0 && probe<=30.0))
 					{
 						error_log_for_options_parsing << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.0 to 30.0.\n";
+					}
+				}
+				else if(voronotalt::openmp_enabled() && opt.name=="processors" && opt.args_ints.size()==1)
+				{
+					max_number_of_processors=static_cast<unsigned int>(opt.args_ints.front());
+					if(!(max_number_of_processors>=1 && max_number_of_processors<=1000))
+					{
+						error_log_for_options_parsing << "Error: invalid command line argument for the maximum number of processors, must be an integer from 1 to 1000.\n";
 					}
 				}
 				else if((opt.name=="input" || opt.name=="i")  && opt.args_strings.size()==1)
@@ -518,15 +525,6 @@ public:
 		{
 			error_log_for_options_parsing << "Error: not exactly two periodic box corners provided.\n";
 		}
-
-#ifdef VORONOTALT_OPENMP
-		omp_set_num_threads(max_number_of_processors);
-#else
-		if(max_number_of_processors>1)
-		{
-			error_log_for_options_parsing << "Error: this executable was not compiled to use OpenMP, therefore using more than 1 processor is not supported.\n";
-		}
-#endif
 
 		if(!graphics_output_file.empty() && graphics_restrict_representations.empty())
 		{
@@ -1662,6 +1660,10 @@ int main(const int argc, const char** argv)
 		}
 		return 1;
 	}
+
+#ifdef VORONOTALT_OPENMP
+		omp_set_num_threads(app_params.max_number_of_processors);
+#endif
 
 	ApplicationLogRecorders app_log_recorders(app_params);
 

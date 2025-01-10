@@ -9,7 +9,7 @@ and can be made even faster by running it using multiple processors.
 
 Options:
     --probe                                          number     rolling probe radius, default is 1.4
-    --processors                                     number     maximum number of OpenMP threads to use, default is 1
+    --processors                                     number     maximum number of OpenMP threads to use, default is 2
     --compute-only-inter-residue-contacts                       flag to only compute inter-residue contacts, turns off per-cell summaries
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
