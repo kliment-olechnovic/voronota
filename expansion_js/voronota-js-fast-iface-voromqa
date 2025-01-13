@@ -107,6 +107,7 @@ MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
 STDIN_FILE="_stream"
 RUN_FASPR=""
+BLANKET_TYPES_FILE=""
 INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 DETAILED_TIMES="false"
@@ -170,6 +171,10 @@ do
 		;;
 	--run-faspr)
 		RUN_FASPR="$OPTARG"
+		shift
+		;;
+	--blanket-types-file)
+		BLANKET_TYPES_FILE="$OPTARG"
 		shift
 		;;
 	--input-is-script)
@@ -242,6 +247,12 @@ fi
 if [ -n "$RUN_FASPR" ] && [ ! -s "$RUN_FASPR" ]
 then
 	echo >&2 "Error: FASPR binary executable file '$RUN_FASPR' does not exist"
+	exit 1
+fi
+
+if [ -n "$BLANKET_TYPES_FILE" ] && [ ! -s "$BLANKET_TYPES_FILE" ]
+then
+	echo >&2 "Error: input blanket types file '$BLANKET_TYPES_FILE' does not exist"
 	exit 1
 fi
 
@@ -379,6 +390,7 @@ common_params.constraint_clashes=$CONSTRAINT_CLASHES;
 common_params.run_faspr='$RUN_FASPR';
 common_params.score_symmetry='$SCORE_SYMMETRY';
 common_params.blanket='$BLANKET';
+common_params.blanket_types_file='$BLANKET_TYPES_FILE';
 common_params.output_detailed_times='$DETAILED_TIMES';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 common_params.output_inter_atom_contacts_file='$OUTPUT_INTER_ATOM_CONTACTS_FILE';
@@ -503,8 +515,11 @@ voronota_assert_full_success("Failed to restrict input atoms by the input query"
 
 if(params.blanket=="true")
 {
-	voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
-	voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
+	if(params.blanket_types_file=="")
+	{
+		voronota_restrict_atoms("-use", "([-protein] or [-nucleic])");
+		voronota_assert_full_success("Failed to restrict input atoms to protein or nucleic only");
+	}
 }
 else
 {
@@ -714,6 +729,13 @@ return summary_table;
 }
 
 voronota_setup_defaults("-no-load-alt-voromqa-potential -faster-load-voromqa-potentials");
+voronota_assert_partial_success("Failed to setup default settings.");
+
+if(common_params.blanket=="true" && common_params.blanket_types_file!="")
+{
+	voronota_setup_chemistry_annotating("-more-atom-types-file", common_params.blanket_types_file);
+	voronota_assert_full_success("Failed to setup custom blanket atom types");
+}
 
 var full_summary_table="";
 
