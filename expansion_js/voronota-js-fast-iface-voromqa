@@ -207,6 +207,11 @@ then
 	print_help_and_exit
 fi
 
+if [ -n "$GLOBAL_VORONOTA_JS_VOROMQA_BLANKET_TYPES_FILE" ]
+then
+	BLANKET_TYPES_FILE="$GLOBAL_VORONOTA_JS_VOROMQA_BLANKET_TYPES_FILE"
+fi
+
 if [ -z "$INFILE" ]
 then
 	echo >&2 "Error: input file not provided"

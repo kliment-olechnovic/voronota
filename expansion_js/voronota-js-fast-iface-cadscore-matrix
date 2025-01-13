@@ -148,6 +148,11 @@ then
 	print_help_and_exit
 fi
 
+if [ -n "$GLOBAL_VORONOTA_JS_INCLUDE_HETEROATOMS" ]
+then
+	INCLUDE_HETEROATOMS="$GLOBAL_VORONOTA_JS_INCLUDE_HETEROATOMS"
+fi
+
 if [ "$INCLUDE_HETEROATOMS" == "true" ] && [ "$CRUDE_MODE" == "true" ]
 then
 	echo >&2 "Error: crude mode is not supported for heteroatoms"

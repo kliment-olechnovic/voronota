@@ -198,6 +198,11 @@ then
 	print_help_and_exit
 fi
 
+if [ -n "$GLOBAL_VORONOTA_JS_INCLUDE_HETEROATOMS" ]
+then
+	INCLUDE_HETEROATOMS="$GLOBAL_VORONOTA_JS_INCLUDE_HETEROATOMS"
+fi
+
 if [ -z "$TARGET_INFILE" ]
 then
 	echo >&2 "Error: target input file not provided"
