@@ -4,6 +4,21 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Voronota-LT Web</title>
+			<style>
+			
+			table {
+			  border-collapse: collapse;
+			}
+			
+			table, td, th {
+			  border: 1px solid black;
+			  padding: 5px;
+			  text-align: left;
+			}
+			
+			tr:hover {background-color:#ccccff;}
+			
+			</style>
 </head>
 <body>
 	<h1>Voronota-LT Web</h1>
@@ -15,7 +30,7 @@
 	
 	<div id="container-for-log"></div>
 	
-	<div id="container-for-downloads"></div>
+	<div id="container-for-links"></div>
 	
 	<script src="voronota_lt_web.js"></script>
 	
@@ -101,8 +116,8 @@ function generateAndOpenPage(tsvContent, filename)
 			const container_for_log = document.getElementById("container-for-log");
 			container_for_log.innerHTML = "";
 			
-			const container_for_downloads = document.getElementById("container-for-downloads");
-			container_for_downloads.innerHTML = "";
+			const container_for_links = document.getElementById("container-for-links");
+			container_for_links.innerHTML = "";
 			
 			const input_content = reader.result;
 	
@@ -113,6 +128,42 @@ function generateAndOpenPage(tsvContent, filename)
 				strings.push(vector.get(i));
 			}
 			vector.delete();
+			
+			const table = document.createElement("table");
+			
+			const thead = document.createElement("thead");
+			
+			{
+            	const trow = document.createElement("tr");
+            	
+            	{
+					const cell = document.createElement("td");
+					cell.textContent="Table file name";
+					trow.appendChild(cell);
+				}
+				
+            	{
+					const cell = document.createElement("td");
+					cell.textContent="";
+					trow.appendChild(cell);
+				}
+				
+				{
+					const cell = document.createElement("td");
+					cell.textContent="";
+					trow.appendChild(cell);
+				}
+				
+				{
+					const cell = document.createElement("td");
+					cell.textContent="";
+					trow.appendChild(cell);
+				}
+				
+				thead.appendChild(trow);
+            }
+            
+			const tbody = document.createElement("tbody");
 			
 			for(let index=0;index<strings.length;index+=2)
 			{
@@ -140,39 +191,75 @@ function generateAndOpenPage(tsvContent, filename)
 					}
 					else if(strings[i2])
 					{
-						const filename=(strings[i1]+".tsv");
+						const trow = document.createElement("tr");
 						
+						const filename=(strings[i1]+".tsv");
 						const blob = new Blob([strings[i2]], { type: "text/plain" });
-						const url = URL.createObjectURL(blob);
+						
 						
 						{
-							const sep = document.createElement("hr");
-							container_for_downloads.appendChild(sep);
+							const cell = document.createElement("td");
+							cell.textContent=filename;
+							trow.appendChild(cell);
 						}
 						
 						{
+							const cell = document.createElement("td");
+							const megabytes=(blob.size/1024/1024);
+							if(megabytes<5)
+							{
+								const link = document.createElement("a");
+								link.href = "#";
+								link.textContent = "view";
+								link.style.display = "block";
+								link.onclick = (event) => {
+									event.preventDefault();
+									generateAndOpenPage(strings[i2], filename);
+								};
+								cell.appendChild(link);
+							}
+							else
+							{
+								cell.textContent="";
+							}
+							trow.appendChild(cell);
+						}
+						
+						{
+							const url = URL.createObjectURL(blob);
 							const link = document.createElement("a");
 							link.href = url;
 							link.download = filename;
-							link.textContent = "Download '"+filename+"'";
+							link.textContent = "download";
 							link.style.display = "block";
-							container_for_downloads.appendChild(link);
 							link.onclick = () => setTimeout(() => URL.revokeObjectURL(url), 100);
+							const cell = document.createElement("td");
+							cell.appendChild(link);
+							trow.appendChild(cell);
 						}
 						
 						{
-							const link = document.createElement("a");
-							link.href = "#";
-							link.textContent = "View '"+filename+"'";
-							link.style.display = "block";
-							container_for_downloads.appendChild(link);
-							link.onclick = (event) => {
-								event.preventDefault();
-								generateAndOpenPage(strings[i2], filename);
-							};
+							const cell = document.createElement("td");
+							const kilobytes=(blob.size/1024);
+							const megabytes=(kilobytes/1024);
+							if(megabytes<1)
+							{
+								cell.textContent=""+kilobytes.toFixed(2)+" KB";
+							}
+							else
+							{
+								cell.textContent=""+megabytes.toFixed(2)+" MB";
+							}
+							trow.appendChild(cell);
 						}
+						
+						tbody.appendChild(trow);
 					}
 				}
+				
+				table.appendChild(thead);
+				table.appendChild(tbody);
+				container_for_links.appendChild(table);
 			}
 		};
 	
