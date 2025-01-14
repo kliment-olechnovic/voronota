@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Voronota-LT Web</title>
+</head>
+<body>
+	<h1>Voronota-LT Web</h1>
+	
+	<label for="fileInput">Input file:</label>
+	<input id="fileInput" type="file" autocomplete="off"/>
+	<br>
+	<button onclick="runVoronotaLT()">Run Voronota-LT</button>
+	
+	<div id="container-for-log"></div>
+	
+	<div id="container-for-downloads"></div>
+	
+	<script src="voronota_lt_web.js"></script>
+	
+	<script>
+		let Module;
+		(async () => { Module = await createVoronotaLTWebModule(); })();
+
+	async function runVoronotaLT()
+	{
+		const fileInput = document.getElementById("fileInput");
+	
+		if(fileInput.files.length === 0)
+		{
+			alert("Please provide an input file.");
+			return;
+		}
+	
+		const file = fileInput.files[0];
+		const reader = new FileReader();
+		
+		reader.onload = async () => {
+			const container_for_log = document.getElementById("container-for-log");
+			container_for_log.innerHTML = "";
+			
+			const container_for_downloads = document.getElementById("container-for-downloads");
+			container_for_downloads.innerHTML = "";
+			
+			const input_content = reader.result;
+	
+			const vector = Module.generate_results(input_content);
+			const strings = [];
+			for(let i=0;i<vector.size();i++)
+			{
+				strings.push(vector.get(i));
+			}
+			vector.delete();
+			
+			for(let index=0;index<strings.length;index+=2)
+			{
+				const i1=index;
+				const i2=index+1;
+				
+				if(i2>=strings.length)
+				{
+					alert("Failed to produce valid output.");
+				}
+				else
+				{
+					if(strings[i1]=="error")
+					{
+						alert(strings[i2]);
+					}
+					else if(strings[i1]=="log")
+					{
+						const sep = document.createElement("hr");
+						container_for_log.appendChild(sep);
+						
+						const logfield = document.createElement("pre");
+						logfield.textContent = strings[i2];
+						container_for_log.appendChild(logfield);
+					}
+					else if(strings[i2])
+					{
+						const filename=(strings[i1]+".tsv");
+						
+						const blob = new Blob([strings[i2]], { type: "text/plain" });
+						const url = URL.createObjectURL(blob);
+						
+						{
+							const sep = document.createElement("hr");
+							container_for_downloads.appendChild(sep);
+						}
+						
+						{
+							const link = document.createElement("a");
+							link.href = url;
+							link.download = filename;
+							link.textContent = "Download '"+filename+"'";
+							link.style.display = "block";
+							container_for_downloads.appendChild(link);
+							link.onclick = () => setTimeout(() => URL.revokeObjectURL(url), 100);
+						}
+						
+						{
+							const link = document.createElement("a");
+							link.href = url;
+							link.target = "_blank";
+							link.textContent = "View '"+filename+"'";
+							link.style.display = "block";
+							container_for_downloads.appendChild(link);
+						}
+					}
+				}
+			}
+		};
+	
+		reader.readAsText(file);
+	}
+	</script>
+</body>
+</html>
+
