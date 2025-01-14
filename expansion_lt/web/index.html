@@ -20,6 +20,67 @@
 	<script src="voronota_lt_web.js"></script>
 	
 	<script>
+function generateAndOpenPage(tsvContent, filename)
+{
+	let htmlContent = `
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<title>${filename}</title>
+			
+			<style>
+			
+			table {
+			  border-collapse: collapse;
+			}
+			
+			table, td, th {
+			  border: 1px solid black;
+			  padding: 5px;
+			  text-align: left;
+			}
+			
+			tr:hover {background-color:#ccccff;}
+			
+			</style>
+
+		</head>
+		<body>
+			<h1>Viewing: ${filename}</h1>
+			<table>
+	`;
+
+	const rows = tsvContent.split('\n').map(row => row.split('\t'));
+	rows.forEach((row, index) => {
+		if(row[0])
+		{
+			htmlContent += '<tr>';
+			row.forEach(cell => {
+				htmlContent += index === 0 
+					? `<th>${cell}</th>` 
+					: `<td>${cell}</td>`;
+			});
+			htmlContent += '</tr>\n';
+		}
+	});
+
+	// Close the HTML
+	const finalHtmlContent = htmlContent + `
+			</table>
+		</body>
+		</html>
+	`;
+
+	// Open a new window and write the HTML content
+	const newWindow = window.open('', '_blank');
+	newWindow.document.write(finalHtmlContent);
+	newWindow.document.close();
+}
+	</script>
+	
+	<script>
 		let Module;
 		(async () => { Module = await createVoronotaLTWebModule(); })();
 
@@ -101,11 +162,14 @@
 						
 						{
 							const link = document.createElement("a");
-							link.href = url;
-							link.target = "_blank";
+							link.href = "#";
 							link.textContent = "View '"+filename+"'";
 							link.style.display = "block";
 							container_for_downloads.appendChild(link);
+							link.onclick = (event) => {
+								event.preventDefault();
+								generateAndOpenPage(strings[i2], filename);
+							};
 						}
 					}
 				}
