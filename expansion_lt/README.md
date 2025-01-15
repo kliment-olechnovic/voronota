@@ -11,6 +11,8 @@ This is the default tessellation variant in Voronota-LT. It considers radii of a
 Voronota-LT is distributed as an expansion part of [the Voronota software package](../README.md),
 mainly to enable other Voronota expansions to easily use the Voronota-LT library.
 
+The core functionality of Voronota-LT is also available via the [Voronota-LT web application](./web/index.html) built using Emscripten.
+
 ## Benchmarking data and results
 
 Benchmarking data and results are available [here](./benchmark/README.md).
