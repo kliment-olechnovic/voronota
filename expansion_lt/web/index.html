@@ -34,6 +34,8 @@
 	<div id="container-for-actions">
 		<button onclick="runVoronotaLT()">Run Voronota-LT</button>
 	</div>
+
+	<div id="container-for-input-info"></div>
 	
 	<div id="container-for-error-log"></div>
 
@@ -102,6 +104,9 @@
 
 		async function runVoronotaLT()
 		{
+			const container_for_input_info = document.getElementById("container-for-input-info");
+			container_for_input_info.innerHTML = "";
+
 			const container_for_error_log = document.getElementById("container-for-error-log");
 			container_for_error_log.innerHTML = "";
 
@@ -119,10 +124,27 @@
 				return;
 			}
 
-			container_for_error_log.innerHTML = "<h2>Running ...</h2>";
-
 			const file = fileInput.files[0];
 			const reader = new FileReader();
+
+			container_for_input_info.innerHTML = "<h2>Input overview</h2>";
+
+			{
+				const cell1 = document.createElement("td");
+				const cell2 = document.createElement("td");
+				cell1.textContent="Input file name";
+				cell2.textContent=file.name;
+				const trow = document.createElement("tr");
+				trow.appendChild(cell1);
+				trow.appendChild(cell2);
+				const tbody = document.createElement("tbody");
+				tbody.appendChild(trow);
+				const table = document.createElement("table");
+				table.appendChild(tbody);
+				container_for_input_info.appendChild(table);
+			}
+
+			container_for_error_log.innerHTML = "<h2>Running ...</h2>";
 
 			setTimeout(async () => {
 				reader.onload = async () => {
