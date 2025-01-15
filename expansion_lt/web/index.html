@@ -133,6 +133,7 @@
 
 					container_for_log.innerHTML = "";
 
+					const tbody_for_log = document.createElement("tbody");
 					const tbody_for_links = document.createElement("tbody");
 
 					let error_status=0;
@@ -154,14 +155,115 @@
 								container_for_log.innerHTML = strings[i2];
 								error_status=2;
 							}
-							else if(strings[i1]=="log")
+							else if(strings[i1]=="log_total_input_balls")
 							{
-								const sep = document.createElement("hr");
-								container_for_log.appendChild(sep);
-
-								const logfield = document.createElement("pre");
-								logfield.textContent = strings[i2];
-								container_for_log.appendChild(logfield);
+								const cell1 = document.createElement("td");
+								const cell2 = document.createElement("td");
+								cell1.textContent="Input atoms";
+								cell2.textContent=strings[i2];
+								const trow = document.createElement("tr");
+								trow.appendChild(cell1);
+								trow.appendChild(cell2);
+								tbody_for_log.appendChild(trow);
+							}
+							else if(strings[i1]=="log_total_contacts_count")
+							{
+								const cell1 = document.createElement("td");
+								const cell2 = document.createElement("td");
+								cell1.textContent="Atom-level contacts";
+								cell2.textContent=strings[i2];
+								const trow = document.createElement("tr");
+								trow.appendChild(cell1);
+								trow.appendChild(cell2);
+								tbody_for_log.appendChild(trow);
+							}
+							else if(strings[i1]=="log_total_contacts_area")
+							{
+								const cell1 = document.createElement("td");
+								const cell2 = document.createElement("td");
+								cell1.textContent="Total contacts area";
+								cell2.textContent=strings[i2];
+								const trow = document.createElement("tr");
+								trow.appendChild(cell1);
+								trow.appendChild(cell2);
+								tbody_for_log.appendChild(trow);
+							}
+							else if(strings[i1]=="log_total_residue_level_contacts_count")
+							{
+								const cell1 = document.createElement("td");
+								const cell2 = document.createElement("td");
+								cell1.textContent="Residue-level contacts";
+								cell2.textContent=strings[i2];
+								const trow = document.createElement("tr");
+								trow.appendChild(cell1);
+								trow.appendChild(cell2);
+								tbody_for_log.appendChild(trow);
+							}
+							else if(strings[i1]=="log_total_chain_level_contacts_count")
+							{
+								const cell1 = document.createElement("td");
+								const cell2 = document.createElement("td");
+								cell1.textContent="Chain-level contacts";
+								cell2.textContent=strings[i2];
+								const trow = document.createElement("tr");
+								trow.appendChild(cell1);
+								trow.appendChild(cell2);
+								tbody_for_log.appendChild(trow);
+							}
+							else if(strings[i1]=="log_total_cells_count")
+							{
+								const cell1 = document.createElement("td");
+								const cell2 = document.createElement("td");
+								cell1.textContent="Atom-level cell summaries";
+								cell2.textContent=strings[i2];
+								const trow = document.createElement("tr");
+								trow.appendChild(cell1);
+								trow.appendChild(cell2);
+								tbody_for_log.appendChild(trow);
+							}
+							else if(strings[i1]=="log_total_cells_sas_area")
+							{
+								const cell1 = document.createElement("td");
+								const cell2 = document.createElement("td");
+								cell1.textContent="Total SAS area of cells";
+								cell2.textContent=strings[i2];
+								const trow = document.createElement("tr");
+								trow.appendChild(cell1);
+								trow.appendChild(cell2);
+								tbody_for_log.appendChild(trow);
+							}
+							else if(strings[i1]=="log_total_cells_sas_inside_volume")
+							{
+								const cell1 = document.createElement("td");
+								const cell2 = document.createElement("td");
+								cell1.textContent="Total volume inside cells";
+								cell2.textContent=strings[i2];
+								const trow = document.createElement("tr");
+								trow.appendChild(cell1);
+								trow.appendChild(cell2);
+								tbody_for_log.appendChild(trow);
+							}
+							else if(strings[i1]=="log_total_residue_level_cells_count")
+							{
+								const cell1 = document.createElement("td");
+								const cell2 = document.createElement("td");
+								cell1.textContent="Residue-level cell summaries";
+								cell2.textContent=strings[i2];
+								const trow = document.createElement("tr");
+								trow.appendChild(cell1);
+								trow.appendChild(cell2);
+								tbody_for_log.appendChild(trow);
+							}
+							else if(strings[i1]=="log_total_chain_level_cells_count")
+							{
+								const cell1 = document.createElement("td");
+								const cell2 = document.createElement("td");
+								cell1.textContent="Chain-level cell summaries";
+								cell2.textContent=strings[i2];
+								const trow = document.createElement("tr");
+								trow.appendChild(cell1);
+								trow.appendChild(cell2);
+								tbody_for_log.appendChild(trow);
 							}
 							else if(strings[i2])
 							{
@@ -234,37 +336,15 @@
 					if(error_status==0)
 					{
 						{
-							const trow = document.createElement("tr");
-
-							{
-								const cell = document.createElement("th");
-								cell.textContent="Output files";
-								trow.appendChild(cell);
-							}
-
-							{
-								const cell = document.createElement("th");
-								cell.textContent="";
-								trow.appendChild(cell);
-							}
-
-							{
-								const cell = document.createElement("th");
-								cell.textContent="";
-								trow.appendChild(cell);
-							}
-
-							{
-								const cell = document.createElement("th");
-								cell.textContent="";
-								trow.appendChild(cell);
-							}
-
-							const thead = document.createElement("thead");
-							thead.appendChild(trow);
-
+							container_for_log.innerHTML = "<h2>Output summary</h2>";
 							const table = document.createElement("table");
-							table.appendChild(thead);
+							table.appendChild(tbody_for_log);
+							container_for_log.appendChild(table);
+						}
+
+						{
+							container_for_links.innerHTML = "<h2>Output files</h2>";
+							const table = document.createElement("table");
 							table.appendChild(tbody_for_links);
 							container_for_links.appendChild(table);
 						}

@@ -50,62 +50,82 @@ std::vector<std::string> generate_results(const std::string& input_data)
 	voronotalt::RadicalTessellation::group_results(result, spheres_input_result.grouping_by_chain, result_grouped_by_chain, time_recorder);
 
 	{
-		std::ostringstream output;
-		output << "log_total_input_balls\t" << result.total_spheres << "\n";
-		output << "log_total_collisions\t" << result.total_collisions << "\n";
-		output << "log_total_relevant_collisions\t" << result.total_relevant_collisions << "\n";
-		output << "log_total_contacts_count\t" << result.total_contacts_summary.count << "\n";
-		output << "log_total_contacts_area\t" << result.total_contacts_summary.area << "\n";
-		output << "log_total_residue_level_contacts_count\t" << result_grouped_by_residue.grouped_contacts_summaries.size() << "\n";
-		output << "log_total_chain_level_contacts_count\t" << result_grouped_by_chain.grouped_contacts_summaries.size() << "\n";
-		output << "log_total_cells_count\t" << result.total_cells_summary.count << "\n";
-		output << "log_total_cells_sas_area\t" << result.total_cells_summary.sas_area << "\n";
-		output << "log_total_cells_sas_inside_volume\t" << result.total_cells_summary.sas_inside_volume << "\n";
-		output << "log_total_residue_level_cells_count\t" << result_grouped_by_residue.grouped_cells_summaries.size() << "\n";
-		output << "log_total_chain_level_cells_count\t" << result_grouped_by_chain.grouped_cells_summaries.size() << "\n";
-		results.push_back(std::string("log"));
-		results.push_back(output.str());
+		results.push_back(std::string("log_total_input_balls"));
+		results.push_back(std::to_string(result.total_spheres));
+
+		results.push_back(std::string("log_total_contacts_count"));
+		results.push_back(std::to_string(result.total_contacts_summary.count));
+
+		results.push_back(std::string("log_total_contacts_area"));
+		results.push_back(std::to_string(result.total_contacts_summary.area));
+
+		results.push_back(std::string("log_total_residue_level_contacts_count"));
+		results.push_back(std::to_string(result_grouped_by_residue.grouped_contacts_summaries.size()));
+
+		results.push_back(std::string("log_total_chain_level_contacts_count"));
+		results.push_back(std::to_string(result_grouped_by_chain.grouped_contacts_summaries.size()));
+
+		results.push_back(std::string("log_total_cells_count"));
+		results.push_back(std::to_string(result.total_cells_summary.count));
+
+		results.push_back(std::string("log_total_cells_sas_area"));
+		results.push_back(std::to_string(result.total_cells_summary.sas_area));
+
+		results.push_back(std::string("log_total_cells_sas_inside_volume"));
+		results.push_back(std::to_string(result.total_cells_summary.sas_inside_volume));
+
+		results.push_back(std::string("log_total_residue_level_cells_count"));
+		results.push_back(std::to_string(result_grouped_by_residue.grouped_cells_summaries.size()));
+
+		results.push_back(std::string("log_total_chain_level_cells_count"));
+		results.push_back(std::to_string(result_grouped_by_chain.grouped_cells_summaries.size()));
 	}
 
+	if(!result.contacts_summaries.empty())
 	{
 		std::ostringstream output;
 		voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, output);
-		results.push_back(std::string("atom-atom-contacts"));
+		results.push_back(std::string("atom-level-contacts"));
 		results.push_back(output.str());
 	}
 
+	if(!result_grouped_by_residue.grouped_contacts_summaries.empty())
 	{
 		std::ostringstream output;
 		voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, output);
-		results.push_back(std::string("residue-residue-contacts"));
+		results.push_back(std::string("residue-level-contacts"));
 		results.push_back(output.str());
 	}
 
+	if(!result_grouped_by_chain.grouped_contacts_summaries.empty())
 	{
 		std::ostringstream output;
 		voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, output);
-		results.push_back(std::string("chain-chain-contacts"));
+		results.push_back(std::string("chain-level-contacts"));
 		results.push_back(output.str());
 	}
 
+	if(!result.cells_summaries.empty())
 	{
 		std::ostringstream output;
 		voronotalt::PrintingCustomTypes::print_cells_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, true, output);
-		results.push_back(std::string("atom-cells"));
+		results.push_back(std::string("atom-level-cell-summaries"));
 		results.push_back(output.str());
 	}
 
+	if(!result_grouped_by_residue.grouped_cells_summaries.empty())
 	{
 		std::ostringstream output;
 		voronotalt::PrintingCustomTypes::print_cells_residue_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, output);
-		results.push_back(std::string("residue-cell-summaries"));
+		results.push_back(std::string("residue-level-cell-summaries"));
 		results.push_back(output.str());
 	}
 
+	if(!result_grouped_by_chain.grouped_cells_summaries.empty())
 	{
 		std::ostringstream output;
 		voronotalt::PrintingCustomTypes::print_cells_chain_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, output);
-		results.push_back(std::string("chain-cell-summaries"));
+		results.push_back(std::string("chain-level-cell-summaries"));
 		results.push_back(output.str());
 	}
 
