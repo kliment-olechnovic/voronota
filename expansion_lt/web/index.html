@@ -3,8 +3,27 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Voronota-LT Web</title>
+	<title>Voronota-LT web application</title>
 		<style>
+			body
+			{
+				line-height: 1.2;
+				margin-left: 20px;
+				background: #ffffff;
+				color:#222222;
+				font-size:16px;
+			}
+
+			h1,h2,h3
+			{
+				line-height: 1.1;
+			}
+
+			a
+			{
+				color: #00007f;
+			}
+
 			table
 			{
 				border-collapse: collapse;
@@ -21,17 +40,37 @@
 			{
 				background-color:#ccccff;
 			}
+
+			#container-for-controls
+			{
+				margin-bottom: 10px;
+			}
+
+			label
+			{
+				margin-bottom: 10px;
+				margin-right: 10px;
+			}
+
+			input[type="file"]
+			{
+				margin-bottom: 10px;
+			}
+
+			button
+			{
+				margin-right: 10px;
+				padding: 5px 15px;
+			}
 		</style>
 </head>
 <body>
-	<h1>Voronota-LT Web</h1>
+	<h1><a href="../">Voronota-LT</a> web application</h1>
 
-	<div id="container-for-input">
-		<label for="fileInput">Input file:</label>
+	<div id="container-for-controls">
+		<label for="fileInput">Input PDB or mmCIF file:</label>
 		<input id="fileInput" type="file" autocomplete="off"/>
-	</div>
-
-	<div id="container-for-actions">
+		<br>
 		<button onclick="runVoronotaLT('all')">Calculate all contacts</button>
 		<button onclick="runVoronotaLT('only_inter_chain')">Calculate only inter-chain contacts</button>
 	</div>
@@ -47,6 +86,18 @@
 	<script src="voronota_lt_web.js"></script>
 	
 	<script>
+		function addLabeledValueToTableBody(tbody, label, value)
+		{
+			const cell1 = document.createElement("td");
+			const cell2 = document.createElement("td");
+			cell1.innerHTML="<strong>"+label+"</strong>";
+			cell2.textContent=value;
+			const trow = document.createElement("tr");
+			trow.appendChild(cell1);
+			trow.appendChild(cell2);
+			tbody.appendChild(trow);
+		}
+
 		function generateAndOpenPage(tsvContent, filename)
 		{
 			let htmlContent = `
@@ -71,7 +122,7 @@
 					</style>
 				</head>
 				<body>
-					<h1>Viewing: ${filename}</h1>
+					<h1>${filename}</h1>
 					<table>
 			`;
 
@@ -130,31 +181,12 @@
 
 			{
 				container_for_input_info.innerHTML = "<h2>Task overview</h2>";
-
 				const tbody = document.createElement("tbody");
-
-				{
-					const cell1 = document.createElement("td");
-					const cell2 = document.createElement("td");
-					cell1.textContent="Input file name";
-					cell2.textContent=file.name;
-					const trow = document.createElement("tr");
-					trow.appendChild(cell1);
-					trow.appendChild(cell2);
-					tbody.appendChild(trow);
-				}
-
-				{
-					const cell1 = document.createElement("td");
-					const cell2 = document.createElement("td");
-					cell1.textContent="Running mode";
-					cell2.textContent=(mode=="only_inter_chain" ? "calculate only inter-chain contacts" : "calculate all contacts");
-					const trow = document.createElement("tr");
-					trow.appendChild(cell1);
-					trow.appendChild(cell2);
-					tbody.appendChild(trow);
-				}
-
+				addLabeledValueToTableBody(tbody, "Input file name", file.name);
+				addLabeledValueToTableBody(tbody, "Read heteroatoms", "yes");
+				addLabeledValueToTableBody(tbody, "Read as an assembly", "yes");
+				addLabeledValueToTableBody(tbody, "Solvent probe radius", "1.4");
+				addLabeledValueToTableBody(tbody, "Calculation mode", (mode=="only_inter_chain" ? "calculate only inter-chain contacts" : "calculate all contacts"));
 				const table = document.createElement("table");
 				table.appendChild(tbody);
 				container_for_input_info.appendChild(table);
@@ -201,135 +233,51 @@
 							}
 							else if(strings[i1]=="log_total_input_balls")
 							{
-								const cell1 = document.createElement("td");
-								const cell2 = document.createElement("td");
-								cell1.textContent="Input atoms";
-								cell2.textContent=strings[i2];
-								const trow = document.createElement("tr");
-								trow.appendChild(cell1);
-								trow.appendChild(cell2);
-								tbody_for_log.appendChild(trow);
+								addLabeledValueToTableBody(tbody_for_log, "Input atoms", strings[i2]);
 							}
 							else if(strings[i1]=="log_total_residues_in_input")
 							{
-								const cell1 = document.createElement("td");
-								const cell2 = document.createElement("td");
-								cell1.textContent="Input residues";
-								cell2.textContent=strings[i2];
-								const trow = document.createElement("tr");
-								trow.appendChild(cell1);
-								trow.appendChild(cell2);
-								tbody_for_log.appendChild(trow);
+								addLabeledValueToTableBody(tbody_for_log, "Input residues", strings[i2]);
 							}
 							else if(strings[i1]=="log_total_chains_in_input")
 							{
-								const cell1 = document.createElement("td");
-								const cell2 = document.createElement("td");
-								cell1.textContent="Input chains";
-								cell2.textContent=strings[i2];
-								const trow = document.createElement("tr");
-								trow.appendChild(cell1);
-								trow.appendChild(cell2);
-								tbody_for_log.appendChild(trow);
+								addLabeledValueToTableBody(tbody_for_log, "Input chains", strings[i2]);
 							}
 							else if(strings[i1]=="log_total_contacts_count")
 							{
-								const cell1 = document.createElement("td");
-								const cell2 = document.createElement("td");
-								cell1.textContent="Atom-level contacts";
-								cell2.textContent=strings[i2];
-								const trow = document.createElement("tr");
-								trow.appendChild(cell1);
-								trow.appendChild(cell2);
-								tbody_for_log.appendChild(trow);
+								addLabeledValueToTableBody(tbody_for_log, "Atom-level contacts", strings[i2]);
 							}
 							else if(strings[i1]=="log_total_contacts_area")
 							{
-								const cell1 = document.createElement("td");
-								const cell2 = document.createElement("td");
-								cell1.textContent="Total contacts area";
-								cell2.textContent=strings[i2];
-								const trow = document.createElement("tr");
-								trow.appendChild(cell1);
-								trow.appendChild(cell2);
-								tbody_for_log.appendChild(trow);
+								addLabeledValueToTableBody(tbody_for_log, "Total contacts area", parseFloat(strings[i2]).toFixed(2));
 							}
 							else if(strings[i1]=="log_total_residue_level_contacts_count")
 							{
-								const cell1 = document.createElement("td");
-								const cell2 = document.createElement("td");
-								cell1.textContent="Residue-level contacts";
-								cell2.textContent=strings[i2];
-								const trow = document.createElement("tr");
-								trow.appendChild(cell1);
-								trow.appendChild(cell2);
-								tbody_for_log.appendChild(trow);
+								addLabeledValueToTableBody(tbody_for_log, "Residue-level contacts", strings[i2]);
 							}
 							else if(strings[i1]=="log_total_chain_level_contacts_count")
 							{
-								const cell1 = document.createElement("td");
-								const cell2 = document.createElement("td");
-								cell1.textContent="Chain-level contacts";
-								cell2.textContent=strings[i2];
-								const trow = document.createElement("tr");
-								trow.appendChild(cell1);
-								trow.appendChild(cell2);
-								tbody_for_log.appendChild(trow);
+								addLabeledValueToTableBody(tbody_for_log, "Chain-level contacts", strings[i2]);
 							}
 							else if(strings[i1]=="log_total_cells_count")
 							{
-								const cell1 = document.createElement("td");
-								const cell2 = document.createElement("td");
-								cell1.textContent="Atom-level cell summaries";
-								cell2.textContent=strings[i2];
-								const trow = document.createElement("tr");
-								trow.appendChild(cell1);
-								trow.appendChild(cell2);
-								tbody_for_log.appendChild(trow);
+								addLabeledValueToTableBody(tbody_for_log, "Atom-level cell summaries", strings[i2]);
 							}
 							else if(strings[i1]=="log_total_cells_sas_area")
 							{
-								const cell1 = document.createElement("td");
-								const cell2 = document.createElement("td");
-								cell1.textContent="Total SAS area of cells";
-								cell2.textContent=strings[i2];
-								const trow = document.createElement("tr");
-								trow.appendChild(cell1);
-								trow.appendChild(cell2);
-								tbody_for_log.appendChild(trow);
+								addLabeledValueToTableBody(tbody_for_log, "Total SAS area of cells", parseFloat(strings[i2]).toFixed(2));
 							}
 							else if(strings[i1]=="log_total_cells_sas_inside_volume")
 							{
-								const cell1 = document.createElement("td");
-								const cell2 = document.createElement("td");
-								cell1.textContent="Total volume inside cells";
-								cell2.textContent=strings[i2];
-								const trow = document.createElement("tr");
-								trow.appendChild(cell1);
-								trow.appendChild(cell2);
-								tbody_for_log.appendChild(trow);
+								addLabeledValueToTableBody(tbody_for_log, "Total volume inside cells", parseFloat(strings[i2]).toFixed(2));
 							}
 							else if(strings[i1]=="log_total_residue_level_cells_count")
 							{
-								const cell1 = document.createElement("td");
-								const cell2 = document.createElement("td");
-								cell1.textContent="Residue-level cell summaries";
-								cell2.textContent=strings[i2];
-								const trow = document.createElement("tr");
-								trow.appendChild(cell1);
-								trow.appendChild(cell2);
-								tbody_for_log.appendChild(trow);
+								addLabeledValueToTableBody(tbody_for_log, "Residue-level cell summaries", strings[i2]);
 							}
 							else if(strings[i1]=="log_total_chain_level_cells_count")
 							{
-								const cell1 = document.createElement("td");
-								const cell2 = document.createElement("td");
-								cell1.textContent="Chain-level cell summaries";
-								cell2.textContent=strings[i2];
-								const trow = document.createElement("tr");
-								trow.appendChild(cell1);
-								trow.appendChild(cell2);
-								tbody_for_log.appendChild(trow);
+								addLabeledValueToTableBody(tbody_for_log, "Chain-level cell summaries", strings[i2]);
 							}
 							else if(strings[i2])
 							{
@@ -339,7 +287,6 @@
 								const blob = new Blob([strings[i2]], { type: "text/plain" });
 								const kilobytes=(blob.size/1024);
 								const megabytes=(kilobytes/1024);
-
 
 								{
 									const cell = document.createElement("td");
