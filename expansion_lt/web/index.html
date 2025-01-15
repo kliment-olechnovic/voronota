@@ -32,7 +32,8 @@
 	</div>
 
 	<div id="container-for-actions">
-		<button onclick="runVoronotaLT()">Run Voronota-LT</button>
+		<button onclick="runVoronotaLT('all')">Calculate all contacts</button>
+		<button onclick="runVoronotaLT('only_inter_chain')">Calculate only inter-chain contacts</button>
 	</div>
 
 	<div id="container-for-input-info"></div>
@@ -102,7 +103,7 @@
 		let Module;
 		(async () => { Module = await createVoronotaLTWebModule(); })();
 
-		async function runVoronotaLT()
+		async function runVoronotaLT(mode)
 		{
 			const container_for_input_info = document.getElementById("container-for-input-info");
 			container_for_input_info.innerHTML = "";
@@ -127,18 +128,33 @@
 			const file = fileInput.files[0];
 			const reader = new FileReader();
 
-			container_for_input_info.innerHTML = "<h2>Input overview</h2>";
-
 			{
-				const cell1 = document.createElement("td");
-				const cell2 = document.createElement("td");
-				cell1.textContent="Input file name";
-				cell2.textContent=file.name;
-				const trow = document.createElement("tr");
-				trow.appendChild(cell1);
-				trow.appendChild(cell2);
+				container_for_input_info.innerHTML = "<h2>Task overview</h2>";
+
 				const tbody = document.createElement("tbody");
-				tbody.appendChild(trow);
+
+				{
+					const cell1 = document.createElement("td");
+					const cell2 = document.createElement("td");
+					cell1.textContent="Input file name";
+					cell2.textContent=file.name;
+					const trow = document.createElement("tr");
+					trow.appendChild(cell1);
+					trow.appendChild(cell2);
+					tbody.appendChild(trow);
+				}
+
+				{
+					const cell1 = document.createElement("td");
+					const cell2 = document.createElement("td");
+					cell1.textContent="Running mode";
+					cell2.textContent=(mode=="only_inter_chain" ? "calculate only inter-chain contacts" : "calculate all contacts");
+					const trow = document.createElement("tr");
+					trow.appendChild(cell1);
+					trow.appendChild(cell2);
+					tbody.appendChild(trow);
+				}
+
 				const table = document.createElement("table");
 				table.appendChild(tbody);
 				container_for_input_info.appendChild(table);
@@ -150,7 +166,7 @@
 				reader.onload = async () => {
 					const input_content = reader.result;
 
-					const vector = Module.generate_results(input_content);
+					const vector = Module.generate_results(input_content, mode);
 					const strings = [];
 					for(let i=0;i<vector.size();i++)
 					{
@@ -188,6 +204,28 @@
 								const cell1 = document.createElement("td");
 								const cell2 = document.createElement("td");
 								cell1.textContent="Input atoms";
+								cell2.textContent=strings[i2];
+								const trow = document.createElement("tr");
+								trow.appendChild(cell1);
+								trow.appendChild(cell2);
+								tbody_for_log.appendChild(trow);
+							}
+							else if(strings[i1]=="log_total_residues_in_input")
+							{
+								const cell1 = document.createElement("td");
+								const cell2 = document.createElement("td");
+								cell1.textContent="Input residues";
+								cell2.textContent=strings[i2];
+								const trow = document.createElement("tr");
+								trow.appendChild(cell1);
+								trow.appendChild(cell2);
+								tbody_for_log.appendChild(trow);
+							}
+							else if(strings[i1]=="log_total_chains_in_input")
+							{
+								const cell1 = document.createElement("td");
+								const cell2 = document.createElement("td");
+								cell1.textContent="Input chains";
 								cell2.textContent=strings[i2];
 								const trow = document.createElement("tr");
 								trow.appendChild(cell1);
@@ -372,7 +410,7 @@
 					if(error_status==0)
 					{
 						{
-							container_for_log.innerHTML = "<h2>Output summary</h2>";
+							container_for_log.innerHTML = "<h2>Results summary</h2>";
 							const table = document.createElement("table");
 							table.appendChild(tbody_for_log);
 							container_for_log.appendChild(table);
