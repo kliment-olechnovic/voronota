@@ -28,7 +28,7 @@ std::vector<std::string> generate_results(const std::string& input_data)
 	if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_string(input_data, molecular_file_reading_parameters, 1.4, spheres_input_result, log_stream, time_recorder))
 	{
 		results.push_back(std::string("error"));
-		results.push_back(std::string("failed to read input without errors: ")+log_stream.str());
+		results.push_back(std::string("Failed to read input without errors.\n")+log_stream.str());
 		return results;
 	}
 
