@@ -198,13 +198,26 @@
 				reader.onload = async () => {
 					const input_content = reader.result;
 
-					const vector = Module.generate_results(input_content, mode);
 					const strings = [];
-					for(let i=0;i<vector.size();i++)
+
+					try
 					{
-						strings.push(vector.get(i));
+						const vector = Module.generate_results(input_content, mode);
+						for(let i=0;i<vector.size();i++)
+						{
+							strings.push(vector.get(i));
+						}
+						vector.delete();
 					}
-					vector.delete();
+					catch(err)
+					{
+						console.error('Exception thrown when executing:', err);
+						container_for_error_log.innerHTML = "<h2>Error log</h2>";
+						const textfield = document.createElement("pre");
+						textfield.textContent="The app was terminated by the browser, probably to save memory.\nPlease refresh the page.\n";
+						container_for_error_log.appendChild(textfield);
+						return;
+					}
 
 					container_for_error_log.innerHTML = "";
 
