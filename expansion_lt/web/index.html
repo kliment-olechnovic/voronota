@@ -216,6 +216,8 @@
 						const textfield = document.createElement("pre");
 						textfield.textContent="The app was terminated by the browser, probably to save memory.\nPlease refresh the page.\n";
 						container_for_error_log.appendChild(textfield);
+						const container_for_controls = document.getElementById("container-for-controls");
+						container_for_controls.remove();
 						return;
 					}
 
