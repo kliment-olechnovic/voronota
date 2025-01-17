@@ -8,10 +8,21 @@ VERSIONID=$(./version.bash)
 
 ################################################################################
 
+if [ "$PACKAGE_NAME" == "make_new_release" ]
+then
+	VERSIONID=$(./version.bash next)
+	echo "$VERSIONID" > ./latest_release_version.txt
+	PACKAGE_NAME="voronota_${VERSIONID}"
+fi
+
+################################################################################
+
 if [ -z "$PACKAGE_NAME" ]
 then
-  PACKAGE_NAME="voronota_$VERSIONID"
+  PACKAGE_NAME="voronota_${VERSIONID}"
 fi
+
+################################################################################
 
 rm -f "${PACKAGE_NAME}.tar.gz"
 rm -r -f "$PACKAGE_NAME"
