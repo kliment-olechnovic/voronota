@@ -9,7 +9,7 @@ trap "rm -r $TMPLDIR" EXIT
 
 {
 
-cat ./resources/texts/intro.markdown
+cat ./resources/texts/intro.markdown | sed "s/LATEST_RELEASE_VERSION/$(cat ./latest_release_version.txt | tr -d '\n')/g"
 
 echo -e "# Command reference"
 
