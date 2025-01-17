@@ -95,7 +95,7 @@ public:
 		bundle_of_triangulation_information=BundleOfTriangulationInformation();
 		bundle_of_triangulation_information.parameters_of_construction=parameters;
 
-		if(balls.size()<4)
+		if(balls.size()<4 && parameters.artificial_boundary_shift<=0.0)
 		{
 			return false;
 		}

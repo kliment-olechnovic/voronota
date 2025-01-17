@@ -135,7 +135,7 @@ public:
 		bundle_of_contact_information=BundleOfContactInformation();
 		bundle_of_contact_information.parameters_of_construction=parameters;
 
-		if(bundle_of_triangulation_information.number_of_input_spheres<4 || bundle_of_triangulation_information.quadruples_map.empty())
+		if(bundle_of_triangulation_information.number_of_input_spheres<1 || bundle_of_triangulation_information.quadruples_map.empty())
 		{
 			return false;
 		}
