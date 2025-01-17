@@ -104,6 +104,7 @@ public:
 			const UnsignedInt b_id,
 			const std::vector<ValuedID>& a_neighbor_collisions,
 			const Float max_circle_radius_restriction,
+			const std::vector<SimplePoint>& preliminary_cutting_plane_normals,
 			ContactDescriptor& result_contact_descriptor) noexcept
 	{
 		result_contact_descriptor.clear();
@@ -128,6 +129,26 @@ public:
 				{
 					bool discarded=false;
 					bool contour_initialized=false;
+					if(!preliminary_cutting_plane_normals.empty())
+					{
+						for(UnsignedInt i=0;i<preliminary_cutting_plane_normals.size() && !discarded;i++)
+						{
+							const UnsignedInt neighbor_id=(spheres.size()+i);
+							const SimplePoint& neighbor_ac_plane_center=(i%2==0 ? a.p : b.p);
+							const SimplePoint& neighbor_ac_plane_normal=preliminary_cutting_plane_normals[i];
+							if(!contour_initialized)
+							{
+								result_contact_descriptor.intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
+								init_contour_from_base_and_axis(a_id, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, result_contact_descriptor.contour);
+								contour_initialized=true;
+							}
+							mark_and_cut_contour(neighbor_ac_plane_center, neighbor_ac_plane_normal, neighbor_id, result_contact_descriptor.contour);
+							if(contour_initialized && result_contact_descriptor.contour.empty())
+							{
+								discarded=true;
+							}
+						}
+					}
 					{
 						bool nostop=true;
 						for(UnsignedInt i=0;i<a_neighbor_collisions.size() && !discarded && nostop;i++)

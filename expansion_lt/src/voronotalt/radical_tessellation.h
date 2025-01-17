@@ -356,6 +356,23 @@ public:
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder) noexcept
 	{
+		construct_full_tessellation(spheres_container, involvement_of_spheres, grouping_of_spheres, with_graphics, summarize_cells, max_circle_radius_restriction, adjunct_max_circle_radius_restrictions, std::vector<SimplePoint>(), std::vector<Float>(), result, result_graphics, time_recorder);
+	}
+
+	static void construct_full_tessellation(
+			const SpheresContainer& spheres_container,
+			const std::vector<int>& involvement_of_spheres,
+			const std::vector<int>& grouping_of_spheres,
+			const bool with_graphics,
+			const bool summarize_cells,
+			const Float max_circle_radius_restriction,
+			const std::vector<Float>& adjunct_max_circle_radius_restrictions,
+			const std::vector<SimplePoint>& global_preliminary_cutting_plane_normals,
+			const std::vector<Float>& preliminary_cutting_plane_normal_multipliers,
+			Result& result,
+			ResultGraphics& result_graphics,
+			TimeRecorder& time_recorder) noexcept
+	{
 		time_recorder.reset();
 
 		result.clear();
@@ -368,6 +385,8 @@ public:
 		result.total_spheres=spheres_container.input_spheres().size();
 		result.total_collisions=spheres_container.total_collisions();
 		result.total_relevant_collisions=preparation_result.relevant_collision_ids.size();
+
+		const bool apply_preliminary_cutting_planes=(global_preliminary_cutting_plane_normals.size()==spheres_container.input_spheres().size() && preliminary_cutting_plane_normal_multipliers.size()==2);
 
 		std::vector<ContactDescriptorSummary> possible_contacts_summaries(preparation_result.relevant_collision_ids.size());
 
@@ -386,6 +405,12 @@ public:
 			RadicalTessellationContactConstruction::ContactDescriptor cd;
 			cd.contour.reserve(12);
 
+			std::vector<SimplePoint> preliminary_cutting_plane_normals;
+			if(apply_preliminary_cutting_planes)
+			{
+				preliminary_cutting_plane_normals.resize(2);
+			}
+
 #ifdef VORONOTALT_OPENMP
 #pragma omp for
 #endif
@@ -393,6 +418,11 @@ public:
 			{
 				const UnsignedInt id_a=preparation_result.relevant_collision_ids[i].first;
 				const UnsignedInt id_b=preparation_result.relevant_collision_ids[i].second;
+				if(apply_preliminary_cutting_planes)
+				{
+					preliminary_cutting_plane_normals[0]=point_and_number_product(global_preliminary_cutting_plane_normals[id_a], preliminary_cutting_plane_normal_multipliers[0]);
+					preliminary_cutting_plane_normals[1]=point_and_number_product(global_preliminary_cutting_plane_normals[id_b], preliminary_cutting_plane_normal_multipliers[1]);
+				}
 				if(RadicalTessellationContactConstruction::construct_contact_descriptor(
 						spheres_container.populated_spheres(),
 						spheres_container.all_exclusion_statuses(),
@@ -400,6 +430,7 @@ public:
 						id_b,
 						spheres_container.all_colliding_ids()[id_a],
 						max_circle_radius_restriction,
+						preliminary_cutting_plane_normals,
 						cd))
 				{
 					possible_contacts_summaries[i].set(cd);
@@ -462,6 +493,12 @@ public:
 				RadicalTessellationContactConstruction::ContactDescriptor cd;
 				cd.contour.reserve(12);
 
+				std::vector<SimplePoint> preliminary_cutting_plane_normals;
+				if(apply_preliminary_cutting_planes)
+				{
+					preliminary_cutting_plane_normals.resize(2);
+				}
+
 #ifdef VORONOTALT_OPENMP
 #pragma omp for
 #endif
@@ -472,6 +509,11 @@ public:
 					{
 						ContactDescriptorSummaryAdjunct& cdsa=result.adjuncts_for_contacts_summaries[i];
 						Float prev_circle_radius_restriction=0.0;
+						if(apply_preliminary_cutting_planes)
+						{
+							preliminary_cutting_plane_normals[0]=point_and_number_product(global_preliminary_cutting_plane_normals[cds.id_a], preliminary_cutting_plane_normal_multipliers[0]);
+							preliminary_cutting_plane_normals[1]=point_and_number_product(global_preliminary_cutting_plane_normals[cds.id_b], preliminary_cutting_plane_normal_multipliers[1]);
+						}
 						for(UnsignedInt j=0;j<adjunct_max_circle_radius_restrictions.size();j++)
 						{
 							const Float circle_radius_restriction=(max_circle_radius_restriction>FLOATCONST(0.0) ? std::min(adjunct_max_circle_radius_restrictions[j], max_circle_radius_restriction) : adjunct_max_circle_radius_restrictions[j]);
@@ -485,6 +527,7 @@ public:
 										cds.id_b,
 										spheres_container.all_colliding_ids()[cds.id_a],
 										circle_radius_restriction,
+										preliminary_cutting_plane_normals,
 										cd))
 								{
 									cdsa.level_areas[j]=cd.area;
