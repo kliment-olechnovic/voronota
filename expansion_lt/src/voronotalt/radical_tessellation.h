@@ -284,6 +284,69 @@ public:
 		}
 	};
 
+	struct ParametersForPreliminaryCuts
+	{
+		std::vector< std::vector<SimplePoint> > global_preliminary_cutting_plane_normals;
+		bool apply_with_single_mask;
+		bool apply_with_all_masks;
+		UnsignedInt single_mask;
+
+		ParametersForPreliminaryCuts() noexcept : apply_with_single_mask(false), apply_with_all_masks(false), single_mask(0)
+		{
+		}
+
+		bool check_if_enabled_and_valid(const UnsignedInt number_of_input_spheres) const noexcept
+		{
+			bool enabled_and_valid=((apply_with_single_mask!=apply_with_all_masks) && !global_preliminary_cutting_plane_normals.empty());
+			for(UnsignedInt g=0;enabled_and_valid && g<global_preliminary_cutting_plane_normals.size();g++)
+			{
+				enabled_and_valid=(enabled_and_valid && global_preliminary_cutting_plane_normals[g].size()==number_of_input_spheres);
+			}
+			return enabled_and_valid;
+		}
+
+		UnsignedInt calculate_number_of_possible_masks() const noexcept
+		{
+			return (static_cast<UnsignedInt>(1) << (2*global_preliminary_cutting_plane_normals.size()));
+		}
+
+		void prepare_input_for_preliminary_cuts(const std::vector<SimpleSphere>& spheres, const UnsignedInt id_a, const UnsignedInt id_b, const UnsignedInt request_mask,
+				std::vector<SimplePoint>& preliminary_cutting_plane_normals, std::vector<SimplePoint>& preliminary_cutting_plane_points) const noexcept
+		{
+			if(!global_preliminary_cutting_plane_normals.empty())
+			{
+				preliminary_cutting_plane_normals.resize(2*global_preliminary_cutting_plane_normals.size());
+				preliminary_cutting_plane_points.resize(2*global_preliminary_cutting_plane_normals.size());
+				if(request_mask==0)
+				{
+					for(UnsignedInt g=0;g<global_preliminary_cutting_plane_normals.size();g++)
+					{
+						preliminary_cutting_plane_normals[g*2+0]=global_preliminary_cutting_plane_normals[g][id_a%global_preliminary_cutting_plane_normals[g].size()];
+						preliminary_cutting_plane_normals[g*2+1]=global_preliminary_cutting_plane_normals[g][id_b%global_preliminary_cutting_plane_normals[g].size()];
+						preliminary_cutting_plane_points[g*2+0]=spheres[id_a].p;
+						preliminary_cutting_plane_points[g*2+1]=spheres[id_b].p;
+					}
+				}
+				else
+				{
+					const UnsignedInt onebit=1;
+					const UnsignedInt mask=(request_mask % (onebit << (2*global_preliminary_cutting_plane_normals.size())));
+					for(UnsignedInt g=0;g<global_preliminary_cutting_plane_normals.size();g++)
+					{
+						preliminary_cutting_plane_normals[g*2+0]=point_and_number_product(
+								global_preliminary_cutting_plane_normals[g][id_a%global_preliminary_cutting_plane_normals[g].size()],
+								((mask & (onebit << (g*2+0)))==0 ? FLOATCONST(1.0) : FLOATCONST(-1.0)));
+						preliminary_cutting_plane_normals[g*2+1]=point_and_number_product(
+								global_preliminary_cutting_plane_normals[g][id_b%global_preliminary_cutting_plane_normals[g].size()],
+								((mask & (onebit << (g*2+1)))==0 ? FLOATCONST(1.0) : FLOATCONST(-1.0)));
+						preliminary_cutting_plane_points[g*2+0]=spheres[id_a].p;
+						preliminary_cutting_plane_points[g*2+1]=spheres[id_b].p;
+					}
+				}
+			}
+		}
+	};
+
 	static void construct_full_tessellation(
 			const std::vector<SimpleSphere>& input_spheres,
 			Result& result) noexcept
@@ -356,7 +419,7 @@ public:
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder) noexcept
 	{
-		construct_full_tessellation(spheres_container, involvement_of_spheres, grouping_of_spheres, with_graphics, summarize_cells, max_circle_radius_restriction, adjunct_max_circle_radius_restrictions, std::vector<SimplePoint>(), 0, result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, involvement_of_spheres, grouping_of_spheres, with_graphics, summarize_cells, max_circle_radius_restriction, adjunct_max_circle_radius_restrictions, ParametersForPreliminaryCuts(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -367,8 +430,7 @@ public:
 			const bool summarize_cells,
 			const Float max_circle_radius_restriction,
 			const std::vector<Float>& adjunct_max_circle_radius_restrictions,
-			const std::vector<SimplePoint>& global_preliminary_cutting_plane_normals,
-			const int requested_stage_to_apply_preliminary_cutting_planes,
+			const ParametersForPreliminaryCuts& parameters_for_preliminary_cuts,
 			Result& result,
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder) noexcept
@@ -386,7 +448,8 @@ public:
 		result.total_collisions=spheres_container.total_collisions();
 		result.total_relevant_collisions=preparation_result.relevant_collision_ids.size();
 
-		const int stage_to_apply_preliminary_cutting_planes=((global_preliminary_cutting_plane_normals.size()==spheres_container.input_spheres().size()) ? requested_stage_to_apply_preliminary_cutting_planes : 0);
+		const bool apply_preliminary_cuts_with_single_mask=(parameters_for_preliminary_cuts.apply_with_single_mask && parameters_for_preliminary_cuts.check_if_enabled_and_valid(spheres_container.input_spheres().size()));
+		const bool apply_preliminary_cuts_with_all_masks=(parameters_for_preliminary_cuts.apply_with_all_masks && parameters_for_preliminary_cuts.check_if_enabled_and_valid(spheres_container.input_spheres().size()));
 
 		std::vector<ContactDescriptorSummary> possible_contacts_summaries(preparation_result.relevant_collision_ids.size());
 
@@ -407,11 +470,6 @@ public:
 
 			std::vector<SimplePoint> preliminary_cutting_plane_normals;
 			std::vector<SimplePoint> preliminary_cutting_plane_points;
-			if(stage_to_apply_preliminary_cutting_planes==1)
-			{
-				preliminary_cutting_plane_normals.resize(2);
-				preliminary_cutting_plane_points.resize(2);
-			}
 
 #ifdef VORONOTALT_OPENMP
 #pragma omp for
@@ -420,12 +478,9 @@ public:
 			{
 				const UnsignedInt id_a=preparation_result.relevant_collision_ids[i].first;
 				const UnsignedInt id_b=preparation_result.relevant_collision_ids[i].second;
-				if(stage_to_apply_preliminary_cutting_planes==1)
+				if(apply_preliminary_cuts_with_single_mask)
 				{
-					preliminary_cutting_plane_normals[0]=global_preliminary_cutting_plane_normals[id_a%result.total_spheres];
-					preliminary_cutting_plane_normals[1]=global_preliminary_cutting_plane_normals[id_b%result.total_spheres];
-					preliminary_cutting_plane_points[0]=spheres_container.populated_spheres()[id_a].p;
-					preliminary_cutting_plane_points[1]=spheres_container.populated_spheres()[id_b].p;
+					parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(spheres_container.populated_spheres(), id_a, id_b, parameters_for_preliminary_cuts.single_mask, preliminary_cutting_plane_normals, preliminary_cutting_plane_points);
 				}
 				if(RadicalTessellationContactConstruction::construct_contact_descriptor(
 						spheres_container.populated_spheres(),
@@ -486,10 +541,12 @@ public:
 			}
 		}
 
-		if(!adjunct_max_circle_radius_restrictions.empty() && stage_to_apply_preliminary_cutting_planes!=2)
+		if(!adjunct_max_circle_radius_restrictions.empty())
 		{
+			const UnsignedInt number_of_applications_of_preliminary_cuts=(!apply_preliminary_cuts_with_all_masks ? static_cast<UnsignedInt>(1) : parameters_for_preliminary_cuts.calculate_number_of_possible_masks());
+
 			result.adjuncts_for_contacts_summaries.clear();
-			result.adjuncts_for_contacts_summaries.resize(result.contacts_summaries.size(), ContactDescriptorSummaryAdjunct(adjunct_max_circle_radius_restrictions.size()));
+			result.adjuncts_for_contacts_summaries.resize(result.contacts_summaries.size(), ContactDescriptorSummaryAdjunct(adjunct_max_circle_radius_restrictions.size()*number_of_applications_of_preliminary_cuts));
 
 #ifdef VORONOTALT_OPENMP
 #pragma omp parallel
@@ -500,11 +557,6 @@ public:
 
 				std::vector<SimplePoint> preliminary_cutting_plane_normals;
 				std::vector<SimplePoint> preliminary_cutting_plane_points;
-				if(stage_to_apply_preliminary_cutting_planes==1)
-				{
-					preliminary_cutting_plane_normals.resize(2);
-					preliminary_cutting_plane_points.resize(2);
-				}
 
 #ifdef VORONOTALT_OPENMP
 #pragma omp for
@@ -514,101 +566,40 @@ public:
 					const ContactDescriptorSummary& cds=result.contacts_summaries[i];
 					if(cds.area>FLOATCONST(0.0))
 					{
-						if(stage_to_apply_preliminary_cutting_planes==1)
-						{
-							preliminary_cutting_plane_normals[0]=global_preliminary_cutting_plane_normals[cds.id_a%result.total_spheres];
-							preliminary_cutting_plane_normals[1]=global_preliminary_cutting_plane_normals[cds.id_b%result.total_spheres];
-							preliminary_cutting_plane_points[0]=spheres_container.populated_spheres()[cds.id_a].p;
-							preliminary_cutting_plane_points[1]=spheres_container.populated_spheres()[cds.id_b].p;
-						}
-						ContactDescriptorSummaryAdjunct& cdsa=result.adjuncts_for_contacts_summaries[i];
-						Float prev_circle_radius_restriction=0.0;
-						for(UnsignedInt j=0;j<adjunct_max_circle_radius_restrictions.size();j++)
-						{
-							const Float circle_radius_restriction=(max_circle_radius_restriction>FLOATCONST(0.0) ? std::min(adjunct_max_circle_radius_restrictions[j], max_circle_radius_restriction) : adjunct_max_circle_radius_restrictions[j]);
-							if(j==0 || (circle_radius_restriction>=prev_circle_radius_restriction)
-									|| (circle_radius_restriction<prev_circle_radius_restriction && cdsa.level_areas[j-1]>FLOATCONST(0.0)))
-							{
-								if(RadicalTessellationContactConstruction::construct_contact_descriptor(
-										spheres_container.populated_spheres(),
-										spheres_container.all_exclusion_statuses(),
-										cds.id_a,
-										cds.id_b,
-										spheres_container.all_colliding_ids()[cds.id_a],
-										circle_radius_restriction,
-										preliminary_cutting_plane_normals,
-										preliminary_cutting_plane_points,
-										cd))
-								{
-									cdsa.level_areas[j]=cd.area;
-								}
-							}
-							prev_circle_radius_restriction=circle_radius_restriction;
-						}
-					}
-				}
-			}
-		}
-		else if(!adjunct_max_circle_radius_restrictions.empty() && stage_to_apply_preliminary_cutting_planes==2)
-		{
-			result.adjuncts_for_contacts_summaries.clear();
-			result.adjuncts_for_contacts_summaries.resize(result.contacts_summaries.size(), ContactDescriptorSummaryAdjunct(adjunct_max_circle_radius_restrictions.size()*4));
-
-#ifdef VORONOTALT_OPENMP
-#pragma omp parallel
-#endif
-			{
-				RadicalTessellationContactConstruction::ContactDescriptor cd;
-				cd.contour.reserve(12);
-
-				std::vector<SimplePoint> preliminary_cutting_plane_normals(2);
-				std::vector<SimplePoint> preliminary_cutting_plane_points(2);
-				std::vector<Float> preliminary_cutting_plane_coeffs_a(4, FLOATCONST(1.0));
-				std::vector<Float> preliminary_cutting_plane_coeffs_b(4, FLOATCONST(1.0));
-				preliminary_cutting_plane_coeffs_a[0]=FLOATCONST(1.0);
-				preliminary_cutting_plane_coeffs_b[0]=FLOATCONST(1.0);
-				preliminary_cutting_plane_coeffs_a[1]=FLOATCONST(-1.0);
-				preliminary_cutting_plane_coeffs_b[1]=FLOATCONST(-1.0);
-				preliminary_cutting_plane_coeffs_a[2]=FLOATCONST(1.0);
-				preliminary_cutting_plane_coeffs_b[2]=FLOATCONST(-1.0);
-				preliminary_cutting_plane_coeffs_a[3]=FLOATCONST(-1.0);
-				preliminary_cutting_plane_coeffs_b[3]=FLOATCONST(1.0);
-
-#ifdef VORONOTALT_OPENMP
-#pragma omp for
-#endif
-				for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
-				{
-					const ContactDescriptorSummary& cds=result.contacts_summaries[i];
-					if(cds.area>FLOATCONST(0.0))
-					{
-						ContactDescriptorSummaryAdjunct& cdsa=result.adjuncts_for_contacts_summaries[i];
 						UnsignedInt lindex=0;
-						for(UnsignedInt k=0;k<preliminary_cutting_plane_coeffs_a.size();k++)
+						for(UnsignedInt k=0;k<number_of_applications_of_preliminary_cuts;k++)
 						{
-							if(stage_to_apply_preliminary_cutting_planes>0)
+							if(apply_preliminary_cuts_with_single_mask)
 							{
-								preliminary_cutting_plane_normals[0]=point_and_number_product(global_preliminary_cutting_plane_normals[cds.id_a%result.total_spheres], preliminary_cutting_plane_coeffs_a[k]);
-								preliminary_cutting_plane_normals[1]=point_and_number_product(global_preliminary_cutting_plane_normals[cds.id_b%result.total_spheres], preliminary_cutting_plane_coeffs_b[k]);
-								preliminary_cutting_plane_points[0]=spheres_container.populated_spheres()[cds.id_a].p;
-								preliminary_cutting_plane_points[1]=spheres_container.populated_spheres()[cds.id_b].p;
+								parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(spheres_container.populated_spheres(), cds.id_a, cds.id_b, parameters_for_preliminary_cuts.single_mask, preliminary_cutting_plane_normals, preliminary_cutting_plane_points);
 							}
+							else if(apply_preliminary_cuts_with_all_masks)
+							{
+								parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(spheres_container.populated_spheres(), cds.id_a, cds.id_b, k, preliminary_cutting_plane_normals, preliminary_cutting_plane_points);
+							}
+							ContactDescriptorSummaryAdjunct& cdsa=result.adjuncts_for_contacts_summaries[i];
+							Float prev_circle_radius_restriction=0.0;
 							for(UnsignedInt j=0;j<adjunct_max_circle_radius_restrictions.size();j++)
 							{
 								const Float circle_radius_restriction=(max_circle_radius_restriction>FLOATCONST(0.0) ? std::min(adjunct_max_circle_radius_restrictions[j], max_circle_radius_restriction) : adjunct_max_circle_radius_restrictions[j]);
-								if(RadicalTessellationContactConstruction::construct_contact_descriptor(
-										spheres_container.populated_spheres(),
-										spheres_container.all_exclusion_statuses(),
-										cds.id_a,
-										cds.id_b,
-										spheres_container.all_colliding_ids()[cds.id_a],
-										circle_radius_restriction,
-										preliminary_cutting_plane_normals,
-										preliminary_cutting_plane_points,
-										cd))
+								if(j==0 || (circle_radius_restriction>=prev_circle_radius_restriction)
+										|| (circle_radius_restriction<prev_circle_radius_restriction && cdsa.level_areas[j-1]>FLOATCONST(0.0)))
 								{
-									cdsa.level_areas[lindex]=cd.area;
+									if(RadicalTessellationContactConstruction::construct_contact_descriptor(
+											spheres_container.populated_spheres(),
+											spheres_container.all_exclusion_statuses(),
+											cds.id_a,
+											cds.id_b,
+											spheres_container.all_colliding_ids()[cds.id_a],
+											circle_radius_restriction,
+											preliminary_cutting_plane_normals,
+											preliminary_cutting_plane_points,
+											cd))
+									{
+										cdsa.level_areas[lindex]=cd.area;
+									}
 								}
+								prev_circle_radius_restriction=circle_radius_restriction;
 								lindex++;
 							}
 						}

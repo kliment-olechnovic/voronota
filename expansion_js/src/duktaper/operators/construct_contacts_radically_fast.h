@@ -68,10 +68,11 @@ public:
 	bool generate_graphics;
 	bool characterize_topology;
 	bool no_remove_triangulation_info;
+	int precutting;
 	std::vector<double> adjunct_circle_restrictions;
 	std::string initial_selection_expression;
 
-	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false)
+	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting(0)
 	{
 	}
 
@@ -85,6 +86,7 @@ public:
 		generate_graphics=input.get_flag("generate-graphics");
 		characterize_topology=input.get_flag("characterize-topology");
 		no_remove_triangulation_info=input.get_flag("no-remove-triangulation-info");
+		precutting=input.get_value_or_default<int>("precutting", 0);
 		adjunct_circle_restrictions=input.get_value_vector_or_default<double>("adjunct-circle-restrictions", std::vector<double>());
 		initial_selection_expression=input.get_value_or_default<std::string>("initial-sel", "");
 	}
@@ -113,6 +115,11 @@ public:
 		if(with_grouping_for_filtering)
 		{
 			data_manager.assert_primary_structure_info_valid();
+		}
+
+		if(precutting>0 && characterize_topology)
+		{
+			throw std::runtime_error("Simultaneous enabling of pre-cutting and topology characterization is not implemented yet.");
 		}
 
 		bool restrictions_positive=false;
@@ -175,18 +182,97 @@ public:
 
 		voronotalt::RadicalTessellation::Result radical_tessellation_result;
 		voronotalt::RadicalTessellation::ResultGraphics radical_tessellation_result_graphics;
-		voronotalt::RadicalTessellation::construct_full_tessellation(
-				spheres_container,
-				std::vector<int>(),
-				grouping_for_filtering,
-				(generate_graphics || characterize_topology),
-				summarize_cells,
-				restrict_circle,
-				descending_adjunct_circle_restrictions,
-				radical_tessellation_result,
-				radical_tessellation_result_graphics,
-				mock_time_recorder);
 
+		if(precutting>0)
+		{
+			voronotalt::RadicalTessellation::ParametersForPreliminaryCuts xmode_parameters_for_pcuts;
+			xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals.resize((precutting<200 ? 1 : 2), std::vector<voronotalt::SimplePoint>(spheres.size()));
+			xmode_parameters_for_pcuts.apply_with_single_mask=true;
+			xmode_parameters_for_pcuts.single_mask=(precutting%100);
+
+			for(std::size_t g=0;g<xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals.size();g++)
+			{
+				std::vector<voronotalt::SimplePoint>& xmode_pcutp_normals=xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals[g];
+				if(g==0)
+				{
+					for(std::size_t i=0;i<spheres.size();i++)
+					{
+						std::size_t j=data_manager.primary_structure_info().map_of_atoms_to_residues[i];
+						std::vector< std::pair<double, std::size_t> > rneighbors;
+						for(std::size_t l=0;l<data_manager.primary_structure_info().residues[j].atom_ids.size();l++)
+						{
+							const std::size_t rnid=data_manager.primary_structure_info().residues[j].atom_ids[l];
+							if(rnid!=i)
+							{
+								rneighbors.push_back(std::pair<double, std::size_t>(0.0-voronotalt::distance_from_point_to_point(spheres[i].p, spheres[rnid].p), rnid));
+							}
+						}
+						std::sort(rneighbors.begin(), rneighbors.end());
+						const voronotalt::SimplePoint fp=spheres[rneighbors[0].second].p;
+						xmode_pcutp_normals[i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, fp));
+					}
+				}
+				else
+				{
+					std::vector<voronotalt::SimplePoint> residue_points(data_manager.primary_structure_info().residues.size());
+					for(std::size_t i=0;i<data_manager.primary_structure_info().residues.size();i++)
+					{
+						for(std::size_t j=0;j<data_manager.primary_structure_info().residues[i].atom_ids.size();j++)
+						{
+							residue_points[i]=voronotalt::sum_of_points(residue_points[i], spheres[data_manager.primary_structure_info().residues[i].atom_ids[j]].p);
+						}
+						residue_points[i]=voronotalt::point_and_number_product(residue_points[i], 1.0/static_cast<double>(data_manager.primary_structure_info().residues[i].atom_ids.size()));
+					}
+					for(std::size_t i=0;i<spheres.size();i++)
+					{
+						std::size_t j=data_manager.primary_structure_info().map_of_atoms_to_residues[i];
+						if(j>0 && (j+1)<residue_points.size())
+						{
+							xmode_pcutp_normals[i]=voronotalt::unit_point(voronotalt::sub_of_points(residue_points[j-1], residue_points[j+1]));
+						}
+						else if(j>0)
+						{
+							xmode_pcutp_normals[i]=voronotalt::unit_point(voronotalt::sub_of_points(residue_points[j-1], residue_points[j]));
+						}
+						else if((j+1)<residue_points.size())
+						{
+							xmode_pcutp_normals[i]=voronotalt::unit_point(voronotalt::sub_of_points(residue_points[j], residue_points[j+1]));
+						}
+						else
+						{
+							xmode_pcutp_normals[i]=voronotalt::unit_point(voronotalt::sub_of_points(residue_points[j], spheres[i].p));
+						}
+					}
+				}
+			}
+
+			voronotalt::RadicalTessellation::construct_full_tessellation(
+					spheres_container,
+					std::vector<int>(),
+					grouping_for_filtering,
+					(generate_graphics || characterize_topology),
+					summarize_cells,
+					restrict_circle,
+					descending_adjunct_circle_restrictions,
+					xmode_parameters_for_pcuts,
+					radical_tessellation_result,
+					radical_tessellation_result_graphics,
+					mock_time_recorder);
+		}
+		else
+		{
+			voronotalt::RadicalTessellation::construct_full_tessellation(
+					spheres_container,
+					std::vector<int>(),
+					grouping_for_filtering,
+					(generate_graphics || characterize_topology),
+					summarize_cells,
+					restrict_circle,
+					descending_adjunct_circle_restrictions,
+					radical_tessellation_result,
+					radical_tessellation_result_graphics,
+					mock_time_recorder);
+		}
 
 		if(radical_tessellation_result.contacts_summaries.empty())
 		{
