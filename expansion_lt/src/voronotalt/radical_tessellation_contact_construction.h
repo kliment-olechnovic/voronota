@@ -132,22 +132,28 @@ public:
 					bool contour_initialized=false;
 					if(!preliminary_cutting_plane_normals.empty() && preliminary_cutting_plane_normals.size()==preliminary_cutting_plane_points.size())
 					{
+						result_contact_descriptor.intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
+						init_contour_from_base_and_axis(a_id, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, result_contact_descriptor.contour);
+						contour_initialized=true;
+						bool cut_performed=false;
 						for(UnsignedInt i=0;i<preliminary_cutting_plane_normals.size() && !discarded;i++)
 						{
 							const UnsignedInt neighbor_id=spheres.size()+i;
 							const SimplePoint& neighbor_ac_plane_normal=preliminary_cutting_plane_normals[i];
 							const SimplePoint& neighbor_ac_plane_center=preliminary_cutting_plane_points[i];
-							if(!contour_initialized)
+							if(mark_and_cut_contour(neighbor_ac_plane_center, neighbor_ac_plane_normal, neighbor_id, result_contact_descriptor.contour))
 							{
-								result_contact_descriptor.intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
-								init_contour_from_base_and_axis(a_id, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, result_contact_descriptor.contour);
-								contour_initialized=true;
+								cut_performed=true;
 							}
-							mark_and_cut_contour(neighbor_ac_plane_center, neighbor_ac_plane_normal, neighbor_id, result_contact_descriptor.contour);
-							if(contour_initialized && result_contact_descriptor.contour.empty())
+							if(result_contact_descriptor.contour.empty())
 							{
 								discarded=true;
 							}
+						}
+						if(!cut_performed)
+						{
+							result_contact_descriptor.contour.clear();
+							contour_initialized=false;
 						}
 					}
 					{
