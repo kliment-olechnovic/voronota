@@ -193,23 +193,64 @@ public:
 			for(std::size_t g=0;g<xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals.size();g++)
 			{
 				std::vector<voronotalt::SimplePoint>& xmode_pcutp_normals=xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals[g];
-				if(g==0)
+				if(g==0 || g==1)
 				{
 					for(std::size_t i=0;i<spheres.size();i++)
 					{
-						std::size_t j=data_manager.primary_structure_info().map_of_atoms_to_residues[i];
-						std::vector< std::pair<double, std::size_t> > rneighbors;
-						for(std::size_t l=0;l<data_manager.primary_structure_info().residues[j].atom_ids.size();l++)
+						bool assigned=false;
+						if(data_manager.primary_structure_info().valid(data_manager.atoms()))
 						{
-							const std::size_t rnid=data_manager.primary_structure_info().residues[j].atom_ids[l];
-							if(rnid!=i)
+							std::size_t j=data_manager.primary_structure_info().map_of_atoms_to_residues[i];
+							if(data_manager.primary_structure_info().residues[j].atom_ids.size()>(g+1))
 							{
-								rneighbors.push_back(std::pair<double, std::size_t>(0.0-voronotalt::distance_from_point_to_point(spheres[i].p, spheres[rnid].p), rnid));
+								std::vector< std::pair< std::pair<double, std::string>, std::size_t > > rneighbors;
+								for(std::size_t l=0;l<data_manager.primary_structure_info().residues[j].atom_ids.size();l++)
+								{
+									const std::size_t rnid=data_manager.primary_structure_info().residues[j].atom_ids[l];
+									if(rnid!=i)
+									{
+										double dist=voronotalt::distance_from_point_to_point(spheres[i].p, spheres[rnid].p);
+										if(dist<1.0)
+										{
+											dist=1.0;
+										}
+										else if(dist<1.5)
+										{
+											dist=1.5;
+										}
+										else if(dist<2.0)
+										{
+											dist=2.0;
+										}
+										else if(dist<2.5)
+										{
+											dist=2.5;
+										}
+										else if(dist<3.0)
+										{
+											dist=3.0;
+										}
+										const std::pair<double, std::string> named_dist(dist, data_manager.atoms()[rnid].crad.name);
+										rneighbors.push_back(std::pair< std::pair<double, std::string>, std::size_t >(named_dist, rnid));
+									}
+								}
+								std::sort(rneighbors.begin(), rneighbors.end());
+								const voronotalt::SimplePoint fp=spheres[rneighbors[g].second].p;
+								xmode_pcutp_normals[i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, fp));
+								assigned=true;
 							}
 						}
-						std::sort(rneighbors.begin(), rneighbors.end());
-						const voronotalt::SimplePoint fp=spheres[rneighbors[0].second].p;
-						xmode_pcutp_normals[i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, fp));
+						if(!assigned)
+						{
+							if(g==0)
+							{
+								xmode_pcutp_normals[i]=voronotalt::unit_point(voronotalt::SimplePoint(1.0, 1.0, 0.0));
+							}
+							else
+							{
+								xmode_pcutp_normals[i]=voronotalt::unit_point(voronotalt::SimplePoint(0.0, 1.0, 1.0));
+							}
+						}
 					}
 				}
 				else

@@ -310,21 +310,18 @@ public:
 			return (static_cast<UnsignedInt>(1) << (2*global_preliminary_cutting_plane_normals.size()));
 		}
 
-		void prepare_input_for_preliminary_cuts(const std::vector<SimpleSphere>& spheres, const UnsignedInt id_a, const UnsignedInt id_b, const UnsignedInt request_mask,
-				std::vector<SimplePoint>& preliminary_cutting_plane_normals, std::vector<SimplePoint>& preliminary_cutting_plane_points) const noexcept
+		void prepare_input_for_preliminary_cuts(const std::vector<SimpleSphere>& spheres, const UnsignedInt id_a, const UnsignedInt id_b,
+				const UnsignedInt request_mask,	std::vector<SimplePoint>& preliminary_cutting_plane_normals) const noexcept
 		{
 			if(!global_preliminary_cutting_plane_normals.empty())
 			{
 				preliminary_cutting_plane_normals.resize(2*global_preliminary_cutting_plane_normals.size());
-				preliminary_cutting_plane_points.resize(2*global_preliminary_cutting_plane_normals.size());
 				if(request_mask==0)
 				{
 					for(UnsignedInt g=0;g<global_preliminary_cutting_plane_normals.size();g++)
 					{
 						preliminary_cutting_plane_normals[g*2+0]=global_preliminary_cutting_plane_normals[g][id_a%global_preliminary_cutting_plane_normals[g].size()];
 						preliminary_cutting_plane_normals[g*2+1]=global_preliminary_cutting_plane_normals[g][id_b%global_preliminary_cutting_plane_normals[g].size()];
-						preliminary_cutting_plane_points[g*2+0]=spheres[id_a].p;
-						preliminary_cutting_plane_points[g*2+1]=spheres[id_b].p;
 					}
 				}
 				else
@@ -339,8 +336,6 @@ public:
 						preliminary_cutting_plane_normals[g*2+1]=point_and_number_product(
 								global_preliminary_cutting_plane_normals[g][id_b%global_preliminary_cutting_plane_normals[g].size()],
 								((mask & (onebit << (g*2+1)))==0 ? FLOATCONST(1.0) : FLOATCONST(-1.0)));
-						preliminary_cutting_plane_points[g*2+0]=spheres[id_a].p;
-						preliminary_cutting_plane_points[g*2+1]=spheres[id_b].p;
 					}
 				}
 			}
@@ -469,7 +464,6 @@ public:
 			cd.contour.reserve(12);
 
 			std::vector<SimplePoint> preliminary_cutting_plane_normals;
-			std::vector<SimplePoint> preliminary_cutting_plane_points;
 
 #ifdef VORONOTALT_OPENMP
 #pragma omp for
@@ -480,7 +474,7 @@ public:
 				const UnsignedInt id_b=preparation_result.relevant_collision_ids[i].second;
 				if(apply_preliminary_cuts_with_single_mask)
 				{
-					parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(spheres_container.populated_spheres(), id_a, id_b, parameters_for_preliminary_cuts.single_mask, preliminary_cutting_plane_normals, preliminary_cutting_plane_points);
+					parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(spheres_container.populated_spheres(), id_a, id_b, parameters_for_preliminary_cuts.single_mask, preliminary_cutting_plane_normals);
 				}
 				if(RadicalTessellationContactConstruction::construct_contact_descriptor(
 						spheres_container.populated_spheres(),
@@ -490,7 +484,6 @@ public:
 						spheres_container.all_colliding_ids()[id_a],
 						max_circle_radius_restriction,
 						preliminary_cutting_plane_normals,
-						preliminary_cutting_plane_points,
 						cd))
 				{
 					possible_contacts_summaries[i].set(cd);
@@ -556,7 +549,6 @@ public:
 				cd.contour.reserve(12);
 
 				std::vector<SimplePoint> preliminary_cutting_plane_normals;
-				std::vector<SimplePoint> preliminary_cutting_plane_points;
 
 #ifdef VORONOTALT_OPENMP
 #pragma omp for
@@ -571,11 +563,11 @@ public:
 						{
 							if(apply_preliminary_cuts_with_single_mask)
 							{
-								parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(spheres_container.populated_spheres(), cds.id_a, cds.id_b, parameters_for_preliminary_cuts.single_mask, preliminary_cutting_plane_normals, preliminary_cutting_plane_points);
+								parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(spheres_container.populated_spheres(), cds.id_a, cds.id_b, parameters_for_preliminary_cuts.single_mask, preliminary_cutting_plane_normals);
 							}
 							else if(apply_preliminary_cuts_with_all_masks)
 							{
-								parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(spheres_container.populated_spheres(), cds.id_a, cds.id_b, k, preliminary_cutting_plane_normals, preliminary_cutting_plane_points);
+								parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(spheres_container.populated_spheres(), cds.id_a, cds.id_b, k, preliminary_cutting_plane_normals);
 							}
 							ContactDescriptorSummaryAdjunct& cdsa=result.adjuncts_for_contacts_summaries[i];
 							Float prev_circle_radius_restriction=0.0;
@@ -593,7 +585,6 @@ public:
 											spheres_container.all_colliding_ids()[cds.id_a],
 											circle_radius_restriction,
 											preliminary_cutting_plane_normals,
-											preliminary_cutting_plane_points,
 											cd))
 									{
 										cdsa.level_areas[lindex]=cd.area;
