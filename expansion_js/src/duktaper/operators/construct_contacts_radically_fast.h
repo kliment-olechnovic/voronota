@@ -181,13 +181,14 @@ public:
 		{
 			const int precutting_application_regime=(precutting/1000);
 			const int precutting_number_of_planes=(precutting%1000)/100;
-			const int precutting_mask=(precutting%100);
 
 			precutting_parameters.apply_with_single_mask=(precutting_application_regime==1);
 			precutting_parameters.apply_with_all_masks=(precutting_application_regime==2);
 			precutting_parameters.global_preliminary_cutting_plane_normals.resize(precutting_number_of_planes, std::vector<voronotalt::SimplePoint>(spheres.size(), voronotalt::unit_point(voronotalt::SimplePoint(1.0, 1.0, 1.0))));
-			precutting_parameters.apply_with_single_mask=true;
-			precutting_parameters.single_mask=precutting_mask;
+			if(precutting_parameters.apply_with_single_mask)
+			{
+				precutting_parameters.single_mask=(precutting%100);
+			}
 
 			for(std::size_t i=0;i<spheres.size();i++)
 			{
@@ -289,23 +290,39 @@ public:
 
 		if(!adjunct_circle_restrictions.empty())
 		{
-			names_for_adjunct_subareas.resize(adjunct_circle_restrictions.size());
-			names_for_adjunct_levelareas.resize(adjunct_circle_restrictions.size());
-			for(std::size_t j=0;j<adjunct_circle_restrictions.size();j++)
+			const std::size_t number_of_applications_of_preliminary_cuts=(!precutting_parameters.apply_with_all_masks ? static_cast<std::size_t>(1) : static_cast<std::size_t>(precutting_parameters.calculate_number_of_possible_masks()));
+			names_for_adjunct_subareas.resize(adjunct_circle_restrictions.size()*number_of_applications_of_preliminary_cuts);
+			names_for_adjunct_levelareas.resize(names_for_adjunct_subareas.size());
+			std::size_t lindex=0;
+			for(std::size_t k=0;k<number_of_applications_of_preliminary_cuts;k++)
 			{
+				for(std::size_t j=0;j<adjunct_circle_restrictions.size();j++)
 				{
-					std::ostringstream name_output;
-					name_output << "subarea";
-					print_pretty_number((j==0 ? (restrictions_positive ? 0.0 : -999.0) : adjunct_circle_restrictions[j-1]), name_output);
-					name_output << "to";
-					print_pretty_number(adjunct_circle_restrictions[j], name_output);
-					names_for_adjunct_subareas[j]=name_output.str();
-				}
-				{
-					std::ostringstream name_output;
-					name_output << "levelarea";
-					print_pretty_number(adjunct_circle_restrictions[j], name_output);
-					names_for_adjunct_levelareas[j]=name_output.str();
+					{
+						std::ostringstream name_output;
+						if(number_of_applications_of_preliminary_cuts>1)
+						{
+							name_output << "pcut";
+							print_pretty_integer_number(k, name_output);
+						}
+						name_output << "subarea";
+						print_pretty_number((j==0 ? (restrictions_positive ? 0.0 : -999.0) : adjunct_circle_restrictions[j-1]), name_output);
+						name_output << "to";
+						print_pretty_number(adjunct_circle_restrictions[j], name_output);
+						names_for_adjunct_subareas[lindex]=name_output.str();
+					}
+					{
+						std::ostringstream name_output;
+						if(number_of_applications_of_preliminary_cuts>1)
+						{
+							name_output << "pcut";
+							print_pretty_integer_number(k, name_output);
+						}
+						name_output << "levelarea";
+						print_pretty_number(adjunct_circle_restrictions[j], name_output);
+						names_for_adjunct_levelareas[lindex]=name_output.str();
+					}
+					lindex++;
 				}
 			}
 		}
@@ -329,26 +346,29 @@ public:
 			{
 				contact.value.props.tags.insert("central");
 			}
-			if(!adjunct_circle_restrictions.empty() && i<radical_tessellation_result.adjuncts_for_contacts_summaries.size())
+			if(!names_for_adjunct_subareas.empty() && i<radical_tessellation_result.adjuncts_for_contacts_summaries.size() && names_for_adjunct_subareas.size()==radical_tessellation_result.adjuncts_for_contacts_summaries[i].level_areas.size())
 			{
 				const voronotalt::RadicalTessellation::ContactDescriptorSummaryAdjunct& cdsa=radical_tessellation_result.adjuncts_for_contacts_summaries[i];
-
-				for(std::size_t j=0;j<adjunct_circle_restrictions.size();j++)
+				for(std::size_t jo=0;jo<names_for_adjunct_subareas.size();jo+=adjunct_circle_restrictions.size())
 				{
-					std::size_t rj=(adjunct_circle_restrictions.size()-1-j);
-					double& subarea=contact.value.props.adjuncts[names_for_adjunct_subareas[j]];
-					double& levelarea=contact.value.props.adjuncts[names_for_adjunct_levelareas[j]];
-					if(rj<cdsa.level_areas.size())
+					for(std::size_t j=0;j<adjunct_circle_restrictions.size();j++)
 					{
-						subarea=(((rj+1)<cdsa.level_areas.size()) ? (cdsa.level_areas[rj]-cdsa.level_areas[rj+1]) : cdsa.level_areas[rj]);
-						levelarea=cdsa.level_areas[rj];
+						std::size_t rj=jo+(adjunct_circle_restrictions.size()-1-j);
+						std::size_t sj=jo+j;
+						double& subarea=contact.value.props.adjuncts[names_for_adjunct_subareas[sj]];
+						double& levelarea=contact.value.props.adjuncts[names_for_adjunct_levelareas[sj]];
+						if(rj<cdsa.level_areas.size())
+						{
+							subarea=(((rj+1-jo)<adjunct_circle_restrictions.size()) ? (cdsa.level_areas[rj]-cdsa.level_areas[rj+1]) : cdsa.level_areas[rj]);
+							levelarea=cdsa.level_areas[rj];
+						}
+						else
+						{
+							subarea=0.0;
+							levelarea=0.0;
+						}
+						total_subareas[names_for_adjunct_subareas[sj]]+=subarea;
 					}
-					else
-					{
-						subarea=0.0;
-						levelarea=0.0;
-					}
-					total_subareas[names_for_adjunct_subareas[j]]+=subarea;
 				}
 			}
 			if(generate_graphics && i<radical_tessellation_result_graphics.contacts_graphics.size())
