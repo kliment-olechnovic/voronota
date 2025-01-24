@@ -310,7 +310,7 @@ public:
 			return (static_cast<UnsignedInt>(1) << (2*global_preliminary_cutting_plane_normals.size()));
 		}
 
-		void prepare_input_for_preliminary_cuts(const std::vector<SimpleSphere>& spheres, const UnsignedInt id_a, const UnsignedInt id_b,
+		void prepare_input_for_preliminary_cuts(const UnsignedInt id_a, const UnsignedInt id_b,
 				const UnsignedInt request_mask,	std::vector<SimplePoint>& preliminary_cutting_plane_normals) const noexcept
 		{
 			if(!global_preliminary_cutting_plane_normals.empty())
@@ -474,7 +474,7 @@ public:
 				const UnsignedInt id_b=preparation_result.relevant_collision_ids[i].second;
 				if(apply_preliminary_cuts_with_single_mask)
 				{
-					parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(spheres_container.populated_spheres(), id_a, id_b, parameters_for_preliminary_cuts.single_mask, preliminary_cutting_plane_normals);
+					parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(id_a, id_b, parameters_for_preliminary_cuts.single_mask, preliminary_cutting_plane_normals);
 				}
 				if(RadicalTessellationContactConstruction::construct_contact_descriptor(
 						spheres_container.populated_spheres(),
@@ -563,11 +563,11 @@ public:
 						{
 							if(apply_preliminary_cuts_with_single_mask)
 							{
-								parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(spheres_container.populated_spheres(), cds.id_a, cds.id_b, parameters_for_preliminary_cuts.single_mask, preliminary_cutting_plane_normals);
+								parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(cds.id_a, cds.id_b, parameters_for_preliminary_cuts.single_mask, preliminary_cutting_plane_normals);
 							}
 							else if(apply_preliminary_cuts_with_all_masks)
 							{
-								parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(spheres_container.populated_spheres(), cds.id_a, cds.id_b, k, preliminary_cutting_plane_normals);
+								parameters_for_preliminary_cuts.prepare_input_for_preliminary_cuts(cds.id_a, cds.id_b, k, preliminary_cutting_plane_normals);
 							}
 							ContactDescriptorSummaryAdjunct& cdsa=result.adjuncts_for_contacts_summaries[i];
 							Float prev_circle_radius_restriction=0.0;

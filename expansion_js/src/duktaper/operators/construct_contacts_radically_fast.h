@@ -112,9 +112,14 @@ public:
 
 		data_manager.assert_atoms_availability();
 
-		if(with_grouping_for_filtering)
+		if(with_grouping_for_filtering || precutting>0)
 		{
 			data_manager.assert_primary_structure_info_valid();
+		}
+
+		if(precutting!=0 && !(precutting>=1100 && precutting<1104) && !(precutting>=1200 && precutting<1216) && !(precutting>=2100 && precutting<2104) && !(precutting>=2200 && precutting<2216))
+		{
+			throw std::runtime_error("Invalid precutting mode.");
 		}
 
 		if(precutting>0 && characterize_topology)
@@ -143,20 +148,15 @@ public:
 			throw std::runtime_error("Invalid signs of circle restrictions, must be either all positive or all negative.");
 		}
 
-		std::vector<double> descending_adjunct_circle_restrictions;
-		if(!adjunct_circle_restrictions.empty())
-		{
-			descending_adjunct_circle_restrictions=adjunct_circle_restrictions;
-			std::reverse(descending_adjunct_circle_restrictions.begin(), descending_adjunct_circle_restrictions.end());
-		}
-
 		std::vector<voronotalt::SimpleSphere> spheres(data_manager.atoms().size());
+
 		for(std::size_t i=0;i<data_manager.atoms().size();i++)
 		{
 			voronotalt::fill_sphere_from_ball(data_manager.atoms()[i].value, probe, spheres[i]);
 		}
 
 		std::vector<int> grouping_for_filtering;
+
 		if(with_grouping_for_filtering)
 		{
 			grouping_for_filtering.resize(spheres.size(), 0);
@@ -175,25 +175,19 @@ public:
 			}
 		}
 
-		voronotalt::TimeRecorder mock_time_recorder;
-
-		voronotalt::SpheresContainer spheres_container;
-		spheres_container.init(spheres, mock_time_recorder);
-
-		voronotalt::RadicalTessellation::Result radical_tessellation_result;
-		voronotalt::RadicalTessellation::ResultGraphics radical_tessellation_result_graphics;
+		voronotalt::RadicalTessellation::ParametersForPreliminaryCuts precutting_parameters;
 
 		if(precutting>0)
 		{
-			if(!data_manager.primary_structure_info().valid(data_manager.atoms()))
-			{
-				throw std::runtime_error("No valid primary structure for assigning precutting directions.");
-			}
+			const int precutting_application_regime=(precutting/1000);
+			const int precutting_number_of_planes=(precutting%1000)/100;
+			const int precutting_mask=(precutting%100);
 
-			voronotalt::RadicalTessellation::ParametersForPreliminaryCuts xmode_parameters_for_pcuts;
-			xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals.resize((precutting<200 ? 1 : 2), std::vector<voronotalt::SimplePoint>(spheres.size(), voronotalt::unit_point(voronotalt::SimplePoint(1.0, 1.0, 1.0))));
-			xmode_parameters_for_pcuts.apply_with_single_mask=true;
-			xmode_parameters_for_pcuts.single_mask=(precutting%100);
+			precutting_parameters.apply_with_single_mask=(precutting_application_regime==1);
+			precutting_parameters.apply_with_all_masks=(precutting_application_regime==2);
+			precutting_parameters.global_preliminary_cutting_plane_normals.resize(precutting_number_of_planes, std::vector<voronotalt::SimplePoint>(spheres.size(), voronotalt::unit_point(voronotalt::SimplePoint(1.0, 1.0, 1.0))));
+			precutting_parameters.apply_with_single_mask=true;
+			precutting_parameters.single_mask=precutting_mask;
 
 			for(std::size_t i=0;i<spheres.size();i++)
 			{
@@ -207,21 +201,13 @@ public:
 						if(rnid!=i)
 						{
 							double dist=voronotalt::distance_from_point_to_point(spheres[i].p, spheres[rnid].p);
-							if(dist<1.0)
+							if(dist<1.7)
 							{
-								dist=1.0;
+								dist=1.7;
 							}
-							else if(dist<1.5)
+							else if(dist<3.1)
 							{
-								dist=1.5;
-							}
-							else if(dist<2.0)
-							{
-								dist=2.0;
-							}
-							else if(dist<3.0)
-							{
-								dist=3.0;
+								dist=3.1;
 							}
 							const std::pair<double, std::string> named_dist(dist, data_manager.atoms()[rnid].crad.name);
 							rneighbors.push_back(std::pair< std::pair<double, std::string>, std::size_t >(named_dist, rnid));
@@ -229,32 +215,50 @@ public:
 					}
 					std::sort(rneighbors.begin(), rneighbors.end());
 				}
-				if(xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals.size()==1)
+				if(precutting_parameters.global_preliminary_cutting_plane_normals.size()==1)
 				{
 					if(rneighbors.size()==1)
 					{
-						xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals[0][i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[0].second].p));
+						precutting_parameters.global_preliminary_cutting_plane_normals[0][i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[0].second].p));
 					}
 					else if(rneighbors.size()>=2)
 					{
 						const voronotalt::SimplePoint dir0=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[0].second].p));
 						const voronotalt::SimplePoint dir1=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[1].second].p));
-						xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals[0][i]=voronotalt::unit_point(voronotalt::sum_of_points(dir0, dir1));
+						precutting_parameters.global_preliminary_cutting_plane_normals[0][i]=voronotalt::unit_point(voronotalt::sum_of_points(dir0, dir1));
 					}
 				}
-				else if(xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals.size()==2)
+				else if(precutting_parameters.global_preliminary_cutting_plane_normals.size()==2)
 				{
 					if(rneighbors.size()>=2)
 					{
-						xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals[0][i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[0].second].p));
-						xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals[1][i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[1].second].p));
+						precutting_parameters.global_preliminary_cutting_plane_normals[0][i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[0].second].p));
+						precutting_parameters.global_preliminary_cutting_plane_normals[1][i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[1].second].p));
 					}
 					else if(rneighbors.size()==1)
 					{
-						xmode_parameters_for_pcuts.global_preliminary_cutting_plane_normals[0][i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[0].second].p));
+						precutting_parameters.global_preliminary_cutting_plane_normals[0][i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[0].second].p));
 					}
 				}
 			}
+		}
+
+		voronotalt::RadicalTessellation::Result radical_tessellation_result;
+		voronotalt::RadicalTessellation::ResultGraphics radical_tessellation_result_graphics;
+
+		{
+			std::vector<double> descending_adjunct_circle_restrictions;
+			
+			if(!adjunct_circle_restrictions.empty())
+			{
+				descending_adjunct_circle_restrictions=adjunct_circle_restrictions;
+				std::reverse(descending_adjunct_circle_restrictions.begin(), descending_adjunct_circle_restrictions.end());
+			}
+
+			voronotalt::TimeRecorder mock_time_recorder;
+
+			voronotalt::SpheresContainer spheres_container;
+			spheres_container.init(spheres, mock_time_recorder);
 
 			voronotalt::RadicalTessellation::construct_full_tessellation(
 					spheres_container,
@@ -264,21 +268,7 @@ public:
 					summarize_cells,
 					restrict_circle,
 					descending_adjunct_circle_restrictions,
-					xmode_parameters_for_pcuts,
-					radical_tessellation_result,
-					radical_tessellation_result_graphics,
-					mock_time_recorder);
-		}
-		else
-		{
-			voronotalt::RadicalTessellation::construct_full_tessellation(
-					spheres_container,
-					std::vector<int>(),
-					grouping_for_filtering,
-					(generate_graphics || characterize_topology),
-					summarize_cells,
-					restrict_circle,
-					descending_adjunct_circle_restrictions,
+					precutting_parameters,
 					radical_tessellation_result,
 					radical_tessellation_result_graphics,
 					mock_time_recorder);
@@ -296,6 +286,7 @@ public:
 
 		std::vector<std::string> names_for_adjunct_subareas;
 		std::vector<std::string> names_for_adjunct_levelareas;
+
 		if(!adjunct_circle_restrictions.empty())
 		{
 			names_for_adjunct_subareas.resize(adjunct_circle_restrictions.size());
@@ -472,6 +463,11 @@ private:
 		{
 			output << "M";
 		}
+		output << (ival<10 ? "0000" : (ival<100 ? "000" : (ival<1000 ? "00" : (ival<10000 ? "0" : "")))) << ival;
+	}
+
+	static void print_pretty_integer_number(const int ival, std::ostream& output)
+	{
 		output << (ival<10 ? "0000" : (ival<100 ? "000" : (ival<1000 ? "00" : (ival<10000 ? "0" : "")))) << ival;
 	}
 };
