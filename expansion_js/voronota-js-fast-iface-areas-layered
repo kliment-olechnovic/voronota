@@ -1,0 +1,460 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-fast-iface-areas-layered' script rapidly computes layered interface areas for protein complexes.
+
+Options:
+    --input | -i                string  *  input file path or '_list' to read file paths from stdin
+    --restrict-input            string     query to restrict input atoms, default is '[]'
+    --layers                    number     number of layers, default is 5
+    --layer-width               number     layer width, default is 0.4
+    --output-table-file         string     output table file path, default is '_stdout' to print to stdout
+    --processors                number     maximum number of processors to run in parallel, default is 1
+    --stdin-file                string     input file path to replace stdin
+    --run-faspr                 string     path to FASPR binary to rebuild side-chains
+    --input-is-script                      flag to treat input file as vs script
+    --as-assembly                          flag to treat input file as biological assembly
+    --help | -h                            flag to display help message and exit
+
+Standard output:
+    space-separated table of scores
+    
+Examples:
+
+    voronota-js-fast-iface-areas-layered --input ./model.pdb
+    
+    ls *.pdb | voronota-js-fast-iface-areas-layered --input _list --processors 8 | column -t
+
+EOF
+exit 1
+}
+
+function cat_stdin
+{
+	STDIN_SOURCE="$1"
+	if [ "$STDIN_SOURCE" == "_stream" ]
+	then
+		cat
+	else
+		cat "$STDIN_SOURCE"
+	fi
+}
+
+function get_input_basename
+{
+	INPUT_MAIN_BASENAME="$(basename $1)"
+	INPUT_STDIN_FILE="$2"
+	if [ "$INPUT_MAIN_BASENAME" == "_stream" ] || [ "$INPUT_MAIN_BASENAME" == "_list" ]
+	then
+		if [ "$INPUT_STDIN_FILE" != "_stream" ] 
+		then
+			basename "$INPUT_STDIN_FILE"
+			return 0
+		fi
+	fi
+	echo "$INPUT_MAIN_BASENAME"
+}
+
+function substitute_id_in_filename
+{
+	SUBSTITUTE_BASENAME="$(basename "$1")"
+	SUBSTITUTE_TEMPLATE="$2"
+	
+	echo "$SUBSTITUTE_TEMPLATE" \
+	| sed "s|-BASENAME-|${SUBSTITUTE_BASENAME}|"
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [ -z "$1" ]
+then
+	print_help_and_exit
+fi
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd "$(dirname ${ZEROARG})"
+	export PATH="$(pwd):${PATH}"
+	cd - &> /dev/null
+fi
+
+export LC_ALL=C
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+INFILE=""
+RESTRICT_INPUT="[]"
+LAYERS="5"
+LAYER_WIDTH="0.4"
+OUTPUT_TABLE_FILE="_stdout"
+MAX_PROCESSORS="1"
+STDIN_FILE="_stream"
+RUN_FASPR=""
+INPUT_IS_SCRIPT="false"
+AS_ASSEMBLY="false"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	--restrict-input)
+		RESTRICT_INPUT="$OPTARG"
+		shift
+		;;
+	--layers)
+		LAYERS="$OPTARG"
+		shift
+		;;
+	--layer-width)
+		LAYER_WIDTH="$OPTARG"
+		shift
+		;;
+	--output-table-file)
+		OUTPUT_TABLE_FILE="$OPTARG"
+		shift
+		;;
+	--processors)
+		MAX_PROCESSORS="$OPTARG"
+		shift
+		;;
+	--stdin-file)
+		STDIN_FILE="$OPTARG"
+		shift
+		;;
+	--run-faspr)
+		RUN_FASPR="$OPTARG"
+		shift
+		;;
+	--input-is-script)
+		INPUT_IS_SCRIPT="true"
+		;;
+	--as-assembly)
+		AS_ASSEMBLY="true"
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ -z "$INFILE" ]
+then
+	echo >&2 "Error: input file not provided"
+	exit 1
+fi
+
+if [[ $INFILE == "_scriptline_"* ]]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	echo "$INFILE" | sed 's/^_scriptline_//' | sed 's/_-_/ /g' \
+	> "$TMPLDIR/_extracted_script_line"
+	
+	if [ ! -s "$TMPLDIR/_extracted_script_line" ]
+	then
+		echo >&2 "Error: no input string line extracted"
+		exit 1
+	fi
+	
+	"$ZEROARG" "${ALLARGS[@]}" --input-is-script --input "$TMPLDIR/_extracted_script_line"
+	
+	exit 0
+fi
+
+if [ "$INFILE" != "_list" ] && [ "$INFILE" != "_stream" ] && [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input file '$INFILE' does not exist"
+	exit 1
+fi
+
+if [ "$STDIN_FILE" != "_stream" ] && [ ! -s "$STDIN_FILE" ]
+then
+	echo >&2 "Error: stdin replacement file '$STDIN_FILE' does not exist"
+	exit 1
+fi
+
+if [ -n "$RUN_FASPR" ] && [ ! -s "$RUN_FASPR" ]
+then
+	echo >&2 "Error: FASPR binary executable file '$RUN_FASPR' does not exist"
+	exit 1
+fi
+
+if [ "$INFILE" == "_stream" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat_stdin "$STDIN_FILE" > "$TMPLDIR/_stream"
+	
+	if [ ! -s "$TMPLDIR/_stream" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	"$ZEROARG" "${ALLARGS[@]}" --input "$TMPLDIR/_stream"
+	
+	exit 0
+fi
+
+if [ -z "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -ne "$MAX_PROCESSORS" ] || [ "$MAX_PROCESSORS" -lt "1" ]
+then
+	echo >&2 "Error: invalid number of processors '$MAX_PROCESSORS', must be a positive number"
+	exit 1
+fi
+
+if [ "$INFILE" == "_list" ] && [ "$MAX_PROCESSORS" -gt "1" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat_stdin "$STDIN_FILE" | egrep . | sort | uniq > "$TMPLDIR/input_list"
+	
+	if [ ! -s "$TMPLDIR/input_list" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	NUM_OF_INPUTS="$(cat $TMPLDIR/input_list | wc -l)"
+	SIZE_OF_PORTION="$(echo "a=$NUM_OF_INPUTS; b=$MAX_PROCESSORS; if(a%b) a/b+1 else a/b" | bc)"
+	
+	if [ "$SIZE_OF_PORTION" -gt "19997" ]
+	then
+		SIZE_OF_PORTION="19997"
+	fi
+	
+	mkdir -p "$TMPLDIR/portions"
+	
+	split -l "$SIZE_OF_PORTION" "$TMPLDIR/input_list" "$TMPLDIR/portions/portion_"
+	
+	mkdir -p "$TMPLDIR/children_tables"
+	
+	find $TMPLDIR/portions/ -type f -not -empty \
+	| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
+	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" --processors 1 --input _list
+		
+	find "$TMPLDIR/children_tables" -type f -not -empty \
+	| sort \
+	| xargs -L 1 cat \
+	| awk '{if(NR==1 || $1!="input_name") print $0}' \
+	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_scored_area -multipliers 1 -tolerances 0.0');" \
+	> "$TMPLDIR/full_output_table"
+	
+	if [ -n "$OUTPUT_TABLE_FILE" ] && [ "$OUTPUT_TABLE_FILE" != "_stdout" ]
+	then
+		mkdir -p "$(dirname "$OUTPUT_TABLE_FILE")"
+		cat "$TMPLDIR/full_output_table" > "$OUTPUT_TABLE_FILE"
+	else
+		cat "$TMPLDIR/full_output_table"
+	fi
+	
+	exit 0
+fi
+
+INFILE_BASENAME="$(get_input_basename $INFILE $STDIN_FILE)"
+OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE_BASENAME" "$OUTPUT_TABLE_FILE")"
+
+{
+cat << EOF
+var common_params={}
+common_params.input_is_script='$INPUT_IS_SCRIPT';
+common_params.input_as_assembly='$AS_ASSEMBLY';
+common_params.restrict_input_atoms='$RESTRICT_INPUT';
+common_params.run_faspr='$RUN_FASPR';
+common_params.layers=$LAYERS;
+common_params.layer_width=$LAYER_WIDTH;
+common_params.output_table_file='$OUTPUT_TABLE_FILE';
+var input_info_array=[];
+EOF
+
+{
+if [ "$INFILE" == "_list" ]
+then
+	cat_stdin "$STDIN_FILE" | egrep . | sort | uniq
+else
+	echo "$INFILE"
+fi
+} | while read -r SUBINFILE
+do
+SUBINFILE_BASENAME="$(get_input_basename $SUBINFILE $STDIN_FILE)"
+cat << EOF
+input_info_array.push({"input_file": "$SUBINFILE", "input_file_name": "$SUBINFILE_BASENAME"});
+EOF
+done
+
+cat << 'EOF'
+analyze_interface=function(params, input)
+{
+
+if(!input.input_file)
+{
+	throw ("No input file");
+}
+
+if(!params.input_is_script)
+{
+	params.input_is_script="false";
+}
+
+if(!params.input_as_assembly)
+{
+	params.input_as_assembly="false";
+}
+
+if(!params.restrict_input_atoms)
+{
+	params.restrict_input_atoms='[]';
+}
+
+if(!params.output_table_file)
+{
+	params.output_table_file="_stdout";
+}
+
+voronota_delete_objects();
+
+if(params.input_is_script=="true")
+{
+	voronota_source("-file", input.input_file);
+	voronota_assert_partial_success("Failed when running provided input script");
+}
+else
+{
+	voronota_import("-file", input.input_file, "-as-assembly", params.input_as_assembly);
+	voronota_assert_partial_success("Failed to import file");
+}
+
+voronota_restrict_atoms("-use", params.restrict_input_atoms);
+voronota_assert_full_success("Failed to restrict input atoms by the input query");
+
+voronota_restrict_atoms("-use", "[-protein]");
+voronota_assert_full_success("Failed to restrict input atoms to protein only");
+
+var result_initial_number_of_accepted_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
+
+if(params.run_faspr)
+{
+	voronota_faspr("-lib-file", params.run_faspr);
+	voronota_assert_full_success("Failed to run FASPR");
+}
+
+var num_of_layers=params.layers;
+var layer_width=params.layer_width;
+var circle_restrictions=[];
+for(var i=1;i<num_of_layers;i++)
+{
+	circle_restrictions.push(0-((num_of_layers-i)*layer_width));
+}
+circle_restrictions.push(-0.0000001);
+
+voronota_construct_contacts_radically_fast("-no-intra-chain", "-adjunct-circle-restrictions", circle_restrictions);
+voronota_assert_full_success("Failed to construct inter-chain contacts");
+var result_contacts_construction=voronota_last_output().results[0].output;
+
+voronota_clash_score("-use", "[-inter-chain]");
+voronota_assert_full_success("Failed to compute clash score");
+var result_clash_score=voronota_last_output().results[0].output.clash_score;
+
+var summary={}
+
+summary.input_name=input.input_file_name;
+summary.input_atoms=result_initial_number_of_accepted_atoms;
+
+summary.iface_scored_area=result_contacts_construction.contacts_summary.area;
+
+summary.number_of_subareas=result_contacts_construction.subareas_values.length;
+
+for(var i=0;i<result_contacts_construction.subareas_values.length;i++)
+{
+	summary["iface_subarea"+(i+1)]=result_contacts_construction.subareas_values[i];
+}
+
+summary.iface_clash_score=result_clash_score;
+
+var summary_table={}
+summary_table.header="";
+summary_table.row="";
+
+Object.keys(summary).forEach(function(key)
+{
+		summary_table.header+=key+" ";
+});
+
+Object.keys(summary).forEach(function(key)
+{
+	value=summary[key];
+	if(typeof value === 'number')
+	{
+		summary_table.row+=parseFloat(value.toFixed(5))+" ";
+	}
+	else
+	{
+		summary_table.row+=value+" ";
+	}
+});
+
+summary_table.header=summary_table.header.trim();
+summary_table.row=summary_table.row.trim();
+
+return summary_table;
+}
+
+voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-alt-voromqa-potential", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential");
+
+var full_summary_table="";
+
+for(var i=0;i<input_info_array.length;i++)
+{
+	var subinput=input_info_array[i];
+	try
+	{
+		var summary_table=analyze_interface(common_params, subinput);
+		if(full_summary_table=="")
+		{
+			full_summary_table+=summary_table.header+"\n";
+		}
+		full_summary_table+=summary_table.row+"\n";
+	}
+	catch(error)
+	{
+		log("Failed with '"+subinput.input_file_name+"': "+error);
+	}
+}
+
+fwrite('_virtual/summary', full_summary_table);
+
+if(common_params.output_table_file!=="_stdout")
+{
+	shell('mkdir -p "$(dirname '+common_params.output_table_file+')"');
+}
+
+voronota_tournament_sort('-input-file', '_virtual/summary', '-output-file', common_params.output_table_file, '-columns', 'iface_scored_area', '-multipliers', 1, '-tolerances', 0.0);
+voronota_assert_full_success("Failed to output sorted scores table");
+
+EOF
+
+} \
+| voronota-js --no-setup-defaults
+

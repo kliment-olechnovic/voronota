@@ -1,0 +1,4 @@
+input_name input_atoms iface_scored_area number_of_subareas iface_subarea1 iface_subarea2 iface_subarea3 iface_subarea4 iface_subarea5 iface_clash_score
+target.pdb 2095 1047.81 5 83.2917 114.254 174.208 259.09 416.964 0
+model1.pdb 2720 979.896 5 94.1047 135.023 177.253 221.141 352.375 0
+model2.pdb 2440 977.962 5 91.9827 129.11 180.317 227.894 348.658 0
