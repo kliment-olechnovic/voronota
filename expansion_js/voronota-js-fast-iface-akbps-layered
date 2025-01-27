@@ -385,6 +385,8 @@ if(params.run_faspr)
 voronota_construct_contacts_radically_fast("-no-intra-chain", "-adjunct-circle-restrictions", [0.4, 0.8, 1.2, 1.6, 999.0]);
 voronota_assert_full_success("Failed to construct inter-chain contacts");
 
+voronota_set_adjunct_of_contacts_by_expression("-use", "[-inter-chain]", "-expression", "_linear_combo", "-parameters", [1, 0], "-input-adjuncts", ["area"], "-output-adjunct", "css6");
+
 voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts");
 voronota_assert_full_success("Failed to select inter-chain contacts");
 
@@ -408,13 +410,253 @@ summary.iface_area=result_akpbs.contacts_summary.area;
 
 summary.iface_scored_area=result_akpbs.scoring_summary.known_area;
 
+summary.iface_score_kbp1_obs=result_akpbs.scoring_summary.score_kbp1_obs;
+summary.iface_score_kbp1_exp=result_akpbs.scoring_summary.score_kbp1_exp;
 summary.iface_score_kbp1=result_akpbs.scoring_summary.score_kbp1;
+
+summary.iface_score_kbp2_obs=result_akpbs.scoring_summary.score_kbp2_obs;
+summary.iface_score_kbp2_exp=result_akpbs.scoring_summary.score_kbp2_exp;
 summary.iface_score_kbp2=result_akpbs.scoring_summary.score_kbp2;
+
+if('score_kbp2_exp_a' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_exp_a=result_akpbs.scoring_summary.score_kbp2_exp_a;
+}
+
+if('score_kbp2_exp_b' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_exp_b=result_akpbs.scoring_summary.score_kbp2_exp_b;
+}
+
+if('score_kbp1sa1' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1sa1=result_akpbs.scoring_summary.score_kbp1sa1;
+}
+if('score_kbp1sa2' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1sa2=result_akpbs.scoring_summary.score_kbp1sa2;
+}
+if('score_kbp1sa3' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1sa3=result_akpbs.scoring_summary.score_kbp1sa3;
+}
+if('score_kbp1sa4' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1sa4=result_akpbs.scoring_summary.score_kbp1sa4;
+}
+if('score_kbp1sa5' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1sa5=result_akpbs.scoring_summary.score_kbp1sa5;
+}
+
+if('score_kbp1_obs_sa1' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1_obs_sa1=result_akpbs.scoring_summary.score_kbp1_obs_sa1;
+}
+if('score_kbp1_obs_sa2' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1_obs_sa2=result_akpbs.scoring_summary.score_kbp1_obs_sa2;
+}
+if('score_kbp1_obs_sa3' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1_obs_sa3=result_akpbs.scoring_summary.score_kbp1_obs_sa3;
+}
+if('score_kbp1_obs_sa4' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1_obs_sa4=result_akpbs.scoring_summary.score_kbp1_obs_sa4;
+}
+if('score_kbp1_obs_sa5' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1_obs_sa5=result_akpbs.scoring_summary.score_kbp1_obs_sa5;
+}
+
+if('score_kbp1_exp_sa1' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1_exp_sa1=result_akpbs.scoring_summary.score_kbp1_exp_sa1;
+}
+if('score_kbp1_exp_sa2' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1_exp_sa2=result_akpbs.scoring_summary.score_kbp1_exp_sa2;
+}
+if('score_kbp1_exp_sa3' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1_exp_sa3=result_akpbs.scoring_summary.score_kbp1_exp_sa3;
+}
+if('score_kbp1_exp_sa4' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1_exp_sa4=result_akpbs.scoring_summary.score_kbp1_exp_sa4;
+}
+if('score_kbp1_exp_sa5' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp1_exp_sa5=result_akpbs.scoring_summary.score_kbp1_exp_sa5;
+}
+
+if('score_kbp2_obs_sa1' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_obs_sa1=result_akpbs.scoring_summary.score_kbp2_obs_sa1;
+}
+if('score_kbp2_obs_sa2' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_obs_sa2=result_akpbs.scoring_summary.score_kbp2_obs_sa2;
+}
+if('score_kbp2_obs_sa3' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_obs_sa3=result_akpbs.scoring_summary.score_kbp2_obs_sa3;
+}
+if('score_kbp2_obs_sa4' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_obs_sa4=result_akpbs.scoring_summary.score_kbp2_obs_sa4;
+}
+if('score_kbp2_obs_sa5' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_obs_sa5=result_akpbs.scoring_summary.score_kbp2_obs_sa5;
+}
+
+if('score_kbp2_exp_a_sa1' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_exp_a_sa1=result_akpbs.scoring_summary.score_kbp2_exp_a_sa1;
+}
+if('score_kbp2_exp_a_sa2' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_exp_a_sa2=result_akpbs.scoring_summary.score_kbp2_exp_a_sa2;
+}
+if('score_kbp2_exp_a_sa3' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_exp_a_sa3=result_akpbs.scoring_summary.score_kbp2_exp_a_sa3;
+}
+if('score_kbp2_exp_a_sa4' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_exp_a_sa4=result_akpbs.scoring_summary.score_kbp2_exp_a_sa4;
+}
+if('score_kbp2_exp_a_sa5' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_exp_a_sa5=result_akpbs.scoring_summary.score_kbp2_exp_a_sa5;
+}
+
+if('score_kbp2_exp_b_sa1' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_exp_b_sa1=result_akpbs.scoring_summary.score_kbp2_exp_b_sa1;
+}
+if('score_kbp2_exp_b_sa2' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_exp_b_sa2=result_akpbs.scoring_summary.score_kbp2_exp_b_sa2;
+}
+if('score_kbp2_exp_b_sa3' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_exp_b_sa3=result_akpbs.scoring_summary.score_kbp2_exp_b_sa3;
+}
+if('score_kbp2_exp_b_sa4' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_exp_b_sa4=result_akpbs.scoring_summary.score_kbp2_exp_b_sa4;
+}
+if('score_kbp2_exp_b_sa5' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_kbp2_exp_b_sa5=result_akpbs.scoring_summary.score_kbp2_exp_b_sa5;
+}
+
+if('score_rawsa1' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_rawsa1=result_akpbs.scoring_summary.score_rawsa1;
+}
+if('score_rawsa2' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_rawsa2=result_akpbs.scoring_summary.score_rawsa2;
+}
+if('score_rawsa3' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_rawsa3=result_akpbs.scoring_summary.score_rawsa3;
+}
+if('score_rawsa4' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_rawsa4=result_akpbs.scoring_summary.score_rawsa4;
+}
+if('score_rawsa5' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_rawsa5=result_akpbs.scoring_summary.score_rawsa5;
+}
+
+if('score_solv_kbp1_obs_sa1' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp1_obs_sa1=result_akpbs.scoring_summary.score_solv_kbp1_obs_sa1;
+}
+if('score_solv_kbp1_obs_sa2' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp1_obs_sa2=result_akpbs.scoring_summary.score_solv_kbp1_obs_sa2;
+}
+if('score_solv_kbp1_obs_sa3' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp1_obs_sa3=result_akpbs.scoring_summary.score_solv_kbp1_obs_sa3;
+}
+if('score_solv_kbp1_obs_sa4' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp1_obs_sa4=result_akpbs.scoring_summary.score_solv_kbp1_obs_sa4;
+}
+if('score_solv_kbp1_obs_sa5' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp1_obs_sa5=result_akpbs.scoring_summary.score_solv_kbp1_obs_sa5;
+}
+
+if('score_solv_kbp1_exp_sa1' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp1_exp_sa1=result_akpbs.scoring_summary.score_solv_kbp1_exp_sa1;
+}
+if('score_solv_kbp1_exp_sa2' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp1_exp_sa2=result_akpbs.scoring_summary.score_solv_kbp1_exp_sa2;
+}
+if('score_solv_kbp1_exp_sa3' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp1_exp_sa3=result_akpbs.scoring_summary.score_solv_kbp1_exp_sa3;
+}
+if('score_solv_kbp1_exp_sa4' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp1_exp_sa4=result_akpbs.scoring_summary.score_solv_kbp1_exp_sa4;
+}
+if('score_solv_kbp1_exp_sa5' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp1_exp_sa5=result_akpbs.scoring_summary.score_solv_kbp1_exp_sa5;
+}
+
+if('score_solv_kbp2_obs_sa1' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp2_obs_sa1=result_akpbs.scoring_summary.score_solv_kbp2_obs_sa1;
+}
+if('score_solv_kbp2_obs_sa2' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp2_obs_sa2=result_akpbs.scoring_summary.score_solv_kbp2_obs_sa2;
+}
+if('score_solv_kbp2_obs_sa3' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp2_obs_sa3=result_akpbs.scoring_summary.score_solv_kbp2_obs_sa3;
+}
+if('score_solv_kbp2_obs_sa4' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp2_obs_sa4=result_akpbs.scoring_summary.score_solv_kbp2_obs_sa4;
+}
+if('score_solv_kbp2_obs_sa5' in result_akpbs.scoring_summary)
+{
+	summary.iface_score_solv_kbp2_obs_sa5=result_akpbs.scoring_summary.score_solv_kbp2_obs_sa5;
+}
 
 if(common_params.mean_mode=="true")
 {
+	summary.iface_score_kbp1_obs/=summary.iface_scored_area;
+	summary.iface_score_kbp1_exp/=summary.iface_scored_area;
 	summary.iface_score_kbp1/=summary.iface_scored_area;
+	
+	summary.iface_score_kbp2_obs/=summary.iface_scored_area;
+	summary.iface_score_kbp2_exp/=summary.iface_scored_area;
 	summary.iface_score_kbp2/=summary.iface_scored_area;
+	
+	if('iface_score_kbp2_exp_a' in summary)
+	{
+		summary.iface_score_kbp2_exp_a/=summary.iface_scored_area;
+	}
+	
+	if('iface_score_kbp2_exp_b' in summary)
+	{
+		summary.iface_score_kbp2_exp_b/=summary.iface_scored_area;
+	}
 	
 	summary.iface_scored_area/=summary.iface_scored_area;
 }
