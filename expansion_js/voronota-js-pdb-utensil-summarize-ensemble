@@ -11,6 +11,7 @@ Options:
     --input-directory         string     path to directory to find input structures, default is ''
     --output-file             string     path to file to output results, default is '_stdout'
     --atom-atom-output-file   string     path to file to output atom-atom results, default is ''
+    --layering-mode           string     layering mode ('outward' or 'inward'), default is 'outward'
     --plot-file               string     path to file to output a plot of results, default is ''
     --help | -h                          flag to display help message and exit
 
@@ -49,6 +50,7 @@ MINRESCOUNT="60"
 INDIR=""
 OUTFILE="_stdout"
 ATOM_ATOM_OUTFILE=""
+LAYERINGMODE="outward"
 PLOTFILE=""
 HELP_MODE="false"
 
@@ -78,6 +80,10 @@ do
 		ATOM_ATOM_OUTFILE="$OPTARG"
 		shift
 		;;
+	--layering-mode)
+		LAYERINGMODE="$OPTARG"
+		shift
+		;;
 	--plot-file)
 		PLOTFILE="$OPTARG"
 		shift
@@ -95,6 +101,12 @@ done
 if [ "$HELP_MODE" == "true" ]
 then
 	print_help_and_exit
+fi
+
+if [ "$LAYERINGMODE" != "outward" ] && [ "$LAYERINGMODE" != "inward" ]
+then
+	echo >&2 "Error: invalid layering mode '${LAYERINGMODE}', must be 'outward' or 'inward'"
+	exit 1
 fi
 
 readonly TMPLDIR=$(mktemp -d)
@@ -143,6 +155,7 @@ cat << EOF
 var params={}
 params.min_residue_count='$MINRESCOUNT';
 params.probe='$PROBE';
+params.layering_mode='$LAYERINGMODE';
 params.output_file='$TMPLDIR/output.txt';
 EOF
 
@@ -190,7 +203,15 @@ voronota_delete_objects_if("-objects-fewer-than", 2);
 
 voronota_pick_objects();
 
-voronota_construct_contacts_radically_fast("-probe", params.probe, "-adjunct-circle-restrictions", [0.4, 0.8, 1.2, 1.6, 999.0]);
+if(params.layering_mode=="outward")
+{
+	voronota_construct_contacts_radically_fast("-probe", params.probe, "-adjunct-circle-restrictions", [0.4, 0.8, 1.2, 1.6, 999.0]);
+}
+else
+{
+	voronota_construct_contacts_radically_fast("-probe", params.probe, "-adjunct-circle-restrictions", [-1.6, -1.2, -0.8, -0.4, -0.0000001]);
+}
+
 voronota_assert_full_success("Failed to construct contacts");
 
 voronota_delete_objects_if("-not-enough-contacts-in-selection", "[-min-seq-sep 2 -no-solvent]");
@@ -203,8 +224,15 @@ voronota_assert_full_success("Failed to collect contact area ranges");
 
 if(params.atom_atom_output_file)
 {
-voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", ["area", "subarea00000to00040", "subarea00040to00080", "subarea00080to00120", "subarea00120to00160", "subarea00160to99900"]);
-voronota_assert_full_success("Failed to collect atom-atom contact area ranges");
+	if(params.layering_mode=="outward")
+	{
+		voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", ["area", "subarea00000to00040", "subarea00040to00080", "subarea00080to00120", "subarea00120to00160", "subarea00160to99900"]);
+	}
+	else
+	{
+		voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", ["area", "subareaM99900toM00160", "subareaM00160toM00120", "subareaM00120toM00080", "subareaM00080toM00040", "subareaM00040toM00000"]);
+	}
+	voronota_assert_full_success("Failed to collect atom-atom contact area ranges");
 }
 EOF
 
