@@ -382,7 +382,7 @@ if(params.run_faspr)
 	voronota_assert_full_success("Failed to run FASPR");
 }
 
-voronota_construct_contacts_radically_fast("-no-intra-chain", "-adjunct-circle-restrictions", [0.4, 0.8, 1.2, 1.6, 999.0]);
+voronota_construct_contacts_radically_fast("-no-intra-chain", "-adjunct-circle-restrictions", [-1.6, -1.2, -0.8, -0.4, -0.0000001]);
 voronota_assert_full_success("Failed to construct inter-chain contacts");
 
 voronota_set_adjunct_of_contacts_by_expression("-use", "[-inter-chain]", "-expression", "_linear_combo", "-parameters", [1, 0], "-input-adjuncts", ["area"], "-output-adjunct", "css6");

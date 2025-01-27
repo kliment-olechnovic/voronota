@@ -22,3 +22,10 @@ find "$INPUTDIR/complex/" -type f \
   --input _list \
   --processors 4 \
   --output-table-file "$SUBDIR/akbps_layered_collapsed_scores"
+
+find "$INPUTDIR/complex/" -type f \
+| $VORONOTAJSDIR/voronota-js-fast-iface-akbps-layered \
+  --akbps-layered-lib ${INPUTDIR}/../../../resources/voromqalike_area_kbps_layered_inward_raw \
+  --input _list \
+  --processors 4 \
+  --output-table-file "$SUBDIR/akbps_layered_inward_scores"
