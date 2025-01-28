@@ -11,6 +11,8 @@ Options:
     --restrict-input            string     query to restrict input atoms, default is '[]'
     --layers                    number     number of layers, default is 5
     --layer-width               number     layer width, default is 0.4
+    --layering-mode             string     layering mode ('outward' or 'inward'), default is 'inward'
+    --directing-mode            string     layering mode ('none' or 'd4'), default is 'none'
     --output-table-file         string     output table file path, default is '_stdout' to print to stdout
     --processors                number     maximum number of processors to run in parallel, default is 1
     --stdin-file                string     input file path to replace stdin
@@ -90,6 +92,8 @@ INFILE=""
 RESTRICT_INPUT="[]"
 LAYERS="5"
 LAYER_WIDTH="0.4"
+LAYERINGMODE="inward"
+DIRECTINGMODE="none"
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
 STDIN_FILE="_stream"
@@ -118,6 +122,14 @@ do
 		;;
 	--layer-width)
 		LAYER_WIDTH="$OPTARG"
+		shift
+		;;
+	--layering-mode)
+		LAYERINGMODE="$OPTARG"
+		shift
+		;;
+	--directing-mode)
+		DIRECTINGMODE="$OPTARG"
 		shift
 		;;
 	--output-table-file)
@@ -160,6 +172,18 @@ fi
 if [ -z "$INFILE" ]
 then
 	echo >&2 "Error: input file not provided"
+	exit 1
+fi
+
+if [ "$LAYERINGMODE" != "outward" ] && [ "$LAYERINGMODE" != "inward" ]
+then
+	echo >&2 "Error: invalid layering mode '${LAYERINGMODE}', must be 'outward' or 'inward'"
+	exit 1
+fi
+
+if [ "$DIRECTINGMODE" != "none" ] && [ "$DIRECTINGMODE" != "d4" ]
+then
+	echo >&2 "Error: invalid directing mode '${DIRECTINGMODE}', must be 'none' or 'd4' or 'd16'"
 	exit 1
 fi
 
@@ -285,6 +309,8 @@ common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.run_faspr='$RUN_FASPR';
 common_params.layers=$LAYERS;
 common_params.layer_width=$LAYER_WIDTH;
+common_params.layering_mode='$LAYERINGMODE';
+common_params.directing_mode='$DIRECTINGMODE';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
 var input_info_array=[];
 EOF
@@ -363,13 +389,32 @@ if(params.run_faspr)
 var num_of_layers=params.layers;
 var layer_width=params.layer_width;
 var circle_restrictions=[];
-for(var i=1;i<num_of_layers;i++)
-{
-	circle_restrictions.push(0-((num_of_layers-i)*layer_width));
-}
-circle_restrictions.push(-0.0000001);
 
-voronota_construct_contacts_radically_fast("-no-intra-chain", "-adjunct-circle-restrictions", circle_restrictions);
+if(params.layering_mode=="inward")
+{
+	for(var i=1;i<num_of_layers;i++)
+	{
+		circle_restrictions.push(0-((num_of_layers-i)*layer_width));
+	}
+	circle_restrictions.push(-0.0000001);
+}
+else if(params.layering_mode=="outward")
+{
+	for(var i=1;i<num_of_layers;i++)
+	{
+		circle_restrictions.push(i*layer_width);
+	}
+	circle_restrictions.push(999.0);
+}
+
+var param_precutting=0;
+
+if(params.directing_mode=="d4")
+{
+	param_precutting=2100;
+}
+
+voronota_construct_contacts_radically_fast("-no-intra-chain", "-adjunct-circle-restrictions", circle_restrictions, "-precutting", param_precutting);
 voronota_assert_full_success("Failed to construct inter-chain contacts");
 var result_contacts_construction=voronota_last_output().results[0].output;
 
@@ -388,7 +433,7 @@ summary.number_of_subareas=result_contacts_construction.subareas_values.length;
 
 for(var i=0;i<result_contacts_construction.subareas_values.length;i++)
 {
-	summary["iface_subarea"+(i+1)]=result_contacts_construction.subareas_values[i];
+	summary[result_contacts_construction.subareas_names[i]]=result_contacts_construction.subareas_values[i];
 }
 
 summary.iface_clash_score=result_clash_score;
