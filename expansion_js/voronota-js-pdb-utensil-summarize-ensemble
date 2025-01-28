@@ -238,14 +238,14 @@ if(params.layering_mode=="outward" && params.directing_mode=="d4")
 {
 	param_adjunct_circle_restrictions=[0.4, 0.8, 1.2, 1.6, 999.0];
 	param_precutting=2100;
-	param_area_value_names=["area", "pcut00000subarea00000to00040", "pcut00000subarea00040to00080", "pcut00000subarea00080to00120", "pcut00000subarea00120to00160", "pcut00000subarea00160to99900", "pcut00001subarea00000to00040", "pcut00001subarea00040to00080", "pcut00001subarea00080to00120", "pcut00001subarea00120to00160", "pcut00001subarea00160to99900", "pcut00002subarea00000to00040", "pcut00002subarea00040to00080", "pcut00002subarea00080to00120", "pcut00002subarea00120to00160", "pcut00002subarea00160to99900", "pcut00003subarea00000to00040", "pcut00003subarea00040to00080", "pcut00003subarea00080to00120", "pcut00003subarea00120to00160", "pcut00003subarea00160to99900"];
+	param_area_value_names=["area", "pcut00000subarea00000to00040", "pcut00000subarea00040to00080", "pcut00000subarea00080to00120", "pcut00000subarea00120to00160", "pcut00000subarea00160to99900", "pcut00001subarea00000to00040", "pcut00001subarea00040to00080", "pcut00001subarea00080to00120", "pcut00001subarea00120to00160", "pcut00001subarea00160to99900", "pcut00003subarea00000to00040", "pcut00003subarea00040to00080", "pcut00003subarea00080to00120", "pcut00003subarea00120to00160", "pcut00003subarea00160to99900"];
 }
 
 if(params.layering_mode=="inward" && params.directing_mode=="d4")
 {
 	param_adjunct_circle_restrictions=[-1.6, -1.2, -0.8, -0.4, -0.0000001];
 	param_precutting=2100;
-	param_area_value_names=["area", "pcut00000subareaM99900toM00160", "pcut00000subareaM00160toM00120", "pcut00000subareaM00120toM00080", "pcut00000subareaM00080toM00040", "pcut00000subareaM00040toM00000", "pcut00001subareaM99900toM00160", "pcut00001subareaM00160toM00120", "pcut00001subareaM00120toM00080", "pcut00001subareaM00080toM00040", "pcut00001subareaM00040toM00000", "pcut00002subareaM99900toM00160", "pcut00002subareaM00160toM00120", "pcut00002subareaM00120toM00080", "pcut00002subareaM00080toM00040", "pcut00002subareaM00040toM00000", "pcut00003subareaM99900toM00160", "pcut00003subareaM00160toM00120", "pcut00003subareaM00120toM00080", "pcut00003subareaM00080toM00040", "pcut00003subareaM00040toM00000"];
+	param_area_value_names=["area", "pcut00000subareaM99900toM00160", "pcut00000subareaM00160toM00120", "pcut00000subareaM00120toM00080", "pcut00000subareaM00080toM00040", "pcut00000subareaM00040toM00000", "pcut00001subareaM99900toM00160", "pcut00001subareaM00160toM00120", "pcut00001subareaM00120toM00080", "pcut00001subareaM00080toM00040", "pcut00001subareaM00040toM00000", "pcut00003subareaM99900toM00160", "pcut00003subareaM00160toM00120", "pcut00003subareaM00120toM00080", "pcut00003subareaM00080toM00040", "pcut00003subareaM00040toM00000"];
 }
 
 voronota_construct_contacts_radically_fast("-probe", params.probe, "-adjunct-circle-restrictions", param_adjunct_circle_restrictions, "-precutting", param_precutting);

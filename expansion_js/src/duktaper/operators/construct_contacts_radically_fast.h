@@ -296,6 +296,7 @@ public:
 			std::size_t lindex=0;
 			for(std::size_t k=0;k<number_of_applications_of_preliminary_cuts;k++)
 			{
+				const int mask_class=((number_of_applications_of_preliminary_cuts>1) ? static_cast<int>(precutting_parameters.calculate_mask_class(k)) : static_cast<int>(1));
 				for(std::size_t j=0;j<adjunct_circle_restrictions.size();j++)
 				{
 					{
@@ -303,7 +304,7 @@ public:
 						if(number_of_applications_of_preliminary_cuts>1)
 						{
 							name_output << "pcut";
-							print_pretty_integer_number(k, name_output);
+							print_pretty_integer_number(mask_class, name_output);
 						}
 						name_output << "subarea";
 						print_pretty_number((j==0 ? (restrictions_positive ? 0.0 : -999.0) : adjunct_circle_restrictions[j-1]), name_output);
@@ -316,7 +317,7 @@ public:
 						if(number_of_applications_of_preliminary_cuts>1)
 						{
 							name_output << "pcut";
-							print_pretty_integer_number(k, name_output);
+							print_pretty_integer_number(mask_class, name_output);
 						}
 						name_output << "levelarea";
 						print_pretty_number(adjunct_circle_restrictions[j], name_output);

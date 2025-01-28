@@ -310,6 +310,22 @@ public:
 			return (static_cast<UnsignedInt>(1) << (2*global_preliminary_cutting_plane_normals.size()));
 		}
 
+		UnsignedInt calculate_mask_class(const UnsignedInt mask) const noexcept
+		{
+			const UnsignedInt onebit=1;
+			UnsignedInt mask_a=0;
+			UnsignedInt mask_b=0;
+			for(UnsignedInt g=0;g<global_preliminary_cutting_plane_normals.size();g++)
+			{
+				const UnsignedInt offset_shift=g*2;
+				const UnsignedInt bit_a=((mask & (onebit << (offset_shift+0))))==0 ? 0 : 1;
+				const UnsignedInt bit_b=((mask & (onebit << (offset_shift+1))))==0 ? 0 : 1;
+				mask_a+=(bit_a << (offset_shift+0))+(bit_b << (offset_shift+1));
+				mask_b+=(bit_a << (offset_shift+1))+(bit_b << (offset_shift+0));
+			}
+			return std::min(mask_a, mask_b);
+		}
+
 		void prepare_input_for_preliminary_cuts(const UnsignedInt id_a, const UnsignedInt id_b,
 				const UnsignedInt request_mask,	std::vector<SimplePoint>& preliminary_cutting_plane_normals) const noexcept
 		{
