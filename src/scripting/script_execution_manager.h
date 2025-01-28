@@ -60,6 +60,7 @@
 #include "operators/export_contacts_as_connected_mesh.h"
 #include "operators/export_contacts_as_pymol_cgo.h"
 #include "operators/export_contacts.h"
+#include "operators/export_directional_atom_type_tuples.h"
 #include "operators/export_figures_as_pymol_cgo.h"
 #include "operators/export_global_adjuncts.h"
 #include "operators/export_objects.h"
@@ -291,6 +292,7 @@ public:
 		set_command_for_data_manager("export-contacts-as-connected-mesh", operators::ExportContactsAsConnectedMesh(), false);
 		set_command_for_data_manager("export-contacts-as-pymol-cgo", operators::ExportContactsAsPymolCGO(), false);
 		set_command_for_data_manager("export-contacts", operators::ExportContacts(), false);
+		set_command_for_data_manager("export-directional-atom-type-tuples", operators::ExportDirectionalAtomTypeTuples(), false);
 		set_command_for_data_manager("export-figures-as-pymol-cgo", operators::ExportFiguresAsPymolCGO(), false);
 		set_command_for_data_manager("export-selection-of-atoms", operators::ExportSelectionOfAtoms(), false);
 		set_command_for_data_manager("export-selection-of-contacts", operators::ExportSelectionOfContacts(), false);
