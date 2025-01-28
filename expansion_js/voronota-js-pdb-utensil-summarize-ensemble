@@ -11,7 +11,8 @@ Options:
     --input-directory         string     path to directory to find input structures, default is ''
     --output-file             string     path to file to output results, default is '_stdout'
     --atom-atom-output-file   string     path to file to output atom-atom results, default is ''
-    --layering-mode           string     layering mode ('outward' or 'inward'), default is 'outward'
+    --layering-mode           string     layering mode ('outward' or 'inward'), default is 'inward'
+    --directing-mode          string     layering mode ('none' or 'd4'), default is 'none'
     --plot-file               string     path to file to output a plot of results, default is ''
     --help | -h                          flag to display help message and exit
 
@@ -50,7 +51,8 @@ MINRESCOUNT="60"
 INDIR=""
 OUTFILE="_stdout"
 ATOM_ATOM_OUTFILE=""
-LAYERINGMODE="outward"
+LAYERINGMODE="inward"
+DIRECTINGMODE="none"
 PLOTFILE=""
 HELP_MODE="false"
 
@@ -84,6 +86,10 @@ do
 		LAYERINGMODE="$OPTARG"
 		shift
 		;;
+	--directing-mode)
+		DIRECTINGMODE="$OPTARG"
+		shift
+		;;
 	--plot-file)
 		PLOTFILE="$OPTARG"
 		shift
@@ -106,6 +112,12 @@ fi
 if [ "$LAYERINGMODE" != "outward" ] && [ "$LAYERINGMODE" != "inward" ]
 then
 	echo >&2 "Error: invalid layering mode '${LAYERINGMODE}', must be 'outward' or 'inward'"
+	exit 1
+fi
+
+if [ "$DIRECTINGMODE" != "none" ] && [ "$DIRECTINGMODE" != "d4" ]
+then
+	echo >&2 "Error: invalid directing mode '${DIRECTINGMODE}', must be 'none' or 'd4' or 'd16'"
 	exit 1
 fi
 
@@ -156,6 +168,7 @@ var params={}
 params.min_residue_count='$MINRESCOUNT';
 params.probe='$PROBE';
 params.layering_mode='$LAYERINGMODE';
+params.directing_mode='$DIRECTINGMODE';
 params.output_file='$TMPLDIR/output.txt';
 EOF
 
@@ -203,15 +216,39 @@ voronota_delete_objects_if("-objects-fewer-than", 2);
 
 voronota_pick_objects();
 
-if(params.layering_mode=="outward")
+var param_adjunct_circle_restrictions=[];
+var param_precutting=0;
+var param_area_value_names=[];
+
+if(params.layering_mode=="outward" && params.directing_mode=="none")
 {
-	voronota_construct_contacts_radically_fast("-probe", params.probe, "-adjunct-circle-restrictions", [0.4, 0.8, 1.2, 1.6, 999.0]);
-}
-else
-{
-	voronota_construct_contacts_radically_fast("-probe", params.probe, "-adjunct-circle-restrictions", [-1.6, -1.2, -0.8, -0.4, -0.0000001]);
+	param_adjunct_circle_restrictions=[0.4, 0.8, 1.2, 1.6, 999.0];
+	param_precutting=0;
+	param_area_value_names=["area", "subarea00000to00040", "subarea00040to00080", "subarea00080to00120", "subarea00120to00160", "subarea00160to99900"];
 }
 
+if(params.layering_mode=="inward" && params.directing_mode=="none")
+{
+	param_adjunct_circle_restrictions=[-1.6, -1.2, -0.8, -0.4, -0.0000001];
+	param_precutting=0;
+	param_area_value_names=["area", "subareaM99900toM00160", "subareaM00160toM00120", "subareaM00120toM00080", "subareaM00080toM00040", "subareaM00040toM00000"];
+}
+
+if(params.layering_mode=="outward" && params.directing_mode=="d4")
+{
+	param_adjunct_circle_restrictions=[0.4, 0.8, 1.2, 1.6, 999.0];
+	param_precutting=2100;
+	param_area_value_names=["area", "pcut00000subarea00000to00040", "pcut00000subarea00040to00080", "pcut00000subarea00080to00120", "pcut00000subarea00120to00160", "pcut00000subarea00160to99900", "pcut00001subarea00000to00040", "pcut00001subarea00040to00080", "pcut00001subarea00080to00120", "pcut00001subarea00120to00160", "pcut00001subarea00160to99900", "pcut00002subarea00000to00040", "pcut00002subarea00040to00080", "pcut00002subarea00080to00120", "pcut00002subarea00120to00160", "pcut00002subarea00160to99900", "pcut00003subarea00000to00040", "pcut00003subarea00040to00080", "pcut00003subarea00080to00120", "pcut00003subarea00120to00160", "pcut00003subarea00160to99900"];
+}
+
+if(params.layering_mode=="inward" && params.directing_mode=="d4")
+{
+	param_adjunct_circle_restrictions=[-1.6, -1.2, -0.8, -0.4, -0.0000001];
+	param_precutting=2100;
+	param_area_value_names=["area", "pcut00000subareaM99900toM00160", "pcut00000subareaM00160toM00120", "pcut00000subareaM00120toM00080", "pcut00000subareaM00080toM00040", "pcut00000subareaM00040toM00000", "pcut00001subareaM99900toM00160", "pcut00001subareaM00160toM00120", "pcut00001subareaM00120toM00080", "pcut00001subareaM00080toM00040", "pcut00001subareaM00040toM00000", "pcut00002subareaM99900toM00160", "pcut00002subareaM00160toM00120", "pcut00002subareaM00120toM00080", "pcut00002subareaM00080toM00040", "pcut00002subareaM00040toM00000", "pcut00003subareaM99900toM00160", "pcut00003subareaM00160toM00120", "pcut00003subareaM00120toM00080", "pcut00003subareaM00080toM00040", "pcut00003subareaM00040toM00000"];
+}
+
+voronota_construct_contacts_radically_fast("-probe", params.probe, "-adjunct-circle-restrictions", param_adjunct_circle_restrictions, "-precutting", param_precutting);
 voronota_assert_full_success("Failed to construct contacts");
 
 voronota_delete_objects_if("-not-enough-contacts-in-selection", "[-min-seq-sep 2 -no-solvent]");
@@ -224,14 +261,7 @@ voronota_assert_full_success("Failed to collect contact area ranges");
 
 if(params.atom_atom_output_file)
 {
-	if(params.layering_mode=="outward")
-	{
-		voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", ["area", "subarea00000to00040", "subarea00040to00080", "subarea00080to00120", "subarea00120to00160", "subarea00160to99900"]);
-	}
-	else
-	{
-		voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", ["area", "subareaM99900toM00160", "subareaM00160toM00120", "subareaM00120toM00080", "subareaM00080toM00040", "subareaM00040toM00000"]);
-	}
+	voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", param_area_value_names);
 	voronota_assert_full_success("Failed to collect atom-atom contact area ranges");
 }
 EOF

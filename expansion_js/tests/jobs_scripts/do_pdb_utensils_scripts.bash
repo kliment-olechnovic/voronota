@@ -41,13 +41,30 @@ cat "$INPUTDIR/complex/target.pdb" \
 > "${SUBDIR}/sequences_of_selection.fasta"
 
 $VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
+  --layering-mode "outward" \
+  --directing-mode "none" \
   --input-directory "$INPUTDIR/complex" \
-  --atom-atom-output-file "${SUBDIR}/ensemble_summary_inter_atom.txt" \
-> "${SUBDIR}/ensemble_summary_inter_residue.txt"
+  --atom-atom-output-file "${SUBDIR}/ensemble_summary_inter_atom_with_layering_outward.txt" \
+> "${SUBDIR}/ensemble_summary_inter_residue_with_layering_outward.txt"
 
 $VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
   --layering-mode "inward" \
+  --directing-mode "none" \
   --input-directory "$INPUTDIR/complex" \
   --atom-atom-output-file "${SUBDIR}/ensemble_summary_inter_atom_with_layering_inward.txt" \
 > "${SUBDIR}/ensemble_summary_inter_residue_with_layering_inward.txt"
+
+$VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
+  --layering-mode "outward" \
+  --directing-mode "d4" \
+  --input-directory "$INPUTDIR/complex" \
+  --atom-atom-output-file "${SUBDIR}/ensemble_summary_inter_atom_with_layering_outward_directing_d4.txt" \
+> "${SUBDIR}/ensemble_summary_inter_residue_with_layering_outward_directing_d4.txt"
+
+$VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
+  --layering-mode "inward" \
+  --directing-mode "d4" \
+  --input-directory "$INPUTDIR/complex" \
+  --atom-atom-output-file "${SUBDIR}/ensemble_summary_inter_atom_with_layering_inward_directing_d4.txt" \
+> "${SUBDIR}/ensemble_summary_inter_residue_with_layering_inward_directing_d4.txt"
 
