@@ -346,6 +346,14 @@ public:
 			{
 				contact.value.props.tags.insert("central");
 			}
+			for(std::size_t j=0;j<names_for_adjunct_subareas.size();j++)
+			{
+				contact.value.props.adjuncts.erase(names_for_adjunct_subareas[j]);
+			}
+			for(std::size_t j=0;j<names_for_adjunct_levelareas.size();j++)
+			{
+				contact.value.props.adjuncts.erase(names_for_adjunct_levelareas[j]);
+			}
 			if(!names_for_adjunct_subareas.empty() && i<radical_tessellation_result.adjuncts_for_contacts_summaries.size() && names_for_adjunct_subareas.size()==radical_tessellation_result.adjuncts_for_contacts_summaries[i].level_areas.size())
 			{
 				const voronotalt::RadicalTessellation::ContactDescriptorSummaryAdjunct& cdsa=radical_tessellation_result.adjuncts_for_contacts_summaries[i];
@@ -359,13 +367,8 @@ public:
 						double& levelarea=contact.value.props.adjuncts[names_for_adjunct_levelareas[sj]];
 						if(rj<cdsa.level_areas.size())
 						{
-							subarea=(((rj+1-jo)<adjunct_circle_restrictions.size()) ? (cdsa.level_areas[rj]-cdsa.level_areas[rj+1]) : cdsa.level_areas[rj]);
-							levelarea=cdsa.level_areas[rj];
-						}
-						else
-						{
-							subarea=0.0;
-							levelarea=0.0;
+							subarea+=(((rj+1-jo)<adjunct_circle_restrictions.size()) ? (cdsa.level_areas[rj]-cdsa.level_areas[rj+1]) : cdsa.level_areas[rj]);
+							levelarea+=cdsa.level_areas[rj];
 						}
 						total_subareas[names_for_adjunct_subareas[sj]]+=subarea;
 					}
