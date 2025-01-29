@@ -16,10 +16,12 @@ public:
 	{
 		double max_bond_distance;
 		std::size_t max_number_of_directional_neighbors;
+		apollota::SimplePoint default_fallback_direction;
 
 		Parameters() :
 			max_bond_distance(1.7),
-			max_number_of_directional_neighbors(2)
+			max_number_of_directional_neighbors(2),
+			default_fallback_direction(apollota::SimplePoint(1.0, 1.0, 1.0).unit())
 		{
 		}
 
@@ -34,6 +36,7 @@ public:
 	{
 		std::vector<std::size_t> counts_of_bonds;
 		std::vector< std::vector<std::size_t> > directional_neighbors;
+		std::vector< std::vector<apollota::SimplePoint> > basic_directions;
 
 		Result()
 		{
@@ -43,6 +46,11 @@ public:
 	static void construct_result(const Parameters& params, const DataManager& data_manager, Result& result)
 	{
 		result=Result();
+
+		if(!(params.max_number_of_directional_neighbors>0))
+		{
+			throw std::runtime_error(std::string("Invalid max number of directional neighbors, must greater than 0."));
+		}
 
 		data_manager.assert_atoms_availability();
 		data_manager.assert_primary_structure_info_valid();
@@ -111,29 +119,55 @@ public:
 
 		result.counts_of_bonds.resize(data_manager.atoms().size());
 		result.directional_neighbors.resize(data_manager.atoms().size());
+		result.basic_directions.resize(data_manager.atoms().size(), std::vector<apollota::SimplePoint>(3, params.default_fallback_direction));
 		for(std::size_t i=0;i<data_manager.atoms().size();i++)
 		{
 			const std::set<std::size_t>& direct_neighbors=graph_direct[i];
-			result.counts_of_bonds[i]=direct_neighbors.size();
 			const std::set<std::size_t>& indirect_neighbors=graph_indirect[i];
 			const std::set<std::size_t>& far_neighbors=graph_far[i];
-			std::vector< std::pair< std::pair<int, std::string>, std::size_t > > neighbors_in_residue;
-			for(std::set<std::size_t>::const_iterator it=direct_neighbors.begin();it!=direct_neighbors.end();++it)
+
+			result.counts_of_bonds[i]=direct_neighbors.size();
+
 			{
-				neighbors_in_residue.push_back(std::pair< std::pair<int, std::string>, std::size_t >(std::pair<int, std::string>(1, data_manager.atoms()[*it].crad.name), *it));
+				std::vector< std::pair< std::pair<int, std::string>, std::size_t > > neighbors_in_residue;
+
+				for(std::set<std::size_t>::const_iterator it=direct_neighbors.begin();it!=direct_neighbors.end();++it)
+				{
+					neighbors_in_residue.push_back(std::pair< std::pair<int, std::string>, std::size_t >(std::pair<int, std::string>(1, data_manager.atoms()[*it].crad.name), *it));
+				}
+
+				for(std::set<std::size_t>::const_iterator it=indirect_neighbors.begin();it!=indirect_neighbors.end() && neighbors_in_residue.size()<params.max_number_of_directional_neighbors;++it)
+				{
+					neighbors_in_residue.push_back(std::pair< std::pair<int, std::string>, std::size_t >(std::pair<int, std::string>(2, data_manager.atoms()[*it].crad.name), *it));
+				}
+
+				for(std::set<std::size_t>::const_iterator it=far_neighbors.begin();it!=far_neighbors.end() && neighbors_in_residue.size()<params.max_number_of_directional_neighbors;++it)
+				{
+					neighbors_in_residue.push_back(std::pair< std::pair<int, std::string>, std::size_t >(std::pair<int, std::string>(3, data_manager.atoms()[*it].crad.name), *it));
+				}
+
+				std::sort(neighbors_in_residue.begin(), neighbors_in_residue.end());
+
+				for(std::size_t l=0;l<params.max_number_of_directional_neighbors && l<neighbors_in_residue.size();l++)
+				{
+					result.directional_neighbors[i].push_back(neighbors_in_residue[l].second);
+				}
 			}
-			for(std::set<std::size_t>::const_iterator it=indirect_neighbors.begin();it!=indirect_neighbors.end() && neighbors_in_residue.size()<params.max_number_of_directional_neighbors;++it)
+
 			{
-				neighbors_in_residue.push_back(std::pair< std::pair<int, std::string>, std::size_t >(std::pair<int, std::string>(2, data_manager.atoms()[*it].crad.name), *it));
-			}
-			for(std::set<std::size_t>::const_iterator it=far_neighbors.begin();it!=far_neighbors.end() && neighbors_in_residue.size()<params.max_number_of_directional_neighbors;++it)
-			{
-				neighbors_in_residue.push_back(std::pair< std::pair<int, std::string>, std::size_t >(std::pair<int, std::string>(3, data_manager.atoms()[*it].crad.name), *it));
-			}
-			std::sort(neighbors_in_residue.begin(), neighbors_in_residue.end());
-			for(std::size_t l=0;l<params.max_number_of_directional_neighbors && l<neighbors_in_residue.size();l++)
-			{
-				result.directional_neighbors[i].push_back(neighbors_in_residue[l].second);
+				const std::vector<std::size_t>& dneighbors=result.directional_neighbors[i];
+
+				const apollota::SimplePoint o(data_manager.atoms()[i].value);
+				const apollota::SimplePoint a=(dneighbors.size()>0 ? apollota::SimplePoint(data_manager.atoms()[dneighbors[0]].value) : o+params.default_fallback_direction);
+				const apollota::SimplePoint b=(dneighbors.size()>1 ? apollota::SimplePoint(data_manager.atoms()[dneighbors[1]].value) : a);
+
+				const apollota::SimplePoint d1=(direct_neighbors.size()<2 ? (o-a).unit() : ((o-a)+(o-b)).unit());
+				const apollota::SimplePoint d2=((o-a)&(o-b)).unit();
+				const apollota::SimplePoint d3=(d1&d2).unit();
+
+				result.basic_directions[i][0]=d1;
+				result.basic_directions[i][1]=d2;
+				result.basic_directions[i][2]=d3;
 			}
 		}
 	}

@@ -75,19 +75,15 @@ public:
 		{
 			const std::size_t id=(*it);
 			const Atom& atom=data_manager.atoms()[id];
-			const std::size_t count_of_bonds=atom_directions_assignment_result.counts_of_bonds[id];
-			const std::vector<std::size_t>& dneighbors=atom_directions_assignment_result.directional_neighbors[id];
 
 			Figure figure;
 			figure.name=LongName(figure_name_start, atom.crad.str());
 
 			const apollota::SimplePoint o(atom.value);
-			const apollota::SimplePoint a=(dneighbors.size()>0 ? apollota::SimplePoint(data_manager.atoms()[dneighbors[0]].value) : o+apollota::SimplePoint(1.0, 1.0, 1.0));
-			const apollota::SimplePoint b=(dneighbors.size()>1 ? apollota::SimplePoint(data_manager.atoms()[dneighbors[1]].value) : a);
 
-			const apollota::SimplePoint d1=(count_of_bonds<2 ? (o-a).unit() : ((o-a)+(o-b)).unit());
-			const apollota::SimplePoint d2=((o-a)&(o-b)).unit();
-			const apollota::SimplePoint d3=(d1&d2).unit();
+			const apollota::SimplePoint& d1=atom_directions_assignment_result.basic_directions[id][0];
+			const apollota::SimplePoint& d2=atom_directions_assignment_result.basic_directions[id][1];
+			const apollota::SimplePoint& d3=atom_directions_assignment_result.basic_directions[id][2];
 
 			const apollota::SimplePoint p1=o+(d1*1.8);
 			const apollota::SimplePoint p2=o+(d2*0.7);
