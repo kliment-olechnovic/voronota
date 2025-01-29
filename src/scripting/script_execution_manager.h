@@ -9,6 +9,7 @@
 #include "operators/add_figure_of_text.h"
 #include "operators/add_figure_of_triangulation.h"
 #include "operators/add_figure_of_voxels_test.h"
+#include "operators/add_figures_of_primitive_directions.h"
 #include "operators/cad_score_many.h"
 #include "operators/cad_score.h"
 #include "operators/calculate_akbps.h"
@@ -257,6 +258,7 @@ public:
 		set_command_for_data_manager("add-figure-of-text", operators::AddFigureOfText(), true);
 		set_command_for_data_manager("add-figure-of-triangulation", operators::AddFigureOfTriangulation(), true);
 		set_command_for_data_manager("add-figure-of-voxels-test", operators::AddFigureOfVoxelsTest(), true);
+		set_command_for_data_manager("add-figures-of-primitive-directions", operators::AddFiguresOfPrimitiveDirections(), true);
 		set_command_for_data_manager("calculate-akbps", operators::CalculateAKBPs(), true);
 		set_command_for_data_manager("calculate-akbps-layered", operators::CalculateAKBPsLayered(), true);
 		set_command_for_data_manager("calculate-betweenness", operators::CalculateBetweenness(), true);

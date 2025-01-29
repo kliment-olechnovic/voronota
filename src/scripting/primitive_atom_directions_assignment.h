@@ -32,6 +32,7 @@ public:
 
 	struct Result
 	{
+		std::vector<std::size_t> counts_of_bonds;
 		std::vector< std::vector<std::size_t> > directional_neighbors;
 
 		Result()
@@ -108,10 +109,12 @@ public:
 			}
 		}
 
+		result.counts_of_bonds.resize(data_manager.atoms().size());
 		result.directional_neighbors.resize(data_manager.atoms().size());
 		for(std::size_t i=0;i<data_manager.atoms().size();i++)
 		{
 			const std::set<std::size_t>& direct_neighbors=graph_direct[i];
+			result.counts_of_bonds[i]=direct_neighbors.size();
 			const std::set<std::size_t>& indirect_neighbors=graph_indirect[i];
 			const std::set<std::size_t>& far_neighbors=graph_far[i];
 			std::vector< std::pair< std::pair<int, std::string>, std::size_t > > neighbors_in_residue;
