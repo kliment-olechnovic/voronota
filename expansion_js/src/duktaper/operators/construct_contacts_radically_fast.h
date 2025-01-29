@@ -7,6 +7,8 @@
 
 #include "../../../../src/auxiliaries/opengl_printer.h"
 
+#include "../../../../src/scripting/primitive_atom_directions_assignment.h"
+
 #include "../operators_common.h"
 
 namespace voronota
@@ -190,55 +192,21 @@ public:
 				precutting_parameters.single_mask=(precutting%100);
 			}
 
-			for(std::size_t i=0;i<spheres.size();i++)
+			scripting::PrimitiveAtomDirectionsAssignment::Result atom_directions_assignment_result;
+
 			{
-				std::vector< std::pair< std::pair<double, std::string>, std::size_t > > rneighbors;
-				std::size_t j=data_manager.primary_structure_info().map_of_atoms_to_residues[i];
-				if(data_manager.primary_structure_info().residues[j].atom_ids.size()>1)
+				scripting::PrimitiveAtomDirectionsAssignment::Parameters atom_directions_assignment_params;
+				scripting::PrimitiveAtomDirectionsAssignment::construct_result(atom_directions_assignment_params, data_manager, atom_directions_assignment_result);
+			}
+
+			if(precutting_parameters.global_preliminary_cutting_plane_normals.size()>=1)
+			{
+				for(std::size_t i=0;i<spheres.size();i++)
 				{
-					for(std::size_t l=0;l<data_manager.primary_structure_info().residues[j].atom_ids.size();l++)
+					precutting_parameters.global_preliminary_cutting_plane_normals[0][i]=voronotalt::SimplePoint(atom_directions_assignment_result.basic_directions[i][0].x, atom_directions_assignment_result.basic_directions[i][0].y, atom_directions_assignment_result.basic_directions[i][0].z);
+					if(precutting_parameters.global_preliminary_cutting_plane_normals.size()==2)
 					{
-						const std::size_t rnid=data_manager.primary_structure_info().residues[j].atom_ids[l];
-						if(rnid!=i)
-						{
-							double dist=voronotalt::distance_from_point_to_point(spheres[i].p, spheres[rnid].p);
-							if(dist<1.7)
-							{
-								dist=1.7;
-							}
-							else if(dist<3.1)
-							{
-								dist=3.1;
-							}
-							const std::pair<double, std::string> named_dist(dist, data_manager.atoms()[rnid].crad.name);
-							rneighbors.push_back(std::pair< std::pair<double, std::string>, std::size_t >(named_dist, rnid));
-						}
-					}
-					std::sort(rneighbors.begin(), rneighbors.end());
-				}
-				if(precutting_parameters.global_preliminary_cutting_plane_normals.size()==1)
-				{
-					if(rneighbors.size()==1)
-					{
-						precutting_parameters.global_preliminary_cutting_plane_normals[0][i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[0].second].p));
-					}
-					else if(rneighbors.size()>=2)
-					{
-						const voronotalt::SimplePoint dir0=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[0].second].p));
-						const voronotalt::SimplePoint dir1=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[1].second].p));
-						precutting_parameters.global_preliminary_cutting_plane_normals[0][i]=voronotalt::unit_point(voronotalt::sum_of_points(dir0, dir1));
-					}
-				}
-				else if(precutting_parameters.global_preliminary_cutting_plane_normals.size()==2)
-				{
-					if(rneighbors.size()>=2)
-					{
-						precutting_parameters.global_preliminary_cutting_plane_normals[0][i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[0].second].p));
-						precutting_parameters.global_preliminary_cutting_plane_normals[1][i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[1].second].p));
-					}
-					else if(rneighbors.size()==1)
-					{
-						precutting_parameters.global_preliminary_cutting_plane_normals[0][i]=voronotalt::unit_point(voronotalt::sub_of_points(spheres[i].p, spheres[rneighbors[0].second].p));
+						precutting_parameters.global_preliminary_cutting_plane_normals[1][i]=voronotalt::SimplePoint(atom_directions_assignment_result.basic_directions[i][1].x, atom_directions_assignment_result.basic_directions[i][1].y, atom_directions_assignment_result.basic_directions[i][1].z);
 					}
 				}
 			}
