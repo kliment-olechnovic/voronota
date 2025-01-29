@@ -139,7 +139,9 @@ public:
 						{
 							const UnsignedInt neighbor_id=spheres.size()+i;
 							const SimplePoint& neighbor_ac_plane_normal=preliminary_cutting_plane_normals[i];
-							const SimplePoint& neighbor_ac_plane_center=result_contact_descriptor.intersection_circle_sphere.p;
+							const Float tan_of_min_angle_for_full_overlap=FLOATCONST(0.087);
+							const SimplePoint shift_for_neighbor_ac_plane_center=point_and_number_product(result_contact_descriptor.intersection_circle_axis, std::min(a.r, b.r)*(i%2==0 ? FLOATCONST(-1.0) : FLOATCONST(1.0))*tan_of_min_angle_for_full_overlap);
+							const SimplePoint neighbor_ac_plane_center=sum_of_points(result_contact_descriptor.intersection_circle_sphere.p, shift_for_neighbor_ac_plane_center);
 							if(mark_and_cut_contour(neighbor_ac_plane_center, neighbor_ac_plane_normal, neighbor_id, result_contact_descriptor.contour))
 							{
 								cut_performed=true;
