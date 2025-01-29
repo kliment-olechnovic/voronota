@@ -16,12 +16,14 @@ public:
 	{
 		double max_bond_distance;
 		std::size_t max_number_of_directional_neighbors;
-		apollota::SimplePoint default_fallback_direction;
+		apollota::SimplePoint default_fallback_direction1;
+		apollota::SimplePoint default_fallback_direction2;
 
 		Parameters() :
 			max_bond_distance(1.7),
 			max_number_of_directional_neighbors(2),
-			default_fallback_direction(apollota::SimplePoint(1.0, 1.0, 1.0).unit())
+			default_fallback_direction1(apollota::SimplePoint(1.0, 0.0, 0.0)),
+			default_fallback_direction2(apollota::SimplePoint(0.0, 1.0, 0.0))
 		{
 		}
 
@@ -119,7 +121,7 @@ public:
 
 		result.counts_of_bonds.resize(data_manager.atoms().size());
 		result.directional_neighbors.resize(data_manager.atoms().size());
-		result.basic_directions.resize(data_manager.atoms().size(), std::vector<apollota::SimplePoint>(3, params.default_fallback_direction));
+		result.basic_directions.resize(data_manager.atoms().size(), std::vector<apollota::SimplePoint>(3));
 		for(std::size_t i=0;i<data_manager.atoms().size();i++)
 		{
 			const std::set<std::size_t>& direct_neighbors=graph_direct[i];
@@ -158,8 +160,8 @@ public:
 				const std::vector<std::size_t>& dneighbors=result.directional_neighbors[i];
 
 				const apollota::SimplePoint o(data_manager.atoms()[i].value);
-				const apollota::SimplePoint a=(dneighbors.size()>0 ? apollota::SimplePoint(data_manager.atoms()[dneighbors[0]].value) : o+params.default_fallback_direction);
-				const apollota::SimplePoint b=(dneighbors.size()>1 ? apollota::SimplePoint(data_manager.atoms()[dneighbors[1]].value) : a);
+				const apollota::SimplePoint a=(dneighbors.size()>0 ? apollota::SimplePoint(data_manager.atoms()[dneighbors[0]].value) : o+params.default_fallback_direction1);
+				const apollota::SimplePoint b=(dneighbors.size()>1 ? apollota::SimplePoint(data_manager.atoms()[dneighbors[1]].value) : o+params.default_fallback_direction2);
 
 				const apollota::SimplePoint d1=(direct_neighbors.size()<2 ? (o-a).unit() : ((o-a)+(o-b)).unit());
 				const apollota::SimplePoint d2=((o-a)&(o-b)).unit();
