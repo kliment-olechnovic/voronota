@@ -947,6 +947,9 @@
             "name":"add-figures-of-labels",
             "short_description":""},
           {
+            "name":"add-figures-of-primitive-directions",
+            "short_description":""},
+          {
             "name":"cad-score",
             "short_description":""},
           {
@@ -1098,6 +1101,9 @@
             "short_description":""},
           {
             "name":"export-contacts-as-pymol-cgo",
+            "short_description":""},
+          {
+            "name":"export-directional-atom-type-tuples",
             "short_description":""},
           {
             "name":"export-figures-as-pymol-cgo",
