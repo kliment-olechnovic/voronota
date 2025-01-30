@@ -186,6 +186,7 @@ public:
 
 			precutting_parameters.apply_with_single_mask=(precutting_application_regime==1);
 			precutting_parameters.apply_with_all_masks=(precutting_application_regime==2);
+			precutting_parameters.global_preliminary_cutting_permissions.resize(spheres.size(), 0);
 			precutting_parameters.global_preliminary_cutting_plane_normals.resize(precutting_number_of_planes, std::vector<voronotalt::SimplePoint>(spheres.size(), voronotalt::unit_point(voronotalt::SimplePoint(1.0, 1.0, 1.0))));
 			if(precutting_parameters.apply_with_single_mask)
 			{
@@ -203,6 +204,10 @@ public:
 			{
 				for(std::size_t i=0;i<spheres.size();i++)
 				{
+					if(atom_directions_assignment_result.counts_of_bonds[i]==1 || atom_directions_assignment_result.counts_of_bonds[i]==2)
+					{
+						precutting_parameters.global_preliminary_cutting_permissions[i]=1;
+					}
 					precutting_parameters.global_preliminary_cutting_plane_normals[0][i]=voronotalt::SimplePoint(atom_directions_assignment_result.basic_directions[i][0].x, atom_directions_assignment_result.basic_directions[i][0].y, atom_directions_assignment_result.basic_directions[i][0].z);
 					if(precutting_parameters.global_preliminary_cutting_plane_normals.size()==2)
 					{
@@ -333,13 +338,15 @@ public:
 						std::size_t rj=jo+(adjunct_circle_restrictions.size()-1-j);
 						std::size_t sj=jo+j;
 						double& subarea=contact.value.props.adjuncts[names_for_adjunct_subareas[sj]];
+						double& total_subarea=total_subareas[names_for_adjunct_subareas[sj]];
 						double& levelarea=contact.value.props.adjuncts[names_for_adjunct_levelareas[sj]];
 						if(rj<cdsa.level_areas.size())
 						{
-							subarea+=(((rj+1-jo)<adjunct_circle_restrictions.size()) ? (cdsa.level_areas[rj]-cdsa.level_areas[rj+1]) : cdsa.level_areas[rj]);
+							const double subarea_to_add=(((rj+1-jo)<adjunct_circle_restrictions.size()) ? (cdsa.level_areas[rj]-cdsa.level_areas[rj+1]) : cdsa.level_areas[rj]);
+							subarea+=subarea_to_add;
+							total_subarea+=subarea_to_add;
 							levelarea+=cdsa.level_areas[rj];
 						}
-						total_subareas[names_for_adjunct_subareas[sj]]+=subarea;
 					}
 				}
 			}

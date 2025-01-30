@@ -14,22 +14,18 @@ class PrimitiveAtomDirectionsAssignment
 public:
 	struct Parameters
 	{
-		double max_bond_distance;
+		double max_bond_distance_common;
+		double max_bond_distance_extended;
 		std::size_t max_number_of_directional_neighbors;
 		apollota::SimplePoint default_fallback_direction1;
 		apollota::SimplePoint default_fallback_direction2;
 
 		Parameters() :
-			max_bond_distance(1.7),
+			max_bond_distance_common(1.7),
+			max_bond_distance_extended(2.0),
 			max_number_of_directional_neighbors(2),
 			default_fallback_direction1(apollota::SimplePoint(1.0, 0.0, 0.0)),
 			default_fallback_direction2(apollota::SimplePoint(0.0, 1.0, 0.0))
-		{
-		}
-
-		Parameters(const double max_bond_distance, const std::size_t max_number_of_directional_neighbors) :
-			max_bond_distance(max_bond_distance),
-			max_number_of_directional_neighbors(max_number_of_directional_neighbors)
 		{
 		}
 	};
@@ -63,16 +59,26 @@ public:
 			const common::ConstructionOfPrimaryStructure::Residue& residue=data_manager.primary_structure_info().residues[j];
 			for(std::size_t id_a=0;id_a<residue.atom_ids.size();id_a++)
 			{
-				for(std::size_t id_b=0;id_b<residue.atom_ids.size();id_b++)
+				const std::size_t atom_id_a=residue.atom_ids[id_a];
+				const Atom& atom_a=data_manager.atoms()[atom_id_a];
+				for(std::size_t k=((j>0) ? (j-1) : j);k<=((j+1<data_manager.primary_structure_info().residues.size()) ? (j+1) : j);k++)
 				{
-					const std::size_t atom_id_a=residue.atom_ids[id_a];
-					const std::size_t atom_id_b=residue.atom_ids[id_b];
-					if(atom_id_a!=atom_id_b)
+					const common::ConstructionOfPrimaryStructure::Residue& context_residue=data_manager.primary_structure_info().residues[k];
+					for(std::size_t id_b=0;id_b<context_residue.atom_ids.size();id_b++)
 					{
-						if(apollota::distance_from_point_to_point(data_manager.atoms()[atom_id_a].value, data_manager.atoms()[atom_id_b].value)<params.max_bond_distance)
+						const std::size_t atom_id_b=context_residue.atom_ids[id_b];
+						if(atom_id_a!=atom_id_b)
 						{
-							graph_direct[atom_id_a].insert(atom_id_b);
-							graph_direct[atom_id_b].insert(atom_id_a);
+							const Atom& atom_b=data_manager.atoms()[atom_id_b];
+							double max_bond_distance=params.max_bond_distance_common;
+							if((atom_a.crad.name.size()>0 && atom_a.crad.name[0]=='S') || (atom_b.crad.name.size()>0 && atom_b.crad.name[0]=='S'))
+							{
+								max_bond_distance=params.max_bond_distance_extended;
+							}
+							if(apollota::distance_from_point_to_point(atom_a.value, atom_b.value)<max_bond_distance)
+							{
+								graph_direct[atom_id_a].insert(atom_id_b);
+							}
 						}
 					}
 				}

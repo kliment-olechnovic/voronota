@@ -286,6 +286,7 @@ public:
 
 	struct ParametersForPreliminaryCuts
 	{
+		std::vector<int> global_preliminary_cutting_permissions;
 		std::vector< std::vector<SimplePoint> > global_preliminary_cutting_plane_normals;
 		bool apply_with_single_mask;
 		bool apply_with_all_masks;
@@ -297,7 +298,7 @@ public:
 
 		bool check_if_enabled_and_valid(const UnsignedInt number_of_input_spheres) const noexcept
 		{
-			bool enabled_and_valid=((apply_with_single_mask!=apply_with_all_masks) && !global_preliminary_cutting_plane_normals.empty());
+			bool enabled_and_valid=((apply_with_single_mask!=apply_with_all_masks) && !global_preliminary_cutting_plane_normals.empty() && global_preliminary_cutting_permissions.size()==number_of_input_spheres);
 			for(UnsignedInt g=0;enabled_and_valid && g<global_preliminary_cutting_plane_normals.size();g++)
 			{
 				enabled_and_valid=(enabled_and_valid && global_preliminary_cutting_plane_normals[g].size()==number_of_input_spheres);
@@ -329,7 +330,7 @@ public:
 		void prepare_input_for_preliminary_cuts(const std::vector<SimpleSphere>& populated_spheres, const UnsignedInt id_a, const UnsignedInt id_b,
 				const UnsignedInt request_mask,	RadicalTessellationContactConstruction::PreliminaryCuttingPlanes& preliminary_cutting_planes) const noexcept
 		{
-			if(!global_preliminary_cutting_plane_normals.empty())
+			if(!global_preliminary_cutting_plane_normals.empty() && !global_preliminary_cutting_permissions.empty())
 			{
 				preliminary_cutting_planes.normals.resize(2*global_preliminary_cutting_plane_normals.size());
 				preliminary_cutting_planes.centers.resize(preliminary_cutting_planes.normals.size());
@@ -338,19 +339,18 @@ public:
 				const SimpleSphere& sphere_a=populated_spheres[id_a];
 				const SimpleSphere& sphere_b=populated_spheres[id_b];
 				const SimplePoint intersection_circle_center=center_of_intersection_circle_of_two_spheres(sphere_a, sphere_b);
-				const SimplePoint shift_along_intersection_circle_axis=point_and_number_product(unit_point(sub_of_points(sphere_a.p, sphere_b.p)), FLOATCONST(0.087)*std::min(sphere_a.r, sphere_b.r));
+				const SimplePoint aligned_normal=unit_point(sub_of_points(sphere_a.p, sphere_b.p));
+				const SimplePoint shift_along_intersection_circle_axis=point_and_number_product(aligned_normal, FLOATCONST(0.087)*std::min(sphere_a.r, sphere_b.r));
+				const UnsignedInt ref_id_a=(id_a%global_preliminary_cutting_permissions.size());
+				const UnsignedInt ref_id_b=(id_b%global_preliminary_cutting_permissions.size());
 				for(UnsignedInt g=0;g<global_preliminary_cutting_plane_normals.size();g++)
 				{
-					preliminary_cutting_planes.normals[g*2+0]=point_and_number_product(
-							global_preliminary_cutting_plane_normals[g][id_a%global_preliminary_cutting_plane_normals[g].size()],
-							((mask & (onebit << (g*2+0)))==0 ? FLOATCONST(1.0) : FLOATCONST(-1.0)));
-					preliminary_cutting_planes.normals[g*2+1]=point_and_number_product(
-							global_preliminary_cutting_plane_normals[g][id_b%global_preliminary_cutting_plane_normals[g].size()],
-							((mask & (onebit << (g*2+1)))==0 ? FLOATCONST(1.0) : FLOATCONST(-1.0)));
-					preliminary_cutting_planes.centers[g*2+0]=sum_of_points(
-							intersection_circle_center, point_and_number_product(shift_along_intersection_circle_axis, FLOATCONST(1.0)));
-					preliminary_cutting_planes.centers[g*2+1]=sum_of_points(
-							intersection_circle_center, point_and_number_product(shift_along_intersection_circle_axis, FLOATCONST(-1.0)));
+					const SimplePoint& basic_normal_a=(global_preliminary_cutting_permissions[ref_id_a]>0 ? global_preliminary_cutting_plane_normals[g][ref_id_a] : point_and_number_product(aligned_normal, FLOATCONST(-1.0)));
+					const SimplePoint& basic_normal_b=(global_preliminary_cutting_permissions[ref_id_b]>0 ? global_preliminary_cutting_plane_normals[g][ref_id_b] : point_and_number_product(aligned_normal, FLOATCONST(1.0)));
+					preliminary_cutting_planes.normals[g*2+0]=point_and_number_product(basic_normal_a, ((mask & (onebit << (g*2+0)))==0 ? FLOATCONST(1.0) : FLOATCONST(-1.0)));
+					preliminary_cutting_planes.normals[g*2+1]=point_and_number_product(basic_normal_b, ((mask & (onebit << (g*2+1)))==0 ? FLOATCONST(1.0) : FLOATCONST(-1.0)));
+					preliminary_cutting_planes.centers[g*2+0]=sum_of_points(intersection_circle_center, point_and_number_product(shift_along_intersection_circle_axis, FLOATCONST(1.0)));
+					preliminary_cutting_planes.centers[g*2+1]=sum_of_points(intersection_circle_center, point_and_number_product(shift_along_intersection_circle_axis, FLOATCONST(-1.0)));
 				}
 			}
 		}

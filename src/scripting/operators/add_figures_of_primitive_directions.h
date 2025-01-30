@@ -76,8 +76,15 @@ public:
 			const std::size_t id=(*it);
 			const Atom& atom=data_manager.atoms()[id];
 
+			std::string category="undefined";
+			{
+				std::ostringstream output;
+				output << "bonds" << atom_directions_assignment_result.counts_of_bonds[id];
+				category=output.str();
+			}
+
 			Figure figure;
-			figure.name=LongName(figure_name_start, atom.crad.str());
+			figure.name=LongName(figure_name_start, category, atom.crad.str());
 
 			const apollota::SimplePoint o(atom.value);
 
