@@ -97,6 +97,17 @@ public:
 		}
 	};
 
+	struct PreliminaryCuttingPlanes
+	{
+		std::vector<SimplePoint> normals;
+		std::vector<SimplePoint> centers;
+
+		bool enabled_and_valid() const noexcept
+		{
+			return (!normals.empty() && normals.size()==centers.size());
+		}
+	};
+
 	static bool construct_contact_descriptor(
 			const std::vector<SimpleSphere>& spheres,
 			const std::vector<int>& spheres_exclusion_statuses,
@@ -104,7 +115,7 @@ public:
 			const UnsignedInt b_id,
 			const std::vector<ValuedID>& a_neighbor_collisions,
 			const Float max_circle_radius_restriction,
-			const std::vector<SimplePoint>& preliminary_cutting_plane_normals,
+			const PreliminaryCuttingPlanes& preliminary_cutting_planes,
 			ContactDescriptor& result_contact_descriptor) noexcept
 	{
 		result_contact_descriptor.clear();
@@ -129,20 +140,15 @@ public:
 				{
 					bool discarded=false;
 					bool contour_initialized=false;
-					if(!preliminary_cutting_plane_normals.empty())
+					if(preliminary_cutting_planes.enabled_and_valid())
 					{
 						result_contact_descriptor.intersection_circle_axis=unit_point(sub_of_points(b.p, a.p));
 						init_contour_from_base_and_axis(a_id, result_contact_descriptor.intersection_circle_sphere, result_contact_descriptor.intersection_circle_axis, result_contact_descriptor.contour);
 						contour_initialized=true;
 						bool cut_performed=false;
-						for(UnsignedInt i=0;i<preliminary_cutting_plane_normals.size() && !discarded;i++)
+						for(UnsignedInt i=0;i<preliminary_cutting_planes.normals.size() && !discarded;i++)
 						{
-							const UnsignedInt neighbor_id=spheres.size()+i;
-							const SimplePoint& neighbor_ac_plane_normal=preliminary_cutting_plane_normals[i];
-							const Float tan_of_min_angle_for_full_overlap=FLOATCONST(0.087);
-							const SimplePoint shift_for_neighbor_ac_plane_center=point_and_number_product(result_contact_descriptor.intersection_circle_axis, std::min(a.r, b.r)*(i%2==0 ? FLOATCONST(-1.0) : FLOATCONST(1.0))*tan_of_min_angle_for_full_overlap);
-							const SimplePoint neighbor_ac_plane_center=sum_of_points(result_contact_descriptor.intersection_circle_sphere.p, shift_for_neighbor_ac_plane_center);
-							if(mark_and_cut_contour(neighbor_ac_plane_center, neighbor_ac_plane_normal, neighbor_id, result_contact_descriptor.contour))
+							if(mark_and_cut_contour(preliminary_cutting_planes.centers[i], preliminary_cutting_planes.normals[i], spheres.size()+i, result_contact_descriptor.contour))
 							{
 								cut_performed=true;
 							}
