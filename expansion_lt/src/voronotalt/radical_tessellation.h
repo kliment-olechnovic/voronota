@@ -343,26 +343,41 @@ public:
 		{
 			if(!global_preliminary_cutting_plane_normals.empty() && !global_preliminary_cutting_permissions.empty())
 			{
+				preliminary_cutting_planes.enabled=true;
 				preliminary_cutting_planes.normals.resize(2*global_preliminary_cutting_plane_normals.size());
 				preliminary_cutting_planes.centers.resize(preliminary_cutting_planes.normals.size());
+				preliminary_cutting_planes.override_statuses.resize(preliminary_cutting_planes.normals.size(), 0);
+				const UnsignedInt input_n=static_cast<UnsignedInt>(global_preliminary_cutting_permissions.size());
+				const UnsignedInt ref_ids[2]={(id_a%input_n), (id_b%input_n)};
+				const Float shift_coeffs[2]={FLOATCONST(1.0), FLOATCONST(-1.0)};
 				const UnsignedInt onebit=1;
 				const UnsignedInt mask=(request_mask % (onebit << (2*global_preliminary_cutting_plane_normals.size())));
 				const SimpleSphere& sphere_a=populated_spheres[id_a];
 				const SimpleSphere& sphere_b=populated_spheres[id_b];
 				const SimplePoint intersection_circle_center=center_of_intersection_circle_of_two_spheres(sphere_a, sphere_b);
-				const SimplePoint aligned_normal=unit_point(sub_of_points(sphere_a.p, sphere_b.p));
-				const SimplePoint shift_along_intersection_circle_axis=point_and_number_product(aligned_normal, FLOATCONST(0.087)*std::min(sphere_a.r, sphere_b.r));
-				const UnsignedInt ref_id_a=(id_a%global_preliminary_cutting_permissions.size());
-				const UnsignedInt ref_id_b=(id_b%global_preliminary_cutting_permissions.size());
+				const SimplePoint shift_along_intersection_circle_axis=point_and_number_product(unit_point(sub_of_points(sphere_a.p, sphere_b.p)), FLOATCONST(0.087)*std::min(sphere_a.r, sphere_b.r));
 				for(UnsignedInt g=0;g<global_preliminary_cutting_plane_normals.size();g++)
 				{
-					const SimplePoint& basic_normal_a=(global_preliminary_cutting_permissions[ref_id_a]>0 ? global_preliminary_cutting_plane_normals[g][ref_id_a] : point_and_number_product(aligned_normal, FLOATCONST(-1.0)));
-					const SimplePoint& basic_normal_b=(global_preliminary_cutting_permissions[ref_id_b]>0 ? global_preliminary_cutting_plane_normals[g][ref_id_b] : point_and_number_product(aligned_normal, FLOATCONST(1.0)));
-					preliminary_cutting_planes.normals[g*2+0]=point_and_number_product(basic_normal_a, ((mask & (onebit << (g*2+0)))==0 ? FLOATCONST(1.0) : FLOATCONST(-1.0)));
-					preliminary_cutting_planes.normals[g*2+1]=point_and_number_product(basic_normal_b, ((mask & (onebit << (g*2+1)))==0 ? FLOATCONST(1.0) : FLOATCONST(-1.0)));
-					preliminary_cutting_planes.centers[g*2+0]=sum_of_points(intersection_circle_center, point_and_number_product(shift_along_intersection_circle_axis, FLOATCONST(1.0)));
-					preliminary_cutting_planes.centers[g*2+1]=sum_of_points(intersection_circle_center, point_and_number_product(shift_along_intersection_circle_axis, FLOATCONST(-1.0)));
+					for(UnsignedInt s=0;s<2;s++)
+					{
+						const UnsignedInt nid=(g*2+s);
+						const int switch_status=((mask & (onebit << nid))==0 ? 1 : -1);
+						if(global_preliminary_cutting_permissions[ref_ids[s]]>0)
+						{
+							preliminary_cutting_planes.override_statuses[nid]=0;
+							preliminary_cutting_planes.normals[nid]=point_and_number_product(global_preliminary_cutting_plane_normals[g][ref_ids[s]], static_cast<Float>(switch_status));
+							preliminary_cutting_planes.centers[nid]=sum_of_points(intersection_circle_center, point_and_number_product(shift_along_intersection_circle_axis, shift_coeffs[s]));
+						}
+						else
+						{
+							preliminary_cutting_planes.override_statuses[nid]=switch_status;
+						}
+					}
 				}
+			}
+			else
+			{
+				preliminary_cutting_planes.enabled=false;
 			}
 		}
 	};

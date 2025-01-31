@@ -99,12 +99,18 @@ public:
 
 	struct PreliminaryCuttingPlanes
 	{
+		bool enabled;
+		std::vector<int> override_statuses;
 		std::vector<SimplePoint> normals;
 		std::vector<SimplePoint> centers;
 
+		PreliminaryCuttingPlanes() : enabled(false)
+		{
+		}
+
 		bool enabled_and_valid() const noexcept
 		{
-			return (!normals.empty() && normals.size()==centers.size());
+			return (enabled && !normals.empty() && normals.size()==centers.size() && normals.size()==override_statuses.size());
 		}
 	};
 
@@ -148,11 +154,18 @@ public:
 						bool cut_performed=false;
 						for(UnsignedInt i=0;i<preliminary_cutting_planes.normals.size() && !discarded;i++)
 						{
-							if(mark_and_cut_contour(preliminary_cutting_planes.centers[i], preliminary_cutting_planes.normals[i], spheres.size()+i, result_contact_descriptor.contour))
+							if(preliminary_cutting_planes.override_statuses[i]==0)
 							{
-								cut_performed=true;
+								if(mark_and_cut_contour(preliminary_cutting_planes.centers[i], preliminary_cutting_planes.normals[i], spheres.size()+i, result_contact_descriptor.contour))
+								{
+									cut_performed=true;
+								}
+								if(result_contact_descriptor.contour.empty())
+								{
+									discarded=true;
+								}
 							}
-							if(result_contact_descriptor.contour.empty())
+							else if(preliminary_cutting_planes.override_statuses[i]>0)
 							{
 								discarded=true;
 							}
