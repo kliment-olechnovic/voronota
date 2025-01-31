@@ -70,15 +70,26 @@ public:
 
 	struct ContactDescriptorSummaryAdjunct
 	{
+		struct LevelArea
+		{
+			UnsignedInt zone;
+			Float restriction;
+			Float area;
+
+			LevelArea() : zone(0), restriction(FLOATCONST(0.0)), area(FLOATCONST(0.0))
+			{
+			}
+		};
+
 		ContactDescriptorSummaryAdjunct() noexcept
 		{
 		}
 
-		explicit ContactDescriptorSummaryAdjunct(const UnsignedInt levels) noexcept : level_areas(levels, FLOATCONST(0.0))
+		explicit ContactDescriptorSummaryAdjunct(const UnsignedInt levels) noexcept : level_areas(levels)
 		{
 		}
 
-		std::vector<Float> level_areas;
+		std::vector<LevelArea> level_areas;
 	};
 
 	struct CellContactDescriptorsSummary
@@ -589,7 +600,7 @@ public:
 							{
 								const Float circle_radius_restriction=(max_circle_radius_restriction>FLOATCONST(0.0) ? std::min(adjunct_max_circle_radius_restrictions[j], max_circle_radius_restriction) : adjunct_max_circle_radius_restrictions[j]);
 								if(j==0 || (circle_radius_restriction>=prev_circle_radius_restriction)
-										|| (circle_radius_restriction<prev_circle_radius_restriction && cdsa.level_areas[j-1]>FLOATCONST(0.0)))
+										|| (circle_radius_restriction<prev_circle_radius_restriction && cdsa.level_areas[lindex-1].area>FLOATCONST(0.0)))
 								{
 									if(RadicalTessellationContactConstruction::construct_contact_descriptor(
 											spheres_container.populated_spheres(),
@@ -601,11 +612,13 @@ public:
 											preliminary_cutting_planes,
 											cd))
 									{
-										cdsa.level_areas[lindex]=cd.area;
+										cdsa.level_areas[lindex].area=cd.area;
 									}
 								}
-								prev_circle_radius_restriction=circle_radius_restriction;
+								cdsa.level_areas[lindex].zone=k;
+								cdsa.level_areas[lindex].restriction=circle_radius_restriction;
 								lindex++;
+								prev_circle_radius_restriction=circle_radius_restriction;
 							}
 						}
 					}
