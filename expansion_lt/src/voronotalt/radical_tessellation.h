@@ -297,8 +297,14 @@ public:
 
 	struct ParametersForPreliminaryCuts
 	{
-		std::vector<int> global_preliminary_cutting_permissions;
-		std::vector< std::vector<SimplePoint> > global_preliminary_cutting_plane_normals;
+		struct Plane
+		{
+			SimplePoint normal;
+			SimplePoint center;
+		};
+
+		std::vector<int> permissions;
+		std::vector< std::vector<Plane> > cutting_planes;
 		bool apply_with_single_mask;
 		bool apply_with_all_masks;
 		UnsignedInt single_mask;
@@ -309,17 +315,17 @@ public:
 
 		bool check_if_enabled_and_valid(const UnsignedInt number_of_input_spheres) const noexcept
 		{
-			bool enabled_and_valid=((apply_with_single_mask!=apply_with_all_masks) && !global_preliminary_cutting_plane_normals.empty() && global_preliminary_cutting_permissions.size()==number_of_input_spheres);
-			for(UnsignedInt g=0;enabled_and_valid && g<global_preliminary_cutting_plane_normals.size();g++)
+			bool enabled_and_valid=((apply_with_single_mask!=apply_with_all_masks) && !cutting_planes.empty() && permissions.size()==number_of_input_spheres);
+			for(UnsignedInt g=0;enabled_and_valid && g<cutting_planes.size();g++)
 			{
-				enabled_and_valid=(enabled_and_valid && global_preliminary_cutting_plane_normals[g].size()==number_of_input_spheres);
+				enabled_and_valid=(enabled_and_valid && cutting_planes[g].size()==number_of_input_spheres);
 			}
 			return enabled_and_valid;
 		}
 
 		UnsignedInt calculate_number_of_possible_masks() const noexcept
 		{
-			return (static_cast<UnsignedInt>(1) << (2*global_preliminary_cutting_plane_normals.size()));
+			return (static_cast<UnsignedInt>(1) << (2*cutting_planes.size()));
 		}
 
 		UnsignedInt calculate_mask_class(const UnsignedInt mask) const noexcept
@@ -327,7 +333,7 @@ public:
 			const UnsignedInt onebit=1;
 			UnsignedInt mask_a=0;
 			UnsignedInt mask_b=0;
-			for(UnsignedInt g=0;g<global_preliminary_cutting_plane_normals.size();g++)
+			for(UnsignedInt g=0;g<cutting_planes.size();g++)
 			{
 				const UnsignedInt offset_shift=g*2;
 				const UnsignedInt bit_a=((mask & (onebit << (offset_shift+0))))==0 ? 0 : 1;
@@ -341,36 +347,32 @@ public:
 		void prepare_input_for_preliminary_cuts(const std::vector<SimpleSphere>& populated_spheres, const UnsignedInt id_a, const UnsignedInt id_b,
 				const UnsignedInt request_mask,	RadicalTessellationContactConstruction::PreliminaryCuttingPlanes& preliminary_cutting_planes) const noexcept
 		{
-			if(!global_preliminary_cutting_plane_normals.empty() && !global_preliminary_cutting_permissions.empty())
+			if(!cutting_planes.empty() && !permissions.empty())
 			{
 				preliminary_cutting_planes.enabled=true;
-				preliminary_cutting_planes.normals.resize(2*global_preliminary_cutting_plane_normals.size());
+				preliminary_cutting_planes.normals.resize(2*cutting_planes.size());
 				preliminary_cutting_planes.centers.resize(preliminary_cutting_planes.normals.size());
 				preliminary_cutting_planes.override_statuses.resize(preliminary_cutting_planes.normals.size(), 0);
-				const UnsignedInt input_n=static_cast<UnsignedInt>(global_preliminary_cutting_permissions.size());
+				const UnsignedInt input_n=static_cast<UnsignedInt>(permissions.size());
+				const UnsignedInt raw_ids[2]={id_a, id_b};
 				const UnsignedInt ref_ids[2]={(id_a%input_n), (id_b%input_n)};
-				const Float shift_coeffs[2]={FLOATCONST(1.0), FLOATCONST(-1.0)};
 				const UnsignedInt onebit=1;
-				const UnsignedInt mask=(request_mask % (onebit << (2*global_preliminary_cutting_plane_normals.size())));
-				const SimpleSphere& sphere_a=populated_spheres[id_a];
-				const SimpleSphere& sphere_b=populated_spheres[id_b];
-				const SimplePoint intersection_circle_center=center_of_intersection_circle_of_two_spheres(sphere_a, sphere_b);
-				const SimplePoint shift_along_intersection_circle_axis=point_and_number_product(unit_point(sub_of_points(sphere_a.p, sphere_b.p)), FLOATCONST(0.087)*std::min(sphere_a.r, sphere_b.r));
-				for(UnsignedInt g=0;g<global_preliminary_cutting_plane_normals.size();g++)
+				const UnsignedInt mask=(request_mask % (onebit << (2*cutting_planes.size())));
+				for(UnsignedInt g=0;g<cutting_planes.size();g++)
 				{
 					for(UnsignedInt s=0;s<2;s++)
 					{
 						const UnsignedInt nid=(g*2+s);
 						const int switch_status=((mask & (onebit << nid))==0 ? 1 : -1);
-						if(global_preliminary_cutting_permissions[ref_ids[s]]>0)
+						if(permissions[ref_ids[s]]>0)
 						{
 							preliminary_cutting_planes.override_statuses[nid]=0;
-							preliminary_cutting_planes.normals[nid]=point_and_number_product(global_preliminary_cutting_plane_normals[g][ref_ids[s]], static_cast<Float>(switch_status));
-							preliminary_cutting_planes.centers[nid]=sum_of_points(intersection_circle_center, point_and_number_product(shift_along_intersection_circle_axis, shift_coeffs[s]));
+							preliminary_cutting_planes.normals[nid]=point_and_number_product(cutting_planes[g][ref_ids[s]].normal, static_cast<Float>(switch_status));
+							preliminary_cutting_planes.centers[nid]=sum_of_points(populated_spheres[raw_ids[s]].p, cutting_planes[g][ref_ids[s]].center);
 						}
 						else
 						{
-							preliminary_cutting_planes.override_statuses[nid]=switch_status;
+							preliminary_cutting_planes.override_statuses[nid]=0-switch_status;
 						}
 					}
 				}

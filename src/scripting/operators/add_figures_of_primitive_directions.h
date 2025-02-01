@@ -64,44 +64,42 @@ public:
 		}
 
 		PrimitiveAtomDirectionsAssignment::Result atom_directions_assignment_result;
-
-		{
-			PrimitiveAtomDirectionsAssignment::Parameters atom_directions_assignment_params;
-			atom_directions_assignment_params.max_number_of_directional_neighbors=2;
-			PrimitiveAtomDirectionsAssignment::construct_result(atom_directions_assignment_params, data_manager, atom_directions_assignment_result);
-		}
+		PrimitiveAtomDirectionsAssignment::construct_result(data_manager, atom_directions_assignment_result);
 
 		for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
 		{
 			const std::size_t id=(*it);
-			const Atom& atom=data_manager.atoms()[id];
-
-			std::string category="undefined";
+			if(!atom_directions_assignment_result.basic_directions[id].empty())
 			{
-				std::ostringstream output;
-				output << "bonds" << atom_directions_assignment_result.counts_of_bonds[id];
-				category=output.str();
+				const Atom& atom=data_manager.atoms()[id];
+
+				std::string category="undefined";
+				{
+					std::ostringstream output;
+					output << "bonds" << atom_directions_assignment_result.directional_neighbors[id].size();
+					category=output.str();
+				}
+
+				Figure figure;
+				figure.name=LongName(figure_name_start, category, atom.crad.str());
+
+				const apollota::SimplePoint o(atom.value);
+
+				const apollota::SimplePoint& d1=atom_directions_assignment_result.basic_directions[id][0];
+				const apollota::SimplePoint d2=apollota::any_normal_of_vector<apollota::SimplePoint>(d1);
+				const apollota::SimplePoint d3=(d1&d2).unit();
+
+				const apollota::SimplePoint p1=o+(d1*1.8);
+				const apollota::SimplePoint p2=o+(d2*0.4);
+				const apollota::SimplePoint p3=o+(d3*0.4);
+
+				figure.add_triangle(o, p1, p2, d3);
+				figure.add_triangle(o, p1, p3, d2);
+				figure.add_triangle(o, p2, p3, d1);
+				figure.add_triangle(p1, p2, p3, ((p2-p1)&(p3-p1)).unit());
+
+				data_manager.add_figure(figure);
 			}
-
-			Figure figure;
-			figure.name=LongName(figure_name_start, category, atom.crad.str());
-
-			const apollota::SimplePoint o(atom.value);
-
-			const apollota::SimplePoint& d1=atom_directions_assignment_result.basic_directions[id][0];
-			const apollota::SimplePoint& d2=atom_directions_assignment_result.basic_directions[id][1];
-			const apollota::SimplePoint& d3=atom_directions_assignment_result.basic_directions[id][2];
-
-			const apollota::SimplePoint p1=o+(d1*1.8);
-			const apollota::SimplePoint p2=o+(d2*0.7);
-			const apollota::SimplePoint p3=o+(d3*0.3);
-
-			figure.add_triangle(o, p1, p2, d3);
-			figure.add_triangle(o, p1, p3, d2);
-			figure.add_triangle(o, p2, p3, d1);
-			figure.add_triangle(p1, p2, p3, ((p2-p1)&(p3-p1)).unit());
-
-			data_manager.add_figure(figure);
 		}
 
 		Result result;

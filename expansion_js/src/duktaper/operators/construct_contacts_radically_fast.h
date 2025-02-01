@@ -71,10 +71,11 @@ public:
 	bool characterize_topology;
 	bool no_remove_triangulation_info;
 	int precutting;
+	double precutting_shift;
 	std::vector<double> adjunct_circle_restrictions;
 	std::string initial_selection_expression;
 
-	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting(0)
+	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting(0), precutting_shift(1.0)
 	{
 	}
 
@@ -89,6 +90,7 @@ public:
 		characterize_topology=input.get_flag("characterize-topology");
 		no_remove_triangulation_info=input.get_flag("no-remove-triangulation-info");
 		precutting=input.get_value_or_default<int>("precutting", 0);
+		precutting_shift=input.get_value_or_default<double>("precutting-shift", 1.0);
 		adjunct_circle_restrictions=input.get_value_vector_or_default<double>("adjunct-circle-restrictions", std::vector<double>());
 		initial_selection_expression=input.get_value_or_default<std::string>("initial-sel", "");
 	}
@@ -183,35 +185,34 @@ public:
 		{
 			const int precutting_application_regime=(precutting/1000);
 			const int precutting_number_of_planes=(precutting%1000)/100;
-
-			precutting_parameters.apply_with_single_mask=(precutting_application_regime==1);
-			precutting_parameters.apply_with_all_masks=(precutting_application_regime==2);
-			precutting_parameters.global_preliminary_cutting_permissions.resize(spheres.size(), 0);
-			precutting_parameters.global_preliminary_cutting_plane_normals.resize(precutting_number_of_planes, std::vector<voronotalt::SimplePoint>(spheres.size(), voronotalt::unit_point(voronotalt::SimplePoint(1.0, 1.0, 1.0))));
-			if(precutting_parameters.apply_with_single_mask)
+			if(precutting_application_regime==1 || precutting_application_regime==2 || precutting_number_of_planes==1 || precutting_number_of_planes==2)
 			{
-				precutting_parameters.single_mask=(precutting%100);
-			}
+				precutting_parameters.apply_with_single_mask=(precutting_application_regime==1);
+				precutting_parameters.apply_with_all_masks=(precutting_application_regime==2);
+				precutting_parameters.permissions.resize(spheres.size(), 0);
+				precutting_parameters.cutting_planes.resize(precutting_number_of_planes, std::vector<voronotalt::RadicalTessellation::ParametersForPreliminaryCuts::Plane>(spheres.size()));
+				if(precutting_parameters.apply_with_single_mask)
+				{
+					precutting_parameters.single_mask=(precutting%100);
+				}
 
-			scripting::PrimitiveAtomDirectionsAssignment::Result atom_directions_assignment_result;
+				scripting::PrimitiveAtomDirectionsAssignment::Result atom_directions_assignment_result;
+				scripting::PrimitiveAtomDirectionsAssignment::construct_result(data_manager, atom_directions_assignment_result);
 
-			{
-				scripting::PrimitiveAtomDirectionsAssignment::Parameters atom_directions_assignment_params;
-				scripting::PrimitiveAtomDirectionsAssignment::construct_result(atom_directions_assignment_params, data_manager, atom_directions_assignment_result);
-			}
-
-			if(precutting_parameters.global_preliminary_cutting_plane_normals.size()>=1)
-			{
 				for(std::size_t i=0;i<spheres.size();i++)
 				{
-					if(atom_directions_assignment_result.counts_of_bonds[i]==1 || atom_directions_assignment_result.counts_of_bonds[i]==2)
+					if(!atom_directions_assignment_result.basic_directions[i].empty())
 					{
-						precutting_parameters.global_preliminary_cutting_permissions[i]=1;
-					}
-					precutting_parameters.global_preliminary_cutting_plane_normals[0][i]=voronotalt::SimplePoint(atom_directions_assignment_result.basic_directions[i][0].x, atom_directions_assignment_result.basic_directions[i][0].y, atom_directions_assignment_result.basic_directions[i][0].z);
-					if(precutting_parameters.global_preliminary_cutting_plane_normals.size()==2)
-					{
-						precutting_parameters.global_preliminary_cutting_plane_normals[1][i]=voronotalt::SimplePoint(atom_directions_assignment_result.basic_directions[i][1].x, atom_directions_assignment_result.basic_directions[i][1].y, atom_directions_assignment_result.basic_directions[i][1].z);
+						precutting_parameters.permissions[i]=1;
+						const apollota::SimplePoint& bd=atom_directions_assignment_result.basic_directions[i][0];
+						double shift_value=precutting_shift;
+						for(std::size_t j=0;j<precutting_parameters.cutting_planes.size();j++)
+						{
+							precutting_parameters.cutting_planes[j][i].normal=voronotalt::SimplePoint(bd.x, bd.y, bd.z);
+							const apollota::SimplePoint shift=bd*shift_value;
+							precutting_parameters.cutting_planes[j][i].center=voronotalt::SimplePoint(shift.x, shift.y, shift.z);
+							shift_value+=precutting_shift;
+						}
 					}
 				}
 			}

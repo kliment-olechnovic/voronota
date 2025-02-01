@@ -47,12 +47,9 @@ public:
 	{
 		assert_file_name_input(file, false);
 
-		PrimitiveAtomDirectionsAssignment::Parameters atom_directions_assignment_params;
-		atom_directions_assignment_params.max_number_of_directional_neighbors=2;
-
 		PrimitiveAtomDirectionsAssignment::Result atom_directions_assignment_result;
 
-		PrimitiveAtomDirectionsAssignment::construct_result(atom_directions_assignment_params, data_manager, atom_directions_assignment_result);
+		PrimitiveAtomDirectionsAssignment::construct_result(data_manager, atom_directions_assignment_result);
 
 		OutputSelector output_selector(file);
 		std::ostream& output=output_selector.stream();
@@ -62,7 +59,7 @@ public:
 		{
 			const Atom& central_atom=data_manager.atoms()[i];
 			output << central_atom.crad.resName << " " << central_atom.crad.name;
-			for(std::size_t l=0;l<2;l++)
+			for(std::size_t l=0;l<3;l++)
 			{
 				if(l<atom_directions_assignment_result.directional_neighbors[i].size())
 				{
