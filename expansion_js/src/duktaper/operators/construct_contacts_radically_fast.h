@@ -70,12 +70,12 @@ public:
 	bool generate_graphics;
 	bool characterize_topology;
 	bool no_remove_triangulation_info;
-	int precutting;
-	double precutting_shift;
+	int precutting_variant;
 	std::vector<double> adjunct_circle_restrictions;
+	std::vector<double> precutting_shifts;
 	std::string initial_selection_expression;
 
-	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting(0), precutting_shift(1.0)
+	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting_variant(-1)
 	{
 	}
 
@@ -89,9 +89,9 @@ public:
 		generate_graphics=input.get_flag("generate-graphics");
 		characterize_topology=input.get_flag("characterize-topology");
 		no_remove_triangulation_info=input.get_flag("no-remove-triangulation-info");
-		precutting=input.get_value_or_default<int>("precutting", 0);
-		precutting_shift=input.get_value_or_default<double>("precutting-shift", 1.0);
+		precutting_variant=input.get_value_or_default<int>("precutting-variant", -1);
 		adjunct_circle_restrictions=input.get_value_vector_or_default<double>("adjunct-circle-restrictions", std::vector<double>());
+		precutting_shifts=input.get_value_vector_or_default<double>("precutting-shifts", std::vector<double>());
 		initial_selection_expression=input.get_value_or_default<std::string>("initial-sel", "");
 	}
 
@@ -106,6 +106,8 @@ public:
 		doc.set_option_decription(CDOD("characterize-topology", CDOD::DATATYPE_BOOL, "flag to characterize topology of the merged contacts mesh surface"));
 		doc.set_option_decription(CDOD("no-remove-triangulation-info", CDOD::DATATYPE_BOOL, "flag to not remove triangulation info"));
 		doc.set_option_decription(CDOD("adjunct-circle-restrictions", CDOD::DATATYPE_FLOAT_ARRAY, "adjunct circle restriction radii", ""));
+		doc.set_option_decription(CDOD("precutting-variant", CDOD::DATATYPE_INT, "precutting variant", -1));
+		doc.set_option_decription(CDOD("precutting-shifts", CDOD::DATATYPE_FLOAT_ARRAY, "precutting plane shift values", ""));
 		doc.set_option_decription(CDOD("initial-sel", CDOD::DATATYPE_STRING, "initial selection expression", ""));
 	}
 
@@ -116,19 +118,19 @@ public:
 
 		data_manager.assert_atoms_availability();
 
-		if(with_grouping_for_filtering || precutting>0)
+		if(with_grouping_for_filtering || !precutting_shifts.empty())
 		{
 			data_manager.assert_primary_structure_info_valid();
 		}
 
-		if(precutting!=0 && !(precutting>=1100 && precutting<1104) && !(precutting>=1200 && precutting<1216) && !(precutting>=2100 && precutting<2104) && !(precutting>=2200 && precutting<2216))
+		if(precutting_shifts.size()>2)
 		{
-			throw std::runtime_error("Invalid precutting mode.");
+			throw std::runtime_error("Invalid number of precutting plane shifts, must be not greater than two.");
 		}
 
-		if(precutting>0 && characterize_topology)
+		if(precutting_variant>=(1 << (precutting_shifts.size()*2)))
 		{
-			throw std::runtime_error("Simultaneous enabling of pre-cutting and topology characterization is not implemented yet.");
+			throw std::runtime_error("Invalid precutting variant, must be less than pow(2, 2*number_ofprecutting_shifts).");
 		}
 
 		bool restrictions_positive=false;
@@ -181,38 +183,31 @@ public:
 
 		voronotalt::RadicalTessellation::ParametersForPreliminaryCuts precutting_parameters;
 
-		if(precutting>0)
+		if(!precutting_shifts.empty())
 		{
-			const int precutting_application_regime=(precutting/1000);
-			const int precutting_number_of_planes=(precutting%1000)/100;
-			if(precutting_application_regime==1 || precutting_application_regime==2 || precutting_number_of_planes==1 || precutting_number_of_planes==2)
+			precutting_parameters.apply_with_single_mask=(precutting_variant>=0);
+			precutting_parameters.apply_with_all_masks=(precutting_variant<0);
+			precutting_parameters.permissions.resize(spheres.size(), 0);
+			precutting_parameters.cutting_planes.resize(precutting_shifts.size(), std::vector<voronotalt::RadicalTessellation::ParametersForPreliminaryCuts::Plane>(spheres.size()));
+			if(precutting_parameters.apply_with_single_mask)
 			{
-				precutting_parameters.apply_with_single_mask=(precutting_application_regime==1);
-				precutting_parameters.apply_with_all_masks=(precutting_application_regime==2);
-				precutting_parameters.permissions.resize(spheres.size(), 0);
-				precutting_parameters.cutting_planes.resize(precutting_number_of_planes, std::vector<voronotalt::RadicalTessellation::ParametersForPreliminaryCuts::Plane>(spheres.size()));
-				if(precutting_parameters.apply_with_single_mask)
-				{
-					precutting_parameters.single_mask=(precutting%100);
-				}
+				precutting_parameters.single_mask=static_cast<voronotalt::UnsignedInt>(precutting_variant);
+			}
 
-				scripting::PrimitiveAtomDirectionsAssignment::Result atom_directions_assignment_result;
-				scripting::PrimitiveAtomDirectionsAssignment::construct_result(data_manager, atom_directions_assignment_result);
+			scripting::PrimitiveAtomDirectionsAssignment::Result atom_directions_assignment_result;
+			scripting::PrimitiveAtomDirectionsAssignment::construct_result(data_manager, atom_directions_assignment_result);
 
-				for(std::size_t i=0;i<spheres.size();i++)
+			for(std::size_t i=0;i<spheres.size();i++)
+			{
+				if(!atom_directions_assignment_result.basic_directions[i].empty())
 				{
-					if(!atom_directions_assignment_result.basic_directions[i].empty())
+					precutting_parameters.permissions[i]=1;
+					const apollota::SimplePoint& bd=atom_directions_assignment_result.basic_directions[i][0];
+					for(std::size_t j=0;j<precutting_parameters.cutting_planes.size();j++)
 					{
-						precutting_parameters.permissions[i]=1;
-						const apollota::SimplePoint& bd=atom_directions_assignment_result.basic_directions[i][0];
-						double shift_value=precutting_shift;
-						for(std::size_t j=0;j<precutting_parameters.cutting_planes.size();j++)
-						{
-							precutting_parameters.cutting_planes[j][i].normal=voronotalt::SimplePoint(bd.x, bd.y, bd.z);
-							const apollota::SimplePoint shift=bd*shift_value;
-							precutting_parameters.cutting_planes[j][i].center=voronotalt::SimplePoint(shift.x, shift.y, shift.z);
-							shift_value+=precutting_shift;
-						}
+						precutting_parameters.cutting_planes[j][i].normal=voronotalt::SimplePoint(bd.x, bd.y, bd.z);
+						const apollota::SimplePoint shift=bd*precutting_shifts[j];
+						precutting_parameters.cutting_planes[j][i].center=voronotalt::SimplePoint(shift.x, shift.y, shift.z);
 					}
 				}
 			}
