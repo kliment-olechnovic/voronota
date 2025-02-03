@@ -217,38 +217,46 @@ voronota_delete_objects_if("-objects-fewer-than", 2);
 voronota_pick_objects();
 
 var param_adjunct_circle_restrictions=[];
-var param_precutting=0;
+var param_precutting_shifts=[];
 var param_area_value_names=[];
 
 if(params.layering_mode=="outward" && params.directing_mode=="none")
 {
 	param_adjunct_circle_restrictions=[0.4, 0.8, 1.2, 1.6, 999.0];
-	param_precutting=0;
+	param_precutting_shifts=[];
 	param_area_value_names=["area", "subarea00000to00040", "subarea00040to00080", "subarea00080to00120", "subarea00120to00160", "subarea00160to99900"];
 }
 
 if(params.layering_mode=="inward" && params.directing_mode=="none")
 {
 	param_adjunct_circle_restrictions=[-1.6, -1.2, -0.8, -0.4, -0.0000001];
-	param_precutting=0;
+	param_precutting_shifts=[];
 	param_area_value_names=["area", "subareaM99900toM00160", "subareaM00160toM00120", "subareaM00120toM00080", "subareaM00080toM00040", "subareaM00040toM00000"];
 }
 
 if(params.layering_mode=="outward" && params.directing_mode=="d4")
 {
 	param_adjunct_circle_restrictions=[0.4, 0.8, 1.2, 1.6, 999.0];
-	param_precutting=2100;
+	param_precutting_shifts=[0.9];
 	param_area_value_names=["area", "pcut00000subarea00000to00040", "pcut00000subarea00040to00080", "pcut00000subarea00080to00120", "pcut00000subarea00120to00160", "pcut00000subarea00160to99900", "pcut00001subarea00000to00040", "pcut00001subarea00040to00080", "pcut00001subarea00080to00120", "pcut00001subarea00120to00160", "pcut00001subarea00160to99900", "pcut00003subarea00000to00040", "pcut00003subarea00040to00080", "pcut00003subarea00080to00120", "pcut00003subarea00120to00160", "pcut00003subarea00160to99900"];
 }
 
 if(params.layering_mode=="inward" && params.directing_mode=="d4")
 {
 	param_adjunct_circle_restrictions=[-1.6, -1.2, -0.8, -0.4, -0.0000001];
-	param_precutting=2100;
+	param_precutting_shifts=[0.9];
 	param_area_value_names=["area", "pcut00000subareaM99900toM00160", "pcut00000subareaM00160toM00120", "pcut00000subareaM00120toM00080", "pcut00000subareaM00080toM00040", "pcut00000subareaM00040toM00000", "pcut00001subareaM99900toM00160", "pcut00001subareaM00160toM00120", "pcut00001subareaM00120toM00080", "pcut00001subareaM00080toM00040", "pcut00001subareaM00040toM00000", "pcut00003subareaM99900toM00160", "pcut00003subareaM00160toM00120", "pcut00003subareaM00120toM00080", "pcut00003subareaM00080toM00040", "pcut00003subareaM00040toM00000"];
 }
 
-voronota_construct_contacts_radically_fast("-probe", params.probe, "-adjunct-circle-restrictions", param_adjunct_circle_restrictions, "-precutting", param_precutting);
+if(param_precutting_shifts.length>0)
+{
+	voronota_construct_contacts_radically_fast("-probe", params.probe, "-adjunct-circle-restrictions", param_adjunct_circle_restrictions, "-precutting-shifts", param_precutting_shifts);
+}
+else
+{
+	voronota_construct_contacts_radically_fast("-probe", params.probe, "-adjunct-circle-restrictions", param_adjunct_circle_restrictions);
+}
+
 voronota_assert_full_success("Failed to construct contacts");
 
 voronota_delete_objects_if("-not-enough-contacts-in-selection", "[-min-seq-sep 2 -no-solvent]");

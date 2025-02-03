@@ -407,14 +407,22 @@ else if(params.layering_mode=="outward")
 	circle_restrictions.push(999.0);
 }
 
-var param_precutting=0;
+var param_precutting_shifts=[];
 
 if(params.directing_mode=="d4")
 {
-	param_precutting=2100;
+	param_precutting_shifts=[0.9];
 }
 
-voronota_construct_contacts_radically_fast("-no-intra-chain", "-adjunct-circle-restrictions", circle_restrictions, "-precutting", param_precutting);
+if(param_precutting_shifts.length>0)
+{
+	voronota_construct_contacts_radically_fast("-no-intra-chain", "-adjunct-circle-restrictions", circle_restrictions, "-precutting-shifts", param_precutting_shifts);
+}
+else
+{
+	voronota_construct_contacts_radically_fast("-no-intra-chain", "-adjunct-circle-restrictions", circle_restrictions);
+}
+
 voronota_assert_full_success("Failed to construct inter-chain contacts");
 var result_contacts_construction=voronota_last_output().results[0].output;
 
