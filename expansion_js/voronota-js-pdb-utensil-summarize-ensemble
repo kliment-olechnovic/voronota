@@ -9,6 +9,7 @@ cat >&2 << 'EOF'
 Options:
     --probe                   number     probe radius, default is 1.4
     --input-directory         string     path to directory to find input structures, default is ''
+    --restrict-input          string     query to restrict input atoms, default is '[]'
     --output-file             string     path to file to output results, default is '_stdout'
     --atom-atom-output-file   string     path to file to output atom-atom results, default is ''
     --layering-mode           string     layering mode ('outward' or 'inward'), default is 'inward'
@@ -47,6 +48,7 @@ export LC_ALL=C
 command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
 
 PROBE="1.4"
+RESTRICT_INPUT="[]"
 MINRESCOUNT="60"
 INDIR=""
 OUTFILE="_stdout"
@@ -64,6 +66,10 @@ do
 	case $OPTION in
 	--probe)
 		PROBE="$OPTARG"
+		shift
+		;;
+	--restrict-input)
+		RESTRICT_INPUT="$OPTARG"
 		shift
 		;;
 	--min-res-count)
@@ -107,6 +113,11 @@ done
 if [ "$HELP_MODE" == "true" ]
 then
 	print_help_and_exit
+fi
+
+if [ -z "$RESTRICT_INPUT" ]
+then
+	RESTRICT_INPUT="[]"
 fi
 
 if [ "$LAYERINGMODE" != "outward" ] && [ "$LAYERINGMODE" != "inward" ]
@@ -165,6 +176,7 @@ fi
 {
 cat << EOF
 var params={}
+params.selection_of_atoms='$RESTRICT_INPUT';
 params.min_residue_count='$MINRESCOUNT';
 params.probe='$PROBE';
 params.layering_mode='$LAYERINGMODE';
@@ -210,6 +222,11 @@ done
 
 cat << 'EOF'
 voronota_pick_objects();
+
+if(params.selection_of_atoms && params.selection_of_atoms!="[]")
+{
+	voronota_restrict_atoms("-use", params.selection_of_atoms);
+}
 
 voronota_delete_objects_if("-residues-fewer-than", params.min_residue_count, "-atoms-to-residues-ratio-less-than", 6.0);
 voronota_delete_objects_if("-objects-fewer-than", 2);
@@ -269,7 +286,7 @@ voronota_assert_full_success("Failed to collect contact area ranges");
 
 if(params.atom_atom_output_file)
 {
-	voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", param_area_value_names, "-remove-contacts");
+	voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", param_area_value_names);
 	voronota_assert_full_success("Failed to collect atom-atom contact area ranges");
 }
 EOF

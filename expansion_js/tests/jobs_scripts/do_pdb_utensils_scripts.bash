@@ -41,6 +41,7 @@ cat "$INPUTDIR/complex/target.pdb" \
 > "${SUBDIR}/sequences_of_selection.fasta"
 
 $VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
+  --restrict-input "[-chain A]" \
   --layering-mode "outward" \
   --directing-mode "none" \
   --input-directory "$INPUTDIR/complex" \
@@ -48,6 +49,7 @@ $VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
 > "${SUBDIR}/ensemble_summary_inter_residue_with_layering_outward.txt"
 
 $VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
+  --restrict-input "[-chain A]" \
   --layering-mode "inward" \
   --directing-mode "none" \
   --input-directory "$INPUTDIR/complex" \
@@ -55,6 +57,7 @@ $VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
 > "${SUBDIR}/ensemble_summary_inter_residue_with_layering_inward.txt"
 
 $VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
+  --restrict-input "[-chain A]" \
   --layering-mode "outward" \
   --directing-mode "d4" \
   --input-directory "$INPUTDIR/complex" \
@@ -62,6 +65,7 @@ $VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
 > "${SUBDIR}/ensemble_summary_inter_residue_with_layering_outward_directing_d4.txt"
 
 $VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
+  --restrict-input "[-chain A]" \
   --layering-mode "inward" \
   --directing-mode "d4" \
   --input-directory "$INPUTDIR/complex" \

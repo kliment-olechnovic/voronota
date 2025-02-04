@@ -35,9 +35,8 @@ public:
 	CongregationOfDataManagers::ObjectQuery objects_query;
 	std::vector<std::string> area_value_names;
 	std::string stats_output_file;
-	bool remove_contacts;
 
-	CollectInterAtomContactAreaRanges() : remove_contacts(false)
+	CollectInterAtomContactAreaRanges()
 	{
 	}
 
@@ -47,7 +46,6 @@ public:
 		objects_query=OperatorsUtilities::read_congregation_of_data_managers_object_query(input);
 		area_value_names=input.get_value_vector_or_default<std::string>("area-value-names", std::vector<std::string>(1, "area"));
 		stats_output_file=input.get_value_or_default<std::string>("stats-output-file", "");
-		remove_contacts=input.get_flag("remove-contacts");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -77,11 +75,46 @@ public:
 			objects[i]->assert_contacts_availability();
 		}
 
-		std::vector< std::set<AtomSequenceContext> > all_atom_availabilities(objects.size());
+		std::vector<AAIdentifier> sorted_list_of_all_encountered_contact_ids;
 
-		std::map< AAIdentifier, std::map<std::size_t, AAContactValue> > inter_atom_contacts_realizations;
+		{
+			std::set<AAIdentifier> set_of_all_encountered_contact_ids;
 
-		bool solvent_encountered=false;
+			for(std::size_t i=0;i<objects.size();i++)
+			{
+				DataManager& data_manager=(*(objects[i]));
+
+				const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts);
+
+				if(!ids.empty())
+				{
+					for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+					{
+						const Contact& contact=data_manager.contacts()[*it];
+						if(contact.solvent())
+						{
+							const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(1));
+							if(is_residue_standard(aaid.asc_a.crad.resName))
+							{
+								set_of_all_encountered_contact_ids.insert(aaid);
+							}
+						}
+						else
+						{
+							const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
+							if(is_residue_standard(aaid.asc_a.crad.resName) && is_residue_standard(aaid.asc_b.crad.resName))
+							{
+								set_of_all_encountered_contact_ids.insert(aaid);
+							}
+						}
+					}
+				}
+			}
+
+			sorted_list_of_all_encountered_contact_ids=std::vector<AAIdentifier>(set_of_all_encountered_contact_ids.begin(), set_of_all_encountered_contact_ids.end());
+		}
+
+		std::map<AAIdentifier, AAContactValueStatistics> inter_atom_contacts_statistics;
 
 		for(std::size_t i=0;i<objects.size();i++)
 		{
@@ -91,14 +124,19 @@ public:
 
 			if(!ids.empty())
 			{
+				std::set<AtomSequenceContext> atom_availabilities;
+				atom_availabilities.insert(AtomSequenceContext(1));
+
 				for(std::size_t j=0;j<data_manager.atoms().size();j++)
 				{
 					const AtomSequenceContext asc(simplified_crad(data_manager.atoms()[j].crad));
 					if(is_residue_standard(asc.crad.resName))
 					{
-						all_atom_availabilities[i].insert(asc);
+						atom_availabilities.insert(asc);
 					}
 				}
+
+				std::map< AAIdentifier, AAContactValue > inter_atom_contacts_realizations;
 
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
@@ -108,12 +146,7 @@ public:
 						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(1));
 						if(is_residue_standard(aaid.asc_a.crad.resName))
 						{
-							inter_atom_contacts_realizations[aaid][i].add(contact.value, area_value_names);
-							if(!solvent_encountered)
-							{
-								all_atom_availabilities[i].insert(aaid.asc_b);
-								solvent_encountered=true;
-							}
+							inter_atom_contacts_realizations[aaid].set(contact.value, area_value_names);
 						}
 					}
 					else
@@ -121,53 +154,55 @@ public:
 						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
 						if(is_residue_standard(aaid.asc_a.crad.resName) && is_residue_standard(aaid.asc_b.crad.resName))
 						{
-							inter_atom_contacts_realizations[aaid][i].add(contact.value, area_value_names);
+							inter_atom_contacts_realizations[aaid].set(contact.value, area_value_names);
 						}
 					}
 				}
-			}
 
-			if(remove_contacts)
-			{
-				data_manager.remove_contacts();
-			}
-		}
-
-		std::map<AAIdentifier, AAContactValueStatistics> inter_atom_contacts_statistics;
-
-		for(std::map< AAIdentifier, std::map<std::size_t, AAContactValue> >::const_iterator it=inter_atom_contacts_realizations.begin();it!=inter_atom_contacts_realizations.end();++it)
-		{
-			const AAIdentifier& aaid=it->first;
-			const std::map<std::size_t, AAContactValue>& map_of_realized_values=it->second;
-
-			int count_contact_possible_but_not_realized=0;
-
-			if(map_of_realized_values.size()<objects.size())
-			{
-				for(std::size_t i=0;i<objects.size();i++)
 				{
-					if(map_of_realized_values.count(i)==0)
+					std::vector<AAIdentifier> sorted_list_of_realized_contact_ids;
+					sorted_list_of_realized_contact_ids.reserve(inter_atom_contacts_realizations.size());
+					for(std::map< AAIdentifier, AAContactValue >::const_iterator it=inter_atom_contacts_realizations.begin();it!=inter_atom_contacts_realizations.end();++it)
 					{
-						std::set<AtomSequenceContext>& atom_availability=all_atom_availabilities[i];
-						if(atom_availability.count(aaid.asc_a)>0 && atom_availability.count(aaid.asc_b)>0)
+						sorted_list_of_realized_contact_ids.push_back(it->first);
+					}
+
+					std::vector<AAIdentifier>::const_iterator it1=sorted_list_of_all_encountered_contact_ids.begin();
+					std::vector<AAIdentifier>::const_iterator it2=sorted_list_of_realized_contact_ids.begin();
+					while(it1!=sorted_list_of_all_encountered_contact_ids.end() && it2!=sorted_list_of_realized_contact_ids.end())
+					{
+						if((*it1)<(*it2))
 						{
-							count_contact_possible_but_not_realized++;
+							if(atom_availabilities.count(it1->asc_a)>0 && atom_availabilities.count(it1->asc_b)>0)
+							{
+								inter_atom_contacts_statistics[*it1].increase_count_without_adding();
+							}
+							++it1;
+						}
+						else if((*it2)<(*it1))
+						{
+							++it2;
+						}
+						else
+						{
+							++it1;
+							++it2;
 						}
 					}
+					while(it1!=sorted_list_of_all_encountered_contact_ids.end())
+					{
+						if(atom_availabilities.count(it1->asc_a)>0 && atom_availabilities.count(it1->asc_b)>0)
+						{
+							inter_atom_contacts_statistics[*it1].increase_count_without_adding();
+						}
+						++it1;
+					}
 				}
-			}
 
-			AAContactValueStatistics stats;
-			stats.count=count_contact_possible_but_not_realized;
-
-			for(std::map<std::size_t, AAContactValue>::const_iterator jt=map_of_realized_values.begin();jt!=map_of_realized_values.end();++jt)
-			{
-				stats.add(jt->second);
-			}
-
-			if(stats.count>1)
-			{
-				inter_atom_contacts_statistics[aaid]=stats;
+				for(std::map< AAIdentifier, AAContactValue >::const_iterator it=inter_atom_contacts_realizations.begin();it!=inter_atom_contacts_realizations.end();++it)
+				{
+					inter_atom_contacts_statistics[it->first].add(it->second);
+				}
 			}
 		}
 
@@ -262,13 +297,12 @@ private:
 	{
 		std::vector<double> area_values;
 		double dist;
-		bool accumulated;
 
-		AAContactValue() : dist(0.0), accumulated(false)
+		AAContactValue() : dist(0.0)
 		{
 		}
 
-		void add(const common::ContactValue& v, const std::vector<std::string>& area_value_names)
+		void set(const common::ContactValue& v, const std::vector<std::string>& area_value_names)
 		{
 			if(area_values.size()!=area_value_names.size())
 			{
@@ -278,21 +312,18 @@ private:
 			{
 				if(area_value_names[i]=="area")
 				{
-					area_values[i]+=v.area;
+					area_values[i]=v.area;
 				}
 				else
 				{
 					std::map<std::string, double>::const_iterator adjunct_it=v.props.adjuncts.find(area_value_names[i]);
 					if(adjunct_it!=v.props.adjuncts.end())
 					{
-						area_values[i]+=adjunct_it->second;
+						area_values[i]=adjunct_it->second;
 					}
 				}
 			}
-
-
-			dist=(!accumulated ? v.dist : std::min(dist, v.dist));
-			accumulated=true;
+			dist=v.dist;
 		}
 	};
 
@@ -342,6 +373,24 @@ private:
 				for(std::size_t i=0;i<v.area_values.size();i++)
 				{
 					area_value_statistics[i].mean_area+=(v.area_values[i]-area_value_statistics[i].mean_area)/static_cast<double>(count);
+				}
+			}
+		}
+
+		void increase_count_without_adding()
+		{
+			for(std::size_t i=0;i<area_value_statistics.size();i++)
+			{
+				area_value_statistics[i].min_area=0.0;
+			}
+
+			count++;
+
+			if(count>1)
+			{
+				for(std::size_t i=0;i<area_value_statistics.size();i++)
+				{
+					area_value_statistics[i].mean_area+=(0.0-area_value_statistics[i].mean_area)/static_cast<double>(count);
 				}
 			}
 		}
