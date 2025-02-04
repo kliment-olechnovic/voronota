@@ -62,63 +62,80 @@ public:
 	{
 		congregation_of_data_managers.assert_objects_availability();
 
-		const std::vector<scripting::DataManager*> objects=congregation_of_data_managers.get_objects(objects_query);
-		if(objects.empty())
+		const std::vector<scripting::DataManager*> all_objects=congregation_of_data_managers.get_objects(objects_query);
+		if(all_objects.empty())
 		{
 			throw std::runtime_error(std::string("No objects selected."));
 		}
-		if(objects.size()==1)
+		if(all_objects.size()==1)
 		{
 			throw std::runtime_error(std::string("Only one object selected."));
 		}
 
-		for(std::size_t i=0;i<objects.size();i++)
-		{
-			objects[i]->assert_atoms_availability();
-		}
-
-		ConstructContactsRadicallyFast simplified_contacts_construction_operator=contacts_construction_operator;
-		simplified_contacts_construction_operator.adjunct_circle_restrictions.clear();
-		simplified_contacts_construction_operator.precutting_shifts.clear();
+		std::vector<scripting::DataManager*> suitable_objects;
 
 		std::vector<AAIdentifier> sorted_list_of_all_encountered_contact_ids;
 
 		{
+			ConstructContactsRadicallyFast simplified_contacts_construction_operator=contacts_construction_operator;
+			simplified_contacts_construction_operator.adjunct_circle_restrictions.clear();
+			simplified_contacts_construction_operator.precutting_shifts.clear();
+
 			std::set<AAIdentifier> set_of_all_encountered_contact_ids;
 
-			for(std::size_t i=0;i<objects.size();i++)
+			for(std::size_t i=0;i<all_objects.size();i++)
 			{
-				scripting::DataManager& data_manager=(*(objects[i]));
+				scripting::DataManager& data_manager=(*(all_objects[i]));
 
 				simplified_contacts_construction_operator.run(data_manager);
 
-				const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts);
-
-				if(!ids.empty())
+				bool suitable=false;
+				for(std::size_t j=0;j<data_manager.contacts().size() && !suitable;j++)
 				{
-					for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+					const scripting::Contact& contact=data_manager.contacts()[j];
+					if(!contact.solvent() && std::abs((data_manager.atoms()[contact.ids[0]].crad.resSeq)-(data_manager.atoms()[contact.ids[1]].crad.resSeq))>1)
 					{
-						const scripting::Contact& contact=data_manager.contacts()[*it];
-						if(contact.solvent())
-						{
-							const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(1));
-							if(is_residue_standard(aaid.asc_a.crad.resName))
-							{
-								set_of_all_encountered_contact_ids.insert(aaid);
-							}
-						}
-						else
-						{
-							const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
-							if(is_residue_standard(aaid.asc_a.crad.resName) && is_residue_standard(aaid.asc_b.crad.resName))
-							{
-								set_of_all_encountered_contact_ids.insert(aaid);
-							}
-						}
+						suitable=true;
 					}
 				}
 
+				if(suitable)
+				{
+					const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts);
+
+					if(!ids.empty())
+					{
+						for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+						{
+							const scripting::Contact& contact=data_manager.contacts()[*it];
+							if(contact.solvent())
+							{
+								const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(1));
+								if(is_residue_standard(aaid.asc_a.crad.resName))
+								{
+									set_of_all_encountered_contact_ids.insert(aaid);
+								}
+							}
+							else
+							{
+								const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
+								if(is_residue_standard(aaid.asc_a.crad.resName) && is_residue_standard(aaid.asc_b.crad.resName))
+								{
+									set_of_all_encountered_contact_ids.insert(aaid);
+								}
+							}
+						}
+					}
+
+					suitable_objects.push_back(all_objects[i]);
+				}
+
 				data_manager.remove_contacts();
+			}
+
+			if(suitable_objects.size()<2)
+			{
+				throw std::runtime_error(std::string("Less than two object suitable."));
 			}
 
 			sorted_list_of_all_encountered_contact_ids=std::vector<AAIdentifier>(set_of_all_encountered_contact_ids.begin(), set_of_all_encountered_contact_ids.end());
@@ -126,9 +143,9 @@ public:
 
 		std::map<AAIdentifier, AAContactValueStatistics> inter_atom_contacts_statistics;
 
-		for(std::size_t i=0;i<objects.size();i++)
+		for(std::size_t i=0;i<suitable_objects.size();i++)
 		{
-			scripting::DataManager& data_manager=(*(objects[i]));
+			scripting::DataManager& data_manager=(*(suitable_objects[i]));
 
 			contacts_construction_operator.run(data_manager);
 
