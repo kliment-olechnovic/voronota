@@ -1,0 +1,273 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-pdb-utensil-summarize-ensemble-aa' script reads structures and summarizes contacts in them.
+
+Options:
+    --probe                   number     probe radius, default is 1.4
+    --input-directory         string     path to directory to find input structures, default is ''
+    --restrict-input          string     query to restrict input atoms, default is '[]'
+    --atom-atom-output-file   string     path to file to output atom-atom results, default is '_stdout'
+    --layering-mode           string     layering mode ('outward' or 'inward'), default is 'inward'
+    --directing-mode          string     layering mode ('none' or 'd4'), default is 'none'
+    --help | -h                          flag to display help message and exit
+
+Standard input:
+    if no input directory specified, the list of input file paths is read from stdin
+    
+Standard output:
+    if no output file specified, then statistics of contacts is printed to stdout
+    
+Examples:
+    
+    find ./input/ -type f -name '*.pdb' | voronota-js-pdb-utensil-summarize-ensemble-aa
+    
+    voronota-js-pdb-utensil-summarize-ensemble-aa --input-directory ./input --atom-atom-output-file ./output/table.txt
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd "$(dirname ${ZEROARG})"
+	export PATH="$(pwd):${PATH}"
+	cd - &> /dev/null
+fi
+
+export LC_ALL=C
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+PROBE="1.4"
+RESTRICT_INPUT="[]"
+MINRESCOUNT="60"
+INDIR=""
+ATOM_ATOM_OUTFILE="_stdout"
+LAYERINGMODE="inward"
+DIRECTINGMODE="none"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	--probe)
+		PROBE="$OPTARG"
+		shift
+		;;
+	--restrict-input)
+		RESTRICT_INPUT="$OPTARG"
+		shift
+		;;
+	--min-res-count)
+		MINRESCOUNT="$OPTARG"
+		shift
+		;;
+	--input-directory)
+		INDIR="$OPTARG"
+		shift
+		;;
+	--atom-atom-output-file)
+		ATOM_ATOM_OUTFILE="$OPTARG"
+		shift
+		;;
+	--layering-mode)
+		LAYERINGMODE="$OPTARG"
+		shift
+		;;
+	--directing-mode)
+		DIRECTINGMODE="$OPTARG"
+		shift
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ -z "$RESTRICT_INPUT" ]
+then
+	RESTRICT_INPUT="[]"
+fi
+
+if [ "$LAYERINGMODE" != "outward" ] && [ "$LAYERINGMODE" != "inward" ]
+then
+	echo >&2 "Error: invalid layering mode '${LAYERINGMODE}', must be 'outward' or 'inward'"
+	exit 1
+fi
+
+if [ "$DIRECTINGMODE" != "none" ] && [ "$DIRECTINGMODE" != "d4" ]
+then
+	echo >&2 "Error: invalid directing mode '${DIRECTINGMODE}', must be 'none' or 'd4' or 'd16'"
+	exit 1
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+{
+if [ -z "$INDIR" ]
+then
+	cat
+else
+	find "$INDIR" -type f -not -empty | egrep -i '\.cif$|\.pdb$'
+fi
+} \
+> "$TMPLDIR/input.txt"
+
+if [ ! -s "$TMPLDIR/input.txt" ]
+then
+	echo >&2 "Error: no input file paths"
+	exit 1
+fi
+
+cat "$TMPLDIR/input.txt" \
+| while read -r SFILE
+do
+	SFILETYPE="$(basename ${SFILE} | sed 's|^.\+\.\([[:alpha:]]\+\)$|\1|' | tr '[:upper:]' '[:lower:]')"
+	if [ "$SFILETYPE" == "cif" ] || [ "$SFILETYPE" == "pdb" ]
+	then
+		echo "$SFILE $SFILETYPE"
+	fi
+done \
+> "$TMPLDIR/typed_input.txt"
+
+if [ ! -s "$TMPLDIR/typed_input.txt" ]
+then
+	echo >&2 "Error: no input file paths with '.cif' or '.pdb' extensions"
+	exit 1
+fi
+
+if [ -z "$OUTFILE" ]
+then
+	OUTFILE="_stdout"
+fi
+
+{
+cat << EOF
+var params={}
+params.selection_of_atoms='$RESTRICT_INPUT';
+params.min_residue_count='$MINRESCOUNT';
+params.probe='$PROBE';
+params.layering_mode='$LAYERINGMODE';
+params.directing_mode='$DIRECTINGMODE';
+params.atom_atom_output_file='$TMPLDIR/atom_atom_output.txt';
+EOF
+
+cat << 'EOF'
+voronota_setup_defaults("-no-load-voromqa-potentials", "-no-load-more-atom-types", "-no-load-mock-voromqa-potential");
+voronota_assert_full_success("Failed to setup defaults");
+EOF
+
+cat "$TMPLDIR/typed_input.txt" \
+| while read -r SFILEPATH SFILETYPE
+do
+	if [ "$SFILETYPE" == "cif" ]
+	then
+cat << EOF
+voronota_import_mmcif('-files', ['${SFILEPATH}']);
+voronota_assert_full_success('Failed to import structure "${SFILEPATH}"');
+EOF
+	fi
+	
+	if [ "$SFILETYPE" == "pdb" ]
+	then
+cat << EOF
+voronota_import('-file', '${SFILEPATH}');
+voronota_assert_full_success('Failed to import structure "${SFILEPATH}"');
+EOF
+	fi
+done
+
+cat << 'EOF'
+voronota_pick_objects();
+
+if(params.selection_of_atoms && params.selection_of_atoms!="[]")
+{
+	voronota_restrict_atoms("-use", params.selection_of_atoms);
+}
+
+voronota_delete_objects_if("-residues-fewer-than", params.min_residue_count, "-atoms-to-residues-ratio-less-than", 6.0);
+voronota_delete_objects_if("-objects-fewer-than", 2);
+
+voronota_pick_objects();
+
+var param_adjunct_circle_restrictions=[];
+var param_precutting_shifts=[];
+var param_area_value_names=[];
+
+if(params.layering_mode=="outward" && params.directing_mode=="none")
+{
+	param_adjunct_circle_restrictions=[0.4, 0.8, 1.2, 1.6, 999.0];
+	param_precutting_shifts=[];
+	param_area_value_names=["area", "subarea00000to00040", "subarea00040to00080", "subarea00080to00120", "subarea00120to00160", "subarea00160to99900"];
+}
+
+if(params.layering_mode=="inward" && params.directing_mode=="none")
+{
+	param_adjunct_circle_restrictions=[-1.6, -1.2, -0.8, -0.4, -0.0000001];
+	param_precutting_shifts=[];
+	param_area_value_names=["area", "subareaM99900toM00160", "subareaM00160toM00120", "subareaM00120toM00080", "subareaM00080toM00040", "subareaM00040toM00000"];
+}
+
+if(params.layering_mode=="outward" && params.directing_mode=="d4")
+{
+	param_adjunct_circle_restrictions=[0.4, 0.8, 1.2, 1.6, 999.0];
+	param_precutting_shifts=[0.9];
+	param_area_value_names=["area", "pcut00000subarea00000to00040", "pcut00000subarea00040to00080", "pcut00000subarea00080to00120", "pcut00000subarea00120to00160", "pcut00000subarea00160to99900", "pcut00001subarea00000to00040", "pcut00001subarea00040to00080", "pcut00001subarea00080to00120", "pcut00001subarea00120to00160", "pcut00001subarea00160to99900", "pcut00003subarea00000to00040", "pcut00003subarea00040to00080", "pcut00003subarea00080to00120", "pcut00003subarea00120to00160", "pcut00003subarea00160to99900"];
+}
+
+if(params.layering_mode=="inward" && params.directing_mode=="d4")
+{
+	param_adjunct_circle_restrictions=[-1.6, -1.2, -0.8, -0.4, -0.0000001];
+	param_precutting_shifts=[0.9];
+	param_area_value_names=["area", "pcut00000subareaM99900toM00160", "pcut00000subareaM00160toM00120", "pcut00000subareaM00120toM00080", "pcut00000subareaM00080toM00040", "pcut00000subareaM00040toM00000", "pcut00001subareaM99900toM00160", "pcut00001subareaM00160toM00120", "pcut00001subareaM00120toM00080", "pcut00001subareaM00080toM00040", "pcut00001subareaM00040toM00000", "pcut00003subareaM99900toM00160", "pcut00003subareaM00160toM00120", "pcut00003subareaM00120toM00080", "pcut00003subareaM00080toM00040", "pcut00003subareaM00040toM00000"];
+}
+
+if(param_precutting_shifts.length>0)
+{
+	voronota_construct_and_collect_inter_atom_contact_area_ranges("-probe", params.probe, "-adjunct-circle-restrictions", param_adjunct_circle_restrictions, "-precutting-shifts", param_precutting_shifts, "-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", param_area_value_names);
+}
+else
+{
+	voronota_construct_and_collect_inter_atom_contact_area_ranges("-probe", params.probe, "-adjunct-circle-restrictions", param_adjunct_circle_restrictions, "-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", param_area_value_names);
+}
+
+voronota_assert_full_success("Failed to construct and collect atom-atom contact area ranges");
+EOF
+
+} \
+| voronota-js --no-setup-defaults
+
+if [ ! -s "$TMPLDIR/atom_atom_output.txt" ]
+then
+	echo >&2 "Error: no output produced"
+	exit 1
+fi
+
+if [ "$ATOM_ATOM_OUTFILE" == "_stdout" ]
+then
+	cat "$TMPLDIR/atom_atom_output.txt"
+else
+	mkdir -p "$(dirname ${ATOM_ATOM_OUTFILE})"
+	cp "$TMPLDIR/atom_atom_output.txt" "$ATOM_ATOM_OUTFILE"
+fi
+

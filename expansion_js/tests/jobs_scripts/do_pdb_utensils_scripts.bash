@@ -72,3 +72,16 @@ $VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble \
   --atom-atom-output-file "${SUBDIR}/ensemble_summary_inter_atom_with_layering_inward_directing_d4.txt" \
 > "${SUBDIR}/ensemble_summary_inter_residue_with_layering_inward_directing_d4.txt"
 
+$VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble-aa \
+  --restrict-input "[-chain A]" \
+  --layering-mode "inward" \
+  --directing-mode "none" \
+  --input-directory "$INPUTDIR/complex" \
+  --atom-atom-output-file "${SUBDIR}/ensemble_summary_aa_inter_atom_with_layering_inward.txt"
+
+$VORONOTAJSDIR/voronota-js-pdb-utensil-summarize-ensemble-aa \
+  --restrict-input "[-chain A]" \
+  --layering-mode "inward" \
+  --directing-mode "d4" \
+  --input-directory "$INPUTDIR/complex" \
+  --atom-atom-output-file "${SUBDIR}/ensemble_summary_aa_inter_atom_with_layering_inward_directing_d4.txt"
