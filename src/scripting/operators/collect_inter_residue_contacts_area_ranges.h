@@ -81,121 +81,145 @@ public:
 			objects[i]->assert_contacts_availability();
 		}
 
-		std::vector< std::set<ResidueSequenceContext> > all_residue_availabilities(objects.size());
+		std::vector<RRIdentifier> sorted_list_of_all_encountered_contact_ids;
 
-		std::vector< std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext> > all_maps_of_crad_to_residue_sequence_contexts(objects.size());
+		{
+			std::set<RRIdentifier> set_of_all_encountered_contact_ids;
 
-		std::map< RRIdentifier, std::map<std::size_t, RRContactValue> > inter_residue_contacts_realizations;
+			for(std::size_t i=0;i<objects.size();i++)
+			{
+				DataManager& data_manager=(*(objects[i]));
 
-		bool solvent_encountered=false;
+				const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts);
+
+				if(!ids.empty())
+				{
+					std::set<ResidueSequenceContext> set_of_acceptable_residue_ids;
+
+					for(std::size_t j=0;j<data_manager.primary_structure_info().residues.size();j++)
+					{
+						const common::ConstructionOfPrimaryStructure::Residue& residue=data_manager.primary_structure_info().residues[j];
+						if(residue.atom_ids.size()>=get_min_acceptable_number_of_heavy_atoms_in_residue(residue.chain_residue_descriptor.resName))
+						{
+							set_of_acceptable_residue_ids.insert(ResidueSequenceContext(simplified_crad(residue.chain_residue_descriptor)));
+						}
+					}
+
+					for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+					{
+						const Contact& contact=data_manager.contacts()[*it];
+						if(contact.solvent())
+						{
+							RRIdentifier rrid(ResidueSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), ResidueSequenceContext(1));
+							if(set_of_acceptable_residue_ids.count(rrid.rsc_a)>0)
+							{
+								set_of_all_encountered_contact_ids.insert(rrid);
+							}
+						}
+						else
+						{
+							RRIdentifier rrid(ResidueSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), ResidueSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
+							if(set_of_acceptable_residue_ids.count(rrid.rsc_a)>0 && set_of_acceptable_residue_ids.count(rrid.rsc_b)>0)
+							{
+								set_of_all_encountered_contact_ids.insert(rrid);
+							}
+						}
+					}
+				}
+			}
+
+			sorted_list_of_all_encountered_contact_ids=std::vector<RRIdentifier>(set_of_all_encountered_contact_ids.begin(), set_of_all_encountered_contact_ids.end());
+		}
+
+		std::map<RRIdentifier, RRContactValueStatistics> inter_residue_contacts_statistics;
 
 		for(std::size_t i=0;i<objects.size();i++)
 		{
 			DataManager& data_manager=(*(objects[i]));
 
 			const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts);
+
 			if(!ids.empty())
 			{
-				std::set<ResidueSequenceContext>& residue_availability=all_residue_availabilities[i];
-				std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>& map_of_crad_to_residue_sequence_contexts=all_maps_of_crad_to_residue_sequence_contexts[i];
+				std::set<ResidueSequenceContext> set_of_acceptable_residue_ids;
+				set_of_acceptable_residue_ids.insert(ResidueSequenceContext(1));
 
 				for(std::size_t j=0;j<data_manager.primary_structure_info().residues.size();j++)
 				{
 					const common::ConstructionOfPrimaryStructure::Residue& residue=data_manager.primary_structure_info().residues[j];
 					if(residue.atom_ids.size()>=get_min_acceptable_number_of_heavy_atoms_in_residue(residue.chain_residue_descriptor.resName))
 					{
-						ResidueSequenceContext rsc(simplified_crad(residue.chain_residue_descriptor));
-						map_of_crad_to_residue_sequence_contexts.insert(std::make_pair(rsc.crad, rsc));
+						set_of_acceptable_residue_ids.insert(ResidueSequenceContext(simplified_crad(residue.chain_residue_descriptor)));
 					}
 				}
 
-				for(std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator it=map_of_crad_to_residue_sequence_contexts.begin();it!=map_of_crad_to_residue_sequence_contexts.end();++it)
-				{
-					residue_availability.insert(it->second);
-				}
-
-				std::map<common::ChainResidueAtomDescriptorsPair, RRContactValue> map_of_contacts;
-				std::map<common::ChainResidueAtomDescriptor, RRContactValue> map_of_sasa;
+				std::map< RRIdentifier, RRContactValue> inter_residue_contacts_realizations;
 
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
 					const Contact& contact=data_manager.contacts()[*it];
 					if(contact.solvent())
 					{
-						map_of_sasa[simplified_crad(data_manager.atoms()[contact.ids[0]].crad)].add(contact.value);
+						RRIdentifier rrid(ResidueSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), ResidueSequenceContext(1));
+						if(set_of_acceptable_residue_ids.count(rrid.rsc_a)>0)
+						{
+							inter_residue_contacts_realizations[rrid].add(contact.value);
+						}
 					}
 					else
 					{
-						map_of_contacts[common::ChainResidueAtomDescriptorsPair(simplified_crad(data_manager.atoms()[contact.ids[0]].crad), simplified_crad(data_manager.atoms()[contact.ids[1]].crad))].add(contact.value);
-					}
-				}
-
-				for(std::map<common::ChainResidueAtomDescriptorsPair, RRContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
-				{
-					const common::ChainResidueAtomDescriptorsPair& crads=it->first;
-					std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_a=map_of_crad_to_residue_sequence_contexts.find(crads.a);
-					if(jt_a!=map_of_crad_to_residue_sequence_contexts.end())
-					{
-						std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_b=map_of_crad_to_residue_sequence_contexts.find(crads.b);
-						if(jt_b!=map_of_crad_to_residue_sequence_contexts.end())
+						RRIdentifier rrid(ResidueSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), ResidueSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
+						if(set_of_acceptable_residue_ids.count(rrid.rsc_a)>0 && set_of_acceptable_residue_ids.count(rrid.rsc_b)>0)
 						{
-							inter_residue_contacts_realizations[RRIdentifier(jt_a->second, jt_b->second)][i]=it->second;
+							inter_residue_contacts_realizations[rrid].add(contact.value);
 						}
 					}
 				}
 
-				for(std::map<common::ChainResidueAtomDescriptor, RRContactValue>::const_iterator it=map_of_sasa.begin();it!=map_of_sasa.end();++it)
 				{
-					const common::ChainResidueAtomDescriptor& crad_a=it->first;
-					std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_a=map_of_crad_to_residue_sequence_contexts.find(crad_a);
-					if(jt_a!=map_of_crad_to_residue_sequence_contexts.end())
+					std::vector<RRIdentifier> sorted_list_of_realized_contact_ids;
+					sorted_list_of_realized_contact_ids.reserve(inter_residue_contacts_realizations.size());
+					for(std::map< RRIdentifier, RRContactValue >::const_iterator it=inter_residue_contacts_realizations.begin();it!=inter_residue_contacts_realizations.end();++it)
 					{
-						inter_residue_contacts_realizations[RRIdentifier(jt_a->second, ResidueSequenceContext(1))][i]=it->second;
-						if(!solvent_encountered)
+						sorted_list_of_realized_contact_ids.push_back(it->first);
+					}
+
+					std::vector<RRIdentifier>::const_iterator it1=sorted_list_of_all_encountered_contact_ids.begin();
+					std::vector<RRIdentifier>::const_iterator it2=sorted_list_of_realized_contact_ids.begin();
+					while(it1!=sorted_list_of_all_encountered_contact_ids.end() && it2!=sorted_list_of_realized_contact_ids.end())
+					{
+						if((*it1)<(*it2))
 						{
-							residue_availability.insert(ResidueSequenceContext(1));
-							solvent_encountered=true;
+							if(set_of_acceptable_residue_ids.count(it1->rsc_a)>0 && set_of_acceptable_residue_ids.count(it1->rsc_b)>0)
+							{
+								inter_residue_contacts_statistics[*it1].increase_count_without_adding();
+							}
+							++it1;
+						}
+						else if((*it2)<(*it1))
+						{
+							++it2;
+						}
+						else
+						{
+							++it1;
+							++it2;
 						}
 					}
-				}
-			}
-		}
-
-		std::map<RRIdentifier, RRContactValueStatistics> inter_residue_contacts_statistics;
-
-		for(std::map< RRIdentifier, std::map<std::size_t, RRContactValue> >::const_iterator it=inter_residue_contacts_realizations.begin();it!=inter_residue_contacts_realizations.end();++it)
-		{
-			const RRIdentifier& rrid=it->first;
-			const std::map<std::size_t, RRContactValue>& map_of_realized_values=it->second;
-
-			int count_contact_possible_but_not_realized=0;
-
-			if(map_of_realized_values.size()<objects.size())
-			{
-				for(std::size_t i=0;i<objects.size();i++)
-				{
-					if(map_of_realized_values.count(i)==0)
+					while(it1!=sorted_list_of_all_encountered_contact_ids.end())
 					{
-						std::set<ResidueSequenceContext>& residue_availability=all_residue_availabilities[i];
-						if(residue_availability.count(rrid.rsc_a)>0 && residue_availability.count(rrid.rsc_b)>0)
+						if(set_of_acceptable_residue_ids.count(it1->rsc_a)>0 && set_of_acceptable_residue_ids.count(it1->rsc_b)>0)
 						{
-							count_contact_possible_but_not_realized++;
+							inter_residue_contacts_statistics[*it1].increase_count_without_adding();
 						}
+						++it1;
 					}
 				}
-			}
 
-			RRContactValueStatistics stats;
-			stats.count=count_contact_possible_but_not_realized;
-
-			for(std::map<std::size_t, RRContactValue>::const_iterator jt=map_of_realized_values.begin();jt!=map_of_realized_values.end();++jt)
-			{
-				stats.add(jt->second);
-			}
-
-			if(stats.count>1)
-			{
-				inter_residue_contacts_statistics[rrid]=stats;
+				for(std::map< RRIdentifier, RRContactValue >::const_iterator it=inter_residue_contacts_realizations.begin();it!=inter_residue_contacts_realizations.end();++it)
+				{
+					inter_residue_contacts_statistics[it->first].add(it->second);
+				}
 			}
 		}
 
@@ -207,7 +231,6 @@ public:
 				const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts);
 				if(!ids.empty())
 				{
-					const std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>& map_of_crad_to_residue_sequence_contexts=all_maps_of_crad_to_residue_sequence_contexts[i];
 					for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 					{
 						std::map<std::string, double>& contact_adjuncts=data_manager.contact_adjuncts_mutable(*it);
@@ -227,27 +250,19 @@ public:
 							contact_adjuncts.erase(adjunct_min_max_area_sqrt_diff);
 						}
 
-						const Contact& contact=data_manager.contacts()[*it];
 						std::map<RRIdentifier, RRContactValueStatistics>::const_iterator jt=inter_residue_contacts_statistics.end();
+
+						const Contact& contact=data_manager.contacts()[*it];
+
 						if(contact.solvent())
 						{
-							std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_a=map_of_crad_to_residue_sequence_contexts.find(simplified_crad(data_manager.atoms()[contact.ids[0]].crad));
-							if(jt_a!=map_of_crad_to_residue_sequence_contexts.end())
-							{
-								jt=inter_residue_contacts_statistics.find(RRIdentifier(jt_a->second, ResidueSequenceContext(1)));
-							}
+							RRIdentifier rrid(ResidueSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), ResidueSequenceContext(1));
+							jt=inter_residue_contacts_statistics.find(rrid);
 						}
 						else
 						{
-							std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_a=map_of_crad_to_residue_sequence_contexts.find(simplified_crad(data_manager.atoms()[contact.ids[0]].crad));
-							if(jt_a!=map_of_crad_to_residue_sequence_contexts.end())
-							{
-								std::map<common::ChainResidueAtomDescriptor, ResidueSequenceContext>::const_iterator jt_b=map_of_crad_to_residue_sequence_contexts.find(simplified_crad(data_manager.atoms()[contact.ids[1]].crad));
-								if(jt_b!=map_of_crad_to_residue_sequence_contexts.end())
-								{
-									jt=inter_residue_contacts_statistics.find(RRIdentifier(jt_a->second, jt_b->second));
-								}
-							}
+							RRIdentifier rrid(ResidueSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), ResidueSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
+							jt=inter_residue_contacts_statistics.find(rrid);
 						}
 
 						if(jt!=inter_residue_contacts_statistics.end())
@@ -393,6 +408,18 @@ private:
 				const double old_mean_area=mean_area;
 				mean_area+=(v.area-mean_area)/static_cast<double>(count);
 				aggregate_for_variance_of_area+=(v.area-mean_area)*(v.area-old_mean_area);
+			}
+		}
+
+		void increase_count_without_adding()
+		{
+			min_area=0.0;
+			count++;
+			if(count>1)
+			{
+				const double old_mean_area=mean_area;
+				mean_area+=(0.0-mean_area)/static_cast<double>(count);
+				aggregate_for_variance_of_area+=(0.0-mean_area)*(0.0-old_mean_area);
 			}
 		}
 
