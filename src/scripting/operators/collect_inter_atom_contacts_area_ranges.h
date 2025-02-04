@@ -35,8 +35,9 @@ public:
 	CongregationOfDataManagers::ObjectQuery objects_query;
 	std::vector<std::string> area_value_names;
 	std::string stats_output_file;
+	bool remove_contacts;
 
-	CollectInterAtomContactAreaRanges()
+	CollectInterAtomContactAreaRanges() : remove_contacts(false)
 	{
 	}
 
@@ -46,6 +47,7 @@ public:
 		objects_query=OperatorsUtilities::read_congregation_of_data_managers_object_query(input);
 		area_value_names=input.get_value_vector_or_default<std::string>("area-value-names", std::vector<std::string>(1, "area"));
 		stats_output_file=input.get_value_or_default<std::string>("stats-output-file", "");
+		remove_contacts=input.get_flag("remove-contacts");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -123,6 +125,11 @@ public:
 						}
 					}
 				}
+			}
+
+			if(remove_contacts)
+			{
+				data_manager.remove_contacts();
 			}
 		}
 

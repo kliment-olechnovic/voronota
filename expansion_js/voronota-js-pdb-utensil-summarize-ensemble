@@ -269,7 +269,7 @@ voronota_assert_full_success("Failed to collect contact area ranges");
 
 if(params.atom_atom_output_file)
 {
-	voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", param_area_value_names);
+	voronota_collect_inter_atom_contact_area_ranges("-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", param_area_value_names, "-remove-contacts");
 	voronota_assert_full_success("Failed to collect atom-atom contact area ranges");
 }
 EOF
