@@ -224,22 +224,22 @@ import 4ung.pdb -title objC0
 
 copy-object objC0 objC1
 pick-objects objC1
-construct-contacts-radically-fast -precutting-shifts 0.9 -precutting-variant 0  -generate-graphics -no-intra-residue -thicken-graphics 0.002
+construct-contacts-radically-fast -precutting-shifts 1.1 -precutting-variant 0  -generate-graphics -no-intra-residue -thicken-graphics 0.002
 color-contacts -col 0xFF0000
 
 copy-object objC0 objC2
 pick-objects objC2
-construct-contacts-radically-fast -precutting-shifts 0.9 -precutting-variant 1  -generate-graphics -no-intra-residue -thicken-graphics 0.003
+construct-contacts-radically-fast -precutting-shifts 1.1 -precutting-variant 1  -generate-graphics -no-intra-residue -thicken-graphics 0.003
 color-contacts -col 0x00FF00
 
 copy-object objC0 objC3
 pick-objects objC3
-construct-contacts-radically-fast -precutting-shifts 0.9 -precutting-variant 2  -generate-graphics -no-intra-residue -thicken-graphics 0.004
+construct-contacts-radically-fast -precutting-shifts 1.1 -precutting-variant 2  -generate-graphics -no-intra-residue -thicken-graphics 0.004
 color-contacts -col 0x00FF00
 
 copy-object objC0 objC4
 pick-objects objC4
-construct-contacts-radically-fast -precutting-shifts 0.9 -precutting-variant 3  -generate-graphics -no-intra-residue -thicken-graphics 0.005
+construct-contacts-radically-fast -precutting-shifts 1.1 -precutting-variant 3  -generate-graphics -no-intra-residue -thicken-graphics 0.005
 color-contacts -col 0x0000FF
 
 copy-object objC0 objC5
@@ -270,6 +270,140 @@ color-atoms [-chain B] -col 0xFFAA88
 show-atoms -rep cartoon sticks -on-objects objC5
 rotate -angle 180 -axis 0 1 0
 `;
+
+			special_demo_script6=`
+animate-none
+delete-objects
+mono
+background white
+
+import 4ung.pdb -title obj0
+
+########################################
+
+copy-object obj0 obj1a
+pick-objects obj1a
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -0.5 -precutting-shifts 1.1 -precutting-variant 0 -thicken-graphics 0.002
+color-contacts -col 0xFFBBBB
+
+copy-object obj0 obj1b
+pick-objects obj1b
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -0.5 -precutting-shifts 1.1 -precutting-variant 1 -thicken-graphics 0.002
+color-contacts -col 0xBBFFBB
+
+copy-object obj0 obj1c
+pick-objects obj1c
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -0.5 -precutting-shifts 1.1 -precutting-variant 2 -thicken-graphics 0.002
+color-contacts -col 0xBBFFBB
+
+copy-object obj0 obj1d
+pick-objects obj1d
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -0.5 -precutting-shifts 1.1 -precutting-variant 3 -thicken-graphics 0.002
+color-contacts -col 0xBBBBFF
+
+########################################
+
+copy-object obj0 obj2a
+pick-objects obj2a
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -0.9 -precutting-shifts 1.1 -precutting-variant 0 -thicken-graphics 0.003
+color-contacts -col 0xFF3333
+
+copy-object obj0 obj2b
+pick-objects obj2b
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -0.9 -precutting-shifts 1.1 -precutting-variant 1 -thicken-graphics 0.003
+color-contacts -col 0x33FF33
+
+copy-object obj0 obj2c
+pick-objects obj2c
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -0.9 -precutting-shifts 1.1 -precutting-variant 2 -thicken-graphics 0.003
+color-contacts -col 0x33FF33
+
+copy-object obj0 obj2d
+pick-objects obj2d
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -0.9 -precutting-shifts 1.1 -precutting-variant 3 -thicken-graphics 0.003
+color-contacts -col 0x3333FF
+
+########################################
+
+copy-object obj0 obj3a
+pick-objects obj3a
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -1.3 -precutting-shifts 1.1 -precutting-variant 0 -thicken-graphics 0.004
+color-contacts -col 0xFF9999
+
+copy-object obj0 obj3b
+pick-objects obj3b
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -1.3 -precutting-shifts 1.1 -precutting-variant 1 -thicken-graphics 0.004
+color-contacts -col 0x99FF99
+
+copy-object obj0 obj3c
+pick-objects obj3c
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -1.3 -precutting-shifts 1.1 -precutting-variant 2 -thicken-graphics 0.004
+color-contacts -col 0x99FF99
+
+copy-object obj0 obj3d
+pick-objects obj3d
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -1.3 -precutting-shifts 1.1 -precutting-variant 3 -thicken-graphics 0.004
+color-contacts -col 0x9999FF
+
+########################################
+
+copy-object obj0 obj4a
+pick-objects obj4a
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -1.7 -precutting-shifts 1.1 -precutting-variant 0 -thicken-graphics 0.005
+color-contacts -col 0xFF4444
+
+copy-object obj0 obj4b
+pick-objects obj4b
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -1.7 -precutting-shifts 1.1 -precutting-variant 1 -thicken-graphics 0.005
+color-contacts -col 0x44FF44
+
+copy-object obj0 obj4c
+pick-objects obj4c
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -1.7 -precutting-shifts 1.1 -precutting-variant 2 -thicken-graphics 0.005
+color-contacts -col 0x44FF44
+
+copy-object obj0 obj4d
+pick-objects obj4d
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -1.7 -precutting-shifts 1.1 -precutting-variant 3 -thicken-graphics 0.005
+color-contacts -col 0x4444FF
+
+########################################
+
+copy-object obj0 obj5a
+pick-objects obj5a
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -precutting-shifts 1.1 -precutting-variant 0
+color-contacts -col 0xFF0000
+
+copy-object obj0 obj5b
+pick-objects obj5b
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -precutting-shifts 1.1 -precutting-variant 1
+color-contacts -col 0x00FF00
+
+copy-object obj0 obj5c
+pick-objects obj5c
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -precutting-shifts 1.1 -precutting-variant 2
+color-contacts -col 0x00FF00
+
+copy-object obj0 obj5d
+pick-objects obj5d
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -precutting-shifts 1.1 -precutting-variant 3
+color-contacts -col 0x0000FF
+
+########################################
+
+pick-objects obj0
+construct-contacts-radically-fast -no-intra-chain
+pick-objects
+select-contacts [-inter-chain] -name iface -on-objects obj0
+orient -atoms [-sel-of-contacts iface]
+rotate -angle -90 -axis 0 0 1
+rotate -angle 180 -axis 0 1 0
+delete-objects obj0
+
+pick-objects
+hide-atoms
+show-contacts [-inter-chain] -rep faces
+`;
 			
 			voronota_viewer_init({
 				width: function(){return window.innerWidth;},
@@ -290,7 +424,8 @@ rotate -angle 180 -axis 0 1 0
 					{action: special_demo_script2, label: "Demo 2"},
 					{action: special_demo_script3, label: "Demo 3"},
 					{action: special_demo_script4, label: "Demo 4"},
-					{action: special_demo_script5, label: "Demo 5"},],
+					{action: special_demo_script5, label: "Demo 5"},
+					{action: special_demo_script6, label: "Demo 6"},],
 				loadscreen_id: "loadscreen",
 				canvas_container_id: null,
 				buttons_container_id: null,
