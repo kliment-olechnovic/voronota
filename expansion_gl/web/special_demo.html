@@ -213,6 +213,63 @@ color-atoms [-chain B] -col 0xFFAA88
 show-atoms -rep cartoon sticks -on-objects objB5
 rotate -angle 180 -axis 0 1 0
 `;
+
+			special_demo_script5=`
+animate-none
+delete-objects
+mono
+background white
+
+import 4ung.pdb -title objC0
+
+copy-object objC0 objC1
+pick-objects objC1
+construct-contacts-radically-fast -precutting-shifts 0.9 -precutting-variant 0  -generate-graphics -no-intra-residue -thicken-graphics 0.002
+color-contacts -col 0xFF0000
+
+copy-object objC0 objC2
+pick-objects objC2
+construct-contacts-radically-fast -precutting-shifts 0.9 -precutting-variant 1  -generate-graphics -no-intra-residue -thicken-graphics 0.003
+color-contacts -col 0x00FF00
+
+copy-object objC0 objC3
+pick-objects objC3
+construct-contacts-radically-fast -precutting-shifts 0.9 -precutting-variant 2  -generate-graphics -no-intra-residue -thicken-graphics 0.004
+color-contacts -col 0x00FF00
+
+copy-object objC0 objC4
+pick-objects objC4
+construct-contacts-radically-fast -precutting-shifts 0.9 -precutting-variant 3  -generate-graphics -no-intra-residue -thicken-graphics 0.005
+color-contacts -col 0x0000FF
+
+copy-object objC0 objC5
+pick-objects objC5
+construct-contacts-radically-fast -generate-graphics -no-intra-residue
+
+copy-object objC0 objC6
+pick-objects objC6
+add-figures-of-primitive-directions -use [] -figure-name-start pdir
+show-figures -name pdir
+color-figures -name pdir -rep solid -col 0xFF77FF
+hide-objects objC6
+
+delete-objects objC0
+
+pick-objects
+hide-atoms
+show-contacts [-inter-chain] -rep faces
+show-contacts [-inter-chain] -rep edges
+color-contacts -rep edges -col 0x000000
+
+select-contacts [-inter-chain] -name iface -on-objects objC5
+orient -atoms [-sel-of-contacts iface]
+rotate -angle -90 -axis 0 0 1
+
+color-atoms [-chain A] -col 0xCCCCCC
+color-atoms [-chain B] -col 0xFFAA88
+show-atoms -rep cartoon sticks -on-objects objC5
+rotate -angle 180 -axis 0 1 0
+`;
 			
 			voronota_viewer_init({
 				width: function(){return window.innerWidth;},
@@ -232,7 +289,8 @@ rotate -angle 180 -axis 0 1 0
 					{action: special_demo_script1, label: "Demo 1"},
 					{action: special_demo_script2, label: "Demo 2"},
 					{action: special_demo_script3, label: "Demo 3"},
-					{action: special_demo_script4, label: "Demo 4"},],
+					{action: special_demo_script4, label: "Demo 4"},
+					{action: special_demo_script5, label: "Demo 5"},],
 				loadscreen_id: "loadscreen",
 				canvas_container_id: null,
 				buttons_container_id: null,
