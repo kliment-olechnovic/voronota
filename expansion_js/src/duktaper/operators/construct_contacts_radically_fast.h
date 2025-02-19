@@ -71,11 +71,12 @@ public:
 	bool characterize_topology;
 	bool no_remove_triangulation_info;
 	int precutting_variant;
+	bool add_collapsed_adjuncts;
 	std::vector<double> adjunct_circle_restrictions;
 	std::vector<double> precutting_shifts;
 	std::string initial_selection_expression;
 
-	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting_variant(-1)
+	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting_variant(-1), add_collapsed_adjuncts(false)
 	{
 	}
 
@@ -90,6 +91,7 @@ public:
 		characterize_topology=input.get_flag("characterize-topology");
 		no_remove_triangulation_info=input.get_flag("no-remove-triangulation-info");
 		precutting_variant=input.get_value_or_default<int>("precutting-variant", -1);
+		add_collapsed_adjuncts=input.get_flag("add-collapsed-adjuncts");
 		adjunct_circle_restrictions=input.get_value_vector_or_default<double>("adjunct-circle-restrictions", std::vector<double>());
 		precutting_shifts=input.get_value_vector_or_default<double>("precutting-shifts", std::vector<double>());
 		initial_selection_expression=input.get_value_or_default<std::string>("initial-sel", "");
@@ -107,6 +109,7 @@ public:
 		doc.set_option_decription(CDOD("no-remove-triangulation-info", CDOD::DATATYPE_BOOL, "flag to not remove triangulation info"));
 		doc.set_option_decription(CDOD("adjunct-circle-restrictions", CDOD::DATATYPE_FLOAT_ARRAY, "adjunct circle restriction radii", ""));
 		doc.set_option_decription(CDOD("precutting-variant", CDOD::DATATYPE_INT, "precutting variant", -1));
+		doc.set_option_decription(CDOD("add-collapsed-adjuncts", CDOD::DATATYPE_BOOL, "flag to add collapse adjuncts of subarea value"));
 		doc.set_option_decription(CDOD("precutting-shifts", CDOD::DATATYPE_FLOAT_ARRAY, "precutting plane shift values", ""));
 		doc.set_option_decription(CDOD("initial-sel", CDOD::DATATYPE_STRING, "initial selection expression", ""));
 	}
@@ -255,6 +258,9 @@ public:
 		}
 
 		std::vector<std::string> names_for_adjunct_subareas;
+		std::vector<std::string> names_for_adjunct_subareas_collapse_layers;
+		std::vector<std::string> names_for_adjunct_subareas_collapse_directions;
+		std::string name_for_adjunct_subareas_collapse_all;
 		std::vector<std::string> names_for_adjunct_levelareas;
 
 		if(!radical_tessellation_result.adjuncts_for_contacts_summaries.empty())
@@ -269,34 +275,55 @@ public:
 					{
 						number_of_adjuncts=n;
 						names_for_adjunct_subareas.resize(number_of_adjuncts);
+						names_for_adjunct_subareas_collapse_layers.resize(number_of_adjuncts);
+						names_for_adjunct_subareas_collapse_directions.resize(number_of_adjuncts);
+						name_for_adjunct_subareas_collapse_all="subareaM99900toM00000";
 						names_for_adjunct_levelareas.resize(number_of_adjuncts);
 						for(std::size_t j=0;j<number_of_adjuncts;j++)
 						{
 							const voronotalt::RadicalTessellation::ContactDescriptorSummaryAdjunct::LevelArea& la=radical_tessellation_result.adjuncts_for_contacts_summaries[i].level_areas[j];
 							const int mask_class=static_cast<int>(precutting_parameters.calculate_mask_class(la.zone));
 							{
-								std::ostringstream name_output;
+								std::string name_for_direction;
 								if(number_of_adjuncts>adjunct_circle_restrictions.size())
 								{
-									name_output << "pcut";
-									print_pretty_integer_number(mask_class, name_output);
+									std::ostringstream name_output_for_direction;
+									name_output_for_direction << "pcut";
+									print_pretty_integer_number(mask_class, name_output_for_direction);
+									name_for_direction=name_output_for_direction.str();
 								}
-								name_output << "subarea";
+
+								std::string name_for_layer;
 								{
-									double smaller_restriction=(restrictions_positive ? 0.0 : -999.0);
-									if(j+1<number_of_adjuncts)
+									std::ostringstream name_output_for_layer;
+									name_output_for_layer << "subarea";
 									{
-										const voronotalt::RadicalTessellation::ContactDescriptorSummaryAdjunct::LevelArea& smaller_la=radical_tessellation_result.adjuncts_for_contacts_summaries[i].level_areas[j+1];
-										if(smaller_la.zone==la.zone)
+										double smaller_restriction=(restrictions_positive ? 0.0 : -999.0);
+										if(j+1<number_of_adjuncts)
 										{
-											smaller_restriction=smaller_la.restriction;
+											const voronotalt::RadicalTessellation::ContactDescriptorSummaryAdjunct::LevelArea& smaller_la=radical_tessellation_result.adjuncts_for_contacts_summaries[i].level_areas[j+1];
+											if(smaller_la.zone==la.zone)
+											{
+												smaller_restriction=smaller_la.restriction;
+											}
 										}
+										print_pretty_number(smaller_restriction, name_output_for_layer);
 									}
-									print_pretty_number(smaller_restriction, name_output);
+									name_output_for_layer << "to";
+									print_pretty_number(la.restriction, name_output_for_layer);
+									name_for_layer=name_output_for_layer.str();
 								}
-								name_output << "to";
-								print_pretty_number(la.restriction, name_output);
-								names_for_adjunct_subareas[j]=name_output.str();
+
+								if(!name_for_direction.empty())
+								{
+									names_for_adjunct_subareas[j]=name_for_direction+name_for_layer;
+									names_for_adjunct_subareas_collapse_layers[j]=name_for_direction+name_for_adjunct_subareas_collapse_all;
+									names_for_adjunct_subareas_collapse_directions[j]=name_for_layer;
+								}
+								else
+								{
+									names_for_adjunct_subareas[j]=name_for_layer;
+								}
 							}
 							{
 								std::ostringstream name_output;
@@ -341,6 +368,18 @@ public:
 			for(std::size_t j=0;j<names_for_adjunct_subareas.size();j++)
 			{
 				contact.value.props.adjuncts.erase(names_for_adjunct_subareas[j]);
+				if(!names_for_adjunct_subareas_collapse_layers[j].empty())
+				{
+					contact.value.props.adjuncts.erase(names_for_adjunct_subareas_collapse_layers[j]);
+				}
+				if(!names_for_adjunct_subareas_collapse_directions[j].empty())
+				{
+					contact.value.props.adjuncts.erase(names_for_adjunct_subareas_collapse_directions[j]);
+				}
+			}
+			if(!name_for_adjunct_subareas_collapse_all.empty())
+			{
+				contact.value.props.adjuncts.erase(name_for_adjunct_subareas_collapse_all);
 			}
 			for(std::size_t j=0;j<names_for_adjunct_levelareas.size();j++)
 			{
@@ -360,8 +399,29 @@ public:
 					{
 						subarea_to_add=cdsa.level_areas[j].area;
 					}
-					contact.value.props.adjuncts[names_for_adjunct_subareas[j]]+=subarea_to_add;
-					total_subareas[names_for_adjunct_subareas[j]]+=subarea_to_add;
+					const std::string& name_for_adjunct_subarea=names_for_adjunct_subareas[j];
+					const std::string& name_for_adjunct_subarea_collapse1=names_for_adjunct_subareas_collapse_layers[j];
+					const std::string& name_for_adjunct_subarea_collapse2=names_for_adjunct_subareas_collapse_directions[j];
+					contact.value.props.adjuncts[name_for_adjunct_subarea]+=subarea_to_add;
+					total_subareas[name_for_adjunct_subarea]+=subarea_to_add;
+					if(add_collapsed_adjuncts)
+					{
+						if(!name_for_adjunct_subarea_collapse1.empty() && name_for_adjunct_subarea_collapse1!=name_for_adjunct_subarea)
+						{
+							contact.value.props.adjuncts[name_for_adjunct_subarea_collapse1]+=subarea_to_add;
+							total_subareas[name_for_adjunct_subarea_collapse1]+=subarea_to_add;
+						}
+						if(!name_for_adjunct_subarea_collapse2.empty() && name_for_adjunct_subarea_collapse2!=name_for_adjunct_subarea && name_for_adjunct_subarea_collapse2!=name_for_adjunct_subarea_collapse1)
+						{
+							contact.value.props.adjuncts[name_for_adjunct_subarea_collapse2]+=subarea_to_add;
+							total_subareas[name_for_adjunct_subarea_collapse2]+=subarea_to_add;
+						}
+						if(!name_for_adjunct_subareas_collapse_all.empty() && name_for_adjunct_subareas_collapse_all!=name_for_adjunct_subarea && name_for_adjunct_subareas_collapse_all!=name_for_adjunct_subarea_collapse1 && name_for_adjunct_subareas_collapse_all!=name_for_adjunct_subarea_collapse2)
+						{
+							contact.value.props.adjuncts[name_for_adjunct_subareas_collapse_all]+=subarea_to_add;
+							total_subareas[name_for_adjunct_subareas_collapse_all]+=subarea_to_add;
+						}
+					}
 					contact.value.props.adjuncts[names_for_adjunct_levelareas[j]]+=cdsa.level_areas[j].area;
 				}
 			}
