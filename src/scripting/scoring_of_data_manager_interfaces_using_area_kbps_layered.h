@@ -20,6 +20,7 @@ public:
 	public:
 		std::vector<std::string> kbp_names;
 		std::map< std::string, std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> > > layers_kbp_coeffs;
+		std::map<std::string, double> summing_weights;
 
 		bool valid() const
 		{
@@ -31,11 +32,27 @@ public:
 			return get_default_configuration_mutable();
 		}
 
-		static bool setup_default_configuration(const std::string& kbps_file)
+		static bool setup_default_configuration(const std::string& kbps_file, const std::string& summing_weights_file)
 		{
 			if(kbps_file.empty())
 			{
 				return false;
+			}
+
+			std::map<std::string, double> raw_summing_weights;
+
+			if(!summing_weights_file.empty())
+			{
+				InputSelector summing_weights_file_input_selector(summing_weights_file);
+				std::istream& finput=summing_weights_file_input_selector.stream();
+				if(!finput.good())
+				{
+					return false;
+				}
+				if(!read_summing_weights(finput, raw_summing_weights))
+				{
+					return false;
+				}
 			}
 
 			std::vector<std::string> raw_kbp_names;
@@ -56,6 +73,7 @@ public:
 
 			get_default_configuration_mutable().kbp_names.swap(raw_kbp_names);
 			get_default_configuration_mutable().layers_kbp_coeffs.swap(raw_layers_kbp_coeffs);
+			get_default_configuration_mutable().summing_weights.swap(raw_summing_weights);
 
 			return get_default_configuration().valid();
 		}
@@ -84,9 +102,10 @@ public:
 		std::vector<std::string> score_names;
 		std::vector<double> score_values;
 		double known_area;
+		double weighted_sum;
 		SummaryOfContacts contacts_summary;
 
-		Result() : known_area(0.0)
+		Result() : known_area(0.0), weighted_sum(0.0)
 		{
 		}
 	};
@@ -128,6 +147,19 @@ public:
 		result.score_names=configuration.kbp_names;
 		result.score_values.resize(configuration.kbp_names.size());
 
+		std::vector<double> score_weights(configuration.kbp_names.size(), 0.0);
+		if(!configuration.summing_weights.empty())
+		{
+			for(std::size_t i=0;i<configuration.kbp_names.size();i++)
+			{
+				std::map<std::string, double>::const_iterator it=configuration.summing_weights.find(configuration.kbp_names[i]);
+				if(it!=configuration.summing_weights.end())
+				{
+					score_weights[i]=(it->second);
+				}
+			}
+		}
+
 		for(std::set<std::size_t>::const_iterator it=all_contact_ids.begin();it!=all_contact_ids.end();++it)
 		{
 			const Contact& contact=data_manager.contacts()[*it];
@@ -160,7 +192,19 @@ public:
 			if(known_area>0.0)
 			{
 				known_area=std::min(known_area, contact.value.area);
+
+				double weighted_sum=0.0;
+
+				if(!configuration.summing_weights.empty())
+				{
+					for(std::size_t i=0;i<score_weights.size();i++)
+					{
+						weighted_sum+=score_values[i]*score_weights[i];
+					}
+				}
+
 				result.known_area+=known_area;
+				result.weighted_sum+=weighted_sum;
 
 				for(std::size_t i=0;i<configuration.kbp_names.size();i++)
 				{
@@ -171,6 +215,7 @@ public:
 				{
 					std::map<std::string, double>& map_of_contact_adjuncts=data_manager.contact_adjuncts_mutable(*it);
 					map_of_contact_adjuncts[params.adjunct_prefix+"_known_area"]=known_area;
+					map_of_contact_adjuncts[params.adjunct_prefix+"_weighted_sum"]=weighted_sum;
 					for(std::size_t i=0;i<configuration.kbp_names.size();i++)
 					{
 						map_of_contact_adjuncts[params.adjunct_prefix+"_"+configuration.kbp_names[i]]=score_values[i];
@@ -272,6 +317,38 @@ public:
 		}
 
 		return !layers_kbp_coeffs.empty();
+	}
+
+	static bool read_summing_weights(std::istream& input_stream, std::map<std::string, double>& summing_weights)
+	{
+		summing_weights.clear();
+
+		input_stream >> std::ws;
+		while(input_stream.good())
+		{
+			std::string line;
+			std::getline(input_stream, line);
+			if(!line.empty())
+			{
+				std::istringstream linput(line);
+				std::string name;
+				linput >> name;
+				if(linput.fail() || name.empty())
+				{
+					return false;
+				}
+				double value=0.0;
+				linput >> value;
+				if(linput.fail())
+				{
+					return false;
+				}
+				summing_weights[name]=value;
+			}
+			input_stream >> std::ws;
+		}
+
+		return !summing_weights.empty();
 	}
 };
 

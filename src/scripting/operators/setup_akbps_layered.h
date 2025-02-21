@@ -24,6 +24,7 @@ public:
 	};
 
 	std::string potentials_file;
+	std::string summing_weights_file;
 
 	SetupAKBPsLayered()
 	{
@@ -32,16 +33,18 @@ public:
 	void initialize(CommandInput& input)
 	{
 		potentials_file=input.get_value<std::string>("potentials");
+		summing_weights_file=input.get_value_or_default<std::string>("summing-weights", std::string());
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("potentials", CDOD::DATATYPE_STRING, "path to file with potentials values"));
+		doc.set_option_decription(CDOD("summing-weights", CDOD::DATATYPE_STRING, "path to file with summing weights values", ""));
 	}
 
 	Result run(void*) const
 	{
-		if(!ScoringOfDataManagerInterfacesUsingAreaKBPsLayered::Configuration::setup_default_configuration(potentials_file))
+		if(!ScoringOfDataManagerInterfacesUsingAreaKBPsLayered::Configuration::setup_default_configuration(potentials_file, summing_weights_file))
 		{
 			throw std::runtime_error(std::string("Failed to setup AKBPs-Layered."));
 		}
