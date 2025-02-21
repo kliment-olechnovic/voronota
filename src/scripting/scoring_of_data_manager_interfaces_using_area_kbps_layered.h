@@ -91,8 +91,9 @@ public:
 		SelectionManager::Query parameters_for_selecting;
 		std::string adjunct_prefix;
 		std::string global_adjunct_prefix;
+		bool verbose_adjuncts;
 
-		Parameters()
+		Parameters() : verbose_adjuncts(false)
 		{
 		}
 	};
@@ -216,10 +217,19 @@ public:
 					std::map<std::string, double>& map_of_contact_adjuncts=data_manager.contact_adjuncts_mutable(*it);
 					map_of_contact_adjuncts[params.adjunct_prefix+"_known_area"]=known_area;
 					map_of_contact_adjuncts[params.adjunct_prefix+"_weighted_sum"]=weighted_sum;
+					if(params.verbose_adjuncts)
+					{
+						map_of_contact_adjuncts[params.adjunct_prefix+"_weighted_mean"]=weighted_sum/known_area;
+					}
 					for(std::size_t i=0;i<configuration.kbp_names.size();i++)
 					{
 						map_of_contact_adjuncts[params.adjunct_prefix+"_"+configuration.kbp_names[i]]=score_values[i];
-						map_of_contact_adjuncts[params.adjunct_prefix+"_"+configuration.kbp_names[i]+"_mean"]=score_values[i]/known_area;
+						if(params.verbose_adjuncts)
+						{
+							map_of_contact_adjuncts[params.adjunct_prefix+"_"+configuration.kbp_names[i]+"_mean"]=score_values[i]/known_area;
+							map_of_contact_adjuncts[params.adjunct_prefix+"_"+configuration.kbp_names[i]+"_weighted"]=(score_values[i]*score_weights[i]);
+							map_of_contact_adjuncts[params.adjunct_prefix+"_"+configuration.kbp_names[i]+"_weighted_mean"]=(score_values[i]*score_weights[i])/known_area;
+						}
 					}
 				}
 			}
@@ -227,10 +237,21 @@ public:
 
 		if(!params.global_adjunct_prefix.empty())
 		{
+			data_manager.global_numeric_adjuncts_mutable()[params.global_adjunct_prefix+"_known_area"]=result.known_area;
+			data_manager.global_numeric_adjuncts_mutable()[params.global_adjunct_prefix+"_weighted_sum"]=result.weighted_sum;
+			if(params.verbose_adjuncts)
+			{
+				data_manager.global_numeric_adjuncts_mutable()[params.global_adjunct_prefix+"_weighted_mean"]=result.weighted_sum/result.known_area;
+			}
 			for(std::size_t i=0;i<result.score_names.size();i++)
 			{
 				data_manager.global_numeric_adjuncts_mutable()[params.global_adjunct_prefix+"_"+result.score_names[i]]=result.score_values[i];
-				data_manager.global_numeric_adjuncts_mutable()[params.global_adjunct_prefix+"_"+result.score_names[i]+"_mean"]=result.score_values[i]/result.known_area;
+				if(params.verbose_adjuncts)
+				{
+					data_manager.global_numeric_adjuncts_mutable()[params.global_adjunct_prefix+"_"+result.score_names[i]+"_mean"]=result.score_values[i]/result.known_area;
+					data_manager.global_numeric_adjuncts_mutable()[params.global_adjunct_prefix+"_"+result.score_names[i]+"_weighted"]=(result.score_values[i]*score_weights[i]);
+					data_manager.global_numeric_adjuncts_mutable()[params.global_adjunct_prefix+"_"+result.score_names[i]+"_weighted_mean"]=(result.score_values[i]*score_weights[i])/result.known_area;
+				}
 			}
 		}
 	}

@@ -44,6 +44,7 @@ public:
 		params.parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query("", "[--inter-chain]", input);
 		params.adjunct_prefix=input.get_value_or_default<std::string>("adj-prefix", "");
 		params.global_adjunct_prefix=input.get_value_or_default<std::string>("global-adj-prefix", "");
+		params.verbose_adjuncts=input.get_flag("verbose-adjuncts");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -51,6 +52,7 @@ public:
 		OperatorsUtilities::document_read_generic_selecting_query("", "[--inter-chain]", doc);
 		doc.set_option_decription(CDOD("adj-prefix", CDOD::DATATYPE_STRING, "adjunct names prefix write KBP-Layered-based scores", ""));
 		doc.set_option_decription(CDOD("global-adj-prefix", CDOD::DATATYPE_STRING, "global adjunct names prefix write KBP-Layered-based scores", ""));
+		doc.set_option_decription(CDOD("verbose-adjuncts", CDOD::DATATYPE_BOOL, "flag to add more adjuncts"));
 	}
 
 	Result run(DataManager& data_manager) const
