@@ -159,6 +159,7 @@ public:
 
 			if(known_area>0.0)
 			{
+				known_area=std::min(known_area, contact.value.area);
 				result.known_area+=known_area;
 
 				for(std::size_t i=0;i<configuration.kbp_names.size();i++)
