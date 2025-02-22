@@ -5,6 +5,7 @@
 
 #include "io_selectors.h"
 #include "data_manager.h"
+#include "primitive_chemistry_annotation.h"
 
 namespace voronota
 {
@@ -21,6 +22,11 @@ public:
 		std::vector<std::string> kbp_names;
 		std::map< std::string, std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> > > layers_kbp_coeffs;
 		std::map<std::string, double> summing_weights;
+		bool has_primitive_chemistry_types;
+
+		Configuration() : has_primitive_chemistry_types(false)
+		{
+		}
 
 		bool valid() const
 		{
@@ -57,6 +63,7 @@ public:
 
 			std::vector<std::string> raw_kbp_names;
 			std::map< std::string, std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> > > raw_layers_kbp_coeffs;
+			bool raw_has_primitive_chemistry_types=false;
 
 			{
 				InputSelector kbps_file_input_selector(kbps_file);
@@ -65,7 +72,7 @@ public:
 				{
 					return false;
 				}
-				if(!read_kbps_names_and_coeffs(finput, raw_kbp_names, raw_layers_kbp_coeffs))
+				if(!read_kbps_names_and_coeffs(finput, raw_kbp_names, raw_layers_kbp_coeffs, raw_has_primitive_chemistry_types))
 				{
 					return false;
 				}
@@ -74,6 +81,7 @@ public:
 			get_default_configuration_mutable().kbp_names.swap(raw_kbp_names);
 			get_default_configuration_mutable().layers_kbp_coeffs.swap(raw_layers_kbp_coeffs);
 			get_default_configuration_mutable().summing_weights.swap(raw_summing_weights);
+			get_default_configuration_mutable().has_primitive_chemistry_types=raw_has_primitive_chemistry_types;
 
 			return get_default_configuration().valid();
 		}
@@ -175,6 +183,33 @@ public:
 				const std::string& layer=layer_it->first;
 				const std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> >& coeffs=layer_it->second;
 				std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> >::const_iterator kbp_it=coeffs.find(crads);
+				if(configuration.has_primitive_chemistry_types && kbp_it==coeffs.end())
+				{
+					common::ChainResidueAtomDescriptor alt_crad_a;
+					alt_crad_a.name=PrimitiveChemistryAnnotation::get_knodle_atom_type_string(crads.a);
+					if(!alt_crad_a.name.empty())
+					{
+						alt_crad_a.resName="ANY";
+						const common::ChainResidueAtomDescriptorsPair alt_crads_ao(alt_crad_a, crads.b);
+						kbp_it=coeffs.find(alt_crads_ao);
+						if(kbp_it==coeffs.end())
+						{
+							common::ChainResidueAtomDescriptor alt_crad_b;
+							alt_crad_b.name=PrimitiveChemistryAnnotation::get_knodle_atom_type_string(crads.b);
+							if(!alt_crad_b.name.empty())
+							{
+								alt_crad_b.resName="ANY";
+								const common::ChainResidueAtomDescriptorsPair alt_crads_ob(crads.a, alt_crad_b);
+								kbp_it=coeffs.find(alt_crads_ob);
+								if(kbp_it==coeffs.end())
+								{
+									const common::ChainResidueAtomDescriptorsPair alt_crads_ab(alt_crad_a, alt_crad_b);
+									kbp_it=coeffs.find(alt_crads_ab);
+								}
+							}
+						}
+					}
+				}
 				if(kbp_it!=coeffs.end() && kbp_it->second.size()==configuration.kbp_names.size())
 				{
 					std::map<std::string, double>::const_iterator adjuncts_it=contact.value.props.adjuncts.find(layer);
@@ -261,7 +296,7 @@ public:
 		construct_result(Configuration::get_default_configuration(), params, data_manager, result);
 	}
 
-	static bool read_kbps_names_and_coeffs(std::istream& input_stream, std::vector<std::string>& kbp_names, std::map< std::string, std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> > >& layers_kbp_coeffs)
+	static bool read_kbps_names_and_coeffs(std::istream& input_stream, std::vector<std::string>& kbp_names, std::map< std::string, std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> > >& layers_kbp_coeffs, bool& has_primitive_chemistry_types)
 	{
 		std::vector<std::string> header;
 
@@ -333,6 +368,7 @@ public:
 				}
 				std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> >& layer_map=layers_kbp_coeffs[layer];
 				layer_map.insert(layer_map.end(), iname_coeffs);
+				has_primitive_chemistry_types=(has_primitive_chemistry_types || iname_coeffs.first.a.resName=="ANY" || iname_coeffs.first.b.resName=="ANY");
 				input_stream >> std::ws;
 			}
 		}
