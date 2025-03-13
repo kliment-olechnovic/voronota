@@ -242,6 +242,18 @@ public:
 		}
 	};
 
+	struct TessellationNet
+	{
+		std::vector<RadicalTessellationContactConstruction::TessellationVertex> tes_vertices;
+		std::vector<RadicalTessellationContactConstruction::TessellationEdge> tes_edges;
+
+		void clear() noexcept
+		{
+			tes_vertices.clear();
+			tes_edges.clear();
+		}
+	};
+
 	struct Result
 	{
 		UnsignedInt total_spheres;
@@ -254,6 +266,7 @@ public:
 		TotalCellContactDescriptorsSummary total_cells_summary;
 		std::vector<ContactDescriptorSummary> contacts_summaries_with_redundancy_in_periodic_box;
 		std::vector<UnsignedInt> contacts_canonical_ids_with_redundancy_in_periodic_box;
+		TessellationNet tessellation_net;
 
 		Result() noexcept : total_spheres(0), total_collisions(0), total_relevant_collisions(0)
 		{
@@ -271,6 +284,7 @@ public:
 			total_cells_summary=TotalCellContactDescriptorsSummary();
 			contacts_summaries_with_redundancy_in_periodic_box.clear();
 			contacts_canonical_ids_with_redundancy_in_periodic_box.clear();
+			tessellation_net.clear();
 		}
 	};
 
@@ -392,7 +406,7 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, false, true, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -404,7 +418,7 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, false, grouping_of_spheres.empty(), FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, false, false, grouping_of_spheres.empty(), FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -416,7 +430,7 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, periodic_box, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, true, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, false, true, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -429,25 +443,27 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, periodic_box, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, false, grouping_of_spheres.empty(), FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, false, false, grouping_of_spheres.empty(), FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
 			const SpheresContainer& spheres_container,
 			const std::vector<int>& grouping_of_spheres,
+			const bool with_tessellation_net,
 			const bool with_graphics,
 			const bool summarize_cells,
 			Result& result,
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder) noexcept
 	{
-		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, with_graphics, summarize_cells, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, with_tessellation_net, with_graphics, summarize_cells, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
 			const SpheresContainer& spheres_container,
 			const std::vector<int>& involvement_of_spheres,
 			const std::vector<int>& grouping_of_spheres,
+			const bool with_tessellation_net,
 			const bool with_graphics,
 			const bool summarize_cells,
 			const Float max_circle_radius_restriction,
@@ -456,13 +472,14 @@ public:
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder) noexcept
 	{
-		construct_full_tessellation(spheres_container, involvement_of_spheres, grouping_of_spheres, with_graphics, summarize_cells, max_circle_radius_restriction, adjunct_max_circle_radius_restrictions, ParametersForPreliminaryCuts(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, involvement_of_spheres, grouping_of_spheres, with_tessellation_net, with_graphics, summarize_cells, max_circle_radius_restriction, adjunct_max_circle_radius_restrictions, ParametersForPreliminaryCuts(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
 			const SpheresContainer& spheres_container,
 			const std::vector<int>& involvement_of_spheres,
 			const std::vector<int>& grouping_of_spheres,
+			const bool with_tessellation_net,
 			const bool with_graphics,
 			const bool summarize_cells,
 			const Float max_circle_radius_restriction,
@@ -489,6 +506,12 @@ public:
 		const bool apply_preliminary_cuts_with_all_masks=(parameters_for_preliminary_cuts.apply_with_all_masks && parameters_for_preliminary_cuts.check_if_enabled_and_valid(spheres_container.input_spheres().size()));
 
 		std::vector<ContactDescriptorSummary> possible_contacts_summaries(preparation_result.relevant_collision_ids.size());
+
+		std::vector<TessellationNet> possible_tessellation_subnets;
+		if(with_tessellation_net)
+		{
+			possible_tessellation_subnets.resize(possible_contacts_summaries.size());
+		}
 
 		std::vector<RadicalTessellationContactConstruction::ContactDescriptorGraphics> possible_contacts_graphics;
 		if(with_graphics)
@@ -529,6 +552,10 @@ public:
 						cd))
 				{
 					possible_contacts_summaries[i].set(cd);
+					if(with_tessellation_net)
+					{
+						RadicalTessellationContactConstruction::construct_contact_descriptor_tessellation_vertices_and_edges(cd, possible_tessellation_subnets[i].tes_edges, possible_tessellation_subnets[i].tes_vertices);
+					}
 					if(with_graphics)
 					{
 						RadicalTessellationContactConstruction::construct_contact_descriptor_graphics(cd, 0.2, possible_contacts_graphics[i]);
@@ -644,6 +671,46 @@ public:
 		}
 
 		time_recorder.record_elapsed_miliseconds_and_reset("copy valid contact summaries");
+
+		if(with_tessellation_net)
+		{
+			UnsignedInt number_of_edges_from_subnets=0;
+			UnsignedInt number_of_vertices_from_subnets=0;
+			for(UnsignedInt i=0;i<ids_of_valid_pairs.size();i++)
+			{
+				const TessellationNet& subnet=possible_tessellation_subnets[ids_of_valid_pairs[i]];
+				number_of_edges_from_subnets+=subnet.tes_edges.size();
+				number_of_vertices_from_subnets+=subnet.tes_vertices.size();
+			}
+			TessellationNet redundant_net;
+			redundant_net.tes_edges.reserve(number_of_edges_from_subnets);
+			redundant_net.tes_vertices.reserve(number_of_vertices_from_subnets);
+			for(UnsignedInt i=0;i<ids_of_valid_pairs.size();i++)
+			{
+				const TessellationNet& subnet=possible_tessellation_subnets[ids_of_valid_pairs[i]];
+				redundant_net.tes_edges.insert(redundant_net.tes_edges.end(), subnet.tes_edges.begin(), subnet.tes_edges.end());
+				redundant_net.tes_vertices.insert(redundant_net.tes_vertices.end(), subnet.tes_vertices.begin(), subnet.tes_vertices.end());
+			}
+			std::sort(redundant_net.tes_edges.begin(), redundant_net.tes_edges.end());
+			std::sort(redundant_net.tes_vertices.begin(), redundant_net.tes_vertices.end());
+			result.tessellation_net.tes_edges.reserve(redundant_net.tes_edges.size()/2);
+			result.tessellation_net.tes_vertices.reserve(redundant_net.tes_vertices.size()/4);
+			for(UnsignedInt i=0;i<redundant_net.tes_edges.size();i++)
+			{
+				if(i==0 || !(redundant_net.tes_edges[i]==result.tessellation_net.tes_edges.back()))
+				{
+					result.tessellation_net.tes_edges.push_back(redundant_net.tes_edges[i]);
+				}
+			}
+			for(UnsignedInt i=0;i<redundant_net.tes_vertices.size();i++)
+			{
+				if(i==0 || !(redundant_net.tes_vertices[i]==result.tessellation_net.tes_vertices.back()))
+				{
+					result.tessellation_net.tes_vertices.push_back(redundant_net.tes_vertices[i]);
+				}
+			}
+			time_recorder.record_elapsed_miliseconds_and_reset("assemble valid contacts tessellation net");
+		}
 
 		if(with_graphics)
 		{

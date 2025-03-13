@@ -186,6 +186,8 @@ public:
 	std::set<std::string> graphics_restrict_chains;
 	std::set< std::pair<std::string, std::string> > graphics_restrict_chain_pairs;
 	std::string mesh_output_obj_file;
+	std::string tessellation_edges_output_file;
+	std::string tessellation_vertices_output_file;
 	std::string write_log_to_file;
 	std::ostringstream error_log_for_options_parsing;
 
@@ -437,6 +439,14 @@ public:
 				{
 					mesh_extract_connected_component=static_cast<long>(opt.args_ints.front());
 				}
+				else if(opt.name=="tessellation-edges-output-file" && opt.args_strings.size()==1)
+				{
+					tessellation_edges_output_file=opt.args_strings.front();
+				}
+				else if(opt.name=="tessellation-vertices-output-file" && opt.args_strings.size()==1)
+				{
+					tessellation_vertices_output_file=opt.args_strings.front();
+				}
 				else if(opt.name=="write-log-to-file" && opt.args_strings.size()==1)
 				{
 					write_log_to_file=opt.args_strings.front();
@@ -509,6 +519,16 @@ public:
 		if(running_mode==RunningMode::simplified_aw && (!mesh_output_obj_file.empty() || mesh_print_topology_summary))
 		{
 			error_log_for_options_parsing << "Error: in this version mesh output and analysis is disabled for the simplified additively weighted Voronoi diagram regime.\n";
+		}
+
+		if(running_mode==RunningMode::simplified_aw && !(tessellation_edges_output_file.empty() && tessellation_vertices_output_file.empty()))
+		{
+			error_log_for_options_parsing << "Error: in this version tessellation edges and vertices output is disabled for the simplified additively weighted Voronoi diagram regime.\n";
+		}
+
+		if(!(periodic_box_directions.empty() && periodic_box_corners.empty()) && !(tessellation_edges_output_file.empty() && tessellation_vertices_output_file.empty()))
+		{
+			error_log_for_options_parsing << "Error: in this version tessellation edges and vertices output is disabled for the periodic calculations.\n";
 		}
 
 		if(!periodic_box_directions.empty() && !periodic_box_corners.empty())
@@ -735,7 +755,15 @@ void run_mode_radical(
 		const std::vector<int>& grouping_for_filtering=(app_params.compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (app_params.compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
 		const bool summarize_cells=grouping_for_filtering.empty();
 
-		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, (app_graphics_recorder.graphics_writer.enabled() || app_mesh_recorder.mesh_writer.enabled()), summarize_cells, result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
+		voronotalt::RadicalTessellation::construct_full_tessellation(
+				spheres_container,
+				grouping_for_filtering,
+				!(app_params.tessellation_edges_output_file.empty() && app_params.tessellation_vertices_output_file.empty()),
+				(app_graphics_recorder.graphics_writer.enabled() || app_mesh_recorder.mesh_writer.enabled()),
+				summarize_cells,
+				result,
+				result_graphics,
+				app_log_recorders.time_recoder_for_tessellation);
 	}
 
 	voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;
@@ -868,6 +896,34 @@ void run_mode_radical(
 	}
 
 	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result sas and volumes");
+
+	if(!app_params.tessellation_edges_output_file.empty())
+	{
+		std::ofstream foutput(app_params.tessellation_edges_output_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			voronotalt::PrintingCustomTypes::print_sequential_container_simply(result.tessellation_net.tes_edges, foutput);
+		}
+		else
+		{
+			std::cerr << "Error (non-terminating): failed to write tessellation edges to file '" << app_params.tessellation_edges_output_file << "'\n";
+		}
+		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("write tessellation edges");
+	}
+
+	if(!app_params.tessellation_vertices_output_file.empty())
+	{
+		std::ofstream foutput(app_params.tessellation_vertices_output_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			voronotalt::PrintingCustomTypes::print_sequential_container_simply(result.tessellation_net.tes_vertices, foutput);
+		}
+		else
+		{
+			std::cerr << "Error (non-terminating): failed to write tessellation vertices to file '" << app_params.tessellation_vertices_output_file << "'\n";
+		}
+		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("write tessellation vertices");
+	}
 
 	if(app_graphics_recorder.graphics_writer.enabled())
 	{
@@ -1504,7 +1560,7 @@ void run_mode_test_raw_collisions(
 		{
 			voronotalt::RadicalTessellation::ResultGraphics result_graphics;
 
-			voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, false, false, tessellation_result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
+			voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, false, false, false, tessellation_result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
 		}
 	}
 

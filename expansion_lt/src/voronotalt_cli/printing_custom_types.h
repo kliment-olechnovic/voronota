@@ -251,6 +251,16 @@ public:
 			output << obj.atom_name;
 		}
 	}
+
+	template<class SequentialContainer>
+	inline static void print_sequential_container_simply(const SequentialContainer& v, std::ostream& output) noexcept
+	{
+		for(typename SequentialContainer::const_iterator it=v.begin();it!=v.end();++it)
+		{
+			print((*it), output);
+		}
+	}
+
 private:
 	template<class ContactsContainer, class GroupedContactsContainer>
 	static void print_contacts_residue_level_or_chain_level_to_stream(
@@ -492,6 +502,42 @@ private:
 	inline static void print(const SimplifiedAWTessellation::TotalContactDescriptorsSummary& obj, std::ostream& output) noexcept
 	{
 		output << obj.area << "\t" << obj.arc_length << "\t" << obj.distance << "\t" << obj.count;
+	}
+
+	inline static void print(const RadicalTessellationContactConstruction::TessellationEdge& te, std::ostream& output) noexcept
+	{
+		output << te.ids_of_spheres[0] << " " << te.ids_of_spheres[1] << " ";
+		if(te.ids_of_spheres[2]==null_id())
+		{
+			output << "-1" << " ";
+		}
+		else
+		{
+			output << te.ids_of_spheres[2] << " ";
+		}
+		output << te.length << "\n";
+	}
+
+	inline static void print(const RadicalTessellationContactConstruction::TessellationVertex& tv, std::ostream& output) noexcept
+	{
+		output << tv.ids_of_spheres[0] << " " << tv.ids_of_spheres[1] << " ";
+		if(tv.ids_of_spheres[2]==null_id())
+		{
+			output << "-1";
+		}
+		else
+		{
+			output << tv.ids_of_spheres[2] << " ";
+		}
+		if(tv.ids_of_spheres[3]==null_id())
+		{
+			output << "-1" << " ";
+		}
+		else
+		{
+			output << tv.ids_of_spheres[3] << " ";
+		}
+		output << tv.point.x << " " << tv.point.y << " " << tv.point.z << "\n";
 	}
 };
 

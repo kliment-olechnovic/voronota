@@ -114,6 +114,83 @@ public:
 		}
 	};
 
+	struct TessellationVertex
+	{
+		UnsignedInt ids_of_spheres[4];
+		SimplePoint point;
+
+		void sort_ids_of_spheres() noexcept
+		{
+			if(ids_of_spheres[0]>ids_of_spheres[1])
+			{
+				std::swap(ids_of_spheres[0], ids_of_spheres[1]);
+			}
+			if(ids_of_spheres[2]>ids_of_spheres[3])
+			{
+				std::swap(ids_of_spheres[2], ids_of_spheres[3]);
+			}
+			if(ids_of_spheres[0]>ids_of_spheres[2])
+			{
+				std::swap(ids_of_spheres[0], ids_of_spheres[2]);
+			}
+			if(ids_of_spheres[1]>ids_of_spheres[3])
+			{
+				std::swap(ids_of_spheres[1], ids_of_spheres[3]);
+			}
+			if(ids_of_spheres[1]>ids_of_spheres[2])
+			{
+				std::swap(ids_of_spheres[1], ids_of_spheres[2]);
+			}
+		}
+
+		bool operator<(const TessellationVertex& obj) const noexcept
+		{
+			return ((ids_of_spheres[0]<obj.ids_of_spheres[0])
+					|| (ids_of_spheres[0]==obj.ids_of_spheres[0] && ids_of_spheres[1]<obj.ids_of_spheres[1])
+					|| (ids_of_spheres[0]==obj.ids_of_spheres[0] && ids_of_spheres[1]==obj.ids_of_spheres[1] && ids_of_spheres[2]<obj.ids_of_spheres[2])
+					|| (ids_of_spheres[0]==obj.ids_of_spheres[0] && ids_of_spheres[1]==obj.ids_of_spheres[1] && ids_of_spheres[2]==obj.ids_of_spheres[2] && ids_of_spheres[3]<obj.ids_of_spheres[3]));
+		}
+
+		bool operator==(const TessellationVertex& obj) const noexcept
+		{
+			return (ids_of_spheres[0]==obj.ids_of_spheres[0] && ids_of_spheres[1]==obj.ids_of_spheres[1] && ids_of_spheres[2]==obj.ids_of_spheres[2] && ids_of_spheres[3]==obj.ids_of_spheres[3]);
+		}
+	};
+
+	struct TessellationEdge
+	{
+		UnsignedInt ids_of_spheres[3];
+		Float length;
+
+		void sort_ids_of_spheres() noexcept
+		{
+			if(ids_of_spheres[0]>ids_of_spheres[1])
+			{
+				std::swap(ids_of_spheres[0], ids_of_spheres[1]);
+			}
+			if(ids_of_spheres[1]>ids_of_spheres[2])
+			{
+				std::swap(ids_of_spheres[1], ids_of_spheres[2]);
+			}
+			if(ids_of_spheres[0]>ids_of_spheres[1])
+			{
+				std::swap(ids_of_spheres[0], ids_of_spheres[1]);
+			}
+		}
+
+		bool operator<(const TessellationEdge& obj) const noexcept
+		{
+			return ((ids_of_spheres[0]<obj.ids_of_spheres[0])
+					|| (ids_of_spheres[0]==obj.ids_of_spheres[0] && ids_of_spheres[1]<obj.ids_of_spheres[1])
+					|| (ids_of_spheres[0]==obj.ids_of_spheres[0] && ids_of_spheres[1]==obj.ids_of_spheres[1] && ids_of_spheres[2]<obj.ids_of_spheres[2]));
+		}
+
+		bool operator==(const TessellationEdge& obj) const noexcept
+		{
+			return (ids_of_spheres[0]==obj.ids_of_spheres[0] && ids_of_spheres[1]==obj.ids_of_spheres[1] && ids_of_spheres[2]==obj.ids_of_spheres[2]);
+		}
+	};
+
 	static bool construct_contact_descriptor(
 			const std::vector<SimpleSphere>& spheres,
 			const std::vector<int>& spheres_exclusion_statuses,
@@ -347,6 +424,55 @@ public:
 			}
 		}
 		return (!result_contact_descriptor_graphics.outer_points.empty());
+	}
+
+	static bool construct_contact_descriptor_tessellation_vertices_and_edges(const ContactDescriptor& contact_descriptor, std::vector<TessellationEdge>& tes_edges, std::vector<TessellationVertex>& tes_vertices) noexcept
+	{
+		tes_edges.clear();
+		tes_vertices.clear();
+		if(contact_descriptor.area>FLOATCONST(0.0))
+		{
+			if(contact_descriptor.contour.empty())
+			{
+				TessellationEdge te;
+				te.length=contact_descriptor.sum_of_arc_angles*contact_descriptor.intersection_circle_sphere.r;
+				te.ids_of_spheres[0]=contact_descriptor.id_a;
+				te.ids_of_spheres[1]=contact_descriptor.id_b;
+				te.ids_of_spheres[2]=null_id();
+				te.sort_ids_of_spheres();
+				tes_edges.resize(1, te);
+			}
+			else
+			{
+				tes_vertices.reserve(contact_descriptor.contour.size());
+				tes_edges.reserve(contact_descriptor.contour.size());
+				for(UnsignedInt i=0;i<contact_descriptor.contour.size();i++)
+				{
+					const ContourPoint& mid=contact_descriptor.contour[i];
+					const ContourPoint& next=contact_descriptor.contour[(i+1)<contact_descriptor.contour.size() ? (i+1) : 0];
+					{
+						TessellationEdge te;
+						te.length=((mid.right_id==contact_descriptor.id_a) ? mid.angle*contact_descriptor.intersection_circle_sphere.r : distance_from_point_to_point(mid.p, next.p));
+						te.ids_of_spheres[0]=contact_descriptor.id_a;
+						te.ids_of_spheres[1]=contact_descriptor.id_b;
+						te.ids_of_spheres[2]=((mid.right_id==contact_descriptor.id_a) ? null_id() : mid.right_id);
+						te.sort_ids_of_spheres();
+						tes_edges.push_back(te);
+					}
+					{
+						TessellationVertex tv;
+						tv.point=mid.p;
+						tv.ids_of_spheres[0]=contact_descriptor.id_a;
+						tv.ids_of_spheres[1]=contact_descriptor.id_b;
+						tv.ids_of_spheres[2]=((mid.left_id==contact_descriptor.id_a) ? null_id() : mid.left_id);
+						tv.ids_of_spheres[3]=((mid.right_id==contact_descriptor.id_a) ? null_id() : mid.right_id);
+						tv.sort_ids_of_spheres();
+						tes_vertices.push_back(tv);
+					}
+				}
+			}
+		}
+		return (!tes_edges.empty());
 	}
 
 private:

@@ -2,6 +2,7 @@
 #define VORONOTALT_BASIC_TYPES_AND_FUNCTIONS_H_
 
 #include <cmath>
+#include <limits>
 
 //#define VORONOTALT_FP32
 #define VORONOTALT_UI32
@@ -393,6 +394,11 @@ inline SimplePoint rotate_point_around_axis(const SimplePoint& axis, const Float
 	{
 		return p;
 	}
+}
+
+inline UnsignedInt null_id() noexcept
+{
+	return std::numeric_limits<UnsignedInt>::max();
 }
 
 }
