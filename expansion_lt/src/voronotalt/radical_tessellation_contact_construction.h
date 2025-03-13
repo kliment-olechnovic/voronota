@@ -117,7 +117,7 @@ public:
 	struct TessellationVertex
 	{
 		UnsignedInt ids_of_spheres[4];
-		SimplePoint point;
+		SimpleSphere semitangent;
 
 		void sort_ids_of_spheres() noexcept
 		{
@@ -461,7 +461,7 @@ public:
 					}
 					{
 						TessellationVertex tv;
-						tv.point=mid.p;
+						tv.semitangent.p=mid.p;
 						tv.ids_of_spheres[0]=contact_descriptor.id_a;
 						tv.ids_of_spheres[1]=contact_descriptor.id_b;
 						tv.ids_of_spheres[2]=((mid.left_id==contact_descriptor.id_a) ? null_id() : mid.left_id);

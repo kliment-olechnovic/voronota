@@ -707,6 +707,16 @@ public:
 				if(i==0 || !(redundant_net.tes_vertices[i]==result.tessellation_net.tes_vertices.back()))
 				{
 					result.tessellation_net.tes_vertices.push_back(redundant_net.tes_vertices[i]);
+					RadicalTessellationContactConstruction::TessellationVertex& tv=result.tessellation_net.tes_vertices.back();
+					tv.semitangent.r=FLOATCONST(0.0);
+					if(tv.ids_of_spheres[3]<spheres_container.populated_spheres().size())
+					{
+						for(UnsignedInt j=0;j<4;j++)
+						{
+							const SimpleSphere& ss=spheres_container.populated_spheres()[tv.ids_of_spheres[j]];
+							tv.semitangent.r=std::min(tv.semitangent.r, distance_from_point_to_point(tv.semitangent.p, ss.p)-ss.r);
+						}
+					}
 				}
 			}
 			time_recorder.record_elapsed_miliseconds_and_reset("assemble valid contacts tessellation net");

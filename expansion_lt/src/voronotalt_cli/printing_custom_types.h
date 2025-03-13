@@ -537,7 +537,7 @@ private:
 		{
 			output << tv.ids_of_spheres[3] << " ";
 		}
-		output << tv.point.x << " " << tv.point.y << " " << tv.point.z << "\n";
+		output << tv.semitangent.p.x << " " << tv.semitangent.p.y << " " << tv.semitangent.p.z << " " << tv.semitangent.r << "\n";
 	}
 };
 
