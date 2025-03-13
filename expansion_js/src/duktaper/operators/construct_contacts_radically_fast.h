@@ -237,6 +237,7 @@ public:
 					spheres_container,
 					std::vector<int>(),
 					grouping_for_filtering,
+					false,
 					(generate_graphics || characterize_topology),
 					summarize_cells,
 					restrict_circle,
