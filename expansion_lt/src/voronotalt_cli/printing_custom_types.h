@@ -506,38 +506,39 @@ private:
 
 	inline static void print(const RadicalTessellationContactConstruction::TessellationEdge& te, std::ostream& output) noexcept
 	{
-		output << te.ids_of_spheres[0] << " " << te.ids_of_spheres[1] << " ";
+		output << te.ids_of_spheres[0] << "\t" << te.ids_of_spheres[1] << "\t";
 		if(te.ids_of_spheres[2]==null_id())
 		{
-			output << "-1" << " ";
+			output << "-1";
 		}
 		else
 		{
-			output << te.ids_of_spheres[2] << " ";
+			output << te.ids_of_spheres[2];
 		}
-		output << te.length << "\n";
+		output << "\t" << te.length << "\n";
 	}
 
 	inline static void print(const RadicalTessellationContactConstruction::TessellationVertex& tv, std::ostream& output) noexcept
 	{
-		output << tv.ids_of_spheres[0] << " " << tv.ids_of_spheres[1] << " ";
+		output << tv.ids_of_spheres[0] << "\t" << tv.ids_of_spheres[1] << "\t";
 		if(tv.ids_of_spheres[2]==null_id())
 		{
 			output << "-1";
 		}
 		else
 		{
-			output << tv.ids_of_spheres[2] << " ";
+			output << tv.ids_of_spheres[2];
 		}
+		output << "\t";
 		if(tv.ids_of_spheres[3]==null_id())
 		{
-			output << "-1" << " ";
+			output << "-1";
 		}
 		else
 		{
-			output << tv.ids_of_spheres[3] << " ";
+			output << tv.ids_of_spheres[3];
 		}
-		output << tv.semitangent.p.x << " " << tv.semitangent.p.y << " " << tv.semitangent.p.z << " " << tv.semitangent.r << "\n";
+		output << "\t" << tv.position.x << "\t" << tv.position.y << "\t" << tv.position.z << "\t" << tv.dist_min << "\t" << tv.dist_max << "\n";
 	}
 };
 

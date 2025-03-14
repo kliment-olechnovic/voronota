@@ -131,6 +131,23 @@ voronota-lt \
 
 ####################################################################
 
+voronota-lt \
+  -i "./input/assembly_1ctf.cif" \
+  --probe 1.4 \
+  --write-tessellation-edges-to-file "./output/written_files/output_1ctf_full_tessellation_edges.txt" \
+  --write-tessellation-vertices-to-file "./output/written_files/output_1ctf_full_tessellation_vertices.txt" \
+&> /dev/null
+
+voronota-lt \
+  -i "./input/assembly_1ctf.cif" \
+  --compute-only-inter-chain-contacts \
+  --probe 1.4 \
+  --write-tessellation-edges-to-file "./output/written_files/output_1ctf_inter_chain_tessellation_edges.txt" \
+  --write-tessellation-vertices-to-file "./output/written_files/output_1ctf_inter_chain_tessellation_vertices.txt" \
+&> /dev/null
+
+####################################################################
+
 mkdir -p "./output/api_usage_examples"
 
 g++ -O3 -I../src/voronotalt -o "./output/api_usage_examples/example_basic_and_periodic" "./input/api_usage_example_basic_and_periodic.cpp"

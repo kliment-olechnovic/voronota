@@ -708,13 +708,16 @@ public:
 				{
 					result.tessellation_net.tes_vertices.push_back(redundant_net.tes_vertices[i]);
 					RadicalTessellationContactConstruction::TessellationVertex& tv=result.tessellation_net.tes_vertices.back();
-					tv.semitangent.r=FLOATCONST(0.0);
+					tv.dist_min=FLOATCONST(0.0);
+					tv.dist_max=FLOATCONST(0.0);
 					if(tv.ids_of_spheres[3]<spheres_container.populated_spheres().size())
 					{
 						for(UnsignedInt j=0;j<4;j++)
 						{
 							const SimpleSphere& ss=spheres_container.populated_spheres()[tv.ids_of_spheres[j]];
-							tv.semitangent.r=std::min(tv.semitangent.r, distance_from_point_to_point(tv.semitangent.p, ss.p)-ss.r);
+							const Float dist=distance_from_point_to_point(tv.position, ss.p)-ss.r;
+							tv.dist_min=((j==0 || dist<tv.dist_min) ? dist : tv.dist_min);
+							tv.dist_max=((j==0 || dist>tv.dist_max) ? dist : tv.dist_max);
 						}
 					}
 				}
