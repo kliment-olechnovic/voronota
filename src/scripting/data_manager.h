@@ -1741,6 +1741,18 @@ public:
 		history_of_actions_on_contacts_.enhancing.push_back(parameters_to_enhance_contacts);
 	}
 
+	void reset_contacts_adjacencies_by_swapping(std::vector< std::map<std::size_t, double> >& adjacencies, const std::vector<double>& adjacency_perimeters)
+	{
+		if(adjacencies.size()==contacts_.size() && adjacency_perimeters.size()==contacts_.size())
+		{
+			contacts_adjacencies_.swap(adjacencies);
+			for(std::size_t i=0;i<contacts_.size();i++)
+			{
+				contacts_[i].value.props.adjuncts["adjacency"]=adjacency_perimeters[i];
+			}
+		}
+	}
+
 	void reset_contacts_display_states()
 	{
 		change_indicator_.update_changed_contacts_display_states_info(true, true, true);

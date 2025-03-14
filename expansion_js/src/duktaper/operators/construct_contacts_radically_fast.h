@@ -67,6 +67,7 @@ public:
 	double thicken_graphics;
 	bool no_intra_chain;
 	bool no_intra_residue;
+	bool calculate_adjacencies;
 	bool generate_graphics;
 	bool characterize_topology;
 	bool no_remove_triangulation_info;
@@ -76,7 +77,7 @@ public:
 	std::vector<double> precutting_shifts;
 	std::string initial_selection_expression;
 
-	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting_variant(-1), add_collapsed_adjuncts(false)
+	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), calculate_adjacencies(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting_variant(-1), add_collapsed_adjuncts(false)
 	{
 	}
 
@@ -87,6 +88,7 @@ public:
 		thicken_graphics=input.get_value_or_default<double>("thicken-graphics", 0.0);
 		no_intra_chain=input.get_flag("no-intra-chain");
 		no_intra_residue=input.get_flag("no-intra-residue");
+		calculate_adjacencies=input.get_flag("calculate-adjacencies");
 		generate_graphics=input.get_flag("generate-graphics");
 		characterize_topology=input.get_flag("characterize-topology");
 		no_remove_triangulation_info=input.get_flag("no-remove-triangulation-info");
@@ -104,6 +106,7 @@ public:
 		doc.set_option_decription(CDOD("thicken-graphics", CDOD::DATATYPE_FLOAT, "thickness of generated graphics", 0.0));
 		doc.set_option_decription(CDOD("no-intra-chain", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-chain contacts"));
 		doc.set_option_decription(CDOD("no-intra-residue", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-residue contacts"));
+		doc.set_option_decription(CDOD("calculate-adjacencies", CDOD::DATATYPE_BOOL, "flag to calculate contact-contact adjacency values"));
 		doc.set_option_decription(CDOD("generate-graphics", CDOD::DATATYPE_BOOL, "flag to generate graphics"));
 		doc.set_option_decription(CDOD("characterize-topology", CDOD::DATATYPE_BOOL, "flag to characterize topology of the merged contacts mesh surface"));
 		doc.set_option_decription(CDOD("no-remove-triangulation-info", CDOD::DATATYPE_BOOL, "flag to not remove triangulation info"));
@@ -237,7 +240,7 @@ public:
 					spheres_container,
 					std::vector<int>(),
 					grouping_for_filtering,
-					false,
+					calculate_adjacencies,
 					(generate_graphics || characterize_topology),
 					summarize_cells,
 					restrict_circle,
@@ -477,6 +480,56 @@ public:
 		}
 
 		data_manager.reset_contacts_by_swapping(contacts);
+
+		if(calculate_adjacencies)
+		{
+			std::map< std::pair<std::size_t, std::size_t>, std::size_t > map_of_id_pairs_to_contact_indices;
+			for(std::size_t i=0;i<data_manager.contacts().size();i++)
+			{
+				const scripting::Contact& contact=data_manager.contacts()[i];
+				map_of_id_pairs_to_contact_indices[std::make_pair(contact.ids[0], contact.ids[1])]=i;
+			}
+			std::vector< std::map<std::size_t, double> > adjacencies(data_manager.contacts().size());
+			std::vector<double> adjacency_perimeters(data_manager.contacts().size(), 0.0);
+			for(std::size_t i=0;i<radical_tessellation_result.tessellation_net.tes_edges.size();i++)
+			{
+				const voronotalt::RadicalTessellationContactConstruction::TessellationEdge te=radical_tessellation_result.tessellation_net.tes_edges[i];
+				if(te.ids_of_spheres[2]<spheres.size())
+				{
+					std::map< std::pair<std::size_t, std::size_t>, std::size_t >::const_iterator it1=map_of_id_pairs_to_contact_indices.find(std::pair<std::size_t, std::size_t>(te.ids_of_spheres[0], te.ids_of_spheres[1]));
+					std::map< std::pair<std::size_t, std::size_t>, std::size_t >::const_iterator it2=map_of_id_pairs_to_contact_indices.find(std::pair<std::size_t, std::size_t>(te.ids_of_spheres[0], te.ids_of_spheres[2]));
+					std::map< std::pair<std::size_t, std::size_t>, std::size_t >::const_iterator it3=map_of_id_pairs_to_contact_indices.find(std::pair<std::size_t, std::size_t>(te.ids_of_spheres[1], te.ids_of_spheres[2]));
+					if(it1!=map_of_id_pairs_to_contact_indices.end() && it2!=map_of_id_pairs_to_contact_indices.end())
+					{
+						adjacencies[it1->second][it2->second]=te.length;
+						adjacencies[it2->second][it1->second]=te.length;
+					}
+					if(it1!=map_of_id_pairs_to_contact_indices.end() && it3!=map_of_id_pairs_to_contact_indices.end())
+					{
+						adjacencies[it1->second][it3->second]=te.length;
+						adjacencies[it3->second][it1->second]=te.length;
+					}
+					if(it2!=map_of_id_pairs_to_contact_indices.end() && it3!=map_of_id_pairs_to_contact_indices.end())
+					{
+						adjacencies[it2->second][it3->second]=te.length;
+						adjacencies[it3->second][it2->second]=te.length;
+					}
+					if(it1!=map_of_id_pairs_to_contact_indices.end())
+					{
+						adjacency_perimeters[it1->second]+=te.length;
+					}
+					if(it2!=map_of_id_pairs_to_contact_indices.end())
+					{
+						adjacency_perimeters[it2->second]+=te.length;
+					}
+					if(it3!=map_of_id_pairs_to_contact_indices.end())
+					{
+						adjacency_perimeters[it3->second]+=te.length;
+					}
+				}
+			}
+			data_manager.reset_contacts_adjacencies_by_swapping(adjacencies, adjacency_perimeters);
+		}
 
 		std::set<std::size_t> initial_contact_ids;
 		voronotalt::MeshWriter mesh_writer(characterize_topology);
