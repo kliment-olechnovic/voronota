@@ -175,7 +175,7 @@ public:
 						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(1));
 						if(is_residue_standard(aaid.asc_a.crad.resName))
 						{
-							inter_atom_contacts_realizations[aaid].set(contact.value, area_value_names);
+							inter_atom_contacts_realizations[aaid].update(contact.value, area_value_names);
 						}
 					}
 					else
@@ -183,7 +183,7 @@ public:
 						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
 						if(is_residue_standard(aaid.asc_a.crad.resName) && is_residue_standard(aaid.asc_b.crad.resName))
 						{
-							inter_atom_contacts_realizations[aaid].set(contact.value, area_value_names);
+							inter_atom_contacts_realizations[aaid].update(contact.value, area_value_names);
 						}
 					}
 				}
@@ -329,11 +329,11 @@ private:
 		std::vector<double> area_values;
 		double dist;
 
-		AAContactValue() : dist(0.0)
+		AAContactValue() : dist(std::numeric_limits<double>::max())
 		{
 		}
 
-		void set(const common::ContactValue& v, const std::vector<std::string>& area_value_names)
+		void update(const common::ContactValue& v, const std::vector<std::string>& area_value_names)
 		{
 			if(area_values.size()!=area_value_names.size())
 			{
@@ -343,18 +343,18 @@ private:
 			{
 				if(area_value_names[i]=="area")
 				{
-					area_values[i]=v.area;
+					area_values[i]+=v.area;
 				}
 				else
 				{
 					std::map<std::string, double>::const_iterator adjunct_it=v.props.adjuncts.find(area_value_names[i]);
 					if(adjunct_it!=v.props.adjuncts.end())
 					{
-						area_values[i]=adjunct_it->second;
+						area_values[i]=+adjunct_it->second;
 					}
 				}
 			}
-			dist=v.dist;
+			dist=std::min(dist, v.dist);
 		}
 	};
 
