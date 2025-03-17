@@ -13,6 +13,7 @@ Options:
     --atom-atom-output-file   string     path to file to output atom-atom results, default is '_stdout'
     --layering-mode           string     layering mode ('outward' or 'inward'), default is 'inward'
     --directing-mode          string     layering mode ('none' or 'd4'), default is 'none'
+    --on-residue-level        string     flag to calculate results for residue-residue contacts, default is 'false'
     --help | -h                          flag to display help message and exit
 
 Standard input:
