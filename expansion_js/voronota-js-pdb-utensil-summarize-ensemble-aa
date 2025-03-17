@@ -52,6 +52,7 @@ INDIR=""
 ATOM_ATOM_OUTFILE="_stdout"
 LAYERINGMODE="inward"
 DIRECTINGMODE="none"
+ONRESIDUELEVEL="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -86,6 +87,10 @@ do
 		;;
 	--directing-mode)
 		DIRECTINGMODE="$OPTARG"
+		shift
+		;;
+	--on-residue-level)
+		ONRESIDUELEVEL="$OPTARG"
 		shift
 		;;
 	-h|--help)
@@ -169,6 +174,7 @@ params.min_residue_count='$MINRESCOUNT';
 params.probe='$PROBE';
 params.layering_mode='$LAYERINGMODE';
 params.directing_mode='$DIRECTINGMODE';
+params.on_residue_level='$ONRESIDUELEVEL';
 params.atom_atom_output_file='$TMPLDIR/atom_atom_output.txt';
 EOF
 
@@ -244,11 +250,11 @@ if(params.layering_mode=="inward" && params.directing_mode=="d4")
 
 if(param_precutting_shifts.length>0)
 {
-	voronota_construct_and_collect_inter_atom_contact_area_ranges("-probe", params.probe, "-adjunct-circle-restrictions", param_adjunct_circle_restrictions, "-precutting-shifts", param_precutting_shifts, "-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", param_area_value_names);
+	voronota_construct_and_collect_inter_atom_contact_area_ranges("-probe", params.probe, "-adjunct-circle-restrictions", param_adjunct_circle_restrictions, "-precutting-shifts", param_precutting_shifts, "-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", param_area_value_names, "-on-residue-level", params.on_residue_level);
 }
 else
 {
-	voronota_construct_and_collect_inter_atom_contact_area_ranges("-probe", params.probe, "-adjunct-circle-restrictions", param_adjunct_circle_restrictions, "-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", param_area_value_names);
+	voronota_construct_and_collect_inter_atom_contact_area_ranges("-probe", params.probe, "-adjunct-circle-restrictions", param_adjunct_circle_restrictions, "-stats-output-file", params.atom_atom_output_file, "-use", "[-min-seq-sep 1]", "-area-value-names", param_area_value_names, "-on-residue-level", params.on_residue_level);
 }
 
 voronota_assert_full_success("Failed to construct and collect atom-atom contact area ranges");

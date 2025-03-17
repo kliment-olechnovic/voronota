@@ -35,8 +35,9 @@ public:
 	scripting::CongregationOfDataManagers::ObjectQuery objects_query;
 	std::vector<std::string> area_value_names;
 	std::string stats_output_file;
+	bool on_residue_level;
 
-	ConstructAndCollectInterAtomContactAreaRanges()
+	ConstructAndCollectInterAtomContactAreaRanges() : on_residue_level(false)
 	{
 	}
 
@@ -47,6 +48,7 @@ public:
 		objects_query=scripting::OperatorsUtilities::read_congregation_of_data_managers_object_query(input);
 		area_value_names=input.get_value_vector_or_default<std::string>("area-value-names", std::vector<std::string>(1, "area"));
 		stats_output_file=input.get_value<std::string>("stats-output-file");
+		on_residue_level=input.get_flag("on-residue-level");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -56,6 +58,7 @@ public:
 		scripting::OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("area-value-names", CDOD::DATATYPE_STRING_ARRAY, "vector of contact value names", "area"));
 		doc.set_option_decription(CDOD("stats-output-file", CDOD::DATATYPE_STRING, "file path to output stats"));
+		doc.set_option_decription(CDOD("on-residue-level", CDOD::DATATYPE_BOOL, "flag to calculate and output results on level"));
 	}
 
 	Result run(scripting::CongregationOfDataManagers& congregation_of_data_managers) const
@@ -110,7 +113,7 @@ public:
 							const scripting::Contact& contact=data_manager.contacts()[*it];
 							if(contact.solvent())
 							{
-								const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(1));
+								const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad, on_residue_level)), AtomSequenceContext(1));
 								if(is_residue_standard(aaid.asc_a.crad.resName))
 								{
 									set_of_all_encountered_contact_ids.insert(aaid);
@@ -118,7 +121,7 @@ public:
 							}
 							else
 							{
-								const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
+								const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad, on_residue_level)), AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad, on_residue_level)));
 								if(is_residue_standard(aaid.asc_a.crad.resName) && is_residue_standard(aaid.asc_b.crad.resName))
 								{
 									set_of_all_encountered_contact_ids.insert(aaid);
@@ -158,7 +161,7 @@ public:
 
 				for(std::size_t j=0;j<data_manager.atoms().size();j++)
 				{
-					const AtomSequenceContext asc(simplified_crad(data_manager.atoms()[j].crad));
+					const AtomSequenceContext asc(simplified_crad(data_manager.atoms()[j].crad, on_residue_level));
 					if(is_residue_standard(asc.crad.resName))
 					{
 						atom_availabilities.insert(asc);
@@ -172,7 +175,7 @@ public:
 					const scripting::Contact& contact=data_manager.contacts()[*it];
 					if(contact.solvent())
 					{
-						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(1));
+						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad, on_residue_level)), AtomSequenceContext(1));
 						if(is_residue_standard(aaid.asc_a.crad.resName))
 						{
 							inter_atom_contacts_realizations[aaid].update(contact.value, area_value_names);
@@ -180,7 +183,7 @@ public:
 					}
 					else
 					{
-						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad)), AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad)));
+						const AAIdentifier aaid(AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[0]].crad, on_residue_level)), AtomSequenceContext(simplified_crad(data_manager.atoms()[contact.ids[1]].crad, on_residue_level)));
 						if(is_residue_standard(aaid.asc_a.crad.resName) && is_residue_standard(aaid.asc_b.crad.resName))
 						{
 							inter_atom_contacts_realizations[aaid].update(contact.value, area_value_names);
@@ -427,13 +430,20 @@ private:
 		}
 	};
 
-	static common::ChainResidueAtomDescriptor simplified_crad(const common::ChainResidueAtomDescriptor& crad)
+	static common::ChainResidueAtomDescriptor simplified_crad(const common::ChainResidueAtomDescriptor& crad, const bool residue_level)
 	{
 		const common::ChainResidueAtomDescriptor gen_crad=common::generalize_crad(crad);
 		common::ChainResidueAtomDescriptor s_crad;
 		s_crad.resSeq=crad.resSeq;
 		s_crad.resName=gen_crad.resName;
-		s_crad.name=gen_crad.name;
+		if(residue_level)
+		{
+			s_crad.name="ANY";
+		}
+		else
+		{
+			s_crad.name=gen_crad.name;
+		}
 		return s_crad;
 	}
 
