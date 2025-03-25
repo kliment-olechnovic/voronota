@@ -1512,7 +1512,7 @@ public:
 		reset_data_dependent_on_atoms();
 	}
 
-	void transform_coordinates_of_atoms(const std::set<std::size_t>& ids, const TransformationOfCoordinates& transformation)
+	void transform_coordinates_of_atoms(const std::set<std::size_t>& ids, const TransformationOfCoordinates& transformation, const bool allow_recomputing_dependencies)
 	{
 		if(ids.empty())
 		{
@@ -1532,7 +1532,7 @@ public:
 
 		transformation.transform_coordinates_of_atoms(atoms_, ids);
 
-		if(ids.size()==num_of_all_atoms && atoms_.size()==num_of_all_atoms)
+		if(allow_recomputing_dependencies && ids.size()==num_of_all_atoms && atoms_.size()==num_of_all_atoms)
 		{
 			refresh_by_saving_and_loading();
 		}
@@ -1540,6 +1540,11 @@ public:
 		{
 			reset_data_dependent_on_atoms();
 		}
+	}
+
+	void transform_coordinates_of_atoms(const std::set<std::size_t>& ids, const TransformationOfCoordinates& transformation)
+	{
+		transform_coordinates_of_atoms(ids, transformation, true);
 	}
 
 	void transform_coordinates_of_atoms(const TransformationOfCoordinates& transformation)
