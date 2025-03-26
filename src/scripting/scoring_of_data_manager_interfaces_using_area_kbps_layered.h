@@ -23,8 +23,9 @@ public:
 		std::map< std::string, std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> > > layers_kbp_coeffs;
 		std::map<std::string, double> summing_weights;
 		bool has_primitive_chemistry_types;
+		bool has_coarse_chemistry_types;
 
-		Configuration() : has_primitive_chemistry_types(false)
+		Configuration() : has_primitive_chemistry_types(false), has_coarse_chemistry_types(false)
 		{
 		}
 
@@ -64,6 +65,7 @@ public:
 			std::vector<std::string> raw_kbp_names;
 			std::map< std::string, std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> > > raw_layers_kbp_coeffs;
 			bool raw_has_primitive_chemistry_types=false;
+			bool raw_has_coarse_chemistry_types=false;
 
 			{
 				InputSelector kbps_file_input_selector(kbps_file);
@@ -72,7 +74,7 @@ public:
 				{
 					return false;
 				}
-				if(!read_kbps_names_and_coeffs(finput, raw_kbp_names, raw_layers_kbp_coeffs, raw_has_primitive_chemistry_types))
+				if(!read_kbps_names_and_coeffs(finput, raw_kbp_names, raw_layers_kbp_coeffs, raw_has_primitive_chemistry_types, raw_has_coarse_chemistry_types))
 				{
 					return false;
 				}
@@ -82,6 +84,7 @@ public:
 			get_default_configuration_mutable().layers_kbp_coeffs.swap(raw_layers_kbp_coeffs);
 			get_default_configuration_mutable().summing_weights.swap(raw_summing_weights);
 			get_default_configuration_mutable().has_primitive_chemistry_types=raw_has_primitive_chemistry_types;
+			get_default_configuration_mutable().has_coarse_chemistry_types=raw_has_coarse_chemistry_types;
 
 			return get_default_configuration().valid();
 		}
@@ -210,6 +213,27 @@ public:
 						}
 					}
 				}
+				if(configuration.has_coarse_chemistry_types && kbp_it==coeffs.end())
+				{
+					common::ChainResidueAtomDescriptor alt_crad_a;
+					alt_crad_a.resName=crads.a.resName;
+					alt_crad_a.name="ANY";
+					const common::ChainResidueAtomDescriptorsPair alt_crads_ao(alt_crad_a, crads.b);
+					kbp_it=coeffs.find(alt_crads_ao);
+					if(kbp_it==coeffs.end())
+					{
+						common::ChainResidueAtomDescriptor alt_crad_b;
+						alt_crad_b.resName=crads.b.resName;
+						alt_crad_b.name="ANY";
+						const common::ChainResidueAtomDescriptorsPair alt_crads_ob(crads.a, alt_crad_b);
+						kbp_it=coeffs.find(alt_crads_ob);
+						if(kbp_it==coeffs.end())
+						{
+							const common::ChainResidueAtomDescriptorsPair alt_crads_ab(alt_crad_a, alt_crad_b);
+							kbp_it=coeffs.find(alt_crads_ab);
+						}
+					}
+				}
 				if(kbp_it!=coeffs.end() && kbp_it->second.size()==configuration.kbp_names.size())
 				{
 					std::map<std::string, double>::const_iterator adjuncts_it=contact.value.props.adjuncts.find(layer);
@@ -296,7 +320,7 @@ public:
 		construct_result(Configuration::get_default_configuration(), params, data_manager, result);
 	}
 
-	static bool read_kbps_names_and_coeffs(std::istream& input_stream, std::vector<std::string>& kbp_names, std::map< std::string, std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> > >& layers_kbp_coeffs, bool& has_primitive_chemistry_types)
+	static bool read_kbps_names_and_coeffs(std::istream& input_stream, std::vector<std::string>& kbp_names, std::map< std::string, std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> > >& layers_kbp_coeffs, bool& has_primitive_chemistry_types, bool& has_coarse_chemistry_types)
 	{
 		std::vector<std::string> header;
 
@@ -369,6 +393,7 @@ public:
 				std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> >& layer_map=layers_kbp_coeffs[layer];
 				layer_map.insert(layer_map.end(), iname_coeffs);
 				has_primitive_chemistry_types=(has_primitive_chemistry_types || iname_coeffs.first.a.resName=="ANY" || iname_coeffs.first.b.resName=="ANY");
+				has_coarse_chemistry_types=(has_coarse_chemistry_types || iname_coeffs.first.a.name=="ANY" || iname_coeffs.first.b.name=="ANY");
 				input_stream >> std::ws;
 			}
 		}
