@@ -435,6 +435,19 @@ public:
 
 	static void construct_full_tessellation(
 			const std::vector<SimpleSphere>& input_spheres,
+			const PeriodicBox& periodic_box,
+			const bool with_tessellation_net,
+			Result& result) noexcept
+	{
+		TimeRecorder time_recorder;
+		SpheresContainer spheres_container;
+		spheres_container.init(input_spheres, periodic_box, time_recorder);
+		ResultGraphics result_graphics;
+		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), with_tessellation_net, false, true, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+	}
+
+	static void construct_full_tessellation(
+			const std::vector<SimpleSphere>& input_spheres,
 			const std::vector<int>& grouping_of_spheres,
 			const PeriodicBox& periodic_box,
 			Result& result) noexcept
@@ -808,6 +821,41 @@ public:
 			}
 
 			time_recorder.record_elapsed_miliseconds_and_reset("reassign ids in contacts at boundaries");
+
+			if(with_tessellation_net && count_of_redundant_contacts_in_periodic_box>0)
+			{
+				for(UnsignedInt i=0;i<result.tessellation_net.tes_vertices.size();i++)
+				{
+					RadicalTessellationContactConstruction::TessellationVertex& tv=result.tessellation_net.tes_vertices[i];
+					for(UnsignedInt j=0;j<4;j++)
+					{
+						if(tv.ids_of_spheres[j]!=null_id())
+						{
+							tv.ids_of_spheres[j]=tv.ids_of_spheres[j]%result.total_spheres;
+						}
+					}
+					tv.sort_ids_of_spheres();
+				}
+
+				std::sort(result.tessellation_net.tes_vertices.begin(), result.tessellation_net.tes_vertices.end());
+
+				for(UnsignedInt i=0;i<result.tessellation_net.tes_edges.size();i++)
+				{
+					RadicalTessellationContactConstruction::TessellationEdge& te=result.tessellation_net.tes_edges[i];
+					for(UnsignedInt j=0;j<3;j++)
+					{
+						if(te.ids_of_spheres[j]!=null_id())
+						{
+							te.ids_of_spheres[j]=te.ids_of_spheres[j]%result.total_spheres;
+						}
+					}
+					te.sort_ids_of_spheres();
+				}
+
+				std::sort(result.tessellation_net.tes_edges.begin(), result.tessellation_net.tes_edges.end());
+
+				time_recorder.record_elapsed_miliseconds_and_reset("reassign ids in contacts tessellation net at boundaries");
+			}
 		}
 
 		for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)

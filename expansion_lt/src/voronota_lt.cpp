@@ -21,7 +21,7 @@ namespace
 void print_help(const bool full, std::ostream& output) noexcept
 {
 	output << R"(
-Voronota-LT version 0.9.4
+Voronota-LT version 0.9.5
 
 'voronota-lt' executable constructs a radical Voronoi tessellation (also known as a Laguerre-Voronoi diagram or a power diagram)
 of atomic balls of van der Waals radii constrained inside a solvent-accessible surface defined by a rolling probe.
@@ -526,11 +526,6 @@ public:
 		if(running_mode==RunningMode::simplified_aw && !(write_tessellation_edges_to_file.empty() && write_tessellation_vertices_to_file.empty()))
 		{
 			error_log_for_options_parsing << "Error: in this version tessellation edges and vertices output is disabled for the simplified additively weighted Voronoi diagram regime.\n";
-		}
-
-		if(!(periodic_box_directions.empty() && periodic_box_corners.empty()) && !(write_tessellation_edges_to_file.empty() && write_tessellation_vertices_to_file.empty()))
-		{
-			error_log_for_options_parsing << "Error: in this version tessellation edges and vertices output is disabled for the periodic calculations.\n";
 		}
 
 		if(!periodic_box_directions.empty() && !periodic_box_corners.empty())

@@ -148,6 +148,25 @@ voronota-lt \
 
 ####################################################################
 
+voronota-lt \
+  -processors 40 \
+  -probe 2 \
+  -write-tessellation-edges-to-file ./output/written_files/output_cs_1x1_full_tessellation_edges.txt \
+  -write-tessellation-vertices-to-file ./output/written_files/output_cs_1x1_full_tessellation_vertices.txt \
+< "./input/balls_cs_1x1.xyzr" \
+&> /dev/null
+
+voronota-lt \
+  -processors 40 \
+  -probe 2 \
+  -periodic-box-corners 0 0 0 200 250 300 \
+  -write-tessellation-edges-to-file ./output/written_files/output_cs_1x1_periodic_full_tessellation_edges.txt \
+  -write-tessellation-vertices-to-file ./output/written_files/output_cs_1x1_periodic_full_tessellation_vertices.txt \
+< "./input/balls_cs_1x1.xyzr" \
+&> /dev/null
+
+####################################################################
+
 mkdir -p "./output/api_usage_examples"
 
 g++ -O3 -I../src/voronotalt -o "./output/api_usage_examples/example_basic_and_periodic" "./input/api_usage_example_basic_and_periodic.cpp"
