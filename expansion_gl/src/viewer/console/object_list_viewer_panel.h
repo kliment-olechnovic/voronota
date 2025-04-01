@@ -511,6 +511,14 @@ public:
 							}
 						}
 
+						if(GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_WIGGLE_LEFT && GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_WIGGLE_RIGHT)
+						{
+							if(ImGui::Selectable("Wiggle"))
+							{
+								result="animate-wiggle\n";
+							}
+						}
+
 						if(GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_SPIN_ON_Z_LEFT)
 						{
 							if(ImGui::Selectable("Spin clockwise"))
