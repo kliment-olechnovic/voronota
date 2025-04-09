@@ -170,12 +170,12 @@
 #include "operators/tournament_sort.h"
 #include "operators/unset_aliases.h"
 #include "operators/upload_virtual_file.h"
+#include "operators/vcblocks.h"
 #include "operators/voromqa_frustration.h"
 #include "operators/voromqa_global.h"
 #include "operators/voromqa_interface_frustration.h"
 #include "operators/voromqa_local.h"
 #include "operators/voromqa_membrane_place.h"
-#include "operators/vvblocks.h"
 #include "operators/zoom_by_atoms.h"
 #include "operators/zoom_by_contacts.h"
 #include "operators/zoom_by_objects.h"
@@ -379,7 +379,7 @@ public:
 		set_command_for_data_manager("voromqa-interface-frustration", operators::VoroMQAInterfaceFrustration(), true);
 		set_command_for_data_manager("voromqa-local", operators::VoroMQALocal(), true);
 		set_command_for_data_manager("voromqa-membrane-place", operators::VoroMQAMembranePlace(), true);
-		set_command_for_data_manager("vvblocks", operators::VVBlocks(), true);
+		set_command_for_data_manager("vcblocks", operators::VCBlocks(), true);
 		set_command_for_data_manager("zoom-by-atoms", operators::ZoomByAtoms(), false);
 		set_command_for_data_manager("zoom-by-contacts", operators::ZoomByContacts(), false);
 

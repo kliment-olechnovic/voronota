@@ -1,8 +1,8 @@
-#ifndef SCRIPTING_OPERATORS_VVBLOCKS_H_
-#define SCRIPTING_OPERATORS_VVBLOCKS_H_
+#ifndef SCRIPTING_OPERATORS_VCBLOCKS_H_
+#define SCRIPTING_OPERATORS_VCBLOCKS_H_
 
 #include "../operators_common.h"
-#include "../vvblocks_of_data_manager.h"
+#include "../vcblocks_of_data_manager.h"
 
 namespace voronota
 {
@@ -13,73 +13,80 @@ namespace scripting
 namespace operators
 {
 
-class VVBlocks : public OperatorBase<VVBlocks>
+class VCBlocks : public OperatorBase<VCBlocks>
 {
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
-		std::size_t vvblocks_count;
+		std::size_t vcblocks_count;
 
-		Result() : vvblocks_count(0)
+		Result() : vcblocks_count(0)
 		{
 		}
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
-			heterostorage.variant_object.value("vvblocks_count")=vvblocks_count;
+			heterostorage.variant_object.value("vcblocks_count")=vcblocks_count;
 		}
 	};
 
-	int vvblock_to_display;
+	int vcblock_to_display;
 
-	VVBlocks() : vvblock_to_display(-1)
+	VCBlocks() : vcblock_to_display(-1)
 	{
 	}
 
 	void initialize(CommandInput& input)
 	{
-		vvblock_to_display=input.get_value_or_default<int>("vvblock-to-display", -1);
+		vcblock_to_display=input.get_value_or_default<int>("vcblock-to-display", -1);
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(CDOD("vvblock-to-display", CDOD::DATATYPE_INT, "ID of vvblock to display"));
+		doc.set_option_decription(CDOD("vcblock-to-display", CDOD::DATATYPE_INT, "ID of vcblock to display"));
 	}
 
 	Result run(DataManager& data_manager) const
 	{
-		VVBlocksOfDataManager::Parameters params;
-		VVBlocksOfDataManager::Result vvblocks_result;
+		VCBlocksOfDataManager::Parameters params;
+		VCBlocksOfDataManager::Result vcblocks_result;
 
-		VVBlocksOfDataManager::construct_result(params, data_manager, vvblocks_result);
+		VCBlocksOfDataManager::construct_result(params, data_manager, vcblocks_result);
 
-		if(vvblock_to_display>=0)
+		if(vcblock_to_display>=0)
 		{
-			const std::size_t vvblock_id=static_cast<std::size_t>(vvblock_to_display);
+			const std::size_t vcblock_id=static_cast<std::size_t>(vcblock_to_display);
 
-			if(vvblock_id>=vvblocks_result.vvblocks.size())
+			if(vcblock_id>=vcblocks_result.vcblocks.size())
 			{
-				throw std::runtime_error(std::string("Invalid provided vvblock ID to display."));
+				throw std::runtime_error(std::string("Invalid provided vcblock ID to display."));
 			}
 
-			const VVBlocksOfDataManager::VVBlock& vvblock=vvblocks_result.vvblocks[vvblock_id];
+			const VCBlocksOfDataManager::VCBlock& vcblock=vcblocks_result.vcblocks[vcblock_id];
 
 			std::set<std::size_t> contact_ids_main;
 
-			for(std::size_t i=0;i<6;i++)
 			{
-				VVBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vvblocks_result.rr_contact_descriptors[vvblock.rr_contact_descriptor_ids_main[i]];
+				VCBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vcblocks_result.rr_contact_descriptors[vcblock.rr_contact_descriptor_id_main];
 				contact_ids_main.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
+			}
+
+			for(int j=0;j<2;j++)
+			{
+				for(std::size_t i=0;i<vcblock.rr_contact_descriptor_ids_surrounding[j].size();i++)
+				{
+					VCBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vcblocks_result.rr_contact_descriptors[vcblock.rr_contact_descriptor_ids_surrounding[j][i]];
+					contact_ids_main.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
+				}
 			}
 
 			std::set<std::size_t> contact_ids_side;
 
-			for(std::size_t i=0;i<12;i++)
+			for(int j=0;j<2;j++)
 			{
-				const std::size_t rr_id=vvblock.rr_contact_descriptor_ids_side[i];
-				if(rr_id!=VVBlocksOfDataManager::null_id())
+				for(std::size_t i=0;i<vcblock.rr_contact_descriptor_ids_capping[j].size();i++)
 				{
-					VVBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vvblocks_result.rr_contact_descriptors[rr_id];
+					VCBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vcblocks_result.rr_contact_descriptors[vcblock.rr_contact_descriptor_ids_capping[j][i]];
 					contact_ids_side.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
 				}
 			}
@@ -105,7 +112,7 @@ public:
 		}
 
 		Result result;
-		result.vvblocks_count=vvblocks_result.vvblocks.size();
+		result.vcblocks_count=vcblocks_result.vcblocks.size();
 
 		return result;
 	}
@@ -119,9 +126,9 @@ public:
 
 /*
 construct-contacts-radically-fast -calculate-adjacencies -generate-graphics
-vvblocks -vvblock-to-display 33
+vcblocks -vcblock-to-display 30
 hide-atoms
 show-atoms [-sel-of-contacts _visible] -full-residues -rep sticks
 */
 
-#endif /* SCRIPTING_OPERATORS_VVBLOCKS_H_ */
+#endif /* SCRIPTING_OPERATORS_VCBLOCKS_H_ */
