@@ -1,6 +1,15 @@
 # Using Voronota-LT Python bindings
 
-## Compiling Python bindings
+## Installing Python bindings using "pip install"
+
+Voronota-LT Python interface PyPI package is hosted at [https://pypi.org/project/voronotalt/](https://pypi.org/project/voronotalt/).
+It can be downloaded and compiled using the following command:
+
+```bash
+pip install voronotalt
+```
+
+## Compiling Python bindings from source
 
 Python bindings of Voronota-LT are done using SWIG. The SWIG-generated files "voronotalt_python.py" and voronotalt_python_wrap.cxx" are provided in the "expansion_lt/swig" directory, but it is also possible to regenerate them by running the following command in the "expansion_lt/swig" directory:
 
@@ -14,17 +23,14 @@ After ensuring that "voronotalt_python.py" and "voronotalt_python_wrap.cxx" are 
 g++ -fPIC -shared -O3 voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
 ```
 
-The files "_voronotalt_python.so" and "voronotalt_python.py" are needed to call Voronota-LT from Python code.
-
-## Using Python bindings
-
 When "_voronotalt_python.so" and "voronotalt_python.py" are generated, the "voronotalt_python" module can be made findable by python by adding its directory to the PYTHONPATH environmental variable:
 
 ```bash
 export PYTHONPATH="${PYTHONPATH}:/path/to/voronota/expansion_lt/swig"
 ```
+## Using Python bindings
 
-Then Voronota-LT can be used in Python code as in the following example:
+Voronota-LT can be used in Python code as in the following example:
 
 ```py
 import voronotalt_python as voronotalt
