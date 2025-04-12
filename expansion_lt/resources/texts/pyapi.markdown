@@ -97,3 +97,16 @@ for i, cell in enumerate(rt.cells):
     print("cell", i, cell.sas_area, cell.volume)
 ```
 
+To run this example, make sure you have intalled Biotite:
+
+```bash
+pip install biotite
+```
+
+Then run by providing either PDB or mmCIF file path:
+
+```bash
+python3 example_script.py 2zsk.pdb
+python3 example_script.py 2zsk.cif
+```
+
