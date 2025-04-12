@@ -2,15 +2,19 @@
 
 ## Compiling Python bindings
 
-Python bindings of Voronota-LT can be built using SWIG, in the "expansion_lt/swig" directory:
+Python bindings of Voronota-LT are done using SWIG. The SWIG-generated files "voronotalt_python.py" and voronotalt_python_wrap.cxx" are provided in the "expansion_lt/swig" directory, but it is also possible to regenerate them by running the following command in the "expansion_lt/swig" directory:
 
 ```bash
 swig -python -c++ voronotalt_python.i
-
-g++ -fPIC -shared -O3 -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
 ```
 
-This produces "_voronotalt_python.so" and "voronotalt_python.py" that are needed to call Voronota-LT from Python code.
+After ensuring that "voronotalt_python.py" and "voronotalt_python_wrap.cxx" are present int the "expansion_lt/swig" directory, compile the Python bindings to produce the "_voronotalt_python.so" shared library file:
+
+```bash
+g++ -fPIC -shared -O3 voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
+```
+
+The files "_voronotalt_python.so" and "voronotalt_python.py" are needed to call Voronota-LT from Python code.
 
 ## Using Python bindings
 

@@ -102,6 +102,9 @@ mkdir -p "${PACKAGE_NAME}/expansion_lt/swig"
 cp \
   "./expansion_lt/swig/voronotalt.h" \
   "./expansion_lt/swig/voronotalt_python.i" \
+  "./expansion_lt/swig/voronotalt_python_wrap.cxx" \
+  "./expansion_lt/swig/voronotalt_python.py" \
+  "./expansion_lt/swig/voronotalt_python_biotite.py" \
   "${PACKAGE_NAME}/expansion_lt/swig/"
 
 ################################################################################
