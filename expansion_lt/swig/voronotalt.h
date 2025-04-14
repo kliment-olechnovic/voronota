@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdexcept>
 
-#include "../src/voronotalt/voronotalt.h"
+#include "voronotalt/voronotalt.h"
 
 struct Ball
 {

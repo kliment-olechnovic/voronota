@@ -6,5 +6,5 @@ rm -rf "./voronotalt_python_wrap.cxx" "./_voronotalt_python.so" "./voronotalt_py
 
 swig -python -c++ voronotalt_python.i
 
-g++ -fPIC -shared -Ofast -march=native -fopenmp voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
+g++ -fPIC -shared -Ofast -march=native -fopenmp -I ../src/ voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
 
