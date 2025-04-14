@@ -42,8 +42,9 @@ public:
 	std::string alignment_file;
 	bool keep_dashes;
 	bool only_equal_pairs;
+	bool drop_non_polymeric_atoms;
 
-	SetChainResidueNumbersBySequences() : keep_dashes(false), only_equal_pairs(false)
+	SetChainResidueNumbersBySequences() : keep_dashes(false), only_equal_pairs(false), drop_non_polymeric_atoms(false)
 	{
 	}
 
@@ -55,6 +56,7 @@ public:
 		alignment_file=input.get_value_or_default<std::string>("alignment-file", "");
 		keep_dashes=input.get_flag("keep-dashes");
 		only_equal_pairs=input.get_flag("only-equal-pairs");
+		drop_non_polymeric_atoms=input.get_flag("drop-non-polymeric-atoms");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -65,6 +67,7 @@ public:
 		doc.set_option_decription(CDOD("alignment-file", CDOD::DATATYPE_STRING, "sequence alignment output file", ""));
 		doc.set_option_decription(CDOD("keep-dashes", CDOD::DATATYPE_BOOL, "flag to keep dashes in sequence before alignment"));
 		doc.set_option_decription(CDOD("only-equal-pairs", CDOD::DATATYPE_BOOL, "flag to only leave equal pairs from alignment"));
+		doc.set_option_decription(CDOD("drop-non-polymeric-atoms", CDOD::DATATYPE_BOOL, "flag to not treat non-polymeric atoms as untouchable"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -135,7 +138,10 @@ public:
 				const common::ConstructionOfPrimaryStructure::Residue& residue=data_manager.primary_structure_info().residues[*it];
 				if(residue.residue_type==common::ConstructionOfPrimaryStructure::RESIDUE_TYPE_OTHER)
 				{
-					untouchable_atom_ids.insert(residue.atom_ids.begin(), residue.atom_ids.end());
+					if(!drop_non_polymeric_atoms)
+					{
+						untouchable_atom_ids.insert(residue.atom_ids.begin(), residue.atom_ids.end());
+					}
 				}
 				else
 				{
@@ -151,11 +157,36 @@ public:
 		atom_ids_to_keep.reserve(data_manager.atoms().size());
 		std::map<std::size_t, int> atom_ids_to_renumber;
 
+		std::set<int> forbidden_residue_numbers_for_untouchable_atoms;
+		if(!untouchable_atom_ids.empty())
+		{
+			for(std::map<common::ChainResidueAtomDescriptor, int>::const_iterator jt=sequence_mapping.begin();jt!=sequence_mapping.end();++jt)
+			{
+				forbidden_residue_numbers_for_untouchable_atoms.insert(jt->second);
+			}
+		}
+
 		for(std::size_t i=0;i<data_manager.atoms().size();i++)
 		{
-			if(data_manager.atoms()[i].crad.chainID!=chain_name || untouchable_atom_ids.count(i)>0)
+			if(data_manager.atoms()[i].crad.chainID!=chain_name)
 			{
 				atom_ids_to_keep.push_back(i);
+			}
+			else if(untouchable_atom_ids.count(i)>0)
+			{
+				atom_ids_to_keep.push_back(i);
+				const int current_resSeq=data_manager.atoms()[i].crad.resSeq;
+				if(forbidden_residue_numbers_for_untouchable_atoms.count(current_resSeq)>0)
+				{
+					if(current_resSeq<0)
+					{
+						atom_ids_to_renumber[i]=((*forbidden_residue_numbers_for_untouchable_atoms.begin())-1+current_resSeq);
+					}
+					else
+					{
+						atom_ids_to_renumber[i]=((*forbidden_residue_numbers_for_untouchable_atoms.rbegin())+1+current_resSeq);
+					}
+				}
 			}
 			else
 			{
