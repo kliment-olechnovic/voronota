@@ -30,6 +30,7 @@ public:
 		}
 	};
 
+	VCBlocksOfDataManager::Parameters construction_parameters;
 	std::string selection_for_display;
 
 	VCBlocks()
@@ -38,20 +39,23 @@ public:
 
 	void initialize(CommandInput& input)
 	{
+		construction_parameters.with_parasiding=input.get_flag("with-parasiding");
+		construction_parameters.with_paracapping=input.get_flag("with-paracapping");
 		selection_for_display=input.get_value_or_default<std::string>("sel-for-display", "");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
+		doc.set_option_decription(CDOD("with-parasiding", CDOD::DATATYPE_BOOL, "falg to include parasiding contacts"));
+		doc.set_option_decription(CDOD("with-paracapping", CDOD::DATATYPE_BOOL, "falg to include paracapping contacts"));
 		doc.set_option_decription(CDOD("sel-for-display", CDOD::DATATYPE_STRING, "selection expression for contacts to display"));
 	}
 
 	Result run(DataManager& data_manager) const
 	{
-		VCBlocksOfDataManager::Parameters params;
 		VCBlocksOfDataManager::Result vcblocks_result;
 
-		VCBlocksOfDataManager::construct_result(params, data_manager, vcblocks_result);
+		VCBlocksOfDataManager::construct_result(construction_parameters, data_manager, vcblocks_result);
 
 		if(!selection_for_display.empty())
 		{
@@ -107,6 +111,24 @@ public:
 						contact_ids_side.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
 					}
 				}
+
+				for(std::size_t i=0;i<vcblock.rr_contact_descriptor_ids_parasiding.size();i++)
+				{
+					for(std::size_t j=0;j<vcblock.rr_contact_descriptor_ids_parasiding[i].size();j++)
+					{
+						VCBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vcblocks_result.rr_contact_descriptors[vcblock.rr_contact_descriptor_ids_parasiding[i][j]];
+						contact_ids_side.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
+					}
+				}
+
+				for(std::size_t i=0;i<vcblock.rr_contact_descriptor_ids_paracapping.size();i++)
+				{
+					for(std::size_t j=0;j<vcblock.rr_contact_descriptor_ids_paracapping[i].size();j++)
+					{
+						VCBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vcblocks_result.rr_contact_descriptors[vcblock.rr_contact_descriptor_ids_paracapping[i][j]];
+						contact_ids_side.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
+					}
+				}
 			}
 
 			{
@@ -147,6 +169,8 @@ construct-contacts-radically-fast -calculate-adjacencies -generate-graphics
 vcblocks -sel-for-display [-a1 [-chain A -rnum 4] -a2 [-chain A -rnum 22]]
 hide-atoms
 show-atoms [-sel-of-contacts _visible] -full-residues -rep sticks
+color-contacts -col black -rep edges
+spectrum-contacts -by residue-ids -rep faces -scheme rygwbwbcgyr
 zoom-by-atoms [-sel-of-contacts _visible]
 */
 

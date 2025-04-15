@@ -19,7 +19,10 @@ public:
 
 	struct Parameters
 	{
-		Parameters()
+		bool with_parasiding;
+		bool with_paracapping;
+
+		Parameters() : with_parasiding(false), with_paracapping(false)
 		{
 		}
 	};
@@ -37,6 +40,8 @@ public:
 		std::size_t rr_contact_descriptor_id_main;
 		std::vector<std::size_t> rr_contact_descriptor_ids_surrounding[2];
 		std::vector<std::size_t> rr_contact_descriptor_ids_capping[2];
+		std::vector< std::vector<std::size_t> > rr_contact_descriptor_ids_parasiding;
+		std::vector< std::vector<std::size_t> > rr_contact_descriptor_ids_paracapping;
 	};
 
 	struct Result
@@ -50,7 +55,7 @@ public:
 		}
 	};
 
-	static void construct_result(const Parameters& /*params*/, const DataManager& data_manager, Result& result)
+	static void construct_result(const Parameters& params, const DataManager& data_manager, Result& result)
 	{
 		result=Result();
 
@@ -106,11 +111,18 @@ public:
 
 		std::vector< std::set<std::size_t> > graph_of_residues(data_manager.primary_structure_info().residues.size());
 
+		std::vector< std::set<std::size_t> > map_of_residues_to_rr_contact_descriptors(data_manager.primary_structure_info().residues.size());
+
 		for(std::size_t i=0;i<result.rr_contact_descriptors.size();i++)
 		{
 			const RRContactDescriptor& rrcd=result.rr_contact_descriptors[i];
 			graph_of_residues[rrcd.rr_pair[0]].insert(rrcd.rr_pair[1]);
 			graph_of_residues[rrcd.rr_pair[1]].insert(rrcd.rr_pair[0]);
+			if(params.with_parasiding || params.with_paracapping)
+			{
+				map_of_residues_to_rr_contact_descriptors[rrcd.rr_pair[0]].insert(i);
+				map_of_residues_to_rr_contact_descriptors[rrcd.rr_pair[1]].insert(i);
+			}
 		}
 
 		result.vcblocks.resize(result.rr_contact_descriptors.size());
@@ -176,6 +188,52 @@ public:
 					residue_pair_ids[1]=(*it);
 					std::sort(residue_pair_ids.begin(), residue_pair_ids.end());
 					vcblock.rr_contact_descriptor_ids_capping[j].push_back(map_of_rr_pairs_to_rr_contact_descriptors[residue_pair_ids]);
+				}
+			}
+
+			if(params.with_parasiding || params.with_paracapping)
+			{
+				std::set<std::size_t> set_of_residue_ids_surrounding(vcblock.residue_ids_surrounding.begin(), vcblock.residue_ids_surrounding.end());
+				if(params.with_parasiding)
+				{
+					vcblock.rr_contact_descriptor_ids_parasiding.resize(vcblock.residue_ids_surrounding.size());
+				}
+				if(params.with_paracapping)
+				{
+					vcblock.rr_contact_descriptor_ids_paracapping.resize(vcblock.residue_ids_surrounding.size());
+				}
+				for(std::size_t j=0;j<vcblock.residue_ids_surrounding.size();j++)
+				{
+					const std::set<std::size_t>& relevant_rr_contact_descriptors=map_of_residues_to_rr_contact_descriptors[vcblock.residue_ids_surrounding[j]];
+					if(params.with_parasiding)
+					{
+						vcblock.rr_contact_descriptor_ids_parasiding[j].reserve(relevant_rr_contact_descriptors.size());
+					}
+					if(params.with_paracapping)
+					{
+						vcblock.rr_contact_descriptor_ids_paracapping[j].reserve(relevant_rr_contact_descriptors.size());
+					}
+					for(std::set<std::size_t>::const_iterator it=relevant_rr_contact_descriptors.begin();it!=relevant_rr_contact_descriptors.end();++it)
+					{
+						const RRContactDescriptor& rrcd=result.rr_contact_descriptors[*it];
+						if(rrcd.rr_pair[0]!=vcblock.residue_id_main[0] && rrcd.rr_pair[0]!=vcblock.residue_id_main[1] && rrcd.rr_pair[1]!=vcblock.residue_id_main[0] && rrcd.rr_pair[1]!=vcblock.residue_id_main[1])
+						{
+							if(set_of_residue_ids_surrounding.count(rrcd.rr_pair[0])>0 && set_of_residue_ids_surrounding.count(rrcd.rr_pair[1])>0)
+							{
+								if(params.with_parasiding)
+								{
+									vcblock.rr_contact_descriptor_ids_parasiding[j].push_back(*it);
+								}
+							}
+							else
+							{
+								if(params.with_paracapping)
+								{
+									vcblock.rr_contact_descriptor_ids_paracapping[j].push_back(*it);
+								}
+							}
+						}
+					}
 				}
 			}
 		}
