@@ -165,10 +165,17 @@ public:
 }
 
 /*
+select-atoms [-chain A -rnum 4] -name asel1
+select-atoms [-chain A -rnum 22] -name asel2
 construct-contacts-radically-fast -calculate-adjacencies -generate-graphics
-vcblocks -sel-for-display [-a1 [-chain A -rnum 4] -a2 [-chain A -rnum 22]]
+vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]]
+select-contacts [-a1 [asel1] -no-solvent] -name csel1
+select-contacts [-a1 [asel2] -no-solvent] -name csel2
+select-atoms ([-sel-of-contacts csel1] and [-sel-of-contacts csel2]) -full-residues -name aselCommon
 hide-atoms
-show-atoms [-sel-of-contacts _visible] -full-residues -rep sticks
+show-atoms [aselCommon] -rep sticks
+color-atoms [aselCommon] -col 0xFFFFFF
+color-atoms ([asel1] or [asel2]) -col 0xFFBBFF
 color-contacts -col black -rep edges
 spectrum-contacts -by residue-ids -rep faces -scheme rygwbwbcgyr
 zoom-by-atoms [-sel-of-contacts _visible]
