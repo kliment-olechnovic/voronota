@@ -30,20 +30,20 @@ public:
 		}
 	};
 
-	int vcblock_to_display;
+	std::string selection_for_display;
 
-	VCBlocks() : vcblock_to_display(-1)
+	VCBlocks()
 	{
 	}
 
 	void initialize(CommandInput& input)
 	{
-		vcblock_to_display=input.get_value_or_default<int>("vcblock-to-display", -1);
+		selection_for_display=input.get_value_or_default<std::string>("sel-for-display", "");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(CDOD("vcblock-to-display", CDOD::DATATYPE_INT, "ID of vcblock to display"));
+		doc.set_option_decription(CDOD("sel-for-display", CDOD::DATATYPE_STRING, "selection expression for contacts to display"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -53,41 +53,59 @@ public:
 
 		VCBlocksOfDataManager::construct_result(params, data_manager, vcblocks_result);
 
-		if(vcblock_to_display>=0)
+		if(!selection_for_display.empty())
 		{
-			const std::size_t vcblock_id=static_cast<std::size_t>(vcblock_to_display);
+			const std::set<std::size_t> selected_contact_ids=data_manager.selection_manager().select_contacts(SelectionManager::Query(selection_for_display, false));
 
-			if(vcblock_id>=vcblocks_result.vcblocks.size())
+			if(selected_contact_ids.empty())
 			{
-				throw std::runtime_error(std::string("Invalid provided vcblock ID to display."));
+				throw std::runtime_error(std::string("No contacts selected for display."));
 			}
 
-			const VCBlocksOfDataManager::VCBlock& vcblock=vcblocks_result.vcblocks[vcblock_id];
+			std::set<std::size_t> vcblock_ids_for_display;
 
-			std::set<std::size_t> contact_ids_main;
-
+			for(std::set<std::size_t>::const_iterator it=selected_contact_ids.begin();it!=selected_contact_ids.end();++it)
 			{
-				VCBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vcblocks_result.rr_contact_descriptors[vcblock.rr_contact_descriptor_id_main];
-				contact_ids_main.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
-			}
-
-			for(int j=0;j<2;j++)
-			{
-				for(std::size_t i=0;i<vcblock.rr_contact_descriptor_ids_surrounding[j].size();i++)
+				const std::size_t vcblock_id=vcblocks_result.map_of_aa_contact_ids_to_rr_contact_descriptors[*it];
+				if(vcblock_id!=VCBlocksOfDataManager::null_id())
 				{
-					VCBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vcblocks_result.rr_contact_descriptors[vcblock.rr_contact_descriptor_ids_surrounding[j][i]];
-					contact_ids_main.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
+					vcblock_ids_for_display.insert(vcblock_id);
 				}
 			}
 
+			if(vcblock_ids_for_display.empty())
+			{
+				throw std::runtime_error(std::string("No vcblocks selected for display."));
+			}
+
+			std::set<std::size_t> contact_ids_main;
 			std::set<std::size_t> contact_ids_side;
 
-			for(int j=0;j<2;j++)
+			for(std::set<std::size_t>::const_iterator it=vcblock_ids_for_display.begin();it!=vcblock_ids_for_display.end();++it)
 			{
-				for(std::size_t i=0;i<vcblock.rr_contact_descriptor_ids_capping[j].size();i++)
+				const VCBlocksOfDataManager::VCBlock& vcblock=vcblocks_result.vcblocks[*it];
+
 				{
-					VCBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vcblocks_result.rr_contact_descriptors[vcblock.rr_contact_descriptor_ids_capping[j][i]];
-					contact_ids_side.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
+					VCBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vcblocks_result.rr_contact_descriptors[vcblock.rr_contact_descriptor_id_main];
+					contact_ids_main.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
+				}
+
+				for(int j=0;j<2;j++)
+				{
+					for(std::size_t i=0;i<vcblock.rr_contact_descriptor_ids_surrounding[j].size();i++)
+					{
+						VCBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vcblocks_result.rr_contact_descriptors[vcblock.rr_contact_descriptor_ids_surrounding[j][i]];
+						contact_ids_main.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
+					}
+				}
+
+				for(int j=0;j<2;j++)
+				{
+					for(std::size_t i=0;i<vcblock.rr_contact_descriptor_ids_capping[j].size();i++)
+					{
+						VCBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vcblocks_result.rr_contact_descriptors[vcblock.rr_contact_descriptor_ids_capping[j][i]];
+						contact_ids_side.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
+					}
 				}
 			}
 
@@ -126,9 +144,10 @@ public:
 
 /*
 construct-contacts-radically-fast -calculate-adjacencies -generate-graphics
-vcblocks -vcblock-to-display 30
+vcblocks -sel-for-display [-a1 [-chain A -rnum 4] -a2 [-chain A -rnum 22]]
 hide-atoms
 show-atoms [-sel-of-contacts _visible] -full-residues -rep sticks
+zoom-by-atoms [-sel-of-contacts _visible]
 */
 
 #endif /* SCRIPTING_OPERATORS_VCBLOCKS_H_ */

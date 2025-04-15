@@ -42,6 +42,7 @@ public:
 	struct Result
 	{
 		std::vector<RRContactDescriptor> rr_contact_descriptors;
+		std::vector<std::size_t> map_of_aa_contact_ids_to_rr_contact_descriptors;
 		std::vector<VCBlock> vcblocks;
 
 		Result()
@@ -89,6 +90,17 @@ public:
 				rrcd.aa_contact_ids=it->second;
 				map_of_rr_pairs_to_rr_contact_descriptors[it->first]=i;
 				i++;
+			}
+		}
+
+		result.map_of_aa_contact_ids_to_rr_contact_descriptors.resize(data_manager.contacts().size(), null_id());
+
+		for(std::size_t i=0;i<result.rr_contact_descriptors.size();i++)
+		{
+			const RRContactDescriptor& rrcd=result.rr_contact_descriptors[i];
+			for(std::size_t j=0;j<rrcd.aa_contact_ids.size();j++)
+			{
+				result.map_of_aa_contact_ids_to_rr_contact_descriptors[rrcd.aa_contact_ids[j]]=i;
 			}
 		}
 
