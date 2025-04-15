@@ -126,6 +126,12 @@ then
 	exit 1
 fi
 
+if [ "$ONRESIDUELEVEL" != "false" ] && [ "$ONRESIDUELEVEL" != "true" ]
+then
+	echo >&2 "Error: invalid residue level flag value, must be 'false' or 'true'"
+	exit 1
+fi
+
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
