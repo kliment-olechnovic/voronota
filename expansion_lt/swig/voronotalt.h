@@ -4,7 +4,9 @@
 #include <vector>
 #include <stdexcept>
 
+#ifndef SWIG
 #include "voronotalt/voronotalt.h"
+#endif
 
 struct Ball
 {
@@ -53,7 +55,7 @@ public:
 	std::vector<Cell> cells;
 	double probe;
 
-	RadicalTessellation(const std::vector<Ball>& balls, double probe) : probe(probe), balls(balls)
+	RadicalTessellation(const std::vector<Ball>& balls, double probe) : balls(balls), probe(probe)
 	{
 		recompute(probe);
 	}
