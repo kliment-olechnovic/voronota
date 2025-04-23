@@ -18,15 +18,20 @@ class VCBlocks : public OperatorBase<VCBlocks>
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
-		std::size_t vcblocks_count;
+		std::size_t total_count_of_vcblocks;
+		std::size_t total_count_of_recorded_vcblocks;
+		std::size_t total_count_of_surrounding_residues;
 
-		Result() : vcblocks_count(0)
+		Result() : total_count_of_vcblocks(0), total_count_of_recorded_vcblocks(0), total_count_of_surrounding_residues(0)
 		{
 		}
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
-			heterostorage.variant_object.value("vcblocks_count")=vcblocks_count;
+			heterostorage.variant_object.value("total_count_of_vcblocks")=total_count_of_vcblocks;
+			heterostorage.variant_object.value("total_count_of_recorded_vcblocks")=total_count_of_recorded_vcblocks;
+			heterostorage.variant_object.value("total_count_of_surrounding_residues")=total_count_of_surrounding_residues;
+			heterostorage.variant_object.value("avg_count_of_surrounding_residues")=static_cast<double>(total_count_of_surrounding_residues)/static_cast<double>(total_count_of_recorded_vcblocks);
 		}
 	};
 
@@ -41,6 +46,7 @@ public:
 	{
 		construction_parameters.with_parasiding=input.get_flag("with-parasiding");
 		construction_parameters.with_paracapping=input.get_flag("with-paracapping");
+		construction_parameters.selection_of_contacts_for_recording_blocks=input.get_value_or_default<std::string>("sel-for-recording", VCBlocksOfDataManager::Parameters().selection_of_contacts_for_recording_blocks);
 		selection_for_display=input.get_value_or_default<std::string>("sel-for-display", "");
 	}
 
@@ -48,7 +54,8 @@ public:
 	{
 		doc.set_option_decription(CDOD("with-parasiding", CDOD::DATATYPE_BOOL, "falg to include parasiding contacts"));
 		doc.set_option_decription(CDOD("with-paracapping", CDOD::DATATYPE_BOOL, "falg to include paracapping contacts"));
-		doc.set_option_decription(CDOD("sel-for-display", CDOD::DATATYPE_STRING, "selection expression for contacts to display"));
+		doc.set_option_decription(CDOD("sel-for-recording", CDOD::DATATYPE_STRING, "selection expression for contacts for recording", VCBlocksOfDataManager::Parameters().selection_of_contacts_for_recording_blocks));
+		doc.set_option_decription(CDOD("sel-for-display", CDOD::DATATYPE_STRING, "selection expression for contacts to display", ""));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -71,7 +78,7 @@ public:
 			for(std::set<std::size_t>::const_iterator it=selected_contact_ids.begin();it!=selected_contact_ids.end();++it)
 			{
 				const std::size_t vcblock_id=vcblocks_result.map_of_aa_contact_ids_to_rr_contact_descriptors[*it];
-				if(vcblock_id!=VCBlocksOfDataManager::null_id())
+				if(vcblock_id!=VCBlocksOfDataManager::null_id() && vcblocks_result.vcblocks[vcblock_id].recorded)
 				{
 					vcblock_ids_for_display.insert(vcblock_id);
 				}
@@ -152,7 +159,12 @@ public:
 		}
 
 		Result result;
-		result.vcblocks_count=vcblocks_result.vcblocks.size();
+		result.total_count_of_vcblocks=vcblocks_result.vcblocks.size();
+		result.total_count_of_recorded_vcblocks=vcblocks_result.indices_of_recorded_vcblocks.size();
+		for(std::size_t i=0;i<vcblocks_result.indices_of_recorded_vcblocks.size();i++)
+		{
+			result.total_count_of_surrounding_residues+=vcblocks_result.vcblocks[vcblocks_result.indices_of_recorded_vcblocks[i]].residue_ids_surrounding.size();
+		}
 
 		return result;
 	}
@@ -168,7 +180,7 @@ public:
 select-atoms [-chain A -rnum 4] -name asel1
 select-atoms [-chain A -rnum 22] -name asel2
 construct-contacts-radically-fast -calculate-adjacencies -generate-graphics
-vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]]
+vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]] #-with-parasiding -with-paracapping
 select-contacts [-a1 [asel1] -no-solvent] -name csel1
 select-contacts [-a1 [asel2] -no-solvent] -name csel2
 select-atoms ([-sel-of-contacts csel1] and [-sel-of-contacts csel2]) -full-residues -name aselCommon
