@@ -183,7 +183,9 @@ construct-contacts-radically-fast -calculate-adjacencies -generate-graphics
 vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]] #-with-parasiding -with-paracapping
 select-contacts [-a1 [asel1] -no-solvent] -name csel1
 select-contacts [-a1 [asel2] -no-solvent] -name csel2
-select-atoms ([-sel-of-contacts csel1] and [-sel-of-contacts csel2]) -full-residues -name aselCommon
+select-atoms [-sel-of-contacts csel1] -full-residues -name aselcsel1
+select-atoms [-sel-of-contacts csel2] -full-residues -name aselcsel2
+select-atoms ([aselcsel1] and [aselcsel2]) -name aselCommon
 hide-atoms
 show-atoms [aselCommon] -rep sticks
 color-atoms [aselCommon] -col 0xFFFFFF
