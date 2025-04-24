@@ -192,10 +192,12 @@ public:
 }
 
 /*
+setup-akbps-layered -potentials ../tmp/akbps_layered_lib -summing-weights ../tmp/akbps_layered_lib_weights
+construct-contacts-radically-fast -adjunct-circle-restrictions -1.6 -1.2 -0.8 -0.4 -0.0000001 -precutting-shifts 0.9 -add-collapsed-adjuncts -calculate-adjacencies -generate-graphics
+calculate-akbps-layered -use [-min-seq-sep 2]  -adj-prefix AKBP #-verbose-adjuncts
 select-atoms [-chain A -rnum 4] -name asel1
 select-atoms [-chain A -rnum 22] -name asel2
-construct-contacts-radically-fast -calculate-adjacencies -generate-graphics
-vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]] #-with-parasiding -with-paracapping
+vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]] -with-parasiding -with-paracapping -log-to-stderr
 select-contacts [-a1 [asel1] -no-solvent] -name csel1
 select-contacts [-a1 [asel2] -no-solvent] -name csel2
 select-atoms [-sel-of-contacts csel1] -full-residues -name aselcsel1
