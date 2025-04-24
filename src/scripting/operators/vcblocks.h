@@ -37,8 +37,9 @@ public:
 
 	VCBlocksOfDataManager::Parameters construction_parameters;
 	std::string selection_for_display;
+	bool log_to_stderr;
 
-	VCBlocks()
+	VCBlocks() : log_to_stderr(false)
 	{
 	}
 
@@ -48,6 +49,7 @@ public:
 		construction_parameters.with_paracapping=input.get_flag("with-paracapping");
 		construction_parameters.selection_of_contacts_for_recording_blocks=input.get_value_or_default<std::string>("sel-for-recording", VCBlocksOfDataManager::Parameters().selection_of_contacts_for_recording_blocks);
 		selection_for_display=input.get_value_or_default<std::string>("sel-for-display", "");
+		log_to_stderr=input.get_flag("log-to-stderr");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -135,6 +137,19 @@ public:
 						VCBlocksOfDataManager::RRContactDescriptor& rr_contact_descriptor=vcblocks_result.rr_contact_descriptors[vcblock.rr_contact_descriptor_ids_paracapping[i][j]];
 						contact_ids_side.insert(rr_contact_descriptor.aa_contact_ids.begin(), rr_contact_descriptor.aa_contact_ids.end());
 					}
+				}
+
+				if(log_to_stderr)
+				{
+					std::cerr << data_manager.primary_structure_info().residues[vcblock.residue_id_main[0]].chain_residue_descriptor << " ";
+					std::cerr << data_manager.primary_structure_info().residues[vcblock.residue_id_main[1]].chain_residue_descriptor << " ";
+					std::cerr << vcblock.residue_ids_surrounding.size() << ": ";
+					for(std::size_t j=0;j<vcblock.residue_ids_surrounding.size();j++)
+					{
+						std::cerr << "(" << data_manager.primary_structure_info().residues[vcblock.residue_ids_surrounding[j]].chain_residue_descriptor << "=";
+						std::cerr << vcblock.angles_of_surrounding_residues[j] << ") ";
+					}
+					std::cerr << "\n";
 				}
 			}
 

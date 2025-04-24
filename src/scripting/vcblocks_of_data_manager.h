@@ -44,6 +44,7 @@ public:
 		std::vector<std::size_t> rr_contact_descriptor_ids_capping[2];
 		std::vector< std::vector<std::size_t> > rr_contact_descriptor_ids_parasiding;
 		std::vector< std::vector<std::size_t> > rr_contact_descriptor_ids_paracapping;
+		std::vector<double> angles_of_surrounding_residues;
 
 		VCBlock() : recorded(false), rr_contact_descriptor_id_main(null_id())
 		{
@@ -260,6 +261,71 @@ public:
 										vcblock.rr_contact_descriptor_ids_paracapping[j].push_back(*it);
 									}
 								}
+							}
+						}
+					}
+				}
+
+				{
+					vcblock.angles_of_surrounding_residues.resize(vcblock.residue_ids_surrounding.size(), 0.0);
+
+					if(vcblock.residue_ids_surrounding.size()>1)
+					{
+						apollota::SimplePoint main_residue_points[2]={apollota::SimplePoint(), apollota::SimplePoint()};
+						{
+							std::map< std::size_t, std::vector<std::size_t> > map_of_residues_to_atoms_involved;
+							for(std::vector<std::size_t>::const_iterator it=rrcd.aa_contact_ids.begin();it!=rrcd.aa_contact_ids.end();++it)
+							{
+								const Contact& contact=data_manager.contacts()[*it];
+								map_of_residues_to_atoms_involved[data_manager.primary_structure_info().map_of_atoms_to_residues[contact.ids[0]]].push_back(contact.ids[0]);
+								map_of_residues_to_atoms_involved[data_manager.primary_structure_info().map_of_atoms_to_residues[contact.ids[1]]].push_back(contact.ids[1]);
+							}
+							for(int j=0;j<2;j++)
+							{
+								const std::vector<std::size_t>& ids_of_atoms_involved=map_of_residues_to_atoms_involved[rrcd.rr_pair[j]];
+								for(std::size_t e=0;e<ids_of_atoms_involved.size();e++)
+								{
+									main_residue_points[j]=main_residue_points[j]+apollota::SimplePoint(data_manager.atoms()[ids_of_atoms_involved[e]].value);
+								}
+								main_residue_points[j]=main_residue_points[j]*(1.0/static_cast<double>(ids_of_atoms_involved.size()));
+							}
+						}
+
+						std::vector<apollota::SimplePoint> surroinding_residue_points(vcblock.residue_ids_surrounding.size());
+						{
+							std::map< std::size_t, std::vector<std::size_t> > map_of_residues_to_atoms_involved;
+							for(int j=0;j<2;j++)
+							{
+								for(std::size_t e=0;e<vcblock.rr_contact_descriptor_ids_surrounding[j].size();e++)
+								{
+									const RRContactDescriptor& srrcd=result.rr_contact_descriptors[vcblock.rr_contact_descriptor_ids_surrounding[j][e]];
+									for(std::vector<std::size_t>::const_iterator it=srrcd.aa_contact_ids.begin();it!=srrcd.aa_contact_ids.end();++it)
+									{
+										const Contact& contact=data_manager.contacts()[*it];
+										map_of_residues_to_atoms_involved[data_manager.primary_structure_info().map_of_atoms_to_residues[contact.ids[0]]].push_back(contact.ids[0]);
+										map_of_residues_to_atoms_involved[data_manager.primary_structure_info().map_of_atoms_to_residues[contact.ids[1]]].push_back(contact.ids[1]);
+									}
+								}
+							}
+							for(std::size_t j=0;j<vcblock.residue_ids_surrounding.size();j++)
+							{
+								const std::vector<std::size_t>& ids_of_atoms_involved=map_of_residues_to_atoms_involved[vcblock.residue_ids_surrounding[j]];
+								for(std::size_t e=0;e<ids_of_atoms_involved.size();e++)
+								{
+									surroinding_residue_points[j]=surroinding_residue_points[j]+apollota::SimplePoint(data_manager.atoms()[ids_of_atoms_involved[e]].value);
+								}
+								surroinding_residue_points[j]=surroinding_residue_points[j]*(1.0/static_cast<double>(ids_of_atoms_involved.size()));
+							}
+						}
+
+						{
+							const apollota::SimplePoint o=(main_residue_points[0]+main_residue_points[1])*0.5;
+							const apollota::SimplePoint& c=main_residue_points[1];
+							const apollota::SimplePoint& a=surroinding_residue_points[0];
+							for(std::size_t j=1;j<vcblock.residue_ids_surrounding.size();j++)
+							{
+								const apollota::SimplePoint& b=surroinding_residue_points[j];
+								vcblock.angles_of_surrounding_residues[j]=apollota::directed_angle(o, a, b, c);
 							}
 						}
 					}
