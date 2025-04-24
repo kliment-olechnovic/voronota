@@ -1,4 +1,4 @@
-import voronotalt_python as voronotalt
+import voronotalt
 
 balls = []
 balls.append(voronotalt.Ball(0, 0, 2, 1))

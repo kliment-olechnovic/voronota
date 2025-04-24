@@ -1,39 +1,21 @@
-# Using Voronota-LT Python bindings
-
-## Installing Python bindings using "pip install"
+# Voronota-LT Python bindings
 
 Voronota-LT Python interface PyPI package is hosted at [https://pypi.org/project/voronotalt/](https://pypi.org/project/voronotalt/).
-It can be downloaded and compiled using the following command:
+
+## Installation
+
+Install with pip using this command:
 
 ```bash
 pip install voronotalt
 ```
 
-## Compiling Python bindings from source
-
-Python bindings of Voronota-LT are done using SWIG. The SWIG-generated files "voronotalt_python.py" and voronotalt_python_wrap.cxx" are provided in the "expansion_lt/swig" directory, but it is also possible to regenerate them by running the following command in the "expansion_lt/swig" directory:
-
-```bash
-swig -python -c++ voronotalt_python.i
-```
-
-After ensuring that "voronotalt_python.py" and "voronotalt_python_wrap.cxx" are present int the "expansion_lt/swig" directory, compile the Python bindings to produce the "_voronotalt_python.so" shared library file:
-
-```bash
-g++ -fPIC -shared -O3 voronotalt_python_wrap.cxx -o _voronotalt_python.so $(python3-config --includes)
-```
-
-When "_voronotalt_python.so" and "voronotalt_python.py" are generated, the "voronotalt_python" module can be made findable by python by adding its directory to the PYTHONPATH environmental variable:
-
-```bash
-export PYTHONPATH="${PYTHONPATH}:/path/to/voronota/expansion_lt/swig"
-```
-## Using Python bindings
+## Usage example, basic
 
 Voronota-LT can be used in Python code as in the following example:
 
 ```py
-import voronotalt_python as voronotalt
+import voronotalt
 
 balls = []
 balls.append(voronotalt.Ball(0, 0, 2, 1))
@@ -72,13 +54,14 @@ for i, cell in enumerate(cells):
 
 ```
 
-### Using Python bindings with Biotite input
 
-When, in addition to the requirements specified in the previous section, an extra module "voronotalt_python_biotite.py" is available, Voronota-LT can be used in Python code with Biotite as in the following example:
+## Usage example, using Biotite to provide input
+
+Voronota-LT can be used in Python code with Biotite as in the following example:
 
 ```py
 import argparse
-from voronotalt_python_biotite import radical_tessellation_from_atom_array
+from voronotalt.biotite_interface import radical_tessellation_from_atom_array
 from biotite.structure.io import load_structure
 
 # Parse command-line arguments
@@ -119,4 +102,9 @@ Then run by providing either PDB or mmCIF file path:
 python3 example_script.py 2zsk.pdb
 python3 example_script.py 2zsk.cif
 ```
+
+
+# Voronota-LT Rust bindings
+
+Thanks to Mikael Lund, there is also Rust interface for Voronota-LT at [https://github.com/mlund/voronota-rs](https://github.com/mlund/voronota-rs).
 
