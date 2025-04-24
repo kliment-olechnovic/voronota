@@ -143,11 +143,17 @@ public:
 				{
 					std::cerr << data_manager.primary_structure_info().residues[vcblock.residue_id_main[0]].chain_residue_descriptor << " ";
 					std::cerr << data_manager.primary_structure_info().residues[vcblock.residue_id_main[1]].chain_residue_descriptor << " ";
-					std::cerr << vcblock.residue_ids_surrounding.size() << ": ";
+					std::cerr << vcblock.residue_ids_surrounding.size() << ":\n";
 					for(std::size_t j=0;j<vcblock.residue_ids_surrounding.size();j++)
 					{
-						std::cerr << "(" << data_manager.primary_structure_info().residues[vcblock.residue_ids_surrounding[j]].chain_residue_descriptor << "=";
-						std::cerr << vcblock.angles_of_surrounding_residues[j] << ") ";
+						std::cerr << " (" << data_manager.primary_structure_info().residues[vcblock.residue_ids_surrounding[j]].chain_residue_descriptor << "=";
+						std::cerr << vcblock.angles_of_surrounding_residues[j] << ")";
+					}
+					std::cerr << "\n";
+					for(std::size_t j=0;j<vcblock.residue_ids_surrounding.size();j++)
+					{
+						std::cerr << " (" << data_manager.primary_structure_info().residues[vcblock.residue_ids_surrounding[j]].chain_residue_descriptor << "=";
+						std::cerr << vcblock.adjacency_lengths_of_surrounding_residues[j] << ")";
 					}
 					std::cerr << "\n";
 				}

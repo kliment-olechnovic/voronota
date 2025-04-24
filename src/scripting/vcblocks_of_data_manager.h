@@ -45,6 +45,7 @@ public:
 		std::vector< std::vector<std::size_t> > rr_contact_descriptor_ids_parasiding;
 		std::vector< std::vector<std::size_t> > rr_contact_descriptor_ids_paracapping;
 		std::vector<double> angles_of_surrounding_residues;
+		std::vector<double> adjacency_lengths_of_surrounding_residues;
 
 		VCBlock() : recorded(false), rr_contact_descriptor_id_main(null_id())
 		{
@@ -326,6 +327,37 @@ public:
 							{
 								const apollota::SimplePoint& b=surroinding_residue_points[j];
 								vcblock.angles_of_surrounding_residues[j]=apollota::directed_angle(o, a, b, c);
+							}
+						}
+					}
+				}
+
+				{
+					vcblock.adjacency_lengths_of_surrounding_residues.resize(vcblock.residue_ids_surrounding.size(), 0.0);
+					std::map<std::size_t, std::size_t> map_of_residue_ids_to_surrounding_indices;
+					for(std::size_t j=0;j<vcblock.residue_ids_surrounding.size();j++)
+					{
+						map_of_residue_ids_to_surrounding_indices[vcblock.residue_ids_surrounding[j]]=j;
+					}
+					for(std::vector<std::size_t>::const_iterator it=rrcd.aa_contact_ids.begin();it!=rrcd.aa_contact_ids.end();++it)
+					{
+						const std::map<std::size_t, double>& map_of_adjacencies=data_manager.contacts_adjacencies()[*it];
+						for(std::map<std::size_t, double>::const_iterator jt=map_of_adjacencies.begin();jt!=map_of_adjacencies.end();++jt)
+						{
+							const Contact& contact=data_manager.contacts()[jt->first];
+							std::size_t residue_pair_ids[2];
+							residue_pair_ids[0]=data_manager.primary_structure_info().map_of_atoms_to_residues[contact.ids[0]];
+							residue_pair_ids[1]=data_manager.primary_structure_info().map_of_atoms_to_residues[contact.ids[1]];
+							if(!((rrcd.rr_pair[0]==residue_pair_ids[0] && rrcd.rr_pair[1]==residue_pair_ids[1]) || (rrcd.rr_pair[0]==residue_pair_ids[1] && rrcd.rr_pair[1]==residue_pair_ids[0])))
+							{
+								for(int j=0;j<2;j++)
+								{
+									std::map<std::size_t, std::size_t>::const_iterator s_it=map_of_residue_ids_to_surrounding_indices.find(residue_pair_ids[j]);
+									if(s_it!=map_of_residue_ids_to_surrounding_indices.end())
+									{
+										vcblock.adjacency_lengths_of_surrounding_residues[s_it->second]+=jt->second*0.5;
+									}
+								}
 							}
 						}
 					}
