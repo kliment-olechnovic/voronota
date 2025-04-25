@@ -19,11 +19,12 @@ public:
 
 	struct Parameters
 	{
+		int seq_sep_threshold;
 		bool with_parasiding;
 		bool with_paracapping;
 		std::string selection_of_contacts_for_recording_blocks;
 
-		Parameters() : with_parasiding(false), with_paracapping(false), selection_of_contacts_for_recording_blocks("[ --min-seq-sep 6 ]")
+		Parameters() : seq_sep_threshold(2), with_parasiding(false), with_paracapping(false), selection_of_contacts_for_recording_blocks("[ --min-seq-sep 6 ]")
 		{
 		}
 	};
@@ -32,6 +33,11 @@ public:
 	{
 		std::size_t rr_pair[2];
 		std::vector<std::size_t> aa_contact_ids;
+		int seq_sep_class;
+
+		RRContactDescriptor() : seq_sep_class(0)
+		{
+		}
 	};
 
 	struct VCBlock
@@ -109,6 +115,15 @@ public:
 				rrcd.rr_pair[0]=it->first[0];
 				rrcd.rr_pair[1]=it->first[1];
 				rrcd.aa_contact_ids=it->second;
+				rrcd.seq_sep_class=0;
+				{
+					const common::ConstructionOfPrimaryStructure::Residue& res_a=data_manager.primary_structure_info().residues[rrcd.rr_pair[0]];
+					const common::ConstructionOfPrimaryStructure::Residue& res_b=data_manager.primary_structure_info().residues[rrcd.rr_pair[1]];
+					if(res_a.segment_id==res_b.segment_id && std::abs(res_a.position_in_segment-res_b.position_in_segment)<params.seq_sep_threshold)
+					{
+						rrcd.seq_sep_class=1;
+					}
+				}
 				map_of_rr_pairs_to_rr_contact_descriptors[it->first]=i;
 				i++;
 			}
