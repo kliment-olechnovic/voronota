@@ -48,6 +48,8 @@ public:
 		construction_parameters.with_parasiding=input.get_flag("with-parasiding");
 		construction_parameters.with_paracapping=input.get_flag("with-paracapping");
 		construction_parameters.selection_of_contacts_for_recording_blocks=input.get_value_or_default<std::string>("sel-for-recording", VCBlocksOfDataManager::Parameters().selection_of_contacts_for_recording_blocks);
+		construction_parameters.names_of_raw_values_describing_residues=input.get_value_vector_or_default<std::string>("residue-value-names-for-encoding", std::vector<std::string>());
+		construction_parameters.names_of_raw_values_describing_rr_contacts=input.get_value_vector_or_default<std::string>("contact-value-names-for-encoding", std::vector<std::string>());
 		selection_for_display=input.get_value_or_default<std::string>("sel-for-display", "");
 		log_to_stderr=input.get_flag("log-to-stderr");
 	}
@@ -55,8 +57,10 @@ public:
 	void document(CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("with-parasiding", CDOD::DATATYPE_BOOL, "falg to include parasiding contacts"));
-		doc.set_option_decription(CDOD("with-paracapping", CDOD::DATATYPE_BOOL, "falg to include paracapping contacts"));
+		doc.set_option_decription(CDOD("with-paracapping", CDOD::DATATYPE_BOOL, "flag to include paracapping contacts"));
 		doc.set_option_decription(CDOD("sel-for-recording", CDOD::DATATYPE_STRING, "selection expression for contacts for recording", VCBlocksOfDataManager::Parameters().selection_of_contacts_for_recording_blocks));
+		doc.set_option_decription(CDOD("residue-value-names-for-encoding", CDOD::DATATYPE_STRING_ARRAY, "list of names of residue values to encode"));
+		doc.set_option_decription(CDOD("contact-value-names-for-encoding", CDOD::DATATYPE_STRING_ARRAY, "list of names of residue-residue contact values to encode"));
 		doc.set_option_decription(CDOD("sel-for-display", CDOD::DATATYPE_STRING, "selection expression for contacts to display", ""));
 	}
 
@@ -156,6 +160,14 @@ public:
 						std::cerr << vcblock.adjacency_lengths_of_surrounding_residues[j] << ")";
 					}
 					std::cerr << "\n";
+					{
+						std::cerr << " encoded " << vcblock.full_encoding.size() << ":";
+						for(std::size_t j=0;j<vcblock.full_encoding.size();j++)
+						{
+							std::cerr << " " << vcblock.full_encoding[j];
+						}
+					}
+					std::cerr << "\n";
 				}
 			}
 
@@ -203,7 +215,9 @@ construct-contacts-radically-fast -adjunct-circle-restrictions -1.6 -1.2 -0.8 -0
 calculate-akbps-layered -use [-min-seq-sep 2]  -adj-prefix AKBP #-verbose-adjuncts
 select-atoms [-chain A -rnum 4] -name asel1
 select-atoms [-chain A -rnum 22] -name asel2
-vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]] -with-parasiding -with-paracapping -log-to-stderr
+vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]] -with-parasiding -with-paracapping -log-to-stderr \
+  -residue-value-names-for-encoding atoms_count volume sas_area area_near area_far \
+  -contact-value-names-for-encoding area boundary AKBP_kbp1_exp AKBP_kbp1_exp_sa1x AKBP_kbp1_exp_sa2x AKBP_kbp1_exp_sa3x AKBP_kbp1_exp_sa4x AKBP_kbp1_exp_sa5x AKBP_kbp1_exp_saXa AKBP_kbp1_exp_saXb AKBP_kbp1_exp_saXc AKBP_kbp1_exp_saXx AKBP_kbp1_obs AKBP_kbp1_obs_sa1x AKBP_kbp1_obs_sa2x AKBP_kbp1_obs_sa3x AKBP_kbp1_obs_sa4x AKBP_kbp1_obs_sa5x AKBP_kbp1_obs_saXa AKBP_kbp1_obs_saXb AKBP_kbp1_obs_saXc AKBP_kbp1_obs_saXx AKBP_kbp2_exp_a AKBP_kbp2_exp_a_sa1x AKBP_kbp2_exp_a_sa2x AKBP_kbp2_exp_a_sa3x AKBP_kbp2_exp_a_sa4x AKBP_kbp2_exp_a_sa5x AKBP_kbp2_exp_a_saXa AKBP_kbp2_exp_a_saXb AKBP_kbp2_exp_a_saXc AKBP_kbp2_exp_a_saXx AKBP_kbp2_exp_b AKBP_kbp2_exp_b_sa1x AKBP_kbp2_exp_b_sa2x AKBP_kbp2_exp_b_sa3x AKBP_kbp2_exp_b_sa4x AKBP_kbp2_exp_b_sa5x AKBP_kbp2_exp_b_saXa AKBP_kbp2_exp_b_saXb AKBP_kbp2_exp_b_saXc AKBP_kbp2_exp_b_saXx AKBP_kbp2_obs AKBP_kbp2_obs_sa1x AKBP_kbp2_obs_sa2x AKBP_kbp2_obs_sa3x AKBP_kbp2_obs_sa4x AKBP_kbp2_obs_sa5x AKBP_kbp2_obs_saXa AKBP_kbp2_obs_saXb AKBP_kbp2_obs_saXc AKBP_kbp2_obs_saXx AKBP_known_area AKBP_raw_sa1x AKBP_raw_sa2x AKBP_raw_sa3x AKBP_raw_sa4x AKBP_raw_sa5x AKBP_raw_saXa AKBP_raw_saXb AKBP_raw_saXc AKBP_raw_saXx AKBP_weighted_sum pcut00000levelareaM00000 pcut00000levelareaM00040 pcut00000levelareaM00080 pcut00000levelareaM00120 pcut00000levelareaM00160 pcut00000subareaM00040toM00000 pcut00000subareaM00080toM00040 pcut00000subareaM00120toM00080 pcut00000subareaM00160toM00120 pcut00000subareaM99900toM00000 pcut00000subareaM99900toM00160 pcut00001levelareaM00000 pcut00001levelareaM00040 pcut00001levelareaM00080 pcut00001levelareaM00120 pcut00001levelareaM00160 pcut00001subareaM00040toM00000 pcut00001subareaM00080toM00040 pcut00001subareaM00120toM00080 pcut00001subareaM00160toM00120 pcut00001subareaM99900toM00000 pcut00001subareaM99900toM00160 pcut00003levelareaM00000 pcut00003levelareaM00040 pcut00003levelareaM00080 pcut00003levelareaM00120 pcut00003levelareaM00160 pcut00003subareaM00040toM00000 pcut00003subareaM00080toM00040 pcut00003subareaM00120toM00080 pcut00003subareaM00160toM00120 pcut00003subareaM99900toM00000 pcut00003subareaM99900toM00160
 select-contacts [-a1 [asel1] -no-solvent] -name csel1
 select-contacts [-a1 [asel2] -no-solvent] -name csel2
 select-atoms [-sel-of-contacts csel1] -full-residues -name aselcsel1
