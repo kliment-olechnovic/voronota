@@ -161,6 +161,14 @@ public:
 					}
 					std::cerr << "\n";
 					{
+						std::cerr << " header_encoded " << vcblocks_result.header_for_vcblock_encodings.size() << ":";
+						for(std::size_t j=0;j<vcblocks_result.header_for_vcblock_encodings.size();j++)
+						{
+							std::cerr << " " << vcblocks_result.header_for_vcblock_encodings[j];
+						}
+					}
+					std::cerr << "\n";
+					{
 						std::cerr << " encoded " << vcblock.full_encoding.size() << ":";
 						for(std::size_t j=0;j<vcblock.full_encoding.size();j++)
 						{
@@ -215,9 +223,12 @@ construct-contacts-radically-fast -adjunct-circle-restrictions -1.6 -1.2 -0.8 -0
 calculate-akbps-layered -use [-min-seq-sep 2]  -adj-prefix AKBP #-verbose-adjuncts
 select-atoms [-chain A -rnum 4] -name asel1
 select-atoms [-chain A -rnum 22] -name asel2
+#vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]] -with-parasiding -with-paracapping -log-to-stderr \
+#  -residue-value-names-for-encoding atoms_count volume sas_area area_near area_far \
+#  -contact-value-names-for-encoding area boundary AKBP_kbp1_exp AKBP_kbp1_exp_sa1x AKBP_kbp1_exp_sa2x AKBP_kbp1_exp_sa3x AKBP_kbp1_exp_sa4x AKBP_kbp1_exp_sa5x AKBP_kbp1_exp_saXa AKBP_kbp1_exp_saXb AKBP_kbp1_exp_saXc AKBP_kbp1_exp_saXx AKBP_kbp1_obs AKBP_kbp1_obs_sa1x AKBP_kbp1_obs_sa2x AKBP_kbp1_obs_sa3x AKBP_kbp1_obs_sa4x AKBP_kbp1_obs_sa5x AKBP_kbp1_obs_saXa AKBP_kbp1_obs_saXb AKBP_kbp1_obs_saXc AKBP_kbp1_obs_saXx AKBP_kbp2_exp_a AKBP_kbp2_exp_a_sa1x AKBP_kbp2_exp_a_sa2x AKBP_kbp2_exp_a_sa3x AKBP_kbp2_exp_a_sa4x AKBP_kbp2_exp_a_sa5x AKBP_kbp2_exp_a_saXa AKBP_kbp2_exp_a_saXb AKBP_kbp2_exp_a_saXc AKBP_kbp2_exp_a_saXx AKBP_kbp2_exp_b AKBP_kbp2_exp_b_sa1x AKBP_kbp2_exp_b_sa2x AKBP_kbp2_exp_b_sa3x AKBP_kbp2_exp_b_sa4x AKBP_kbp2_exp_b_sa5x AKBP_kbp2_exp_b_saXa AKBP_kbp2_exp_b_saXb AKBP_kbp2_exp_b_saXc AKBP_kbp2_exp_b_saXx AKBP_kbp2_obs AKBP_kbp2_obs_sa1x AKBP_kbp2_obs_sa2x AKBP_kbp2_obs_sa3x AKBP_kbp2_obs_sa4x AKBP_kbp2_obs_sa5x AKBP_kbp2_obs_saXa AKBP_kbp2_obs_saXb AKBP_kbp2_obs_saXc AKBP_kbp2_obs_saXx AKBP_known_area AKBP_raw_sa1x AKBP_raw_sa2x AKBP_raw_sa3x AKBP_raw_sa4x AKBP_raw_sa5x AKBP_raw_saXa AKBP_raw_saXb AKBP_raw_saXc AKBP_raw_saXx AKBP_weighted_sum pcut00000levelareaM00000 pcut00000levelareaM00040 pcut00000levelareaM00080 pcut00000levelareaM00120 pcut00000levelareaM00160 pcut00000subareaM00040toM00000 pcut00000subareaM00080toM00040 pcut00000subareaM00120toM00080 pcut00000subareaM00160toM00120 pcut00000subareaM99900toM00000 pcut00000subareaM99900toM00160 pcut00001levelareaM00000 pcut00001levelareaM00040 pcut00001levelareaM00080 pcut00001levelareaM00120 pcut00001levelareaM00160 pcut00001subareaM00040toM00000 pcut00001subareaM00080toM00040 pcut00001subareaM00120toM00080 pcut00001subareaM00160toM00120 pcut00001subareaM99900toM00000 pcut00001subareaM99900toM00160 pcut00003levelareaM00000 pcut00003levelareaM00040 pcut00003levelareaM00080 pcut00003levelareaM00120 pcut00003levelareaM00160 pcut00003subareaM00040toM00000 pcut00003subareaM00080toM00040 pcut00003subareaM00120toM00080 pcut00003subareaM00160toM00120 pcut00003subareaM99900toM00000 pcut00003subareaM99900toM00160
 vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]] -with-parasiding -with-paracapping -log-to-stderr \
-  -residue-value-names-for-encoding atoms_count volume sas_area area_near area_far \
-  -contact-value-names-for-encoding area boundary AKBP_kbp1_exp AKBP_kbp1_exp_sa1x AKBP_kbp1_exp_sa2x AKBP_kbp1_exp_sa3x AKBP_kbp1_exp_sa4x AKBP_kbp1_exp_sa5x AKBP_kbp1_exp_saXa AKBP_kbp1_exp_saXb AKBP_kbp1_exp_saXc AKBP_kbp1_exp_saXx AKBP_kbp1_obs AKBP_kbp1_obs_sa1x AKBP_kbp1_obs_sa2x AKBP_kbp1_obs_sa3x AKBP_kbp1_obs_sa4x AKBP_kbp1_obs_sa5x AKBP_kbp1_obs_saXa AKBP_kbp1_obs_saXb AKBP_kbp1_obs_saXc AKBP_kbp1_obs_saXx AKBP_kbp2_exp_a AKBP_kbp2_exp_a_sa1x AKBP_kbp2_exp_a_sa2x AKBP_kbp2_exp_a_sa3x AKBP_kbp2_exp_a_sa4x AKBP_kbp2_exp_a_sa5x AKBP_kbp2_exp_a_saXa AKBP_kbp2_exp_a_saXb AKBP_kbp2_exp_a_saXc AKBP_kbp2_exp_a_saXx AKBP_kbp2_exp_b AKBP_kbp2_exp_b_sa1x AKBP_kbp2_exp_b_sa2x AKBP_kbp2_exp_b_sa3x AKBP_kbp2_exp_b_sa4x AKBP_kbp2_exp_b_sa5x AKBP_kbp2_exp_b_saXa AKBP_kbp2_exp_b_saXb AKBP_kbp2_exp_b_saXc AKBP_kbp2_exp_b_saXx AKBP_kbp2_obs AKBP_kbp2_obs_sa1x AKBP_kbp2_obs_sa2x AKBP_kbp2_obs_sa3x AKBP_kbp2_obs_sa4x AKBP_kbp2_obs_sa5x AKBP_kbp2_obs_saXa AKBP_kbp2_obs_saXb AKBP_kbp2_obs_saXc AKBP_kbp2_obs_saXx AKBP_known_area AKBP_raw_sa1x AKBP_raw_sa2x AKBP_raw_sa3x AKBP_raw_sa4x AKBP_raw_sa5x AKBP_raw_saXa AKBP_raw_saXb AKBP_raw_saXc AKBP_raw_saXx AKBP_weighted_sum pcut00000levelareaM00000 pcut00000levelareaM00040 pcut00000levelareaM00080 pcut00000levelareaM00120 pcut00000levelareaM00160 pcut00000subareaM00040toM00000 pcut00000subareaM00080toM00040 pcut00000subareaM00120toM00080 pcut00000subareaM00160toM00120 pcut00000subareaM99900toM00000 pcut00000subareaM99900toM00160 pcut00001levelareaM00000 pcut00001levelareaM00040 pcut00001levelareaM00080 pcut00001levelareaM00120 pcut00001levelareaM00160 pcut00001subareaM00040toM00000 pcut00001subareaM00080toM00040 pcut00001subareaM00120toM00080 pcut00001subareaM00160toM00120 pcut00001subareaM99900toM00000 pcut00001subareaM99900toM00160 pcut00003levelareaM00000 pcut00003levelareaM00040 pcut00003levelareaM00080 pcut00003levelareaM00120 pcut00003levelareaM00160 pcut00003subareaM00040toM00000 pcut00003subareaM00080toM00040 pcut00003subareaM00120toM00080 pcut00003subareaM00160toM00120 pcut00003subareaM99900toM00000 pcut00003subareaM99900toM00160
+  -residue-value-names-for-encoding volume sas_area \
+  -contact-value-names-for-encoding area boundary
 select-contacts [-a1 [asel1] -no-solvent] -name csel1
 select-contacts [-a1 [asel2] -no-solvent] -name csel2
 select-atoms [-sel-of-contacts csel1] -full-residues -name aselcsel1

@@ -84,6 +84,7 @@ public:
 		std::vector<std::size_t> indices_of_recorded_vcblocks;
 		std::vector< std::vector<double> > raw_values_for_residues;
 		std::vector< std::vector<double> > raw_values_for_rr_contacts;
+		std::vector<std::string> header_for_vcblock_encodings;
 
 		Result()
 		{
@@ -514,16 +515,91 @@ public:
 				}
 			}
 
-			std::size_t max_length_of_full_encoding=0;
+			{
+				for(std::size_t i=0;i<params.names_of_raw_values_describing_rr_contacts.size();i++)
+				{
+					result.header_for_vcblock_encodings.push_back(std::string("main_rr_contact__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c1"));
+				}
+				for(std::size_t i=0;i<params.names_of_raw_values_describing_rr_contacts.size();i++)
+				{
+					result.header_for_vcblock_encodings.push_back(std::string("main_rr_contact__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c2"));
+				}
+				for(std::size_t i=0;i<params.names_of_raw_values_describing_residues.size();i++)
+				{
+					result.header_for_vcblock_encodings.push_back(std::string("main_r_pair__")+params.names_of_raw_values_describing_residues[i]+std::string("__v1"));
+					result.header_for_vcblock_encodings.push_back(std::string("main_r_pair__")+params.names_of_raw_values_describing_residues[i]+std::string("__v2"));
+				}
+				for(std::size_t i=0;i<params.names_of_raw_values_describing_rr_contacts.size();i++)
+				{
+					result.header_for_vcblock_encodings.push_back(std::string("capping_contacts_sum__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c1__v1"));
+					result.header_for_vcblock_encodings.push_back(std::string("capping_contacts_sum__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c1__v2"));
+				}
+				for(std::size_t i=0;i<params.names_of_raw_values_describing_rr_contacts.size();i++)
+				{
+					result.header_for_vcblock_encodings.push_back(std::string("capping_contacts_sum__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c2__v1"));
+					result.header_for_vcblock_encodings.push_back(std::string("capping_contacts_sum__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c2__v2"));
+				}
+
+				{
+					std::vector<std::string> header_for_surroundings;
+					for(std::size_t i=0;i<params.names_of_raw_values_describing_residues.size();i++)
+					{
+						header_for_surroundings.push_back(std::string("sur_r__")+params.names_of_raw_values_describing_residues[i]);
+					}
+					header_for_surroundings.push_back(std::string("sur_adjacency"));
+					for(std::size_t i=0;i<params.names_of_raw_values_describing_rr_contacts.size();i++)
+					{
+						header_for_surroundings.push_back(std::string("sur_contact_pair__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c1__v1"));
+						header_for_surroundings.push_back(std::string("sur_contact_pair__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c1__v2"));
+					}
+					for(std::size_t i=0;i<params.names_of_raw_values_describing_rr_contacts.size();i++)
+					{
+						header_for_surroundings.push_back(std::string("sur_contact_pair__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c2__v1"));
+						header_for_surroundings.push_back(std::string("sur_contact_pair__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c2__v2"));
+					}
+
+					if(params.with_parasiding)
+					{
+						for(std::size_t i=0;i<params.names_of_raw_values_describing_rr_contacts.size();i++)
+						{
+							header_for_surroundings.push_back(std::string("parasiding_contacts_sum__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c1"));
+						}
+						for(std::size_t i=0;i<params.names_of_raw_values_describing_rr_contacts.size();i++)
+						{
+							header_for_surroundings.push_back(std::string("parasiding_contacts_sum__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c2"));
+						}
+					}
+
+					if(params.with_paracapping)
+					{
+						for(std::size_t i=0;i<params.names_of_raw_values_describing_rr_contacts.size();i++)
+						{
+							header_for_surroundings.push_back(std::string("paracapping_contacts_sum__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c1"));
+						}
+						for(std::size_t i=0;i<params.names_of_raw_values_describing_rr_contacts.size();i++)
+						{
+							header_for_surroundings.push_back(std::string("paracapping_contacts_sum__")+params.names_of_raw_values_describing_rr_contacts[i]+std::string("__c2"));
+						}
+					}
+
+					for(std::size_t i=0;i<header_for_surroundings.size();i++)
+					{
+						result.header_for_vcblock_encodings.push_back(header_for_surroundings[i]+std::string("__mean_v"));
+						result.header_for_vcblock_encodings.push_back(header_for_surroundings[i]+std::string("__mean_x"));
+						result.header_for_vcblock_encodings.push_back(header_for_surroundings[i]+std::string("__mean_y"));
+						result.header_for_vcblock_encodings.push_back(header_for_surroundings[i]+std::string("__var_v"));
+						result.header_for_vcblock_encodings.push_back(header_for_surroundings[i]+std::string("__var_x"));
+						result.header_for_vcblock_encodings.push_back(header_for_surroundings[i]+std::string("__var_y"));
+						result.header_for_vcblock_encodings.push_back(header_for_surroundings[i]+std::string("__cov_xy"));
+					}
+				}
+			}
 
 			for(std::size_t i=0;i<result.indices_of_recorded_vcblocks.size();i++)
 			{
 				VCBlock& vcblock=result.vcblocks[result.indices_of_recorded_vcblocks[i]];
 
-				if(max_length_of_full_encoding>0)
-				{
-					vcblock.full_encoding.reserve(max_length_of_full_encoding);
-				}
+				vcblock.full_encoding.reserve(result.header_for_vcblock_encodings.size());
 
 				pseudoencode_values_and_append_to_output(result.raw_values_for_rr_contacts[vcblock.rr_contact_descriptor_id_main], vcblock.full_encoding);
 
@@ -639,7 +715,10 @@ public:
 					pseudoencode_values_and_append_to_output(stats_of_sector_encoding_values, vcblock.full_encoding);
 				}
 
-				max_length_of_full_encoding=std::max(max_length_of_full_encoding, vcblock.full_encoding.size());
+				if(vcblock.full_encoding.size()!=result.header_for_vcblock_encodings.size())
+				{
+					vcblock.full_encoding.resize(result.header_for_vcblock_encodings.size(), 0.0);
+				}
 			}
 		}
 	}
