@@ -67,6 +67,7 @@ public:
 		std::vector< std::vector<std::size_t> > rr_contact_descriptor_ids_paracapping;
 		std::vector<double> angles_of_surrounding_residues;
 		std::vector<double> adjacency_lengths_of_surrounding_residues;
+		std::vector<double> full_encoding;
 
 		VCBlock() : recorded(false), rr_contact_descriptor_id_main(null_id())
 		{
@@ -449,65 +450,220 @@ public:
 			}
 		}
 
-		result.raw_values_for_residues.resize(result.residue_descriptors.size(), std::vector<double>(params.names_of_raw_values_describing_residues.size(), 0.0));
-
-		for(std::size_t i=0;i<result.residue_descriptors.size();i++)
+		if(!params.names_of_raw_values_describing_residues.empty() && !params.names_of_raw_values_describing_rr_contacts.empty())
 		{
-			const ResidueDescriptor& rd=result.residue_descriptors[i];
-			for(std::size_t j=0;j<params.names_of_raw_values_describing_residues.size();j++)
+			result.raw_values_for_residues.resize(result.residue_descriptors.size(), std::vector<double>(params.names_of_raw_values_describing_residues.size(), 0.0));
+
+			for(std::size_t i=0;i<result.residue_descriptors.size();i++)
 			{
-				const std::string& name=params.names_of_raw_values_describing_residues[j];
-				double& value=result.raw_values_for_residues[i][j];
-				if(name=="atoms_count")
+				const ResidueDescriptor& rd=result.residue_descriptors[i];
+				for(std::size_t j=0;j<params.names_of_raw_values_describing_residues.size();j++)
 				{
-					value=rd.atoms_count;
-				}
-				else if(name=="volume")
-				{
-					value=rd.volume;
-				}
-				else if(name=="area_near")
-				{
-					value=rd.contacts_area_for_seq_sep_1;
-				}
-				else if(name=="area_far")
-				{
-					value=rd.contacts_area_for_seq_sep_2_plus;
-				}
-				else if(name=="sas_area")
-				{
-					value=rd.sas_area;
+					const std::string& name=params.names_of_raw_values_describing_residues[j];
+					double& value=result.raw_values_for_residues[i][j];
+					if(name=="atoms_count")
+					{
+						value=rd.atoms_count;
+					}
+					else if(name=="volume")
+					{
+						value=rd.volume;
+					}
+					else if(name=="area_near")
+					{
+						value=rd.contacts_area_for_seq_sep_1;
+					}
+					else if(name=="area_far")
+					{
+						value=rd.contacts_area_for_seq_sep_2_plus;
+					}
+					else if(name=="sas_area")
+					{
+						value=rd.sas_area;
+					}
 				}
 			}
-		}
 
-		result.raw_values_for_rr_contacts.resize(result.rr_contact_descriptors.size(), std::vector<double>(params.names_of_raw_values_describing_rr_contacts.size(), 0.0));
+			const std::size_t number_of_rr_contact_raw_values=params.names_of_raw_values_describing_rr_contacts.size()*2;
 
-		for(std::size_t i=0;i<result.rr_contact_descriptors.size();i++)
-		{
-			const RRContactDescriptor& rrcd=result.rr_contact_descriptors[i];
-			for(std::size_t j=0;j<params.names_of_raw_values_describing_rr_contacts.size();j++)
+			result.raw_values_for_rr_contacts.resize(result.rr_contact_descriptors.size(), std::vector<double>(number_of_rr_contact_raw_values, 0.0));
+
+			for(std::size_t i=0;i<result.rr_contact_descriptors.size();i++)
 			{
-				const std::string& name=params.names_of_raw_values_describing_rr_contacts[j];
-				double& value=result.raw_values_for_rr_contacts[i][j];
-				for(std::size_t e=0;e<rrcd.aa_contact_ids.size();e++)
+				const RRContactDescriptor& rrcd=result.rr_contact_descriptors[i];
+				for(std::size_t j=0;j<params.names_of_raw_values_describing_rr_contacts.size();j++)
 				{
-					const Contact& contact=data_manager.contacts()[rrcd.aa_contact_ids[e]];
-					if(name=="area")
+					const std::string& name=params.names_of_raw_values_describing_rr_contacts[j];
+					double& value=result.raw_values_for_rr_contacts[i][rrcd.seq_sep_class==0 ? j : (params.names_of_raw_values_describing_rr_contacts.size()+j)];
+					for(std::size_t e=0;e<rrcd.aa_contact_ids.size();e++)
 					{
-						value+=contact.value.area;
-					}
-					else
-					{
-						std::map<std::string, double>::const_iterator it=contact.value.props.adjuncts.find(name);
-						if(it!=contact.value.props.adjuncts.end())
+						const Contact& contact=data_manager.contacts()[rrcd.aa_contact_ids[e]];
+						if(name=="area")
 						{
-							value+=it->second;
+							value+=contact.value.area;
+						}
+						else
+						{
+							std::map<std::string, double>::const_iterator it=contact.value.props.adjuncts.find(name);
+							if(it!=contact.value.props.adjuncts.end())
+							{
+								value+=it->second;
+							}
 						}
 					}
 				}
 			}
+
+			std::size_t max_length_of_full_encoding=0;
+
+			for(std::size_t i=0;i<result.indices_of_recorded_vcblocks.size();i++)
+			{
+				VCBlock& vcblock=result.vcblocks[result.indices_of_recorded_vcblocks[i]];
+
+				if(max_length_of_full_encoding>0)
+				{
+					vcblock.full_encoding.reserve(max_length_of_full_encoding);
+				}
+
+				pseudoencode_values_and_append_to_output(result.raw_values_for_rr_contacts[vcblock.rr_contact_descriptor_id_main], vcblock.full_encoding);
+
+				encode_values_for_pair_and_append_to_output(result.raw_values_for_residues[vcblock.residue_id_main[0]], result.raw_values_for_residues[vcblock.residue_id_main[1]], vcblock.full_encoding);
+
+				{
+					std::vector<double> summed_contact_values[2];
+					for(int e=0;e<2;e++)
+					{
+						summed_contact_values[e].resize(number_of_rr_contact_raw_values);
+						for(std::vector<std::size_t>::const_iterator it=vcblock.rr_contact_descriptor_ids_capping[e].begin();it!=vcblock.rr_contact_descriptor_ids_capping[e].end();++it)
+						{
+							for(std::size_t l=0;l<number_of_rr_contact_raw_values;l++)
+							{
+								summed_contact_values[e][l]+=result.raw_values_for_rr_contacts[*it][l];
+							}
+						}
+					}
+					encode_values_for_pair_and_append_to_output(summed_contact_values[0], summed_contact_values[1], vcblock.full_encoding);
+				}
+
+				if(!vcblock.residue_ids_surrounding.empty())
+				{
+					std::vector< std::vector<double> > all_sector_encodings(vcblock.residue_ids_surrounding.size());
+
+					for(std::size_t j=0;j<vcblock.residue_ids_surrounding.size();j++)
+					{
+						std::vector<double>& sector_encoding=all_sector_encodings[j];
+
+						pseudoencode_values_and_append_to_output(result.raw_values_for_residues[vcblock.residue_ids_surrounding[j]], sector_encoding);
+
+						sector_encoding.push_back(vcblock.adjacency_lengths_of_surrounding_residues[j]);
+
+						encode_values_for_pair_and_append_to_output(result.raw_values_for_rr_contacts[vcblock.rr_contact_descriptor_ids_surrounding[0][j]], result.raw_values_for_rr_contacts[vcblock.rr_contact_descriptor_ids_surrounding[1][j]], sector_encoding);
+
+						if(params.with_parasiding)
+						{
+							std::vector<double> summed_contact_values;
+							summed_contact_values.resize(number_of_rr_contact_raw_values);
+							for(std::vector<std::size_t>::const_iterator it=vcblock.rr_contact_descriptor_ids_parasiding[j].begin();it!=vcblock.rr_contact_descriptor_ids_parasiding[j].end();++it)
+							{
+								for(std::size_t l=0;l<number_of_rr_contact_raw_values;l++)
+								{
+									summed_contact_values[l]+=result.raw_values_for_rr_contacts[*it][l];
+								}
+							}
+							pseudoencode_values_and_append_to_output(summed_contact_values, sector_encoding);
+						}
+
+						if(params.with_paracapping)
+						{
+							std::vector<double> summed_contact_values;
+							summed_contact_values.resize(number_of_rr_contact_raw_values);
+							for(std::vector<std::size_t>::const_iterator it=vcblock.rr_contact_descriptor_ids_paracapping[j].begin();it!=vcblock.rr_contact_descriptor_ids_paracapping[j].end();++it)
+							{
+								for(std::size_t l=0;l<number_of_rr_contact_raw_values;l++)
+								{
+									summed_contact_values[l]+=result.raw_values_for_rr_contacts[*it][l];
+								}
+							}
+							pseudoencode_values_and_append_to_output(summed_contact_values, sector_encoding);
+						}
+					}
+
+					const std::size_t num_of_of_sector_encoding_values=all_sector_encodings[0].size();
+
+					std::vector<double> stats_of_sector_encoding_values;
+					stats_of_sector_encoding_values.reserve(num_of_of_sector_encoding_values*7);
+
+					for(std::size_t e=0;e<num_of_of_sector_encoding_values;e++)
+					{
+						double N=static_cast<double>(all_sector_encodings.size());
+						double mean_v=0.0;
+						double mean_x=0.0;
+						double mean_y=0.0;
+						for(std::size_t j=0;j<all_sector_encodings.size();j++)
+						{
+							const double angle=vcblock.angles_of_surrounding_residues[j];
+							const double v=all_sector_encodings[j][e];
+							mean_v+=v;
+							mean_x+=(v*std::cos(angle));
+							mean_y+=(v*std::sin(angle));
+						}
+						mean_v/=N;
+						mean_x/=N;
+						mean_y/=N;
+						double var_v=0.0;
+						double var_x=0.0;
+						double var_y=0.0;
+						double cov_xy=0.0;
+						for(std::size_t j=0;j<all_sector_encodings.size();j++)
+						{
+							const double angle=vcblock.angles_of_surrounding_residues[j];
+							const double v=all_sector_encodings[j][e];
+							var_v+=square(v-mean_v);
+							var_x+=square((v*std::cos(angle))-mean_x);
+							var_y+=square((v*std::sin(angle))-mean_y);
+							cov_xy+=((v*std::cos(angle))-mean_x)*((v*std::sin(angle))-mean_y);
+						}
+						var_v/=N;
+						var_x/=N;
+						var_y/=N;
+						cov_xy/=N;
+						stats_of_sector_encoding_values.push_back(mean_v);
+						stats_of_sector_encoding_values.push_back(mean_x);
+						stats_of_sector_encoding_values.push_back(mean_y);
+						stats_of_sector_encoding_values.push_back(var_v);
+						stats_of_sector_encoding_values.push_back(var_x);
+						stats_of_sector_encoding_values.push_back(var_y);
+						stats_of_sector_encoding_values.push_back(cov_xy);
+					}
+
+					pseudoencode_values_and_append_to_output(stats_of_sector_encoding_values, vcblock.full_encoding);
+				}
+
+				max_length_of_full_encoding=std::max(max_length_of_full_encoding, vcblock.full_encoding.size());
+			}
 		}
+	}
+
+private:
+	static void pseudoencode_values_and_append_to_output(const std::vector<double>& raw_values, std::vector<double>& output)
+	{
+		output.insert(output.end(), raw_values.begin(), raw_values.end());
+	}
+
+	static void encode_values_for_pair_and_append_to_output(const std::vector<double>& raw_values1, const std::vector<double>& raw_values2, std::vector<double>& output)
+	{
+		for(std::size_t i=0;i<raw_values1.size() && i<raw_values2.size();i++)
+		{
+			const double x=raw_values1[i];
+			const double y=raw_values2[i];
+			output.push_back((x+y)*0.5);
+			output.push_back(std::abs(x-y));
+		}
+	}
+
+	static double square(const double v)
+	{
+		return (v*v);
 	}
 };
 
