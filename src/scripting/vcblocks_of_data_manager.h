@@ -558,7 +558,7 @@ public:
 
 				vcblock.full_encoding.reserve(result.header_for_vcblock_encodings.size());
 
-				pseudoencode_values_and_append_to_output(result.raw_values_for_rr_contacts[vcblock.rr_contact_descriptor_id_main], vcblock.full_encoding);
+				encode_values_simply_and_append_to_output(result.raw_values_for_rr_contacts[vcblock.rr_contact_descriptor_id_main], vcblock.full_encoding);
 
 				encode_values_for_pair_and_append_to_output(result.raw_values_for_residues[vcblock.residue_id_main[0]], result.raw_values_for_residues[vcblock.residue_id_main[1]], vcblock.full_encoding);
 
@@ -586,7 +586,7 @@ public:
 					{
 						std::vector<double>& sector_encoding=all_sector_encodings[j];
 
-						pseudoencode_values_and_append_to_output(result.raw_values_for_residues[vcblock.residue_ids_surrounding[j]], sector_encoding);
+						encode_values_simply_and_append_to_output(result.raw_values_for_residues[vcblock.residue_ids_surrounding[j]], sector_encoding);
 
 						sector_encoding.push_back(vcblock.adjacency_lengths_of_surrounding_residues[j]);
 
@@ -602,7 +602,7 @@ public:
 									summed_contact_values[l]+=result.raw_values_for_rr_contacts[*it][l];
 								}
 							}
-							pseudoencode_values_and_append_to_output(summed_contact_values, sector_encoding);
+							encode_values_simply_and_append_to_output(summed_contact_values, sector_encoding);
 						}
 					}
 
@@ -654,7 +654,7 @@ public:
 						stats_of_sector_encoding_values.push_back(cov_xy);
 					}
 
-					pseudoencode_values_and_append_to_output(stats_of_sector_encoding_values, vcblock.full_encoding);
+					encode_values_simply_and_append_to_output(stats_of_sector_encoding_values, vcblock.full_encoding);
 				}
 
 				if(vcblock.full_encoding.size()!=result.header_for_vcblock_encodings.size())
@@ -666,7 +666,7 @@ public:
 	}
 
 private:
-	static void pseudoencode_values_and_append_to_output(const std::vector<double>& raw_values, std::vector<double>& output)
+	static void encode_values_simply_and_append_to_output(const std::vector<double>& raw_values, std::vector<double>& output)
 	{
 		output.insert(output.end(), raw_values.begin(), raw_values.end());
 	}

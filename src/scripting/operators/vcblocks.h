@@ -37,6 +37,7 @@ public:
 
 	VCBlocksOfDataManager::Parameters construction_parameters;
 	std::string selection_for_display;
+	std::string output_table;
 	bool log_to_stderr;
 
 	VCBlocks() : log_to_stderr(false)
@@ -51,6 +52,7 @@ public:
 		construction_parameters.names_of_raw_values_describing_rr_contacts_far=input.get_value_vector_or_default<std::string>("far-contact-value-names-for-encoding", dafault_construction_parameters.names_of_raw_values_describing_rr_contacts_far);
 		construction_parameters.names_of_raw_values_describing_rr_contacts_near=input.get_value_vector_or_default<std::string>("near-contact-value-names-for-encoding", dafault_construction_parameters.names_of_raw_values_describing_rr_contacts_near);
 		selection_for_display=input.get_value_or_default<std::string>("sel-for-display", "");
+		output_table=input.get_value_or_default<std::string>("output-table", "");
 		log_to_stderr=input.get_flag("log-to-stderr");
 	}
 
@@ -61,6 +63,7 @@ public:
 		doc.set_option_decription(CDOD("far-contact-value-names-for-encoding", CDOD::DATATYPE_STRING_ARRAY, "list of names of  values to encode for far residue-residue contacts", ""));
 		doc.set_option_decription(CDOD("near-contact-value-names-for-encoding", CDOD::DATATYPE_STRING_ARRAY, "list of names of  values to encode for near residue-residue contacts", ""));
 		doc.set_option_decription(CDOD("sel-for-display", CDOD::DATATYPE_STRING, "selection expression for contacts to display", ""));
+		doc.set_option_decription(CDOD("output-table", CDOD::DATATYPE_STRING, "file path to output results table", ""));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -68,6 +71,36 @@ public:
 		VCBlocksOfDataManager::Result vcblocks_result;
 
 		VCBlocksOfDataManager::construct_result(construction_parameters, data_manager, vcblocks_result);
+
+		if(!output_table.empty())
+		{
+			OutputSelector output_selector(output_table);
+			std::ostream& output=output_selector.stream();
+			assert_io_stream(output_table, output);
+
+			{
+				output << "chain1 seqnum1 resname1 chain2 seqnum2 resname2";
+				for(std::size_t j=0;j<vcblocks_result.header_for_vcblock_encodings.size();j++)
+				{
+					output << " " << vcblocks_result.header_for_vcblock_encodings[j];
+				}
+				output << "\n";
+			}
+
+			for(std::vector<std::size_t>::const_iterator vcblock_id_it=vcblocks_result.indices_of_recorded_vcblocks.begin();vcblock_id_it!=vcblocks_result.indices_of_recorded_vcblocks.end();++vcblock_id_it)
+			{
+				const VCBlocksOfDataManager::VCBlock& vcblock=vcblocks_result.vcblocks[*vcblock_id_it];
+				const common::ChainResidueAtomDescriptor& crad1=data_manager.primary_structure_info().residues[vcblock.residue_id_main[0]].chain_residue_descriptor;
+				const common::ChainResidueAtomDescriptor& crad2=data_manager.primary_structure_info().residues[vcblock.residue_id_main[1]].chain_residue_descriptor;
+				output << (crad1.chainID.empty() ? std::string(".") : crad1.chainID) << " " << crad1.resSeq << " " << (crad1.resName.empty() ? std::string(".") : crad1.resName);
+				output << " " << (crad2.chainID.empty() ? std::string(".") : crad2.chainID) << " " << crad2.resSeq << " " << (crad2.resName.empty() ? std::string(".") : crad2.resName);
+				for(std::size_t j=0;j<vcblock.full_encoding.size();j++)
+				{
+					output << " " << vcblock.full_encoding[j];
+				}
+				output << "\n";
+			}
+		}
 
 		if(!selection_for_display.empty())
 		{
@@ -151,19 +184,8 @@ public:
 					}
 					std::cerr << "\n";
 					{
-						std::cerr << " header_encoded " << vcblocks_result.header_for_vcblock_encodings.size() << ":";
-						for(std::size_t j=0;j<vcblocks_result.header_for_vcblock_encodings.size();j++)
-						{
-							std::cerr << " " << vcblocks_result.header_for_vcblock_encodings[j];
-						}
-					}
-					std::cerr << "\n";
-					{
-						std::cerr << " encoded " << vcblock.full_encoding.size() << ":";
-						for(std::size_t j=0;j<vcblock.full_encoding.size();j++)
-						{
-							std::cerr << " " << vcblock.full_encoding[j];
-						}
+						std::cerr << " encoding_header_length=" << vcblocks_result.header_for_vcblock_encodings.size();
+						std::cerr << " encoding_vector_length=" << vcblock.full_encoding.size();
 					}
 					std::cerr << "\n";
 				}
@@ -217,11 +239,13 @@ reset-time
 #vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]] -log-to-stderr \
 #  -residue-value-names-for-encoding atoms_count volume sas_area area_near area_far \
 #  -far-contact-value-names-for-encoding area boundary AKBP_kbp1_exp AKBP_kbp1_exp_sa1x AKBP_kbp1_exp_sa2x AKBP_kbp1_exp_sa3x AKBP_kbp1_exp_sa4x AKBP_kbp1_exp_sa5x AKBP_kbp1_exp_saXa AKBP_kbp1_exp_saXb AKBP_kbp1_exp_saXc AKBP_kbp1_exp_saXx AKBP_kbp1_obs AKBP_kbp1_obs_sa1x AKBP_kbp1_obs_sa2x AKBP_kbp1_obs_sa3x AKBP_kbp1_obs_sa4x AKBP_kbp1_obs_sa5x AKBP_kbp1_obs_saXa AKBP_kbp1_obs_saXb AKBP_kbp1_obs_saXc AKBP_kbp1_obs_saXx AKBP_kbp2_exp_a AKBP_kbp2_exp_a_sa1x AKBP_kbp2_exp_a_sa2x AKBP_kbp2_exp_a_sa3x AKBP_kbp2_exp_a_sa4x AKBP_kbp2_exp_a_sa5x AKBP_kbp2_exp_a_saXa AKBP_kbp2_exp_a_saXb AKBP_kbp2_exp_a_saXc AKBP_kbp2_exp_a_saXx AKBP_kbp2_exp_b AKBP_kbp2_exp_b_sa1x AKBP_kbp2_exp_b_sa2x AKBP_kbp2_exp_b_sa3x AKBP_kbp2_exp_b_sa4x AKBP_kbp2_exp_b_sa5x AKBP_kbp2_exp_b_saXa AKBP_kbp2_exp_b_saXb AKBP_kbp2_exp_b_saXc AKBP_kbp2_exp_b_saXx AKBP_kbp2_obs AKBP_kbp2_obs_sa1x AKBP_kbp2_obs_sa2x AKBP_kbp2_obs_sa3x AKBP_kbp2_obs_sa4x AKBP_kbp2_obs_sa5x AKBP_kbp2_obs_saXa AKBP_kbp2_obs_saXb AKBP_kbp2_obs_saXc AKBP_kbp2_obs_saXx AKBP_known_area AKBP_raw_sa1x AKBP_raw_sa2x AKBP_raw_sa3x AKBP_raw_sa4x AKBP_raw_sa5x AKBP_raw_saXa AKBP_raw_saXb AKBP_raw_saXc AKBP_raw_saXx AKBP_weighted_sum pcut00000levelareaM00000 pcut00000levelareaM00040 pcut00000levelareaM00080 pcut00000levelareaM00120 pcut00000levelareaM00160 pcut00000subareaM00040toM00000 pcut00000subareaM00080toM00040 pcut00000subareaM00120toM00080 pcut00000subareaM00160toM00120 pcut00000subareaM99900toM00000 pcut00000subareaM99900toM00160 pcut00001levelareaM00000 pcut00001levelareaM00040 pcut00001levelareaM00080 pcut00001levelareaM00120 pcut00001levelareaM00160 pcut00001subareaM00040toM00000 pcut00001subareaM00080toM00040 pcut00001subareaM00120toM00080 pcut00001subareaM00160toM00120 pcut00001subareaM99900toM00000 pcut00001subareaM99900toM00160 pcut00003levelareaM00000 pcut00003levelareaM00040 pcut00003levelareaM00080 pcut00003levelareaM00120 pcut00003levelareaM00160 pcut00003subareaM00040toM00000 pcut00003subareaM00080toM00040 pcut00003subareaM00120toM00080 pcut00003subareaM00160toM00120 pcut00003subareaM99900toM00000 pcut00003subareaM99900toM00160 \
-#  -near-contact-value-names-for-encoding area boundary
+#  -near-contact-value-names-for-encoding area boundary \
+#  -output-table ../tmp/vcblocks.txt
 vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]] -log-to-stderr \
   -residue-value-names-for-encoding volume sas_area \
   -far-contact-value-names-for-encoding area boundary \
-  -near-contact-value-names-for-encoding area boundary
+  -near-contact-value-names-for-encoding area boundary \
+  -output-table ../tmp/vcblocks.txt
 print-time
 select-contacts [-a1 [asel1] -no-solvent] -name csel1
 select-contacts [-a1 [asel2] -no-solvent] -name csel2
