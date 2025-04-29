@@ -159,7 +159,7 @@ public:
 
 		if(selected_aa_contact_ids_for_recording_blocks.empty())
 		{
-			throw std::runtime_error(std::string("No contacts selected for recording."));
+			throw std::runtime_error(std::string("No atom-atom contacts selected to define recording."));
 		}
 
 		std::map< std::vector<std::size_t>,  std::vector<std::size_t> > map_of_rr_pairs_to_aa_contact_ids;
@@ -537,9 +537,9 @@ public:
 			}
 
 			{
-				for(std::size_t i=0;i<combined_names_of_raw_values_describing_rr_contacts.size();i++)
+				for(std::size_t i=0;i<params.names_of_raw_values_describing_rr_contacts_far.size();i++)
 				{
-					result.header_for_vcblock_encodings.push_back(std::string("main_rr_contact__")+combined_names_of_raw_values_describing_rr_contacts[i]);
+					result.header_for_vcblock_encodings.push_back(std::string("main_rr_contact__")+params.names_of_raw_values_describing_rr_contacts_far[i]);
 				}
 				for(std::size_t i=0;i<params.names_of_raw_values_describing_residues.size();i++)
 				{
@@ -592,7 +592,7 @@ public:
 
 				vcblock.full_encoding.reserve(result.header_for_vcblock_encodings.size());
 
-				encode_values_simply_and_append_to_output(result.raw_values_for_rr_contacts[vcblock.rr_contact_descriptor_id_main], vcblock.full_encoding);
+				encode_values_cut_simply_and_append_to_output(result.raw_values_for_rr_contacts[vcblock.rr_contact_descriptor_id_main], params.names_of_raw_values_describing_rr_contacts_far.size(), vcblock.full_encoding);
 
 				encode_values_for_pair_and_append_to_output(result.raw_values_for_residues[vcblock.residue_id_main[0]], result.raw_values_for_residues[vcblock.residue_id_main[1]], vcblock.full_encoding);
 
@@ -703,6 +703,14 @@ private:
 	static void encode_values_simply_and_append_to_output(const std::vector<double>& raw_values, std::vector<double>& output)
 	{
 		output.insert(output.end(), raw_values.begin(), raw_values.end());
+	}
+
+	static void encode_values_cut_simply_and_append_to_output(const std::vector<double>& raw_values, const std::size_t cut_size, std::vector<double>& output)
+	{
+		for(std::size_t i=0;i<cut_size && i<raw_values.size();i++)
+		{
+			output.push_back(raw_values[i]);
+		}
 	}
 
 	static void encode_values_for_pair_and_append_to_output(const std::vector<double>& raw_values1, const std::vector<double>& raw_values2, std::vector<double>& output)
