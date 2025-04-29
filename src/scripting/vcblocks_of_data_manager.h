@@ -426,34 +426,65 @@ public:
 
 		if(params.names_filled())
 		{
+			std::vector<int> involvement_of_residue_descriptors(result.residue_descriptors.size(), 0);
+			std::vector<int> involvement_of_rr_contact_descriptors(result.rr_contact_descriptors.size(), 0);
+
+			for(std::size_t i=0;i<result.indices_of_recorded_vcblocks.size();i++)
+			{
+				VCBlock& vcblock=result.vcblocks[result.indices_of_recorded_vcblocks[i]];
+				involvement_of_rr_contact_descriptors[vcblock.rr_contact_descriptor_id_main]=1;
+				involvement_of_residue_descriptors[vcblock.residue_id_main[0]]=1;
+				involvement_of_residue_descriptors[vcblock.residue_id_main[1]]=1;
+				for(int e=0;e<2;e++)
+				{
+					for(std::vector<std::size_t>::const_iterator it=vcblock.rr_contact_descriptor_ids_capping[e].begin();it!=vcblock.rr_contact_descriptor_ids_capping[e].end();++it)
+					{
+						involvement_of_rr_contact_descriptors[*it]=1;
+					}
+				}
+				for(std::size_t j=0;j<vcblock.residue_ids_surrounding.size();j++)
+				{
+					involvement_of_residue_descriptors[vcblock.residue_ids_surrounding[j]]=1;
+					involvement_of_rr_contact_descriptors[vcblock.rr_contact_descriptor_ids_surrounding[0][j]];
+					involvement_of_rr_contact_descriptors[vcblock.rr_contact_descriptor_ids_surrounding[1][j]];
+					for(std::vector<std::size_t>::const_iterator it=vcblock.rr_contact_descriptor_ids_paracapping[j].begin();it!=vcblock.rr_contact_descriptor_ids_paracapping[j].end();++it)
+					{
+						involvement_of_rr_contact_descriptors[*it]=1;
+					}
+				}
+			}
+
 			result.raw_values_for_residues.resize(result.residue_descriptors.size(), std::vector<double>(params.names_of_raw_values_describing_residues.size(), 0.0));
 
 			for(std::size_t i=0;i<result.residue_descriptors.size();i++)
 			{
-				const ResidueDescriptor& rd=result.residue_descriptors[i];
-				for(std::size_t j=0;j<params.names_of_raw_values_describing_residues.size();j++)
+				if(involvement_of_residue_descriptors[i]>0)
 				{
-					const std::string& name=params.names_of_raw_values_describing_residues[j];
-					double& value=result.raw_values_for_residues[i][j];
-					if(name=="atoms_count")
+					const ResidueDescriptor& rd=result.residue_descriptors[i];
+					for(std::size_t j=0;j<params.names_of_raw_values_describing_residues.size();j++)
 					{
-						value=rd.atoms_count;
-					}
-					else if(name=="volume")
-					{
-						value=rd.volume;
-					}
-					else if(name=="area_near")
-					{
-						value=rd.contacts_area_for_seq_sep_1;
-					}
-					else if(name=="area_far")
-					{
-						value=rd.contacts_area_for_seq_sep_2_plus;
-					}
-					else if(name=="sas_area")
-					{
-						value=rd.sas_area;
+						const std::string& name=params.names_of_raw_values_describing_residues[j];
+						double& value=result.raw_values_for_residues[i][j];
+						if(name=="atoms_count")
+						{
+							value=rd.atoms_count;
+						}
+						else if(name=="volume")
+						{
+							value=rd.volume;
+						}
+						else if(name=="area_near")
+						{
+							value=rd.contacts_area_for_seq_sep_1;
+						}
+						else if(name=="area_far")
+						{
+							value=rd.contacts_area_for_seq_sep_2_plus;
+						}
+						else if(name=="sas_area")
+						{
+							value=rd.sas_area;
+						}
 					}
 				}
 			}
@@ -475,26 +506,29 @@ public:
 
 			for(std::size_t i=0;i<result.rr_contact_descriptors.size();i++)
 			{
-				const RRContactDescriptor& rrcd=result.rr_contact_descriptors[i];
-				for(std::size_t j=0;j<combined_names_of_raw_values_describing_rr_contacts.size();j++)
+				if(involvement_of_rr_contact_descriptors[i]>0)
 				{
-					if((rrcd.seq_sep_class==0 && j<params.names_of_raw_values_describing_rr_contacts_far.size()) || (rrcd.seq_sep_class!=0 && j>=params.names_of_raw_values_describing_rr_contacts_far.size()))
+					const RRContactDescriptor& rrcd=result.rr_contact_descriptors[i];
+					for(std::size_t j=0;j<combined_names_of_raw_values_describing_rr_contacts.size();j++)
 					{
-						const std::string& name=(rrcd.seq_sep_class==0 ? params.names_of_raw_values_describing_rr_contacts_far[j] : params.names_of_raw_values_describing_rr_contacts_near[j-params.names_of_raw_values_describing_rr_contacts_far.size()]);
-						double& value=result.raw_values_for_rr_contacts[i][j];
-						for(std::size_t e=0;e<rrcd.aa_contact_ids.size();e++)
+						if((rrcd.seq_sep_class==0 && j<params.names_of_raw_values_describing_rr_contacts_far.size()) || (rrcd.seq_sep_class!=0 && j>=params.names_of_raw_values_describing_rr_contacts_far.size()))
 						{
-							const Contact& contact=data_manager.contacts()[rrcd.aa_contact_ids[e]];
-							if(name=="area")
+							const std::string& name=(rrcd.seq_sep_class==0 ? params.names_of_raw_values_describing_rr_contacts_far[j] : params.names_of_raw_values_describing_rr_contacts_near[j-params.names_of_raw_values_describing_rr_contacts_far.size()]);
+							double& value=result.raw_values_for_rr_contacts[i][j];
+							for(std::size_t e=0;e<rrcd.aa_contact_ids.size();e++)
 							{
-								value+=contact.value.area;
-							}
-							else
-							{
-								std::map<std::string, double>::const_iterator it=contact.value.props.adjuncts.find(name);
-								if(it!=contact.value.props.adjuncts.end())
+								const Contact& contact=data_manager.contacts()[rrcd.aa_contact_ids[e]];
+								if(name=="area")
 								{
-									value+=it->second;
+									value+=contact.value.area;
+								}
+								else
+								{
+									std::map<std::string, double>::const_iterator it=contact.value.props.adjuncts.find(name);
+									if(it!=contact.value.props.adjuncts.end())
+									{
+										value+=it->second;
+									}
 								}
 							}
 						}
