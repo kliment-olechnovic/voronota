@@ -38,6 +38,90 @@ public:
 		}
 	};
 
+	class Standardizer
+	{
+	public:
+		std::vector<double> values_of_means;
+		std::vector<double> values_of_sds;
+
+		static const Standardizer& get_default_standardizer()
+		{
+			return get_default_standardizer_mutable();
+		}
+
+		static bool setup_default_standardizer(const std::string& file_of_means, const std::string& file_of_sds)
+		{
+			if(file_of_means.empty() || file_of_sds.empty())
+			{
+				return false;
+			}
+
+			Standardizer standardizer;
+			standardizer.input_files.push_back(file_of_means);
+			standardizer.input_files.push_back(file_of_sds);
+
+			if(!get_default_standardizer().empty() && get_default_standardizer().input_files==standardizer.input_files)
+			{
+				return true;
+			}
+
+			voronota::auxiliaries::IOUtilities().read_file_lines_to_set(file_of_means, standardizer.values_of_means);
+			voronota::auxiliaries::IOUtilities().read_file_lines_to_set(file_of_means, standardizer.values_of_sds);
+
+			if(standardizer.values_of_means.empty() || standardizer.values_of_means.size()!=standardizer.values_of_sds.size())
+			{
+				return false;
+			}
+
+			get_default_standardizer_mutable().values_of_means.swap(standardizer.values_of_means);
+			get_default_standardizer_mutable().values_of_sds.swap(standardizer.values_of_sds);
+			get_default_standardizer_mutable().input_files.swap(standardizer.input_files);
+
+			return true;
+		}
+
+		bool empty() const
+		{
+			return (values_of_means.empty() && values_of_sds.empty());
+		}
+
+		bool valid(const std::size_t input_length) const
+		{
+			return (values_of_means.size()==input_length && values_of_means.size()==values_of_sds.size());
+		}
+
+		void apply(const std::vector<double>& input_values, std::vector<double>& output_values) const
+		{
+			if(!valid(input_values.size()))
+			{
+				throw std::runtime_error(std::string("Invalid standardizer for vcblocks."));
+			}
+			output_values.resize(input_values.size(), 0.0);
+			for(std::size_t i=0;i<input_values.size();i++)
+			{
+				const double mean=values_of_means[i];
+				const double sd=values_of_sds[i];
+				if(sd<=0.0)
+				{
+					output_values[i]=0.0;
+				}
+				else
+				{
+					output_values[i]=(input_values[i]-mean)/sd;
+				}
+			}
+		}
+
+	private:
+		std::vector<std::string> input_files;
+
+		static Standardizer& get_default_standardizer_mutable()
+		{
+			static Standardizer standarizer;
+			return standarizer;
+		}
+	};
+
 	struct ResidueDescriptor
 	{
 		int atoms_count;
@@ -74,6 +158,7 @@ public:
 		std::vector<double> angles_of_surrounding_residues;
 		std::vector<double> adjacency_lengths_of_surrounding_residues;
 		std::vector<double> full_encoding;
+		std::vector<double> standardized_encoding;
 
 		VCBlock() : recorded(false), rr_contact_descriptor_id_main(null_id())
 		{
@@ -97,7 +182,7 @@ public:
 		}
 	};
 
-	static void construct_result(const Parameters& params, DataManager& data_manager, Result& result)
+	static void construct_result(const Parameters& params, const Standardizer& standardizer, DataManager& data_manager, Result& result)
 	{
 		result=Result();
 		result.used_params=params;
@@ -694,6 +779,11 @@ public:
 				if(vcblock.full_encoding.size()!=result.header_for_vcblock_encodings.size())
 				{
 					vcblock.full_encoding.resize(result.header_for_vcblock_encodings.size(), 0.0);
+				}
+
+				if(!standardizer.empty())
+				{
+					standardizer.apply(vcblock.full_encoding, vcblock.standardized_encoding);
 				}
 			}
 		}

@@ -36,6 +36,8 @@ public:
 	};
 
 	VCBlocksOfDataManager::Parameters construction_parameters;
+	std::string input_standardizer_means;
+	std::string input_standardizer_sds;
 	std::string selection_for_display;
 	std::string output_table;
 	bool log_to_stderr;
@@ -51,6 +53,8 @@ public:
 		construction_parameters.names_of_raw_values_describing_residues=input.get_value_vector_or_default<std::string>("residue-value-names-for-encoding", dafault_construction_parameters.names_of_raw_values_describing_residues);
 		construction_parameters.names_of_raw_values_describing_rr_contacts_far=input.get_value_vector_or_default<std::string>("far-contact-value-names-for-encoding", dafault_construction_parameters.names_of_raw_values_describing_rr_contacts_far);
 		construction_parameters.names_of_raw_values_describing_rr_contacts_near=input.get_value_vector_or_default<std::string>("near-contact-value-names-for-encoding", dafault_construction_parameters.names_of_raw_values_describing_rr_contacts_near);
+		input_standardizer_means=input.get_value_or_default<std::string>("input-standardizer-means", "");
+		input_standardizer_sds=input.get_value_or_default<std::string>("input-standardizer-sds", "");
 		selection_for_display=input.get_value_or_default<std::string>("sel-for-display", "");
 		output_table=input.get_value_or_default<std::string>("output-table", "");
 		log_to_stderr=input.get_flag("log-to-stderr");
@@ -62,15 +66,34 @@ public:
 		doc.set_option_decription(CDOD("residue-value-names-for-encoding", CDOD::DATATYPE_STRING_ARRAY, "list of names of residue values to encode", ""));
 		doc.set_option_decription(CDOD("far-contact-value-names-for-encoding", CDOD::DATATYPE_STRING_ARRAY, "list of names of  values to encode for far residue-residue contacts", ""));
 		doc.set_option_decription(CDOD("near-contact-value-names-for-encoding", CDOD::DATATYPE_STRING_ARRAY, "list of names of  values to encode for near residue-residue contacts", ""));
+		doc.set_option_decription(CDOD("input-standardizer-means", CDOD::DATATYPE_STRING, "file path to input mean values to standardize encodings", ""));
+		doc.set_option_decription(CDOD("input-standardizer-sds", CDOD::DATATYPE_STRING, "file path to input sd values to standardize encodings", ""));
 		doc.set_option_decription(CDOD("sel-for-display", CDOD::DATATYPE_STRING, "selection expression for contacts to display", ""));
 		doc.set_option_decription(CDOD("output-table", CDOD::DATATYPE_STRING, "file path to output results table", ""));
 	}
 
 	Result run(DataManager& data_manager) const
 	{
+		data_manager.assert_primary_structure_info_valid();
+		data_manager.assert_contacts_availability();
+		data_manager.assert_contacts_adjacencies_availability();
+
+		const bool use_standardizer=(!input_standardizer_means.empty() || !input_standardizer_sds.empty());
+
 		VCBlocksOfDataManager::Result vcblocks_result;
 
-		VCBlocksOfDataManager::construct_result(construction_parameters, data_manager, vcblocks_result);
+		if(use_standardizer)
+		{
+			if(!VCBlocksOfDataManager::Standardizer::setup_default_standardizer(input_standardizer_means, input_standardizer_sds))
+			{
+				throw std::runtime_error(std::string("Failed to setup standardizer for vcblocks."));
+			}
+			VCBlocksOfDataManager::construct_result(construction_parameters, VCBlocksOfDataManager::Standardizer::get_default_standardizer(), data_manager, vcblocks_result);
+		}
+		else
+		{
+			VCBlocksOfDataManager::construct_result(construction_parameters, VCBlocksOfDataManager::Standardizer(), data_manager, vcblocks_result);
+		}
 
 		if(!output_table.empty())
 		{
@@ -80,9 +103,10 @@ public:
 
 			{
 				output << "chain1 seqnum1 resname1 chain2 seqnum2 resname2";
-				for(std::size_t j=0;j<vcblocks_result.header_for_vcblock_encodings.size();j++)
+				const std::vector<std::string>& final_encoding_header=vcblocks_result.header_for_vcblock_encodings;
+				for(std::size_t j=0;j<final_encoding_header.size();j++)
 				{
-					output << " " << vcblocks_result.header_for_vcblock_encodings[j];
+					output << " " << final_encoding_header[j];
 				}
 				output << "\n";
 			}
@@ -94,9 +118,10 @@ public:
 				const common::ChainResidueAtomDescriptor& crad2=data_manager.primary_structure_info().residues[vcblock.residue_id_main[1]].chain_residue_descriptor;
 				output << (crad1.chainID.empty() ? std::string(".") : crad1.chainID) << " " << crad1.resSeq << " " << (crad1.resName.empty() ? std::string(".") : crad1.resName);
 				output << " " << (crad2.chainID.empty() ? std::string(".") : crad2.chainID) << " " << crad2.resSeq << " " << (crad2.resName.empty() ? std::string(".") : crad2.resName);
-				for(std::size_t j=0;j<vcblock.full_encoding.size();j++)
+				const std::vector<double>& final_encoding=(use_standardizer ? vcblock.standardized_encoding : vcblock.full_encoding);
+				for(std::size_t j=0;j<final_encoding.size();j++)
 				{
-					output << " " << vcblock.full_encoding[j];
+					output << " " << final_encoding[j];
 				}
 				output << "\n";
 			}
