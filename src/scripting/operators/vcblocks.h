@@ -40,6 +40,7 @@ public:
 	std::string input_standardizer_sds;
 	std::string selection_for_display;
 	std::string output_table;
+	std::string output_id;
 	bool log_to_stderr;
 
 	VCBlocks() : log_to_stderr(false)
@@ -57,6 +58,7 @@ public:
 		input_standardizer_sds=input.get_value_or_default<std::string>("input-standardizer-sds", "");
 		selection_for_display=input.get_value_or_default<std::string>("sel-for-display", "");
 		output_table=input.get_value_or_default<std::string>("output-table", "");
+		output_id=input.get_value_or_default<std::string>("output-id", "");
 		log_to_stderr=input.get_flag("log-to-stderr");
 	}
 
@@ -70,6 +72,7 @@ public:
 		doc.set_option_decription(CDOD("input-standardizer-sds", CDOD::DATATYPE_STRING, "file path to input sd values to standardize encodings", ""));
 		doc.set_option_decription(CDOD("sel-for-display", CDOD::DATATYPE_STRING, "selection expression for contacts to display", ""));
 		doc.set_option_decription(CDOD("output-table", CDOD::DATATYPE_STRING, "file path to output results table", ""));
+		doc.set_option_decription(CDOD("output-id", CDOD::DATATYPE_STRING, "string identifier to annotate the output table rows", ""));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -102,7 +105,7 @@ public:
 			assert_io_stream(output_table, output);
 
 			{
-				output << "chain1 seqnum1 resname1 chain2 seqnum2 resname2";
+				output << "ID chain1 seqnum1 resname1 chain2 seqnum2 resname2";
 				const std::vector<std::string>& final_encoding_header=vcblocks_result.header_for_vcblock_encodings;
 				for(std::size_t j=0;j<final_encoding_header.size();j++)
 				{
@@ -116,7 +119,8 @@ public:
 				const VCBlocksOfDataManager::VCBlock& vcblock=vcblocks_result.vcblocks[*vcblock_id_it];
 				const common::ChainResidueAtomDescriptor& crad1=data_manager.primary_structure_info().residues[vcblock.residue_id_main[0]].chain_residue_descriptor;
 				const common::ChainResidueAtomDescriptor& crad2=data_manager.primary_structure_info().residues[vcblock.residue_id_main[1]].chain_residue_descriptor;
-				output << (crad1.chainID.empty() ? std::string(".") : crad1.chainID) << " " << crad1.resSeq << " " << (crad1.resName.empty() ? std::string(".") : crad1.resName);
+				output << (output_id.empty() ? std::string(".") : output_id);
+				output << " " << (crad1.chainID.empty() ? std::string(".") : crad1.chainID) << " " << crad1.resSeq << " " << (crad1.resName.empty() ? std::string(".") : crad1.resName);
 				output << " " << (crad2.chainID.empty() ? std::string(".") : crad2.chainID) << " " << crad2.resSeq << " " << (crad2.resName.empty() ? std::string(".") : crad2.resName);
 				const std::vector<double>& final_encoding=(use_standardizer ? vcblock.standardized_encoding : vcblock.full_encoding);
 				for(std::size_t j=0;j<final_encoding.size();j++)
