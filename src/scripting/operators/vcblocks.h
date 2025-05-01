@@ -91,12 +91,9 @@ public:
 			{
 				throw std::runtime_error(std::string("Failed to setup standardizer for vcblocks."));
 			}
-			VCBlocksOfDataManager::construct_result(construction_parameters, VCBlocksOfDataManager::Standardizer::get_default_standardizer(), data_manager, vcblocks_result);
 		}
-		else
-		{
-			VCBlocksOfDataManager::construct_result(construction_parameters, VCBlocksOfDataManager::Standardizer(), data_manager, vcblocks_result);
-		}
+
+		VCBlocksOfDataManager::construct_result(construction_parameters, data_manager, vcblocks_result);
 
 		if(!output_table.empty())
 		{
@@ -122,7 +119,7 @@ public:
 				output << (output_id.empty() ? std::string(".") : output_id);
 				output << " " << (crad1.chainID.empty() ? std::string(".") : crad1.chainID) << " " << crad1.resSeq << " " << (crad1.resName.empty() ? std::string(".") : crad1.resName);
 				output << " " << (crad2.chainID.empty() ? std::string(".") : crad2.chainID) << " " << crad2.resSeq << " " << (crad2.resName.empty() ? std::string(".") : crad2.resName);
-				const std::vector<double>& final_encoding=(use_standardizer ? vcblock.standardized_encoding : vcblock.full_encoding);
+				const std::vector<double>& final_encoding=(vcblock.standardized_encoding.empty() ? vcblock.full_encoding : vcblock.standardized_encoding);
 				for(std::size_t j=0;j<final_encoding.size();j++)
 				{
 					output << " " << final_encoding[j];

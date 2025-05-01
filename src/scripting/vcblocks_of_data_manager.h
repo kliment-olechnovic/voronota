@@ -49,6 +49,11 @@ public:
 			return get_default_standardizer_mutable();
 		}
 
+		static void reset_default_standardizer()
+		{
+			get_default_standardizer_mutable()=Standardizer();
+		}
+
 		static bool setup_default_standardizer(const std::string& file_of_means, const std::string& file_of_sds)
 		{
 			if(file_of_means.empty() || file_of_sds.empty())
@@ -182,7 +187,7 @@ public:
 		}
 	};
 
-	static void construct_result(const Parameters& params, const Standardizer& standardizer, DataManager& data_manager, Result& result)
+	static void construct_result(const Parameters& params, DataManager& data_manager, Result& result)
 	{
 		result=Result();
 		result.used_params=params;
@@ -780,6 +785,8 @@ public:
 				{
 					vcblock.full_encoding.resize(result.header_for_vcblock_encodings.size(), 0.0);
 				}
+
+				const Standardizer& standardizer=Standardizer::get_default_standardizer();
 
 				if(!standardizer.empty())
 				{
