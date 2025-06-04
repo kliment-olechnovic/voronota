@@ -4,7 +4,7 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-global-cadscore-matrix' script computes CAD-score between molecular sctuctures.
+'voronota-js-global-cadscore-matrix' script computes global CAD-score for all pairs of provided molecular structures.
 
 Options:
     --restrict-input          string     query to restrict input atoms, default is '[]'
@@ -19,7 +19,7 @@ Options:
     --remap-chains                       flag to calculate and use optimal chains remapping
     --ignore-residue-names               flag to ignore residue names in residue identifiers
     --crude                              flag to enable very crude faster mode
-    --lt                                 flag to enable faster mode besed on Voronota-LT
+    --lt                                 flag to enable faster mode based on Voronota-LT
     --help | -h                          flag to display help message and exit
 
 Standard output:

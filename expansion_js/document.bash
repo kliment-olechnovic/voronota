@@ -162,6 +162,32 @@ EOF
 
 ########################################
 
+echo -e "\n## Global CAD-score, with an option to use the Voronota-LT algorithm\n"
+
+cat << 'EOF'
+'voronota-js-global-cadscore' script computes global CAD-score between molecular structures.
+
+### Script interface
+
+EOF
+
+./voronota-js-global-cadscore -h 2>&1 | tail -n +3 | sed 's/^/    /'
+
+########################################
+
+echo -e "\n## Global CAD-score matrix, with an option to use the Voronota-LT algorithm\n"
+
+cat << 'EOF'
+'voronota-js-global-cadscore-matrix' script computes global CAD-score for all pairs of provided molecular structures.
+
+### Script interface
+
+EOF
+
+./voronota-js-global-cadscore-matrix -h 2>&1 | tail -n +3 | sed 's/^/    /'
+
+########################################
+
 } > $TMPLDIR/documentation.markdown
 
 ################################################################################

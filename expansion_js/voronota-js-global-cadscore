@@ -4,7 +4,7 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-global-cadscore' script script computes CAD-score between molecular sctuctures.
+'voronota-js-global-cadscore' script computes global CAD-score between molecular structures.
 
 Options:
     --target | -t             string  *  target file path
@@ -24,7 +24,7 @@ Options:
     --ignore-residue-names               flag to ignore residue names in residue identifiers
     --test-common-ids                    flag to fail quickly if there are no common residues
     --crude                              flag to enable very crude faster mode
-    --lt                                 flag to enable voronota-lt faster mode
+    --lt                                 flag to enable faster mode based on Voronota-LT
     --help | -h                          flag to display help message and exit
 
 Standard output:
@@ -32,9 +32,9 @@ Standard output:
     
 Examples:
 
-    voronota-js-global-cadscore --target target.pdb --model model.pdb
+    voronota-js-global-cadscore --target target.pdb --model model.pdb --lt
     
-    ls *.pdb | voronota-js-global-cadscore --target target.pdb --model _list --processors 8 | column -t
+    ls *.pdb | voronota-js-global-cadscore --target target.pdb --model _list --lt --processors 8 | column -t
 
 EOF
 exit 1

@@ -7,17 +7,19 @@ analysis of macromolecular structures, including the Voronoi tesselation-based a
 Currently, the Voronota-JS package contains several executables:
 
  * "voronota-js" - core engine that executes JavaScript scripts.
- * "voronota-js-voromqa" - wrapper to a voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).
- * "voronota-js-only-global-voromqa" - wrapper to a voronota-js program for computing only global VoroMQA scores with fast caching.
- * "voronota-js-membrane-voromqa" - wrapper to a voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.
- * "voronota-js-ifeatures-voromqa" - wrapper to a voronota-js program for the computation of multiple VoroMQA-based features of protein-protein complexes.
- * "voronota-js-fast-iface-voromqa" - wrapper to a voronota-js program for the very fast computation of the inter-chain interface VoroMQA energy.
- * "voronota-js-fast-iface-cadscore" - wrapper to a voronota-js program for the very fast computation of the inter-chain interface CAD-score.
- * "voronota-js-fast-iface-cadscore-matrix" - wrapper to a voronota-js program for the very fast computation of the inter-chain interface CAD-score matrix.
- * "voronota-js-fast-iface-contacts" - wrapper to a voronota-js program for the very fast computation of the inter-chain interface contact areas.
- * "voronota-js-fast-iface-data-graph" - wrapper to a voronota-js program for the computation of interface graphs used by the VoroIF-GNN method.
- * "voronota-js-voroif-gnn" - wrapper to a voronota-js program and GNN inference scripts that run the VoroIF-GNN method for scoring models of protein-protein complexes (developed for CASP15).
- * "voronota-js-ligand-cadscore" - wrapper to a voronota-js program for the computation of protein-ligand variation of CAD-score (developed to analyze protein-ligand models from CASP15).
+ * "voronota-js-voromqa" - wrapper to run voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).
+ * "voronota-js-only-global-voromqa" - wrapper to run voronota-js program for computing only global VoroMQA scores with fast caching.
+ * "voronota-js-membrane-voromqa" - wrapper to run voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.
+ * "voronota-js-ifeatures-voromqa" - wrapper to run voronota-js program for the computation of multiple VoroMQA-based features of protein-protein complexes.
+ * "voronota-js-fast-iface-voromqa" - wrapper to run voronota-js program for the very fast computation of the inter-chain interface VoroMQA energy.
+ * "voronota-js-fast-iface-cadscore" - wrapper to run voronota-js program for the very fast computation of the inter-chain interface CAD-score.
+ * "voronota-js-fast-iface-cadscore-matrix" - wrapper to run voronota-js program for the very fast computation of the inter-chain interface CAD-score matrix.
+ * "voronota-js-fast-iface-contacts" - wrapper to run voronota-js program for the very fast computation of the inter-chain interface contact areas.
+ * "voronota-js-fast-iface-data-graph" - wrapper to run voronota-js program for the computation of interface graphs used by the VoroIF-GNN method.
+ * "voronota-js-voroif-gnn" - wrapper to run voronota-js program and GNN inference scripts that run the VoroIF-GNN method for scoring models of protein-protein complexes (developed for CASP15).
+ * "voronota-js-ligand-cadscore" - wrapper to run voronota-js program for the computation of protein-ligand variation of CAD-score (developed to analyze protein-ligand models from CASP15).
+ * "voronota-js-global-cadscore" - wrapper to run voronota-js program for computating the global CAD-score, with an option to utilize the Voronota-LT algorithm for high speed.
+ * "voronota-js-global-cadscore-matrix" - wrapper to run voronota-js program for computating the global CAD-score matrix, with an option to utilize the Voronota-LT algorithm for high speed.
 
 ## Usage of externally developed software
 
@@ -592,4 +594,75 @@ Example of visualized contacts (with direct interface contacts in green, adjacen
         voronota-js-ligand-cadscore \
           --target-receptor ./t_protein.pdb --target-ligands './t_ligand1.mol ./t_ligand2.mol ./t_ligand3.mol' --target-ligand-ids 'a a b' \
           --model-receptor ./m_protein.pdb --model-ligands './m_ligand1.mol ./m_ligand2.mol ./m_ligand3.mol' --model-ligand-ids 'a a b'
+    
+
+## Global CAD-score, with an option to use the Voronota-LT algorithm
+
+'voronota-js-global-cadscore' script computes global CAD-score between molecular structures.
+
+### Script interface
+
+    
+    Options:
+        --target | -t             string  *  target file path
+        --model | -m              string  *  model file path or '_list' to read file paths from stdin
+        --restrict-input          string     query to restrict input atoms, default is '[]'
+        --subselect-contacts      string     query to subselect contacts, default is '[]'
+        --output-table-file       string     output table file path, default is '_stdout' to print to stdout
+        --processors              number     maximum number of processors to run in parallel, default is 1
+        --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
+        --stdin-file              string     input file path to replace stdin
+        --run-faspr               string     path to FASPR binary to rebuild side-chains
+        --permuting-allowance     number     maximum number of chains for exhaustive remapping, default is 4
+        --as-assembly                        flag to treat input files as biological assemblies
+        --include-heteroatoms                flag to not discard heteroatoms
+        --remap-chains                       flag to calculate and use optimal chains remapping
+        --remap-chains-logging               flag to print log of chains remapping to stderr
+        --ignore-residue-names               flag to ignore residue names in residue identifiers
+        --test-common-ids                    flag to fail quickly if there are no common residues
+        --crude                              flag to enable very crude faster mode
+        --lt                                 flag to enable faster mode based on Voronota-LT
+        --help | -h                          flag to display help message and exit
+    
+    Standard output:
+        space-separated table of scores
+        
+    Examples:
+    
+        voronota-js-global-cadscore --target target.pdb --model model.pdb --lt
+        
+        ls *.pdb | voronota-js-global-cadscore --target target.pdb --model _list --lt --processors 8 | column -t
+    
+
+## Global CAD-score matrix, with an option to use the Voronota-LT algorithm
+
+'voronota-js-global-cadscore-matrix' script computes global CAD-score for all pairs of provided molecular structures.
+
+### Script interface
+
+    
+    Options:
+        --restrict-input          string     query to restrict input atoms, default is '[]'
+        --subselect-contacts      string     query to subselect contacts, default is '[]'
+        --output-table-file       string     output table file path, default is '_stdout' to print to stdout
+        --processors              number     maximum number of processors to run in parallel, default is 1
+        --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
+        --stdin-file              string     input file path to replace stdin
+        --permuting-allowance     number     maximum number of chains for exhaustive remapping, default is 4
+        --as-assembly                        flag to treat input files as biological assemblies
+        --include-heteroatoms                flag to not discard heteroatoms
+        --remap-chains                       flag to calculate and use optimal chains remapping
+        --ignore-residue-names               flag to ignore residue names in residue identifiers
+        --crude                              flag to enable very crude faster mode
+        --lt                                 flag to enable faster mode based on Voronota-LT
+        --help | -h                          flag to display help message and exit
+    
+    Standard output:
+        space-separated table of scores
+        
+    Examples:
+    
+        ls *.pdb | voronota-js-global-cadscore-matrix --lt | column -t
+        
+        find ./complexes/ -type f -name '*.pdb' | voronota-js-global-cadscore-matrix --lt > "full_matrix.txt"
     
