@@ -1454,6 +1454,9 @@
             "name":"upload-virtual-file",
             "short_description":""},
           {
+            "name":"vcblocks",
+            "short_description":""},
+          {
             "name":"voromqa-frustration",
             "short_description":""},
           {

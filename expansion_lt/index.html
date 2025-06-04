@@ -119,11 +119,13 @@
 <li><a href="#stateless-c-api-additional-features" id="toc-stateless-c-api-additional-features">Stateless C++ API additional features</a></li>
 <li><a href="#stateful-c-api-for-updatable-tessellation" id="toc-stateful-c-api-for-updatable-tessellation">Stateful C++ API for updatable tessellation</a></li>
 </ul></li>
-<li><a href="#using-voronota-lt-python-bindings" id="toc-using-voronota-lt-python-bindings">Using Voronota-LT Python bindings</a>
+<li><a href="#voronota-lt-python-bindings" id="toc-voronota-lt-python-bindings">Voronota-LT Python bindings</a>
 <ul>
-<li><a href="#compiling-python-bindings" id="toc-compiling-python-bindings">Compiling Python bindings</a></li>
-<li><a href="#using-python-bindings" id="toc-using-python-bindings">Using Python bindings</a></li>
+<li><a href="#installation" id="toc-installation">Installation</a></li>
+<li><a href="#usage-example-basic" id="toc-usage-example-basic">Usage example, basic</a></li>
+<li><a href="#usage-example-using-biotite-to-provide-input" id="toc-usage-example-using-biotite-to-provide-input">Usage example, using Biotite to provide input</a></li>
 </ul></li>
+<li><a href="#voronota-lt-rust-bindings" id="toc-voronota-lt-rust-bindings">Voronota-LT Rust bindings</a></li>
 </ul>
 </nav>
 <h1 id="about-voronota-lt">About Voronota-LT</h1>
@@ -891,52 +893,85 @@ Usage examples:
 <span id="cb12-198"><a href="#cb12-198" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-199"><a href="#cb12-199" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb12-200"><a href="#cb12-200" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code></pre></div>
-<h1 id="using-voronota-lt-python-bindings">Using Voronota-LT Python bindings</h1>
-<h2 id="compiling-python-bindings">Compiling Python bindings</h2>
-<p>Python bindings of Voronota-LT can be built using SWIG, in the “expansion_lt/swig” directory:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">swig</span> <span class="at">-python</span> <span class="at">-c++</span> voronotalt_python.i</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="ex">g++</span> <span class="at">-fPIC</span> <span class="at">-shared</span> <span class="at">-O3</span> <span class="at">-fopenmp</span> voronotalt_python_wrap.cxx <span class="at">-o</span> _voronotalt_python.so <span class="va">$(</span><span class="ex">python3-config</span> <span class="at">--includes</span><span class="va">)</span></span></code></pre></div>
-<p>This produces “_voronotalt_python.so” and “voronotalt_python.py” that are needed to call Voronota-LT from Python code.</p>
-<h2 id="using-python-bindings">Using Python bindings</h2>
-<p>When “_voronotalt_python.so” and “voronotalt_python.py” are generated, the “voronotalt_python” module can be made findable by python by adding its directory to the PYTHONPATH environmental variable:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PYTHONPATH</span><span class="op">=</span><span class="st">&quot;</span><span class="va">${PYTHONPATH}</span><span class="st">:/path/to/voronota/expansion_lt/swig&quot;</span></span></code></pre></div>
-<p>Then Voronota-LT can be used in Python code as in the following example:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> voronotalt_python <span class="im">as</span> voronotalt</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>balls <span class="op">=</span> []</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">1</span>))</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="fl">0.38268343236509</span>, <span class="fl">0.923879532511287</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="fl">0.707106781186547</span>, <span class="fl">0.707106781186548</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="fl">0.923879532511287</span>, <span class="fl">0.38268343236509</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="fl">0.923879532511287</span>, <span class="op">-</span><span class="fl">0.38268343236509</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="fl">0.707106781186548</span>, <span class="op">-</span><span class="fl">0.707106781186547</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="fl">0.38268343236509</span>, <span class="op">-</span><span class="fl">0.923879532511287</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.38268343236509</span>, <span class="op">-</span><span class="fl">0.923879532511287</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.707106781186547</span>, <span class="op">-</span><span class="fl">0.707106781186548</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.923879532511287</span>, <span class="op">-</span><span class="fl">0.38268343236509</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.923879532511287</span>, <span class="fl">0.38268343236509</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.707106781186548</span>, <span class="fl">0.707106781186547</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.38268343236509</span>, <span class="fl">0.923879532511287</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>rt <span class="op">=</span> voronotalt.RadicalTessellation(balls, probe<span class="op">=</span><span class="fl">1.0</span>)</span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>contacts<span class="op">=</span><span class="bu">list</span>(rt.contacts)</span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;contacts:&quot;</span>)</span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> contacts:</span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;contact&quot;</span>, contact.index_a, contact.index_b, contact.area, contact.arc_length)<span class="op">;</span></span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>cells<span class="op">=</span><span class="bu">list</span>(rt.cells)</span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;cells:&quot;</span>)</span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, cell <span class="kw">in</span> <span class="bu">enumerate</span>(cells):</span>
-<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;cell&quot;</span>, i, cell.sas_area, cell.volume)<span class="op">;</span></span></code></pre></div>
+<h1 id="voronota-lt-python-bindings">Voronota-LT Python bindings</h1>
+<p>Voronota-LT Python interface PyPI package is hosted at <a href="https://pypi.org/project/voronotalt/">https://pypi.org/project/voronotalt/</a>.</p>
+<h2 id="installation">Installation</h2>
+<p>Install with pip using this command:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install voronotalt</span></code></pre></div>
+<h2 id="usage-example-basic">Usage example, basic</h2>
+<p>Voronota-LT can be used in Python code as in the following example:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> voronotalt</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>balls <span class="op">=</span> []</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="fl">0.38268343236509</span>, <span class="fl">0.923879532511287</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="fl">0.707106781186547</span>, <span class="fl">0.707106781186548</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="fl">0.923879532511287</span>, <span class="fl">0.38268343236509</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="fl">0.923879532511287</span>, <span class="op">-</span><span class="fl">0.38268343236509</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="fl">0.707106781186548</span>, <span class="op">-</span><span class="fl">0.707106781186547</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="fl">0.38268343236509</span>, <span class="op">-</span><span class="fl">0.923879532511287</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.38268343236509</span>, <span class="op">-</span><span class="fl">0.923879532511287</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.707106781186547</span>, <span class="op">-</span><span class="fl">0.707106781186548</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.923879532511287</span>, <span class="op">-</span><span class="fl">0.38268343236509</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.923879532511287</span>, <span class="fl">0.38268343236509</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.707106781186548</span>, <span class="fl">0.707106781186547</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.38268343236509</span>, <span class="fl">0.923879532511287</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>rt <span class="op">=</span> voronotalt.RadicalTessellation(balls, probe<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>contacts<span class="op">=</span><span class="bu">list</span>(rt.contacts)</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;contacts:&quot;</span>)</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> contacts:</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;contact&quot;</span>, contact.index_a, contact.index_b, contact.area, contact.arc_length)<span class="op">;</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>cells<span class="op">=</span><span class="bu">list</span>(rt.cells)</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;cells:&quot;</span>)</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, cell <span class="kw">in</span> <span class="bu">enumerate</span>(cells):</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;cell&quot;</span>, i, cell.sas_area, cell.volume)<span class="op">;</span></span></code></pre></div>
+<h2 id="usage-example-using-biotite-to-provide-input">Usage example, using Biotite to provide input</h2>
+<p>Voronota-LT can be used in Python code with Biotite as in the following example:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> argparse</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> voronotalt.biotite_interface <span class="im">import</span> radical_tessellation_from_atom_array</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> biotite.structure.io <span class="im">import</span> load_structure</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Parse command-line arguments</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>parser <span class="op">=</span> argparse.ArgumentParser(description<span class="op">=</span><span class="st">&quot;Compute radical tessellation using Voronota-LT for an input PDB file.&quot;</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>parser.add_argument(<span class="st">&quot;input_file&quot;</span>, <span class="bu">help</span><span class="op">=</span><span class="st">&quot;Path to the input PDB file&quot;</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>args <span class="op">=</span> parser.parse_args()</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Load AtomArray from a PDB file</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>structure <span class="op">=</span> load_structure(args.input_file)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute tessellation</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>rt <span class="op">=</span> radical_tessellation_from_atom_array(structure, probe<span class="op">=</span><span class="fl">1.4</span>)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Print input balls</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, ball <span class="kw">in</span> <span class="bu">enumerate</span>(rt.balls):</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;ball&quot;</span>, i, ball.x, ball.y, ball.z, ball.r)</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Print contacts</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;contacts:&quot;</span>)</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> rt.contacts:</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;contact&quot;</span>, contact.index_a, contact.index_b, contact.area, contact.arc_length)</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Print cells</span></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;cells:&quot;</span>)</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, cell <span class="kw">in</span> <span class="bu">enumerate</span>(rt.cells):</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;cell&quot;</span>, i, cell.sas_area, cell.volume)</span></code></pre></div>
+<p>To run this example, make sure you have intalled Biotite:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install biotite</span></code></pre></div>
+<p>Then run by providing either PDB or mmCIF file path:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> example_script.py 2zsk.pdb</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> example_script.py 2zsk.cif</span></code></pre></div>
+<h1 id="voronota-lt-rust-bindings">Voronota-LT Rust bindings</h1>
+<p>Thanks to Mikael Lund, there is also Rust interface for Voronota-LT at <a href="https://github.com/mlund/voronota-rs">https://github.com/mlund/voronota-rs</a>.</p>
 </body>
 </html>

@@ -13,4 +13,15 @@ export OUTPUTDIR=./jobs_output
 rm -r -f $OUTPUTDIR
 mkdir $OUTPUTDIR
 
+find ../ -maxdepth 1 -mindepth 1 -type f -name 'voronota-js-*' \
+| while read -r VJSSCRIPTFILE
+do
+	VJSSCRIPTNAME="$(basename ${VJSSCRIPTFILE})"
+	if [ ! -f "${VORONOTAJSDIR}/${VJSSCRIPTNAME}" ]
+	then
+		cp "${VJSSCRIPTFILE}" "${VORONOTAJSDIR}/"
+	fi
+done
+
 find ./jobs_scripts/ -type f -name "*.bash" | xargs -L 1 -P 10 bash
+

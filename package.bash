@@ -97,16 +97,6 @@ cp \
   "./expansion_lt/index.html" \
   "${PACKAGE_NAME}/expansion_lt/"
 
-mkdir -p "${PACKAGE_NAME}/expansion_lt/swig"
-
-cp \
-  "./expansion_lt/swig/voronotalt.h" \
-  "./expansion_lt/swig/voronotalt_python.i" \
-  "./expansion_lt/swig/voronotalt_python_wrap.cxx" \
-  "./expansion_lt/swig/voronotalt_python.py" \
-  "./expansion_lt/swig/voronotalt_python_biotite.py" \
-  "${PACKAGE_NAME}/expansion_lt/swig/"
-
 ################################################################################
 
 ./expansion_js/document.bash
@@ -127,6 +117,8 @@ cp \
   "./expansion_js/voronota-js-fast-iface-cadscore-matrix" \
   "./expansion_js/voronota-js-fast-iface-data-graph" \
   "./expansion_js/voronota-js-fast-iface-contacts" \
+  "./expansion_js/voronota-js-global-cadscore" \
+  "./expansion_js/voronota-js-global-cadscore-matrix" \
   "./expansion_js/voronota-js-voroif-gnn" \
   "./expansion_js/voronota-js-ligand-cadscore" \
   "./expansion_js/voronota-js-pdb-utensil-renumber-by-sequence" \
@@ -136,7 +128,6 @@ cp \
   "./expansion_js/voronota-js-pdb-utensil-rename-chains" \
   "./expansion_js/voronota-js-pdb-utensil-print-sequence-from-structure" \
   "./expansion_js/voronota-js-pdb-utensil-download-structure" \
-  "./expansion_js/voronota-js-pdb-utensil-summarize-ensemble" \
   "./expansion_js/CMakeLists.txt" \
   "./LICENSE.txt" \
   "./expansion_js/README.md" \
