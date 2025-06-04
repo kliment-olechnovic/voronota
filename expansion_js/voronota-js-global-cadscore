@@ -4,14 +4,13 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-fast-iface-cadscore' script rapidly computes interface CAD-score for two protein complexes.
+'voronota-js-global-cadscore' script script computes CAD-score between molecular sctuctures.
 
 Options:
     --target | -t             string  *  target file path
     --model | -m              string  *  model file path or '_list' to read file paths from stdin
     --restrict-input          string     query to restrict input atoms, default is '[]'
-    --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
-    --subselect-site          string     query to subselect atoms for binding site scoring, default is '[]'
+    --subselect-contacts      string     query to subselect contacts, default is '[]'
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to run in parallel, default is 1
     --sbatch-parameters       string     sbatch parameters to run in parallel, default is ''
@@ -33,9 +32,9 @@ Standard output:
     
 Examples:
 
-    voronota-js-fast-iface-cadscore --target target.pdb --model model.pdb
+    voronota-js-global-cadscore --target target.pdb --model model.pdb
     
-    ls *.pdb | voronota-js-fast-iface-cadscore --target target.pdb --model _list --processors 8 | column -t
+    ls *.pdb | voronota-js-global-cadscore --target target.pdb --model _list --processors 8 | column -t
 
 EOF
 exit 1
@@ -75,7 +74,6 @@ TARGET_INFILE=""
 MODEL_INFILE=""
 RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
-SUBSELECT_SITE="[]"
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
@@ -116,10 +114,6 @@ do
 		;;
 	--subselect-contacts)
 		SUBSELECT_CONTACTS="$OPTARG"
-		shift
-		;;
-	--subselect-site)
-		SUBSELECT_SITE="$OPTARG"
 		shift
 		;;
 	--output-table-file)
@@ -391,7 +385,7 @@ then
 	| sort \
 	| xargs -L 1 cat \
 	| awk '{if(NR==1 || $1!="target") print $0}' \
-	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas iface_model_area iface_target_area -multipliers 1 1 1 1 1 -tolerances 0.0 0.0 0.0 0.0 0.0 -no-tournament');" \
+	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns cadscore model_area target_area -multipliers 1 1 1 -tolerances 0.0 0.0 0.0 -no-tournament');" \
 	> "$TMPLDIR/full_output_table"
 	
 	if [ -n "$OUTPUT_TABLE_FILE" ] && [ "$OUTPUT_TABLE_FILE" != "_stdout" ]
@@ -420,7 +414,6 @@ common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.ignore_residue_names='$IGNORE_RESIDUE_NAMES';
 common_params.test_common_ids='$TEST_COMMON_IDS';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
-common_params.site_subselection='$SUBSELECT_SITE';
 common_params.remap_chains='$REMAP_CHAINS';
 common_params.remap_chains_logging='$REMAP_CHAINS_LOGGING';
 common_params.crude_mode='$CRUDE_MODE';
@@ -496,22 +489,6 @@ prepare_atoms=function(params, model_mod_params)
 		initial_number_of_accepted_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
 	}
 	
-	if(params.lt_mode!="true")
-	{
-		if(params.crude_mode=="true")
-		{
-			voronota_select_atoms_close_to_interchain_interface("-name", "actii", "-probe", 4.5);
-		}
-		else
-		{
-			voronota_select_atoms_close_to_interchain_interface("-name", "actii");
-		}
-		voronota_assert_full_success("Failed to select interface atoms");
-	
-		voronota_restrict_atoms("-use", "[actii]");
-		voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
-	}
-	
 	return initial_number_of_accepted_atoms;
 }
 
@@ -519,61 +496,63 @@ prepare_contacts=function(params)
 {
 	if(params.lt_mode=="true")
 	{
-		if(params.crude_mode=="true")
+		var raw_contacts_subselection=params.contacts_subselection.replace(/\s+/g, '').replace("[--", "[-");
+		if(raw_contacts_subselection=="[-inter-chain]")
 		{
-			voronota_construct_contacts_radically_fast("-no-intra-chain -probe 4.5");
+			if(params.crude_mode=="true")
+			{
+				voronota_construct_contacts_radically_fast("-no-intra-chain -probe 4.5");
+			}
+			else
+			{
+				voronota_construct_contacts_radically_fast("-no-intra-chain");
+			}
 		}
 		else
 		{
-			voronota_construct_contacts_radically_fast("-no-intra-chain");
+			if(params.crude_mode=="true")
+			{
+				voronota_construct_contacts_radically_fast("-no-intra-residue -probe 4.5");
+			}
+			else
+			{
+				voronota_construct_contacts_radically_fast("-no-intra-residue");
+			}
 		}
 	}
 	else
 	{
 		if(params.crude_mode=="true")
 		{
-			voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial -probe 4.5");
+			voronota_construct_contacts("-skip-sas -no-calculate-volumes -no-tag-peripherial -probe 4.5");
 		}
 		else
 		{
-			voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
+			voronota_construct_contacts("-skip-sas -no-calculate-volumes -no-tag-peripherial");
 		}
 	}
-	voronota_assert_full_success("Failed to construct inter-chain contacts");
+	voronota_assert_full_success("Failed to construct contacts");
 	
-	voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts");
-	voronota_assert_full_success("Failed to select inter-chain contacts");
+	voronota_select_contacts("-use", "([-min-seq-sep 1] and "+params.contacts_subselection+")", "-name", "relevant_contacts");
+	voronota_assert_full_success("Failed to select contacts");
 }
 
 analyze_interface=function(params, target_object, model_object, initial_summary)
 {
-	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based", "-site-sel", params.site_subselection, "-remap-chains", params.remap_chains, "-remap-chains-logging", params.remap_chains_logging, "-ignore-residue-names", params.ignore_residue_names, "-max-chains-to-fully-permute", params.max_chains_to_fully_permute);
+	voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[relevant_contacts]", "-remap-chains", params.remap_chains, "-remap-chains-logging", params.remap_chains_logging, "-ignore-residue-names", params.ignore_residue_names, "-max-chains-to-fully-permute", params.max_chains_to_fully_permute);
 	voronota_assert_full_success("Failed to compute CAD-score");
 	result_cadscore=voronota_last_output().results[0].output.residue_level_result;
-	result_cadscore_site_based=voronota_last_output().results[0].output.site_residue_level_result;
 	
 	summary={};
 	summary.target=initial_summary.target;
 	summary.model=initial_summary.model;
 	
-	summary.iface_cadscore=result_cadscore.score;
-	summary.iface_site_based_cadscore=result_cadscore_site_based.score;
-	summary.iface_ratio_of_areas=result_cadscore.model_target_area_sum/result_cadscore.target_area_sum;
-	summary.iface_target_area=result_cadscore.target_area_sum;
-	summary.iface_model_area=result_cadscore.model_target_area_sum;
+	summary.cadscore=result_cadscore.score;
+	summary.target_area=result_cadscore.target_area_sum;
+	summary.model_area=result_cadscore.model_target_area_sum;
 	
 	summary.target_atoms=initial_summary.target_atoms;
 	summary.model_atoms=initial_summary.target_atoms;
-	
-	summary.iface_F1=result_cadscore.score_F1;
-	summary.iface_TP=result_cadscore.confusion_TP;
-	summary.iface_FP=result_cadscore.confusion_FP;
-	summary.iface_FN=result_cadscore.confusion_FN;
-	
-	summary.iface_site_based_F1=result_cadscore_site_based.score_F1;
-	summary.iface_site_based_TP=result_cadscore_site_based.confusion_TP;
-	summary.iface_site_based_FP=result_cadscore_site_based.confusion_FP;
-	summary.iface_site_based_FN=result_cadscore_site_based.confusion_FN;
 	
 	var summary_table={}
 	summary_table.header="";
@@ -773,7 +752,7 @@ if(common_params.output_table_file!=="_stdout")
 	shell('mkdir -p "$(dirname '+common_params.output_table_file+')"');
 }
 
-voronota_tournament_sort('-input-file', '_virtual/summary', '-output-file', common_params.output_table_file, '-columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas iface_model_area iface_target_area -multipliers 1 1 1 1 1 -tolerances 0.0 0.0 0.0 0.0 0.0 -no-tournament');
+voronota_tournament_sort('-input-file', '_virtual/summary', '-output-file', common_params.output_table_file, '-columns', ['cadscore', 'model_area', 'target_area'], '-multipliers', [1, 1, 1], '-tolerances', [0.0, 0.0, 0.0], '-no-tournament');
 
 EOF
 

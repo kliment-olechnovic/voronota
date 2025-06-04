@@ -4,7 +4,7 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-global-cadscore-matrix' script computes CAD-score between sctuctures.
+'voronota-js-global-cadscore-matrix' script computes CAD-score between molecular sctuctures.
 
 Options:
     --restrict-input          string     query to restrict input atoms, default is '[]'
@@ -144,6 +144,11 @@ done
 if [ "$HELP_MODE" == "true" ]
 then
 	print_help_and_exit
+fi
+
+if [ -n "$GLOBAL_VORONOTA_JS_INCLUDE_HETEROATOMS" ]
+then
+	INCLUDE_HETEROATOMS="$GLOBAL_VORONOTA_JS_INCLUDE_HETEROATOMS"
 fi
 
 if [ "$INCLUDE_HETEROATOMS" == "true" ] && [ "$CRUDE_MODE" == "true" ]

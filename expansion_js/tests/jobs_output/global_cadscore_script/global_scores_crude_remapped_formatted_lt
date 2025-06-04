@@ -1,0 +1,4 @@
+target      model       cadscore  target_area  model_area  target_atoms  model_atoms
+target.pdb  target.pdb  1         23641.9      23641.9     261           261
+target.pdb  model2.pdb  0.57537   23641.9      18760.9     261           261
+target.pdb  model1.pdb  0.51891   23641.9      18417.1     261           261
