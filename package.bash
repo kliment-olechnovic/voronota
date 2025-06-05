@@ -174,3 +174,14 @@ fi
 tar -czf "${PACKAGE_NAME}.tar.gz" "$PACKAGE_NAME"
 rm -r -f "$PACKAGE_NAME"
 
+################################################################################
+
+VORONOTALT_PACKAGE_NAME="$(./expansion_lt/package.bash)"
+
+################################################################################
+
+mkdir -p "./packages_for_release"
+
+mv "${PACKAGE_NAME}.tar.gz" "./expansion_lt/${VORONOTALT_PACKAGE_NAME}.tar.gz" "./packages_for_release/"
+
+
