@@ -552,7 +552,7 @@ analyze_interface=function(params, target_object, model_object, initial_summary)
 	summary.model_area=result_cadscore.model_target_area_sum;
 	
 	summary.target_atoms=initial_summary.target_atoms;
-	summary.model_atoms=initial_summary.target_atoms;
+	summary.model_atoms=initial_summary.model_atoms;
 	
 	var summary_table={}
 	summary_table.header="";

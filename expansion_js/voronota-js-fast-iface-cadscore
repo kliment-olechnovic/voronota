@@ -563,7 +563,7 @@ analyze_interface=function(params, target_object, model_object, initial_summary)
 	summary.iface_model_area=result_cadscore.model_target_area_sum;
 	
 	summary.target_atoms=initial_summary.target_atoms;
-	summary.model_atoms=initial_summary.target_atoms;
+	summary.model_atoms=initial_summary.model_atoms;
 	
 	summary.iface_F1=result_cadscore.score_F1;
 	summary.iface_TP=result_cadscore.confusion_TP;
