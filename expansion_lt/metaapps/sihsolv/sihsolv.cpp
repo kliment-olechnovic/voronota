@@ -1,0 +1,357 @@
+#include <iostream>
+#include <fstream>
+
+#include "voronotalt/parallelization_configuration.h"
+
+#ifdef VORONOTALT_OPENMP
+#include <omp.h>
+#endif
+
+#include "voronotalt/voronotalt.h"
+
+#include "voronotalt_cli/voronotalt_cli.h"
+
+#include "subdivided_icosahedron.h"
+
+namespace
+{
+
+void print_help(std::ostream& output) noexcept
+{
+	output << R"(
+SIhSolv
+
+'sihsolv' executable generates weighted pseudo-solvent balls
+
+Options:
+    --probe                                          number     rolling probe radius, default is 1.4
+    --stage2-probe                                   number     rolling probe radius for calculating volumes of intersecting pseudo-solvent balls, default is 0.0
+    --sih-depth                                      number     subdivided icosahedron depth, default is 1)";
+
+	if(voronotalt::openmp_enabled())
+	{
+		output << R"(
+    --processors                                     number     maximum number of OpenMP threads to use, default is 2)";
+	}
+
+	output << R"(
+    --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
+    --help | -h                                                 flag to print help (for basic options) to stderr and exit
+
+Standard input stream:
+    Several input formats are supported:
+      a) Space-separated or tab-separated header-less table of balls, one of the following line formats possible:
+             x y z radius
+             chainID x y z radius
+             chainID residueID x y z radius
+             chainID residueID atomName x y z radius
+      b) PDB file
+      c) mmCIF file
+
+Standard output stream:
+    A tab-separeated table of weighted pseudo-solvent balls, where every row is 'x y z radius weight'
+
+Standard error output stream:
+    Log, error messages
+
+Usage examples:
+
+    cat ./2zsk.pdb | sihsolv > solvent.tsv
+
+    cat ./2zsk.pdb | sihsolv --probe 1.4 --stage2-probe 0.0 --sih-depth 1 > solvent.tsv
+)";
+}
+
+class ApplicationParameters
+{
+public:
+	unsigned int max_number_of_processors;
+	voronotalt::Float probe;
+	unsigned int sih_depth;
+	voronotalt::Float stage2_probe;
+	bool pdb_or_mmcif_heteroatoms;
+	bool pdb_or_mmcif_hydrogens;
+	bool pdb_or_mmcif_as_assembly;
+	bool output_for_voronota_gl;
+	bool read_successfuly;
+	std::ostringstream error_log_for_options_parsing;
+
+	ApplicationParameters() noexcept :
+		max_number_of_processors(voronotalt::openmp_enabled() ? 2 : 1),
+		probe(1.4),
+		sih_depth(1),
+		stage2_probe(0.0),
+		pdb_or_mmcif_heteroatoms(false),
+		pdb_or_mmcif_hydrogens(false),
+		pdb_or_mmcif_as_assembly(false),
+		output_for_voronota_gl(false),
+		read_successfuly(false)
+	{
+	}
+
+	bool read_from_command_line_args(const int argc, const char** argv) noexcept
+	{
+		read_successfuly=false;
+
+		{
+			const std::vector<voronotalt::CLOParser::Option> cloptions=voronotalt::CLOParser::read_options(argc, argv);
+
+			for(std::size_t i=0;i<cloptions.size();i++)
+			{
+				const voronotalt::CLOParser::Option& opt=cloptions[i];
+				if((opt.name=="help" || opt.name=="h") && opt.is_flag_and_true())
+				{
+					print_help(error_log_for_options_parsing);
+					return false;
+				}
+			}
+
+			for(std::size_t i=0;i<cloptions.size();i++)
+			{
+				const voronotalt::CLOParser::Option& opt=cloptions[i];
+				if(opt.name=="probe" && opt.args_doubles.size()==1)
+				{
+					probe=static_cast<voronotalt::Float>(opt.args_doubles.front());
+					if(!(probe>=0.0 && probe<=30.0))
+					{
+						error_log_for_options_parsing << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.0 to 30.0.\n";
+					}
+				}
+				else if(opt.name=="sih-depth" && opt.args_ints.size()==1)
+				{
+					sih_depth=static_cast<unsigned int>(opt.args_ints.front());
+					if(!(sih_depth>=0 && sih_depth<=4))
+					{
+						error_log_for_options_parsing << "Error: invalid command line argument for the subdivided icosahedron depth, must be an integer from 1 to 4.\n";
+					}
+				}
+				else if(opt.name=="stage2-probe" && opt.args_doubles.size()==1)
+				{
+					stage2_probe=static_cast<voronotalt::Float>(opt.args_doubles.front());
+					if(!(stage2_probe>=0.0 && stage2_probe<=30.0))
+					{
+						error_log_for_options_parsing << "Error: invalid command line argument for the stage 2 rolling probe radius, must be a value from 0.0 to 30.0.\n";
+					}
+				}
+				else if(voronotalt::openmp_enabled() && opt.name=="processors" && opt.args_ints.size()==1)
+				{
+					max_number_of_processors=static_cast<unsigned int>(opt.args_ints.front());
+					if(!(max_number_of_processors>=1 && max_number_of_processors<=1000))
+					{
+						error_log_for_options_parsing << "Error: invalid command line argument for the maximum number of processors, must be an integer from 1 to 1000.\n";
+					}
+				}
+				else if(opt.name=="pdb-or-mmcif-heteroatoms" && opt.is_flag())
+				{
+					pdb_or_mmcif_heteroatoms=opt.is_flag_and_true();
+				}
+				else if(opt.name=="pdb-or-mmcif-hydrogens" && opt.is_flag())
+				{
+					pdb_or_mmcif_hydrogens=opt.is_flag_and_true();
+				}
+				else if(opt.name=="pdb-or-mmcif-join-models" && opt.is_flag())
+				{
+					pdb_or_mmcif_as_assembly=opt.is_flag_and_true();
+				}
+				else if(opt.name=="output-for-voronota-gl" && opt.is_flag())
+				{
+					output_for_voronota_gl=opt.is_flag_and_true();
+				}
+				else if(opt.name.empty())
+				{
+					error_log_for_options_parsing << "Error: unnamed command line arguments detected.\n";
+				}
+				else
+				{
+					error_log_for_options_parsing << "Error: invalid command line option '" << opt.name << "'.\n";
+				}
+			}
+		}
+
+		if(voronotalt::is_stdin_from_terminal())
+		{
+			error_log_for_options_parsing << "Error: no input provided to stdin.\n";
+		}
+
+		read_successfuly=error_log_for_options_parsing.str().empty();
+
+		return read_successfuly;
+	}
+};
+
+}
+
+int main(const int argc, const char** argv)
+{
+	std::ios_base::sync_with_stdio(false);
+
+	ApplicationParameters app_params;
+
+	if(!app_params.read_from_command_line_args(argc, argv))
+	{
+		if(!app_params.error_log_for_options_parsing.str().empty())
+		{
+			std::cerr << app_params.error_log_for_options_parsing.str() << "\n";
+		}
+		else
+		{
+			std::cerr << "Error: invalid command line arguments.\n";
+		}
+		return 1;
+	}
+
+#ifdef VORONOTALT_OPENMP
+		omp_set_num_threads(app_params.max_number_of_processors);
+#endif
+
+	voronotalt::TimeRecorderChrono time_recorder(false);
+
+	voronotalt::SpheresInput::Result spheres_input_result;
+
+	{
+		std::string input_data;
+
+		{
+			std::istreambuf_iterator<char> stdin_eos;
+			std::string stdin_data(std::istreambuf_iterator<char>(std::cin), stdin_eos);
+			input_data.swap(stdin_data);
+		}
+
+		if(input_data.empty())
+		{
+			std::cerr << "Error: empty input provided\n";
+			return 1;
+		}
+
+		const voronotalt::MolecularFileReading::Parameters molecular_file_reading_parameters(app_params.pdb_or_mmcif_heteroatoms, app_params.pdb_or_mmcif_hydrogens, app_params.pdb_or_mmcif_as_assembly);
+
+		if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_string(input_data, molecular_file_reading_parameters, app_params.probe, spheres_input_result, std::cerr, time_recorder))
+		{
+			std::cerr << "Error: failed to read input without errors\n";
+			return 1;
+		}
+	}
+
+	const std::vector<voronotalt::SimpleSphere>& original_input_spheres=spheres_input_result.spheres;
+
+	std::vector<voronotalt::SimpleSphere> additional_input_spheres;
+	std::vector<voronotalt::UnsignedInt> parents_of_additional_input_spheres;
+
+	{
+		voronotalt::RadicalTessellation::Result result;
+
+		voronotalt::RadicalTessellation::construct_full_tessellation(original_input_spheres, result);
+
+		std::clog << "Stage 1 tessellation summary:\n";
+		voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_basic(result, voronotalt::RadicalTessellation::GroupedResult(), voronotalt::RadicalTessellation::GroupedResult(), std::clog);
+		voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_about_cells(result, voronotalt::RadicalTessellation::GroupedResult(), voronotalt::RadicalTessellation::GroupedResult(), std::clog);
+
+		std::vector< std::set< std::pair<voronotalt::Float, voronotalt::UnsignedInt> > > graph(original_input_spheres.size());
+
+		for(std::size_t i=0;i<result.contacts_summaries.size();i++)
+		{
+			const voronotalt::RadicalTessellation::ContactDescriptorSummary& cds=result.contacts_summaries[i];
+			if(cds.id_a<result.cells_summaries.size() && result.cells_summaries[cds.id_a].sas_area>0.0)
+			{
+				graph[cds.id_a].insert(std::pair<voronotalt::Float, voronotalt::UnsignedInt>(cds.distance, cds.id_b));
+			}
+			if(cds.id_b<result.cells_summaries.size() && result.cells_summaries[cds.id_b].sas_area>0.0)
+			{
+				graph[cds.id_b].insert(std::pair<voronotalt::Float, voronotalt::UnsignedInt>(cds.distance, cds.id_a));
+			}
+		}
+
+		std::vector< std::vector<voronotalt::SimpleSphere> > per_atom_pseudosolvent_spheres(original_input_spheres.size());
+
+		voronotalt::SubdividedIcosahedron sih(1);
+
+#ifdef VORONOTALT_OPENMP
+#pragma omp parallel
+#endif
+		{
+#ifdef VORONOTALT_OPENMP
+#pragma omp for
+#endif
+			for(std::size_t i=0;i<result.cells_summaries.size();i++)
+			{
+				const voronotalt::RadicalTessellation::CellContactDescriptorsSummary& cs=result.cells_summaries[i];
+				if(cs.sas_area>0.0)
+				{
+					const voronotalt::SimpleSphere& sa=original_input_spheres[cs.id];
+					const std::set< std::pair<voronotalt::Float, voronotalt::UnsignedInt> >& neighbors=graph[cs.id];
+					for(std::size_t k=0;k<sih.vertices.size();k++)
+					{
+						const voronotalt::SimplePoint p=sih.get_point_on_sphere(k, sa);
+						const voronotalt::Float dist_to_sa=(voronotalt::distance_from_point_to_point(p, sa.p)-sa.r);
+						bool valid=true;
+						for(std::set< std::pair<voronotalt::Float, voronotalt::UnsignedInt> >::const_iterator jt=neighbors.begin();jt!=neighbors.end() && valid;++jt)
+						{
+							const voronotalt::SimpleSphere& sb=original_input_spheres[jt->second];
+							valid=valid && (dist_to_sa<(voronotalt::distance_from_point_to_point(p, sb.p)-sb.r));
+						}
+						if(valid)
+						{
+							per_atom_pseudosolvent_spheres[cs.id].push_back(voronotalt::SimpleSphere(p, app_params.probe));
+						}
+					}
+				}
+			}
+		}
+
+		for(std::size_t i=0;i<per_atom_pseudosolvent_spheres.size();i++)
+		{
+			for(std::size_t j=0;j<per_atom_pseudosolvent_spheres[i].size();j++)
+			{
+				const voronotalt::SimpleSphere& s=per_atom_pseudosolvent_spheres[i][j];
+				additional_input_spheres.push_back(s);
+				parents_of_additional_input_spheres.push_back(i);
+			}
+		}
+	}
+
+	{
+		std::vector<voronotalt::SimpleSphere> all_input_spheres;
+		all_input_spheres.reserve(original_input_spheres.size()+additional_input_spheres.size());
+		for(std::size_t i=0;i<original_input_spheres.size();i++)
+		{
+			const voronotalt::SimpleSphere& s=original_input_spheres[i];
+			all_input_spheres.push_back(voronotalt::SimpleSphere(s.p, (s.r-app_params.probe)+app_params.stage2_probe));
+		}
+		for(std::size_t i=0;i<additional_input_spheres.size();i++)
+		{
+			const voronotalt::SimpleSphere& s=additional_input_spheres[i];
+			all_input_spheres.push_back(voronotalt::SimpleSphere(s.p, s.r+app_params.stage2_probe));
+		}
+
+		voronotalt::RadicalTessellation::Result result;
+
+		voronotalt::RadicalTessellation::construct_full_tessellation(all_input_spheres, result);
+
+		std::clog << "Stage 2 tessellation summary:\n";
+		voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_basic(result, voronotalt::RadicalTessellation::GroupedResult(), voronotalt::RadicalTessellation::GroupedResult(), std::clog);
+		voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_about_cells(result, voronotalt::RadicalTessellation::GroupedResult(), voronotalt::RadicalTessellation::GroupedResult(), std::clog);
+
+		for(std::size_t i=0;i<result.cells_summaries.size();i++)
+		{
+			const voronotalt::RadicalTessellation::CellContactDescriptorsSummary& cs=result.cells_summaries[i];
+			if(cs.id>=original_input_spheres.size())
+			{
+				const voronotalt::SimpleSphere& s=all_input_spheres[cs.id];
+				if(app_params.output_for_voronota_gl)
+				{
+					const voronotalt::UnsignedInt parent_id=parents_of_additional_input_spheres[cs.id-original_input_spheres.size()];
+					std::cout << "c<S>r<" << parent_id << ">R<O>A<O> " << s.p.x << " " << s.p.y << " " << s.p.z << " " << s.r << " solv tf=" << cs.sas_inside_volume << "\n";
+				}
+				else
+				{
+					std::cout << s.p.x << "\t" << s.p.y << "\t" << s.p.z << "\t" << s.r << "\t" << cs.sas_inside_volume << "\n";
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
