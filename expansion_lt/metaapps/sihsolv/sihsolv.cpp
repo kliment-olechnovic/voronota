@@ -265,7 +265,7 @@ int main(const int argc, const char** argv)
 
 		std::vector< std::vector<voronotalt::SimpleSphere> > per_atom_pseudosolvent_spheres(original_input_spheres.size());
 
-		voronotalt::SubdividedIcosahedron sih(1);
+		voronotalt::SubdividedIcosahedron sih(app_params.sih_depth);
 
 #ifdef VORONOTALT_OPENMP
 #pragma omp parallel
