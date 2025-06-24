@@ -13,6 +13,10 @@ cat ./resources/texts/intro.markdown
 
 echo
 
+cat ./resources/texts/data_graph_generation_info.markdown
+
+echo
+
 cat ./resources/texts/ligand_cadscore_info.markdown
 
 echo -e "\n# Wrapper scripts"
