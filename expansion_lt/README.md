@@ -264,7 +264,7 @@ the values in every row are the following:
 ("atom index 1", "atom index 2", "atom index 3", "atom index 4", "Voronoi vertex position x coordinate", "Voronoi vertex position y coordinate", "Voronoi vertex position z coordinate", "minimum distance to the surface of any relevant atom ball", "maximum distance to the surface of any relevant atom ball")
 
 The value of "atom index 4" (and in some cases "atom index 3") can be equal -1, indicating that the Voronoi vertex is not inside the solvent accessible surface.
-Below is an example of its first 10 lines of `tessellation_vertices.tsv`:
+Below is an example of the first 10 lines of `tessellation_vertices.tsv`:
 
 ```
 0  1  2  3     21.3073  56.4249  13.7346  -1.49455  -1.18217
