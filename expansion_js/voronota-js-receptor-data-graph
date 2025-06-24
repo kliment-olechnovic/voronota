@@ -339,5 +339,12 @@ then
 	exit 1
 fi
 
-echo "Finished: graph data for $DATA_DESCRIPTION"
+cat "${OUTPREFIX}graph_nodes.csv" | tr ',' '\t' > "${OUTPREFIX}atom_graph_nodes.tsv"
+cat "${OUTPREFIX}graph_links.csv" | tr ',' '\t' > "${OUTPREFIX}atom_graph_links.tsv"
+cat "${OUTPREFIX}coarse_graph_nodes.csv" | tr ',' '\t' > "${OUTPREFIX}residue_graph_nodes.tsv"
+cat "${OUTPREFIX}coarse_graph_links.csv" | tr ',' '\t' > "${OUTPREFIX}residue_graph_links.tsv"
+
+rm -f "${OUTPREFIX}graph_nodes.csv" "${OUTPREFIX}graph_links.csv" "${OUTPREFIX}coarse_graph_nodes.csv" "${OUTPREFIX}coarse_graph_links.csv"
+
+exit 0
 

@@ -121,6 +121,8 @@ cp \
   "./expansion_js/voronota-js-global-cadscore-matrix" \
   "./expansion_js/voronota-js-voroif-gnn" \
   "./expansion_js/voronota-js-ligand-cadscore" \
+  "./expansion_js/voronota-js-receptor-data-graph" \
+  "./expansion_js/voronota-js-lt-data-graph" \
   "./expansion_js/voronota-js-pdb-utensil-renumber-by-sequence" \
   "./expansion_js/voronota-js-pdb-utensil-detect-inter-structure-contacts" \
   "./expansion_js/voronota-js-pdb-utensil-split-to-models" \
@@ -176,12 +178,16 @@ rm -r -f "$PACKAGE_NAME"
 
 ################################################################################
 
-VORONOTALT_PACKAGE_NAME="$(./expansion_lt/package.bash)"
+if [ "$PACKAGE_NAME" == "voronota_package" ]
+then
+	exit 0
+fi
 
 ################################################################################
+
+VORONOTALT_PACKAGE_NAME="$(./expansion_lt/package.bash)"
 
 mkdir -p "./packages_for_release"
 
 mv "${PACKAGE_NAME}.tar.gz" "./expansion_lt/${VORONOTALT_PACKAGE_NAME}.tar.gz" "./packages_for_release/"
-
 
