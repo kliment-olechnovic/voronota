@@ -23,6 +23,10 @@ rm ./voronota-lt-for-docs
 
 echo
 
+cat ./resources/texts/cli_example.markdown
+
+echo
+
 echo "# Using Voronota-LT as a C++ library"
 
 echo
