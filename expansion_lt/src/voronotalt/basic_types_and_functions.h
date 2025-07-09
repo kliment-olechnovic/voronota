@@ -1,6 +1,7 @@
 #ifndef VORONOTALT_BASIC_TYPES_AND_FUNCTIONS_H_
 #define VORONOTALT_BASIC_TYPES_AND_FUNCTIONS_H_
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 
