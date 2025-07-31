@@ -262,7 +262,7 @@ int main(const int argc, const char** argv)
 	}
 
 	std::vector<voronotalt::SimpleSphere> all_input_spheres;
-	all_input_spheres.reserve(all_input_spheres.size());
+	all_input_spheres.reserve(spheres_input_result.spheres.size());
 
 	for(std::size_t i=0;i<spheres_input_result.sphere_labels.size();i++)
 	{
