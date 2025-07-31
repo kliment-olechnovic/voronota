@@ -27,6 +27,7 @@ Options:
     --chain-of-interest                              string  *  name of the chain to expand from
     --max-distance                                   number     maximum expansion distance, default is 7.0
     --probe                                          number     probe radius, default is 1.4
+    --bound-by-spheres                               numbers    quadruples of numbers (x, y, z, r) that define bounding spheres
     --sih-depth                                      number     subdivided icosahedron depth, default is 2)";
 
 	if(voronotalt::openmp_enabled())
@@ -77,6 +78,7 @@ public:
 	bool output_for_voronota_gl;
 	bool read_successfuly;
 	std::string chain_of_interest;
+	std::vector<voronotalt::SimpleSphere> bounding_spheres_;
 	std::ostringstream error_log_for_options_parsing;
 
 	ApplicationParameters() noexcept :
@@ -130,6 +132,13 @@ public:
 					if(!(expansion_probe>=0.0 && expansion_probe<=30.0))
 					{
 						error_log_for_options_parsing << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.0 to 30.0.\n";
+					}
+				}
+				else if(opt.name=="bound-by-spheres" && opt.args_doubles.size()>=4 && opt.args_doubles.size()%4==0)
+				{
+					for(std::size_t j=0;j<opt.args_doubles.size();j+=4)
+					{
+						bounding_spheres_.push_back(voronotalt::SimpleSphere(opt.args_doubles[j+0], opt.args_doubles[j+1], opt.args_doubles[j+2], opt.args_doubles[j+3]));
 					}
 				}
 				else if(opt.name=="sih-depth" && opt.args_ints.size()==1)
@@ -343,6 +352,10 @@ int main(const int argc, const char** argv)
 						const voronotalt::SimplePoint p=sih.get_point_on_sphere(k, sa);
 						const voronotalt::Float dist_to_sa=(voronotalt::distance_from_point_to_point(p, sa.p)-sa.r);
 						bool valid=true;
+						for(std::size_t j=0;j<app_params.bounding_spheres_.size() && valid;j++)
+						{
+							valid=valid && (voronotalt::distance_from_point_to_point(p, app_params.bounding_spheres_[j].p)<=app_params.bounding_spheres_[j].r);
+						}
 						for(std::set< std::pair<voronotalt::Float, voronotalt::UnsignedInt> >::const_iterator jt=neighbors.begin();jt!=neighbors.end() && valid;++jt)
 						{
 							const voronotalt::SimpleSphere& sb=all_input_spheres[jt->second];
