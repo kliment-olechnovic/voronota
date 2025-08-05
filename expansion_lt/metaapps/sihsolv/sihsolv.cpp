@@ -8,10 +8,9 @@
 #endif
 
 #include "voronotalt/voronotalt.h"
+#include "voronotalt/subdivided_icosahedron.h"
 
 #include "voronotalt_cli/voronotalt_cli.h"
-
-#include "subdivided_icosahedron.h"
 
 namespace
 {

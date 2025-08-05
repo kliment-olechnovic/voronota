@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 
-#include "voronotalt/basic_types_and_functions.h"
+#include "basic_types_and_functions.h"
 
 namespace voronotalt
 {
