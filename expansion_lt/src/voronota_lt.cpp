@@ -171,6 +171,7 @@ public:
 	unsigned int graphics_color_lattice;
 	long mesh_extract_connected_component;
 	bool mesh_print_topology_summary;
+	bool exit_before_calculations;
 	bool read_successfuly;
 	std::string input_from_file;
 	std::vector<voronotalt::SimplePoint> periodic_box_directions;
@@ -218,6 +219,7 @@ public:
 		graphics_color_lattice(0x00FF00),
 		mesh_extract_connected_component(0),
 		mesh_print_topology_summary(false),
+		exit_before_calculations(false),
 		read_successfuly(false)
 	{
 	}
@@ -436,6 +438,10 @@ public:
 				else if(opt.name=="mesh-print-topology-summary" && opt.is_flag())
 				{
 					mesh_print_topology_summary=opt.is_flag_and_true();
+				}
+				else if(opt.name=="exit-before-calculations" && opt.is_flag())
+				{
+					exit_before_calculations=opt.is_flag_and_true();
 				}
 				else if(opt.name=="mesh-extract-connected-component" && opt.args_ints.size()==1)
 				{
@@ -1778,6 +1784,12 @@ int main(const int argc, const char** argv)
 		{
 			std::cerr << "Error (non-terminating): failed to write input balls to file '" << app_params.write_input_balls_to_file << "'\n";
 		}
+	}
+
+	if(app_params.exit_before_calculations)
+	{
+		std::cerr << "As requested, exiting before any calculations\n";
+		return 0;
 	}
 
 	if((app_params.compute_only_inter_chain_contacts || app_params.need_summaries_on_chain_level) && spheres_input_result.number_of_chain_groups<2)
