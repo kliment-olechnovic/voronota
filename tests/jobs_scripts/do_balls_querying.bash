@@ -45,7 +45,7 @@ cat $SUBDIR/balls \
 > $SUBDIR/balls_renumbered_by_alignment
 
 cat $SUBDIR/balls \
-| $VORONOTA query-balls --set-dssp-info <(dssp $INPUTDIR/single/structure.pdb) \
+| $VORONOTA query-balls --set-dssp-info <(dssp --output-format=dssp $INPUTDIR/single/structure.pdb) \
 | $VORONOTA query-balls --match-tags 'dssp=H|dssp=G|dssp=I' --set-tags 'helix' \
 | $VORONOTA query-balls --match-tags 'dssp=B|dssp=E' --set-tags 'sheet' \
 | $VORONOTA query-balls --set-adjuncts 'ssc=100' \
@@ -110,7 +110,7 @@ cat $SUBDIR/balls \
 cat $SUBDIR/balls \
 | $VORONOTA query-balls \
   --set-seq-pos-adjunct \
-  --set-dssp-info <(dssp $INPUTDIR/single/structure.pdb) \
+  --set-dssp-info <(dssp --output-format=dssp $INPUTDIR/single/structure.pdb) \
 | $VORONOTA x-draw-balls \
   --representation cartoon \
   --drawing-for-pymol $SUBDIR/cartoon_for_pymol.py \
