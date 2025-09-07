@@ -41,6 +41,7 @@ public:
 	std::string selection_for_display;
 	std::string output_table;
 	std::string output_id;
+	std::string special_standardization;
 	bool log_to_stderr;
 
 	VCBlocks() : log_to_stderr(false)
@@ -59,6 +60,7 @@ public:
 		selection_for_display=input.get_value_or_default<std::string>("sel-for-display", "");
 		output_table=input.get_value_or_default<std::string>("output-table", "");
 		output_id=input.get_value_or_default<std::string>("output-id", "");
+		special_standardization=input.get_value_or_default<std::string>("special-standardization", "");
 		log_to_stderr=input.get_flag("log-to-stderr");
 	}
 
@@ -73,6 +75,7 @@ public:
 		doc.set_option_decription(CDOD("sel-for-display", CDOD::DATATYPE_STRING, "selection expression for contacts to display", ""));
 		doc.set_option_decription(CDOD("output-table", CDOD::DATATYPE_STRING, "file path to output results table", ""));
 		doc.set_option_decription(CDOD("output-id", CDOD::DATATYPE_STRING, "string identifier to annotate the output table rows", ""));
+		doc.set_option_decription(CDOD("special-standardization", CDOD::DATATYPE_STRING, "statistics file path for special standardization", ""));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -82,6 +85,16 @@ public:
 		data_manager.assert_contacts_adjacencies_availability();
 
 		const bool use_standardizer=(!input_standardizer_means.empty() || !input_standardizer_sds.empty());
+
+		if(use_standardizer & !special_standardization.empty())
+		{
+			throw std::runtime_error(std::string("Basic and special standardization regimes are not allowed to be used together."));
+		}
+
+		if(!special_standardization.empty() && output_table.empty())
+		{
+			throw std::runtime_error(std::string("Special standardization has no effect when output table path is not provided."));
+		}
 
 		VCBlocksOfDataManager::Result vcblocks_result;
 
@@ -95,18 +108,165 @@ public:
 
 		VCBlocksOfDataManager::construct_result(construction_parameters, data_manager, vcblocks_result);
 
-		if(!output_table.empty())
+		if(!special_standardization.empty() && !output_table.empty())
+		{
+			std::vector<std::string> column_names;
+			std::vector<double> column_mean_values;
+			std::vector<double> column_sd_values;
+
+			{
+				InputSelector input_selector(special_standardization);
+				std::istream& input=input_selector.stream();
+
+				{
+					std::string line;
+					std::getline(input, line);
+					if(!line.empty())
+					{
+						std::istringstream line_input(line);
+						while(line_input.good())
+						{
+							std::string token;
+							line_input >> token;
+							if(line_input.fail())
+							{
+								throw std::runtime_error(std::string("Failed to parse special standardization stats file header."));
+							}
+							else
+							{
+								column_names.push_back(token);
+							}
+						}
+					}
+					if(column_names.empty())
+					{
+						throw std::runtime_error(std::string("Failed to read special standardization stats file header."));
+					}
+				}
+
+				for(int ri=0;ri<2;ri++)
+				{
+					std::vector<double>& column_values=(ri==0 ? column_mean_values : column_sd_values);
+					column_values.reserve(column_names.size());
+					std::string line;
+					std::getline(input, line);
+					if(!line.empty())
+					{
+						std::istringstream line_input(line);
+						while(line_input.good())
+						{
+							double value=0.0;
+							line_input >> value;
+							if(line_input.fail())
+							{
+								throw std::runtime_error(std::string("Failed to parse special standardization stats file values row."));
+							}
+							else
+							{
+								column_values.push_back(value);
+							}
+						}
+					}
+					if(column_values.size()!=column_names.size())
+					{
+						throw std::runtime_error(std::string("Failed to read special standardization stats file values row to match the header."));
+					}
+				}
+			}
+
+			const std::size_t data_header_size=vcblocks_result.header_for_vcblock_encodings.size();
+			std::size_t data_header_main_positions[2]={data_header_size, data_header_size};
+			{
+				for(std::size_t j=0;j<data_header_size && !(data_header_main_positions[0]<data_header_size && data_header_main_positions[1]<data_header_size);j++)
+				{
+					if(vcblocks_result.header_for_vcblock_encodings[j]=="main_rr_contact__area")
+					{
+						data_header_main_positions[0]=j;
+					}
+					else if(vcblocks_result.header_for_vcblock_encodings[j]=="main_rr_contact__boundary")
+					{
+						data_header_main_positions[1]=j;
+					}
+				}
+
+				if(!(data_header_main_positions[0]<data_header_size && data_header_main_positions[1]<data_header_size))
+				{
+					throw std::runtime_error(std::string("Missing basic column names ('main_rr_contact__area' and  'main_rr_contact__boundary') in header for output."));
+				}
+			}
+
+			std::vector<std::size_t> list_of_data_column_positions_to_output;
+			std::vector<std::size_t> list_of_stats_column_positions_to_use;
+			{
+				list_of_data_column_positions_to_output.reserve(column_names.size());
+				list_of_stats_column_positions_to_use.reserve(column_names.size());
+				std::map<std::string, std::size_t> map_of_data_column_positions;
+				for(std::size_t j=0;j<vcblocks_result.header_for_vcblock_encodings.size();j++)
+				{
+					map_of_data_column_positions[vcblocks_result.header_for_vcblock_encodings[j]]=j;
+				}
+				for(std::size_t j=0;j<column_names.size();j++)
+				{
+					std::map<std::string, std::size_t>::const_iterator data_it=map_of_data_column_positions.find(column_names[j]);
+					if(data_it!=map_of_data_column_positions.end())
+					{
+						list_of_data_column_positions_to_output.push_back(data_it->second);
+						list_of_stats_column_positions_to_use.push_back(j);
+					}
+				}
+			}
+
+			{
+				OutputSelector output_selector(output_table);
+				std::ostream& output=output_selector.stream();
+				assert_io_stream(output_table, output);
+
+				{
+					output << "ID\tchain1\tseqnum1\tresname1\tchain2\tseqnum2\tresname2\tmain_rr_contact__area\tmain_rr_contact__boundary\tpersistence";
+					for(std::size_t j=0;j<list_of_data_column_positions_to_output.size();j++)
+					{
+						output << "\t" << vcblocks_result.header_for_vcblock_encodings[list_of_data_column_positions_to_output[j]];
+					}
+					output << "\n";
+				}
+
+				for(std::vector<std::size_t>::const_iterator vcblock_id_it=vcblocks_result.indices_of_recorded_vcblocks.begin();vcblock_id_it!=vcblocks_result.indices_of_recorded_vcblocks.end();++vcblock_id_it)
+				{
+					const VCBlocksOfDataManager::VCBlock& vcblock=vcblocks_result.vcblocks[*vcblock_id_it];
+					if(vcblock.full_encoding[data_header_main_positions[0]]>1.0)
+					{
+						const common::ChainResidueAtomDescriptor& crad1=data_manager.primary_structure_info().residues[vcblock.residue_id_main[0]].chain_residue_descriptor;
+						const common::ChainResidueAtomDescriptor& crad2=data_manager.primary_structure_info().residues[vcblock.residue_id_main[1]].chain_residue_descriptor;
+						output << (output_id.empty() ? std::string(".") : output_id);
+						output << "\t" << (crad1.chainID.empty() ? std::string(".") : crad1.chainID) << "\t" << crad1.resSeq << "\t" << (crad1.resName.empty() ? std::string(".") : crad1.resName);
+						output << "\t" << (crad2.chainID.empty() ? std::string(".") : crad2.chainID) << "\t" << crad2.resSeq << "\t" << (crad2.resName.empty() ? std::string(".") : crad2.resName);
+						output << "\t" << vcblock.full_encoding[data_header_main_positions[0]] << "\t" << vcblock.full_encoding[data_header_main_positions[1]];
+						output << "\t0";
+						for(std::size_t j=0;j<list_of_data_column_positions_to_output.size();j++)
+						{
+							const double raw_value=vcblock.full_encoding[list_of_data_column_positions_to_output[j]];
+							const double mean_value=column_mean_values[list_of_stats_column_positions_to_use[j]];
+							const double sd_value=column_sd_values[list_of_stats_column_positions_to_use[j]];
+							const double zscore=(raw_value-mean_value)/sd_value;
+							output << "\t" << zscore;
+						}
+						output << "\n";
+					}
+				}
+			}
+		}
+		else if(!output_table.empty())
 		{
 			OutputSelector output_selector(output_table);
 			std::ostream& output=output_selector.stream();
 			assert_io_stream(output_table, output);
 
 			{
-				output << "ID chain1 seqnum1 resname1 chain2 seqnum2 resname2";
+				output << "ID\tchain1\tseqnum1\tresname1\tchain2\tseqnum2\tresname2";
 				const std::vector<std::string>& final_encoding_header=vcblocks_result.header_for_vcblock_encodings;
 				for(std::size_t j=0;j<final_encoding_header.size();j++)
 				{
-					output << " " << final_encoding_header[j];
+					output << "\t" << final_encoding_header[j];
 				}
 				output << "\n";
 			}
@@ -117,12 +277,12 @@ public:
 				const common::ChainResidueAtomDescriptor& crad1=data_manager.primary_structure_info().residues[vcblock.residue_id_main[0]].chain_residue_descriptor;
 				const common::ChainResidueAtomDescriptor& crad2=data_manager.primary_structure_info().residues[vcblock.residue_id_main[1]].chain_residue_descriptor;
 				output << (output_id.empty() ? std::string(".") : output_id);
-				output << " " << (crad1.chainID.empty() ? std::string(".") : crad1.chainID) << " " << crad1.resSeq << " " << (crad1.resName.empty() ? std::string(".") : crad1.resName);
-				output << " " << (crad2.chainID.empty() ? std::string(".") : crad2.chainID) << " " << crad2.resSeq << " " << (crad2.resName.empty() ? std::string(".") : crad2.resName);
+				output << "\t" << (crad1.chainID.empty() ? std::string(".") : crad1.chainID) << "\t" << crad1.resSeq << "\t" << (crad1.resName.empty() ? std::string(".") : crad1.resName);
+				output << "\t" << (crad2.chainID.empty() ? std::string(".") : crad2.chainID) << "\t" << crad2.resSeq << "\t" << (crad2.resName.empty() ? std::string(".") : crad2.resName);
 				const std::vector<double>& final_encoding=(vcblock.standardized_encoding.empty() ? vcblock.full_encoding : vcblock.standardized_encoding);
 				for(std::size_t j=0;j<final_encoding.size();j++)
 				{
-					output << " " << final_encoding[j];
+					output << "\t" << final_encoding[j];
 				}
 				output << "\n";
 			}
