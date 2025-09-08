@@ -217,40 +217,45 @@ public:
 			}
 
 			{
-				OutputSelector output_selector(output_table);
-				std::ostream& output=output_selector.stream();
-				assert_io_stream(output_table, output);
+				const std::string output_table_part1=output_table+"_part1";
+				std::ofstream output1;
+				output1.open(output_table_part1.c_str(), std::ios::out | std::ios::binary);
+				assert_io_stream(output_table_part1, output1);
 
-				{
-					output << "ID\tchain1\tseqnum1\tresname1\tchain2\tseqnum2\tresname2\tmain_rr_contact__area\tmain_rr_contact__boundary\tpersistence";
-					for(std::size_t j=0;j<list_of_data_column_positions_to_output.size();j++)
-					{
-						output << "\t" << vcblocks_result.header_for_vcblock_encodings[list_of_data_column_positions_to_output[j]];
-					}
-					output << "\n";
-				}
+				const std::string output_table_part2=output_table+"_part2";
+				std::ofstream output2;
+				output2.open(output_table_part2.c_str(), std::ios::out | std::ios::binary);
+				assert_io_stream(output_table_part2, output2);
+
+				output1 << "ID\tchain1\tseqnum1\tresname1\tchain2\tseqnum2\tresname2\tmain_rr_contact__area\tmain_rr_contact__boundary\n";
 
 				for(std::vector<std::size_t>::const_iterator vcblock_id_it=vcblocks_result.indices_of_recorded_vcblocks.begin();vcblock_id_it!=vcblocks_result.indices_of_recorded_vcblocks.end();++vcblock_id_it)
 				{
 					const VCBlocksOfDataManager::VCBlock& vcblock=vcblocks_result.vcblocks[*vcblock_id_it];
 					if(vcblock.full_encoding[data_header_main_positions[0]]>1.0)
 					{
-						const common::ChainResidueAtomDescriptor& crad1=data_manager.primary_structure_info().residues[vcblock.residue_id_main[0]].chain_residue_descriptor;
-						const common::ChainResidueAtomDescriptor& crad2=data_manager.primary_structure_info().residues[vcblock.residue_id_main[1]].chain_residue_descriptor;
-						output << (output_id.empty() ? std::string(".") : output_id);
-						output << "\t" << (crad1.chainID.empty() ? std::string(".") : crad1.chainID) << "\t" << crad1.resSeq << "\t" << (crad1.resName.empty() ? std::string(".") : crad1.resName);
-						output << "\t" << (crad2.chainID.empty() ? std::string(".") : crad2.chainID) << "\t" << crad2.resSeq << "\t" << (crad2.resName.empty() ? std::string(".") : crad2.resName);
-						output << "\t" << vcblock.full_encoding[data_header_main_positions[0]] << "\t" << vcblock.full_encoding[data_header_main_positions[1]];
-						output << "\t0";
-						for(std::size_t j=0;j<list_of_data_column_positions_to_output.size();j++)
 						{
-							const double raw_value=vcblock.full_encoding[list_of_data_column_positions_to_output[j]];
-							const double mean_value=column_mean_values[list_of_stats_column_positions_to_use[j]];
-							const double sd_value=column_sd_values[list_of_stats_column_positions_to_use[j]];
-							const double zscore=(raw_value-mean_value)/sd_value;
-							output << "\t" << zscore;
+							const common::ChainResidueAtomDescriptor& crad1=data_manager.primary_structure_info().residues[vcblock.residue_id_main[0]].chain_residue_descriptor;
+							const common::ChainResidueAtomDescriptor& crad2=data_manager.primary_structure_info().residues[vcblock.residue_id_main[1]].chain_residue_descriptor;
+							output1 << (output_id.empty() ? std::string(".") : output_id);
+							output1 << "\t" << (crad1.chainID.empty() ? std::string(".") : crad1.chainID) << "\t" << crad1.resSeq << "\t" << (crad1.resName.empty() ? std::string(".") : crad1.resName);
+							output1 << "\t" << (crad2.chainID.empty() ? std::string(".") : crad2.chainID) << "\t" << crad2.resSeq << "\t" << (crad2.resName.empty() ? std::string(".") : crad2.resName);
+							output1 << "\t" << vcblock.full_encoding[data_header_main_positions[0]] << "\t" << vcblock.full_encoding[data_header_main_positions[1]];
+							output1 << "\n";
 						}
-						output << "\n";
+
+						{
+							output2 << "0";
+							for(std::size_t j=0;j<list_of_data_column_positions_to_output.size();j++)
+							{
+								const double raw_value=vcblock.full_encoding[list_of_data_column_positions_to_output[j]];
+								const double mean_value=column_mean_values[list_of_stats_column_positions_to_use[j]];
+								const double sd_value=column_sd_values[list_of_stats_column_positions_to_use[j]];
+								const double zscore=(raw_value-mean_value)/sd_value;
+								output2 << "\t" << zscore;
+							}
+							output2 << "\n";
+						}
 					}
 				}
 			}
