@@ -245,14 +245,13 @@ public:
 						}
 
 						{
-							output2 << "0";
 							for(std::size_t j=0;j<list_of_data_column_positions_to_output.size();j++)
 							{
 								const double raw_value=vcblock.full_encoding[list_of_data_column_positions_to_output[j]];
 								const double mean_value=column_mean_values[list_of_stats_column_positions_to_use[j]];
 								const double sd_value=column_sd_values[list_of_stats_column_positions_to_use[j]];
 								const double zscore=(raw_value-mean_value)/sd_value;
-								output2 << "\t" << zscore;
+								output2 << (j>0 ? "\t" : "") << zscore;
 							}
 							output2 << "\n";
 						}
