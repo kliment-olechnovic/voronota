@@ -309,6 +309,16 @@ public:
 		}
 	};
 
+	struct ParametersForAdjunctMaxCircleRadiusRestrictions
+	{
+		 std::vector<Float> radius_restrictions;
+		 std::vector<int> grouping_of_spheres_for_skipping;
+
+		 ParametersForAdjunctMaxCircleRadiusRestrictions() noexcept
+		 {
+		 }
+	};
+
 	struct ParametersForPreliminaryCuts
 	{
 		struct Plane
@@ -406,7 +416,7 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, false, true, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, false, true, FLOATCONST(0.0), ParametersForAdjunctMaxCircleRadiusRestrictions(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -418,7 +428,7 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, false, false, grouping_of_spheres.empty(), FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, false, false, grouping_of_spheres.empty(), FLOATCONST(0.0), ParametersForAdjunctMaxCircleRadiusRestrictions(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -430,7 +440,7 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, periodic_box, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, false, true, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), false, false, true, FLOATCONST(0.0), ParametersForAdjunctMaxCircleRadiusRestrictions(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -443,7 +453,7 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, periodic_box, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), with_tessellation_net, false, true, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), std::vector<int>(), with_tessellation_net, false, true, FLOATCONST(0.0), ParametersForAdjunctMaxCircleRadiusRestrictions(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -456,7 +466,7 @@ public:
 		SpheresContainer spheres_container;
 		spheres_container.init(input_spheres, periodic_box, time_recorder);
 		ResultGraphics result_graphics;
-		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, false, false, grouping_of_spheres.empty(), FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, false, false, grouping_of_spheres.empty(), FLOATCONST(0.0), ParametersForAdjunctMaxCircleRadiusRestrictions(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -469,7 +479,7 @@ public:
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder) noexcept
 	{
-		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, with_tessellation_net, with_graphics, summarize_cells, FLOATCONST(0.0), std::vector<Float>(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, std::vector<int>(), grouping_of_spheres, with_tessellation_net, with_graphics, summarize_cells, FLOATCONST(0.0), ParametersForAdjunctMaxCircleRadiusRestrictions(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -480,12 +490,12 @@ public:
 			const bool with_graphics,
 			const bool summarize_cells,
 			const Float max_circle_radius_restriction,
-			const std::vector<Float>& adjunct_max_circle_radius_restrictions,
+			const ParametersForAdjunctMaxCircleRadiusRestrictions& parameters_for_adjunct_max_circle_radius_restrictions,
 			Result& result,
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder) noexcept
 	{
-		construct_full_tessellation(spheres_container, involvement_of_spheres, grouping_of_spheres, with_tessellation_net, with_graphics, summarize_cells, max_circle_radius_restriction, adjunct_max_circle_radius_restrictions, ParametersForPreliminaryCuts(), result, result_graphics, time_recorder);
+		construct_full_tessellation(spheres_container, involvement_of_spheres, grouping_of_spheres, with_tessellation_net, with_graphics, summarize_cells, max_circle_radius_restriction, parameters_for_adjunct_max_circle_radius_restrictions, ParametersForPreliminaryCuts(), result, result_graphics, time_recorder);
 	}
 
 	static void construct_full_tessellation(
@@ -496,7 +506,7 @@ public:
 			const bool with_graphics,
 			const bool summarize_cells,
 			const Float max_circle_radius_restriction,
-			const std::vector<Float>& adjunct_max_circle_radius_restrictions,
+			const ParametersForAdjunctMaxCircleRadiusRestrictions& parameters_for_adjunct_max_circle_radius_restrictions,
 			const ParametersForPreliminaryCuts& parameters_for_preliminary_cuts,
 			Result& result,
 			ResultGraphics& result_graphics,
@@ -616,12 +626,14 @@ public:
 			}
 		}
 
-		if(!adjunct_max_circle_radius_restrictions.empty())
+		if(!parameters_for_adjunct_max_circle_radius_restrictions.radius_restrictions.empty())
 		{
 			const UnsignedInt number_of_applications_of_preliminary_cuts=(!apply_preliminary_cuts_with_all_masks ? static_cast<UnsignedInt>(1) : parameters_for_preliminary_cuts.calculate_number_of_possible_masks());
 
+			const std::vector<int>& groups_for_skipping=parameters_for_adjunct_max_circle_radius_restrictions.grouping_of_spheres_for_skipping;
+
 			result.adjuncts_for_contacts_summaries.clear();
-			result.adjuncts_for_contacts_summaries.resize(result.contacts_summaries.size(), ContactDescriptorSummaryAdjunct(adjunct_max_circle_radius_restrictions.size()*number_of_applications_of_preliminary_cuts));
+			result.adjuncts_for_contacts_summaries.resize(result.contacts_summaries.size(), ContactDescriptorSummaryAdjunct(parameters_for_adjunct_max_circle_radius_restrictions.radius_restrictions.size()*number_of_applications_of_preliminary_cuts));
 
 #ifdef VORONOTALT_OPENMP
 #pragma omp parallel
@@ -638,7 +650,11 @@ public:
 				for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
 				{
 					const ContactDescriptorSummary& cds=result.contacts_summaries[i];
-					if(cds.area>FLOATCONST(0.0))
+					if(cds.area<=FLOATCONST(0.0) || (!groups_for_skipping.empty() && groups_for_skipping.size()==spheres_container.input_spheres().size() && groups_for_skipping[cds.id_a%groups_for_skipping.size()]==groups_for_skipping[cds.id_b%groups_for_skipping.size()]))
+					{
+						result.adjuncts_for_contacts_summaries[i].level_areas.clear();
+					}
+					else
 					{
 						UnsignedInt lindex=0;
 						for(UnsignedInt k=0;k<number_of_applications_of_preliminary_cuts;k++)
@@ -653,9 +669,9 @@ public:
 							}
 							ContactDescriptorSummaryAdjunct& cdsa=result.adjuncts_for_contacts_summaries[i];
 							Float prev_circle_radius_restriction=0.0;
-							for(UnsignedInt j=0;j<adjunct_max_circle_radius_restrictions.size();j++)
+							for(UnsignedInt j=0;j<parameters_for_adjunct_max_circle_radius_restrictions.radius_restrictions.size();j++)
 							{
-								const Float circle_radius_restriction=(max_circle_radius_restriction>FLOATCONST(0.0) ? std::min(adjunct_max_circle_radius_restrictions[j], max_circle_radius_restriction) : adjunct_max_circle_radius_restrictions[j]);
+								const Float circle_radius_restriction=(max_circle_radius_restriction>FLOATCONST(0.0) ? std::min(parameters_for_adjunct_max_circle_radius_restrictions.radius_restrictions[j], max_circle_radius_restriction) : parameters_for_adjunct_max_circle_radius_restrictions.radius_restrictions[j]);
 								if(j==0 || (circle_radius_restriction>=prev_circle_radius_restriction)
 										|| (circle_radius_restriction<prev_circle_radius_restriction && cdsa.level_areas[lindex-1].area>FLOATCONST(0.0)))
 								{

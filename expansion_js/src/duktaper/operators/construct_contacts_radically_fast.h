@@ -73,11 +73,12 @@ public:
 	bool no_remove_triangulation_info;
 	int precutting_variant;
 	bool add_collapsed_adjuncts;
+	bool no_intra_residue_adjunct_circle_restrictions;
 	std::vector<double> adjunct_circle_restrictions;
 	std::vector<double> precutting_shifts;
 	std::string initial_selection_expression;
 
-	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), calculate_adjacencies(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting_variant(-1), add_collapsed_adjuncts(false)
+	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), calculate_adjacencies(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting_variant(-1), add_collapsed_adjuncts(false), no_intra_residue_adjunct_circle_restrictions(false)
 	{
 	}
 
@@ -95,6 +96,7 @@ public:
 		precutting_variant=input.get_value_or_default<int>("precutting-variant", -1);
 		add_collapsed_adjuncts=input.get_flag("add-collapsed-adjuncts");
 		adjunct_circle_restrictions=input.get_value_vector_or_default<double>("adjunct-circle-restrictions", std::vector<double>());
+		no_intra_residue_adjunct_circle_restrictions=input.get_flag("no-intra-residue-adjunct-circle-restrictions");
 		precutting_shifts=input.get_value_vector_or_default<double>("precutting-shifts", std::vector<double>());
 		initial_selection_expression=input.get_value_or_default<std::string>("initial-sel", "");
 	}
@@ -111,6 +113,7 @@ public:
 		doc.set_option_decription(CDOD("characterize-topology", CDOD::DATATYPE_BOOL, "flag to characterize topology of the merged contacts mesh surface"));
 		doc.set_option_decription(CDOD("no-remove-triangulation-info", CDOD::DATATYPE_BOOL, "flag to not remove triangulation info"));
 		doc.set_option_decription(CDOD("adjunct-circle-restrictions", CDOD::DATATYPE_FLOAT_ARRAY, "adjunct circle restriction radii", ""));
+		doc.set_option_decription(CDOD("no-intra-residue-adjunct-circle-restrictions", CDOD::DATATYPE_BOOL, "flag to skip computing circle restriction adjuncts for intra-residue contacts"));
 		doc.set_option_decription(CDOD("precutting-variant", CDOD::DATATYPE_INT, "precutting variant", -1));
 		doc.set_option_decription(CDOD("add-collapsed-adjuncts", CDOD::DATATYPE_BOOL, "flag to add collapse adjuncts of subarea value"));
 		doc.set_option_decription(CDOD("precutting-shifts", CDOD::DATATYPE_FLOAT_ARRAY, "precutting plane shift values", ""));
@@ -223,12 +226,21 @@ public:
 		voronotalt::RadicalTessellation::ResultGraphics radical_tessellation_result_graphics;
 
 		{
-			std::vector<double> descending_adjunct_circle_restrictions;
+			voronotalt::RadicalTessellation::ParametersForAdjunctMaxCircleRadiusRestrictions parameters_for_adjunct_max_circle_radius_restrictions;
 			
 			if(!adjunct_circle_restrictions.empty())
 			{
-				descending_adjunct_circle_restrictions=adjunct_circle_restrictions;
-				std::reverse(descending_adjunct_circle_restrictions.begin(), descending_adjunct_circle_restrictions.end());
+				parameters_for_adjunct_max_circle_radius_restrictions.radius_restrictions=adjunct_circle_restrictions;
+				std::reverse(parameters_for_adjunct_max_circle_radius_restrictions.radius_restrictions.begin(), parameters_for_adjunct_max_circle_radius_restrictions.radius_restrictions.end());
+
+				if(no_intra_residue_adjunct_circle_restrictions)
+				{
+					parameters_for_adjunct_max_circle_radius_restrictions.grouping_of_spheres_for_skipping.resize(spheres.size(), 0);
+					for(std::size_t i=0;i<spheres.size();i++)
+					{
+						parameters_for_adjunct_max_circle_radius_restrictions.grouping_of_spheres_for_skipping[i]=static_cast<int>(data_manager.primary_structure_info().map_of_atoms_to_residues[i]);
+					}
+				}
 			}
 
 			voronotalt::TimeRecorder mock_time_recorder;
@@ -244,7 +256,7 @@ public:
 					(generate_graphics || characterize_topology),
 					summarize_cells,
 					restrict_circle,
-					descending_adjunct_circle_restrictions,
+					parameters_for_adjunct_max_circle_radius_restrictions,
 					precutting_parameters,
 					radical_tessellation_result,
 					radical_tessellation_result_graphics,
