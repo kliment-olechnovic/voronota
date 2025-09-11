@@ -631,6 +631,14 @@ public:
 		h += (h << 15);
 		return h;
 	}
+
+	struct HashFunctor
+	{
+		std::size_t operator()(const ChainResidueAtomDescriptorsPair& v) const
+		{
+			return static_cast<std::size_t>(v.hash_value());
+		}
+	};
 };
 
 inline std::ostream& operator<<(std::ostream& output, const ChainResidueAtomDescriptorsPair& descriptors_pair)
