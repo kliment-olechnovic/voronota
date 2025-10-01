@@ -89,6 +89,19 @@ hide-contacts
 spectrum-contacts [-inter-chain] -adjunct cifem -scheme bwr -min-val -2 -max-val 1
 show-contacts [-inter-chain]
 
+### Draw a subset of empty tangent spheres
+construct-contacts
+delete-figures -name et_spheres
+add-figure-of-triangulation [] -strict \
+  -min-radius 0.1 -max-radius 3.0 \
+  -as-spheres -figure-name et_spheres
+hide-figures
+show-figures
+color-figures 0xFF7777
+hide-atoms
+show-atoms -rep balls
+color-atoms 0x7777FF
+
 ### Calculate geometric exposure values for surface atoms
 restrict-atoms [-t! het]
 construct-contacts
@@ -143,4 +156,109 @@ show-contacts ([contacts_r1] or [contacts_r2]) -rep edges
 select-contacts [-inter-chain -a1 [-chain A -rnum 16] -a2 [-chain B -rnum 15]] -name iface
 color-contacts [iface] -rep faces -col yellow
 show-contacts [iface] -rep faces
+
+### Demo analysis of empty space
+grid-by-object
+
+import 3szd.pdb -title 3szd1
+
+construct-contacts
+copy-object 3szd1 3szd2
+copy-object 3szd1 3szd3
+
+pick-objects 3szd1
+show-atoms -rep sticks
+spectrum-atoms -by residue-id
+
+pick-objects 3szd2
+delete-figures -name et_spheres
+add-figure-of-triangulation [] -strict \
+  -min-radius 1.3 -max-radius 10.0 \
+  -as-spheres -figure-name et_spheres
+hide-figures
+show-figures
+color-figures 0xFF7777
+hide-atoms
+show-atoms -rep balls
+spectrum-atoms -by residue-id
+
+pick-objects 3szd3
+delete-adjuncts-of-atoms -adjuncts ev
+describe-exposure -adj-atom-exposure-value ev \
+  -probe-min 2.0 -probe-max 30 -expansion 1 \
+  -smoothing-iterations 2 -smoothing-depth 1
+hide-atoms
+show-atoms
+color-atoms 0x555555
+spectrum-atoms -adjunct ev -scheme bwr
+
+### Demo analysis membrane protein
+grid-by-object
+
+import 3szd.pdb -title 3szd1
+construct-contacts
+copy-object 3szd1 3szd2
+
+pick-objects 3szd1
+delete-adjuncts-of-atoms -adjuncts ev
+describe-exposure -adj-atom-exposure-value ev \
+  -probe-min 2.0 -probe-max 30 -expansion 1 \
+  -smoothing-iterations 2 -smoothing-depth 1
+hide-atoms
+show-atoms
+color-atoms 0x555555
+spectrum-atoms -adjunct ev -scheme bwr -min-val 0.0 -max-val 0.9
+
+pick-objects 3szd2
+voromqa-global
+voromqa-frustration -adj-atom-frustration-energy-mean afem \
+  -adj-contact-frustration-energy-mean cfem \
+  -smoothing-iterations 1 -smoothing-depth 3
+hide-atoms
+show-atoms -rep balls
+color-atoms 0x555555
+spectrum-atoms -adjunct afem -scheme bwr
+
+copy-object 3szd2 3szd3
+pick-objects 3szd3
+construct-contacts
+voromqa-global
+voromqa-frustration \
+  -smoothing-iterations 3 -smoothing-depth 1
+describe-exposure \
+  -probe-min 2.0 -probe-max 30 -expansion 1 \
+  -smoothing-iterations 3 -smoothing-depth 1
+voromqa-membrane-place \
+  -adj-atom-weighted-membrane-place-value weighted_membrane_place_value \
+  -membrane-width 20 -membrane-width-extended 24
+set-adjunct-of-atoms-by-expression \
+  -use [-v weighted_membrane_place_value] -expression _logistic \
+  -input-adjuncts weighted_membrane_place_value \
+  -parameters 1 30 0.3 -output-adjunct area_alt_part
+set-adjunct-of-contacts-by-atom-adjuncts \
+  -atoms [-v area_alt_part=0.01:1] \
+  -contacts [-solvent] -source-name area_alt_part \
+  -destination-name area_alt_part -pooling-mode min
+hide-atoms
+hide-contacts
+color-contacts -col yellow
+spectrum-contacts -adjunct area_alt_part -scheme bwr -min-val 0 -max-val 1
+show-contacts [-solvent] -rep faces
+
+import 3szd.pdb -include-heteroatoms -title 3szd_opm
+restrict-atoms [-rname DUM]
+hide-atoms
+show-atoms -rep balls
+color-atoms 0x777777
+
+### Demo ensemble contacts
+import-session ensemble.vses
+pick-objects
+hide-atoms
+show-atoms -rep sticks
+spectrum-atoms
+construct-contacts-radically-fast -no-intra-residue -generate-graphics
+show-contacts [-a1 [-rnum 1:30] -a2 [-rnum 170:9999] -no-solvent]
+spectrum-contacts -by area -min-val 0 -max-val 15 -scheme wm
+animate-loop-picked-objects -time-step 200
 
