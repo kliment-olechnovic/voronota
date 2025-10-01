@@ -75,9 +75,10 @@ public:
 		set_command_for_congregation_of_data_managers("congruence-score", operators::CongruenceScore());
 		set_command_for_congregation_of_data_managers("congruence-score-many", operators::CongruenceScoreMany());
 		set_command_for_congregation_of_data_managers("export-atoms-to-mmcif-multimodel", operators::ExportAtomsToMMCIFMultimodel());
-		set_command_for_congregation_of_data_managers("fetch", operators::Fetch(RemoteImportDownloaderSimple< RemoteImportRequest<scripting::operators::ImportMany> >::instance()));
+		set_command_for_congregation_of_data_managers("fetch-pdb", operators::Fetch(RemoteImportDownloaderSimple< RemoteImportRequest<scripting::operators::ImportMany> >::instance()));
 		set_command_for_congregation_of_data_managers("fetch-afdb", operators::FetchAFDB(RemoteImportDownloaderSimple< RemoteImportRequest<scripting::operators::ImportMany> >::instance()));
 		set_command_for_congregation_of_data_managers("fetch-mmcif", operators::FetchMMCIF(RemoteImportDownloaderSimple< RemoteImportRequest<operators::ImportMMCIF> >::instance()));
+		set_command_for_congregation_of_data_managers("fetch", operators::FetchMMCIF(RemoteImportDownloaderSimple< RemoteImportRequest<operators::ImportMMCIF> >::instance()));
 		set_command_for_congregation_of_data_managers("import-cod-cif", operators::ImportCODCIF());
 		set_command_for_congregation_of_data_managers("import-mmcif", operators::ImportMMCIF());
 		set_command_for_congregation_of_data_managers("import-mmcif-url", operators::ImportUrl< RemoteImportDownloaderSimple< RemoteImportRequest<operators::ImportMMCIF> > >());
