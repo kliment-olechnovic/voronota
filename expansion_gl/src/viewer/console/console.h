@@ -132,7 +132,7 @@ public:
 						ImGui::PopItemWidth();
 						ImGui::SameLine();
 						{
-							const std::string button_id=std::string("fetch");
+							const std::string button_id=std::string("fetch##fetch_from_pdb");
 							if(ImGui::Button(button_id.c_str()))
 							{
 								requested=true;
@@ -170,6 +170,41 @@ public:
 
 						{
 							ImGui::Checkbox("use mmCIF label (entity) IDs##for_fetch", &menu_open_use_label_ids);
+						}
+
+						ImGui::EndMenu();
+					}
+
+					if(ImGui::BeginMenu("Fetch from AlphaFoldDB"))
+					{
+						static std::vector<char> pdbid_buffer;
+						if(pdbid_buffer.empty())
+						{
+							const std::string example("A0A2K6V5L6");
+							pdbid_buffer=std::vector<char>(example.begin(), example.end());
+							pdbid_buffer.resize(128, 0);
+						}
+						const std::string textbox_id=std::string("##afdbid");
+						bool requested=false;
+						ImGui::PushItemWidth(150*GUIStyleWrapper::scale_factor());
+						if(ImGui::InputText(textbox_id.c_str(), pdbid_buffer.data(), pdbid_buffer.size()-1, ImGuiInputTextFlags_EnterReturnsTrue))
+						{
+							requested=true;
+						}
+						ImGui::PopItemWidth();
+						ImGui::SameLine();
+						{
+							const std::string button_id=std::string("fetch##fetch_from_afdb");
+							if(ImGui::Button(button_id.c_str()))
+							{
+								requested=true;
+							}
+						}
+						if(requested && pdbid_buffer.data()[0]!=0)
+						{
+							const std::string pdbid_str(pdbid_buffer.data());
+							result="fetch-afdb ";
+							result+=pdbid_str;
 						}
 
 						ImGui::EndMenu();
