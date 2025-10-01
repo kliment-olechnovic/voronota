@@ -262,3 +262,72 @@ show-contacts [-a1 [-rnum 1:30] -a2 [-rnum 170:9999] -no-solvent]
 spectrum-contacts -by area -min-val 0 -max-val 15 -scheme wm
 animate-loop-picked-objects -time-step 200
 
+### Demo layers of contacts
+import 4ung.pdb -title objB0
+
+copy-object objB0 objB1
+pick-objects objB1
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -0.4 -thicken-graphics 0.002
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0x00FFFF
+
+copy-object objB0 objB2
+pick-objects objB2
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -0.8 -thicken-graphics 0.003
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0x00AA00
+
+copy-object objB0 objB3
+pick-objects objB3
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -1.2  -thicken-graphics 0.004
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0xFFFF00
+
+copy-object objB0 objB4
+pick-objects objB4
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -restrict-circle -1.6  -thicken-graphics 0.005
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0xFF2222
+
+copy-object objB0 objB5
+pick-objects objB5
+
+construct-contacts-radically-fast -generate-graphics -no-intra-chain -adjunct-circle-restrictions -1.6 -1.2 -0.8 -0.4 -0.0000001
+
+show-contacts [-inter-chain] -rep faces
+color-contacts -col 0xAA22FF
+
+pick-objects
+hide-atoms
+
+delete-objects objB0
+
+show-contacts [-inter-chain] -rep edges
+color-contacts -rep edges -col 0x000000
+
+select-contacts [-inter-chain] -name iface -on-objects objB5
+orient -atoms [-sel-of-contacts iface]
+rotate -angle -90 -axis 0 0 1
+
+color-atoms [-chain A] -col 0xCCCCCC
+color-atoms [-chain B] -col 0xFFAA88
+show-atoms -rep cartoon sticks -on-objects objB5
+rotate -angle 180 -axis 0 1 0
+
+### Demo VCBlock
+import 4ung.pdb
+select-atoms [-chain A -rnum 16] -name asel1
+select-atoms [-chain B -rnum 15] -name asel2
+construct-contacts-radically-fast -calculate-adjacencies -generate-graphics
+vcblocks -sel-for-display [-a1 [asel1] -a2 [asel2]]
+select-contacts [-a1 [asel1] -no-solvent] -name csel1
+select-contacts [-a1 [asel2] -no-solvent] -name csel2
+select-atoms ([-sel-of-contacts csel1] and [-sel-of-contacts csel2]) -full-residues -name aselCommon
+hide-atoms
+show-atoms [aselCommon] -rep sticks
+color-atoms [aselCommon] -col 0xFFFFFF
+color-atoms ([asel1] or [asel2]) -col 0xFFBBFF
+color-contacts -col black -rep edges
+spectrum-contacts -by residue-ids -rep faces -scheme rygwbwbcgyr
+zoom-by-atoms [-sel-of-contacts _visible]
+
