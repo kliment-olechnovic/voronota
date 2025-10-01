@@ -205,6 +205,24 @@ public:
 		scroll_output=true;
 	}
 
+	void add_clear_start()
+	{
+		add_output("clear_start", 0.50f, 0.50f, 0.50f);
+	}
+
+	void clear_outputs_from_last_clear_start()
+	{
+		while(!outputs.empty() && outputs.back().content!="clear_start")
+		{
+			outputs.pop_back();
+		}
+		if(!outputs.empty() && outputs.back().content=="clear_start")
+		{
+			outputs.pop_back();
+		}
+		scroll_output=true;
+	}
+
 private:
 	std::deque<OutputToken> outputs;
 	std::vector<std::string> history_of_commands;

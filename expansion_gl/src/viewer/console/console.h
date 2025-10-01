@@ -120,11 +120,11 @@ public:
 						{
 							const std::string example("2zsk");
 							pdbid_buffer=std::vector<char>(example.begin(), example.end());
-							pdbid_buffer.resize(128, 0);
+							pdbid_buffer.resize(1024, 0);
 						}
 						const std::string textbox_id=std::string("##pdbid");
 						bool requested=false;
-						ImGui::PushItemWidth(70*GUIStyleWrapper::scale_factor());
+						ImGui::PushItemWidth(180*GUIStyleWrapper::scale_factor());
 						if(ImGui::InputText(textbox_id.c_str(), pdbid_buffer.data(), pdbid_buffer.size()-1, ImGuiInputTextFlags_EnterReturnsTrue))
 						{
 							requested=true;
@@ -140,7 +140,14 @@ public:
 						}
 						if(requested && pdbid_buffer.data()[0]!=0)
 						{
-							const std::string pdbid_str(pdbid_buffer.data());
+							std::string pdbid_str(pdbid_buffer.data());
+							for(std::size_t j=0;j<pdbid_str.size();j++)
+							{
+								if(pdbid_str[j]==',' || pdbid_str[j]==';')
+								{
+									pdbid_str[j]=' ';
+								}
+							}
 							result="fetch-mmcif ";
 							result+=pdbid_str;
 							if(!menu_open_include_heteroatoms)
@@ -182,11 +189,11 @@ public:
 						{
 							const std::string example("A0A2K6V5L6");
 							pdbid_buffer=std::vector<char>(example.begin(), example.end());
-							pdbid_buffer.resize(128, 0);
+							pdbid_buffer.resize(1024, 0);
 						}
 						const std::string textbox_id=std::string("##afdbid");
 						bool requested=false;
-						ImGui::PushItemWidth(150*GUIStyleWrapper::scale_factor());
+						ImGui::PushItemWidth(120*GUIStyleWrapper::scale_factor());
 						if(ImGui::InputText(textbox_id.c_str(), pdbid_buffer.data(), pdbid_buffer.size()-1, ImGuiInputTextFlags_EnterReturnsTrue))
 						{
 							requested=true;
