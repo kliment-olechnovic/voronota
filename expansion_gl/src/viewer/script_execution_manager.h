@@ -704,8 +704,16 @@ private:
 				script_output << " -on-objects " << list_of_names << "\n";
 				script_output << "clear-last\n";
 
-				script_output << "spectrum-atoms [] -by chain -scheme random -on-objects " << list_of_names << "\n";
-				script_output << "clear-last\n";
+				if(object_query.names.size()==1 && list_of_names.rfind(" AF-", 0)==0)
+				{
+					script_output << "spectrum-atoms -adjunct tf -scheme rwb -min-val 50 -max-val 100 -on-objects " << list_of_names << "\n";
+					script_output << "clear-last\n";
+				}
+				else
+				{
+					script_output << "spectrum-atoms [] -by chain -scheme random -on-objects " << list_of_names << "\n";
+					script_output << "clear-last\n";
+				}
 
 				if(available_tags_het)
 				{

@@ -132,7 +132,7 @@ public:
 						ImGui::PopItemWidth();
 						ImGui::SameLine();
 						{
-							const std::string button_id=std::string("fetch##fetch_from_pdb");
+							const std::string button_id=std::string("fetch by PDB ID##fetch_from_pdb");
 							if(ImGui::Button(button_id.c_str()))
 							{
 								requested=true;
@@ -194,7 +194,7 @@ public:
 						ImGui::PopItemWidth();
 						ImGui::SameLine();
 						{
-							const std::string button_id=std::string("fetch##fetch_from_afdb");
+							const std::string button_id=std::string("fetch by UniProt ID##fetch_from_afdb");
 							if(ImGui::Button(button_id.c_str()))
 							{
 								requested=true;
