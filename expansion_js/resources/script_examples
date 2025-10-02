@@ -157,6 +157,43 @@ select-contacts [-inter-chain -a1 [-chain A -rnum 16] -a2 [-chain B -rnum 15]] -
 color-contacts [iface] -rep faces -col yellow
 show-contacts [iface] -rep faces
 
+### Demo mutate sidechains an rescore interface
+grid-by-object
+
+import 4ung.pdb -title 4ung_wt
+restrict-atoms [-t! het]
+hide-atoms
+show-atoms -rep cartoon
+spectrum-atoms -by chain -scheme oc
+construct-contacts
+voromqa-global
+voromqa-interface-frustration [-inter-chain] \
+  -adj-contact-interface-frustration-energy-mean cifem \
+  -smoothing-iterations 2
+hide-contacts
+spectrum-contacts [-inter-chain] -adjunct cifem -scheme bwr -min-val -2 -max-val 1
+show-contacts [-inter-chain]
+show-atoms [-rname LEU] -rep sticks
+color-atoms [-rname LEU] -col 0x00FF00
+
+import 4ung.pdb -title 4ung_mutant
+restrict-atoms [-t! het]
+set-atom-names -use [-rname LEU] -residue-name ARG
+faspr
+hide-atoms
+show-atoms -rep cartoon
+spectrum-atoms -by chain -scheme oc
+construct-contacts
+voromqa-global
+voromqa-interface-frustration [-inter-chain] \
+  -adj-contact-interface-frustration-energy-mean cifem \
+  -smoothing-iterations 2
+hide-contacts
+spectrum-contacts [-inter-chain] -adjunct cifem -scheme bwr -min-val -2 -max-val 1
+show-contacts [-inter-chain]
+show-atoms [-rname ARG] -rep sticks
+color-atoms [-rname ARG] -col 0xFFFF00
+
 ### Demo analysis of empty space
 grid-by-object
 
