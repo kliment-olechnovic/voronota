@@ -40,7 +40,7 @@ public:
 			ImGui::PushTextWrapPos();
 			for(std::size_t i=0;i<text_interface_info.outputs.size();i++)
 			{
-				const TextInterfaceInfo::OutputToken& ot=text_interface_info.outputs[i];
+				TextInterfaceInfo::OutputToken& ot=text_interface_info.outputs[i];
 				if(ot.content==TextInterfaceInfo::separator_string())
 				{
 					ImGui::Separator();
@@ -107,17 +107,36 @@ public:
 	}
 
 private:
-	static void execute_copy_menu(const std::size_t index, const std::string& content)
+	static void execute_copy_menu(const std::size_t index, std::string& content)
 	{
-		std::ostringstream menu_id_output;
-		menu_id_output << "Copy text##copy_output_" << index;
-		const std::string menu_id=menu_id_output.str();
+		static std::map<std::size_t, std::string> prepared_menu_ids;
+		std::string& menu_id=prepared_menu_ids[index];
+		if(menu_id.empty())
+		{
+			std::ostringstream menu_id_output;
+			menu_id_output << "Copy text##copy_output_" << index;
+			menu_id=menu_id_output.str();
+		}
 		if(ImGui::BeginPopupContextItem(menu_id.c_str(), 1))
 		{
-			if(ImGui::Selectable("Copy to clipboard"))
+			const int max_lines_count=32;
+			const int max_line_width=64;
+			int lines_count=3;
 			{
-				ImGui::SetClipboardText(content.c_str());
+				int current_line_width=1;
+				for(std::size_t i=0;i<content.size() && lines_count<=max_lines_count;i++)
+				{
+					if(content[i]=='\n' || (current_line_width+5)%max_line_width==0)
+					{
+						lines_count++;
+						current_line_width=1;
+					}
+					current_line_width++;
+				}
 			}
+
+			ImGui::InputTextMultiline("##logtext", &content[0], content.size()+1, ImVec2(ImGui::GetTextLineHeight()*(max_line_width/2), ImGui::GetTextLineHeight()*lines_count), (ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_WordWrap));
+
 			ImGui::EndPopup();
 		}
 	}
