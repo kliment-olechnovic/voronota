@@ -53,20 +53,17 @@ public:
 						const std::size_t max_text_chunk_size=5000;
 						if(ot.content.size()<=(max_text_chunk_size*2+100))
 						{
-							ImGuiAddonGlobalTextColorVector gtcv(ot.char_colors.size(), ot.char_colors.data());
 							ImGui::TextUnformatted(ot.content.c_str());
 						}
 						else
 						{
 							{
-								ImGuiAddonGlobalTextColorVector gtcv(max_text_chunk_size, ot.char_colors.data());
 								ImGui::TextUnformatted(ot.content.c_str(), ot.content.c_str()+max_text_chunk_size);
 							}
 							ImGui::TextUnformatted("-------------------------------------------\n");
 							ImGui::TextUnformatted("-------- middle part not displayed --------\n");
 							ImGui::TextUnformatted("-------------------------------------------\n");
 							{
-								ImGuiAddonGlobalTextColorVector gtcv(max_text_chunk_size, ot.char_colors.data()+(ot.content.size()-max_text_chunk_size));
 								ImGui::TextUnformatted(ot.content.c_str()+(ot.content.size()-max_text_chunk_size), ot.content.c_str()+ot.content.size());
 							}
 						}

@@ -1,7 +1,6 @@
 #ifndef VIEWER_CONSOLE_COMMON_GUI_H_
 #define VIEWER_CONSOLE_COMMON_GUI_H_
 
-#include "../../dependencies/imgui/addons/global_text_color_vector.h"
 #include "../../dependencies/imgui/addons/simple_splitter.h"
 
 #ifndef FOR_WEB
