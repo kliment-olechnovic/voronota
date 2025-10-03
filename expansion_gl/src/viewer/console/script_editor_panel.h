@@ -27,11 +27,11 @@ public:
 	{
 		if(script_editor_colors_black_on_white_)
 		{
-			editor_.SetPalette(TextEditor::GetLightPalette());
+			editor_.SetPalette(TextEditor::PaletteId::Light);
 		}
 		else
 		{
-			editor_.SetPalette(TextEditor::GetDarkPalette());
+			editor_.SetPalette(TextEditor::PaletteId::Dark);
 		}
 	}
 
@@ -80,11 +80,11 @@ public:
 				{
 					if(script_editor_colors_black_on_white_)
 					{
-						editor_.SetPalette(TextEditor::GetLightPalette());
+						editor_.SetPalette(TextEditor::PaletteId::Light);
 					}
 					else
 					{
-						editor_.SetPalette(TextEditor::GetDarkPalette());
+						editor_.SetPalette(TextEditor::PaletteId::Dark);
 					}
 				}
 
@@ -104,8 +104,8 @@ public:
 			ImGuiAddonSimpleSplitter::set_splitter("##script_editor_splitter", &flexible_region_size, &flexible_region_size_left, flexible_region_size_min, flexible_region_size_min, GUIStyleWrapper::scale_factor());
 
 			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0, (flexible_region_size-4.0f*GUIStyleWrapper::scale_factor())));
-			editor_.Render("ScriptEditor");
-			text_interface_info.set_script_editor_focused(editor_.IsFocused());
+			const bool editor_is_focused=editor_.Render("ScriptEditor");
+			text_interface_info.set_script_editor_focused(editor_is_focused);
 			ImGui::EndChild();
 
 			ImGui::Dummy(ImVec2(0.0f, 4.0f*GUIStyleWrapper::scale_factor()));

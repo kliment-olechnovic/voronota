@@ -40,13 +40,13 @@ emcc --std=c++14 \
   ../../expansion_js/src/dependencies/tinf/*.cpp \
   ../../expansion_js/src/dependencies/pulchra_bb/*.cpp \
   ../../expansion_js/src/dependencies/utilities/*.cpp \
-  ../../expansion_gl/src/dependencies/ImGuiColorTextEdit/TextEditor.cpp \
+  ../../expansion_gl/src/dependencies/ImGuiColorTextEdit/*.cpp \
 -DFOR_WEB \
 -DUSE_LINENOISE=0 \
 -I "../../expansion_js/src/dependencies/" \
 -I "../src/dependencies/" \
 -I "/usr/include/glm/" \
--s USE_GLFW=3 \
+--use-port=contrib.glfw3 \
 -s ALLOW_MEMORY_GROWTH=1 \
 -s DISABLE_EXCEPTION_CATCHING=0 \
 -s LZ4=1 \
