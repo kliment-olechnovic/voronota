@@ -130,6 +130,15 @@ function voronota_viewer_download_file(filename)
 
 function voronota_viewer_init(config)
 {
+	document.addEventListener('keydown', function (e)
+	{
+		if (e.key === 'F11' || e.code === 'F11' || e.keyCode === 122
+			|| e.key === 'F12' || e.code === 'F12' || e.keyCode === 123)
+		{
+			e.stopImmediatePropagation();
+		}
+	}, true);
+	
 	const canvas_id="voronota_viewer_canvas";
 	
 	if(document.getElementById(canvas_id))
