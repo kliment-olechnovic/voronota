@@ -21,15 +21,6 @@ function voronota_viewer_is_retina_display()
     return false;
 }
 
-function voronota_viewer_screen_pixel_ratio()
-{
-	if(voronota_viewer_is_retina_display())
-	{
-		return 1.0; // let GLFW handle scaling
-	}
-	return 1.0;
-}
-
 var voronota_viewer_default_width=function()
 {
 	return null;
@@ -48,12 +39,9 @@ function voronota_viewer_resize_window(width_arg, height_arg)
 	const height=((height_arg) ? ((typeof height_arg === "function") ? height_arg() : height_arg) : 500)-voronota_viewer_bottom_margin;
 	const new_width=((width<500) ? 500 : width);
 	const new_height=((height<500) ? 500 : height);
-	const pixel_ratio=voronota_viewer_screen_pixel_ratio();
-	Module.ccall('voronota_viewer_resize_window', null, ['int','int'], [new_width*pixel_ratio,new_height*pixel_ratio]);
+	Module.ccall('voronota_viewer_resize_window', null, ['int','int'], [new_width,new_height]);
 	Module.canvas.style.setProperty("width", new_width + "px", "important");
 	Module.canvas.style.setProperty("height", new_height + "px", "important");
-	Module.canvas.width=new_width*pixel_ratio;
-	Module.canvas.height=new_height*pixel_ratio;
 }
 
 function voronota_viewer_enqueue_script(str)
@@ -214,7 +202,7 @@ function voronota_viewer_init(config)
 				}
 			}
 		})],
-		arguments: ['--window-width', '500', '--window-height', '500', '--gui-scaling', ''+voronota_viewer_screen_pixel_ratio()],
+		arguments: ['--window-width', '500', '--window-height', '500'],
 		print: ((text) => {	console.log(text);}),
 		locateFile: ((s) =>	{return (voronota_viewer_app_subdirectory + s);}),
 		canvas: canvas
