@@ -25,7 +25,7 @@ function voronota_viewer_screen_pixel_ratio()
 {
 	if(voronota_viewer_is_retina_display())
 	{
-		return 2.0;
+		return 1.0; // let GLFW handle scaling
 	}
 	return 1.0;
 }

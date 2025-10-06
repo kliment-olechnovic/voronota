@@ -98,10 +98,6 @@ public:
 			glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 		}
 
-#ifdef FOR_WEB
-		glfwWindowHint(GLFW_SCALE_FRAMEBUFFER, GLFW_FALSE);
-#endif
-
 		window_=glfwCreateWindow(parameters.suggested_window_width, parameters.suggested_window_height, parameters.title.c_str(), 0, 0);
 		if(!window_)
 		{
