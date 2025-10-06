@@ -48,7 +48,7 @@ function voronota_viewer_resize_window(width_arg, height_arg)
 	const height=((height_arg) ? ((typeof height_arg === "function") ? height_arg() : height_arg) : 500)-voronota_viewer_bottom_margin;
 	const new_width=((width<500) ? 500 : width);
 	const new_height=((height<500) ? 500 : height);
-	const pixel_ratio=1.0;//voronota_viewer_screen_pixel_ratio();
+	const pixel_ratio=voronota_viewer_screen_pixel_ratio();
 	Module.ccall('voronota_viewer_resize_window', null, ['int','int'], [new_width*pixel_ratio,new_height*pixel_ratio]);
 	Module.canvas.style.setProperty("width", new_width + "px", "important");
 	Module.canvas.style.setProperty("height", new_height + "px", "important");
