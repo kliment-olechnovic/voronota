@@ -40,9 +40,7 @@ int main(const int argc, const char** argv)
 			throw std::runtime_error(std::string("Failed to init application."));
 		}
 
-		const float requested_gui_scaling=(gui_scaling>0.0f ? gui_scaling : static_cast<float>(voronota::viewer::Application::instance().framebuffer_and_window_ratio()));
-
-		voronota::viewer::GUIStyleWrapper::instance().init(custom_font_file, (requested_gui_scaling<1.5f ? 1.0f : 2.0f));
+		voronota::viewer::GUIStyleWrapper::instance().init(custom_font_file, (gui_scaling>0.0f ? gui_scaling : 1.0f));
 
 		voronota::viewer::Application::instance().enqueue_script("clear");
 		voronota::viewer::Application::instance().enqueue_script("setup-defaults");
