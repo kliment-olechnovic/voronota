@@ -136,17 +136,6 @@ function voronota_viewer_init(config)
 	
 	var canvas_container=voronota_viewer_return_document_element_or_body(config.canvas_container_id);
 	
-	(function()
-	{
-		const scripts = ["4ung.js", "3szd.js", "ensemble.js", "dun2010bbdep.js", "voronota_viewer.js"];
-		for (var i = 0; i < scripts.length; i++)
-		{
-			var script = document.createElement('script');
-			script.src = voronota_viewer_app_subdirectory+scripts[i];
-			document.body.appendChild(script);
-		}
-	})();
-	
 	var canvas = document.createElement('canvas');
 	canvas.className = "emscripten";
 	canvas.id = canvas_id;
@@ -207,6 +196,17 @@ function voronota_viewer_init(config)
 		locateFile: ((s) =>	{return (voronota_viewer_app_subdirectory + s);}),
 		canvas: canvas
 	};
+	
+	(function()
+	{
+		const scripts = ["4ung.js", "3szd.js", "ensemble.js", "dun2010bbdep.js", "voronota_viewer.js"];
+		for (var i = 0; i < scripts.length; i++)
+		{
+			var script = document.createElement('script');
+			script.src = voronota_viewer_app_subdirectory+scripts[i];
+			document.body.appendChild(script);
+		}
+	})();
 	
 	if(config.bottom_margin)
 	{

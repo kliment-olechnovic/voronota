@@ -87,7 +87,7 @@ public:
 		import_many_operator.import_operator.loading_parameters.format_fallback="mmcif";
 
 		std::ostringstream url_output;
-		url_output << "https://alphafold.ebi.ac.uk/files/AF-" << id << "-F1-model_v4.cif";
+		url_output << "https://alphafold.ebi.ac.uk/files/AF-" << id << "-F1-model_v6.cif";
 
 		RemoteImportRequestType& request=downloader.add_request_and_start_download(RemoteImportRequestType(url_output.str(), import_many_operator));
 

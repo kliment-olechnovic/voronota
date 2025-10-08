@@ -28,7 +28,7 @@ mkdir -p "./voronota_viewer_app"
 
 emcc --std=c++17 \
 -s "EXPORTED_FUNCTIONS=['_main','_malloc','_free','_voronota_viewer_enqueue_script','_voronota_viewer_execute_native_script','_voronota_viewer_get_last_script_output','_voronota_viewer_upload_file','_voronota_viewer_upload_session','_voronota_viewer_setup_js_bindings_to_all_api_functions']" \
--s "EXPORTED_RUNTIME_METHODS=['ccall']" \
+-s "EXPORTED_RUNTIME_METHODS=['ccall','HEAPU8']" \
   ../src/voronota_gl.cpp \
   ../src/dependencies/imgui/*.cpp \
   ../../expansion_gl/src/dependencies/imgui/addons/*.cpp \
