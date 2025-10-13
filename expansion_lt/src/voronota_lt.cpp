@@ -989,6 +989,46 @@ void run_mode_radical(
 				}
 			}
 		}
+//		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "sasmesh"))
+//		{
+//			if(result.cells_summaries.size()==spheres_input_result.spheres.size())
+//			{
+//				app_graphics_recorder.graphics_writer.add_color("sasmesh", "", app_params.graphics_color_wireframe);
+//				std::vector< std::vector<voronotalt::SimpleSphere> > all_cutting_spheres(spheres_input_result.spheres.size());
+//				for(std::size_t i=0;i<result.contacts_summaries.size();i++)
+//				{
+//					const voronotalt::RadicalTessellation::ContactDescriptorSummary& cds=result.contacts_summaries[i];
+//					if(cds.id_a<spheres_input_result.spheres.size() && cds.id_b<spheres_input_result.spheres.size())
+//					{
+//						if(result.cells_summaries[cds.id_a].sas_area>FLOATCONST(0.0))
+//						{
+//							all_cutting_spheres[cds.id_a].push_back(spheres_input_result.spheres[cds.id_b]);
+//						}
+//						if(result.cells_summaries[cds.id_b].sas_area>FLOATCONST(0.0))
+//						{
+//							all_cutting_spheres[cds.id_b].push_back(spheres_input_result.spheres[cds.id_a]);
+//						}
+//					}
+//				}
+//				const voronotalt::SubdividedIcosahedron sih(3);
+//				voronotalt::SubdividedIcosahedronCut sihcut;
+//				for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+//				{
+//					if(!all_cutting_spheres[i].empty())
+//					{
+//						sihcut.init(sih, spheres_input_result.spheres[i], all_cutting_spheres[i]);
+//						for(std::size_t j=0;j<sihcut.graphics_bundle.triples.size();j++)
+//						{
+//							std::vector<voronotalt::SimplePoint> tloop(3);
+//							tloop[0]=sihcut.graphics_bundle.vertices[sihcut.graphics_bundle.triples[j].ids[0]];
+//							tloop[1]=sihcut.graphics_bundle.vertices[sihcut.graphics_bundle.triples[j].ids[1]];
+//							tloop[2]=sihcut.graphics_bundle.vertices[sihcut.graphics_bundle.triples[j].ids[2]];
+//							app_graphics_recorder.graphics_writer.add_line_loop("sasmesh", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), tloop);
+//						}
+//					}
+//				}
+//			}
+//		}
 		if(periodic_box.enabled() && ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "lattice"))
 		{
 			voronotalt::SimplePoint origin;
