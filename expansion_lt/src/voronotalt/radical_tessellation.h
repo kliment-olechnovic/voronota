@@ -418,17 +418,17 @@ public:
 		UnsignedInt sas_subdivision_depth;
 
 		ParametersForGraphics() noexcept :
-				with_graphics(false), with_sas_graphics_if_possible(false), length_step(FLOATCONST(0.2)), sas_subdivision_depth(2)
+				with_graphics(false), with_sas_graphics_if_possible(false), length_step(FLOATCONST(0.2)), sas_subdivision_depth(3)
 		{
 		}
 
 		explicit ParametersForGraphics(const bool with_graphics) noexcept :
-				with_graphics(with_graphics), with_sas_graphics_if_possible(false), length_step(FLOATCONST(0.2)), sas_subdivision_depth(2)
+				with_graphics(with_graphics), with_sas_graphics_if_possible(false), length_step(FLOATCONST(0.2)), sas_subdivision_depth(3)
 		{
 		}
 
 		ParametersForGraphics(const bool with_graphics, const bool with_sas_graphics_if_possible) noexcept :
-				with_graphics(with_graphics), with_sas_graphics_if_possible(with_sas_graphics_if_possible), length_step(FLOATCONST(0.2)), sas_subdivision_depth(2)
+				with_graphics(with_graphics), with_sas_graphics_if_possible(with_sas_graphics_if_possible), length_step(FLOATCONST(0.2)), sas_subdivision_depth(3)
 		{
 		}
 

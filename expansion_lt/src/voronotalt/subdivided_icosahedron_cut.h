@@ -60,12 +60,12 @@ public:
 		graphics_bundle.vertices.resize(sih.vertices.size());
 		vertices_mask_.resize(sih.vertices.size(), 1);
 
-		const Float max_edge_length=sih.max_edge_length*sphere.r;
+		const Float max_edge_length=sih.max_edge_length*sphere.r*FLOATCONST(1.01);
 
 		for(std::size_t i=0;i<graphics_bundle.vertices.size();i++)
 		{
 			graphics_bundle.vertices[i]=sih.get_point_on_sphere(i, sphere);
-			for(std::size_t j=0;j<cutting_planes.size() && vertices_mask_[i]==1;j++)
+			for(std::size_t j=0;j<cutting_planes.size() && vertices_mask_[i]>0;j++)
 			{
 				const Float sd=signed_distance_from_point_to_plane(cutting_planes[j].point, cutting_planes[j].normal, graphics_bundle.vertices[i]);
 				if(sd<=FLOATCONST(0.0))
@@ -82,7 +82,7 @@ public:
 			{
 				graphics_bundle.triples.push_back(ot);
 			}
-			else if(vertices_mask_[ot.ids[0]]>0 || vertices_mask_[ot.ids[1]]>0 || vertices_mask_[ot.ids[2]]>0)
+			else if(vertices_mask_[ot.ids[0]]>0 && vertices_mask_[ot.ids[1]]>0 && vertices_mask_[ot.ids[2]]>0)
 			{
 				std::vector<SubdividedIcosahedron::Triple> ts1(1, ot);
 				std::vector<SubdividedIcosahedron::Triple> ts2;
