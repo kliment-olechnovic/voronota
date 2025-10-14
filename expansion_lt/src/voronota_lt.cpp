@@ -760,7 +760,7 @@ void run_mode_radical(
 
 		const bool with_tessellation_net=!(app_params.write_tessellation_edges_to_file.empty() && app_params.write_tessellation_vertices_to_file.empty());
 		const bool with_graphics=(app_graphics_recorder.graphics_writer.enabled() || app_mesh_recorder.mesh_writer.enabled());
-		const bool with_sas_graphics_if_possible=(app_graphics_recorder.graphics_writer.enabled() && summarize_cells && ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "sasmesh"));
+		const bool with_sas_graphics_if_possible=(app_graphics_recorder.graphics_writer.enabled() && summarize_cells && (ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "sas") || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "sasmesh")));
 
 		voronotalt::RadicalTessellation::construct_full_tessellation(
 				spheres_container,
@@ -990,6 +990,30 @@ void run_mode_radical(
 				if(ApplicationGraphicsRecorder::allow_ball_group(app_params.graphics_restrict_chains, spheres_input_result, i))
 				{
 					app_graphics_recorder.graphics_writer.add_sphere("xspheres", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), spheres_input_result.spheres[i], 0.0);
+				}
+			}
+		}
+		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "sas"))
+		{
+			if(!result_graphics.sas_graphics.empty())
+			{
+				app_graphics_recorder.graphics_writer.add_color("sas", "", app_params.graphics_color_xspheres);
+				for(std::size_t i=0;i<result_graphics.sas_graphics.size();i++)
+				{
+					const voronotalt::SubdividedIcosahedronCut::GraphicsBundle& gb=result_graphics.sas_graphics[i];
+					for(std::size_t j=0;j<gb.triples.size();j++)
+					{
+						const voronotalt::SubdividedIcosahedron::Triple& t=gb.triples[j];
+						std::vector<voronotalt::SimplePoint> tvertices(3);
+						std::vector<voronotalt::SimplePoint> tnormals(3);
+						tvertices[0]=gb.vertices[t.ids[0]];
+						tvertices[1]=gb.vertices[t.ids[1]];
+						tvertices[2]=gb.vertices[t.ids[2]];
+						tnormals[0]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[0], spheres_input_result.spheres[i].p));
+						tnormals[1]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[1], spheres_input_result.spheres[i].p));
+						tnormals[2]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[2], spheres_input_result.spheres[i].p));
+						app_graphics_recorder.graphics_writer.add_triangle_strip("sas", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), tvertices, tnormals);
+					}
 				}
 			}
 		}

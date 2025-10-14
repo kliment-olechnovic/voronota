@@ -44,6 +44,15 @@ public:
 		add_triangle_fan(category_name, group_name, outer_points, center, unit_point(sub_of_points(normal_direction_end, normal_direction_start)));
 	}
 
+	void add_triangle_strip(const std::string& category_name, const std::string& group_name, const std::vector<SimplePoint>& points, const std::vector<SimplePoint>& normals) noexcept
+	{
+		if(!enabled_)
+		{
+			return;
+		}
+		add_part(category_name, group_name, print_triangle_strip_for_pymol(points, normals, "", ", \n"));
+	}
+
 	void add_line_loop(const std::string& category_name, const std::string& group_name, const std::vector<SimplePoint>& outer_points) noexcept
 	{
 		if(!enabled_)
@@ -204,6 +213,22 @@ private:
 			}
 			output << ", \nNORMAL, " << normal.x << ", " << normal.y << ", " << normal.z;
 			output << ", VERTEX, " << outer_points[0].x << ", " << outer_points[0].y << ", " << outer_points[0].z;
+		}
+		output << ", \nEND" << postfix;
+		return output.str();
+	}
+
+	static std::string print_triangle_strip_for_pymol(const std::vector<SimplePoint>& points, const std::vector<SimplePoint>& normals, const std::string& prefix, const std::string& postfix) noexcept
+	{
+		std::ostringstream output;
+		output << prefix << "BEGIN, TRIANGLE_STRIP";
+		if(!points.empty())
+		{
+			for(std::size_t j=0;j<points.size() && j<normals.size();j++)
+			{
+				output << ", \nNORMAL, " << normals[j].x << ", " << normals[j].y << ", " << normals[j].z;
+				output << ", VERTEX, " << points[j].x << ", " << points[j].y << ", " << points[j].z;
+			}
 		}
 		output << ", \nEND" << postfix;
 		return output.str();
