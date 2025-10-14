@@ -69,7 +69,7 @@ public:
 		in_sync_with_backup_=false;
 
 		RadicalTessellation::ResultGraphics result_graphics;
-		RadicalTessellation::construct_full_tessellation(state_.spheres_container, std::vector<int>(), std::vector<int>(), false, false, true, FLOATCONST(0.0), RadicalTessellation::ParametersForAdjunctMaxCircleRadiusRestrictions(), buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
+		RadicalTessellation::construct_full_tessellation(state_.spheres_container, std::vector<int>(), std::vector<int>(), false, RadicalTessellation::ParametersForGraphics(false), true, FLOATCONST(0.0), RadicalTessellation::ParametersForAdjunctMaxCircleRadiusRestrictions(), buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
 
 		involvement_of_spheres_for_update_.clear();
 
@@ -119,7 +119,7 @@ public:
 		if(state_.ids_of_affected_input_spheres.empty())
 		{
 			RadicalTessellation::ResultGraphics result_graphics;
-			RadicalTessellation::construct_full_tessellation(state_.spheres_container, std::vector<int>(), std::vector<int>(), false, false, true, FLOATCONST(0.0), RadicalTessellation::ParametersForAdjunctMaxCircleRadiusRestrictions(), buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
+			RadicalTessellation::construct_full_tessellation(state_.spheres_container, std::vector<int>(), std::vector<int>(), false, RadicalTessellation::ParametersForGraphics(false), true, FLOATCONST(0.0), RadicalTessellation::ParametersForAdjunctMaxCircleRadiusRestrictions(), buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
 			init_result_from_tessellation_result();
 		}
 		else
@@ -576,7 +576,7 @@ private:
 
 		{
 			RadicalTessellation::ResultGraphics result_graphics;
-			RadicalTessellation::construct_full_tessellation(state_.spheres_container, involvement_of_spheres_for_update_, std::vector<int>(), false, false, false, FLOATCONST(0.0), RadicalTessellation::ParametersForAdjunctMaxCircleRadiusRestrictions(), buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
+			RadicalTessellation::construct_full_tessellation(state_.spheres_container, involvement_of_spheres_for_update_, std::vector<int>(), false, RadicalTessellation::ParametersForGraphics(false), false, FLOATCONST(0.0), RadicalTessellation::ParametersForAdjunctMaxCircleRadiusRestrictions(), buffered_temporary_storage_.tessellation_result, result_graphics, time_recorder);
 
 			{
 				const ConditionToRemoveContact condition_to_remove_contact(involvement_of_spheres_for_update_);

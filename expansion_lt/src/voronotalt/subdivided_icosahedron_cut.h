@@ -1,6 +1,8 @@
 #ifndef VORONOTALT_SUBDIVIDED_ICOSAHEDRON_CUT_H_
 #define VORONOTALT_SUBDIVIDED_ICOSAHEDRON_CUT_H_
 
+#include <algorithm>
+
 #include "subdivided_icosahedron.h"
 
 namespace voronotalt
@@ -19,15 +21,35 @@ public:
 	{
 		std::vector<SimplePoint> vertices;
 		std::vector<SubdividedIcosahedron::Triple> triples;
+
+		bool empty() const noexcept
+		{
+			return triples.empty();
+		}
+
+		bool collect_pairs(std::vector<SubdividedIcosahedron::Pair>& pairs) const noexcept
+		{
+			pairs.clear();
+			for(std::size_t i=0;i<triples.size();i++)
+			{
+				const SubdividedIcosahedron::Triple& t=triples[i];
+				pairs.push_back(SubdividedIcosahedron::Pair(t.ids[0], t.ids[1]));
+				pairs.push_back(SubdividedIcosahedron::Pair(t.ids[0], t.ids[2]));
+				pairs.push_back(SubdividedIcosahedron::Pair(t.ids[1], t.ids[2]));
+			}
+			std::sort(pairs.begin(), pairs.end());
+			pairs.erase(std::unique(pairs.begin(), pairs.end()), pairs.end());
+			return (!pairs.empty());
+		}
 	};
 
 	GraphicsBundle graphics_bundle;
 
-	SubdividedIcosahedronCut()
+	SubdividedIcosahedronCut() noexcept
 	{
 	}
 
-	void init(const SubdividedIcosahedron& sih, const SimpleSphere& sphere, const std::vector<CuttingPlane>& cutting_planes)
+	void init(const SubdividedIcosahedron& sih, const SimpleSphere& sphere, const std::vector<CuttingPlane>& cutting_planes) noexcept
 	{
 		graphics_bundle.vertices.clear();
 		graphics_bundle.triples.clear();
@@ -187,7 +209,7 @@ public:
 		filtered_vertices_.clear();
 	}
 
-	void init(const SubdividedIcosahedron& sih, const SimpleSphere& sphere, const std::vector<SimpleSphere>& cutting_spheres)
+	void init(const SubdividedIcosahedron& sih, const SimpleSphere& sphere, const std::vector<SimpleSphere>& cutting_spheres) noexcept
 	{
 		std::vector<CuttingPlane> cutting_planes;
 		cutting_planes.reserve(cutting_spheres.size());

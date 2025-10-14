@@ -69,6 +69,7 @@ public:
 	bool no_intra_residue;
 	bool calculate_adjacencies;
 	bool generate_graphics;
+	bool with_sas_graphics;
 	bool characterize_topology;
 	bool no_remove_triangulation_info;
 	int precutting_variant;
@@ -78,7 +79,7 @@ public:
 	std::vector<double> precutting_shifts;
 	std::string initial_selection_expression;
 
-	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), calculate_adjacencies(false), generate_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting_variant(-1), add_collapsed_adjuncts(false), no_intra_residue_adjunct_circle_restrictions(false)
+	ConstructContactsRadicallyFast() : probe(1.4), restrict_circle(0.0), thicken_graphics(0.0), no_intra_chain(false), no_intra_residue(false), calculate_adjacencies(false), generate_graphics(false), with_sas_graphics(false), characterize_topology(false), no_remove_triangulation_info(false), precutting_variant(-1), add_collapsed_adjuncts(false), no_intra_residue_adjunct_circle_restrictions(false)
 	{
 	}
 
@@ -91,6 +92,7 @@ public:
 		no_intra_residue=input.get_flag("no-intra-residue");
 		calculate_adjacencies=input.get_flag("calculate-adjacencies");
 		generate_graphics=input.get_flag("generate-graphics");
+		with_sas_graphics=input.get_flag("with-sas-graphics");
 		characterize_topology=input.get_flag("characterize-topology");
 		no_remove_triangulation_info=input.get_flag("no-remove-triangulation-info");
 		precutting_variant=input.get_value_or_default<int>("precutting-variant", -1);
@@ -110,6 +112,7 @@ public:
 		doc.set_option_decription(CDOD("no-intra-residue", CDOD::DATATYPE_BOOL, "flag to skip constructing intra-residue contacts"));
 		doc.set_option_decription(CDOD("calculate-adjacencies", CDOD::DATATYPE_BOOL, "flag to calculate contact-contact adjacency values"));
 		doc.set_option_decription(CDOD("generate-graphics", CDOD::DATATYPE_BOOL, "flag to generate graphics"));
+		doc.set_option_decription(CDOD("with-sas-graphics", CDOD::DATATYPE_BOOL, "flag to include SAS when generating graphics"));
 		doc.set_option_decription(CDOD("characterize-topology", CDOD::DATATYPE_BOOL, "flag to characterize topology of the merged contacts mesh surface"));
 		doc.set_option_decription(CDOD("no-remove-triangulation-info", CDOD::DATATYPE_BOOL, "flag to not remove triangulation info"));
 		doc.set_option_decription(CDOD("adjunct-circle-restrictions", CDOD::DATATYPE_FLOAT_ARRAY, "adjunct circle restriction radii", ""));
@@ -248,12 +251,14 @@ public:
 			voronotalt::SpheresContainer spheres_container;
 			spheres_container.init(spheres, mock_time_recorder);
 
+			const voronotalt::RadicalTessellation::ParametersForGraphics parameters_for_graphics((generate_graphics || characterize_topology), (generate_graphics && with_sas_graphics && summarize_cells), 0.2, 3);
+
 			voronotalt::RadicalTessellation::construct_full_tessellation(
 					spheres_container,
 					std::vector<int>(),
 					grouping_for_filtering,
 					calculate_adjacencies,
-					(generate_graphics || characterize_topology),
+					parameters_for_graphics,
 					summarize_cells,
 					restrict_circle,
 					parameters_for_adjunct_max_circle_radius_restrictions,
@@ -482,6 +487,28 @@ public:
 				contact.ids[1]=ccds.id;
 				contact.value.area=ccds.sas_area;
 				contact.value.dist=spheres[ccds.id].r+probe*2.0;
+				if(generate_graphics && i<radical_tessellation_result_graphics.sas_graphics.size())
+				{
+					const voronotalt::SubdividedIcosahedronCut::GraphicsBundle& gb=radical_tessellation_result_graphics.sas_graphics[i];
+					if(!gb.empty())
+					{
+						auxiliaries::OpenGLPrinter opengl_printer;
+						for(std::size_t j=0;j<gb.triples.size();j++)
+						{
+							const voronotalt::SubdividedIcosahedron::Triple& t=gb.triples[j];
+							std::vector<voronotalt::SimplePoint> tvertices(3);
+							std::vector<voronotalt::SimplePoint> tnormals(3);
+							tvertices[0]=gb.vertices[t.ids[0]];
+							tvertices[1]=gb.vertices[t.ids[1]];
+							tvertices[2]=gb.vertices[t.ids[2]];
+							tnormals[0]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[0], spheres[i].p));
+							tnormals[1]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[1], spheres[i].p));
+							tnormals[2]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[2], spheres[i].p));
+							opengl_printer.add_triangle_strip(tvertices, tnormals);
+						}
+						contact.value.graphics=opengl_printer.str();
+					}
+				}
 			}
 			data_manager.atom_adjuncts_mutable(ccds.id)["volume"]=ccds.sas_inside_volume;
 		}

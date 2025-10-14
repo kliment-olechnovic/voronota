@@ -5,6 +5,5 @@
 #include "radical_tessellation.h"
 #include "simplified_aw_tessellation.h"
 #include "updateable_radical_tessellation.h"
-#include "subdivided_icosahedron_cut.h"
 
 #endif /* VORONOTALT_VORONOTALT_H_ */

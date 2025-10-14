@@ -15,7 +15,7 @@ struct SubdividedIcosahedron
 	{
 		UnsignedInt ids[2];
 
-		Pair(const UnsignedInt a, const UnsignedInt b)
+		Pair(const UnsignedInt a, const UnsignedInt b) noexcept
 		{
 			ids[0]=a;
 			ids[1]=b;
@@ -25,7 +25,12 @@ struct SubdividedIcosahedron
 			}
 		}
 
-		bool operator<(const Pair& p) const
+		bool operator==(const Pair& p) const noexcept
+		{
+			return (ids[0]==p.ids[0] && ids[1]==p.ids[1]);
+		}
+
+		bool operator<(const Pair& p) const noexcept
 		{
 			return (ids[0]<p.ids[0] || (ids[0]==p.ids[0] && ids[1]<p.ids[1]));
 		}
@@ -35,7 +40,7 @@ struct SubdividedIcosahedron
 	{
 		UnsignedInt ids[3];
 
-		Triple(const UnsignedInt a, const UnsignedInt b, const UnsignedInt c)
+		Triple(const UnsignedInt a, const UnsignedInt b, const UnsignedInt c) noexcept
 		{
 			ids[0]=a;
 			ids[1]=b;
@@ -58,7 +63,7 @@ struct SubdividedIcosahedron
 	std::vector<SimplePoint> vertices;
 	std::vector<Triple> triples;
 
-	SubdividedIcosahedron(const UnsignedInt depth)
+	SubdividedIcosahedron(const UnsignedInt depth) noexcept
 	{
 		const double t=(1+sqrt(5.0))/2.0;
 
@@ -129,7 +134,7 @@ struct SubdividedIcosahedron
 		}
 	}
 
-	SimplePoint get_point_on_sphere(const UnsignedInt i, const SimpleSphere& sphere) const
+	SimplePoint get_point_on_sphere(const UnsignedInt i, const SimpleSphere& sphere) const noexcept
 	{
 		SimplePoint result;
 		if(i<vertices.size())

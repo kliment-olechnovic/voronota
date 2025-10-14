@@ -47,8 +47,8 @@ log_urt_upd10_total_contacts_area	211489
 log_urt_upd10_total_cells_sas_area	58651
 
 log_urt_diff_total_contacts_count	0
-log_urt_diff_total_contacts_area	0
+log_urt_diff_total_contacts_area	-2.91038e-11
 log_urt_diff_total_cells_count	0
-log_urt_diff_total_cells_sas_area	-1.45519e-11
-log_urt_diff_total_cells_sas_inside_volume	0
+log_urt_diff_total_cells_sas_area	0
+log_urt_diff_total_cells_sas_inside_volume	-2.91038e-11
 
