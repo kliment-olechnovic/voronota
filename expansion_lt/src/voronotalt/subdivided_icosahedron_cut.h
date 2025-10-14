@@ -60,14 +60,17 @@ public:
 		graphics_bundle.vertices.resize(sih.vertices.size());
 		vertices_mask_.resize(sih.vertices.size(), 1);
 
+		const Float max_edge_length=sih.max_edge_length*sphere.r;
+
 		for(std::size_t i=0;i<graphics_bundle.vertices.size();i++)
 		{
 			graphics_bundle.vertices[i]=sih.get_point_on_sphere(i, sphere);
 			for(std::size_t j=0;j<cutting_planes.size() && vertices_mask_[i]==1;j++)
 			{
-				if(halfspace_of_point(cutting_planes[j].point, cutting_planes[j].normal, graphics_bundle.vertices[i])!=1)
+				const Float sd=signed_distance_from_point_to_plane(cutting_planes[j].point, cutting_planes[j].normal, graphics_bundle.vertices[i]);
+				if(sd<=FLOATCONST(0.0))
 				{
-					vertices_mask_[i]=-1;
+					vertices_mask_[i]=((FLOATCONST(0.0)-sd)<max_edge_length) ? 2 : 0;
 				}
 			}
 		}
@@ -79,7 +82,7 @@ public:
 			{
 				graphics_bundle.triples.push_back(ot);
 			}
-			else if(vertices_mask_[ot.ids[0]]==1 || vertices_mask_[ot.ids[1]]==1 || vertices_mask_[ot.ids[2]]==1)
+			else if(vertices_mask_[ot.ids[0]]>0 || vertices_mask_[ot.ids[1]]>0 || vertices_mask_[ot.ids[2]]>0)
 			{
 				std::vector<SubdividedIcosahedron::Triple> ts1(1, ot);
 				std::vector<SubdividedIcosahedron::Triple> ts2;
@@ -141,30 +144,26 @@ public:
 							if(left1right2)
 							{
 								SimplePoint i01=intersection_of_plane_and_segment(cutting_planes[k].point, cutting_planes[k].normal, graphics_bundle.vertices[tids[0]], graphics_bundle.vertices[tids[1]]);
-								i01=sum_of_points(sphere.p, point_and_number_product(unit_point(sub_of_points(i01, sphere.p)), sphere.r));
+								project_point_on_sphere_and_cutting_plane(sphere, cutting_planes[k], i01);
 								SimplePoint i02=intersection_of_plane_and_segment(cutting_planes[k].point, cutting_planes[k].normal, graphics_bundle.vertices[tids[0]], graphics_bundle.vertices[tids[2]]);
-								i02=sum_of_points(sphere.p, point_and_number_product(unit_point(sub_of_points(i02, sphere.p)), sphere.r));
+								project_point_on_sphere_and_cutting_plane(sphere, cutting_planes[k], i02);
 								UnsignedInt nid01=graphics_bundle.vertices.size();
 								graphics_bundle.vertices.push_back(i01);
-								vertices_mask_.push_back(2);
 								UnsignedInt nid02=graphics_bundle.vertices.size();
 								graphics_bundle.vertices.push_back(i02);
-								vertices_mask_.push_back(2);
 								ts2.push_back(SubdividedIcosahedron::Triple(nid01, nid02, tids[1]));
 								ts2.push_back(SubdividedIcosahedron::Triple(nid02, tids[1], tids[2]));
 							}
 							else if(left2right1)
 							{
 								SimplePoint i02=intersection_of_plane_and_segment(cutting_planes[k].point, cutting_planes[k].normal, graphics_bundle.vertices[tids[0]], graphics_bundle.vertices[tids[2]]);
-								i02=sum_of_points(sphere.p, point_and_number_product(unit_point(sub_of_points(i02, sphere.p)), sphere.r));
+								project_point_on_sphere_and_cutting_plane(sphere, cutting_planes[k], i02);
 								SimplePoint i12=intersection_of_plane_and_segment(cutting_planes[k].point, cutting_planes[k].normal, graphics_bundle.vertices[tids[1]], graphics_bundle.vertices[tids[2]]);
-								i12=sum_of_points(sphere.p, point_and_number_product(unit_point(sub_of_points(i12, sphere.p)), sphere.r));
+								project_point_on_sphere_and_cutting_plane(sphere, cutting_planes[k], i12);
 								UnsignedInt nid02=graphics_bundle.vertices.size();
 								graphics_bundle.vertices.push_back(i02);
-								vertices_mask_.push_back(2);
 								UnsignedInt nid12=graphics_bundle.vertices.size();
 								graphics_bundle.vertices.push_back(i12);
-								vertices_mask_.push_back(2);
 								ts2.push_back(SubdividedIcosahedron::Triple(nid02, nid12, tids[2]));
 							}
 							else
@@ -227,6 +226,18 @@ public:
 	}
 
 private:
+	static inline void project_point_on_sphere_and_cutting_plane(const SimpleSphere& sphere, const CuttingPlane& cutting_plane, SimplePoint& p) noexcept
+	{
+		p=sum_of_points(sphere.p, point_and_number_product(unit_point(sub_of_points(p, sphere.p)), sphere.r));
+		Float d=signed_distance_from_point_to_plane(cutting_plane.point, cutting_plane.normal, p);
+		for(int i=0;i<10 && d>FLOATEPSILON;i++)
+		{
+			p=sub_of_points(p, point_and_number_product(cutting_plane.normal, d));
+			p=sum_of_points(sphere.p, point_and_number_product(unit_point(sub_of_points(p, sphere.p)), sphere.r));
+			d=signed_distance_from_point_to_plane(cutting_plane.point, cutting_plane.normal, p);
+		}
+	}
+
 	std::vector<int> vertices_mask_;
 	std::vector<UnsignedInt> vertices_renumbering_;
 	std::vector<SimplePoint> filtered_vertices_;

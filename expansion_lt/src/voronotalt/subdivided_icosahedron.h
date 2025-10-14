@@ -62,8 +62,9 @@ struct SubdividedIcosahedron
 
 	std::vector<SimplePoint> vertices;
 	std::vector<Triple> triples;
+	Float max_edge_length;
 
-	SubdividedIcosahedron(const UnsignedInt depth) noexcept
+	SubdividedIcosahedron(const UnsignedInt depth) noexcept : max_edge_length(FLOATCONST(0.0))
 	{
 		const double t=(1+sqrt(5.0))/2.0;
 
@@ -131,6 +132,14 @@ struct SubdividedIcosahedron
 				next_triples.push_back(Triple(middle_point_ids[0], middle_point_ids[1], middle_point_ids[2]));
 			}
 			triples.swap(next_triples);
+		}
+
+		for(std::size_t i=0;i<triples.size();i++)
+		{
+			const SubdividedIcosahedron::Triple& triple=triples[i];
+			max_edge_length=std::max(max_edge_length, distance_from_point_to_point(vertices[triple.ids[0]], vertices[triple.ids[1]]));
+			max_edge_length=std::max(max_edge_length, distance_from_point_to_point(vertices[triple.ids[0]], vertices[triple.ids[2]]));
+			max_edge_length=std::max(max_edge_length, distance_from_point_to_point(vertices[triple.ids[1]], vertices[triple.ids[2]]));
 		}
 	}
 
