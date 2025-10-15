@@ -1012,6 +1012,12 @@ void run_mode_radical(
 						tnormals[0]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[0], spheres_input_result.spheres[i].p));
 						tnormals[1]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[1], spheres_input_result.spheres[i].p));
 						tnormals[2]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[2], spheres_input_result.spheres[i].p));
+						const voronotalt::SimplePoint refnormal=voronotalt::unit_point(voronotalt::cross_product(voronotalt::sub_of_points(tvertices[1], tvertices[0]), voronotalt::sub_of_points(tvertices[2], tvertices[0])));
+						if(voronotalt::dot_product(refnormal, tnormals[0])<0.0)
+						{
+							std::swap(tvertices[1], tvertices[2]);
+							std::swap(tnormals[1], tnormals[2]);
+						}
 						app_graphics_recorder.graphics_writer.add_triangle_strip("sas", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), tvertices, tnormals);
 					}
 				}
@@ -1043,7 +1049,7 @@ void run_mode_radical(
 		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "vsticks"))
 		{
 			const voronotalt::Float scaling=0.3;
-			const voronotalt::Float narrowing=0.4;
+			const voronotalt::Float narrowing=0.3;
 			{
 				for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 				{
@@ -1072,29 +1078,60 @@ void run_mode_radical(
 							pair_graphics_a.outer_points[j]=voronotalt::sum_of_points(sphere_a.p, voronotalt::point_and_number_product(voronotalt::sub_of_points(pair_graphics_a.outer_points[j], sphere_a.p), scaling));
 							pair_graphics_b.outer_points[j]=voronotalt::sum_of_points(sphere_b.p, voronotalt::point_and_number_product(voronotalt::sub_of_points(pair_graphics_b.outer_points[j], sphere_b.p), scaling));
 						}
-						app_graphics_recorder.graphics_writer.add_triangle_fan("vstickheads", group_name, pair_graphics_a.outer_points, pair_graphics_a.barycenter, pair_graphics_a.plane_normal);
-						app_graphics_recorder.graphics_writer.add_triangle_fan("vstickheads", group_name, pair_graphics_b.outer_points, pair_graphics_b.barycenter, pair_graphics_b.plane_normal);
 
-						if(voronotalt::distance_from_point_to_point(sphere_a.p, sphere_b.p)<2.0)
+						if(voronotalt::distance_from_point_to_point(sphere_a.p, sphere_b.p)>2.0)
 						{
-							app_graphics_recorder.graphics_writer.add_color("vsticklinks", "", 0x999999);
+							app_graphics_recorder.graphics_writer.add_triangle_fan("vstickheads", group_name, pair_graphics_a.outer_points, pair_graphics_a.barycenter, pair_graphics_a.plane_normal);
+							app_graphics_recorder.graphics_writer.add_triangle_fan("vstickheads", group_name, pair_graphics_b.outer_points, pair_graphics_b.barycenter, pair_graphics_b.plane_normal);
+						}
+						else
+						{
+							app_graphics_recorder.graphics_writer.add_color("vsticklinks", "", 0x777777);
+
+							voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics pair_graphics_ma=pair_graphics;
+							voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics pair_graphics_mb=pair_graphics;
+							pair_graphics_ma.barycenter=voronotalt::sum_of_points(voronotalt::point_and_number_product(pair_graphics_a.barycenter, 0.8), voronotalt::point_and_number_product(pair_graphics_b.barycenter, 0.2));
+							pair_graphics_mb.barycenter=voronotalt::sum_of_points(voronotalt::point_and_number_product(pair_graphics_a.barycenter, 0.2), voronotalt::point_and_number_product(pair_graphics_b.barycenter, 0.8));
+							for(std::size_t j=0;j<pair_graphics.outer_points.size();j++)
+							{
+								pair_graphics_ma.outer_points[j]=voronotalt::sum_of_points(voronotalt::point_and_number_product(pair_graphics_a.outer_points[j], 0.9), voronotalt::point_and_number_product(pair_graphics_b.outer_points[j], 0.1));
+								pair_graphics_mb.outer_points[j]=voronotalt::sum_of_points(voronotalt::point_and_number_product(pair_graphics_a.outer_points[j], 0.1), voronotalt::point_and_number_product(pair_graphics_b.outer_points[j], 0.9));
+							}
 
 							for(std::size_t j=0;j<pair_graphics.outer_points.size();j++)
 							{
-								pair_graphics_a.outer_points[j]=voronotalt::sum_of_points(pair_graphics_a.barycenter, voronotalt::point_and_number_product(voronotalt::sub_of_points(pair_graphics_a.outer_points[j], pair_graphics_a.barycenter), narrowing));
-								pair_graphics_b.outer_points[j]=voronotalt::sum_of_points(pair_graphics_b.barycenter, voronotalt::point_and_number_product(voronotalt::sub_of_points(pair_graphics_b.outer_points[j], pair_graphics_b.barycenter), narrowing));
+								pair_graphics_ma.outer_points[j]=voronotalt::sum_of_points(pair_graphics_ma.barycenter, voronotalt::point_and_number_product(voronotalt::sub_of_points(pair_graphics_ma.outer_points[j], pair_graphics_a.barycenter), narrowing));
+								pair_graphics_mb.outer_points[j]=voronotalt::sum_of_points(pair_graphics_mb.barycenter, voronotalt::point_and_number_product(voronotalt::sub_of_points(pair_graphics_mb.outer_points[j], pair_graphics_b.barycenter), narrowing));
 							}
 
 							for(std::size_t j=0;j<pair_graphics.outer_points.size();j++)
 							{
 								std::size_t k=((j+1)<pair_graphics.outer_points.size() ? (j+1) : 0);
 								std::vector<voronotalt::SimplePoint> sidepoints(4);
-								sidepoints[0]=pair_graphics_a.outer_points[j];
-								sidepoints[1]=pair_graphics_a.outer_points[k];
-								sidepoints[2]=pair_graphics_b.outer_points[j];
-								sidepoints[3]=pair_graphics_b.outer_points[k];
-								const voronotalt::SimplePoint sidenormal=voronotalt::unit_point(voronotalt::cross_product(voronotalt::sub_of_points(sidepoints[1], sidepoints[0]), voronotalt::sub_of_points(sidepoints[3], sidepoints[0])));
-								app_graphics_recorder.graphics_writer.add_triangle_strip("vsticklinks", group_name, sidepoints, std::vector<voronotalt::SimplePoint>(sidepoints.size(), sidenormal));
+								{
+									sidepoints[0]=pair_graphics_a.outer_points[j];
+									sidepoints[1]=pair_graphics_a.outer_points[k];
+									sidepoints[2]=pair_graphics_ma.outer_points[j];
+									sidepoints[3]=pair_graphics_ma.outer_points[k];
+									const voronotalt::SimplePoint sidenormal=voronotalt::unit_point(voronotalt::cross_product(voronotalt::sub_of_points(sidepoints[1], sidepoints[0]), voronotalt::sub_of_points(sidepoints[3], sidepoints[0])));
+									app_graphics_recorder.graphics_writer.add_triangle_strip("vsticklinks", group_name, sidepoints, std::vector<voronotalt::SimplePoint>(sidepoints.size(), sidenormal));
+								}
+								{
+									sidepoints[0]=pair_graphics_ma.outer_points[j];
+									sidepoints[1]=pair_graphics_ma.outer_points[k];
+									sidepoints[2]=pair_graphics_mb.outer_points[j];
+									sidepoints[3]=pair_graphics_mb.outer_points[k];
+									const voronotalt::SimplePoint sidenormal=voronotalt::unit_point(voronotalt::cross_product(voronotalt::sub_of_points(sidepoints[1], sidepoints[0]), voronotalt::sub_of_points(sidepoints[3], sidepoints[0])));
+									app_graphics_recorder.graphics_writer.add_triangle_strip("vsticklinks", group_name, sidepoints, std::vector<voronotalt::SimplePoint>(sidepoints.size(), sidenormal));
+								}
+								{
+									sidepoints[0]=pair_graphics_mb.outer_points[j];
+									sidepoints[1]=pair_graphics_mb.outer_points[k];
+									sidepoints[2]=pair_graphics_b.outer_points[j];
+									sidepoints[3]=pair_graphics_b.outer_points[k];
+									const voronotalt::SimplePoint sidenormal=voronotalt::unit_point(voronotalt::cross_product(voronotalt::sub_of_points(sidepoints[1], sidepoints[0]), voronotalt::sub_of_points(sidepoints[3], sidepoints[0])));
+									app_graphics_recorder.graphics_writer.add_triangle_strip("vsticklinks", group_name, sidepoints, std::vector<voronotalt::SimplePoint>(sidepoints.size(), sidenormal));
+								}
 							}
 						}
 					}
@@ -1103,8 +1140,7 @@ void run_mode_radical(
 			{
 				if(!result_graphics.sas_graphics.empty())
 				{
-					app_graphics_recorder.graphics_writer.add_color("vstickysas", "", 0x00FFFF);
-					app_graphics_recorder.graphics_writer.add_color("vstickysasmesh", "", 0x00AAAA);
+					app_graphics_recorder.graphics_writer.add_color("vsticksas", "", 0x00FFFF);
 					for(std::size_t i=0;i<result_graphics.sas_graphics.size();i++)
 					{
 						const voronotalt::SubdividedIcosahedronCut::GraphicsBundle& gb=result_graphics.sas_graphics[i];
@@ -1118,8 +1154,13 @@ void run_mode_radical(
 								tvertices[k]=voronotalt::sum_of_points(spheres_input_result.spheres[i].p, voronotalt::point_and_number_product(voronotalt::sub_of_points(gb.vertices[t.ids[k]], spheres_input_result.spheres[i].p), scaling));
 								tnormals[k]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[k], spheres_input_result.spheres[i].p));
 							}
-							app_graphics_recorder.graphics_writer.add_triangle_strip("vstickysas", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), tvertices, tnormals);
-							app_graphics_recorder.graphics_writer.add_line_strip("vstickysasmesh", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), tvertices);
+							const voronotalt::SimplePoint refnormal=voronotalt::unit_point(voronotalt::cross_product(voronotalt::sub_of_points(tvertices[1], tvertices[0]), voronotalt::sub_of_points(tvertices[2], tvertices[0])));
+							if(voronotalt::dot_product(refnormal, tnormals[0])<0.0)
+							{
+								std::swap(tvertices[1], tvertices[2]);
+								std::swap(tnormals[1], tnormals[2]);
+							}
+							app_graphics_recorder.graphics_writer.add_triangle_strip("vsticksas", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), tvertices, tnormals);
 						}
 					}
 				}
