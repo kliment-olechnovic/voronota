@@ -760,7 +760,7 @@ void run_mode_radical(
 
 		const bool with_tessellation_net=!(app_params.write_tessellation_edges_to_file.empty() && app_params.write_tessellation_vertices_to_file.empty());
 		const bool with_graphics=(app_graphics_recorder.graphics_writer.enabled() || app_mesh_recorder.mesh_writer.enabled());
-		const bool with_sas_graphics_if_possible=(app_graphics_recorder.graphics_writer.enabled() && summarize_cells && (ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "sas") || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "sasmesh") || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "vorostickssas")));
+		const bool with_sas_graphics_if_possible=(app_graphics_recorder.graphics_writer.enabled() && summarize_cells && (ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "sas") || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "sasmesh") || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "vsticks")));
 
 		voronotalt::RadicalTessellation::construct_full_tessellation(
 				spheres_container,
@@ -1040,13 +1040,11 @@ void run_mode_radical(
 				}
 			}
 		}
-		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "vorosticks") || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "vorostickssas"))
+		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "vsticks"))
 		{
 			const voronotalt::Float scaling=0.3;
-			const voronotalt::Float narrowing=0.5;
-			if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "vorosticks"))
+			const voronotalt::Float narrowing=0.4;
 			{
-				app_graphics_recorder.graphics_writer.add_color("vorosticks", "", app_params.graphics_color_faces);
 				for(std::size_t i=0;i<result_graphics.contacts_graphics.size();i++)
 				{
 					const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=(i<result.contacts_summaries_with_redundancy_in_periodic_box.size() ? result.contacts_summaries_with_redundancy_in_periodic_box[i] : result.contacts_summaries[i]);
@@ -1055,7 +1053,11 @@ void run_mode_radical(
 						const std::string group_name=ApplicationGraphicsRecorder::name_contact_group("contacts", spheres_input_result, pair_summary.id_a, pair_summary.id_b);
 						if(app_params.graphics_color_faces==0)
 						{
-							app_graphics_recorder.graphics_writer.add_random_color("vorosticks", group_name);
+							app_graphics_recorder.graphics_writer.add_random_color("vstickheads", group_name);
+						}
+						else
+						{
+							app_graphics_recorder.graphics_writer.add_color("vstickheads", "", 0xFFFF00);
 						}
 						const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 
@@ -1070,11 +1072,13 @@ void run_mode_radical(
 							pair_graphics_a.outer_points[j]=voronotalt::sum_of_points(sphere_a.p, voronotalt::point_and_number_product(voronotalt::sub_of_points(pair_graphics_a.outer_points[j], sphere_a.p), scaling));
 							pair_graphics_b.outer_points[j]=voronotalt::sum_of_points(sphere_b.p, voronotalt::point_and_number_product(voronotalt::sub_of_points(pair_graphics_b.outer_points[j], sphere_b.p), scaling));
 						}
-						app_graphics_recorder.graphics_writer.add_triangle_fan("vorosticks", group_name, pair_graphics_a.outer_points, pair_graphics_a.barycenter, pair_graphics_a.plane_normal);
-						app_graphics_recorder.graphics_writer.add_triangle_fan("vorosticks", group_name, pair_graphics_b.outer_points, pair_graphics_b.barycenter, pair_graphics_b.plane_normal);
+						app_graphics_recorder.graphics_writer.add_triangle_fan("vstickheads", group_name, pair_graphics_a.outer_points, pair_graphics_a.barycenter, pair_graphics_a.plane_normal);
+						app_graphics_recorder.graphics_writer.add_triangle_fan("vstickheads", group_name, pair_graphics_b.outer_points, pair_graphics_b.barycenter, pair_graphics_b.plane_normal);
 
 						if(voronotalt::distance_from_point_to_point(sphere_a.p, sphere_b.p)<2.0)
 						{
+							app_graphics_recorder.graphics_writer.add_color("vsticklinks", "", 0x999999);
+
 							for(std::size_t j=0;j<pair_graphics.outer_points.size();j++)
 							{
 								pair_graphics_a.outer_points[j]=voronotalt::sum_of_points(pair_graphics_a.barycenter, voronotalt::point_and_number_product(voronotalt::sub_of_points(pair_graphics_a.outer_points[j], pair_graphics_a.barycenter), narrowing));
@@ -1090,17 +1094,17 @@ void run_mode_radical(
 								sidepoints[2]=pair_graphics_b.outer_points[j];
 								sidepoints[3]=pair_graphics_b.outer_points[k];
 								const voronotalt::SimplePoint sidenormal=voronotalt::unit_point(voronotalt::cross_product(voronotalt::sub_of_points(sidepoints[1], sidepoints[0]), voronotalt::sub_of_points(sidepoints[3], sidepoints[0])));
-								app_graphics_recorder.graphics_writer.add_triangle_strip("vorosticks", group_name, sidepoints, std::vector<voronotalt::SimplePoint>(sidepoints.size(), sidenormal));
+								app_graphics_recorder.graphics_writer.add_triangle_strip("vsticklinks", group_name, sidepoints, std::vector<voronotalt::SimplePoint>(sidepoints.size(), sidenormal));
 							}
 						}
 					}
 				}
 			}
-			if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "vorostickssas"))
 			{
 				if(!result_graphics.sas_graphics.empty())
 				{
-					app_graphics_recorder.graphics_writer.add_color("vorosticks_sas", "", app_params.graphics_color_xspheres);
+					app_graphics_recorder.graphics_writer.add_color("vstickysas", "", 0x00FFFF);
+					app_graphics_recorder.graphics_writer.add_color("vstickysasmesh", "", 0x00AAAA);
 					for(std::size_t i=0;i<result_graphics.sas_graphics.size();i++)
 					{
 						const voronotalt::SubdividedIcosahedronCut::GraphicsBundle& gb=result_graphics.sas_graphics[i];
@@ -1114,7 +1118,8 @@ void run_mode_radical(
 								tvertices[k]=voronotalt::sum_of_points(spheres_input_result.spheres[i].p, voronotalt::point_and_number_product(voronotalt::sub_of_points(gb.vertices[t.ids[k]], spheres_input_result.spheres[i].p), scaling));
 								tnormals[k]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[k], spheres_input_result.spheres[i].p));
 							}
-							app_graphics_recorder.graphics_writer.add_triangle_strip("vorosticks_sas", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), tvertices, tnormals);
+							app_graphics_recorder.graphics_writer.add_triangle_strip("vstickysas", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), tvertices, tnormals);
+							app_graphics_recorder.graphics_writer.add_line_strip("vstickysasmesh", ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i), tvertices);
 						}
 					}
 				}
