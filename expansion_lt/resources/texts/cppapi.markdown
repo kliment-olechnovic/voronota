@@ -110,11 +110,13 @@ Below is a detailed example for both basic and periodic box modes:
         cells.resize(balls.size());
         for(std::size_t i=0;i<result.cells_summaries.size();i++)
         {
-            const std::size_t index=static_cast<std::size_t>(result.cells_summaries[i].id);
-            cells[index].index=static_cast<int>(result.cells_summaries[i].id);
-            cells[index].sas_area=result.cells_summaries[i].sas_area;
-            cells[index].volume=result.cells_summaries[i].sas_inside_volume;
-            cells[index].included=true;
+            cells[i].index=static_cast<int>(i);
+            if(result.cells_summaries[i].stage>0)
+            {
+                cells[i].sas_area=result.cells_summaries[i].sas_area;
+                cells[i].volume=result.cells_summaries[i].sas_inside_volume;
+                cells[i].included=true;
+            }
         }
 
         return true;

@@ -35,7 +35,7 @@ void print_tessellation_result_contacts_and_cells(const voronotalt::UpdateableRa
 	for(std::size_t i=0;i<result.cells_summaries.size();i++)
 	{
 		const voronotalt::RadicalTessellation::CellContactDescriptorsSummary& cell=result.cells_summaries[i];
-		std::cout << "cell " << cell.id << " " << cell.sas_area << " " << cell.sas_inside_volume << "\n";
+		std::cout << "cell " << i << " " << cell.sas_area << " " << cell.sas_inside_volume << "\n";
 	}
 	std::cout << "\n";
 }
