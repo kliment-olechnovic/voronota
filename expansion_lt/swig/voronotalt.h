@@ -96,10 +96,13 @@ public:
 		cells.resize(balls.size());
 		for(std::size_t i=0;i<result.cells_summaries.size();i++)
 		{
-			const std::size_t index=static_cast<std::size_t>(result.cells_summaries[i].id);
-			cells[index].sas_area=result.cells_summaries[i].sas_area;
-			cells[index].volume=result.cells_summaries[i].sas_inside_volume;
-			cells[index].included=true;
+			if(result.cells_summaries[i].stage>0)
+			{
+				const std::size_t index=static_cast<std::size_t>(result.cells_summaries[i].id);
+				cells[index].sas_area=result.cells_summaries[i].sas_area;
+				cells[index].volume=result.cells_summaries[i].sas_inside_volume;
+				cells[index].included=true;
+			}
 		}
 
 		return static_cast<int>(contacts.size());
