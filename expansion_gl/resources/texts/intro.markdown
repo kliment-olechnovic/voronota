@@ -13,7 +13,7 @@ Voronota-GL can be built to run as a standalone application, or as a WebAssembly
 Voronota-GL relies on several externally developed software projects (big thanks to their authors):
 
 * ImGui - [https://github.com/ocornut/imgui](https://github.com/ocornut/imgui)
-* ImGuiColorTextEdit - [https://github.com/BalazsJako/ImGuiColorTextEdit](https://github.com/BalazsJako/ImGuiColorTextEdit)
+* ImGuiColorTextEdit - [https://github.com/santaclose/ImGuiColorTextEdit](https://github.com/santaclose/ImGuiColorTextEdit)
 * ImGuiFileDialog - [https://github.com/aiekick/ImGuiFileDialog](https://github.com/aiekick/ImGuiFileDialog)
 * GLFW - [https://www.glfw.org/](https://www.glfw.org/)
 * GLM - [https://github.com/g-truc/glm](https://github.com/g-truc/glm)
