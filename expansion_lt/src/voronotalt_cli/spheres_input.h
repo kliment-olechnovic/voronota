@@ -8,6 +8,7 @@
 #include "../voronotalt/basic_types_and_functions.h"
 #include "../voronotalt/time_recorder.h"
 
+#include "sphere_labeling.h"
 #include "io_utilities.h"
 #include "molecular_file_reading.h"
 #include "molecular_radii_assignment.h"
@@ -18,17 +19,10 @@ namespace voronotalt
 class SpheresInput
 {
 public:
-	struct SphereLabel
-	{
-		std::string chain_id;
-		std::string residue_id;
-		std::string atom_name;
-	};
-
 	struct Result
 	{
 		std::vector<SimpleSphere> spheres;
-		std::vector<SphereLabel> sphere_labels;
+		std::vector<SphereLabeling::SphereLabel> sphere_labels;
 		std::vector<int> grouping_by_chain;
 		std::vector<int> grouping_by_residue;
 		int label_size;
@@ -166,7 +160,7 @@ public:
 						result.sphere_labels.resize(N);
 						for(std::size_t i=0;i<N;i++)
 						{
-							SphereLabel& sphere_label=result.sphere_labels[i];
+							SphereLabeling::SphereLabel& sphere_label=result.sphere_labels[i];
 							if(label_size==1)
 							{
 								sphere_label.chain_id=string_ids[i];
@@ -185,16 +179,8 @@ public:
 							else if(label_size==8)
 							{
 								sphere_label.chain_id=string_ids[i*label_size+2];
-								sphere_label.residue_id=string_ids[i*label_size+3];
+								SphereLabeling::form_residue_id_string(string_ids[i*label_size+3], string_ids[i*label_size+7], string_ids[i*label_size+4], sphere_label.residue_id);
 								sphere_label.atom_name=string_ids[i*label_size+5];
-								if(string_ids[i*label_size+7]!=".")
-								{
-									sphere_label.residue_id+=std::string("/")+string_ids[i*label_size+7];
-								}
-								if(string_ids[i*label_size+4]!=".")
-								{
-									sphere_label.residue_id+=std::string("|")+string_ids[i*label_size+4];
-								}
 							}
 							result.label_size=std::min(static_cast<int>(label_size), 3);
 						}
@@ -244,17 +230,9 @@ public:
 					sphere.r=MolecularRadiiAssignment::get_atom_radius(ar.resName, ar.name)+probe;
 				}
 				{
-					SphereLabel& sphere_label=result.sphere_labels[i];
+					SphereLabeling::SphereLabel& sphere_label=result.sphere_labels[i];
 					sphere_label.chain_id=(ar.chainID.empty() ? default_chain_id : ar.chainID);
-					sphere_label.residue_id=std::to_string(ar.resSeq);
-					if(!ar.iCode.empty())
-					{
-						sphere_label.residue_id+=std::string("/")+ar.iCode;
-					}
-					if(!ar.resName.empty())
-					{
-						sphere_label.residue_id+=std::string("|")+ar.resName;
-					}
+					SphereLabeling::form_residue_id_string(ar.resSeq, ar.iCode, ar.resName, sphere_label.residue_id);
 					sphere_label.atom_name=(ar.name.empty() ? default_atom_name : ar.name);
 				}
 			}
@@ -283,7 +261,7 @@ public:
 	}
 
 private:
-	static int assign_groups_to_sphere_labels_by_chain(const std::vector<SphereLabel>& sphere_labels, std::vector<int>& groups) noexcept
+	static int assign_groups_to_sphere_labels_by_chain(const std::vector<SphereLabeling::SphereLabel>& sphere_labels, std::vector<int>& groups) noexcept
 	{
 		groups.clear();
 		groups.resize(sphere_labels.size(), 0);
@@ -291,7 +269,7 @@ private:
 		std::map<std::string, int> map_of_chains_to_groups;
 		for(std::size_t i=0;i<sphere_labels.size();i++)
 		{
-			const SphereLabel& sl=sphere_labels[i];
+			const SphereLabeling::SphereLabel& sl=sphere_labels[i];
 			std::map<std::string, int>::const_iterator it=map_of_chains_to_groups.find(sl.chain_id);
 			if(it==map_of_chains_to_groups.end())
 			{
@@ -312,7 +290,7 @@ private:
 		return static_cast<int>(map_of_chains_to_groups.size());
 	}
 
-	static int assign_groups_to_sphere_labels_by_residue(const std::vector<SphereLabel>& sphere_labels, std::vector<int>& groups) noexcept
+	static int assign_groups_to_sphere_labels_by_residue(const std::vector<SphereLabeling::SphereLabel>& sphere_labels, std::vector<int>& groups) noexcept
 	{
 		groups.clear();
 		groups.resize(sphere_labels.size(), 0);
@@ -320,7 +298,7 @@ private:
 		std::map< std::pair<std::string, std::string>, int> map_of_residues_to_groups;
 		for(std::size_t i=0;i<sphere_labels.size();i++)
 		{
-			const SphereLabel& sl=sphere_labels[i];
+			const SphereLabeling::SphereLabel& sl=sphere_labels[i];
 			const std::pair<std::string, std::string> chain_residue_id(sl.chain_id, sl.residue_id);
 			std::map< std::pair<std::string, std::string>, int>::const_iterator it=map_of_residues_to_groups.find(chain_residue_id);
 			if(it==map_of_residues_to_groups.end())
