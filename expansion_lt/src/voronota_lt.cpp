@@ -43,6 +43,7 @@ Options:
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
     --input | -i                                     string     input file path to use instead of standard input, or '_stdin' to still use standard input
+    --slice-input                                    string     selection expression to slice input
     --periodic-box-directions                        numbers    coordinates of three vectors (x1 y1 z1 x2 y2 z2 x3 y3 z3) to define and use a periodic box
     --periodic-box-corners                           numbers    coordinates of two corners (x1 y1 z1 x2 y2 z2) to define and use a periodic box
     --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
@@ -174,6 +175,7 @@ public:
 	bool exit_before_calculations;
 	bool read_successfuly;
 	std::string input_from_file;
+	std::string slice_input;
 	std::vector<voronotalt::SimplePoint> periodic_box_directions;
 	std::vector<voronotalt::SimplePoint> periodic_box_corners;
 	std::string write_input_balls_to_file;
@@ -268,6 +270,10 @@ public:
 				else if((opt.name=="input" || opt.name=="i")  && opt.args_strings.size()==1)
 				{
 					input_from_file=opt.args_strings.front();
+				}
+				else if(opt.name=="slice-input"  && opt.args_strings.size()==1)
+				{
+					slice_input=opt.args_strings.front();
 				}
 				else if(opt.name=="periodic-box-directions" && opt.args_doubles.size()==9)
 				{
@@ -1942,6 +1948,41 @@ int main(const int argc, const char** argv)
 			std::cerr << "Error: failed to read input without errors\n";
 			return 1;
 		}
+	}
+
+	if(!app_params.slice_input.empty())
+	{
+		if(spheres_input_result.sphere_labels.size()!=spheres_input_result.spheres.size())
+		{
+			std::cerr << "Input has no labels for filtering and slicing\n";
+			return 1;
+		}
+		voronotalt::FilteringBySphereLabels::ExpressionForSingle efs(app_params.slice_input);
+		if(!efs.valid())
+		{
+			std::cerr << "Invalid input slice filtering expression\n";
+			return 1;
+		}
+		if(!efs.allow_all())
+		{
+			voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=efs.filter_vector(spheres_input_result.sphere_labels);
+			if(!ver.expression_valid)
+			{
+				std::cerr << "Slice filtering expression application failed\n";
+				return 1;
+			}
+			if(!ver.expression_matched())
+			{
+				std::cerr << "No input satisfied slice filtering expression\n";
+				return 1;
+			}
+			if(!spheres_input_result.slice(ver.expression_matched_all, ver.expression_matched_ids))
+			{
+				std::cerr << "Failed to slice input\n";
+				return 1;
+			}
+		}
+		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("slice input using filtering expression");
 	}
 
 	if(!app_params.write_input_balls_to_file.empty())
