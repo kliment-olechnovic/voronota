@@ -194,6 +194,7 @@ public:
 	std::string write_tessellation_edges_to_file;
 	std::string write_tessellation_vertices_to_file;
 	std::string write_log_to_file;
+	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_fo_spheres_input;
 	std::ostringstream error_log_for_options_parsing;
 
 	ApplicationParameters() noexcept :
@@ -563,6 +564,15 @@ public:
 			if(!periodic_box_directions.empty() || !periodic_box_corners.empty())
 			{
 				graphics_restrict_representations.insert("lattice");
+			}
+		}
+
+		if(!slice_input.empty())
+		{
+			filtering_expression_fo_spheres_input=voronotalt::FilteringBySphereLabels::ExpressionForSingle(slice_input);
+			if(!filtering_expression_fo_spheres_input.valid())
+			{
+				error_log_for_options_parsing << "Error: invalid input slice filtering expression.\n";
 			}
 		}
 
@@ -1900,11 +1910,11 @@ int main(const int argc, const char** argv)
 
 	ApplicationLogRecorders app_log_recorders(app_params);
 
+	app_log_recorders.time_recoder_for_input.reset();
+
 	voronotalt::SpheresInput::Result spheres_input_result;
 
 	{
-		app_log_recorders.time_recoder_for_input.reset();
-
 		std::string input_data;
 
 		if(app_params.input_from_file.empty() || app_params.input_from_file=="_stdin")
@@ -1950,37 +1960,28 @@ int main(const int argc, const char** argv)
 		}
 	}
 
-	if(!app_params.slice_input.empty())
+	if(!app_params.filtering_expression_fo_spheres_input.allow_all())
 	{
 		if(spheres_input_result.sphere_labels.size()!=spheres_input_result.spheres.size())
 		{
 			std::cerr << "Input has no labels for filtering and slicing\n";
 			return 1;
 		}
-		voronotalt::FilteringBySphereLabels::ExpressionForSingle efs(app_params.slice_input);
-		if(!efs.valid())
+		voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_fo_spheres_input.filter_vector(spheres_input_result.sphere_labels);
+		if(!ver.expression_valid)
 		{
-			std::cerr << "Invalid input slice filtering expression\n";
+			std::cerr << "Slice filtering expression application failed\n";
 			return 1;
 		}
-		if(!efs.allow_all())
+		if(!ver.expression_matched())
 		{
-			voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=efs.filter_vector(spheres_input_result.sphere_labels);
-			if(!ver.expression_valid)
-			{
-				std::cerr << "Slice filtering expression application failed\n";
-				return 1;
-			}
-			if(!ver.expression_matched())
-			{
-				std::cerr << "No input satisfied slice filtering expression\n";
-				return 1;
-			}
-			if(!spheres_input_result.slice(ver.expression_matched_all, ver.expression_matched_ids))
-			{
-				std::cerr << "Failed to slice input\n";
-				return 1;
-			}
+			std::cerr << "No input satisfied slice filtering expression\n";
+			return 1;
+		}
+		if(!spheres_input_result.slice(ver.expression_matched_all, ver.expression_matched_ids))
+		{
+			std::cerr << "Failed to slice input\n";
+			return 1;
 		}
 		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("slice input using filtering expression");
 	}

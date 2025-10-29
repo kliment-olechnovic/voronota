@@ -825,6 +825,10 @@ public:
 	class ExpressionForSingle
 	{
 	public:
+		ExpressionForSingle() noexcept : allow_all_(true)
+		{
+		}
+
 		ExpressionForSingle(const std::string& expression_str) noexcept : allow_all_(expression_str.empty() || expression_str=="[]")
 		{
 			if(!allow_all_)
@@ -895,7 +899,11 @@ public:
 	class ExpressionForPair
 	{
 	public:
-		ExpressionForPair(const std::string& expression_str)  noexcept : allow_all_(expression_str.empty() || expression_str=="[]")
+		ExpressionForPair() noexcept : allow_all_(true)
+		{
+		}
+
+		ExpressionForPair(const std::string& expression_str) noexcept : allow_all_(expression_str.empty() || expression_str=="[]")
 		{
 			if(!allow_all_)
 			{
