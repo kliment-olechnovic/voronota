@@ -32,62 +32,6 @@ public:
 		Result() noexcept : label_size(0), number_of_chain_groups(0), number_of_residue_groups(0)
 		{
 		}
-
-		bool slice(const bool select_all, std::vector<std::size_t>& indices)
-		{
-			if(select_all)
-			{
-				return !spheres.empty();
-			}
-			if(indices.empty() || spheres.empty())
-			{
-				return false;
-			}
-			bool something_selected=false;
-			Result sub_result;
-			sub_result.spheres.reserve(indices.size());
-			if(!sphere_labels.empty())
-			{
-				sub_result.sphere_labels.reserve(indices.size());
-			}
-			if(!grouping_by_chain.empty())
-			{
-				sub_result.grouping_by_chain.reserve(indices.size());
-			}
-			if(!grouping_by_residue.empty())
-			{
-				sub_result.grouping_by_residue.reserve(indices.size());
-			}
-			for(std::size_t i=0;i<indices.size();i++)
-			{
-				const std::size_t id=indices[i];
-				if(id<spheres.size())
-				{
-					something_selected=true;
-					sub_result.spheres.push_back(spheres[id]);
-				}
-				if(id<sphere_labels.size())
-				{
-					sub_result.sphere_labels.push_back(sphere_labels[id]);
-				}
-				if(id<grouping_by_chain.size())
-				{
-					sub_result.grouping_by_chain.push_back(grouping_by_chain[id]);
-				}
-				if(id<grouping_by_residue.size())
-				{
-					sub_result.grouping_by_residue.push_back(grouping_by_residue[id]);
-				}
-			}
-			if(something_selected)
-			{
-				spheres.swap(sub_result.spheres);
-				sphere_labels.swap(sub_result.sphere_labels);
-				grouping_by_chain.swap(sub_result.grouping_by_chain);
-				grouping_by_residue.swap(sub_result.grouping_by_residue);
-			}
-			return something_selected;
-		}
 	};
 
 	struct InputDataFormat
@@ -314,6 +258,62 @@ public:
 		}
 
 		return true;
+	}
+
+	static bool slice_spheres_input_result(const bool select_all, const std::vector<std::size_t>& indices, Result& result)
+	{
+		if(select_all)
+		{
+			return !result.spheres.empty();
+		}
+		if(indices.empty() || result.spheres.empty())
+		{
+			return false;
+		}
+		bool something_selected=false;
+		Result sub_result;
+		sub_result.spheres.reserve(indices.size());
+		if(!result.sphere_labels.empty())
+		{
+			sub_result.sphere_labels.reserve(indices.size());
+		}
+		if(!result.grouping_by_chain.empty())
+		{
+			sub_result.grouping_by_chain.reserve(indices.size());
+		}
+		if(!result.grouping_by_residue.empty())
+		{
+			sub_result.grouping_by_residue.reserve(indices.size());
+		}
+		for(std::size_t i=0;i<indices.size();i++)
+		{
+			const std::size_t id=indices[i];
+			if(id<result.spheres.size())
+			{
+				something_selected=true;
+				sub_result.spheres.push_back(result.spheres[id]);
+			}
+			if(id<result.sphere_labels.size())
+			{
+				sub_result.sphere_labels.push_back(result.sphere_labels[id]);
+			}
+			if(id<result.grouping_by_chain.size())
+			{
+				sub_result.grouping_by_chain.push_back(result.grouping_by_chain[id]);
+			}
+			if(id<result.grouping_by_residue.size())
+			{
+				sub_result.grouping_by_residue.push_back(result.grouping_by_residue[id]);
+			}
+		}
+		if(something_selected)
+		{
+			result.spheres.swap(sub_result.spheres);
+			result.sphere_labels.swap(sub_result.sphere_labels);
+			result.grouping_by_chain.swap(sub_result.grouping_by_chain);
+			result.grouping_by_residue.swap(sub_result.grouping_by_residue);
+		}
+		return something_selected;
 	}
 
 private:

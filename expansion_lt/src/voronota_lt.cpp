@@ -1978,7 +1978,7 @@ int main(const int argc, const char** argv)
 			std::cerr << "No input satisfied slice filtering expression\n";
 			return 1;
 		}
-		if(!spheres_input_result.slice(ver.expression_matched_all, ver.expression_matched_ids))
+		if(!voronotalt::SpheresInput::slice_spheres_input_result(ver.expression_matched_all, ver.expression_matched_ids, spheres_input_result))
 		{
 			std::cerr << "Failed to slice input\n";
 			return 1;
