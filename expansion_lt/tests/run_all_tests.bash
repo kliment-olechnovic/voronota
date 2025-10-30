@@ -226,7 +226,7 @@ cat << 'EOF'
 1.0 0.0 0.0 1.0
 EOF
 } \
-| voronota-lt -probe 1.0 -graphics-output-file "./output/tricky_cases_graphics/draw_case_1.py" -graphics-title "case_1" -graphics-restrict-representations balls faces wireframe xspheres 2> /dev/null
+| voronota-lt -probe 1.0 -graphics-output-file "./output/tricky_cases_graphics/draw_case_1.py" -graphics-title "case_1" -graphics-restrict-representations balls faces wireframe sas sasmesh 2> /dev/null
 
 ########################################
 
@@ -238,7 +238,7 @@ cat << 'EOF'
 0 1 1 1
 EOF
 } \
-| voronota-lt -probe 2.0 -graphics-output-file "./output/tricky_cases_graphics/draw_case_2.py" -graphics-title "case_2" -graphics-restrict-representations balls faces wireframe xspheres 2> /dev/null
+| voronota-lt -probe 2.0 -graphics-output-file "./output/tricky_cases_graphics/draw_case_2.py" -graphics-title "case_2" -graphics-restrict-representations balls faces wireframe sas sasmesh 2> /dev/null
 
 ########################################
 
@@ -255,7 +255,7 @@ cat << 'EOF'
 EOF
 } \
 | voronota-lt -probe 2.0 -graphics-output-file "./output/tricky_cases_graphics/draw_case_3.py" \
-  -graphics-title "case_3" -graphics-restrict-representations balls faces wireframe xspheres 2> /dev/null
+  -graphics-title "case_3" -graphics-restrict-representations balls faces wireframe sas sasmesh 2> /dev/null
 
 ########################################
 
@@ -267,7 +267,7 @@ cat << 'EOF'
 EOF
 } \
 | voronota-lt -probe 0.5 -graphics-output-file "./output/tricky_cases_graphics/draw_case_4.py" \
-  -graphics-title "case_4" -graphics-restrict-representations balls faces wireframe xspheres 2> /dev/null
+  -graphics-title "case_4" -graphics-restrict-representations balls faces wireframe sas sasmesh 2> /dev/null
 
 ########################################
 
@@ -293,7 +293,7 @@ cat << 'EOF'
 EOF
 } \
 | voronota-lt -probe 1.0 -graphics-output-file "./output/tricky_cases_graphics/draw_case_5.py" \
-  -graphics-title "case_5" -graphics-restrict-representations balls faces wireframe xspheres 2> /dev/null
+  -graphics-title "case_5" -graphics-restrict-representations balls faces wireframe sas sasmesh 2> /dev/null
 
 ########################################
 
@@ -310,7 +310,7 @@ cat << 'EOF'
 EOF
 } \
 | voronota-lt -probe 0.75 -periodic-box-corners -1 -1 -1 2 2 2 -graphics-output-file "./output/tricky_cases_graphics/draw_case_6.py" \
-  -graphics-title "case_6" -graphics-restrict-representations balls faces wireframe xspheres lattice 2> /dev/null
+  -graphics-title "case_6" -graphics-restrict-representations balls faces wireframe sas sasmesh lattice 2> /dev/null
 
 ########################################
 
@@ -336,7 +336,7 @@ cat << 'EOF'
 EOF
 } \
 | voronota-lt -probe 1.0 -periodic-box-corners -1.6 -1.6 -0.6 1.6 1.6 3.1 -graphics-output-file "./output/tricky_cases_graphics/draw_case_7.py" \
-  -graphics-title "case_7" -graphics-restrict-representations balls faces wireframe xspheres lattice 2> /dev/null
+  -graphics-title "case_7" -graphics-restrict-representations balls faces wireframe sas sasmesh lattice 2> /dev/null
 
 ########################################
 
