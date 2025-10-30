@@ -121,10 +121,19 @@ public:
 	{
 		SpheresContainer spheres_container;
 		spheres_container.init(spheres, time_recorder);
-
 		SpheresContainer::ResultOfPreparationForTessellation preparation_result;
 		spheres_container.prepare_for_tessellation(grouping_of_spheres, preparation_result, time_recorder);
+		construct_full_tessellation(spheres_container, preparation_result, with_graphics, result, result_graphics, time_recorder);
+	}
 
+	static void construct_full_tessellation(
+			const SpheresContainer& spheres_container,
+			const SpheresContainer::ResultOfPreparationForTessellation& preparation_result,
+			const bool with_graphics,
+			Result& result,
+			ResultGraphics& result_graphics,
+			TimeRecorder& time_recorder) noexcept
+	{
 		time_recorder.reset();
 
 		result=Result();

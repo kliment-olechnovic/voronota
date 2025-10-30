@@ -786,16 +786,15 @@ void run_mode_radical(
 
 	const voronotalt::PeriodicBox periodic_box=voronotalt::PeriodicBox::create_periodic_box_from_shift_directions_or_from_corners(app_params.periodic_box_directions, app_params.periodic_box_corners);
 
-	voronotalt::SpheresContainer spheres_container;
-
-	spheres_container.init(spheres_input_result.spheres, periodic_box, app_log_recorders.time_recoder_for_tessellation);
-
 	voronotalt::RadicalTessellation::Result result;
 	voronotalt::RadicalTessellation::ResultGraphics result_graphics;
 
 	{
 		const std::vector<int> null_grouping;
 		const std::vector<int>& grouping_for_filtering=(app_params.compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (app_params.compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
+
+		voronotalt::SpheresContainer spheres_container;
+		spheres_container.init(spheres_input_result.spheres, periodic_box, app_log_recorders.time_recoder_for_tessellation);
 
 		voronotalt::SpheresContainer::ResultOfPreparationForTessellation preparation_result;
 		spheres_container.prepare_for_tessellation(grouping_for_filtering, preparation_result, app_log_recorders.time_recoder_for_tessellation);
@@ -1335,7 +1334,27 @@ void run_mode_simplified_aw(
 		const std::vector<int> null_grouping;
 		const std::vector<int>& grouping_for_filtering=(app_params.compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (app_params.compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
 
-		voronotalt::SimplifiedAWTessellation::construct_full_tessellation(spheres_input_result.spheres, grouping_for_filtering, app_graphics_recorder.graphics_writer.enabled(), result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
+		voronotalt::SpheresContainer spheres_container;
+		spheres_container.init(spheres_input_result.spheres, app_log_recorders.time_recoder_for_tessellation);
+
+		voronotalt::SpheresContainer::ResultOfPreparationForTessellation preparation_result;
+		spheres_container.prepare_for_tessellation(grouping_for_filtering, preparation_result, app_log_recorders.time_recoder_for_tessellation);
+
+		if(!app_params.filtering_expression_for_relevant_collisions.allow_all())
+		{
+			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_relevant_collisions.filter_vector(spheres_input_result.sphere_labels, preparation_result.relevant_collision_ids);
+			if(ver.expression_matched())
+			{
+				preparation_result.slice_relevant_collision_ids(ver.expression_matched_all, ver.expression_matched_ids);
+			}
+			else
+			{
+				preparation_result=voronotalt::SpheresContainer::ResultOfPreparationForTessellation();
+			}
+			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("slice collisions using filtering expression");
+		}
+
+		voronotalt::SimplifiedAWTessellation::construct_full_tessellation(spheres_container, preparation_result, app_graphics_recorder.graphics_writer.enabled(), result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
 	}
 
 	voronotalt::SimplifiedAWTessellation::GroupedResult result_grouped_by_residue;
