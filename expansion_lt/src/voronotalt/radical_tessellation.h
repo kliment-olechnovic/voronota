@@ -1059,7 +1059,7 @@ public:
 				time_recorder.record_elapsed_miliseconds_and_reset("grouped contacts summaries");
 			}
 
-			if(!full_result.cells_summaries.empty() && full_result.cells_summaries.size()==grouping_of_spheres.size())
+			if(!full_result.cells_summaries.empty())
 			{
 				grouped_result.grouped_cells_representative_ids.reserve(full_result.cells_summaries.size()/5);
 				grouped_result.grouped_cells_summaries.reserve(full_result.cells_summaries.size()/5);
