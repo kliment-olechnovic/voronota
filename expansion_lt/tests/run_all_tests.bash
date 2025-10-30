@@ -167,6 +167,24 @@ voronota-lt \
 
 ####################################################################
 
+voronota-lt \
+  -i "./input/assembly_1ctf.cif" \
+  -probe 1.4 \
+  -slice-input-spheres '[-chain A -rname PHE]' \
+  -print-everything \
+2> "./output/contacts_1ctf_mmcif_assembly_sliced_input_summary.txt" \
+> "./output/contacts_1ctf_mmcif_assembly_sliced_input_tables.txt"
+
+voronota-lt \
+  -i "./input/assembly_1ctf.cif" \
+  -probe 1.4 \
+  -slice-candidate-contacts '[-a1 [-rname PHE] -a2 [-chain A]]' \
+  -print-everything \
+2> "./output/contacts_1ctf_mmcif_assembly_sliced_candidate_contacts_summary.txt" \
+> "./output/contacts_1ctf_mmcif_assembly_sliced_candidate_contacts_tables.txt"
+
+####################################################################
+
 mkdir -p "./output/api_usage_examples"
 
 g++ -O3 -I../src/voronotalt -o "./output/api_usage_examples/example_basic_and_periodic" "./input/api_usage_example_basic_and_periodic.cpp"
