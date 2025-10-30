@@ -36,6 +36,7 @@ Options:
     --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
+    --slice-contacts-output                          string     selection expression to slice output contacts
     --graphics-output-file                           string     output file path to write contacts drawing .py script to run in PyMol
     --graphics-*                                     various    other graphics output configuration options, can be listed with '--help-full' flag
     --mesh-output-obj-file                           string     output file path to write contacts surfaces mesh .obj file

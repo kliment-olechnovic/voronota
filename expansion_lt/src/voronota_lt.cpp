@@ -65,6 +65,7 @@ Options:
     --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
+    --slice-contacts-output                          string     selection expression to slice output contacts
     --graphics-output-file                           string     output file path to write contacts drawing .py script to run in PyMol)";
 
 	if(full)
@@ -194,7 +195,9 @@ public:
 	std::string write_tessellation_edges_to_file;
 	std::string write_tessellation_vertices_to_file;
 	std::string write_log_to_file;
-	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_fo_spheres_input;
+	std::string slice_contacts_output;
+	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_spheres_input;
+	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_contacts_output;
 	std::ostringstream error_log_for_options_parsing;
 
 	ApplicationParameters() noexcept :
@@ -394,6 +397,10 @@ public:
 				{
 					write_cells_chain_level_to_file=opt.args_strings.front();
 				}
+				else if(opt.name=="slice-contacts-output"  && opt.args_strings.size()==1)
+				{
+					slice_contacts_output=opt.args_strings.front();
+				}
 				else if(opt.name=="graphics-output-file" && opt.args_strings.size()==1)
 				{
 					graphics_output_file=opt.args_strings.front();
@@ -569,10 +576,19 @@ public:
 
 		if(!slice_input.empty())
 		{
-			filtering_expression_fo_spheres_input=voronotalt::FilteringBySphereLabels::ExpressionForSingle(slice_input);
-			if(!filtering_expression_fo_spheres_input.valid())
+			filtering_expression_for_spheres_input=voronotalt::FilteringBySphereLabels::ExpressionForSingle(slice_input);
+			if(!filtering_expression_for_spheres_input.valid())
 			{
 				error_log_for_options_parsing << "Error: invalid input slice filtering expression.\n";
+			}
+		}
+
+		if(!slice_contacts_output.empty())
+		{
+			filtering_expression_for_contacts_output=voronotalt::FilteringBySphereLabels::ExpressionForPair(slice_contacts_output);
+			if(!filtering_expression_for_contacts_output.valid())
+			{
+				error_log_for_options_parsing << "Error: invalid contacts output slice filtering expression.\n";
 			}
 		}
 
@@ -1960,14 +1976,14 @@ int main(const int argc, const char** argv)
 		}
 	}
 
-	if(!app_params.filtering_expression_fo_spheres_input.allow_all())
+	if(!app_params.filtering_expression_for_spheres_input.allow_all())
 	{
 		if(spheres_input_result.sphere_labels.size()!=spheres_input_result.spheres.size())
 		{
 			std::cerr << "Input has no labels for filtering and slicing\n";
 			return 1;
 		}
-		voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_fo_spheres_input.filter_vector(spheres_input_result.sphere_labels);
+		voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_spheres_input.filter_vector(spheres_input_result.sphere_labels);
 		if(!ver.expression_valid)
 		{
 			std::cerr << "Slice filtering expression application failed\n";
