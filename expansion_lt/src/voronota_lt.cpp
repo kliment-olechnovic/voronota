@@ -1976,6 +1976,11 @@ int main(const int argc, const char** argv)
 		}
 	}
 
+	if(!app_params.filtering_expression_for_spheres_input.allow_all() || !app_params.filtering_expression_for_contacts_output.allow_all())
+	{
+		voronotalt::SphereLabeling::parse_expanded_residue_ids_in_sphere_labels(spheres_input_result.sphere_labels);
+	}
+
 	if(!app_params.filtering_expression_for_spheres_input.allow_all())
 	{
 		if(spheres_input_result.sphere_labels.size()!=spheres_input_result.spheres.size())

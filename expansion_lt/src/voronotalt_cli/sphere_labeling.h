@@ -2,6 +2,7 @@
 #define VORONOTALT_CLI_SPHERE_LABELING_H_
 
 #include <string>
+#include <vector>
 
 namespace voronotalt
 {
@@ -9,16 +10,8 @@ namespace voronotalt
 class SphereLabeling
 {
 public:
-	struct SphereLabel
+	struct ExpandedResidueID
 	{
-		std::string chain_id;
-		std::string residue_id;
-		std::string atom_name;
-	};
-
-	class ExpandedResidueID
-	{
-	public:
 		bool parsed;
 		bool valid;
 		int rnum;
@@ -30,7 +23,15 @@ public:
 		}
 	};
 
-	static void form_residue_id_string(const std::string& rnum, const std::string& icode, const std::string& rname, std::string& residue_id)
+	struct SphereLabel
+	{
+		std::string chain_id;
+		std::string residue_id;
+		std::string atom_name;
+		ExpandedResidueID expanded_residue_id;
+	};
+
+	static void form_residue_id_string(const std::string& rnum, const std::string& icode, const std::string& rname, std::string& residue_id) noexcept
 	{
 		residue_id=rnum;
 		if(!icode.empty() && icode!=".")
@@ -43,7 +44,7 @@ public:
 		}
 	}
 
-	static void form_residue_id_string(const int rnum, const std::string& icode, const std::string& rname, std::string& residue_id)
+	static void form_residue_id_string(const int rnum, const std::string& icode, const std::string& rname, std::string& residue_id) noexcept
 	{
 		form_residue_id_string(std::to_string(rnum), icode, rname, residue_id);
 	}
@@ -85,6 +86,18 @@ public:
 			}
 		}
 		return erid;
+	}
+
+	static void parse_expanded_residue_ids_in_sphere_labels(std::vector<SphereLabel>& sls) noexcept
+	{
+		for(std::size_t i=0;i<sls.size();i++)
+		{
+			SphereLabel& sl=sls[i];
+			if(!sl.expanded_residue_id.parsed)
+			{
+				sl.expanded_residue_id=parse_expanded_residue_id(sl.residue_id);
+			}
+		}
 	}
 };
 

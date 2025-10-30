@@ -62,7 +62,7 @@ private:
 		std::set<std::string> aname_yes;
 		std::set<std::string> aname_no;
 
-		bool match(const SphereLabeling::SphereLabel& v, SphereLabeling::ExpandedResidueID& erid) const noexcept
+		bool match(const SphereLabeling::SphereLabel& v) const noexcept
 		{
 			if(!((chains_yes.empty() || chains_yes.count(v.chain_id)>0) && (chains_no.empty() || chains_no.count(v.chain_id)==0)))
 			{
@@ -78,35 +78,24 @@ private:
 			}
 			else if(!(rname_yes.empty() && rname_no.empty() && rnum_yes.empty() && rnum_no.empty()))
 			{
-				if(!erid.parsed)
-				{
-					erid=SphereLabeling::parse_expanded_residue_id(v.residue_id);
-				}
-
-				if(!erid.valid)
+				if(!v.expanded_residue_id.valid)
 				{
 					return false;
 				}
-				else if(!erid.rname.empty() && erid.rname!="." && !((rname_yes.empty() || rname_yes.count(erid.rname)>0) && (rname_no.empty() || rname_no.count(erid.rname)==0)))
+				else if(!v.expanded_residue_id.rname.empty() && v.expanded_residue_id.rname!="." && !((rname_yes.empty() || rname_yes.count(v.expanded_residue_id.rname)>0) && (rname_no.empty() || rname_no.count(v.expanded_residue_id.rname)==0)))
 				{
 					return false;
 				}
-				else if(!(rnum_yes.empty() || any_interval_matching(erid.rnum, rnum_yes)))
+				else if(!(rnum_yes.empty() || any_interval_matching(v.expanded_residue_id.rnum, rnum_yes)))
 				{
 					return false;
 				}
-				else if(!(rnum_no.empty() || !any_interval_matching(erid.rnum, rnum_no)))
+				else if(!(rnum_no.empty() || !any_interval_matching(v.expanded_residue_id.rnum, rnum_no)))
 				{
 					return false;
 				}
 			}
 			return true;
-		}
-
-		bool match(const SphereLabeling::SphereLabel& v) const noexcept
-		{
-			SphereLabeling::ExpandedResidueID erid;
-			return match(v, erid);
 		}
 
 	private:
@@ -155,10 +144,8 @@ private:
 
 		bool match(const PairOfSphereLabels& p) const noexcept
 		{
-			SphereLabeling::ExpandedResidueID erid_a;
-			SphereLabeling::ExpandedResidueID erid_b;
-			return ((filter1_yes.match(p.a(), erid_a) && !filter1_no.match(p.a(), erid_a) && filter2_yes.match(p.b(), erid_b) && !filter2_no.match(p.b(), erid_b))
-					|| (filter1_yes.match(p.b(), erid_b) && !filter1_no.match(p.b(), erid_b) && filter2_yes.match(p.a(), erid_a) && !filter2_no.match(p.a(), erid_a)));
+			return ((filter1_yes.match(p.a()) && !filter1_no.match(p.a()) && filter2_yes.match(p.b()) && !filter2_no.match(p.b()))
+					|| (filter1_yes.match(p.b()) && !filter1_no.match(p.b()) && filter2_yes.match(p.a()) && !filter2_no.match(p.a())));
 		}
 	};
 
