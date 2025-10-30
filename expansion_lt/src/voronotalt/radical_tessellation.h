@@ -514,6 +514,19 @@ public:
 
 	static void construct_full_tessellation(
 			const SpheresContainer& spheres_container,
+			const SpheresContainer::ResultOfPreparationForTessellation& preparation_result,
+			const bool with_tessellation_net,
+			const ParametersForGraphics& parameters_for_graphics,
+			const bool summarize_cells,
+			Result& result,
+			ResultGraphics& result_graphics,
+			TimeRecorder& time_recorder) noexcept
+	{
+		construct_full_tessellation(spheres_container, preparation_result, with_tessellation_net, parameters_for_graphics, summarize_cells, FLOATCONST(0.0), ParametersForAdjunctMaxCircleRadiusRestrictions(), ParametersForPreliminaryCuts(), result, result_graphics, time_recorder);
+	}
+
+	static void construct_full_tessellation(
+			const SpheresContainer& spheres_container,
 			const std::vector<int>& involvement_of_spheres,
 			const std::vector<int>& grouping_of_spheres,
 			const bool with_tessellation_net,
@@ -542,12 +555,27 @@ public:
 			ResultGraphics& result_graphics,
 			TimeRecorder& time_recorder) noexcept
 	{
+		SpheresContainer::ResultOfPreparationForTessellation preparation_result;
+		spheres_container.prepare_for_tessellation(involvement_of_spheres, grouping_of_spheres, preparation_result, time_recorder);
+		construct_full_tessellation(spheres_container, preparation_result, with_tessellation_net, parameters_for_graphics, summarize_cells, max_circle_radius_restriction, parameters_for_adjunct_max_circle_radius_restrictions, parameters_for_preliminary_cuts, result, result_graphics, time_recorder);
+	}
+
+	static void construct_full_tessellation(
+			const SpheresContainer& spheres_container,
+			const SpheresContainer::ResultOfPreparationForTessellation& preparation_result,
+			const bool with_tessellation_net,
+			const ParametersForGraphics& parameters_for_graphics,
+			const bool summarize_cells,
+			const Float max_circle_radius_restriction,
+			const ParametersForAdjunctMaxCircleRadiusRestrictions& parameters_for_adjunct_max_circle_radius_restrictions,
+			const ParametersForPreliminaryCuts& parameters_for_preliminary_cuts,
+			Result& result,
+			ResultGraphics& result_graphics,
+			TimeRecorder& time_recorder) noexcept
+	{
 		time_recorder.reset();
 
 		result.clear();
-
-		SpheresContainer::ResultOfPreparationForTessellation preparation_result;
-		spheres_container.prepare_for_tessellation(involvement_of_spheres, grouping_of_spheres, preparation_result, time_recorder);
 
 		result_graphics=ResultGraphics();
 
@@ -911,7 +939,7 @@ public:
 
 		time_recorder.record_elapsed_miliseconds_and_reset("accumulate total contacts summary");
 
-		if(summarize_cells && grouping_of_spheres.empty())
+		if(summarize_cells && !preparation_result.collision_ids_constrained)
 		{
 			const std::vector<ContactDescriptorSummary>& all_contacts_summaries=(result.contacts_summaries_with_redundancy_in_periodic_box.empty() ? result.contacts_summaries : result.contacts_summaries_with_redundancy_in_periodic_box);
 

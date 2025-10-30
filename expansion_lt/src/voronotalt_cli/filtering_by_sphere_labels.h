@@ -41,9 +41,9 @@ public:
 		{
 		}
 
-		bool expression_matched() const
+		bool expression_matched() const noexcept
 		{
-			return (expression_matched_all || !expression_matched_ids.empty());
+			return (expression_valid && (expression_matched_all || !expression_matched_ids.empty()));
 		}
 	};
 
@@ -61,6 +61,11 @@ private:
 		std::set<std::string> rname_no;
 		std::set<std::string> aname_yes;
 		std::set<std::string> aname_no;
+
+		bool empty() const noexcept
+		{
+			return (chains_yes.empty() && chains_no.empty() && rid_yes.empty() && rid_no.empty() && rnum_yes.empty()&& rnum_no.empty() && rname_yes.empty() && rname_no.empty() && aname_yes.empty() && aname_no.empty());
+		}
 
 		bool match(const SphereLabeling::SphereLabel& v) const noexcept
 		{
@@ -96,6 +101,11 @@ private:
 				}
 			}
 			return true;
+		}
+
+		bool not_empty_and_match(const SphereLabeling::SphereLabel& v) const noexcept
+		{
+			return (!empty() && match(v));
 		}
 
 	private:
@@ -144,8 +154,8 @@ private:
 
 		bool match(const PairOfSphereLabels& p) const noexcept
 		{
-			return ((filter1_yes.match(p.a()) && !filter1_no.match(p.a()) && filter2_yes.match(p.b()) && !filter2_no.match(p.b()))
-					|| (filter1_yes.match(p.b()) && !filter1_no.match(p.b()) && filter2_yes.match(p.a()) && !filter2_no.match(p.a())));
+			return ((filter1_yes.match(p.a()) && !filter1_no.not_empty_and_match(p.a()) && filter2_yes.match(p.b()) && !filter2_no.not_empty_and_match(p.b()))
+					|| (filter1_yes.match(p.b()) && !filter1_no.not_empty_and_match(p.b()) && filter2_yes.match(p.a()) && !filter2_no.not_empty_and_match(p.a())));
 		}
 	};
 
@@ -930,8 +940,8 @@ public:
 			{
 				for(std::size_t i=0;i<container.size() && ver.expression_valid;i++)
 				{
-					const std::size_t id_a=static_cast<std::size_t>(container[i].id_a);
-					const std::size_t id_b=static_cast<std::size_t>(container[i].id_b);
+					const std::size_t id_a=static_cast<std::size_t>(container[i].first);
+					const std::size_t id_b=static_cast<std::size_t>(container[i].second);
 					const ExpressionResult er=(id_a<labels.size() && id_b<labels.size()) ? filter(labels[id_a], labels[id_b]) : ExpressionResult();
 					if(er.expression_valid && er.expression_matched)
 					{

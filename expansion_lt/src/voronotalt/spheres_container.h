@@ -13,10 +13,41 @@ class SpheresContainer
 public:
 	struct ResultOfPreparationForTessellation
 	{
+		bool collision_ids_constrained;
 		std::vector< std::pair<UnsignedInt, UnsignedInt> > relevant_collision_ids;
 
-		ResultOfPreparationForTessellation() noexcept
+		ResultOfPreparationForTessellation() noexcept : collision_ids_constrained(false)
 		{
+		}
+
+		bool slice_relevant_collision_ids(const bool select_all, const std::vector<std::size_t>& indices) noexcept
+		{
+			if(select_all)
+			{
+				return !relevant_collision_ids.empty();
+			}
+			if(indices.empty() || relevant_collision_ids.empty())
+			{
+				return false;
+			}
+			bool something_selected=false;
+			std::vector< std::pair<UnsignedInt, UnsignedInt> > sub_relevant_collision_ids;
+			sub_relevant_collision_ids.reserve(indices.size());
+			for(std::size_t i=0;i<indices.size();i++)
+			{
+				const std::size_t id=indices[i];
+				if(id<relevant_collision_ids.size())
+				{
+					something_selected=true;
+					sub_relevant_collision_ids.push_back(relevant_collision_ids[id]);
+				}
+			}
+			if(something_selected)
+			{
+				relevant_collision_ids.swap(sub_relevant_collision_ids);
+				collision_ids_constrained=true;
+			}
+			return something_selected;
 		}
 	};
 
@@ -525,12 +556,15 @@ public:
 	{
 		time_recorder.reset();
 
+		result.collision_ids_constrained=false;
 		result.relevant_collision_ids.clear();
 
 		if(populated_spheres_.empty())
 		{
 			return false;
 		}
+
+		result.collision_ids_constrained=!grouping_of_spheres.empty();
 
 		result.relevant_collision_ids.reserve(total_collisions_);
 

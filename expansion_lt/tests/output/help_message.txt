@@ -14,12 +14,13 @@ Options:
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
     --input | -i                                     string     input file path to use instead of standard input, or '_stdin' to still use standard input
-    --slice-input                                    string     selection expression to slice input
     --periodic-box-directions                        numbers    coordinates of three vectors (x1 y1 z1 x2 y2 z2 x3 y3 z3) to define and use a periodic box
     --periodic-box-corners                           numbers    coordinates of two corners (x1 y1 z1 x2 y2 z2) to define and use a periodic box
     --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
+    --slice-input-spheres                            string     selection expression to slice input spheres
+    --slice-candidate-contacts                       string     selection expression to slice candidate contacts
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
     --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout
@@ -36,7 +37,6 @@ Options:
     --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
-    --slice-contacts-output                          string     selection expression to slice output contacts
     --graphics-output-file                           string     output file path to write contacts drawing .py script to run in PyMol
     --graphics-*                                     various    other graphics output configuration options, can be listed with '--help-full' flag
     --mesh-output-obj-file                           string     output file path to write contacts surfaces mesh .obj file

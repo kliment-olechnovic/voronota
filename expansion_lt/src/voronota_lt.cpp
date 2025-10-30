@@ -43,12 +43,13 @@ Options:
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
     --input | -i                                     string     input file path to use instead of standard input, or '_stdin' to still use standard input
-    --slice-input                                    string     selection expression to slice input
     --periodic-box-directions                        numbers    coordinates of three vectors (x1 y1 z1 x2 y2 z2 x3 y3 z3) to define and use a periodic box
     --periodic-box-corners                           numbers    coordinates of two corners (x1 y1 z1 x2 y2 z2) to define and use a periodic box
     --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
+    --slice-input-spheres                            string     selection expression to slice input spheres
+    --slice-candidate-contacts                       string     selection expression to slice candidate contacts
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
     --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout
@@ -65,7 +66,6 @@ Options:
     --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
-    --slice-contacts-output                          string     selection expression to slice output contacts
     --graphics-output-file                           string     output file path to write contacts drawing .py script to run in PyMol)";
 
 	if(full)
@@ -176,7 +176,6 @@ public:
 	bool exit_before_calculations;
 	bool read_successfuly;
 	std::string input_from_file;
-	std::string slice_input;
 	std::vector<voronotalt::SimplePoint> periodic_box_directions;
 	std::vector<voronotalt::SimplePoint> periodic_box_corners;
 	std::string write_input_balls_to_file;
@@ -195,9 +194,10 @@ public:
 	std::string write_tessellation_edges_to_file;
 	std::string write_tessellation_vertices_to_file;
 	std::string write_log_to_file;
-	std::string slice_contacts_output;
+	std::string slice_input_spheres;
+	std::string slice_candidate_contacts;
 	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_spheres_input;
-	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_contacts_output;
+	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_relevant_collisions;
 	std::ostringstream error_log_for_options_parsing;
 
 	ApplicationParameters() noexcept :
@@ -275,9 +275,13 @@ public:
 				{
 					input_from_file=opt.args_strings.front();
 				}
-				else if(opt.name=="slice-input"  && opt.args_strings.size()==1)
+				else if(opt.name=="slice-input-spheres"  && opt.args_strings.size()==1)
 				{
-					slice_input=opt.args_strings.front();
+					slice_input_spheres=opt.args_strings.front();
+				}
+				else if(opt.name=="slice-candidate-contacts"  && opt.args_strings.size()==1)
+				{
+					slice_candidate_contacts=opt.args_strings.front();
 				}
 				else if(opt.name=="periodic-box-directions" && opt.args_doubles.size()==9)
 				{
@@ -328,6 +332,14 @@ public:
 				else if(opt.name=="pdb-or-mmcif-join-models" && opt.is_flag())
 				{
 					pdb_or_mmcif_as_assembly=opt.is_flag_and_true();
+				}
+				else if(opt.name=="slice-input-spheres"  && opt.args_strings.size()==1)
+				{
+					slice_input_spheres=opt.args_strings.front();
+				}
+				else if(opt.name=="slice-candidate-contacts"  && opt.args_strings.size()==1)
+				{
+					slice_candidate_contacts=opt.args_strings.front();
 				}
 				else if(opt.name=="measure-running-time" && opt.is_flag())
 				{
@@ -396,10 +408,6 @@ public:
 				else if(opt.name=="write-cells-chain-level-to-file" && opt.args_strings.size()==1)
 				{
 					write_cells_chain_level_to_file=opt.args_strings.front();
-				}
-				else if(opt.name=="slice-contacts-output"  && opt.args_strings.size()==1)
-				{
-					slice_contacts_output=opt.args_strings.front();
 				}
 				else if(opt.name=="graphics-output-file" && opt.args_strings.size()==1)
 				{
@@ -574,19 +582,19 @@ public:
 			}
 		}
 
-		if(!slice_input.empty())
+		if(!slice_input_spheres.empty())
 		{
-			filtering_expression_for_spheres_input=voronotalt::FilteringBySphereLabels::ExpressionForSingle(slice_input);
+			filtering_expression_for_spheres_input=voronotalt::FilteringBySphereLabels::ExpressionForSingle(slice_input_spheres);
 			if(!filtering_expression_for_spheres_input.valid())
 			{
 				error_log_for_options_parsing << "Error: invalid input slice filtering expression.\n";
 			}
 		}
 
-		if(!slice_contacts_output.empty())
+		if(!slice_candidate_contacts.empty())
 		{
-			filtering_expression_for_contacts_output=voronotalt::FilteringBySphereLabels::ExpressionForPair(slice_contacts_output);
-			if(!filtering_expression_for_contacts_output.valid())
+			filtering_expression_for_relevant_collisions=voronotalt::FilteringBySphereLabels::ExpressionForPair(slice_candidate_contacts);
+			if(!filtering_expression_for_relevant_collisions.valid())
 			{
 				error_log_for_options_parsing << "Error: invalid contacts output slice filtering expression.\n";
 			}
@@ -788,7 +796,25 @@ void run_mode_radical(
 	{
 		const std::vector<int> null_grouping;
 		const std::vector<int>& grouping_for_filtering=(app_params.compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (app_params.compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
-		const bool summarize_cells=grouping_for_filtering.empty();
+
+		voronotalt::SpheresContainer::ResultOfPreparationForTessellation preparation_result;
+		spheres_container.prepare_for_tessellation(grouping_for_filtering, preparation_result, app_log_recorders.time_recoder_for_tessellation);
+
+		if(!app_params.filtering_expression_for_relevant_collisions.allow_all())
+		{
+			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_relevant_collisions.filter_vector(spheres_input_result.sphere_labels, preparation_result.relevant_collision_ids);
+			if(ver.expression_matched())
+			{
+				preparation_result.slice_relevant_collision_ids(ver.expression_matched_all, ver.expression_matched_ids);
+			}
+			else
+			{
+				preparation_result=voronotalt::SpheresContainer::ResultOfPreparationForTessellation();
+			}
+			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("slice collisions using filtering expression");
+		}
+
+		const bool summarize_cells=!preparation_result.collision_ids_constrained;
 
 		const bool with_tessellation_net=!(app_params.write_tessellation_edges_to_file.empty() && app_params.write_tessellation_vertices_to_file.empty());
 		const bool with_graphics=(app_graphics_recorder.graphics_writer.enabled() || app_mesh_recorder.mesh_writer.enabled());
@@ -796,7 +822,7 @@ void run_mode_radical(
 
 		voronotalt::RadicalTessellation::construct_full_tessellation(
 				spheres_container,
-				grouping_for_filtering,
+				preparation_result,
 				with_tessellation_net,
 				voronotalt::RadicalTessellation::ParametersForGraphics(with_graphics, with_sas_graphics_if_possible),
 				summarize_cells,
@@ -1976,18 +2002,19 @@ int main(const int argc, const char** argv)
 		}
 	}
 
-	if(!app_params.filtering_expression_for_spheres_input.allow_all() || !app_params.filtering_expression_for_contacts_output.allow_all())
-	{
-		voronotalt::SphereLabeling::parse_expanded_residue_ids_in_sphere_labels(spheres_input_result.sphere_labels);
-	}
-
-	if(!app_params.filtering_expression_for_spheres_input.allow_all())
+	if(!app_params.filtering_expression_for_spheres_input.allow_all() || !app_params.filtering_expression_for_relevant_collisions.allow_all())
 	{
 		if(spheres_input_result.sphere_labels.size()!=spheres_input_result.spheres.size())
 		{
 			std::cerr << "Input has no labels for filtering and slicing\n";
 			return 1;
 		}
+
+		voronotalt::SphereLabeling::parse_expanded_residue_ids_in_sphere_labels(spheres_input_result.sphere_labels);
+	}
+
+	if(!app_params.filtering_expression_for_spheres_input.allow_all())
+	{
 		voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_spheres_input.filter_vector(spheres_input_result.sphere_labels);
 		if(!ver.expression_valid)
 		{
@@ -1999,7 +2026,7 @@ int main(const int argc, const char** argv)
 			std::cerr << "No input satisfied slice filtering expression\n";
 			return 1;
 		}
-		if(!voronotalt::SpheresInput::slice_spheres_input_result(ver.expression_matched_all, ver.expression_matched_ids, spheres_input_result))
+		if(!spheres_input_result.slice_spheres_input_result(ver.expression_matched_all, ver.expression_matched_ids))
 		{
 			std::cerr << "Failed to slice input\n";
 			return 1;
