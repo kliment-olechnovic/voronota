@@ -1,12 +1,12 @@
 from pymol.cgo import *
 from pymol import cmd
-cgo_graphics_list_balls_atoms = [COLOR, 0, 1, 1,
-SPHERE, 0, 0, 0, 1,
-SPHERE, 0, 0, 0, 0.5,
-SPHERE, 1, 0, 0, 1,
+cgo_graphics_list_balls_atoms = [COLOR, 0, 1, 1, 
+SPHERE, 0, 0, 0, 1, 
+SPHERE, 0, 0, 0, 0.5, 
+SPHERE, 1, 0, 0, 1, 
 ]
 cmd.load_cgo(cgo_graphics_list_balls_atoms, 'case_4_balls_atoms')
-cgo_graphics_list_faces_contacts = [COLOR, 1, 1, 0,
+cgo_graphics_list_faces_contacts = [COLOR, 1, 1, 0, 
 BEGIN, TRIANGLE_FAN, 
 NORMAL, 1, 0, 0, VERTEX, 0.5, 0, 0, 
 NORMAL, 1, 0, 0, VERTEX, 0.5, 1.41421, 0, 
@@ -58,7 +58,7 @@ NORMAL, 1, 0, 0, VERTEX, 0.5, 1.41421, 0,
 END, 
 ]
 cmd.load_cgo(cgo_graphics_list_faces_contacts, 'case_4_faces_contacts')
-cgo_graphics_list_sas_atoms = [COLOR, 0, 1, 0,
+cgo_graphics_list_sas_atoms = [COLOR, 0, 1, 0, 
 BEGIN, TRIANGLE_STRIP, 
 NORMAL, 0.309017, 0.5, 0.809017, VERTEX, 0.463525, 0.75, 1.21353, 
 NORMAL, 0.334077, 0.458154, 0.823703, VERTEX, 0.501116, 0.687231, 1.23555, 
@@ -9441,7 +9441,7 @@ NORMAL, 0.0823236, -0.399607, -0.912982, VERTEX, 1.12349, -0.599411, -1.36947,
 END, 
 ]
 cmd.load_cgo(cgo_graphics_list_sas_atoms, 'case_4_sas_atoms')
-cgo_graphics_list_sasmesh_atoms = [COLOR, 0.501961, 0.501961, 0.501961,
+cgo_graphics_list_sasmesh_atoms = [COLOR, 0.501961, 0.501961, 0.501961, 
 BEGIN, LINE_STRIP, 
 VERTEX, -1.27598, 0.788597, 0, 
 VERTEX, -1.17576, 0.923463, -0.121629, 
@@ -21732,7 +21732,7 @@ VERTEX, 0.499228, -0.198096, -1.39999,
 END, 
 ]
 cmd.load_cgo(cgo_graphics_list_sasmesh_atoms, 'case_4_sasmesh_atoms')
-cgo_graphics_list_wireframe_contacts = [COLOR, 0.501961, 0.501961, 0.501961,
+cgo_graphics_list_wireframe_contacts = [COLOR, 0.501961, 0.501961, 0.501961, 
 BEGIN, LINE_LOOP, 
 VERTEX, 0.5, 1.41421, 0, 
 VERTEX, 0.5, 1.40009, 0.199334, 

@@ -1,17 +1,17 @@
 from pymol.cgo import *
 from pymol import cmd
-cgo_graphics_list_balls_atoms = [COLOR, 0, 1, 1,
-SPHERE, 0, 0, 0, 0.5,
-SPHERE, 0, 0, 1, 0.5,
-SPHERE, 0, 1, 0, 0.5,
-SPHERE, 0, 1, 1, 0.5,
-SPHERE, 1, 0, 0, 0.5,
-SPHERE, 1, 0, 1, 0.5,
-SPHERE, 1, 1, 0, 0.5,
-SPHERE, 1, 1, 1, 0.5,
+cgo_graphics_list_balls_atoms = [COLOR, 0, 1, 1, 
+SPHERE, 0, 0, 0, 0.5, 
+SPHERE, 0, 0, 1, 0.5, 
+SPHERE, 0, 1, 0, 0.5, 
+SPHERE, 0, 1, 1, 0.5, 
+SPHERE, 1, 0, 0, 0.5, 
+SPHERE, 1, 0, 1, 0.5, 
+SPHERE, 1, 1, 0, 0.5, 
+SPHERE, 1, 1, 1, 0.5, 
 ]
 cmd.load_cgo(cgo_graphics_list_balls_atoms, 'case_6_balls_atoms')
-cgo_graphics_list_faces_contacts = [COLOR, 1, 1, 0,
+cgo_graphics_list_faces_contacts = [COLOR, 1, 1, 0, 
 BEGIN, TRIANGLE_FAN, 
 NORMAL, 0, 0, 1, VERTEX, -0.472693, -0.516851, 0.5, 
 NORMAL, 0, 0, 1, VERTEX, 0.5, 0.5, 0.5, 
@@ -590,7 +590,7 @@ NORMAL, 1, 0, 0, VERTEX, 2, 0.5, 1.55902,
 END, 
 ]
 cmd.load_cgo(cgo_graphics_list_faces_contacts, 'case_6_faces_contacts')
-cgo_graphics_list_lattice_borders = [COLOR, 0, 1, 0,
+cgo_graphics_list_lattice_borders = [COLOR, 0, 1, 0, 
 BEGIN, LINE_STRIP, 
 VERTEX, -4, -1, -1, 
 VERTEX, 5, -1, -1, 
@@ -641,7 +641,7 @@ VERTEX, 2, 2, 5,
 END, 
 ]
 cmd.load_cgo(cgo_graphics_list_lattice_borders, 'case_6_lattice_borders')
-cgo_graphics_list_sas_atoms = [COLOR, 0, 1, 0,
+cgo_graphics_list_sas_atoms = [COLOR, 0, 1, 0, 
 BEGIN, TRIANGLE_STRIP, 
 NORMAL, -0.779204, 0.401156, -0.481575, VERTEX, -0.974006, 0.501445, -0.601969, 
 NORMAL, -0.800821, 0.337231, -0.494935, VERTEX, -1.00103, 0.421539, -0.618669, 
@@ -9684,7 +9684,7 @@ NORMAL, -0.401226, 0.557492, 0.726788, VERTEX, 0.498468, 1.69686, 1.90849,
 END, 
 ]
 cmd.load_cgo(cgo_graphics_list_sas_atoms, 'case_6_sas_atoms')
-cgo_graphics_list_sasmesh_atoms = [COLOR, 0.501961, 0.501961, 0.501961,
+cgo_graphics_list_sasmesh_atoms = [COLOR, 0.501961, 0.501961, 0.501961, 
 BEGIN, LINE_STRIP, 
 VERTEX, -0.867226, 0.200778, -0.877558, 
 VERTEX, -0.714065, 0.266279, -0.990812, 
@@ -25431,7 +25431,7 @@ VERTEX, 0.498995, 1.74408, 1.87054,
 END, 
 ]
 cmd.load_cgo(cgo_graphics_list_sasmesh_atoms, 'case_6_sasmesh_atoms')
-cgo_graphics_list_wireframe_contacts = [COLOR, 0.501961, 0.501961, 0.501961,
+cgo_graphics_list_wireframe_contacts = [COLOR, 0.501961, 0.501961, 0.501961, 
 BEGIN, LINE_LOOP, 
 VERTEX, 0.5, 0.5, 0.5, 
 VERTEX, -1, 0.5, 0.5, 
