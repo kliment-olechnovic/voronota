@@ -32,7 +32,7 @@ public:
 		{
 			return;
 		}
-		parts_.push_back(PrimitivePart(category_name, group_name, PrimitivePart::TriangleFan(outer_points, center, normal)));
+		parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::TriangleFan(outer_points, center, normal)));
 	}
 
 	void add_triangle_fan(const std::string& category_name, const std::string& group_name, const std::vector<SimplePoint>& outer_points, const SimplePoint& center, const SimplePoint& normal_direction_start, const SimplePoint& normal_direction_end) noexcept
@@ -50,7 +50,7 @@ public:
 		{
 			return;
 		}
-		parts_.push_back(PrimitivePart(category_name, group_name, PrimitivePart::TriangleStrip(points, normals)));
+		parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::TriangleStrip(points, normals)));
 	}
 
 	void add_line_loop(const std::string& category_name, const std::string& group_name, const std::vector<SimplePoint>& outer_points) noexcept
@@ -59,7 +59,7 @@ public:
 		{
 			return;
 		}
-		parts_.push_back(PrimitivePart(category_name, group_name, PrimitivePart::LineLoop(outer_points)));
+		parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::LineLoop(outer_points)));
 	}
 
 	void add_line_strip(const std::string& category_name, const std::string& group_name, const std::vector<SimplePoint>& points) noexcept
@@ -68,7 +68,7 @@ public:
 		{
 			return;
 		}
-		parts_.push_back(PrimitivePart(category_name, group_name, PrimitivePart::LineStrip(points)));
+		parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::LineStrip(points)));
 	}
 
 	void add_line(const std::string& category_name, const std::string& group_name, const SimplePoint& point_a, const SimplePoint& point_b) noexcept
@@ -89,7 +89,7 @@ public:
 		{
 			return;
 		}
-		parts_.push_back(PrimitivePart(category_name, group_name, PrimitivePart::BasicSphere(sphere, radius_change)));
+		parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::BasicSphere(sphere, radius_change)));
 	}
 
 	void add_color(const std::string& category_name, const std::string& group_name, const double r, const double g, const double b) noexcept
@@ -98,7 +98,7 @@ public:
 		{
 			return;
 		}
-		parts_.push_back(PrimitivePart(category_name, group_name, PrimitivePart::Color(r, g, b)));
+		parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::Color(r, g, b)));
 	}
 
 	void add_color(const std::string& category_name, const std::string& group_name, const unsigned int rgb) noexcept
@@ -130,7 +130,7 @@ public:
 		{
 			return;
 		}
-		parts_.push_back(PrimitivePart(category_name, group_name, PrimitivePart::Alpha(a)));
+		parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::Alpha(a)));
 	}
 
 	bool write_to_file(const std::string& title, const std::string& filename) const noexcept
@@ -145,19 +145,46 @@ public:
 			return false;
 		}
 
-		std::ofstream output(filename, std::ios::out);
+		const OutputFormat::ID output_format=detect_output_format_from_name(filename);
 
+		std::ofstream output(filename, std::ios::out);
 		if(!output.good())
 		{
 			return false;
 		}
 
-		PrinterForPymol printer;
+		if(output_format==OutputFormat::chimera_bild)
+		{
+			PrinterForChimeraBILD printer;
+			return printer.print(parts_, output);
+		}
 
-		return printer.print(title, parts_, output);
+		{
+			PrinterForPymolCGO printer;
+			return printer.print(title, parts_, output);
+		}
 	}
 
 private:
+	struct BundlingID
+	{
+		BundlingID() noexcept
+		{
+		}
+
+		BundlingID(const std::string& category_name, const std::string& group_name) noexcept : category_name(category_name), group_name(group_name)
+		{
+		}
+
+		bool operator<(const BundlingID& v) const
+		{
+			return ((category_name<v.category_name) || (category_name==v.category_name && group_name<v.group_name));
+		}
+
+		std::string category_name;
+		std::string group_name;
+	};
+
 	struct PrimitivePart
 	{
 		struct TriangleFan
@@ -271,40 +298,39 @@ private:
 		{
 		}
 
-		PrimitivePart(const std::string& category_name, const std::string& group_name) noexcept : category_name(category_name), group_name(group_name)
+		PrimitivePart(const BundlingID& bundling_id) noexcept : bundling_id(bundling_id)
 		{
 		}
 
-		PrimitivePart(const std::string& category_name, const std::string& group_name, const TriangleFan& obj) noexcept : category_name(category_name), group_name(group_name), obj_triangle_fan(obj)
+		PrimitivePart(const BundlingID& bundling_id, const TriangleFan& obj) noexcept : bundling_id(bundling_id), obj_triangle_fan(obj)
 		{
 		}
 
-		PrimitivePart(const std::string& category_name, const std::string& group_name, const TriangleStrip& obj) noexcept : category_name(category_name), group_name(group_name), obj_triangle_strip(obj)
+		PrimitivePart(const BundlingID& bundling_id, const TriangleStrip& obj) noexcept : bundling_id(bundling_id), obj_triangle_strip(obj)
 		{
 		}
 
-		PrimitivePart(const std::string& category_name, const std::string& group_name, const LineLoop& obj) noexcept : category_name(category_name), group_name(group_name), obj_line_loop(obj)
+		PrimitivePart(const BundlingID& bundling_id, const LineLoop& obj) noexcept : bundling_id(bundling_id), obj_line_loop(obj)
 		{
 		}
 
-		PrimitivePart(const std::string& category_name, const std::string& group_name, const LineStrip& obj) noexcept : category_name(category_name), group_name(group_name), obj_line_strip(obj)
+		PrimitivePart(const BundlingID& bundling_id, const LineStrip& obj) noexcept : bundling_id(bundling_id), obj_line_strip(obj)
 		{
 		}
 
-		PrimitivePart(const std::string& category_name, const std::string& group_name, const BasicSphere& obj) noexcept : category_name(category_name), group_name(group_name), obj_basic_sphere(obj)
+		PrimitivePart(const BundlingID& bundling_id, const BasicSphere& obj) noexcept : bundling_id(bundling_id), obj_basic_sphere(obj)
 		{
 		}
 
-		PrimitivePart(const std::string& category_name, const std::string& group_name, const Color& obj) noexcept : category_name(category_name), group_name(group_name), obj_color_(obj)
+		PrimitivePart(const BundlingID& bundling_id, const Color& obj) noexcept : bundling_id(bundling_id), obj_color_(obj)
 		{
 		}
 
-		PrimitivePart(const std::string& category_name, const std::string& group_name, const Alpha& obj) noexcept : category_name(category_name), group_name(group_name), obj_alpha_(obj)
+		PrimitivePart(const BundlingID& bundling_id, const Alpha& obj) noexcept : bundling_id(bundling_id), obj_alpha_(obj)
 		{
 		}
 
-		std::string category_name;
-		std::string group_name;
+		BundlingID bundling_id;
 		TriangleFan obj_triangle_fan;
 		TriangleStrip obj_triangle_strip;
 		LineLoop obj_line_loop;
@@ -314,10 +340,10 @@ private:
 		Alpha obj_alpha_;
 	};
 
-	class PrinterForPymol
+	class PrinterForPymolCGO
 	{
 	public:
-		PrinterForPymol() : prefix(""), postfix(", \n")
+		PrinterForPymolCGO() : prefix(""), postfix(", \n")
 		{
 		}
 
@@ -440,16 +466,16 @@ private:
 				return false;
 			}
 
-			std::set< std::pair<std::string, std::string> > category_group_pairs;
+			std::set<BundlingID> main_bundling_ids;
 			for(std::size_t i=0;i<parts.size();i++)
 			{
-				if(!parts[i].group_name.empty())
+				if(!parts[i].bundling_id.group_name.empty())
 				{
-					category_group_pairs.insert(std::pair<std::string, std::string>(parts[i].category_name, parts[i].group_name));
+					main_bundling_ids.insert(parts[i].bundling_id);
 				}
 			}
 
-			if(category_group_pairs.empty())
+			if(main_bundling_ids.empty())
 			{
 				return false;
 			}
@@ -457,22 +483,21 @@ private:
 			output << "from pymol.cgo import *\n";
 			output << "from pymol import cmd\n";
 
-			for(std::set< std::pair<std::string, std::string> >::const_iterator it=category_group_pairs.begin();it!=category_group_pairs.end();++it)
+			for(std::set<BundlingID>::const_iterator it=main_bundling_ids.begin();it!=main_bundling_ids.end();++it)
 			{
-				const std::string& current_category=it->first;
-				const std::string& current_group=it->second;
-				output << "cgo_graphics_list_" << current_category << "_" << current_group << " = [";
+				const BundlingID& current_bundling_id=(*it);
+				output << "cgo_graphics_list_" << current_bundling_id.category_name << "_" << current_bundling_id.group_name << " = [";
 				for(std::size_t i=0;i<parts.size();i++)
 				{
 					const PrimitivePart& part=parts[i];
-					if(part.category_name==current_category && (part.group_name.empty() || part.group_name==current_group))
+					if(part.bundling_id.category_name==current_bundling_id.category_name && (part.bundling_id.group_name.empty() || part.bundling_id.group_name==current_bundling_id.group_name))
 					{
 						print(part, output);
 					}
 				}
 				output << "]\n";
-				output << "cmd.load_cgo(cgo_graphics_list_" << current_category << "_" << current_group;
-				output << ", '" << (title.empty() ? std::string("cgo") : title) << "_" << current_category << "_" << current_group << "')\n";
+				output << "cmd.load_cgo(cgo_graphics_list_" << current_bundling_id.category_name << "_" << current_bundling_id.group_name;
+				output << ", '" << (title.empty() ? std::string("cgo") : title) << "_" << current_bundling_id.category_name << "_" << current_bundling_id.group_name << "')\n";
 			}
 
 			output << "cmd.set('two_sided_lighting', 1)\n";
@@ -484,6 +509,211 @@ private:
 		std::string prefix;
 		std::string postfix;
 	};
+
+	class PrinterForChimeraBILD
+	{
+	public:
+		PrinterForChimeraBILD() : sep(" "), bigsep("\n")
+		{
+		}
+
+		void print(const PrimitivePart::TriangleFan& obj, std::ostream& output) const noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			if(!obj.outer_points.empty())
+			{
+				for(std::size_t j=0;j<obj.outer_points.size();j++)
+				{
+					output << ".polygon";
+					output << sep << obj.center.x << sep << obj.center.y << sep << obj.center.z;
+					output << sep << obj.outer_points[j].x << sep << obj.outer_points[j].y << sep << obj.outer_points[j].z;
+					if((j+1)<obj.outer_points.size())
+					{
+						output << sep << obj.outer_points[j+1].x << sep << obj.outer_points[j+1].y << sep << obj.outer_points[j+1].z;
+					}
+					else
+					{
+						output << sep << obj.outer_points[0].x << sep << obj.outer_points[0].y << sep << obj.outer_points[0].z;
+					}
+					output << bigsep;
+				}
+			}
+		}
+
+		void print(const PrimitivePart::TriangleStrip& obj, std::ostream& output) const noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			if(!obj.points.empty())
+			{
+				for(std::size_t j=0;(j+2)<obj.points.size();j++)
+				{
+					output << ".polygon";
+					output << sep << obj.points[j].x << sep << obj.points[j].y << sep << obj.points[j].z;
+					output << sep << obj.points[j+1].x << sep << obj.points[j+1].y << sep << obj.points[j+1].z;
+					output << sep << obj.points[j+2].x << sep << obj.points[j+2].y << sep << obj.points[j+2].z;
+					output << bigsep;
+				}
+			}
+		}
+
+		void print(const PrimitivePart::LineLoop& obj, std::ostream& output) const noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			if(!obj.outer_points.empty())
+			{
+				for(std::size_t j=0;j<obj.outer_points.size();j++)
+				{
+					output << (j==0 ? ".move" : ".draw") << sep << obj.outer_points[j].x << sep << obj.outer_points[j].y << sep << obj.outer_points[j].z << bigsep;
+				}
+				output << ".draw" << sep << obj.outer_points[0].x << sep << obj.outer_points[0].y << sep << obj.outer_points[0].z << bigsep;
+			}
+		}
+
+		void print(const PrimitivePart::LineStrip& obj, std::ostream& output) const noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			if(!obj.points.empty())
+			{
+				for(std::size_t j=0;j<obj.points.size();j++)
+				{
+					output << (j==0 ? ".move" : ".draw") << sep << obj.points[j].x << sep << obj.points[j].y << sep << obj.points[j].z << bigsep;
+				}
+			}
+		}
+
+		void print(const PrimitivePart::BasicSphere& obj, std::ostream& output) const noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			output << ".sphere" << sep << obj.sphere.p.x << sep << obj.sphere.p.y << sep << obj.sphere.p.z << sep << obj.sphere.r << bigsep;
+		}
+
+		void print(const PrimitivePart::Color& obj, std::ostream& output) const noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			output << ".color" << sep << obj.r << sep << obj.g << sep << obj.b << bigsep;
+		}
+
+		void print(const PrimitivePart::Alpha& obj, std::ostream& output) const noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			output << ".transparency" << sep << (1.0-obj.a) << bigsep;
+		}
+
+		void print(const PrimitivePart& part, std::ostream& output) const noexcept
+		{
+			print(part.obj_color_, output);
+			print(part.obj_alpha_, output);
+			print(part.obj_triangle_fan, output);
+			print(part.obj_triangle_strip, output);
+			print(part.obj_line_loop, output);
+			print(part.obj_line_strip, output);
+			print(part.obj_basic_sphere, output);
+		}
+
+		bool print(const std::vector<PrimitivePart>& parts, std::ostream& output) const noexcept
+		{
+			if(!output.good())
+			{
+				return false;
+			}
+
+			std::set<BundlingID> main_bundling_ids;
+			for(std::size_t i=0;i<parts.size();i++)
+			{
+				if(!parts[i].bundling_id.group_name.empty())
+				{
+					main_bundling_ids.insert(parts[i].bundling_id);
+				}
+			}
+
+			if(main_bundling_ids.empty())
+			{
+				return false;
+			}
+
+			for(std::set<BundlingID>::const_iterator it=main_bundling_ids.begin();it!=main_bundling_ids.end();++it)
+			{
+				const BundlingID& current_bundling_id=(*it);
+				for(std::size_t i=0;i<parts.size();i++)
+				{
+					const PrimitivePart& part=parts[i];
+					if(part.bundling_id.category_name==current_bundling_id.category_name && (part.bundling_id.group_name.empty() || part.bundling_id.group_name==current_bundling_id.group_name))
+					{
+						print(part, output);
+					}
+				}
+			}
+
+			return true;
+		}
+
+		std::string sep;
+		std::string bigsep;
+	};
+
+	struct OutputFormat
+	{
+		enum ID
+		{
+			pymol_cgo,
+			chimera_bild,
+			undefined
+		};
+	};
+
+	static bool match_name_extension(const std::string& str, const std::string& ext) noexcept
+	{
+	    if(ext.size()>str.size())
+		{
+			return false;
+		}
+		std::string::const_iterator it_str=str.begin()+(str.size()-ext.size());
+		std::string::const_iterator it_ext=ext.begin();
+		while(it_ext!=ext.end())
+		{
+			if(std::tolower(static_cast<unsigned char>(*it_str))!=std::tolower(static_cast<unsigned char>(*it_ext)))
+			{
+				return false;
+			}
+			++it_ext;
+			++it_str;
+		}
+	    return true;
+	}
+
+	static OutputFormat::ID detect_output_format_from_name(const std::string& str) noexcept
+	{
+		if(match_name_extension(str, ".py"))
+		{
+			return OutputFormat::pymol_cgo;
+		}
+		else if(match_name_extension(str, ".bild") || match_name_extension(str, ".bld"))
+		{
+			return OutputFormat::chimera_bild;
+		}
+		return OutputFormat::undefined;
+	}
 
 	bool enabled_;
 	uint64_t color_randomization_state_;
