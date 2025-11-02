@@ -33,7 +33,7 @@ public:
 		{
 		}
 
-		bool slice_spheres_input_result(const bool select_all, const std::vector<std::size_t>& indices) noexcept
+		bool restrict_spheres(const bool select_all, const std::vector<std::size_t>& indices) noexcept
 		{
 			if(select_all)
 			{

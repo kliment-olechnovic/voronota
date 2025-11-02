@@ -20,7 +20,7 @@ public:
 		{
 		}
 
-		bool slice_relevant_collision_ids(const bool select_all, const std::vector<std::size_t>& indices) noexcept
+		bool restrict_relevant_collision_ids(const bool select_all, const std::vector<std::size_t>& indices) noexcept
 		{
 			if(select_all)
 			{

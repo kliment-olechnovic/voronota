@@ -170,7 +170,7 @@ voronota-lt \
 voronota-lt \
   -i "./input/assembly_1ctf.cif" \
   -probe 1.4 \
-  -slice-input-spheres '[-chain A -rname PHE]' \
+  -restrict-input-balls '[-chain A -rname PHE]' \
   -print-everything \
 2> "./output/contacts_1ctf_mmcif_assembly_sliced_input_summary.txt" \
 > "./output/contacts_1ctf_mmcif_assembly_sliced_input_tables.txt"
@@ -178,7 +178,7 @@ voronota-lt \
 voronota-lt \
   -i "./input/assembly_1ctf.cif" \
   -probe 1.4 \
-  -slice-candidate-contacts '[-a1 [-rname PHE] -a2 [-chain A]]' \
+  -restrict-contacts '[-a1 [-rname PHE] -a2 [-chain A]]' \
   -print-everything \
 2> "./output/contacts_1ctf_mmcif_assembly_sliced_candidate_contacts_summary.txt" \
 > "./output/contacts_1ctf_mmcif_assembly_sliced_candidate_contacts_tables.txt"

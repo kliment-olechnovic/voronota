@@ -48,8 +48,8 @@ Options:
     --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
-    --slice-input-spheres                            string     selection expression to slice input spheres
-    --slice-candidate-contacts                       string     selection expression to slice candidate contacts
+    --restrict-input-balls                           string     selection expression to restrict input balls
+    --restrict-contacts                              string     selection expression to restrict contacts to be constructed
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
     --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout
@@ -194,10 +194,10 @@ public:
 	std::string write_tessellation_edges_to_file;
 	std::string write_tessellation_vertices_to_file;
 	std::string write_log_to_file;
-	std::string slice_input_spheres;
-	std::string slice_candidate_contacts;
-	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_spheres_input;
-	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_relevant_collisions;
+	std::string restrict_input_balls;
+	std::string restrict_contacts;
+	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_input_balls;
+	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_collisions;
 	std::ostringstream error_log_for_options_parsing;
 
 	ApplicationParameters() noexcept :
@@ -275,13 +275,13 @@ public:
 				{
 					input_from_file=opt.args_strings.front();
 				}
-				else if(opt.name=="slice-input-spheres"  && opt.args_strings.size()==1)
+				else if(opt.name=="restrict-input-balls"  && opt.args_strings.size()==1)
 				{
-					slice_input_spheres=opt.args_strings.front();
+					restrict_input_balls=opt.args_strings.front();
 				}
-				else if(opt.name=="slice-candidate-contacts"  && opt.args_strings.size()==1)
+				else if(opt.name=="restricts-contacts"  && opt.args_strings.size()==1)
 				{
-					slice_candidate_contacts=opt.args_strings.front();
+					restrict_contacts=opt.args_strings.front();
 				}
 				else if(opt.name=="periodic-box-directions" && opt.args_doubles.size()==9)
 				{
@@ -333,13 +333,13 @@ public:
 				{
 					pdb_or_mmcif_as_assembly=opt.is_flag_and_true();
 				}
-				else if(opt.name=="slice-input-spheres"  && opt.args_strings.size()==1)
+				else if(opt.name=="restrict-input-balls"  && opt.args_strings.size()==1)
 				{
-					slice_input_spheres=opt.args_strings.front();
+					restrict_input_balls=opt.args_strings.front();
 				}
-				else if(opt.name=="slice-candidate-contacts"  && opt.args_strings.size()==1)
+				else if(opt.name=="restrict-contacts"  && opt.args_strings.size()==1)
 				{
-					slice_candidate_contacts=opt.args_strings.front();
+					restrict_contacts=opt.args_strings.front();
 				}
 				else if(opt.name=="measure-running-time" && opt.is_flag())
 				{
@@ -582,21 +582,21 @@ public:
 			}
 		}
 
-		if(!slice_input_spheres.empty())
+		if(!restrict_input_balls.empty())
 		{
-			filtering_expression_for_spheres_input=voronotalt::FilteringBySphereLabels::ExpressionForSingle(slice_input_spheres);
-			if(!filtering_expression_for_spheres_input.valid())
+			filtering_expression_for_restricting_input_balls=voronotalt::FilteringBySphereLabels::ExpressionForSingle(restrict_input_balls);
+			if(!filtering_expression_for_restricting_input_balls.valid())
 			{
-				error_log_for_options_parsing << "Error: invalid input slice filtering expression.\n";
+				error_log_for_options_parsing << "Error: invalid input balls filtering expression.\n";
 			}
 		}
 
-		if(!slice_candidate_contacts.empty())
+		if(!restrict_contacts.empty())
 		{
-			filtering_expression_for_relevant_collisions=voronotalt::FilteringBySphereLabels::ExpressionForPair(slice_candidate_contacts);
-			if(!filtering_expression_for_relevant_collisions.valid())
+			filtering_expression_for_restricting_collisions=voronotalt::FilteringBySphereLabels::ExpressionForPair(restrict_contacts);
+			if(!filtering_expression_for_restricting_collisions.valid())
 			{
-				error_log_for_options_parsing << "Error: invalid contacts output slice filtering expression.\n";
+				error_log_for_options_parsing << "Error: invalid contacts restriction filtering expression.\n";
 			}
 		}
 
@@ -799,18 +799,18 @@ void run_mode_radical(
 		voronotalt::SpheresContainer::ResultOfPreparationForTessellation preparation_result;
 		spheres_container.prepare_for_tessellation(grouping_for_filtering, preparation_result, app_log_recorders.time_recoder_for_tessellation);
 
-		if(!app_params.filtering_expression_for_relevant_collisions.allow_all())
+		if(!app_params.filtering_expression_for_restricting_collisions.allow_all())
 		{
-			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_relevant_collisions.filter_vector(spheres_input_result.sphere_labels, preparation_result.relevant_collision_ids);
+			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_collisions.filter_vector(spheres_input_result.sphere_labels, preparation_result.relevant_collision_ids);
 			if(ver.expression_matched())
 			{
-				preparation_result.slice_relevant_collision_ids(ver.expression_matched_all, ver.expression_matched_ids);
+				preparation_result.restrict_relevant_collision_ids(ver.expression_matched_all, ver.expression_matched_ids);
 			}
 			else
 			{
 				preparation_result=voronotalt::SpheresContainer::ResultOfPreparationForTessellation();
 			}
-			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("slice collisions using filtering expression");
+			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("restrict collisions using filtering expression");
 		}
 
 		const bool summarize_cells=!preparation_result.collision_ids_constrained;
@@ -1328,18 +1328,18 @@ void run_mode_simplified_aw(
 		voronotalt::SpheresContainer::ResultOfPreparationForTessellation preparation_result;
 		spheres_container.prepare_for_tessellation(grouping_for_filtering, preparation_result, app_log_recorders.time_recoder_for_tessellation);
 
-		if(!app_params.filtering_expression_for_relevant_collisions.allow_all())
+		if(!app_params.filtering_expression_for_restricting_collisions.allow_all())
 		{
-			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_relevant_collisions.filter_vector(spheres_input_result.sphere_labels, preparation_result.relevant_collision_ids);
+			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_collisions.filter_vector(spheres_input_result.sphere_labels, preparation_result.relevant_collision_ids);
 			if(ver.expression_matched())
 			{
-				preparation_result.slice_relevant_collision_ids(ver.expression_matched_all, ver.expression_matched_ids);
+				preparation_result.restrict_relevant_collision_ids(ver.expression_matched_all, ver.expression_matched_ids);
 			}
 			else
 			{
 				preparation_result=voronotalt::SpheresContainer::ResultOfPreparationForTessellation();
 			}
-			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("slice collisions using filtering expression");
+			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("restrict collisions using filtering expression");
 		}
 
 		voronotalt::SimplifiedAWTessellation::construct_full_tessellation(spheres_container, preparation_result, app_graphics_recorder.graphics_writer.enabled(), result, result_graphics, app_log_recorders.time_recoder_for_tessellation);
@@ -1997,7 +1997,7 @@ int main(const int argc, const char** argv)
 		}
 	}
 
-	if(!app_params.filtering_expression_for_spheres_input.allow_all() || !app_params.filtering_expression_for_relevant_collisions.allow_all())
+	if(!app_params.filtering_expression_for_restricting_input_balls.allow_all() || !app_params.filtering_expression_for_restricting_collisions.allow_all())
 	{
 		if(spheres_input_result.sphere_labels.size()!=spheres_input_result.spheres.size())
 		{
@@ -2008,25 +2008,25 @@ int main(const int argc, const char** argv)
 		voronotalt::SphereLabeling::parse_expanded_residue_ids_in_sphere_labels(spheres_input_result.sphere_labels);
 	}
 
-	if(!app_params.filtering_expression_for_spheres_input.allow_all())
+	if(!app_params.filtering_expression_for_restricting_input_balls.allow_all())
 	{
-		voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_spheres_input.filter_vector(spheres_input_result.sphere_labels);
+		voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_input_balls.filter_vector(spheres_input_result.sphere_labels);
 		if(!ver.expression_valid)
 		{
-			std::cerr << "Slice filtering expression application failed\n";
+			std::cerr << "Restricting input by applying filtering expression failed\n";
 			return 1;
 		}
 		if(!ver.expression_matched())
 		{
-			std::cerr << "No input satisfied slice filtering expression\n";
+			std::cerr << "No input satisfied restricting filtering expression\n";
 			return 1;
 		}
-		if(!spheres_input_result.slice_spheres_input_result(ver.expression_matched_all, ver.expression_matched_ids))
+		if(!spheres_input_result.restrict_spheres(ver.expression_matched_all, ver.expression_matched_ids))
 		{
-			std::cerr << "Failed to slice input\n";
+			std::cerr << "Failed to restrict input\n";
 			return 1;
 		}
-		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("slice input using filtering expression");
+		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("restrict input using filtering expression");
 	}
 
 	if(!app_params.write_input_balls_to_file.empty())

@@ -19,8 +19,8 @@ Options:
     --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
-    --slice-input-spheres                            string     selection expression to slice input spheres
-    --slice-candidate-contacts                       string     selection expression to slice candidate contacts
+    --restrict-input-balls                           string     selection expression to restrict input balls
+    --restrict-contacts                              string     selection expression to restrict contacts to be constructed
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
     --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout
