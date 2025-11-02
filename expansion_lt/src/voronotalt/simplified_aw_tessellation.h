@@ -300,6 +300,47 @@ public:
 
 		return (!grouped_result.grouped_contacts_summaries.empty());
 	}
+
+	static bool restrict_result_contacts(const bool select_all, const std::vector<std::size_t>& indices, Result& result, ResultGraphics& result_graphics) noexcept
+	{
+		if(select_all)
+		{
+			return !result.contacts_summaries.empty();
+		}
+		if(indices.empty() || result.contacts_summaries.empty())
+		{
+			return false;
+		}
+		bool something_selected=false;
+		Result sub_result;
+		ResultGraphics sub_result_graphics;
+		sub_result.contacts_summaries.reserve(indices.size());
+		if(!result_graphics.contacts_graphics.empty())
+		{
+			sub_result_graphics.contacts_graphics.reserve(indices.size());
+		}
+		for(std::size_t i=0;i<indices.size();i++)
+		{
+			const std::size_t id=indices[i];
+			if(id<result.contacts_summaries.size())
+			{
+				something_selected=true;
+				sub_result.contacts_summaries.push_back(result.contacts_summaries[id]);
+				sub_result.total_contacts_summary.add(result.contacts_summaries[id]);
+				if(result_graphics.contacts_graphics.size()==result.contacts_summaries.size())
+				{
+					sub_result_graphics.contacts_graphics.push_back(result_graphics.contacts_graphics[id]);
+				}
+			}
+		}
+		if(something_selected)
+		{
+			result.contacts_summaries.swap(sub_result.contacts_summaries);
+			result.total_contacts_summary=sub_result.total_contacts_summary;
+			result_graphics.contacts_graphics.swap(sub_result_graphics.contacts_graphics);
+		}
+		return something_selected;
+	}
 };
 
 }

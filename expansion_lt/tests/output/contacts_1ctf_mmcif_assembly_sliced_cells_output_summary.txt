@@ -1,0 +1,12 @@
+log_total_input_balls	974
+log_total_collisions	20737
+log_total_relevant_collisions	20737
+log_total_contacts_count	6278
+log_total_contacts_area	21169.7
+log_total_residue_level_contacts_count	706
+log_total_chain_level_contacts_count	1
+log_total_cells_count	11
+log_total_cells_sas_area	58.0118
+log_total_cells_sas_inside_volume	251.789
+log_total_residue_level_cells_count	1
+log_total_chain_level_cells_count	1

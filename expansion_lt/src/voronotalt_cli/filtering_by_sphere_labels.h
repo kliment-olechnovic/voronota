@@ -965,6 +965,18 @@ public:
 			return ver;
 		}
 
+		template<class ContainerType>
+		static std::vector< std::pair<std::size_t, std::size_t> > adapt_indices_container(const ContainerType& container) noexcept
+		{
+			std::vector< std::pair<std::size_t, std::size_t> > result(container.size());
+			for(std::size_t i=0;i<container.size();i++)
+			{
+				result[i].first=static_cast<std::size_t>(container[i].id_a);
+				result[i].second=static_cast<std::size_t>(container[i].id_b);
+			}
+			return result;
+		}
+
 	private:
 		bool allow_all_;
 		std::vector< FilteringExpressionToken<FilterPair> > postfix_expression_;

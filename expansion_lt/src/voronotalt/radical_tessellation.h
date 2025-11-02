@@ -1123,6 +1123,147 @@ public:
 
 		return (!grouped_result.grouped_contacts_summaries.empty());
 	}
+
+	static bool restrict_result_contacts(const bool select_all, const std::vector<std::size_t>& indices, Result& result, ResultGraphics& result_graphics) noexcept
+	{
+		if(select_all)
+		{
+			return !result.contacts_summaries.empty();
+		}
+		if(indices.empty() || result.contacts_summaries.empty())
+		{
+			return false;
+		}
+		bool something_selected=false;
+		Result sub_result;
+		ResultGraphics sub_result_graphics;
+		sub_result.contacts_summaries.reserve(indices.size());
+		if(!result.contacts_canonical_ids_with_redundancy_in_periodic_box.empty())
+		{
+			sub_result.contacts_canonical_ids_with_redundancy_in_periodic_box.reserve(indices.size());
+		}
+		if(!result.contacts_summaries_with_redundancy_in_periodic_box.empty())
+		{
+			sub_result.contacts_summaries_with_redundancy_in_periodic_box.reserve(indices.size());
+		}
+		if(!result.adjuncts_for_contacts_summaries.empty())
+		{
+			sub_result.adjuncts_for_contacts_summaries.reserve(indices.size());
+		}
+		if(!result_graphics.contacts_graphics.empty())
+		{
+			sub_result_graphics.contacts_graphics.reserve(indices.size());
+		}
+		for(std::size_t i=0;i<indices.size();i++)
+		{
+			const std::size_t id=indices[i];
+			if(id<result.contacts_summaries.size())
+			{
+				something_selected=true;
+				sub_result.contacts_summaries.push_back(result.contacts_summaries[id]);
+				sub_result.total_contacts_summary.add(result.contacts_summaries[id]);
+				if(result.contacts_canonical_ids_with_redundancy_in_periodic_box.size()==result.contacts_summaries.size())
+				{
+					sub_result.contacts_canonical_ids_with_redundancy_in_periodic_box.push_back(result.contacts_canonical_ids_with_redundancy_in_periodic_box[id]);
+				}
+				if(result.contacts_summaries_with_redundancy_in_periodic_box.size()==result.contacts_summaries.size())
+				{
+					sub_result.contacts_summaries_with_redundancy_in_periodic_box.push_back(result.contacts_summaries_with_redundancy_in_periodic_box[id]);
+				}
+				if(result.adjuncts_for_contacts_summaries.size()==result.contacts_summaries.size())
+				{
+					sub_result.adjuncts_for_contacts_summaries.push_back(result.adjuncts_for_contacts_summaries[id]);
+				}
+				if(result_graphics.contacts_graphics.size()==result.contacts_summaries.size())
+				{
+					sub_result_graphics.contacts_graphics.push_back(result_graphics.contacts_graphics[id]);
+				}
+			}
+		}
+		if(something_selected
+				&& !result.contacts_canonical_ids_with_redundancy_in_periodic_box.empty()
+				&& result.contacts_canonical_ids_with_redundancy_in_periodic_box.size()!=result.contacts_summaries.size()
+				&& result.contacts_canonical_ids_with_redundancy_in_periodic_box.size()==result.contacts_summaries_with_redundancy_in_periodic_box.size())
+		{
+			std::vector<bool> map_of_inclusion(result.contacts_summaries.size(), false);
+			for(std::size_t i=0;i<indices.size();i++)
+			{
+				const std::size_t id=indices[i];
+				if(id<map_of_inclusion.size())
+				{
+					map_of_inclusion[id]=true;
+				}
+			}
+			for(std::size_t i=0;i<result.contacts_canonical_ids_with_redundancy_in_periodic_box.size();i++)
+			{
+				const std::size_t oid=result.contacts_canonical_ids_with_redundancy_in_periodic_box[i];
+				if(oid<map_of_inclusion.size() && map_of_inclusion[oid])
+				{
+					sub_result.contacts_canonical_ids_with_redundancy_in_periodic_box.push_back(result.contacts_canonical_ids_with_redundancy_in_periodic_box[i]);
+					sub_result.contacts_summaries_with_redundancy_in_periodic_box.push_back(result.contacts_summaries_with_redundancy_in_periodic_box[i]);
+					if(result.adjuncts_for_contacts_summaries.size()==result.contacts_canonical_ids_with_redundancy_in_periodic_box.size())
+					{
+						sub_result.adjuncts_for_contacts_summaries.push_back(result.adjuncts_for_contacts_summaries[i]);
+					}
+					if(result_graphics.contacts_graphics.size()==result.contacts_canonical_ids_with_redundancy_in_periodic_box.size())
+					{
+						sub_result_graphics.contacts_graphics.push_back(result_graphics.contacts_graphics[i]);
+					}
+				}
+			}
+		}
+		if(something_selected)
+		{
+			result.contacts_summaries.swap(sub_result.contacts_summaries);
+			result.contacts_canonical_ids_with_redundancy_in_periodic_box.swap(sub_result.contacts_canonical_ids_with_redundancy_in_periodic_box);
+			result.contacts_summaries_with_redundancy_in_periodic_box.swap(sub_result.contacts_summaries_with_redundancy_in_periodic_box);
+			result.adjuncts_for_contacts_summaries.swap(sub_result.adjuncts_for_contacts_summaries);
+			result.total_contacts_summary=sub_result.total_contacts_summary;
+			result_graphics.contacts_graphics.swap(sub_result_graphics.contacts_graphics);
+		}
+		return something_selected;
+	}
+
+	static bool restrict_result_cells(const bool select_all, const std::vector<std::size_t>& indices, Result& result, ResultGraphics& result_graphics) noexcept
+	{
+		if(select_all)
+		{
+			return !result.cells_summaries.empty();
+		}
+		if(indices.empty() || result.cells_summaries.empty())
+		{
+			return false;
+		}
+		bool something_selected=false;
+		Result sub_result;
+		ResultGraphics sub_result_graphics;
+		sub_result.cells_summaries.reserve(indices.size());
+		if(!result_graphics.sas_graphics.empty())
+		{
+			sub_result_graphics.sas_graphics.reserve(indices.size());
+		}
+		for(std::size_t i=0;i<indices.size();i++)
+		{
+			const std::size_t id=indices[i];
+			if(id<result.cells_summaries.size())
+			{
+				something_selected=true;
+				sub_result.cells_summaries.push_back(result.cells_summaries[id]);
+				sub_result.total_cells_summary.add(result.cells_summaries[id]);
+				if(result_graphics.sas_graphics.size()==result.cells_summaries.size())
+				{
+					sub_result_graphics.sas_graphics.push_back(result_graphics.sas_graphics[id]);
+				}
+			}
+		}
+		if(something_selected)
+		{
+			result.cells_summaries.swap(sub_result.cells_summaries);
+			result.total_cells_summary=sub_result.total_cells_summary;
+			result_graphics.sas_graphics.swap(sub_result_graphics.sas_graphics);
+		}
+		return something_selected;
+	}
 };
 
 }
