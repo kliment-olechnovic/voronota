@@ -51,7 +51,7 @@ Options:
     --restrict-input-balls                           string     selection expression to restrict input balls
     --restrict-contacts                              string     selection expression to restrict contacts before construction
     --restrict-contacts-for-output                   string     selection expression to restrict contacts for output
-    --restrict-cells-for-output                      string     selection expression to restrict cells for output
+    --restrict-balls-and-cells-for-output            string     selection expression to restrict cells for output
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
     --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout
@@ -195,11 +195,11 @@ public:
 	std::string restrict_input_balls;
 	std::string restrict_contacts;
 	std::string restrict_contacts_for_output;
-	std::string restrict_cells_for_output;
+	std::string restrict_balls_and_cells_for_output;
 	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_input_balls;
 	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_collisions;
 	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_contacts_for_output;
-	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_cells_for_output;
+	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_balls_and_cells_for_output;
 	std::ostringstream error_log_for_options_parsing;
 
 	ApplicationParameters() noexcept :
@@ -339,9 +339,9 @@ public:
 				{
 					restrict_contacts_for_output=opt.args_strings.front();
 				}
-				else if(opt.name=="restrict-cells-for-output" && opt.args_strings.size()==1)
+				else if(opt.name=="restrict-balls-and-cells-for-output" && opt.args_strings.size()==1)
 				{
-					restrict_cells_for_output=opt.args_strings.front();
+					restrict_balls_and_cells_for_output=opt.args_strings.front();
 				}
 				else if(opt.name=="measure-running-time" && opt.is_flag())
 				{
@@ -599,10 +599,10 @@ public:
 			}
 		}
 
-		if(!restrict_cells_for_output.empty())
+		if(!restrict_balls_and_cells_for_output.empty())
 		{
-			filtering_expression_for_restricting_cells_for_output=voronotalt::FilteringBySphereLabels::ExpressionForSingle(restrict_cells_for_output);
-			if(!filtering_expression_for_restricting_cells_for_output.valid())
+			filtering_expression_for_restricting_balls_and_cells_for_output=voronotalt::FilteringBySphereLabels::ExpressionForSingle(restrict_balls_and_cells_for_output);
+			if(!filtering_expression_for_restricting_balls_and_cells_for_output.valid())
 			{
 				error_log_for_options_parsing << "Error: invalid cells restriction filtering expression for cells output.\n";
 			}
@@ -624,7 +624,7 @@ public:
 		return(!filtering_expression_for_restricting_input_balls.allow_all()
 				|| !filtering_expression_for_restricting_collisions.allow_all()
 				|| !filtering_expression_for_restricting_contacts_for_output.allow_all()
-				|| !filtering_expression_for_restricting_cells_for_output.allow_all());
+				|| !filtering_expression_for_restricting_balls_and_cells_for_output.allow_all());
 	}
 };
 
@@ -826,9 +826,9 @@ void run_mode_radical(
 			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("restrict contacts for output using filtering expression");
 		}
 
-		if(!result.cells_summaries.empty() && !app_params.filtering_expression_for_restricting_cells_for_output.allow_all())
+		if(!result.cells_summaries.empty() && !app_params.filtering_expression_for_restricting_balls_and_cells_for_output.allow_all())
 		{
-			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_cells_for_output.filter_vector(spheres_input_result.sphere_labels);
+			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_balls_and_cells_for_output.filter_vector(spheres_input_result.sphere_labels);
 			if(!ver.expression_matched() || !voronotalt::RadicalTessellation::restrict_result_cells(ver.expression_matched_all, ver.expression_matched_ids, result, result_graphics))
 			{
 				std::cerr << "Error: failed to restrict cells for output\n";
@@ -1004,6 +1004,7 @@ void run_mode_radical(
 			app_graphics_recorder.graphics_writer.add_color("balls", "", app_params.graphics_color_balls);
 			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
 			{
+				if(app_params.filtering_expression_for_restricting_balls_and_cells_for_output.allow_all() || (i<spheres_input_result.sphere_labels.size() && app_params.filtering_expression_for_restricting_balls_and_cells_for_output.filter(spheres_input_result.sphere_labels[i]).expression_matched))
 				{
 					const std::string group_name=ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i);
 					if(app_params.graphics_color_balls==0)
@@ -1431,6 +1432,7 @@ void run_mode_simplified_aw(
 			app_graphics_recorder.graphics_writer.add_color("balls", "", app_params.graphics_color_balls);
 			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
 			{
+				if(app_params.filtering_expression_for_restricting_balls_and_cells_for_output.allow_all() || (i<spheres_input_result.sphere_labels.size() && app_params.filtering_expression_for_restricting_balls_and_cells_for_output.filter(spheres_input_result.sphere_labels[i]).expression_matched))
 				{
 					const std::string group_name=ApplicationGraphicsRecorder::name_ball_group("atoms", spheres_input_result, i);
 					if(app_params.graphics_color_balls==0)

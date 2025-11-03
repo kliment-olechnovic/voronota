@@ -194,7 +194,7 @@ voronota-lt \
 voronota-lt \
   -i "./input/assembly_1ctf.cif" \
   -probe 1.4 \
-  -restrict-cells-for-output '[-chain A -rname PHE]' \
+  -restrict-balls-and-cells-for-output '[-chain A -rname PHE]' \
   -print-everything \
 2> "./output/contacts_1ctf_mmcif_assembly_sliced_cells_output_summary.txt" \
 > "./output/contacts_1ctf_mmcif_assembly_sliced_cells_output_tables.txt"

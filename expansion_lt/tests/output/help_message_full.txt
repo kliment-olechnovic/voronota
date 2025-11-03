@@ -22,7 +22,7 @@ Options:
     --restrict-input-balls                           string     selection expression to restrict input balls
     --restrict-contacts                              string     selection expression to restrict contacts before construction
     --restrict-contacts-for-output                   string     selection expression to restrict contacts for output
-    --restrict-cells-for-output                      string     selection expression to restrict cells for output
+    --restrict-balls-and-cells-for-output            string     selection expression to restrict cells for output
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
     --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout
