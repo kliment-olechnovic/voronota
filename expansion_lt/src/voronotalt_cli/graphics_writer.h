@@ -53,6 +53,29 @@ public:
 		parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::TriangleStrip(points, normals)));
 	}
 
+	void add_triangle_on_sphere(const std::string& category_name, const std::string& group_name, const SimplePoint& sp, const SimplePoint& p1, const SimplePoint& p2, const SimplePoint& p3) noexcept
+	{
+		if(!enabled_)
+		{
+			return;
+		}
+		std::vector<voronotalt::SimplePoint> tvertices(3);
+		std::vector<voronotalt::SimplePoint> tnormals(3);
+		tvertices[0]=p1;
+		tvertices[1]=p2;
+		tvertices[2]=p3;
+		tnormals[0]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[0], sp));
+		tnormals[1]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[1], sp));
+		tnormals[2]=voronotalt::unit_point(voronotalt::sub_of_points(tvertices[2], sp));
+		const voronotalt::SimplePoint refnormal=voronotalt::unit_point(voronotalt::cross_product(voronotalt::sub_of_points(tvertices[1], tvertices[0]), voronotalt::sub_of_points(tvertices[2], tvertices[0])));
+		if(voronotalt::dot_product(refnormal, tnormals[0])<0.0)
+		{
+			std::swap(tvertices[1], tvertices[2]);
+			std::swap(tnormals[1], tnormals[2]);
+		}
+		add_triangle_strip(category_name, group_name, tvertices, tnormals);
+	}
+
 	void add_line_loop(const std::string& category_name, const std::string& group_name, const std::vector<SimplePoint>& outer_points) noexcept
 	{
 		if(!enabled_)
