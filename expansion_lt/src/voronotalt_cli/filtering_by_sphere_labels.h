@@ -147,15 +147,32 @@ private:
 	class FilterPair
 	{
 	public:
+		bool inter_chain;
+		bool intra_chain;
+		int min_seq_sep;
+		int max_seq_sep;
 		FilterSingle filter1_yes;
 		FilterSingle filter1_no;
 		FilterSingle filter2_yes;
 		FilterSingle filter2_no;
 
+		FilterPair() noexcept : inter_chain(false), intra_chain(false), min_seq_sep(-1), max_seq_sep(-1)
+		{
+		}
+
 		bool match(const PairOfSphereLabels& p) const noexcept
 		{
-			return ((filter1_yes.match(p.a()) && !filter1_no.not_empty_and_match(p.a()) && filter2_yes.match(p.b()) && !filter2_no.not_empty_and_match(p.b()))
-					|| (filter1_yes.match(p.b()) && !filter1_no.not_empty_and_match(p.b()) && filter2_yes.match(p.a()) && !filter2_no.not_empty_and_match(p.a())));
+			return
+			(
+				(!inter_chain || p.a().chain_id!=p.b().chain_id) &&
+				(!intra_chain || p.a().chain_id==p.b().chain_id) &&
+				(min_seq_sep<0 || p.a().chain_id!=p.b().chain_id || (p.a().expanded_residue_id.valid && p.b().expanded_residue_id.valid && std::abs(p.a().expanded_residue_id.rnum-p.b().expanded_residue_id.rnum)>=min_seq_sep)) &&
+				(max_seq_sep<0 || (p.a().chain_id==p.b().chain_id && p.a().expanded_residue_id.valid && p.b().expanded_residue_id.valid && std::abs(p.a().expanded_residue_id.rnum-p.b().expanded_residue_id.rnum)<=max_seq_sep)) &&
+				(
+					(filter1_yes.match(p.a()) && !filter1_no.not_empty_and_match(p.a()) && filter2_yes.match(p.b()) && !filter2_no.not_empty_and_match(p.b())) ||
+					(filter1_yes.match(p.b()) && !filter1_no.not_empty_and_match(p.b()) && filter2_yes.match(p.a()) && !filter2_no.not_empty_and_match(p.a()))
+				)
+			);
 		}
 	};
 
@@ -213,6 +230,19 @@ private:
 			return (type==TYPE_BRACKET_OPEN || type==TYPE_BRACKET_CLOSE);
 		}
 	};
+
+	static bool read_integer_value(std::istream& input, int& output_value) noexcept
+	{
+		std::string v_str;
+		input >> v_str;
+		const int v_val=std::atoi(v_str.c_str());
+		if(v_val==0 && v_str!="0")
+		{
+			return false;
+		}
+		output_value=v_val;
+		return true;
+	}
 
 	static bool read_bundle_of_strings(std::istream& input, std::set<std::string>& output_strings) noexcept
 	{
@@ -478,6 +508,28 @@ private:
 				if(token=="]")
 				{
 					end=true;
+				}
+				else if(token=="-inter-chain")
+				{
+					tester.inter_chain=true;
+				}
+				else if(token=="-intra-chain")
+				{
+					tester.intra_chain=true;
+				}
+				else if(token=="-min-sep")
+				{
+					if(!read_integer_value(input, tester.min_seq_sep))
+					{
+						return false;
+					}
+				}
+				else if(token=="-max-sep")
+				{
+					if(!read_integer_value(input, tester.max_seq_sep))
+					{
+						return false;
+					}
 				}
 				else if(token=="-atom1" || token=="-a1")
 				{
