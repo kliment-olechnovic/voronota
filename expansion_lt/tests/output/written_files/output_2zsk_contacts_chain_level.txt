@@ -1,2 +1,2 @@
-cu_header	ID1_chain	ID1_residue	ID1_atom	ID2_chain	ID2_residue	ID2_atom	area	arc_legth	distance	count
-cu	A	.	.	B	.	.	1407.36	248.965	2.42567	692
+cu_header	ID1_chain	ID1_res_number	ID1_res_icode	ID1_res_name	ID1_atom	ID2_chain	ID2_res_number	ID2_res_icode	ID2_res_name	ID2_atom	area	arc_legth	distance	count
+cu	A	.	.	.	.	B	.	.	.	.	1407.36	248.965	2.42567	692

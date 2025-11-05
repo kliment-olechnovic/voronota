@@ -33,7 +33,11 @@ public:
 
 	static void form_residue_id_string(const std::string& rnum, const std::string& icode, const std::string& rname, std::string& residue_id) noexcept
 	{
-		residue_id=rnum;
+		residue_id.clear();
+		if(!rnum.empty() && rnum!=".")
+		{
+			residue_id=rnum;
+		}
 		if(!icode.empty() && icode!=".")
 		{
 			residue_id+=std::string("/")+icode;

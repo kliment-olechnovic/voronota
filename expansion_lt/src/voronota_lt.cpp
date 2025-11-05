@@ -21,7 +21,7 @@ namespace
 void print_help(const bool full, std::ostream& output) noexcept
 {
 	output << R"(
-Voronota-LT version 0.9.5
+Voronota-LT version 1.0.1
 
 'voronota-lt' executable constructs a radical Voronoi tessellation (also known as a Laguerre-Voronoi diagram or a power diagram)
 of atomic balls of van der Waals radii constrained inside a solvent-accessible surface defined by a rolling probe.
@@ -68,7 +68,7 @@ Options:
     --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
-    --graphics-output-file                           string     output file path to write contacts drawing .py script to run in PyMol)";
+    --graphics-output-file                           string     output file path to write contacts drawing (.py script for PyMol or .bild script for Chimera))";
 
 	if(full)
 	{
@@ -104,6 +104,8 @@ Standard input stream:
              chainID x y z radius
              chainID residueID x y z radius
              chainID residueID atomName x y z radius
+             chainID residueNum residueName atomName x y z radius
+             chainID residueNum iCode residueName atomName x y z radius
       b) Output of 'voronota get-balls-from-atoms-file' is acceptable, where line format is:
              x y z radius # atomSerial chainID resSeq resName atomName altLoc iCode
       c) PDB file
@@ -619,7 +621,7 @@ public:
 		return read_successfuly;
 	}
 
-	bool contains_complex_filtering_expressions() noexcept
+	bool contains_complex_filtering_expressions() const noexcept
 	{
 		return(!filtering_expression_for_restricting_input_balls.allow_all()
 				|| !filtering_expression_for_restricting_collisions.allow_all()
@@ -1737,7 +1739,7 @@ void run_mode_test_second_order_cell_volumes_calculation(
 		std::cout << "socv_header";
 		if(!spheres_input_result.sphere_labels.empty())
 		{
-			std::cout << "\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom";
+			std::cout << "\tID1_chain\tID1_res_number\tID1_res_icode\tID1_res_name\tID1_atom\tID2_chain\tID2_res_number\tID2_res_icode\tID2_res_name\tID2_atom";
 		}
 		std::cout << "\tID1_index\tID2_index\tarea\tarc_legth\tdistance\tsolid_angle_a\tsolid_angle_b\tpyramid_volume_a\tpyramid_volume_b\tsecond_order_cell_volume\n";
 		for(voronotalt::UnsignedInt i=0;i<urt.result().contacts_summaries.size();i++)
@@ -1825,7 +1827,7 @@ void run_mode_test_raw_collisions(
 	std::cout << "trc_header";
 	if(!spheres_input_result.sphere_labels.empty())
 	{
-		std::cout << "\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom";
+		std::cout << "\tID1_chain\tID1_res_number\tID1_res_icode\tID1_res_name\tID1_atom\tID2_chain\tID2_res_number\tID2_res_icode\tID2_res_name\tID2_atom";
 	}
 	std::cout << "\tID1_index\tID2_index\tdistance\tdistance_vdw\tarea\tarc_length\n";
 
@@ -2001,15 +2003,10 @@ int main(const int argc, const char** argv)
 		}
 	}
 
-	if(app_params.contains_complex_filtering_expressions())
+	if(app_params.contains_complex_filtering_expressions() && spheres_input_result.sphere_labels.size()!=spheres_input_result.spheres.size())
 	{
-		if(spheres_input_result.sphere_labels.size()!=spheres_input_result.spheres.size())
-		{
-			std::cerr << "Input has no labels for filtering\n";
-			return 1;
-		}
-
-		voronotalt::SphereLabeling::parse_expanded_residue_ids_in_sphere_labels(spheres_input_result.sphere_labels);
+		std::cerr << "Input has no labels for filtering\n";
+		return 1;
 	}
 
 	if(!app_params.filtering_expression_for_restricting_input_balls.allow_all())

@@ -43,7 +43,7 @@ public:
 		{
 			if(labels_enabled)
 			{
-				output << "ca_header\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom\tID1_index\tID2_index\tarea\tarc_legth\tdistance\n";
+				output << "ca_header\tID1_chain\tID1_res_number\tID1_res_icode\tID1_res_name\tID1_atom\tID2_chain\tID2_res_number\tID2_res_icode\tID2_res_name\tID2_atom\tID1_index\tID2_index\tarea\tarc_legth\tdistance\n";
 			}
 			else
 			{
@@ -124,7 +124,7 @@ public:
 		{
 			if(labels_enabled)
 			{
-				output << "sa_header\tID_chain\tID_residue\tID_atom\tID_index\tsas_area\tvolume\n";
+				output << "sa_header\tID_chain\tID_res_number\tID_res_icode\tID_res_name\tID_atom\tID_index\tsas_area\tvolume\n";
 			}
 			else
 			{
@@ -231,13 +231,38 @@ public:
 
 		output << "\t";
 
-		if(no_residue || obj.residue_id.empty())
+		if(no_residue || obj.residue_id.empty() || obj.residue_id==".")
 		{
-			output << ".";
+			output << ".\t.\t.";
 		}
 		else
 		{
-			output << obj.residue_id;
+			if(obj.expanded_residue_id.parsed && obj.expanded_residue_id.valid)
+			{
+				output << obj.expanded_residue_id.rnum;
+				output << "\t";
+				if(obj.expanded_residue_id.icode.empty())
+				{
+					output << ".";
+				}
+				else
+				{
+					output << obj.expanded_residue_id.icode;
+				}
+				output << "\t";
+				if(obj.expanded_residue_id.rname.empty())
+				{
+					output << ".";
+				}
+				else
+				{
+					output << obj.expanded_residue_id.rname;
+				}
+			}
+			else
+			{
+				output << ".\t.\t" << obj.residue_id;
+			}
 		}
 
 		output << "\t";
@@ -274,7 +299,7 @@ private:
 		const SphereLabeling::SphereLabel null_label;
 		if(!grouped_contacts.empty())
 		{
-			output << (chain_level ? "cu" : "cr") << "_header\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom\tarea\tarc_legth\tdistance\tcount\n";
+			output << (chain_level ? "cu" : "cr") << "_header\tID1_chain\tID1_res_number\tID1_res_icode\tID1_res_name\tID1_atom\tID2_chain\tID2_res_number\tID2_res_icode\tID2_res_name\tID2_atom\tarea\tarc_legth\tdistance\tcount\n";
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
 			if(grouped_contacts.size()>1000)
@@ -337,7 +362,7 @@ private:
 		const SphereLabeling::SphereLabel null_label;
 		if(!grouped_cells.empty())
 		{
-			output << (chain_level ? "su" : "sr") << "_header\tID_chain\tID_residue\tID_atom\tsas_area\tvolume\tcount\n";
+			output << (chain_level ? "su" : "sr") << "_header\tID_chain\tID_res_number\tID_res_icode\tID_res_name\tID_atom\tsas_area\tvolume\tcount\n";
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
 			if(grouped_cells.size()>1000)

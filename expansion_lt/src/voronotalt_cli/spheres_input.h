@@ -98,6 +98,8 @@ public:
 			l1xyzr,
 			l2xyzr,
 			l3xyzr,
+			l4xyzr,
+			l5xyzr,
 			xyzrl8,
 			pdb,
 			mmcif,
@@ -143,6 +145,14 @@ public:
 						else if(label_size==3)
 						{
 							result=InputDataFormat::l3xyzr;
+						}
+						else if(label_size==4)
+						{
+							result=InputDataFormat::l4xyzr;
+						}
+						else if(label_size==5)
+						{
+							result=InputDataFormat::l5xyzr;
 						}
 					}
 				}
@@ -190,8 +200,8 @@ public:
 		time_recorder.record_elapsed_miliseconds_and_reset("detect input format");
 
 		if(input_format==InputDataFormat::xyzr
-				|| input_format==InputDataFormat::l1xyzr || input_format==InputDataFormat::l2xyzr
-				|| input_format==InputDataFormat::l3xyzr || input_format==InputDataFormat::xyzrl8)
+				|| input_format==InputDataFormat::l1xyzr || input_format==InputDataFormat::l2xyzr || input_format==InputDataFormat::l3xyzr
+				|| input_format==InputDataFormat::l4xyzr || input_format==InputDataFormat::l5xyzr || input_format==InputDataFormat::xyzrl8)
 		{
 			std::vector<std::string> string_ids;
 			std::vector<double> values;
@@ -200,7 +210,7 @@ public:
 				const std::size_t N=(values.size()/4);
 				const std::size_t label_size=(string_ids.size()/N);
 				const bool labels_tailing=(!string_ids.empty() && string_ids.front()=="#");
-				if((label_size<=3 || (labels_tailing && label_size==8)) && string_ids.size()==N*label_size)
+				if((label_size<=5 || (labels_tailing && label_size==8)) && string_ids.size()==N*label_size)
 				{
 					result.spheres.resize(N);
 					for(std::size_t i=0;i<N;i++)
@@ -232,6 +242,18 @@ public:
 								sphere_label.residue_id=string_ids[i*label_size+1];
 								sphere_label.atom_name=string_ids[i*label_size+2];
 							}
+							else if(label_size==4)
+							{
+								sphere_label.chain_id=string_ids[i*label_size+0];
+								SphereLabeling::form_residue_id_string(string_ids[i*label_size+1], std::string(), string_ids[i*label_size+2], sphere_label.residue_id);
+								sphere_label.atom_name=string_ids[i*label_size+3];
+							}
+							else if(label_size==5)
+							{
+								sphere_label.chain_id=string_ids[i*label_size+0];
+								SphereLabeling::form_residue_id_string(string_ids[i*label_size+1], string_ids[i*label_size+2], string_ids[i*label_size+3], sphere_label.residue_id);
+								sphere_label.atom_name=string_ids[i*label_size+4];
+							}
 							else if(label_size==8)
 							{
 								sphere_label.chain_id=string_ids[i*label_size+2];
@@ -245,7 +267,7 @@ public:
 			}
 			if(result.spheres.empty())
 			{
-				error_message_output_stream << "Error: invalid input data, expected a text table with exactly 0, 1, 2, or 3 string IDs and exactly 4 floating point values (x, y, z, r) per line\n";
+				error_message_output_stream << "Error: invalid input data, expected a text table with 0-5 string IDs and exactly 4 floating point values (x, y, z, r) per line\n";
 				return false;
 			}
 		}
@@ -311,6 +333,10 @@ public:
 			}
 
 			time_recorder.record_elapsed_miliseconds_and_reset("assign groups based on labels");
+
+			SphereLabeling::parse_expanded_residue_ids_in_sphere_labels(result.sphere_labels);
+
+			time_recorder.record_elapsed_miliseconds_and_reset("parse residue id labels");
 		}
 
 		return true;

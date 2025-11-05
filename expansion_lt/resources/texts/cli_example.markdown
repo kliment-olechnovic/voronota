@@ -22,6 +22,7 @@ x y z radius
 chainID x y z radius
 chainID residueID x y z radius
 chainID residueID atomName x y z radius
+chainID residueNumber residueName atomName x y z radius
 ```
 
 The output file `interatomic_contacts.tsv` has named columns, below is an example of its first 10 lines:
