@@ -2035,7 +2035,7 @@ int main(const int argc, const char** argv)
 		std::ofstream foutput(app_params.write_input_balls_to_file.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			voronotalt::PrintingCustomTypes::print_balls_to_stream(spheres_input_result.spheres, spheres_input_result.sphere_labels, app_params.probe, foutput);
+			voronotalt::PrintingCustomTypes::print_balls_to_stream(spheres_input_result.spheres, spheres_input_result.sphere_labels, app_params.probe, false, foutput);
 		}
 		else
 		{

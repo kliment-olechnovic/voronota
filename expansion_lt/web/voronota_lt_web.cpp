@@ -55,7 +55,7 @@ std::vector<std::string> generate_results(const std::string& input_data, const s
 		const std::vector<int>& grouping_for_filtering=(compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : null_grouping);
 		const bool summarize_cells=grouping_for_filtering.empty();
 
-		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, false, summarize_cells, result, result_graphics, time_recorder);
+		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, false, voronotalt::RadicalTessellation::ParametersForGraphics(), summarize_cells, result, result_graphics, time_recorder);
 	}
 
 	voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;
@@ -114,8 +114,7 @@ std::vector<std::string> generate_results(const std::string& input_data, const s
 	if(!spheres_input_result.spheres.empty())
 	{
 		std::ostringstream output;
-		output << "ID_chain\tID_residue\tID_atom\tx\ty\tz\tradius\n";
-		voronotalt::PrintingCustomTypes::print_balls_to_stream(spheres_input_result.spheres, spheres_input_result.sphere_labels, probe, output);
+		voronotalt::PrintingCustomTypes::print_balls_to_stream(spheres_input_result.spheres, spheres_input_result.sphere_labels, probe, true, output);
 		results.push_back(std::string("input-atom-balls"));
 		results.push_back(output.str());
 	}
