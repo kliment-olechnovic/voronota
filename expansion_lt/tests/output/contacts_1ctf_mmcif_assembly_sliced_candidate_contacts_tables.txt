@@ -1,4 +1,4 @@
-ca_header	ID1_chain	ID1_res_number	ID1_res_icode	ID1_res_name	ID1_atom	ID2_chain	ID2_res_number	ID2_res_icode	ID2_res_name	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
+ca_header	ID1_chain	ID1_rnum	ID1_ic	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_ic	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
 ca	A	53	.	GLU	N	A	54	.	PHE	CE1	0	17	7.3809	3.82028	4.09728
 ca	A	53	.	GLU	N	A	54	.	PHE	CD1	0	15	0.0359529	0	4.09924
 ca	A	53	.	GLU	N	A	54	.	PHE	CZ	0	19	2.70772	2.95728	4.71093
@@ -117,7 +117,7 @@ ca	A	54	.	PHE	CB	A	120	.	LYS	O	13	480	1.9576	0	3.68948
 ca	A	54	.	PHE	CD2	A	120	.	LYS	O	16	480	1.3148	0	3.85337
 ca	A	54	.	PHE	CD2	A	120	.	LYS	OXT	16	486	5.16303	0.938865	4.05757
 ca	A	54	.	PHE	CA	A	120	.	LYS	OXT	10	486	0.0105183	0	4.76114
-cr_header	ID1_chain	ID1_res_number	ID1_res_icode	ID1_res_name	ID1_atom	ID2_chain	ID2_res_number	ID2_res_icode	ID2_res_name	ID2_atom	area	arc_legth	distance	count
+cr_header	ID1_chain	ID1_rnum	ID1_ic	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_ic	ID2_rname	ID2_atom	area	arc_legth	distance	count
 cr	A	53	.	GLU	.	A	54	.	PHE	.	41.7696	9.69602	1.34774	21
 cr	A	54	.	PHE	.	A	55	.	ASP	.	24.9977	0.406154	1.31559	13
 cr	A	54	.	PHE	.	A	98	.	VAL	.	22.6954	0	2.60767	10

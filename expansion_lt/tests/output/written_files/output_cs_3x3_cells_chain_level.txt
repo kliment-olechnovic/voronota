@@ -1,4 +1,4 @@
-su_header	ID_chain	ID_res_number	ID_res_icode	ID_res_name	ID_atom	sas_area	volume	count
+su_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	sas_area	volume	count
 su	c0	.	.	.	.	20023.1	45173.2	100
 su	c1	.	.	.	.	21016.1	45801.4	100
 su	c2	.	.	.	.	21016.1	45801.4	100

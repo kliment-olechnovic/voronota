@@ -1,4 +1,4 @@
-ca_header	ID1_chain	ID1_res_number	ID1_res_icode	ID1_res_name	ID1_atom	ID2_chain	ID2_res_number	ID2_res_icode	ID2_res_name	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
+ca_header	ID1_chain	ID1_rnum	ID1_ic	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_ic	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
 ca	A	53	.	GLU	N	A	53	.	GLU	CA	0	1	12.5167	1.58166	1.48837
 ca	A	53	.	GLU	N	A	53	.	GLU	CB	0	4	4.42067	2.81052	2.50605
 ca	A	53	.	GLU	N	A	53	.	GLU	C	0	2	1.45209	0	2.45376
@@ -6277,7 +6277,7 @@ ca	A-2	120	.	LYS	CB	A-2	120	.	LYS	OXT	968	973	1.43995	2.82799	3.31987
 ca	A-2	54	.	PHE	CD2	A-2	120	.	LYS	OXT	503	973	5.16303	0.938865	4.05757
 ca	A-2	54	.	PHE	CA	A-2	120	.	LYS	OXT	497	973	0.0105183	0	4.76114
 ca	A-2	53	.	GLU	O	A-2	120	.	LYS	OXT	490	973	3.38259	3.47163	4.7689
-cr_header	ID1_chain	ID1_res_number	ID1_res_icode	ID1_res_name	ID1_atom	ID2_chain	ID2_res_number	ID2_res_icode	ID2_res_name	ID2_atom	area	arc_legth	distance	count
+cr_header	ID1_chain	ID1_rnum	ID1_ic	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_ic	ID2_rname	ID2_atom	area	arc_legth	distance	count
 cr	A	53	.	GLU	.	A	54	.	PHE	.	41.7696	9.69602	1.34774	21
 cr	A	53	.	GLU	.	A	98	.	VAL	.	6.60744	0.0670848	3.47871	6
 cr	A	53	.	GLU	.	A	99	.	SER	.	5.80868	5.00507	5.18182	3
@@ -6984,9 +6984,9 @@ cr	A-2	119	.	VAL	.	A-2	56	.	VAL	.	10.5519	0	4.46268	6
 cr	A-2	119	.	VAL	.	A-2	120	.	LYS	.	29.5942	7.06644	1.33978	10
 cr	A-2	117	.	VAL	.	A-2	119	.	VAL	.	2.40129	0	5.08494	1
 cr	A-2	120	.	LYS	.	A-2	57	.	ILE	.	23.184	6.12861	3.57606	6
-cu_header	ID1_chain	ID1_res_number	ID1_res_icode	ID1_res_name	ID1_atom	ID2_chain	ID2_res_number	ID2_res_icode	ID2_res_name	ID2_atom	area	arc_legth	distance	count
+cu_header	ID1_chain	ID1_rnum	ID1_ic	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_ic	ID2_rname	ID2_atom	area	arc_legth	distance	count
 cu	A	.	.	.	.	A-2	.	.	.	.	513.032	142.699	2.8269	218
-sa_header	ID_chain	ID_res_number	ID_res_icode	ID_res_name	ID_atom	ID_index	sas_area	volume
+sa_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	ID_index	sas_area	volume
 sa	A	54	.	PHE	N	9	0	9.40207
 sa	A	54	.	PHE	CA	10	0.0436927	22.4647
 sa	A	54	.	PHE	C	11	0	13.1968
@@ -6998,7 +6998,7 @@ sa	A	54	.	PHE	CD2	16	1.10107	29.0897
 sa	A	54	.	PHE	CE1	17	7.66469	28.6107
 sa	A	54	.	PHE	CE2	18	30.1138	48.9375
 sa	A	54	.	PHE	CZ	19	19.0885	38.1781
-sr_header	ID_chain	ID_res_number	ID_res_icode	ID_res_name	ID_atom	sas_area	volume	count
+sr_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	sas_area	volume	count
 sr	A	54	.	PHE	.	58.0118	251.789	11
-su_header	ID_chain	ID_res_number	ID_res_icode	ID_res_name	ID_atom	sas_area	volume	count
+su_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	sas_area	volume	count
 su	A	.	.	.	.	58.0118	251.789	11

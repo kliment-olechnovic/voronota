@@ -43,7 +43,7 @@ public:
 		{
 			if(labels_enabled)
 			{
-				output << "ca_header\tID1_chain\tID1_res_number\tID1_res_icode\tID1_res_name\tID1_atom\tID2_chain\tID2_res_number\tID2_res_icode\tID2_res_name\tID2_atom\tID1_index\tID2_index\tarea\tarc_legth\tdistance\n";
+				output << "ca_header\tID1_chain\tID1_rnum\tID1_ic\tID1_rname\tID1_atom\tID2_chain\tID2_rnum\tID2_ic\tID2_rname\tID2_atom\tID1_index\tID2_index\tarea\tarc_legth\tdistance\n";
 			}
 			else
 			{
@@ -124,7 +124,7 @@ public:
 		{
 			if(labels_enabled)
 			{
-				output << "sa_header\tID_chain\tID_res_number\tID_res_icode\tID_res_name\tID_atom\tID_index\tsas_area\tvolume\n";
+				output << "sa_header\tID_chain\tID_rnum\tID_ic\tID_rname\tID_atom\tID_index\tsas_area\tvolume\n";
 			}
 			else
 			{
@@ -299,7 +299,7 @@ private:
 		const SphereLabeling::SphereLabel null_label;
 		if(!grouped_contacts.empty())
 		{
-			output << (chain_level ? "cu" : "cr") << "_header\tID1_chain\tID1_res_number\tID1_res_icode\tID1_res_name\tID1_atom\tID2_chain\tID2_res_number\tID2_res_icode\tID2_res_name\tID2_atom\tarea\tarc_legth\tdistance\tcount\n";
+			output << (chain_level ? "cu" : "cr") << "_header\tID1_chain\tID1_rnum\tID1_ic\tID1_rname\tID1_atom\tID2_chain\tID2_rnum\tID2_ic\tID2_rname\tID2_atom\tarea\tarc_legth\tdistance\tcount\n";
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
 			if(grouped_contacts.size()>1000)
@@ -362,7 +362,7 @@ private:
 		const SphereLabeling::SphereLabel null_label;
 		if(!grouped_cells.empty())
 		{
-			output << (chain_level ? "su" : "sr") << "_header\tID_chain\tID_res_number\tID_res_icode\tID_res_name\tID_atom\tsas_area\tvolume\tcount\n";
+			output << (chain_level ? "su" : "sr") << "_header\tID_chain\tID_rnum\tID_ic\tID_rname\tID_atom\tsas_area\tvolume\tcount\n";
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
 			if(grouped_cells.size()>1000)

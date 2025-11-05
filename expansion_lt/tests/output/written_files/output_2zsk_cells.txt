@@ -1,4 +1,4 @@
-sa_header	ID_chain	ID_res_number	ID_res_icode	ID_res_name	ID_atom	ID_index	sas_area	volume
+sa_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	ID_index	sas_area	volume
 sa	A	1	.	.	N	0	53.3426	63.8989
 sa	A	1	.	.	CA	1	4.70418	30.7944
 sa	A	1	.	.	C	2	2.62416	15.6203

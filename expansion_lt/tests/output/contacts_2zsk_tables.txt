@@ -1,4 +1,4 @@
-ca_header	ID1_chain	ID1_res_number	ID1_res_icode	ID1_res_name	ID1_atom	ID2_chain	ID2_res_number	ID2_res_icode	ID2_res_name	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
+ca_header	ID1_chain	ID1_rnum	ID1_ic	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_ic	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
 ca	A	1	.	.	N	A	1	.	.	CA	0	1	16.5137	6.06483	1.4962
 ca	A	1	.	.	N	A	1	.	.	CB	0	4	8.78012	6.97738	2.47926
 ca	A	1	.	.	N	A	1	.	.	C	0	2	2.26495	1.78545	2.51605
@@ -23854,7 +23854,7 @@ ca	B	226	.	.	CB	B	226	.	.	OXT	3539	3544	5.32811	3.67056	2.85839
 ca	B	226	.	.	O	B	226	.	.	OXT	3538	3544	1.40084	3.6692	2.21839
 ca	B	226	.	.	CG	B	226	.	.	OXT	3540	3544	3.46783	1.93367	3.32776
 ca	B	226	.	.	OE2	B	226	.	.	OXT	3543	3544	0.261984	1.77425	4.65676
-cr_header	ID1_chain	ID1_res_number	ID1_res_icode	ID1_res_name	ID1_atom	ID2_chain	ID2_res_number	ID2_res_icode	ID2_res_name	ID2_atom	area	arc_legth	distance	count
+cr_header	ID1_chain	ID1_rnum	ID1_ic	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_ic	ID2_rname	ID2_atom	area	arc_legth	distance	count
 cr	A	1	.	.	.	A	2	.	.	.	27.3555	5.59216	1.33573	10
 cr	A	1	.	.	.	A	224	.	.	.	9.38126	0	3.34954	3
 cr	A	1	.	.	.	A	226	.	.	.	6.14355	3.85731	4.80279	2
@@ -26409,9 +26409,9 @@ cr	B	222	.	.	.	B	226	.	.	.	10.7162	4.97691	3.21202	6
 cr	B	223	.	.	.	B	226	.	.	.	40.6566	16.2682	3.05552	15
 cr	B	1	.	.	.	B	226	.	.	.	6.03262	4.33126	4.95545	1
 cr	B	2	.	.	.	B	226	.	.	.	2.64348	3.23262	5.5633	2
-cu_header	ID1_chain	ID1_res_number	ID1_res_icode	ID1_res_name	ID1_atom	ID2_chain	ID2_res_number	ID2_res_icode	ID2_res_name	ID2_atom	area	arc_legth	distance	count
+cu_header	ID1_chain	ID1_rnum	ID1_ic	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_ic	ID2_rname	ID2_atom	area	arc_legth	distance	count
 cu	A	.	.	.	.	B	.	.	.	.	1407.36	248.965	2.42567	692
-sa_header	ID_chain	ID_res_number	ID_res_icode	ID_res_name	ID_atom	ID_index	sas_area	volume
+sa_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	ID_index	sas_area	volume
 sa	A	1	.	.	N	0	53.3426	63.8989
 sa	A	1	.	.	CA	1	4.70418	30.7944
 sa	A	1	.	.	C	2	2.62416	15.6203
@@ -29957,7 +29957,7 @@ sa	B	226	.	.	CD	3541	3.34683	24.4595
 sa	B	226	.	.	OE1	3542	19.9349	28.3542
 sa	B	226	.	.	OE2	3543	43.2461	45.9164
 sa	B	226	.	.	OXT	3544	40.1105	43.4319
-sr_header	ID_chain	ID_res_number	ID_res_icode	ID_res_name	ID_atom	sas_area	volume	count
+sr_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	sas_area	volume	count
 sr	A	1	.	.	.	99.3646	213.619	5
 sr	A	2	.	.	.	26.5311	132.432	5
 sr	A	3	.	.	.	66.24	256.468	9
@@ -30410,6 +30410,6 @@ sr	B	223	.	.	.	54.4093	227.888	8
 sr	B	224	.	.	.	0.0527845	95.7724	5
 sr	B	225	.	.	.	54.89	158.257	6
 sr	B	226	.	.	.	172.549	324.387	10
-su_header	ID_chain	ID_res_number	ID_res_icode	ID_res_name	ID_atom	sas_area	volume	count
+su_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	sas_area	volume	count
 su	A	.	.	.	.	9441.91	42590.6	1801
 su	B	.	.	.	.	9208.03	41365.9	1744

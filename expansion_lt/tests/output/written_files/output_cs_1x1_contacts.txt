@@ -1,4 +1,4 @@
-ca_header	ID1_chain	ID1_res_number	ID1_res_icode	ID1_res_name	ID1_atom	ID2_chain	ID2_res_number	ID2_res_icode	ID2_res_name	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
+ca_header	ID1_chain	ID1_rnum	ID1_ic	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_ic	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
 ca	c0	1	.	.	.	c0	2	.	.	.	0	1	42.9555	23.2335	6.73107
 ca	c0	2	.	.	.	c0	3	.	.	.	1	2	5.32484	8.18009	9.65506
 ca	c0	3	.	.	.	c0	4	.	.	.	2	3	35.0134	20.976	7.44443

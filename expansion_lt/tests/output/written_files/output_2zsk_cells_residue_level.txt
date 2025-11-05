@@ -1,4 +1,4 @@
-sr_header	ID_chain	ID_res_number	ID_res_icode	ID_res_name	ID_atom	sas_area	volume	count
+sr_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	sas_area	volume	count
 sr	A	1	.	.	.	99.3646	213.619	5
 sr	A	2	.	.	.	26.5311	132.432	5
 sr	A	3	.	.	.	66.24	256.468	9
