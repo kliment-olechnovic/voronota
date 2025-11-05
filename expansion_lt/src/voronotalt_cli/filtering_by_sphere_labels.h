@@ -147,6 +147,7 @@ private:
 	class FilterPair
 	{
 	public:
+		bool inter_residue;
 		bool inter_chain;
 		bool intra_chain;
 		int min_seq_sep;
@@ -156,7 +157,7 @@ private:
 		FilterSingle filter2_yes;
 		FilterSingle filter2_no;
 
-		FilterPair() noexcept : inter_chain(false), intra_chain(false), min_seq_sep(-1), max_seq_sep(-1)
+		FilterPair() noexcept : inter_residue(false), inter_chain(false), intra_chain(false), min_seq_sep(-1), max_seq_sep(-1)
 		{
 		}
 
@@ -164,6 +165,7 @@ private:
 		{
 			return
 			(
+				(!inter_residue || p.a().residue_id!=p.b().residue_id) &&
 				(!inter_chain || p.a().chain_id!=p.b().chain_id) &&
 				(!intra_chain || p.a().chain_id==p.b().chain_id) &&
 				(min_seq_sep<0 || p.a().chain_id!=p.b().chain_id || (p.a().expanded_residue_id.valid && p.b().expanded_residue_id.valid && std::abs(p.a().expanded_residue_id.rnum-p.b().expanded_residue_id.rnum)>=min_seq_sep)) &&
@@ -508,6 +510,10 @@ private:
 				if(token=="]")
 				{
 					end=true;
+				}
+				else if(token=="-inter-residue")
+				{
+					tester.inter_residue=true;
 				}
 				else if(token=="-inter-chain")
 				{
