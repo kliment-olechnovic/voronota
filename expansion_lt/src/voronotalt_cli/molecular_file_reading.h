@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include <iomanip>
+#include <cstdlib>
 
 namespace voronotalt
 {
@@ -137,18 +138,18 @@ public:
 		{
 			AtomRecord record=AtomRecord();
 			record.record_name=substring_of_columned_line(pdb_file_line, 1, 6);
-			record.serial=convert_string<int>(substring_of_columned_line(pdb_file_line, 7, 11), record.serial_valid);
+			record.serial=convert_string_to_int(substring_of_columned_line(pdb_file_line, 7, 11), record.serial_valid);
 			record.name=substring_of_columned_line(pdb_file_line, 13, 16);
 			record.altLoc=fix_undefined_string(substring_of_columned_line(pdb_file_line, 17, 17));
 			record.resName=fix_undefined_string(substring_of_columned_line(pdb_file_line, 18, 20));
 			record.chainID=fix_undefined_string(substring_of_columned_line(pdb_file_line, 22, 22));
-			record.resSeq=convert_string<int>(substring_of_columned_line(pdb_file_line, 23, 26), record.resSeq_valid);
+			record.resSeq=convert_string_to_int(substring_of_columned_line(pdb_file_line, 23, 26), record.resSeq_valid);
 			record.iCode=fix_undefined_string(substring_of_columned_line(pdb_file_line, 27, 27));
-			record.x=convert_string<double>(substring_of_columned_line(pdb_file_line, 31, 38), record.x_valid);
-			record.y=convert_string<double>(substring_of_columned_line(pdb_file_line, 39, 46), record.y_valid);
-			record.z=convert_string<double>(substring_of_columned_line(pdb_file_line, 47, 54), record.z_valid);
-			record.occupancy=convert_string<double>(substring_of_columned_line(pdb_file_line, 55, 60), record.occupancy_valid);
-			record.tempFactor=convert_string<double>(substring_of_columned_line(pdb_file_line, 61, 66), record.tempFactor_valid);
+			record.x=convert_string_to_double(substring_of_columned_line(pdb_file_line, 31, 38), record.x_valid);
+			record.y=convert_string_to_double(substring_of_columned_line(pdb_file_line, 39, 46), record.y_valid);
+			record.z=convert_string_to_double(substring_of_columned_line(pdb_file_line, 47, 54), record.z_valid);
+			record.occupancy=convert_string_to_double(substring_of_columned_line(pdb_file_line, 55, 60), record.occupancy_valid);
+			record.tempFactor=convert_string_to_double(substring_of_columned_line(pdb_file_line, 61, 66), record.tempFactor_valid);
 			record.element=fix_undefined_string(substring_of_columned_line(pdb_file_line, 77, 78));
 			normalize_numbered_atom_name(record.name);
 			return record;
@@ -319,18 +320,18 @@ public:
 		{
 			AtomRecord record=AtomRecord();
 			record.record_name=get_value_from_table_row(header_map, values_iter, atom_site_prefix+"group_PDB");
-			record.serial=convert_string<int>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"id"), record.serial_valid);
+			record.serial=convert_string_to_int(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"id"), record.serial_valid);
 			record.name=get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_atom_id", atom_site_prefix+"label_atom_id");
 			record.altLoc=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"label_alt_id"));
 			record.resName=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_comp_id", atom_site_prefix+"label_comp_id"));
 			record.chainID=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_asym_id", atom_site_prefix+"label_asym_id"));
-			record.resSeq=convert_string<int>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_seq_id", atom_site_prefix+"label_seq_id"), record.resSeq_valid);
+			record.resSeq=convert_string_to_int(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_seq_id", atom_site_prefix+"label_seq_id"), record.resSeq_valid);
 			record.iCode=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"pdbx_PDB_ins_code"));
-			record.x=convert_string<double>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_x"), record.x_valid);
-			record.y=convert_string<double>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_y"), record.y_valid);
-			record.z=convert_string<double>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_z"), record.z_valid);
-			record.occupancy=convert_string<double>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"occupancy"), record.occupancy_valid);
-			record.tempFactor=convert_string<double>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"B_iso_or_equiv"), record.tempFactor_valid);
+			record.x=convert_string_to_double(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_x"), record.x_valid);
+			record.y=convert_string_to_double(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_y"), record.y_valid);
+			record.z=convert_string_to_double(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_z"), record.z_valid);
+			record.occupancy=convert_string_to_double(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"occupancy"), record.occupancy_valid);
+			record.tempFactor=convert_string_to_double(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"B_iso_or_equiv"), record.tempFactor_valid);
 			record.element=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"type_symbol"));
 			normalize_numbered_atom_name(record.name);
 			return record;
@@ -358,19 +359,33 @@ private:
 				record.resName!="HOH");
 	}
 
-	template<typename T>
-	static T convert_string(const std::string& str, bool& valid) noexcept
+	static int convert_string_to_int(const std::string& str, bool& valid) noexcept
 	{
-		T value=T();
+		int value=0;
 		if(str.empty())
 		{
 			valid=false;
 		}
 		else
 		{
-			std::istringstream input(str);
-			input >> value;
-			valid=!input.fail();
+			value=std::atoi(str.c_str());
+			valid=!(value==0 && str!="0");
+		}
+		return value;
+	}
+
+	static double convert_string_to_double(const std::string& str, bool& valid) noexcept
+	{
+		double value=0.0;
+		if(str.empty())
+		{
+			valid=false;
+		}
+		else
+		{
+			char* str_next=0;
+			value=std::strtod(str.c_str(), &str_next);
+			valid=(str!=str_next);
 		}
 		return value;
 	}
