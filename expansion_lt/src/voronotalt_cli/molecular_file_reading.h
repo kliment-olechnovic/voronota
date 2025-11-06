@@ -5,7 +5,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <unordered_map>
+#include <map>
 #include <iomanip>
 #include <cstdlib>
 
@@ -305,40 +305,109 @@ public:
 			}
 		};
 
-		static bool read_uncommented_token_from_mmcif_file_stream(std::istream& input, std::string& output) noexcept
+		static bool read_uncommented_token_from_mmcif_file_stream(std::istream& in, std::string& out) noexcept
 		{
-			output.clear();
-			while(input.good())
+			out.clear();
+
+			std::streambuf* sb=in.rdbuf();
+			if(sb==NULL)
 			{
-				input >> std::ws;
-				const char opener=std::char_traits<char>::to_char_type(input.peek());
-				if(opener=='#')
+				in.setstate(std::ios::failbit);
+				return false;
+			}
+
+			const int EOFc=std::char_traits<char>::eof();
+			int c=sb->sgetc();
+
+			bool rescan=true;
+			while(rescan)
+			{
+				while(c!=EOFc && c<=32)
 				{
-					std::string comment;
-					std::getline(input, comment);
+					c=sb->snextc();
+				}
+
+				if(c==EOFc)
+				{
+					in.setstate(std::ios::eofbit | std::ios::failbit);
+					return false;
+				}
+
+				if(c=='#')
+				{
+					do
+					{
+						c=sb->snextc();
+					}
+					while(c!=EOFc && c!='\n');
+
+					if(c==EOFc)
+					{
+						in.setstate(std::ios::eofbit | std::ios::failbit);
+						return false;
+					}
+
+					c=sb->snextc();
+					rescan=true;
 				}
 				else
 				{
-					if(opener=='"' || opener=='\'')
-					{
-						input.get();
-						std::getline(input, output, opener);
-					}
-					else
-					{
-						input >> output;
-					}
-
-					if(input.fail())
-					{
-						return false;
-					}
-					else
-					{
-						return true;
-					}
+					rescan=false;
 				}
 			}
+
+			if(c=='\'' || c=='"')
+			{
+				const int quote=c;
+				c=sb->snextc();
+
+				while(c!=EOFc && c!=quote)
+				{
+					out.push_back(std::char_traits<char>::to_char_type(c));
+					c=sb->snextc();
+				}
+
+				if(c==quote)
+				{
+					sb->snextc();
+					if(out.empty() && in.good()==false)
+					{
+						in.clear();
+					}
+					return true;
+				}
+				else
+				{
+					in.setstate(std::ios::eofbit | std::ios::failbit);
+					return false;
+				}
+			}
+			else
+			{
+				while(c!=EOFc && c>32)
+				{
+					out.push_back(std::char_traits<char>::to_char_type(c));
+					c=sb->snextc();
+				}
+
+				if(!out.empty())
+				{
+					return true;
+				}
+				else
+				{
+					if(c==EOFc)
+					{
+						in.setstate(std::ios::eofbit | std::ios::failbit);
+					}
+					else
+					{
+						in.setstate(std::ios::failbit);
+					}
+					return false;
+				}
+			}
+
 			return false;
 		}
 
