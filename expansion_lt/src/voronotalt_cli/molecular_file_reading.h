@@ -5,7 +5,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <iomanip>
 #include <cstdlib>
 
@@ -170,7 +170,8 @@ public:
 			while(file_stream.good())
 			{
 				std::string token;
-				bool token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
+				std::getline(file_stream, token);
+				bool token_status=true;
 				if(token_status && token=="loop_")
 				{
 					std::vector<std::string> header;
@@ -182,12 +183,7 @@ public:
 					}
 					if(!header.empty())
 					{
-						std::map<std::string, std::size_t> header_map;
-						for(std::size_t i=0;i<header.size();i++)
-						{
-							header_map[header[i]]=i;
-						}
-						if(header_map.size()==header.size())
+						const std::vector< std::pair<bool, std::size_t> > map_of_value_positions=AtomSiteMapping::map_value_names_to_header_positions(header, atom_site_prefix);
 						{
 							std::vector<std::string> values;
 							while(token_status && !(token=="loop_" || token.rfind("_", 0)==0 || token.rfind("data_", 0)==0))
@@ -198,13 +194,13 @@ public:
 							if(!values.empty() && ((values.size()%header.size())==0))
 							{
 								data.atom_records.reserve(values.size()/header.size());
-								const std::string first_model_id=get_value_from_table_row(header_map, values.begin(), atom_site_prefix+"pdbx_PDB_model_num");
+								const std::string first_model_id=get_value_from_table_row(map_of_value_positions, values.begin(), AtomSiteMapping::atom_site__pdbx_PDB_model_num);
 								for(std::size_t i=0;i<values.size();i+=header.size())
 								{
-									const std::string current_model_id=get_value_from_table_row(header_map, (values.begin()+i), atom_site_prefix+"pdbx_PDB_model_num");
+									const std::string current_model_id=get_value_from_table_row(map_of_value_positions, (values.begin()+i), AtomSiteMapping::atom_site__pdbx_PDB_model_num);
 									if(parameters.as_assembly || current_model_id==first_model_id)
 									{
-										AtomRecord record=read_atom_record_from_table_row(atom_site_prefix, header_map, (values.begin()+i));
+										AtomRecord record=read_atom_record_from_table_row(map_of_value_positions, (values.begin()+i));
 										if(check_atom_record_acceptability(record, parameters.include_heteroatoms, parameters.include_hydrogens))
 										{
 											if(check_atom_record_validity(record))
@@ -237,12 +233,6 @@ public:
 								return false;
 							}
 						}
-						else
-						{
-							error_message_output_stream << "Duplicate key in '_atom_site' loop in mmCIF input stream.\n";
-							data.clear();
-							return false;
-						}
 					}
 				}
 			}
@@ -250,6 +240,71 @@ public:
 		}
 
 	private:
+		class AtomSiteMapping
+		{
+		public:
+			enum ValueName
+			{
+				atom_site__pdbx_PDB_model_num,
+				atom_site__group_PDB,
+				atom_site__id,
+				atom_site__auth_atom_id,
+				atom_site__label_atom_id,
+				atom_site__label_alt_id,
+				atom_site__auth_comp_id,
+				atom_site__label_comp_id,
+				atom_site__auth_asym_id,
+				atom_site__label_asym_id,
+				atom_site__auth_seq_id,
+				atom_site__label_seq_id,
+				atom_site__pdbx_PDB_ins_code,
+				atom_site__Cartn_x,
+				atom_site__Cartn_y,
+				atom_site__Cartn_z,
+				atom_site__occupancy,
+				atom_site__B_iso_or_equiv,
+				atom_site__type_symbol,
+				atom_site__undefined
+			};
+
+			static std::vector< std::pair<bool, std::size_t> > map_value_names_to_header_positions(const std::vector<std::string>& header, const std::string& atom_site_prefix) noexcept
+			{
+				std::vector< std::pair<bool, std::size_t> > result(static_cast<int>(atom_site__undefined)+1, std::pair<bool, std::size_t>(false, 0));
+				std::map<std::string, std::size_t> header_map;
+				for(std::size_t i=0;i<header.size();i++)
+				{
+					header_map[header[i]]=i;
+				}
+				result[static_cast<int>(atom_site__pdbx_PDB_model_num)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"pdbx_PDB_model_num");
+				result[static_cast<int>(atom_site__group_PDB)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"group_PDB");
+				result[static_cast<int>(atom_site__id)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"id");
+				result[static_cast<int>(atom_site__auth_atom_id)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"auth_atom_id");
+				result[static_cast<int>(atom_site__label_atom_id)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"label_atom_id");
+				result[static_cast<int>(atom_site__label_alt_id)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"label_alt_id");
+				result[static_cast<int>(atom_site__auth_comp_id)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"auth_comp_id");
+				result[static_cast<int>(atom_site__label_comp_id)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"label_comp_id");
+				result[static_cast<int>(atom_site__auth_asym_id)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"auth_asym_id");
+				result[static_cast<int>(atom_site__label_asym_id)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"label_asym_id");
+				result[static_cast<int>(atom_site__auth_seq_id)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"auth_seq_id");
+				result[static_cast<int>(atom_site__label_seq_id)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"label_seq_id");
+				result[static_cast<int>(atom_site__pdbx_PDB_ins_code)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"pdbx_PDB_ins_code");
+				result[static_cast<int>(atom_site__Cartn_x)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"Cartn_x");
+				result[static_cast<int>(atom_site__Cartn_y)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"Cartn_y");
+				result[static_cast<int>(atom_site__Cartn_z)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"Cartn_z");
+				result[static_cast<int>(atom_site__occupancy)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"occupancy");
+				result[static_cast<int>(atom_site__B_iso_or_equiv)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"B_iso_or_equiv");
+				result[static_cast<int>(atom_site__type_symbol)]=get_position_by_name_from_header_map(header_map, atom_site_prefix+"type_symbol");
+				return result;
+			}
+
+		private:
+			static std::pair<bool, std::size_t> get_position_by_name_from_header_map(const std::map<std::string, std::size_t>& header_map, const std::string& name) noexcept
+			{
+				std::map<std::string, std::size_t>::const_iterator it=header_map.find(name);
+				return (it==header_map.end() ? std::pair<bool, std::size_t>(false, 0) : std::pair<bool, std::size_t>(true, it->second));
+			}
+		};
+
 		static bool read_uncommented_token_from_mmcif_file_stream(std::istream& input, std::string& output) noexcept
 		{
 			output.clear();
@@ -288,51 +343,46 @@ public:
 		}
 
 		static std::string get_value_from_table_row(
-				const std::map<std::string, std::size_t>& header_map,
+				const std::vector< std::pair<bool, std::size_t> >& map_to_header_positions,
 				const std::vector<std::string>::const_iterator& values_iter,
-				const std::string& name) noexcept
+				const AtomSiteMapping::ValueName name) noexcept
 		{
-			std::map<std::string, std::size_t>::const_iterator it=header_map.find(name);
-			if(it!=header_map.end() && it->second<header_map.size())
-			{
-				return (*(values_iter+it->second));
-			}
-			return std::string();
+			const std::pair<bool, std::size_t>& pos=map_to_header_positions[static_cast<int>(name)];
+			return (pos.first ? (*(values_iter+pos.second)) : std::string());
 		}
 
 		static std::string get_value_from_table_row(
-				const std::map<std::string, std::size_t>& header_map,
+				const std::vector< std::pair<bool, std::size_t> >& map_to_header_positions,
 				const std::vector<std::string>::const_iterator& values_iter,
-				const std::string& name_primary,
-				const std::string& name_alternative) noexcept
+				const AtomSiteMapping::ValueName name_primary,
+				const AtomSiteMapping::ValueName name_alternative) noexcept
 		{
-			if(header_map.count(name_primary)>0)
+			const std::pair<bool, std::size_t>& pos_primary=map_to_header_positions[static_cast<int>(name_primary)];
+			if(pos_primary.first)
 			{
-				return get_value_from_table_row(header_map, values_iter, name_primary);
+				return (*(values_iter+pos_primary.second));
 			}
-			else
-			{
-				return get_value_from_table_row(header_map, values_iter, name_alternative);
-			}
+			const std::pair<bool, std::size_t>& pos_alternative=map_to_header_positions[static_cast<int>(name_alternative)];
+			return (pos_alternative.first ? (*(values_iter+pos_alternative.second)) : std::string());
 		}
 
-		static AtomRecord read_atom_record_from_table_row(const std::string& atom_site_prefix, const std::map<std::string, std::size_t>& header_map, const std::vector<std::string>::const_iterator& values_iter) noexcept
+		static AtomRecord read_atom_record_from_table_row(const std::vector< std::pair<bool, std::size_t> >& map_to_header_positions, const std::vector<std::string>::const_iterator& values_iter) noexcept
 		{
 			AtomRecord record=AtomRecord();
-			record.record_name=get_value_from_table_row(header_map, values_iter, atom_site_prefix+"group_PDB");
-			record.serial=convert_string_to_int(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"id"), record.serial_valid);
-			record.name=get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_atom_id", atom_site_prefix+"label_atom_id");
-			record.altLoc=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"label_alt_id"));
-			record.resName=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_comp_id", atom_site_prefix+"label_comp_id"));
-			record.chainID=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_asym_id", atom_site_prefix+"label_asym_id"));
-			record.resSeq=convert_string_to_int(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_seq_id", atom_site_prefix+"label_seq_id"), record.resSeq_valid);
-			record.iCode=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"pdbx_PDB_ins_code"));
-			record.x=convert_string_to_double(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_x"), record.x_valid);
-			record.y=convert_string_to_double(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_y"), record.y_valid);
-			record.z=convert_string_to_double(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_z"), record.z_valid);
-			record.occupancy=convert_string_to_double(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"occupancy"), record.occupancy_valid);
-			record.tempFactor=convert_string_to_double(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"B_iso_or_equiv"), record.tempFactor_valid);
-			record.element=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"type_symbol"));
+			record.record_name=get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__group_PDB);
+			record.serial=convert_string_to_int(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__id), record.serial_valid);
+			record.name=get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__auth_atom_id, AtomSiteMapping::atom_site__label_atom_id);
+			record.altLoc=fix_undefined_string(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__label_alt_id));
+			record.resName=fix_undefined_string(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__auth_comp_id, AtomSiteMapping::atom_site__label_comp_id));
+			record.chainID=fix_undefined_string(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__auth_asym_id, AtomSiteMapping::atom_site__label_asym_id));
+			record.resSeq=convert_string_to_int(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__auth_seq_id, AtomSiteMapping::atom_site__label_seq_id), record.resSeq_valid);
+			record.iCode=fix_undefined_string(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__pdbx_PDB_ins_code));
+			record.x=convert_string_to_double(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__Cartn_x), record.x_valid);
+			record.y=convert_string_to_double(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__Cartn_y), record.y_valid);
+			record.z=convert_string_to_double(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__Cartn_z), record.z_valid);
+			record.occupancy=convert_string_to_double(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__occupancy), record.occupancy_valid);
+			record.tempFactor=convert_string_to_double(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__B_iso_or_equiv), record.tempFactor_valid);
+			record.element=fix_undefined_string(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__type_symbol));
 			normalize_numbered_atom_name(record.name);
 			return record;
 		}
