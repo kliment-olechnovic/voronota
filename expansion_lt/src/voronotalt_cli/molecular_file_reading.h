@@ -184,23 +184,24 @@ public:
 					if(!header.empty())
 					{
 						const std::vector< std::pair<bool, std::size_t> > map_of_value_positions=AtomSiteMapping::map_value_names_to_header_positions(header, atom_site_prefix);
+						std::vector<std::string> values;
+						values.reserve(header.size());
+						while(token_status && !(token.rfind("_", 0)==0 || token.rfind("data_", 0)==0 || token=="loop_"))
 						{
-							std::vector<std::string> values;
-							while(token_status && !(token=="loop_" || token.rfind("_", 0)==0 || token.rfind("data_", 0)==0))
+							values.clear();
+							while(token_status && values.size()<header.size())
 							{
 								values.push_back(token);
 								token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
 							}
-							if(!values.empty() && ((values.size()%header.size())==0))
+							if(values.size()==header.size())
 							{
-								data.atom_records.reserve(values.size()/header.size());
 								const std::string first_model_id=get_value_from_table_row(map_of_value_positions, values.begin(), AtomSiteMapping::atom_site__pdbx_PDB_model_num);
-								for(std::size_t i=0;i<values.size();i+=header.size())
 								{
-									const std::string current_model_id=get_value_from_table_row(map_of_value_positions, (values.begin()+i), AtomSiteMapping::atom_site__pdbx_PDB_model_num);
+									const std::string current_model_id=get_value_from_table_row(map_of_value_positions, values.begin(), AtomSiteMapping::atom_site__pdbx_PDB_model_num);
 									if(parameters.as_assembly || current_model_id==first_model_id)
 									{
-										AtomRecord record=read_atom_record_from_table_row(map_of_value_positions, (values.begin()+i));
+										AtomRecord record=read_atom_record_from_table_row(map_of_value_positions, values.begin());
 										if(check_atom_record_acceptability(record, parameters.include_heteroatoms, parameters.include_hydrogens))
 										{
 											if(check_atom_record_validity(record))
@@ -217,14 +218,13 @@ public:
 												error_message_output_stream << "Invalid atom record in row:";
 												for(std::size_t j=0;j<header.size();j++)
 												{
-													error_message_output_stream << " " << header[j] << "=" << values[i+j];
+													error_message_output_stream << " " << header[j] << "=" << values[j];
 												}
 												error_message_output_stream << "\n";
 											}
 										}
 									}
 								}
-								return data.valid();
 							}
 							else
 							{
@@ -233,6 +233,7 @@ public:
 								return false;
 							}
 						}
+						return data.valid();
 					}
 				}
 			}
