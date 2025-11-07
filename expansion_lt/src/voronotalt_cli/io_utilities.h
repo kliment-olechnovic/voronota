@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cctype>
 #include <cstring>
+#include <cstdio>
 
 #ifdef VORONOTALT_OPENMP
 #include <omp.h>
@@ -262,6 +263,51 @@ inline bool read_string_ids_and_double_values_from_text_string(const std::size_t
 	}
 
 	return (total_failures==0);
+}
+
+inline static void string_append_char(std::string& dest, const char c) noexcept
+{
+	dest.push_back(c);
+}
+
+inline static void string_append_cstring(std::string& dest, const char* s) noexcept
+{
+	dest.append(s);
+}
+
+inline static void string_append_string(std::string& dest, const std::string& s) noexcept
+{
+	dest.append(s);
+}
+
+template<typename IntType>
+inline static void string_append_int(std::string& dest, const IntType v) noexcept
+{
+    char buf[32];
+    const int n=std::snprintf(buf, sizeof(buf), "%d", static_cast<int>(v));
+    if(n>0)
+	{
+    	dest.append(buf, static_cast<std::size_t>(n));
+	}
+    else
+    {
+    	dest.push_back('.');
+    }
+}
+
+template<typename FloatType>
+inline static void string_append_double(std::string& dest, const FloatType v)
+{
+    char buf[48];
+    const int n=std::snprintf(buf, sizeof(buf), "%.6g", static_cast<double>(v));
+    if(n>0)
+	{
+		dest.append(buf, static_cast<std::size_t>(n));
+	}
+    else
+    {
+    	dest.push_back('.');
+    }
 }
 
 }

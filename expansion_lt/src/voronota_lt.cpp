@@ -647,6 +647,28 @@ public:
 	{
 	}
 
+	template<class Result, class GroupedResult>
+	void print_tessellation_full_construction_result_log_basic(const Result& result, const GroupedResult& result_grouped_by_residue, const GroupedResult& result_grouped_by_chain) noexcept
+	{
+		log_output << "log_total_input_balls\t" << result.total_spheres << "\n";
+		log_output << "log_total_collisions\t" << result.total_collisions << "\n";
+		log_output << "log_total_relevant_collisions\t" << result.total_relevant_collisions << "\n";
+		log_output << "log_total_contacts_count\t" << result.total_contacts_summary.count << "\n";
+		log_output << "log_total_contacts_area\t" << result.total_contacts_summary.area << "\n";
+		log_output << "log_total_residue_level_contacts_count\t" << result_grouped_by_residue.grouped_contacts_summaries.size() << "\n";
+		log_output << "log_total_chain_level_contacts_count\t" << result_grouped_by_chain.grouped_contacts_summaries.size() << "\n";
+	}
+
+	template<class Result, class GroupedResult>
+	void print_tessellation_full_construction_result_log_about_cells(const Result& result, const GroupedResult& result_grouped_by_residue, const GroupedResult& result_grouped_by_chain) noexcept
+	{
+		log_output << "log_total_cells_count\t" << result.total_cells_summary.count << "\n";
+		log_output << "log_total_cells_sas_area\t" << result.total_cells_summary.sas_area << "\n";
+		log_output << "log_total_cells_sas_inside_volume\t" << result.total_cells_summary.sas_inside_volume << "\n";
+		log_output << "log_total_residue_level_cells_count\t" << result_grouped_by_residue.grouped_cells_summaries.size() << "\n";
+		log_output << "log_total_chain_level_cells_count\t" << result_grouped_by_chain.grouped_cells_summaries.size() << "\n";
+	}
+
 	void finalize_and_output(const ApplicationParameters& app_params) noexcept
 	{
 		if(app_params.measure_running_time)
@@ -854,118 +876,160 @@ void run_mode_radical(
 
 	app_log_recorders.time_recoder_for_output.reset();
 
-	voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_basic(result, result_grouped_by_residue, result_grouped_by_chain, app_log_recorders.log_output);
-	voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_about_cells(result, result_grouped_by_residue, result_grouped_by_chain, app_log_recorders.log_output);
+	app_log_recorders.print_tessellation_full_construction_result_log_basic(result, result_grouped_by_residue, result_grouped_by_chain);
+	app_log_recorders.print_tessellation_full_construction_result_log_about_cells(result, result_grouped_by_residue, result_grouped_by_chain);
 
 	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print total numbers");
 
-	if(app_params.print_contacts)
+	if(app_params.print_contacts || !app_params.write_contacts_to_file.empty())
 	{
-		voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, std::cout);
-	}
-
-	if(!app_params.write_contacts_to_file.empty())
-	{
-		std::ofstream foutput(app_params.write_contacts_to_file.c_str(), std::ios::out);
-		if(foutput.good())
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_contacts(result.contacts_summaries, spheres_input_result.sphere_labels, true, output_string);
+		if(!output_string.empty())
 		{
-			voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, foutput);
-		}
-		else
-		{
-			std::cerr << "Error (non-terminating): failed to write contacts to file '" << app_params.write_contacts_to_file << "'\n";
-		}
-	}
-
-	if(app_params.print_contacts_residue_level)
-	{
-		voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, std::cout);
-	}
-
-	if(!app_params.write_contacts_residue_level_to_file.empty())
-	{
-		std::ofstream foutput(app_params.write_contacts_residue_level_to_file.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, foutput);
-		}
-		else
-		{
-			std::cerr << "Error (non-terminating): failed to write contacts on residue level to file '" << app_params.write_contacts_residue_level_to_file << "'\n";
+			if(app_params.print_contacts)
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			if(!app_params.write_contacts_to_file.empty())
+			{
+				std::ofstream foutput(app_params.write_contacts_to_file.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+				}
+				else
+				{
+					std::cerr << "Error (non-terminating): failed to write contacts to file '" << app_params.write_contacts_to_file << "'\n";
+				}
+			}
 		}
 	}
 
-	if(app_params.print_contacts_chain_level)
+	if(app_params.print_contacts_residue_level || !app_params.write_contacts_residue_level_to_file.empty())
 	{
-		voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, std::cout);
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_contacts_residue_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, output_string);
+		if(!output_string.empty())
+		{
+			if(app_params.print_contacts_residue_level)
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			if(!app_params.write_contacts_residue_level_to_file.empty())
+			{
+				std::ofstream foutput(app_params.write_contacts_residue_level_to_file.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+				}
+				else
+				{
+					std::cerr << "Error (non-terminating): failed to write contacts on residue level to file '" << app_params.write_contacts_residue_level_to_file << "'\n";
+				}
+			}
+		}
 	}
 
-	if(!app_params.write_contacts_chain_level_to_file.empty())
+	if(app_params.print_contacts_chain_level || !app_params.write_contacts_chain_level_to_file.empty())
 	{
-		std::ofstream foutput(app_params.write_contacts_chain_level_to_file.c_str(), std::ios::out);
-		if(foutput.good())
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_contacts_chain_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, output_string);
+		if(!output_string.empty())
 		{
-			voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, foutput);
-		}
-		else
-		{
-			std::cerr << "Error (non-terminating): failed to write contacts on chain level to file '" << app_params.write_contacts_chain_level_to_file << "'\n";
+			if(app_params.print_contacts_chain_level)
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			if(!app_params.write_contacts_chain_level_to_file.empty())
+			{
+				std::ofstream foutput(app_params.write_contacts_chain_level_to_file.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+				}
+				else
+				{
+					std::cerr << "Error (non-terminating): failed to write contacts on chain level to file '" << app_params.write_contacts_chain_level_to_file << "'\n";
+				}
+			}
 		}
 	}
 
 	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result contacts");
 
-	if(app_params.print_cells)
+	if(app_params.print_cells || !app_params.write_cells_to_file.empty())
 	{
-		voronotalt::PrintingCustomTypes::print_cells_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, true, std::cout);
-	}
-
-	if(!app_params.write_cells_to_file.empty())
-	{
-		std::ofstream foutput(app_params.write_cells_to_file.c_str(), std::ios::out);
-		if(foutput.good())
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_cells(result.cells_summaries, spheres_input_result.sphere_labels, true, output_string);
+		if(!output_string.empty())
 		{
-			voronotalt::PrintingCustomTypes::print_cells_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, true, foutput);
-		}
-		else
-		{
-			std::cerr << "Error (non-terminating): failed to write cells to file '" << app_params.write_cells_to_file << "'\n";
-		}
-	}
-
-	if(app_params.print_cells_residue_level)
-	{
-		voronotalt::PrintingCustomTypes::print_cells_residue_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, std::cout);
-	}
-
-	if(!app_params.write_cells_residue_level_to_file.empty())
-	{
-		std::ofstream foutput(app_params.write_cells_residue_level_to_file.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			voronotalt::PrintingCustomTypes::print_cells_residue_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, foutput);
-		}
-		else
-		{
-			std::cerr << "Error (non-terminating): failed to write cells on residue level to file '" << app_params.write_cells_residue_level_to_file << "'\n";
+			if(app_params.print_cells)
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			if(!app_params.write_cells_to_file.empty())
+			{
+				std::ofstream foutput(app_params.write_cells_to_file.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+				}
+				else
+				{
+					std::cerr << "Error (non-terminating): failed to write cells to file '" << app_params.write_cells_to_file << "'\n";
+				}
+			}
 		}
 	}
 
-	if(app_params.print_cells_chain_level)
+	if(app_params.print_cells_residue_level || !app_params.write_cells_residue_level_to_file.empty())
 	{
-		voronotalt::PrintingCustomTypes::print_cells_chain_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, std::cout);
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_cells_residue_level(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, output_string);
+		if(!output_string.empty())
+		{
+			if(app_params.print_cells_residue_level)
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			if(!app_params.write_cells_residue_level_to_file.empty())
+			{
+				std::ofstream foutput(app_params.write_cells_residue_level_to_file.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+				}
+				else
+				{
+					std::cerr << "Error (non-terminating): failed to write cells on residue level to file '" << app_params.write_cells_residue_level_to_file << "'\n";
+				}
+			}
+		}
 	}
 
-	if(!app_params.write_cells_chain_level_to_file.empty())
+	if(app_params.print_cells_chain_level || !app_params.write_cells_chain_level_to_file.empty())
 	{
-		std::ofstream foutput(app_params.write_cells_chain_level_to_file.c_str(), std::ios::out);
-		if(foutput.good())
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_cells_chain_level(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, output_string);
+		if(!output_string.empty())
 		{
-			voronotalt::PrintingCustomTypes::print_cells_chain_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, foutput);
-		}
-		else
-		{
-			std::cerr << "Error (non-terminating): failed to write cells on chain level to file '" << app_params.write_cells_chain_level_to_file << "'\n";
+			if(app_params.print_cells_chain_level)
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			if(!app_params.write_cells_chain_level_to_file.empty())
+			{
+				std::ofstream foutput(app_params.write_cells_chain_level_to_file.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+				}
+				else
+				{
+					std::cerr << "Error (non-terminating): failed to write cells on chain level to file '" << app_params.write_cells_chain_level_to_file << "'\n";
+				}
+			}
 		}
 	}
 
@@ -973,28 +1037,38 @@ void run_mode_radical(
 
 	if(!app_params.write_tessellation_edges_to_file.empty())
 	{
-		std::ofstream foutput(app_params.write_tessellation_edges_to_file.c_str(), std::ios::out);
-		if(foutput.good())
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_sequential_container_simply(result.tessellation_net.tes_edges, output_string);
+		if(!output_string.empty())
 		{
-			voronotalt::PrintingCustomTypes::print_sequential_container_simply(result.tessellation_net.tes_edges, foutput);
-		}
-		else
-		{
-			std::cerr << "Error (non-terminating): failed to write tessellation edges to file '" << app_params.write_tessellation_edges_to_file << "'\n";
+			std::ofstream foutput(app_params.write_tessellation_edges_to_file.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			else
+			{
+				std::cerr << "Error (non-terminating): failed to write tessellation edges to file '" << app_params.write_tessellation_edges_to_file << "'\n";
+			}
 		}
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("write tessellation edges");
 	}
 
 	if(!app_params.write_tessellation_vertices_to_file.empty())
 	{
-		std::ofstream foutput(app_params.write_tessellation_vertices_to_file.c_str(), std::ios::out);
-		if(foutput.good())
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_sequential_container_simply(result.tessellation_net.tes_vertices, output_string);
+		if(!output_string.empty())
 		{
-			voronotalt::PrintingCustomTypes::print_sequential_container_simply(result.tessellation_net.tes_vertices, foutput);
-		}
-		else
-		{
-			std::cerr << "Error (non-terminating): failed to write tessellation vertices to file '" << app_params.write_tessellation_vertices_to_file << "'\n";
+			std::ofstream foutput(app_params.write_tessellation_vertices_to_file.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			else
+			{
+				std::cerr << "Error (non-terminating): failed to write tessellation vertices to file '" << app_params.write_tessellation_vertices_to_file << "'\n";
+			}
 		}
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("write tessellation vertices");
 	}
@@ -1367,61 +1441,82 @@ void run_mode_simplified_aw(
 
 	app_log_recorders.time_recoder_for_output.reset();
 
-	voronotalt::PrintingCustomTypes::print_tessellation_full_construction_result_log_basic(result, result_grouped_by_residue, result_grouped_by_chain, app_log_recorders.log_output);
+	app_log_recorders.print_tessellation_full_construction_result_log_basic(result, result_grouped_by_residue, result_grouped_by_chain);
 
 	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print total numbers");
 
-	if(app_params.print_contacts)
+	if(app_params.print_contacts || !app_params.write_contacts_to_file.empty())
 	{
-		voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, std::cout);
-	}
-
-	if(!app_params.write_contacts_to_file.empty())
-	{
-		std::ofstream foutput(app_params.write_contacts_to_file.c_str(), std::ios::out);
-		if(foutput.good())
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_contacts(result.contacts_summaries, spheres_input_result.sphere_labels, true, output_string);
+		if(!output_string.empty())
 		{
-			voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, foutput);
-		}
-		else
-		{
-			std::cerr << "Error (non-terminating): failed to write contacts to file '" << app_params.write_contacts_to_file << "'\n";
-		}
-	}
-
-	if(app_params.print_contacts_residue_level)
-	{
-		voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, std::cout);
-	}
-
-	if(!app_params.write_contacts_residue_level_to_file.empty())
-	{
-		std::ofstream foutput(app_params.write_contacts_residue_level_to_file.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, foutput);
-		}
-		else
-		{
-			std::cerr << "Error (non-terminating): failed to write contacts on residue level to file '" << app_params.write_contacts_residue_level_to_file << "'\n";
+			if(app_params.print_contacts)
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			if(!app_params.write_contacts_to_file.empty())
+			{
+				std::ofstream foutput(app_params.write_contacts_to_file.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+				}
+				else
+				{
+					std::cerr << "Error (non-terminating): failed to write contacts to file '" << app_params.write_contacts_to_file << "'\n";
+				}
+			}
 		}
 	}
 
-	if(app_params.print_contacts_chain_level)
+	if(app_params.print_contacts_residue_level || !app_params.write_contacts_residue_level_to_file.empty())
 	{
-		voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, std::cout);
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_contacts_residue_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, output_string);
+		if(!output_string.empty())
+		{
+			if(app_params.print_contacts_residue_level)
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			if(!app_params.write_contacts_residue_level_to_file.empty())
+			{
+				std::ofstream foutput(app_params.write_contacts_residue_level_to_file.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+				}
+				else
+				{
+					std::cerr << "Error (non-terminating): failed to write contacts on residue level to file '" << app_params.write_contacts_residue_level_to_file << "'\n";
+				}
+			}
+		}
 	}
 
-	if(!app_params.write_contacts_chain_level_to_file.empty())
+	if(app_params.print_contacts_chain_level || !app_params.write_contacts_chain_level_to_file.empty())
 	{
-		std::ofstream foutput(app_params.write_contacts_chain_level_to_file.c_str(), std::ios::out);
-		if(foutput.good())
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_contacts_chain_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, output_string);
+		if(!output_string.empty())
 		{
-			voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, foutput);
-		}
-		else
-		{
-			std::cerr << "Error (non-terminating): failed to write contacts on chain level to file '" << app_params.write_contacts_chain_level_to_file << "'\n";
+			if(app_params.print_contacts_chain_level)
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			if(!app_params.write_contacts_chain_level_to_file.empty())
+			{
+				std::ofstream foutput(app_params.write_contacts_chain_level_to_file.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+				}
+				else
+				{
+					std::cerr << "Error (non-terminating): failed to write contacts on chain level to file '" << app_params.write_contacts_chain_level_to_file << "'\n";
+				}
+			}
 		}
 	}
 
@@ -1736,12 +1831,13 @@ void run_mode_test_second_order_cell_volumes_calculation(
 
 	if(urt.calculate_second_order_cell_volumes(all_result_volumes_for_contacts_summaries))
 	{
-		std::cout << "socv_header";
+		std::string output_string;
+		voronotalt::string_append_cstring(output_string, "socv_header");
 		if(!spheres_input_result.sphere_labels.empty())
 		{
-			std::cout << "\tID1_chain\tID1_res_number\tID1_res_icode\tID1_res_name\tID1_atom\tID2_chain\tID2_res_number\tID2_res_icode\tID2_res_name\tID2_atom";
+			voronotalt::string_append_cstring(output_string, "\tID1_chain\tID1_res_number\tID1_res_icode\tID1_res_name\tID1_atom\tID2_chain\tID2_res_number\tID2_res_icode\tID2_res_name\tID2_atom");
 		}
-		std::cout << "\tID1_index\tID2_index\tarea\tarc_legth\tdistance\tsolid_angle_a\tsolid_angle_b\tpyramid_volume_a\tpyramid_volume_b\tsecond_order_cell_volume\n";
+		voronotalt::string_append_cstring(output_string, "\tID1_index\tID2_index\tarea\tarc_legth\tdistance\tsolid_angle_a\tsolid_angle_b\tpyramid_volume_a\tpyramid_volume_b\tsecond_order_cell_volume\n");
 		for(voronotalt::UnsignedInt i=0;i<urt.result().contacts_summaries.size();i++)
 		{
 			for(voronotalt::UnsignedInt j=0;j<urt.result().contacts_summaries[i].size();j++)
@@ -1749,21 +1845,39 @@ void run_mode_test_second_order_cell_volumes_calculation(
 				const voronotalt::RadicalTessellation::ContactDescriptorSummary& cds=urt.result().contacts_summaries[i][j];
 				if(std::min(cds.id_a, cds.id_b)==i)
 				{
-					std::cout << "socv";
+					voronotalt::string_append_cstring(output_string, "socv");
 					if(!spheres_input_result.sphere_labels.empty())
 					{
-						std::cout << "\t";
-						voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[cds.id_a], false, false, std::cout);
-						std::cout << "\t";
-						voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[cds.id_b], false, false, std::cout);
+						voronotalt::string_append_char(output_string, '\t');
+						voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[cds.id_a], false, false, output_string);
+						voronotalt::string_append_char(output_string, '\t');
+						voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[cds.id_b], false, false, output_string);
 					}
-					std::cout << "\t" << cds.id_a << "\t" << cds.id_b << "\t" << cds.area << "\t" << cds.arc_length << "\t" << cds.distance;
-					std::cout << "\t" << cds.solid_angle_a << "\t" << cds.solid_angle_b << "\t" << cds.pyramid_volume_a << "\t" << cds.pyramid_volume_b;
-					std::cout << "\t" << ((i<all_result_volumes_for_contacts_summaries.size() && j<all_result_volumes_for_contacts_summaries[i].size()) ? all_result_volumes_for_contacts_summaries[i][j] : FLOATCONST(0.0));
-					std::cout << "\n";
+					voronotalt::string_append_char(output_string, '\t');
+					voronotalt::string_append_int(output_string, cds.id_a);
+					voronotalt::string_append_char(output_string, '\t');
+					voronotalt::string_append_int(output_string, cds.id_b);
+					voronotalt::string_append_char(output_string, '\t');
+					voronotalt::string_append_double(output_string, cds.area);
+					voronotalt::string_append_char(output_string, '\t');
+					voronotalt::string_append_double(output_string, cds.arc_length);
+					voronotalt::string_append_char(output_string, '\t');
+					voronotalt::string_append_double(output_string, cds.distance);
+					voronotalt::string_append_char(output_string, '\t');
+					voronotalt::string_append_double(output_string, cds.solid_angle_a);
+					voronotalt::string_append_char(output_string, '\t');
+					voronotalt::string_append_double(output_string, cds.solid_angle_b);
+					voronotalt::string_append_char(output_string, '\t');
+					voronotalt::string_append_double(output_string, cds.pyramid_volume_a);
+					voronotalt::string_append_char(output_string, '\t');
+					voronotalt::string_append_double(output_string, cds.pyramid_volume_b);
+					voronotalt::string_append_char(output_string, '\t');
+					voronotalt::string_append_double(output_string, ((i<all_result_volumes_for_contacts_summaries.size() && j<all_result_volumes_for_contacts_summaries[i].size()) ? all_result_volumes_for_contacts_summaries[i][j] : FLOATCONST(0.0)));
+					voronotalt::string_append_char(output_string, '\n');
 				}
 			}
 		}
+		std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
 	}
 }
 
@@ -1824,39 +1938,54 @@ void run_mode_test_raw_collisions(
 		contact_id.second=i;
 	}
 
-	std::cout << "trc_header";
-	if(!spheres_input_result.sphere_labels.empty())
 	{
-		std::cout << "\tID1_chain\tID1_res_number\tID1_res_icode\tID1_res_name\tID1_atom\tID2_chain\tID2_res_number\tID2_res_icode\tID2_res_name\tID2_atom";
-	}
-	std::cout << "\tID1_index\tID2_index\tdistance\tdistance_vdw\tarea\tarc_length\n";
-
-	for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_collisions_to_contacts.begin();it!=map_of_collisions_to_contacts.end();++it)
-	{
-		const voronotalt::UnsignedInt a=it->first.first;
-		const voronotalt::UnsignedInt b=it->first.second;
-		const voronotalt::Float distance=voronotalt::distance_from_point_to_point(spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
-		const voronotalt::Float distance_vdw=distance-(spheres_input_result.spheres[a].r-app_params.probe)-(spheres_input_result.spheres[b].r-app_params.probe);
-		std::cout << "trc";
+		std::string output_string;
+		voronotalt::string_append_cstring(output_string, "trc_header");
 		if(!spheres_input_result.sphere_labels.empty())
 		{
-			std::cout << "\t";
-			voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[a], false, false, std::cout);
-			std::cout << "\t";
-			voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[b], false, false, std::cout);
+			voronotalt::string_append_cstring(output_string, "\tID1_chain\tID1_res_number\tID1_res_icode\tID1_res_name\tID1_atom\tID2_chain\tID2_res_number\tID2_res_icode\tID2_res_name\tID2_atom");
 		}
-		std::cout << "\t" << a << "\t" << b << "\t" << distance << "\t" << distance_vdw;
-		const std::pair<bool, voronotalt::UnsignedInt>& contact_id=it->second;
-		if(contact_id.first)
+		voronotalt::string_append_cstring(output_string, "\tID1_index\tID2_index\tdistance\tdistance_vdw\tarea\tarc_length\n");
+
+		for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_collisions_to_contacts.begin();it!=map_of_collisions_to_contacts.end();++it)
 		{
-			const voronotalt::RadicalTessellation::ContactDescriptorSummary& cd=tessellation_result.contacts_summaries[contact_id.second];
-			std::cout << "\t" << cd.area << "\t" << cd.arc_length;
+			const voronotalt::UnsignedInt a=it->first.first;
+			const voronotalt::UnsignedInt b=it->first.second;
+			const voronotalt::Float distance=voronotalt::distance_from_point_to_point(spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
+			const voronotalt::Float distance_vdw=distance-(spheres_input_result.spheres[a].r-app_params.probe)-(spheres_input_result.spheres[b].r-app_params.probe);
+			voronotalt::string_append_cstring(output_string, "trc");
+			if(!spheres_input_result.sphere_labels.empty())
+			{
+				voronotalt::string_append_char(output_string, '\t');
+				voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[a], false, false, output_string);
+				voronotalt::string_append_char(output_string, '\t');
+				voronotalt::PrintingCustomTypes::print_label(spheres_input_result.sphere_labels[b], false, false, output_string);
+			}
+			voronotalt::string_append_char(output_string, '\t');
+			voronotalt::string_append_int(output_string, a);
+			voronotalt::string_append_char(output_string, '\t');
+			voronotalt::string_append_int(output_string, b);
+			voronotalt::string_append_char(output_string, '\t');
+			voronotalt::string_append_double(output_string, distance);
+			voronotalt::string_append_char(output_string, '\t');
+			voronotalt::string_append_double(output_string, distance_vdw);
+
+			const std::pair<bool, voronotalt::UnsignedInt>& contact_id=it->second;
+			if(contact_id.first)
+			{
+				const voronotalt::RadicalTessellation::ContactDescriptorSummary& cd=tessellation_result.contacts_summaries[contact_id.second];
+				voronotalt::string_append_char(output_string, '\t');
+				voronotalt::string_append_double(output_string, cd.area);
+				voronotalt::string_append_char(output_string, '\t');
+				voronotalt::string_append_double(output_string, cd.arc_length);
+			}
+			else
+			{
+				voronotalt::string_append_cstring(output_string, "\t0\t0");
+			}
+			voronotalt::string_append_char(output_string, '\n');
 		}
-		else
-		{
-			std::cout << "\t0\t0";
-		}
-		std::cout << "\n";
+		std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
 	}
 
 	if(app_graphics_recorder.graphics_writer.enabled())
@@ -2035,7 +2164,12 @@ int main(const int argc, const char** argv)
 		std::ofstream foutput(app_params.write_input_balls_to_file.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			voronotalt::PrintingCustomTypes::print_balls_to_stream(spheres_input_result.spheres, spheres_input_result.sphere_labels, app_params.probe, false, foutput);
+			std::string output_string;
+			voronotalt::PrintingCustomTypes::print_balls(spheres_input_result.spheres, spheres_input_result.sphere_labels, app_params.probe, false, output_string);
+		    if(!output_string.empty())
+		    {
+		    	foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+		    }
 		}
 		else
 		{
