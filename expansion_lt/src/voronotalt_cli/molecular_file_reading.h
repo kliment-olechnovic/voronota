@@ -184,6 +184,8 @@ public:
 					if(!header.empty())
 					{
 						const std::vector< std::pair<bool, std::size_t> > map_of_value_positions=AtomSiteMapping::map_value_names_to_header_positions(header, atom_site_prefix);
+						std::string first_model_id;
+						bool first_model_id_ready=false;
 						std::vector<std::string> values;
 						values.reserve(header.size());
 						while(token_status && !(token.rfind("_", 0)==0 || token.rfind("data_", 0)==0 || token=="loop_"))
@@ -196,35 +198,12 @@ public:
 							}
 							if(values.size()==header.size())
 							{
-								const std::string first_model_id=get_value_from_table_row(map_of_value_positions, values.begin(), AtomSiteMapping::atom_site__pdbx_PDB_model_num);
+								if(!first_model_id_ready)
 								{
-									const std::string current_model_id=get_value_from_table_row(map_of_value_positions, values.begin(), AtomSiteMapping::atom_site__pdbx_PDB_model_num);
-									if(parameters.as_assembly || current_model_id==first_model_id)
-									{
-										AtomRecord record=read_atom_record_from_table_row(map_of_value_positions, values.begin());
-										if(check_atom_record_acceptability(record, parameters.include_heteroatoms, parameters.include_hydrogens))
-										{
-											if(check_atom_record_validity(record))
-											{
-												record.altLoc.clear();
-												if(parameters.as_assembly && current_model_id!="1")
-												{
-													record.chainID+=current_model_id;
-												}
-												data.atom_records.push_back(record);
-											}
-											else
-											{
-												error_message_output_stream << "Invalid atom record in row:";
-												for(std::size_t j=0;j<header.size();j++)
-												{
-													error_message_output_stream << " " << header[j] << "=" << values[j];
-												}
-												error_message_output_stream << "\n";
-											}
-										}
-									}
+									first_model_id=get_value_from_table_row(map_of_value_positions, values.begin(), AtomSiteMapping::atom_site__pdbx_PDB_model_num);
+									first_model_id_ready=true;
 								}
+								read_and_store_atom_record_from_table_row(header, map_of_value_positions, values, parameters, first_model_id, data.atom_records, error_message_output_stream);
 							}
 							else
 							{
@@ -455,6 +434,43 @@ public:
 			record.element=fix_undefined_string(get_value_from_table_row(map_to_header_positions, values_iter, AtomSiteMapping::atom_site__type_symbol));
 			normalize_numbered_atom_name(record.name);
 			return record;
+		}
+
+		static void read_and_store_atom_record_from_table_row(
+				const std::vector<std::string>& header,
+				const std::vector< std::pair<bool, std::size_t> >& map_to_header_positions,
+				const std::vector<std::string>& values,
+				const Parameters& parameters,
+				const std::string& first_model_id,
+				std::vector<AtomRecord>& atom_records,
+				std::ostream& error_message_output_stream)
+		{
+			const std::string current_model_id=get_value_from_table_row(map_to_header_positions, values.begin(), AtomSiteMapping::atom_site__pdbx_PDB_model_num);
+			if(parameters.as_assembly || current_model_id==first_model_id)
+			{
+				AtomRecord record=read_atom_record_from_table_row(map_to_header_positions, values.begin());
+				if(check_atom_record_acceptability(record, parameters.include_heteroatoms, parameters.include_hydrogens))
+				{
+					if(check_atom_record_validity(record))
+					{
+						record.altLoc.clear();
+						if(parameters.as_assembly && current_model_id!="1")
+						{
+							record.chainID+=current_model_id;
+						}
+						atom_records.push_back(record);
+					}
+					else
+					{
+						error_message_output_stream << "Invalid atom record in row:";
+						for(std::size_t j=0;j<header.size();j++)
+						{
+							error_message_output_stream << " " << header[j] << "=" << values[j];
+						}
+						error_message_output_stream << "\n";
+					}
+				}
+			}
 		}
 	};
 
