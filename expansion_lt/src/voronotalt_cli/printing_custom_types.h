@@ -41,13 +41,7 @@ public:
 		{
 			print_label((i<sphere_labels.size() ? sphere_labels[i] : null_label), false, false, output);
 			string_append_char(output, '\t');
-			string_append_double(output, spheres[i].p.x);
-			string_append_char(output, '\t');
-			string_append_double(output, spheres[i].p.y);
-			string_append_char(output, '\t');
-			string_append_double(output, spheres[i].p.z);
-			string_append_char(output, '\t');
-			string_append_double(output, (spheres[i].r-probe));
+			string_append_doubles(output, spheres[i].p.x, spheres[i].p.y, spheres[i].p.z, (spheres[i].r-probe));
 			string_append_char(output, '\n');
 		}
 	}
@@ -532,20 +526,12 @@ private:
 		string_append_char(output, '\t');
 		string_append_int(output, obj.id_b);
 		string_append_char(output, '\t');
-		string_append_double(output, obj.area);
-		string_append_char(output, '\t');
-		string_append_double(output, obj.arc_length);
-		string_append_char(output, '\t');
-		string_append_double(output, obj.distance);
+		string_append_doubles(output, obj.area, obj.arc_length, obj.distance);
 	}
 
 	inline static void print(const RadicalTessellation::TotalContactDescriptorsSummary& obj, std::string& output) noexcept
 	{
-		string_append_double(output, obj.area);
-		string_append_char(output, '\t');
-		string_append_double(output, obj.arc_length);
-		string_append_char(output, '\t');
-		string_append_double(output, obj.distance);
+		string_append_doubles(output, obj.area, obj.arc_length, obj.distance);
 		string_append_char(output, '\t');
 		string_append_int(output, obj.count);
 	}
@@ -554,16 +540,12 @@ private:
 	{
 		string_append_int(output, obj.id);
 		string_append_char(output, '\t');
-		string_append_double(output, obj.sas_area);
-		string_append_char(output, '\t');
-		string_append_double(output, obj.sas_inside_volume);
+		string_append_doubles(output, obj.sas_area, obj.sas_inside_volume);
 	}
 
 	inline static void print(const RadicalTessellation::TotalCellContactDescriptorsSummary& obj, std::string& output) noexcept
 	{
-		string_append_double(output, obj.sas_area);
-		string_append_char(output, '\t');
-		string_append_double(output, obj.sas_inside_volume);
+		string_append_doubles(output, obj.sas_area, obj.sas_inside_volume);
 		string_append_char(output, '\t');
 		string_append_int(output, obj.count);
 	}
@@ -574,20 +556,12 @@ private:
 		string_append_char(output, '\t');
 		string_append_int(output, obj.id_b);
 		string_append_char(output, '\t');
-		string_append_double(output, obj.area);
-		string_append_char(output, '\t');
-		string_append_double(output, obj.arc_length);
-		string_append_char(output, '\t');
-		string_append_double(output, obj.distance);
+		string_append_doubles(output, obj.area, obj.arc_length, obj.distance);
 	}
 
 	inline static void print(const SimplifiedAWTessellation::TotalContactDescriptorsSummary& obj, std::string& output) noexcept
 	{
-		string_append_double(output, obj.area);
-		string_append_char(output, '\t');
-		string_append_double(output, obj.arc_length);
-		string_append_char(output, '\t');
-		string_append_double(output, obj.distance);
+		string_append_doubles(output, obj.area, obj.arc_length, obj.distance);
 		string_append_char(output, '\t');
 		string_append_int(output, obj.count);
 	}
@@ -635,15 +609,7 @@ private:
 			string_append_int(output, tv.ids_of_spheres[3]);
 		}
 		string_append_char(output, '\t');
-		string_append_double(output, tv.position.x);
-		string_append_char(output, '\t');
-		string_append_double(output, tv.position.y);
-		string_append_char(output, '\t');
-		string_append_double(output, tv.position.z);
-		string_append_char(output, '\t');
-		string_append_double(output, tv.dist_min);
-		string_append_char(output, '\t');
-		string_append_double(output, tv.dist_max);
+		string_append_doubles(output, tv.position.x, tv.position.y, tv.position.z, tv.dist_min, tv.dist_max);
 		string_append_char(output, '\n');
 	}
 };

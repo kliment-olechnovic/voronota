@@ -298,7 +298,7 @@ inline static void string_append_int(std::string& dest, const IntType v) noexcep
 template<typename FloatType>
 inline static void string_append_double(std::string& dest, const FloatType v)
 {
-    char buf[48];
+    char buf[32];
     const int n=std::snprintf(buf, sizeof(buf), "%.6g", static_cast<double>(v));
     if(n>0)
 	{
@@ -307,6 +307,66 @@ inline static void string_append_double(std::string& dest, const FloatType v)
     else
     {
     	dest.push_back('.');
+    }
+}
+
+template<typename FloatType>
+inline static void string_append_doubles(std::string& dest, const FloatType v1, const FloatType v2)
+{
+    char buf[64];
+    const int n=std::snprintf(buf, sizeof(buf), "%.6g\t%.6g", static_cast<double>(v1), static_cast<double>(v2));
+    if(n>0)
+	{
+		dest.append(buf, static_cast<std::size_t>(n));
+	}
+    else
+    {
+    	dest.append(".\t.");
+    }
+}
+
+template<typename FloatType>
+inline static void string_append_doubles(std::string& dest, const FloatType v1, const FloatType v2, const FloatType v3)
+{
+    char buf[96];
+    const int n=std::snprintf(buf, sizeof(buf), "%.6g\t%.6g\t%.6g", static_cast<double>(v1), static_cast<double>(v2), static_cast<double>(v3));
+    if(n>0)
+	{
+		dest.append(buf, static_cast<std::size_t>(n));
+	}
+    else
+    {
+    	dest.append(".\t.\t.");
+    }
+}
+
+template<typename FloatType>
+inline static void string_append_doubles(std::string& dest, const FloatType v1, const FloatType v2, const FloatType v3, const FloatType v4)
+{
+    char buf[128];
+    const int n=std::snprintf(buf, sizeof(buf), "%.6g\t%.6g\t%.6g\t%.6g", static_cast<double>(v1), static_cast<double>(v2), static_cast<double>(v3), static_cast<double>(v4));
+    if(n>0)
+	{
+		dest.append(buf, static_cast<std::size_t>(n));
+	}
+    else
+    {
+    	dest.append(".\t.\t.\t.");
+    }
+}
+
+template<typename FloatType>
+inline static void string_append_doubles(std::string& dest, const FloatType v1, const FloatType v2, const FloatType v3, const FloatType v4, const FloatType v5)
+{
+    char buf[160];
+    const int n=std::snprintf(buf, sizeof(buf), "%.6g\t%.6g\t%.6g\t%.6g\t%.6g", static_cast<double>(v1), static_cast<double>(v2), static_cast<double>(v3), static_cast<double>(v4), static_cast<double>(v5));
+    if(n>0)
+	{
+		dest.append(buf, static_cast<std::size_t>(n));
+	}
+    else
+    {
+    	dest.append(".\t.\t.\t.\t.");
     }
 }
 
