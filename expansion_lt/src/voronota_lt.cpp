@@ -2041,6 +2041,7 @@ int main(const int argc, const char** argv)
 		{
 			std::cerr << "Error (non-terminating): failed to write input balls to file '" << app_params.write_input_balls_to_file << "'\n";
 		}
+		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("write input balls to file");
 	}
 
 	if(app_params.exit_before_calculations)
