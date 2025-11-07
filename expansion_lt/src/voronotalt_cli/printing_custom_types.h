@@ -22,7 +22,7 @@ public:
 	static void print_balls(
 			const std::vector<SimpleSphere>& spheres,
 			const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
-			const double probe,
+			const Float probe,
 			const bool with_header,
 			std::string& output) noexcept
 	{
@@ -37,12 +37,52 @@ public:
 			print_label_header("", output);
 			string_append_cstring(output, "x\ty\tz\tradius\n");
 		}
-		for(std::size_t i=0;i<spheres.size();i++)
+		bool printed_in_parallel=false;
+#ifdef VORONOTALT_OPENMP
+		if(spheres.size()>1000)
 		{
-			print_label((i<sphere_labels.size() ? sphere_labels[i] : null_label), false, false, output);
-			string_append_char(output, '\t');
-			string_append_doubles(output, spheres[i].p.x, spheres[i].p.y, spheres[i].p.z, (spheres[i].r-probe));
-			string_append_char(output, '\n');
+			const int data_size=static_cast<int>(spheres.size());
+			const int n_threads=omp_get_max_threads();
+			if(n_threads>1)
+			{
+				const int approximate_portion_size=(data_size/n_threads);
+				if(approximate_portion_size>100)
+				{
+					std::vector<int> thread_data_starts(n_threads, 0);
+					for(int i=1;i<n_threads;i++)
+					{
+						thread_data_starts[i]=thread_data_starts[i-1]+approximate_portion_size;
+					}
+
+					std::vector<std::string> suboutputs(n_threads);
+
+					{
+						#pragma omp parallel for schedule(static,1)
+						for(int i=0;i<n_threads;i++)
+						{
+							for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
+							{
+								print_ball(static_cast<std::size_t>(j), spheres, sphere_labels, null_label, probe, suboutputs[i]);
+							}
+						}
+					}
+
+					for(int i=0;i<n_threads;i++)
+					{
+						string_append_string(output, suboutputs[i]);
+					}
+
+					printed_in_parallel=true;
+				}
+			}
+		}
+#endif
+		if(!printed_in_parallel)
+		{
+			for(std::size_t i=0;i<spheres.size();i++)
+			{
+				print_ball(i, spheres, sphere_labels, null_label, probe, output);
+			}
 		}
 	}
 
@@ -432,6 +472,20 @@ private:
 				}
 			}
 		}
+	}
+
+	static void print_ball(
+			const std::size_t i,
+			const std::vector<SimpleSphere>& spheres,
+			const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
+			const SphereLabeling::SphereLabel& null_label,
+			const Float probe,
+			std::string& output)
+	{
+		print_label((i<sphere_labels.size() ? sphere_labels[i] : null_label), false, false, output);
+		string_append_char(output, '\t');
+		string_append_doubles(output, spheres[i].p.x, spheres[i].p.y, spheres[i].p.z, (spheres[i].r-probe));
+		string_append_char(output, '\n');
 	}
 
 	template<class ContactsContainer>
