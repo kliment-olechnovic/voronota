@@ -4,18 +4,25 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-split-intervals-scoring-by-voromqa' script scores domain split intervals in a monomer.
+'voronota-js-split-intervals-scoring-by-voromqa' script scores domain split intervals for a protein monomer.
 
 Options:
-    --input                   string  *  path to input protein file
-    --output-dir              string  *  output directory path
+    --input                   string  *  path to input protein file (only the protein first chain is read)
+    --score-one-split         string     domains defined by residue sequence number intervals
+    --suggest-splits                     flag to naively suggest splits instead of scoring a provided split
+    --output-dir              string     output directory path for details
     --help | -h                          flag to display help message and exit
     
 Standard output:
     Summary results in stdout, error messages in stderr
     
 Examples:
-    voronota-js-split-intervals-scoring-by-voromqa --input "./1axc.pdb"
+
+    voronota-js-split-intervals-scoring-by-voromqa --input "./1axc.pdb" --suggest-splits
+    
+    voronota-js-split-intervals-scoring-by-voromqa --input "./1axc.pdb" --score-one-split '1:118;134:252'
+    
+    voronota-js-split-intervals-scoring-by-voromqa --input "./3dlb.pdb" --score-one-split '12:306,329:462;463:642'
     
 EOF
 exit 1
@@ -45,6 +52,8 @@ command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executab
 command -v R &> /dev/null || { echo >&2 "Error: 'R' executable not in binaries path"; exit 1; }
 
 INFILE=""
+SCORE_ONE_SPLIT=""
+SUGGEST_SPLITS="false"
 OUTPUT_DIR=""
 HELP_MODE="false"
 
@@ -57,6 +66,13 @@ do
 	--input)
 		INFILE="$OPTARG"
 		shift
+		;;
+	--score-one-split)
+		SCORE_ONE_SPLIT="$OPTARG"
+		shift
+		;;
+	--suggest-splits)
+		SUGGEST_SPLITS="true"
 		;;
 	--output-dir)
 		OUTPUT_DIR="$OPTARG"
@@ -83,6 +99,18 @@ then
 	exit 1
 fi
 
+if [ -z "$SCORE_ONE_SPLIT" ] && [ "$SUGGEST_SPLITS" != "true" ]
+then
+	echo >&2 "Error: action not specified, please use either '--score-one-split' or '--suggest-splits'."
+	exit 1
+fi
+
+if [ -n "$SCORE_ONE_SPLIT" ] && [ "$SUGGEST_SPLITS" == "true" ]
+then
+	echo >&2 "Error: multiple actions specified, please use either '--score-one-split' or '--suggest-splits'."
+	exit 1
+fi
+
 if [ ! -s "$INFILE" ]
 then
 	echo >&2 "Error: input structure file '$INFILE' does not exist"
@@ -104,7 +132,7 @@ EOF
 cat << 'EOF'
 voronota_auto_assert_full_success=true;
 
-voronota_import('-file', params.input_structure_file, '-as-assembly', '-title', 'model');
+voronota_import('-file', params.input_structure_file, '-title', 'model');
 
 voronota_restrict_atoms("-use", "[-protein]");
 
@@ -112,6 +140,85 @@ voronota_summarize_linear_structure();
 var single_chain_name=voronota_last_output().results[0].output.chain_names_protein[0];
 
 voronota_restrict_atoms("-use", "[-chain "+single_chain_name+"]");
+
+voronota_export_atoms("-as-pdb", "-file", params.output_prefix+"structure.pdb");
+EOF
+} \
+| voronota-js
+
+if [ ! -s "${TMPLDIR}/structure.pdb" ]
+then
+	echo >&2 "Error: no single-chain protein structure extracted from '${INFILE}'"
+	exit 1
+fi
+
+if [ -n "$SCORE_ONE_SPLIT" ]
+then
+{
+	echo "input_part voromqa_dark voromqa_light atoms residues"
+	
+	voronota-js-only-global-voromqa --lt false --input "${TMPLDIR}/structure.pdb" --restrict-input "[]" \
+	| awk -v name="full" '{if(NR==2){print name " " $2 " " $3 " " $4 " " $5}}'
+	
+	echo "$SCORE_ONE_SPLIT" \
+	| tr ';' '\n' \
+	| while read -r RESTRICTION
+	do
+		voronota-js-only-global-voromqa --lt false --input "${TMPLDIR}/structure.pdb" --restrict-input "[-rnum ${RESTRICTION}]" \
+		| awk -v name="$RESTRICTION" '{if(NR==2){print name " " $2 " " $3 " " $4 " " $5}}'
+	done
+} \
+> "${TMPLDIR}/global_voromqa.txt"
+
+cd "${TMPLDIR}"
+
+R --slave --vanilla &> /dev/null << 'EOF'
+df=read.table("global_voromqa.txt", header=TRUE, stringsAsFactors=FALSE);
+df_full=df[which(df$input_part=="full"),];
+df_domains=df[which(df$input_part!="full"),];
+if(nrow(df_domains)>1)
+{
+df_combo=df_full;
+df_combo$input_part=paste(df$input_part[which(df$input_part!="full")], collapse=';');
+df_combo$voromqa_dark=sum(df_domains$voromqa_dark*df_domains$atoms)/sum(df_domains$atoms);
+df_combo$voromqa_light=sum(df_domains$voromqa_light*df_domains$atoms)/sum(df_domains$atoms);
+df_combo$atoms=sum(df_domains$atoms);
+df_combo$residues=sum(df_domains$residues);
+df=rbind(df, df_combo);
+}
+df$completeness=df$residues/df_full$residues;
+write.table(df, "global_voromqa.tsv", quote=FALSE, row.names=FALSE, col.names=TRUE, sep='\t');
+EOF
+
+cd - &> /dev/null
+
+cat "${TMPLDIR}/global_voromqa.tsv" | column -t
+
+if [ -n "$OUTPUT_DIR" ]
+then
+	OUTPREFIX="${OUTPUT_DIR}/${BASENAME}/"
+	
+	mkdir -p "$(dirname ${OUTPREFIX}name)"
+	
+	cat "${TMPLDIR}/structure.pdb" > "${OUTPREFIX}structure.pdb"
+	
+	cat "${TMPLDIR}/global_voromqa.tsv" > "${OUTPREFIX}global_voromqa.tsv"
+fi
+
+exit 0
+fi
+
+{
+cat << EOF
+var params={}
+params.input_structure_file='${TMPLDIR}/structure.pdb';
+params.output_prefix='${TMPLDIR}/';
+EOF
+
+cat << 'EOF'
+voronota_auto_assert_full_success=true;
+
+voronota_import('-file', params.input_structure_file, '-title', 'model');
 
 voronota_set_tag_of_atoms_by_secondary_structure();
 
@@ -138,14 +245,13 @@ voronota_export_adjuncts_of_contacts("-inter-residue", "-file", params.output_pr
 voronota_export_adjuncts_of_contacts("-inter-residue", "-file", params.output_prefix+"r_sas.txt", "-expand-ids", "-contacts-use", "[-solvent]", "-adjuncts", ["voromqa_energy", "area"]);
 
 voronota_export_adjuncts_of_atoms("-use" , "[-aname CA]", "-file", params.output_prefix+"r_ids.txt", "-expand-ids", "-adjuncts", ["rclass"]);
-
 EOF
 } \
 | voronota-js
 
 if [ ! -s "${TMPLDIR}/rr_contacts.txt" ] || [ ! -s "${TMPLDIR}/r_sas.txt" ] || [ ! -s "${TMPLDIR}/r_ids.txt" ]
 then
-	echo >&2 "Error: no contacts produced for '${INFILE}"
+	echo >&2 "Error: no contacts produced for '${INFILE}'"
 	exit 1
 fi
 
@@ -189,7 +295,7 @@ for(a in final_candidate_ids)
 	}
 }
 
-result=data.frame(p_header=rep("p", length(pairs_a)), pos_a=pairs_a, pos_b=pairs_b);
+result=data.frame(pos_a=pairs_a, pos_b=pairs_b);
 result$length=(result$pos_b-result$pos_a)+1;
 result=result[which(result$length>=min_domain_length),];
 
@@ -289,7 +395,7 @@ for(i in 1:length(combos_scores))
 	combo_strings=c(combo_strings, paste(paste(subresult$pos_a, subresult$pos_b, sep=':'), collapse=';'));
 }
 
-combos_result=data.frame(i_header=rep("i", length(combo_strings)), domain_intervals=combo_strings, num_of_domains=combos_sizes, total_length=combos_lengths, coverage=format(pmin(combos_lengths/max_available_length, 1.0), digits=2), score=combos_scores, norm_score=format(combos_scores/min(combos_scores), digits=3));
+combos_result=data.frame(domain_intervals=combo_strings, num_of_domains=combos_sizes, total_length=combos_lengths, coverage=format(pmin(combos_lengths/max_available_length, 1.0), digits=2), score=combos_scores, norm_score=format(combos_scores/min(combos_scores), digits=3));
 combos_result=combos_result[order(combos_result$score),];
 
 write.table(result, "scored_simple_intervals.tsv", quote=FALSE, row.names=FALSE, col.names=TRUE, sep='\t');
@@ -298,8 +404,6 @@ EOF
 
 cd - &> /dev/null
 
-cat "${TMPLDIR}/scored_simple_intervals.tsv" | column -t
-
 cat "${TMPLDIR}/selected_combined_intervals.tsv" | column -t
 
 if [ -n "$OUTPUT_DIR" ]
@@ -307,6 +411,8 @@ then
 	OUTPREFIX="${OUTPUT_DIR}/${BASENAME}/"
 	
 	mkdir -p "$(dirname ${OUTPREFIX}name)"
+	
+	cat "${TMPLDIR}/structure.pdb" > "${OUTPREFIX}structure.pdb"
 	
 	cat "${TMPLDIR}/rr_contacts.txt" | tr ' ' '\t' > "${OUTPREFIX}rr_contacts.tsv"
 	
