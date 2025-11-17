@@ -157,14 +157,14 @@ then
 {
 	echo "input_part voromqa_dark voromqa_light atoms residues"
 	
-	voronota-js-only-global-voromqa --lt false --input "${TMPLDIR}/structure.pdb" --restrict-input "[]" \
+	voronota-js-only-global-voromqa --input "${TMPLDIR}/structure.pdb" --restrict-input "[]" \
 	| awk -v name="full" '{if(NR==2){print name " " $2 " " $3 " " $4 " " $5}}'
 	
 	echo "$SCORE_ONE_SPLIT" \
 	| tr ';' '\n' \
 	| while read -r RESTRICTION
 	do
-		voronota-js-only-global-voromqa --lt false --input "${TMPLDIR}/structure.pdb" --restrict-input "[-rnum ${RESTRICTION}]" \
+		voronota-js-only-global-voromqa --input "${TMPLDIR}/structure.pdb" --restrict-input "[-rnum ${RESTRICTION}]" \
 		| awk -v name="$RESTRICTION" '{if(NR==2){print name " " $2 " " $3 " " $4 " " $5}}'
 	done
 } \
