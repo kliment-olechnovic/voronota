@@ -70,6 +70,7 @@ MAX_PROCESSORS="1"
 SBATCH_PARAMETERS=""
 CACHE_DIR=""
 RUN_FASPR=""
+USE_VORONOTALT="false"
 INPUT_IS_SCRIPT="false"
 AS_ASSEMBLY="false"
 JUST_OUTPUT_FROM_DIR=""
@@ -115,6 +116,10 @@ do
 		;;
 	--run-faspr)
 		RUN_FASPR="$OPTARG"
+		shift
+		;;
+	--lt)
+		USE_VORONOTALT="$OPTARG"
 		shift
 		;;
 	--input-is-script)
@@ -447,6 +452,7 @@ common_params.input_is_script='$INPUT_IS_SCRIPT';
 common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.run_faspr='$RUN_FASPR';
+common_params.use_voronotalt='$USE_VORONOTALT';
 common_params.output_table_file='$TMPLDIR/output_table_file';
 common_params.output_adjuncts_file='$TMPLDIR/output_adjuncts_file';
 var input_info={"input_file": "$INFILE", "input_file_name": "$INFILE_BASENAME"}
@@ -481,6 +487,11 @@ if(params.run_faspr===undefined)
 	params.run_faspr="";
 }
 
+if(params.use_voronotalt===undefined || params.use_voronotalt==="")
+{
+	params.use_voronotalt="false";
+}
+
 if(params.output_table_file===undefined || params.output_table_file==="")
 {
 	params.output_table_file="_stdout";
@@ -511,8 +522,16 @@ if(params.run_faspr!="")
 	voronota_assert_full_success("Failed to run FASPR");
 }
 
-voronota_construct_contacts();
-voronota_assert_full_success("Failed to construct inter-chain contacts");
+if(params.use_voronotalt=="true")
+{
+	voronota_do("construct-contacts-radically-fast");
+	voronota_assert_full_success("Failed to construct contacts radically fast");
+}
+else
+{
+	voronota_construct_contacts();
+	voronota_assert_full_success("Failed to construct contacts");
+}
 
 voronota_voromqa_global();
 voronota_assert_full_success("Failed to compute VoroMQA-light scores");

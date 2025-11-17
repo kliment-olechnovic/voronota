@@ -1,0 +1,323 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-split-intervals-scoring-by-voromqa' script scores domain split intervals in a monomer.
+
+Options:
+    --input                   string  *  path to input protein file
+    --output-dir              string  *  output directory path
+    --help | -h                          flag to display help message and exit
+    
+Standard output:
+    Summary results in stdout, error messages in stderr
+    
+Examples:
+    voronota-js-split-intervals-scoring-by-voromqa --input "./1axc.pdb"
+    
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+
+if [ -z "$1" ]
+then
+	print_help_and_exit
+fi
+
+SELFLOCATION="$(dirname ${ZEROARG})"
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd "$SELFLOCATION"
+	SELFLOCATION="$(pwd)"
+	export PATH="${SELFLOCATION}:${PATH}"
+	cd - &> /dev/null
+fi
+
+export LC_ALL=C
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+command -v R &> /dev/null || { echo >&2 "Error: 'R' executable not in binaries path"; exit 1; }
+
+INFILE=""
+OUTPUT_DIR=""
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	--output-dir)
+		OUTPUT_DIR="$OPTARG"
+		shift
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ -z "$INFILE" ]
+then
+	echo >&2 "Error: no input file provided"
+	exit 1
+fi
+
+if [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input structure file '$INFILE' does not exist"
+	exit 1
+fi
+
+BASENAME="$(basename ${INFILE} .pdb)"
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+{
+cat << EOF
+var params={}
+params.input_structure_file='$INFILE';
+params.output_prefix='${TMPLDIR}/';
+EOF
+
+cat << 'EOF'
+voronota_auto_assert_full_success=true;
+
+voronota_import('-file', params.input_structure_file, '-as-assembly', '-title', 'model');
+
+voronota_restrict_atoms("-use", "[-protein]");
+
+voronota_summarize_linear_structure();
+var single_chain_name=voronota_last_output().results[0].output.chain_names_protein[0];
+
+voronota_restrict_atoms("-use", "[-chain "+single_chain_name+"]");
+
+voronota_set_tag_of_atoms_by_secondary_structure();
+
+voronota_construct_contacts_radically_fast();
+
+voronota_select_atoms("-use", "([-t ss=H] or [-t ss=S])", "-name", "ssatoms");
+
+voronota_select_atoms("-use", "(not ([-t ss=H] or [-t ss=S]))", "-name", "nossatoms");
+
+voronota_select_contacts("-use", "[-a1 [ssatoms] -a2 [nossatoms] -min-seq-sep 1 -max-seq-sep 1]", "-name", "isscontacts");
+
+voronota_select_atoms("-use", "[-sel-of-contacts isscontacts]", "-full-residues", "-name", "issatoms");
+
+voronota_set_adjunct_of_atoms("-use", "[]", "-name", "rclass", "-value", 0);
+voronota_set_adjunct_of_atoms("-use", "([nossatoms])", "-name", "rclass", "-value", 0);
+voronota_set_adjunct_of_atoms("-use", "([nossatoms] and [issatoms])", "-name", "rclass", "-value", 1);
+voronota_set_adjunct_of_atoms("-use", "([ssatoms])", "-name", "rclass", "-value", 10);
+voronota_set_adjunct_of_atoms("-use", "([ssatoms] and [issatoms])", "-name", "rclass", "-value", 11);
+
+voronota_voromqa_global("-adj-contact-energy-split-to-sas", "voromqa_energy_split");
+
+voronota_export_adjuncts_of_contacts("-inter-residue", "-file", params.output_prefix+"rr_contacts.txt", "-expand-ids", "-contacts-use", "[-min-seq-sep 2 -no-solvent]", "-adjuncts", ["voromqa_energy", "voromqa_energy_split_a", "voromqa_energy_split_b", "area"]);
+
+voronota_export_adjuncts_of_contacts("-inter-residue", "-file", params.output_prefix+"r_sas.txt", "-expand-ids", "-contacts-use", "[-solvent]", "-adjuncts", ["voromqa_energy", "area"]);
+
+voronota_export_adjuncts_of_atoms("-use" , "[-aname CA]", "-file", params.output_prefix+"r_ids.txt", "-expand-ids", "-adjuncts", ["rclass"]);
+
+EOF
+} \
+| voronota-js
+
+if [ ! -s "${TMPLDIR}/rr_contacts.txt" ] || [ ! -s "${TMPLDIR}/r_sas.txt" ] || [ ! -s "${TMPLDIR}/r_ids.txt" ]
+then
+	echo >&2 "Error: no contacts produced for '${INFILE}"
+	exit 1
+fi
+
+cd "${TMPLDIR}"
+
+R --slave --vanilla &> /dev/null << 'EOF'
+min_domain_length=50;
+weight_inter_energy_solvent=0.5;
+
+weight_inter_energy_pseudosolvent=weight_inter_energy_solvent;
+weight_sas_energy=0.33*weight_inter_energy_solvent;
+
+df_rids=df=read.table("r_ids.txt", header=TRUE, stringsAsFactors=FALSE);
+
+all_candidate_indices=which(df_rids$rclass>=0);
+raw_final_candidate_indices=sort(union(c(min(all_candidate_indices), max(all_candidate_indices)), which(df_rids$rclass==1)));
+
+raw_final_candidate_ids=df_rids$ID_resSeq[raw_final_candidate_indices];
+
+final_candidate_ids=raw_final_candidate_ids;
+
+min_candidate_id=min(final_candidate_ids);
+max_candidate_id=max(final_candidate_ids);
+max_available_length=(max_candidate_id-min_candidate_id);
+total_noloop_length=length(which(df_rids$rclass>0));
+
+df=read.table("rr_contacts.txt", header=TRUE, stringsAsFactors=FALSE);
+
+df_sas=read.table("r_sas.txt", header=TRUE, stringsAsFactors=FALSE);
+
+pairs_a=c();
+pairs_b=c();
+
+for(a in final_candidate_ids)
+{
+	other_candidate_ids=final_candidate_ids[which(final_candidate_ids>=(a+min_domain_length) & ((final_candidate_ids-a)==max_available_length | ((final_candidate_ids-a)+min_domain_length)<=max_available_length))];
+	for(b in other_candidate_ids)
+	{
+		pairs_a=c(pairs_a, a);
+		pairs_b=c(pairs_b, b);
+	}
+}
+
+result=data.frame(p_header=rep("p", length(pairs_a)), pos_a=pairs_a, pos_b=pairs_b);
+result$length=(result$pos_b-result$pos_a)+1;
+result=result[which(result$length>=min_domain_length),];
+
+result$intra_energy=0;
+result$intra_area=0;
+result$inter_energy_buried=0;
+result$inter_energy_pseudosolvent=0;
+result$inter_area=0;
+result$sas_energy=0;
+result$sas_area=0;
+
+for(i in 1:nrow(result))
+{
+	a=result$pos_a[i];
+	b=result$pos_b[i];
+
+	sel_intra=which(df$ID1_resSeq>=a & df$ID1_resSeq<=b & df$ID2_resSeq>=a & df$ID2_resSeq<=b);
+	result$intra_energy[i]=sum(df$voromqa_energy[sel_intra]);
+	result$intra_area[i]=sum(df$area[sel_intra]);
+
+	sel_inter1=which(df$ID1_resSeq>=a & df$ID1_resSeq<=b & (df$ID2_resSeq<a | df$ID2_resSeq>b));
+	sel_inter2=which(df$ID2_resSeq>=a & df$ID2_resSeq<=b & (df$ID1_resSeq<a | df$ID1_resSeq>b));
+	sel_inter=union(sel_inter1, sel_inter2);
+	result$inter_energy_buried[i]=sum(df$voromqa_energy[sel_inter]);
+	result$inter_energy_pseudosolvent[i]=(sum(df$voromqa_energy_split_a[sel_inter1])+sum(df$voromqa_energy_split_b[sel_inter2]));
+	result$inter_area[i]=sum(df$area[sel_inter]);
+
+	sel_sas=which(df_sas$ID1_resSeq>=a & df_sas$ID1_resSeq<=b);
+	result$sas_energy[i]=sum(df_sas$voromqa_energy[sel_sas]);
+	result$sas_area[i]=sum(df_sas$area[sel_sas]);
+}
+
+result$score=(result$intra_energy+result$inter_energy_pseudosolvent*weight_inter_energy_pseudosolvent+result$sas_energy*weight_sas_energy)/result$length;
+result=result[which(result$score<(0-10)),];
+result=result[order(result$score),];
+
+redundant_indices=c();
+for(i in 1:nrow(result))
+{
+	redundant_indices=union(redundant_indices, which(result$score>result$score[i] & abs(result$pos_a-result$pos_a[i])<=2 & abs(result$pos_b-result$pos_b[i])<=2));
+}
+
+result=result[setdiff(1:nrow(result), redundant_indices),];
+result=result[order(result$score),];
+
+combos=list();
+available_picks=1:nrow(result);
+combos_sizes=c();
+combos_scores=c();
+combos_lengths=c();
+
+current_combo=c();
+while(length(available_picks)>0)
+{
+	if(length(current_combo)==0)
+	{
+		current_combo=available_picks[1];
+		available_picks=sort(setdiff(available_picks, min(current_combo)));
+	}
+	sel=intersect(available_picks, which(result$score>max(result$score[current_combo])));
+	if(length(sel)>0) {
+		for(jid in current_combo)
+		{
+			sel=intersect(sel, which(result$pos_b<result$pos_a[jid] | result$pos_a>result$pos_b[jid]));
+			if(length(sel)==0) {
+				break;
+			}
+		}
+	}
+	if(length(sel)>0)
+	{
+		current_combo=c(current_combo, min(sel[1]));
+	} else {
+		current_combo_size=length(current_combo);
+		current_combo_score=sum(result$score[current_combo]*result$length[current_combo])/sum(result$length[current_combo]);
+		current_combo_length=sum(result$length[current_combo]);
+		if(current_combo_length>=total_noloop_length && length(which(combos_sizes==current_combo_size))<current_combo_size)
+		{
+			if(length(combos_scores)>0 && (current_combo_score>0.0 || current_combo_score>min(combos_scores)*0.7))
+			{
+				break;
+			}
+			combos=append(combos, list(current_combo));
+			combos_sizes=c(combos_sizes, current_combo_size);
+			combos_scores=c(combos_scores, current_combo_score);
+			combos_lengths=c(combos_lengths, current_combo_length);
+		}
+		current_combo=c();
+	}
+}
+
+combo_strings=c();
+for(i in 1:length(combos_scores))
+{
+	subresult=result[combos[[i]],];
+	subresult=subresult[order(subresult$pos_a),];
+	combo_strings=c(combo_strings, paste(paste(subresult$pos_a, subresult$pos_b, sep=':'), collapse=';'));
+}
+
+combos_result=data.frame(i_header=rep("i", length(combo_strings)), domain_intervals=combo_strings, num_of_domains=combos_sizes, total_length=combos_lengths, coverage=format(pmin(combos_lengths/max_available_length, 1.0), digits=2), score=combos_scores, norm_score=format(combos_scores/min(combos_scores), digits=3));
+combos_result=combos_result[order(combos_result$score),];
+
+write.table(result, "scored_simple_intervals.tsv", quote=FALSE, row.names=FALSE, col.names=TRUE, sep='\t');
+write.table(combos_result, "selected_combined_intervals.tsv", quote=FALSE, row.names=FALSE, col.names=TRUE, sep='\t');
+EOF
+
+cd - &> /dev/null
+
+cat "${TMPLDIR}/scored_simple_intervals.tsv" | column -t
+
+cat "${TMPLDIR}/selected_combined_intervals.tsv" | column -t
+
+if [ -n "$OUTPUT_DIR" ]
+then
+	OUTPREFIX="${OUTPUT_DIR}/${BASENAME}/"
+	
+	mkdir -p "$(dirname ${OUTPREFIX}name)"
+	
+	cat "${TMPLDIR}/rr_contacts.txt" | tr ' ' '\t' > "${OUTPREFIX}rr_contacts.tsv"
+	
+	cat "${TMPLDIR}/r_sas.txt" | tr ' ' '\t' > "${OUTPREFIX}r_sas.tsv"
+	
+	cat "${TMPLDIR}/r_ids.txt" | tr ' ' '\t' > "${OUTPREFIX}r_ids.tsv"
+	
+	cat "${TMPLDIR}/scored_simple_intervals.tsv" > "${OUTPREFIX}scored_simple_intervals.tsv"
+	
+	cat "${TMPLDIR}/selected_combined_intervals.tsv" > "${OUTPREFIX}selected_combined_intervals.tsv"
+fi
+
+exit 0
+
