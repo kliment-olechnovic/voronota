@@ -258,7 +258,7 @@ fi
 cd "${TMPLDIR}"
 
 R --slave --vanilla &> /dev/null << 'EOF'
-min_domain_length=50;
+min_domain_length=30;
 weight_inter_energy_solvent=0.5;
 
 weight_inter_energy_pseudosolvent=weight_inter_energy_solvent;
@@ -329,7 +329,6 @@ for(i in 1:nrow(result))
 }
 
 result$score=(result$intra_energy+result$inter_energy_pseudosolvent*weight_inter_energy_pseudosolvent+result$sas_energy*weight_sas_energy)/result$length;
-result=result[which(result$score<(0-10)),];
 result=result[order(result$score),];
 
 redundant_indices=c();
