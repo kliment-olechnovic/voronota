@@ -292,8 +292,8 @@ fi
 cd "${TMPLDIR}"
 
 R --slave --vanilla &> /dev/null << 'EOF'
-min_domain_length=30;
-weight_inter_energy_solvent=0.0;
+min_interval_length=30;
+weight_inter_energy_solvent=0.2;
 
 weight_inter_energy_pseudosolvent=weight_inter_energy_solvent;
 weight_sas_energy=0.33*weight_inter_energy_solvent;
@@ -321,7 +321,7 @@ pairs_b=c();
 
 for(a in final_candidate_ids)
 {
-	other_candidate_ids=final_candidate_ids[which(final_candidate_ids>=(a+min_domain_length) & ((final_candidate_ids-a)==max_available_length | ((final_candidate_ids-a)+min_domain_length)<=max_available_length))];
+	other_candidate_ids=final_candidate_ids[which(final_candidate_ids>=(a+min_interval_length) & ((final_candidate_ids-a)==max_available_length | ((final_candidate_ids-a)+min_interval_length)<=max_available_length))];
 	for(b in other_candidate_ids)
 	{
 		pairs_a=c(pairs_a, a);
@@ -331,7 +331,7 @@ for(a in final_candidate_ids)
 
 result=data.frame(pos_a=pairs_a, pos_b=pairs_b);
 result$length=(result$pos_b-result$pos_a)+1;
-result=result[which(result$length>=min_domain_length),];
+result=result[which(result$length>=min_interval_length),];
 
 result$intra_energy=0;
 result$intra_area=0;
