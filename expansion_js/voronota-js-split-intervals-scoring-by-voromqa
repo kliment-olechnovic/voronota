@@ -7,7 +7,8 @@ cat >&2 << 'EOF'
 'voronota-js-split-intervals-scoring-by-voromqa' script scores domain split intervals for a protein monomer.
 
 Options:
-    --input                   string  *  path to input protein file (only the protein first chain is read)
+    --input                   string  *  path to input protein file (only the first chain is read if not in oligomeric mode)
+    --oligomeric                         flag to enable oligomeric mode - correct for homooligomers only
     --score-one-split         string     domains defined by residue sequence number intervals
     --suggest-splits                     flag to naively suggest splits instead of scoring a provided split
     --output-dir              string     output directory path for details
@@ -52,6 +53,7 @@ command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executab
 command -v R &> /dev/null || { echo >&2 "Error: 'R' executable not in binaries path"; exit 1; }
 
 INFILE=""
+OLIGOMERIC="false"
 SCORE_ONE_SPLIT=""
 SUGGEST_SPLITS="false"
 OUTPUT_DIR=""
@@ -66,6 +68,9 @@ do
 	--input)
 		INFILE="$OPTARG"
 		shift
+		;;
+	--oligomeric)
+		OLIGOMERIC="true"
 		;;
 	--score-one-split)
 		SCORE_ONE_SPLIT="$OPTARG"
@@ -135,12 +140,19 @@ voronota_auto_assert_full_success=true;
 voronota_import('-file', params.input_structure_file, '-title', 'model');
 
 voronota_restrict_atoms("-use", "[-protein]");
+EOF
 
+if [ "$OLIGOMERIC" != "true" ]
+then
+cat << 'EOF'
 voronota_summarize_linear_structure();
 var single_chain_name=voronota_last_output().results[0].output.chain_names_protein[0];
 
 voronota_restrict_atoms("-use", "[-chain "+single_chain_name+"]");
+EOF
+fi
 
+cat << 'EOF'
 voronota_export_atoms("-as-pdb", "-file", params.output_prefix+"structure.pdb");
 EOF
 } \
@@ -292,13 +304,13 @@ all_candidate_indices=which(df_rids$rclass>=0);
 raw_final_candidate_indices=sort(union(c(min(all_candidate_indices), max(all_candidate_indices)), which(df_rids$rclass==1)));
 
 raw_final_candidate_ids=df_rids$ID_resSeq[raw_final_candidate_indices];
+raw_final_candidate_ids=sort(intersect(raw_final_candidate_ids, raw_final_candidate_ids));
 
 final_candidate_ids=raw_final_candidate_ids;
 
 min_candidate_id=min(final_candidate_ids);
 max_candidate_id=max(final_candidate_ids);
 max_available_length=(max_candidate_id-min_candidate_id);
-total_noloop_length=length(which(df_rids$rclass>0));
 
 df=read.table("rr_contacts.txt", header=TRUE, stringsAsFactors=FALSE);
 
@@ -353,15 +365,6 @@ for(i in 1:nrow(result))
 result$score=(result$intra_energy+result$inter_energy_pseudosolvent*weight_inter_energy_pseudosolvent+result$sas_energy*weight_sas_energy)/result$length;
 result=result[order(result$score),];
 
-redundant_indices=c();
-for(i in 1:nrow(result))
-{
-	redundant_indices=union(redundant_indices, which(result$score>result$score[i] & abs(result$pos_a-result$pos_a[i])<=2 & abs(result$pos_b-result$pos_b[i])<=2));
-}
-
-result=result[setdiff(1:nrow(result), redundant_indices),];
-result=result[order(result$score),];
-
 combos=list();
 available_picks=1:nrow(result);
 combos_sizes=c();
@@ -393,7 +396,7 @@ while(length(available_picks)>0)
 		current_combo_size=length(current_combo);
 		current_combo_score=sum(result$score[current_combo]*result$length[current_combo])/sum(result$length[current_combo]);
 		current_combo_length=sum(result$length[current_combo]);
-		if(current_combo_length>=total_noloop_length && length(which(combos_sizes==current_combo_size))<current_combo_size)
+		if(length(which(combos_sizes==current_combo_size))<min(c(current_combo_size^3, 10)))
 		{
 			if(length(combos_scores)>0 && (current_combo_score>0.0 || current_combo_score>min(combos_scores)*0.7))
 			{
