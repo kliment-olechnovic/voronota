@@ -196,11 +196,33 @@ cat "${TMPLDIR}/global_voromqa.tsv" | column -t
 
 if [ -n "$OUTPUT_DIR" ]
 then
+
+{
+cat << EOF
+var params={}
+params.input_structure_file='${TMPLDIR}/structure.pdb';
+params.output_structure_file='${TMPLDIR}/structure_marked.pdb';
+voronota_auto_assert_full_success=true;
+voronota_import('-file', params.input_structure_file, '-title', 'model');
+voronota_set_adjunct_of_atoms('-use', '[]', '-name', 'tf', '-value', 0);
+EOF
+	echo "$SCORE_ONE_SPLIT" \
+	| tr ';' '\n' \
+	| nl \
+	| while read -r DNUM RESTRICTION
+	do
+		echo "voronota_set_adjunct_of_atoms('-use', '[-rnum ${RESTRICTION}]', '-name', 'tf', '-value', ${DNUM});"
+	done
+	
+	echo 'voronota_export_atoms("-as-pdb", "-file", params.output_structure_file);';
+} \
+| voronota-js
+
 	OUTPREFIX="${OUTPUT_DIR}/${BASENAME}/"
 	
 	mkdir -p "$(dirname ${OUTPREFIX}name)"
 	
-	cat "${TMPLDIR}/structure.pdb" > "${OUTPREFIX}structure.pdb"
+	cat "${TMPLDIR}/structure_marked.pdb" > "${OUTPREFIX}structure.pdb"
 	
 	cat "${TMPLDIR}/global_voromqa.tsv" > "${OUTPREFIX}global_voromqa.tsv"
 fi
@@ -259,7 +281,7 @@ cd "${TMPLDIR}"
 
 R --slave --vanilla &> /dev/null << 'EOF'
 min_domain_length=30;
-weight_inter_energy_solvent=0.5;
+weight_inter_energy_solvent=0.0;
 
 weight_inter_energy_pseudosolvent=weight_inter_energy_solvent;
 weight_sas_energy=0.33*weight_inter_energy_solvent;
