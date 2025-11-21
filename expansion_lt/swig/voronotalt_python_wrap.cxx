@@ -32079,7 +32079,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
   PyObject *resultobj = 0;
   MolecularFileInput *arg1 = 0 ;
   MolecularRadicalTessellationParameters *arg2 = 0 ;
@@ -32087,11 +32087,10 @@ SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation(PyObject *self, PyOb
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
-  PyObject *swig_obj[2] ;
   MolecularRadicalTessellation *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "new_MolecularRadicalTessellation", 2, 2, swig_obj)) SWIG_fail;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(swig_obj[0], &argp1, SWIGTYPE_p_MolecularFileInput,  0  | 0);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_MolecularRadicalTessellation" "', argument " "1"" of type '" "MolecularFileInput const &""'"); 
@@ -32123,6 +32122,98 @@ SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation(PyObject *self, PyOb
   return resultobj;
 fail:
   return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *arg1 = 0 ;
+  MolecularRadicalTessellationParameters *arg2 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  MolecularRadicalTessellation *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  {
+    std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *ptr = (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *)0;
+    res1 = swig::asptr(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_MolecularRadicalTessellation" "', argument " "1"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularRadicalTessellation" "', argument " "1"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularRadicalTessellationParameters,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_MolecularRadicalTessellation" "', argument " "2"" of type '" "MolecularRadicalTessellationParameters const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularRadicalTessellation" "', argument " "2"" of type '" "MolecularRadicalTessellationParameters const &""'"); 
+  }
+  arg2 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp2);
+  {
+    try
+    {
+      result = (MolecularRadicalTessellation *)new MolecularRadicalTessellation((std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &)*arg1,(MolecularRadicalTessellationParameters const &)*arg2);
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularRadicalTessellation, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_MolecularRadicalTessellation", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = SWIG_ConvertPtr(argv[0], 0, SWIGTYPE_p_MolecularFileInput, SWIG_POINTER_NO_NULL | 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularRadicalTessellationParameters, SWIG_POINTER_NO_NULL | 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_MolecularRadicalTessellation__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularRadicalTessellationParameters, SWIG_POINTER_NO_NULL | 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_MolecularRadicalTessellation__SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_MolecularRadicalTessellation'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    MolecularRadicalTessellation::MolecularRadicalTessellation(MolecularFileInput const &,MolecularRadicalTessellationParameters const &)\n"
+    "    MolecularRadicalTessellation::MolecularRadicalTessellation(std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &,MolecularRadicalTessellationParameters const &)\n");
+  return 0;
 }
 
 

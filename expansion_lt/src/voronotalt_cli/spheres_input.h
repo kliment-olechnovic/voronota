@@ -291,29 +291,7 @@ public:
 					return false;
 				}
 			}
-			const std::size_t N=mol_data.atom_records.size();
-			result.spheres.resize(N);
-			result.sphere_labels.resize(N);
-			result.label_size=3;
-			static const std::string default_chain_id=".";
-			static const std::string default_atom_name=".";
-			for(std::size_t i=0;i<N;i++)
-			{
-				const MolecularFileReading::AtomRecord& ar=mol_data.atom_records[i];
-				{
-					SimpleSphere& sphere=result.spheres[i];
-					sphere.p.x=static_cast<Float>(ar.x);
-					sphere.p.y=static_cast<Float>(ar.y);
-					sphere.p.z=static_cast<Float>(ar.z);
-					sphere.r=MolecularRadiiAssignment::get_atom_radius(ar.resName, ar.name)+probe;
-				}
-				{
-					SphereLabeling::SphereLabel& sphere_label=result.sphere_labels[i];
-					sphere_label.chain_id=(ar.chainID.empty() ? default_chain_id : ar.chainID);
-					SphereLabeling::form_residue_id_string(ar.resSeq, ar.iCode, ar.resName, sphere_label.residue_id);
-					sphere_label.atom_name=(ar.name.empty() ? default_atom_name : ar.name);
-				}
-			}
+			read_labeled_spheres_from_molecular_data_descriptor(mol_data, probe, false, result);
 		}
 		else
 		{
@@ -340,6 +318,45 @@ public:
 		}
 
 		return true;
+	}
+
+	static bool read_labeled_spheres_from_molecular_data_descriptor(
+			const MolecularFileReading::Data& mol_data,
+			const Float probe,
+			const bool group_and_expand_ids,
+			Result& result) noexcept
+	{
+		result=Result();
+		const std::size_t N=mol_data.atom_records.size();
+		result.spheres.resize(N);
+		result.sphere_labels.resize(N);
+		result.label_size=3;
+		static const std::string default_chain_id=".";
+		static const std::string default_atom_name=".";
+		for(std::size_t i=0;i<N;i++)
+		{
+			const MolecularFileReading::AtomRecord& ar=mol_data.atom_records[i];
+			{
+				SimpleSphere& sphere=result.spheres[i];
+				sphere.p.x=static_cast<Float>(ar.x);
+				sphere.p.y=static_cast<Float>(ar.y);
+				sphere.p.z=static_cast<Float>(ar.z);
+				sphere.r=MolecularRadiiAssignment::get_atom_radius(ar.resName, ar.name)+probe;
+			}
+			{
+				SphereLabeling::SphereLabel& sphere_label=result.sphere_labels[i];
+				sphere_label.chain_id=(ar.chainID.empty() ? default_chain_id : ar.chainID);
+				SphereLabeling::form_residue_id_string(ar.resSeq, ar.iCode, ar.resName, sphere_label.residue_id);
+				sphere_label.atom_name=(ar.name.empty() ? default_atom_name : ar.name);
+			}
+		}
+		if(group_and_expand_ids)
+		{
+			result.number_of_chain_groups=assign_groups_to_sphere_labels_by_chain(result.sphere_labels, result.grouping_by_chain);
+			result.number_of_residue_groups=assign_groups_to_sphere_labels_by_residue(result.sphere_labels, result.grouping_by_residue);
+			SphereLabeling::parse_expanded_residue_ids_in_sphere_labels(result.sphere_labels);
+		}
+		return (!result.spheres.empty() && result.spheres.size()==result.sphere_labels.size());
 	}
 
 private:

@@ -283,11 +283,16 @@ public:
 
 	MolecularRadicalTessellation(const MolecularFileInput& molecular_file_input, const MolecularRadicalTessellationParameters& init_params)
 	{
-		reconstruct(molecular_file_input, init_params);
+		reconstruct(std::vector<MolecularAtomBall>(), molecular_file_input, init_params);
+	}
+
+	MolecularRadicalTessellation(const std::vector<MolecularAtomBall>& input_atom_balls, const MolecularRadicalTessellationParameters& init_params)
+	{
+		reconstruct(input_atom_balls, MolecularFileInput(), init_params);
 	}
 
 private:
-	void reconstruct(const MolecularFileInput& molecular_file_input, const MolecularRadicalTessellationParameters& init_params)
+	void reconstruct(const std::vector<MolecularAtomBall>& input_atom_balls, const MolecularFileInput& molecular_file_input, const MolecularRadicalTessellationParameters& init_params)
 	{
 		params=init_params;
 		atom_balls.clear();
@@ -298,9 +303,14 @@ private:
 		residue_cell_summaries.clear();
 		chain_cell_summaries.clear();
 
-		if(molecular_file_input.input_file_path.empty())
+		if(input_atom_balls.empty() && molecular_file_input.input_file_path.empty())
 		{
-			throw std::runtime_error("No input file path provided.");
+			throw std::runtime_error("No input source provided.");
+		}
+
+		if(!input_atom_balls.empty() && !molecular_file_input.input_file_path.empty())
+		{
+			throw std::runtime_error("Conflicted sources of input provided.");
 		}
 
 		const bool restricted_construction_of_contacts=(
@@ -369,6 +379,38 @@ private:
 
 		voronotalt::SpheresInput::Result spheres_input_result;
 
+		if(!input_atom_balls.empty())
+		{
+			voronotalt::MolecularFileReading::Data mol_data;
+			mol_data.atom_records.resize(input_atom_balls.size());
+			for(std::size_t i=0;i<input_atom_balls.size();i++)
+			{
+				const MolecularAtomBall& ab=input_atom_balls[i];
+				voronotalt::MolecularFileReading::AtomRecord& ar=mol_data.atom_records[i];
+				ar.chainID=ab.ID_chain;
+				ar.resSeq=ab.ID_residue_seq_number;
+				ar.iCode=ab.ID_residue_icode;
+				ar.resName=ab.ID_residue_name;
+				ar.name=ab.ID_atom_name;
+				ar.x=ab.x;
+				ar.y=ab.y;
+				ar.z=ab.z;
+			}
+			if(!voronotalt::SpheresInput::read_labeled_spheres_from_molecular_data_descriptor(mol_data, params.probe, true, spheres_input_result)
+					|| spheres_input_result.spheres.size()!=input_atom_balls.size() || spheres_input_result.sphere_labels.size()!=input_atom_balls.size())
+			{
+				throw std::runtime_error("Failed to process input vector of atom balls.");
+			}
+			for(std::size_t i=0;i<input_atom_balls.size();i++)
+			{
+				const MolecularAtomBall& ab=input_atom_balls[i];
+				if(ab.r>0.0)
+				{
+					spheres_input_result.spheres[i].r=ab.r+params.probe;
+				}
+			}
+		}
+		else
 		{
 			std::string input_data;
 

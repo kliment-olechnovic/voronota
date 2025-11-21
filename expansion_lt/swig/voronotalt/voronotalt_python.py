@@ -1396,8 +1396,8 @@ class MolecularRadicalTessellation(object):
     residue_cell_summaries = property(_voronotalt_python.MolecularRadicalTessellation_residue_cell_summaries_get, _voronotalt_python.MolecularRadicalTessellation_residue_cell_summaries_set)
     chain_cell_summaries = property(_voronotalt_python.MolecularRadicalTessellation_chain_cell_summaries_get, _voronotalt_python.MolecularRadicalTessellation_chain_cell_summaries_set)
 
-    def __init__(self, molecular_file_input, init_params):
-        _voronotalt_python.MolecularRadicalTessellation_swiginit(self, _voronotalt_python.new_MolecularRadicalTessellation(molecular_file_input, init_params))
+    def __init__(self, *args):
+        _voronotalt_python.MolecularRadicalTessellation_swiginit(self, _voronotalt_python.new_MolecularRadicalTessellation(*args))
     __swig_destroy__ = _voronotalt_python.delete_MolecularRadicalTessellation
 
 # Register MolecularRadicalTessellation in _voronotalt_python:
