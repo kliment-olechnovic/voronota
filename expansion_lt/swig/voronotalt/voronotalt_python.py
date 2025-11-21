@@ -433,6 +433,741 @@ class VectorCell(object):
 
 # Register VectorCell in _voronotalt_python:
 _voronotalt_python.VectorCell_swigregister(VectorCell)
+class VectorMolecularAtomBall(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def iterator(self):
+        return _voronotalt_python.VectorMolecularAtomBall_iterator(self)
+    def __iter__(self):
+        return self.iterator()
+
+    def __nonzero__(self):
+        return _voronotalt_python.VectorMolecularAtomBall___nonzero__(self)
+
+    def __bool__(self):
+        return _voronotalt_python.VectorMolecularAtomBall___bool__(self)
+
+    def __len__(self):
+        return _voronotalt_python.VectorMolecularAtomBall___len__(self)
+
+    def __getslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularAtomBall___getslice__(self, i, j)
+
+    def __setslice__(self, *args):
+        return _voronotalt_python.VectorMolecularAtomBall___setslice__(self, *args)
+
+    def __delslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularAtomBall___delslice__(self, i, j)
+
+    def __delitem__(self, *args):
+        return _voronotalt_python.VectorMolecularAtomBall___delitem__(self, *args)
+
+    def __getitem__(self, *args):
+        return _voronotalt_python.VectorMolecularAtomBall___getitem__(self, *args)
+
+    def __setitem__(self, *args):
+        return _voronotalt_python.VectorMolecularAtomBall___setitem__(self, *args)
+
+    def pop(self):
+        return _voronotalt_python.VectorMolecularAtomBall_pop(self)
+
+    def append(self, x):
+        return _voronotalt_python.VectorMolecularAtomBall_append(self, x)
+
+    def empty(self):
+        return _voronotalt_python.VectorMolecularAtomBall_empty(self)
+
+    def size(self):
+        return _voronotalt_python.VectorMolecularAtomBall_size(self)
+
+    def swap(self, v):
+        return _voronotalt_python.VectorMolecularAtomBall_swap(self, v)
+
+    def begin(self):
+        return _voronotalt_python.VectorMolecularAtomBall_begin(self)
+
+    def end(self):
+        return _voronotalt_python.VectorMolecularAtomBall_end(self)
+
+    def rbegin(self):
+        return _voronotalt_python.VectorMolecularAtomBall_rbegin(self)
+
+    def rend(self):
+        return _voronotalt_python.VectorMolecularAtomBall_rend(self)
+
+    def clear(self):
+        return _voronotalt_python.VectorMolecularAtomBall_clear(self)
+
+    def get_allocator(self):
+        return _voronotalt_python.VectorMolecularAtomBall_get_allocator(self)
+
+    def pop_back(self):
+        return _voronotalt_python.VectorMolecularAtomBall_pop_back(self)
+
+    def erase(self, *args):
+        return _voronotalt_python.VectorMolecularAtomBall_erase(self, *args)
+
+    def __init__(self, *args):
+        _voronotalt_python.VectorMolecularAtomBall_swiginit(self, _voronotalt_python.new_VectorMolecularAtomBall(*args))
+
+    def push_back(self, x):
+        return _voronotalt_python.VectorMolecularAtomBall_push_back(self, x)
+
+    def front(self):
+        return _voronotalt_python.VectorMolecularAtomBall_front(self)
+
+    def back(self):
+        return _voronotalt_python.VectorMolecularAtomBall_back(self)
+
+    def assign(self, n, x):
+        return _voronotalt_python.VectorMolecularAtomBall_assign(self, n, x)
+
+    def resize(self, *args):
+        return _voronotalt_python.VectorMolecularAtomBall_resize(self, *args)
+
+    def insert(self, *args):
+        return _voronotalt_python.VectorMolecularAtomBall_insert(self, *args)
+
+    def reserve(self, n):
+        return _voronotalt_python.VectorMolecularAtomBall_reserve(self, n)
+
+    def capacity(self):
+        return _voronotalt_python.VectorMolecularAtomBall_capacity(self)
+    __swig_destroy__ = _voronotalt_python.delete_VectorMolecularAtomBall
+
+# Register VectorMolecularAtomBall in _voronotalt_python:
+_voronotalt_python.VectorMolecularAtomBall_swigregister(VectorMolecularAtomBall)
+class VectorMolecularInterAtomContactSummary(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def iterator(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_iterator(self)
+    def __iter__(self):
+        return self.iterator()
+
+    def __nonzero__(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary___nonzero__(self)
+
+    def __bool__(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary___bool__(self)
+
+    def __len__(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary___len__(self)
+
+    def __getslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary___getslice__(self, i, j)
+
+    def __setslice__(self, *args):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary___setslice__(self, *args)
+
+    def __delslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary___delslice__(self, i, j)
+
+    def __delitem__(self, *args):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary___delitem__(self, *args)
+
+    def __getitem__(self, *args):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary___getitem__(self, *args)
+
+    def __setitem__(self, *args):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary___setitem__(self, *args)
+
+    def pop(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_pop(self)
+
+    def append(self, x):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_append(self, x)
+
+    def empty(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_empty(self)
+
+    def size(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_size(self)
+
+    def swap(self, v):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_swap(self, v)
+
+    def begin(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_begin(self)
+
+    def end(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_end(self)
+
+    def rbegin(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_rbegin(self)
+
+    def rend(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_rend(self)
+
+    def clear(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_clear(self)
+
+    def get_allocator(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_get_allocator(self)
+
+    def pop_back(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_pop_back(self)
+
+    def erase(self, *args):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_erase(self, *args)
+
+    def __init__(self, *args):
+        _voronotalt_python.VectorMolecularInterAtomContactSummary_swiginit(self, _voronotalt_python.new_VectorMolecularInterAtomContactSummary(*args))
+
+    def push_back(self, x):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_push_back(self, x)
+
+    def front(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_front(self)
+
+    def back(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_back(self)
+
+    def assign(self, n, x):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_assign(self, n, x)
+
+    def resize(self, *args):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_resize(self, *args)
+
+    def insert(self, *args):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_insert(self, *args)
+
+    def reserve(self, n):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_reserve(self, n)
+
+    def capacity(self):
+        return _voronotalt_python.VectorMolecularInterAtomContactSummary_capacity(self)
+    __swig_destroy__ = _voronotalt_python.delete_VectorMolecularInterAtomContactSummary
+
+# Register VectorMolecularInterAtomContactSummary in _voronotalt_python:
+_voronotalt_python.VectorMolecularInterAtomContactSummary_swigregister(VectorMolecularInterAtomContactSummary)
+class VectorMolecularInterResidueContactSummary(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def iterator(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_iterator(self)
+    def __iter__(self):
+        return self.iterator()
+
+    def __nonzero__(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary___nonzero__(self)
+
+    def __bool__(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary___bool__(self)
+
+    def __len__(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary___len__(self)
+
+    def __getslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary___getslice__(self, i, j)
+
+    def __setslice__(self, *args):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary___setslice__(self, *args)
+
+    def __delslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary___delslice__(self, i, j)
+
+    def __delitem__(self, *args):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary___delitem__(self, *args)
+
+    def __getitem__(self, *args):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary___getitem__(self, *args)
+
+    def __setitem__(self, *args):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary___setitem__(self, *args)
+
+    def pop(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_pop(self)
+
+    def append(self, x):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_append(self, x)
+
+    def empty(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_empty(self)
+
+    def size(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_size(self)
+
+    def swap(self, v):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_swap(self, v)
+
+    def begin(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_begin(self)
+
+    def end(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_end(self)
+
+    def rbegin(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_rbegin(self)
+
+    def rend(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_rend(self)
+
+    def clear(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_clear(self)
+
+    def get_allocator(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_get_allocator(self)
+
+    def pop_back(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_pop_back(self)
+
+    def erase(self, *args):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_erase(self, *args)
+
+    def __init__(self, *args):
+        _voronotalt_python.VectorMolecularInterResidueContactSummary_swiginit(self, _voronotalt_python.new_VectorMolecularInterResidueContactSummary(*args))
+
+    def push_back(self, x):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_push_back(self, x)
+
+    def front(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_front(self)
+
+    def back(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_back(self)
+
+    def assign(self, n, x):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_assign(self, n, x)
+
+    def resize(self, *args):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_resize(self, *args)
+
+    def insert(self, *args):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_insert(self, *args)
+
+    def reserve(self, n):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_reserve(self, n)
+
+    def capacity(self):
+        return _voronotalt_python.VectorMolecularInterResidueContactSummary_capacity(self)
+    __swig_destroy__ = _voronotalt_python.delete_VectorMolecularInterResidueContactSummary
+
+# Register VectorMolecularInterResidueContactSummary in _voronotalt_python:
+_voronotalt_python.VectorMolecularInterResidueContactSummary_swigregister(VectorMolecularInterResidueContactSummary)
+class VectorMolecularInterChainContactSummary(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def iterator(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_iterator(self)
+    def __iter__(self):
+        return self.iterator()
+
+    def __nonzero__(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary___nonzero__(self)
+
+    def __bool__(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary___bool__(self)
+
+    def __len__(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary___len__(self)
+
+    def __getslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary___getslice__(self, i, j)
+
+    def __setslice__(self, *args):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary___setslice__(self, *args)
+
+    def __delslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary___delslice__(self, i, j)
+
+    def __delitem__(self, *args):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary___delitem__(self, *args)
+
+    def __getitem__(self, *args):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary___getitem__(self, *args)
+
+    def __setitem__(self, *args):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary___setitem__(self, *args)
+
+    def pop(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_pop(self)
+
+    def append(self, x):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_append(self, x)
+
+    def empty(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_empty(self)
+
+    def size(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_size(self)
+
+    def swap(self, v):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_swap(self, v)
+
+    def begin(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_begin(self)
+
+    def end(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_end(self)
+
+    def rbegin(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_rbegin(self)
+
+    def rend(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_rend(self)
+
+    def clear(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_clear(self)
+
+    def get_allocator(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_get_allocator(self)
+
+    def pop_back(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_pop_back(self)
+
+    def erase(self, *args):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_erase(self, *args)
+
+    def __init__(self, *args):
+        _voronotalt_python.VectorMolecularInterChainContactSummary_swiginit(self, _voronotalt_python.new_VectorMolecularInterChainContactSummary(*args))
+
+    def push_back(self, x):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_push_back(self, x)
+
+    def front(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_front(self)
+
+    def back(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_back(self)
+
+    def assign(self, n, x):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_assign(self, n, x)
+
+    def resize(self, *args):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_resize(self, *args)
+
+    def insert(self, *args):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_insert(self, *args)
+
+    def reserve(self, n):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_reserve(self, n)
+
+    def capacity(self):
+        return _voronotalt_python.VectorMolecularInterChainContactSummary_capacity(self)
+    __swig_destroy__ = _voronotalt_python.delete_VectorMolecularInterChainContactSummary
+
+# Register VectorMolecularInterChainContactSummary in _voronotalt_python:
+_voronotalt_python.VectorMolecularInterChainContactSummary_swigregister(VectorMolecularInterChainContactSummary)
+class VectorMolecularAtomCellSummary(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def iterator(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_iterator(self)
+    def __iter__(self):
+        return self.iterator()
+
+    def __nonzero__(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary___nonzero__(self)
+
+    def __bool__(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary___bool__(self)
+
+    def __len__(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary___len__(self)
+
+    def __getslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularAtomCellSummary___getslice__(self, i, j)
+
+    def __setslice__(self, *args):
+        return _voronotalt_python.VectorMolecularAtomCellSummary___setslice__(self, *args)
+
+    def __delslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularAtomCellSummary___delslice__(self, i, j)
+
+    def __delitem__(self, *args):
+        return _voronotalt_python.VectorMolecularAtomCellSummary___delitem__(self, *args)
+
+    def __getitem__(self, *args):
+        return _voronotalt_python.VectorMolecularAtomCellSummary___getitem__(self, *args)
+
+    def __setitem__(self, *args):
+        return _voronotalt_python.VectorMolecularAtomCellSummary___setitem__(self, *args)
+
+    def pop(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_pop(self)
+
+    def append(self, x):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_append(self, x)
+
+    def empty(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_empty(self)
+
+    def size(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_size(self)
+
+    def swap(self, v):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_swap(self, v)
+
+    def begin(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_begin(self)
+
+    def end(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_end(self)
+
+    def rbegin(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_rbegin(self)
+
+    def rend(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_rend(self)
+
+    def clear(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_clear(self)
+
+    def get_allocator(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_get_allocator(self)
+
+    def pop_back(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_pop_back(self)
+
+    def erase(self, *args):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_erase(self, *args)
+
+    def __init__(self, *args):
+        _voronotalt_python.VectorMolecularAtomCellSummary_swiginit(self, _voronotalt_python.new_VectorMolecularAtomCellSummary(*args))
+
+    def push_back(self, x):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_push_back(self, x)
+
+    def front(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_front(self)
+
+    def back(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_back(self)
+
+    def assign(self, n, x):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_assign(self, n, x)
+
+    def resize(self, *args):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_resize(self, *args)
+
+    def insert(self, *args):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_insert(self, *args)
+
+    def reserve(self, n):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_reserve(self, n)
+
+    def capacity(self):
+        return _voronotalt_python.VectorMolecularAtomCellSummary_capacity(self)
+    __swig_destroy__ = _voronotalt_python.delete_VectorMolecularAtomCellSummary
+
+# Register VectorMolecularAtomCellSummary in _voronotalt_python:
+_voronotalt_python.VectorMolecularAtomCellSummary_swigregister(VectorMolecularAtomCellSummary)
+class VectorMolecularResidueCellSummary(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def iterator(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_iterator(self)
+    def __iter__(self):
+        return self.iterator()
+
+    def __nonzero__(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary___nonzero__(self)
+
+    def __bool__(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary___bool__(self)
+
+    def __len__(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary___len__(self)
+
+    def __getslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularResidueCellSummary___getslice__(self, i, j)
+
+    def __setslice__(self, *args):
+        return _voronotalt_python.VectorMolecularResidueCellSummary___setslice__(self, *args)
+
+    def __delslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularResidueCellSummary___delslice__(self, i, j)
+
+    def __delitem__(self, *args):
+        return _voronotalt_python.VectorMolecularResidueCellSummary___delitem__(self, *args)
+
+    def __getitem__(self, *args):
+        return _voronotalt_python.VectorMolecularResidueCellSummary___getitem__(self, *args)
+
+    def __setitem__(self, *args):
+        return _voronotalt_python.VectorMolecularResidueCellSummary___setitem__(self, *args)
+
+    def pop(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_pop(self)
+
+    def append(self, x):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_append(self, x)
+
+    def empty(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_empty(self)
+
+    def size(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_size(self)
+
+    def swap(self, v):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_swap(self, v)
+
+    def begin(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_begin(self)
+
+    def end(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_end(self)
+
+    def rbegin(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_rbegin(self)
+
+    def rend(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_rend(self)
+
+    def clear(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_clear(self)
+
+    def get_allocator(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_get_allocator(self)
+
+    def pop_back(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_pop_back(self)
+
+    def erase(self, *args):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_erase(self, *args)
+
+    def __init__(self, *args):
+        _voronotalt_python.VectorMolecularResidueCellSummary_swiginit(self, _voronotalt_python.new_VectorMolecularResidueCellSummary(*args))
+
+    def push_back(self, x):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_push_back(self, x)
+
+    def front(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_front(self)
+
+    def back(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_back(self)
+
+    def assign(self, n, x):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_assign(self, n, x)
+
+    def resize(self, *args):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_resize(self, *args)
+
+    def insert(self, *args):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_insert(self, *args)
+
+    def reserve(self, n):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_reserve(self, n)
+
+    def capacity(self):
+        return _voronotalt_python.VectorMolecularResidueCellSummary_capacity(self)
+    __swig_destroy__ = _voronotalt_python.delete_VectorMolecularResidueCellSummary
+
+# Register VectorMolecularResidueCellSummary in _voronotalt_python:
+_voronotalt_python.VectorMolecularResidueCellSummary_swigregister(VectorMolecularResidueCellSummary)
+class VectorMolecularChainCellSummary(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def iterator(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_iterator(self)
+    def __iter__(self):
+        return self.iterator()
+
+    def __nonzero__(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary___nonzero__(self)
+
+    def __bool__(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary___bool__(self)
+
+    def __len__(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary___len__(self)
+
+    def __getslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularChainCellSummary___getslice__(self, i, j)
+
+    def __setslice__(self, *args):
+        return _voronotalt_python.VectorMolecularChainCellSummary___setslice__(self, *args)
+
+    def __delslice__(self, i, j):
+        return _voronotalt_python.VectorMolecularChainCellSummary___delslice__(self, i, j)
+
+    def __delitem__(self, *args):
+        return _voronotalt_python.VectorMolecularChainCellSummary___delitem__(self, *args)
+
+    def __getitem__(self, *args):
+        return _voronotalt_python.VectorMolecularChainCellSummary___getitem__(self, *args)
+
+    def __setitem__(self, *args):
+        return _voronotalt_python.VectorMolecularChainCellSummary___setitem__(self, *args)
+
+    def pop(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_pop(self)
+
+    def append(self, x):
+        return _voronotalt_python.VectorMolecularChainCellSummary_append(self, x)
+
+    def empty(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_empty(self)
+
+    def size(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_size(self)
+
+    def swap(self, v):
+        return _voronotalt_python.VectorMolecularChainCellSummary_swap(self, v)
+
+    def begin(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_begin(self)
+
+    def end(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_end(self)
+
+    def rbegin(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_rbegin(self)
+
+    def rend(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_rend(self)
+
+    def clear(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_clear(self)
+
+    def get_allocator(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_get_allocator(self)
+
+    def pop_back(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_pop_back(self)
+
+    def erase(self, *args):
+        return _voronotalt_python.VectorMolecularChainCellSummary_erase(self, *args)
+
+    def __init__(self, *args):
+        _voronotalt_python.VectorMolecularChainCellSummary_swiginit(self, _voronotalt_python.new_VectorMolecularChainCellSummary(*args))
+
+    def push_back(self, x):
+        return _voronotalt_python.VectorMolecularChainCellSummary_push_back(self, x)
+
+    def front(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_front(self)
+
+    def back(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_back(self)
+
+    def assign(self, n, x):
+        return _voronotalt_python.VectorMolecularChainCellSummary_assign(self, n, x)
+
+    def resize(self, *args):
+        return _voronotalt_python.VectorMolecularChainCellSummary_resize(self, *args)
+
+    def insert(self, *args):
+        return _voronotalt_python.VectorMolecularChainCellSummary_insert(self, *args)
+
+    def reserve(self, n):
+        return _voronotalt_python.VectorMolecularChainCellSummary_reserve(self, n)
+
+    def capacity(self):
+        return _voronotalt_python.VectorMolecularChainCellSummary_capacity(self)
+    __swig_destroy__ = _voronotalt_python.delete_VectorMolecularChainCellSummary
+
+# Register VectorMolecularChainCellSummary in _voronotalt_python:
+_voronotalt_python.VectorMolecularChainCellSummary_swigregister(VectorMolecularChainCellSummary)
 class Ball(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
     __repr__ = _swig_repr
@@ -480,15 +1215,191 @@ class RadicalTessellation(object):
     balls = property(_voronotalt_python.RadicalTessellation_balls_get, _voronotalt_python.RadicalTessellation_balls_set)
     contacts = property(_voronotalt_python.RadicalTessellation_contacts_get, _voronotalt_python.RadicalTessellation_contacts_set)
     cells = property(_voronotalt_python.RadicalTessellation_cells_get, _voronotalt_python.RadicalTessellation_cells_set)
-    probe = property(_voronotalt_python.RadicalTessellation_probe_get, _voronotalt_python.RadicalTessellation_probe_set)
 
     def __init__(self, balls, probe):
         _voronotalt_python.RadicalTessellation_swiginit(self, _voronotalt_python.new_RadicalTessellation(balls, probe))
 
-    def recompute(self, new_probe):
-        return _voronotalt_python.RadicalTessellation_recompute(self, new_probe)
+    def recompute(self, probe):
+        return _voronotalt_python.RadicalTessellation_recompute(self, probe)
     __swig_destroy__ = _voronotalt_python.delete_RadicalTessellation
 
 # Register RadicalTessellation in _voronotalt_python:
 _voronotalt_python.RadicalTessellation_swigregister(RadicalTessellation)
+class MolecularAtomBall(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    ID_chain = property(_voronotalt_python.MolecularAtomBall_ID_chain_get, _voronotalt_python.MolecularAtomBall_ID_chain_set)
+    ID_residue_seq_number = property(_voronotalt_python.MolecularAtomBall_ID_residue_seq_number_get, _voronotalt_python.MolecularAtomBall_ID_residue_seq_number_set)
+    ID_residue_icode = property(_voronotalt_python.MolecularAtomBall_ID_residue_icode_get, _voronotalt_python.MolecularAtomBall_ID_residue_icode_set)
+    ID_residue_name = property(_voronotalt_python.MolecularAtomBall_ID_residue_name_get, _voronotalt_python.MolecularAtomBall_ID_residue_name_set)
+    ID_atom_name = property(_voronotalt_python.MolecularAtomBall_ID_atom_name_get, _voronotalt_python.MolecularAtomBall_ID_atom_name_set)
+    x = property(_voronotalt_python.MolecularAtomBall_x_get, _voronotalt_python.MolecularAtomBall_x_set)
+    y = property(_voronotalt_python.MolecularAtomBall_y_get, _voronotalt_python.MolecularAtomBall_y_set)
+    z = property(_voronotalt_python.MolecularAtomBall_z_get, _voronotalt_python.MolecularAtomBall_z_set)
+    r = property(_voronotalt_python.MolecularAtomBall_r_get, _voronotalt_python.MolecularAtomBall_r_set)
+
+    def __init__(self):
+        _voronotalt_python.MolecularAtomBall_swiginit(self, _voronotalt_python.new_MolecularAtomBall())
+    __swig_destroy__ = _voronotalt_python.delete_MolecularAtomBall
+
+# Register MolecularAtomBall in _voronotalt_python:
+_voronotalt_python.MolecularAtomBall_swigregister(MolecularAtomBall)
+class MolecularInterAtomContactSummary(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    ID1_chain = property(_voronotalt_python.MolecularInterAtomContactSummary_ID1_chain_get, _voronotalt_python.MolecularInterAtomContactSummary_ID1_chain_set)
+    ID1_residue_seq_number = property(_voronotalt_python.MolecularInterAtomContactSummary_ID1_residue_seq_number_get, _voronotalt_python.MolecularInterAtomContactSummary_ID1_residue_seq_number_set)
+    ID1_residue_icode = property(_voronotalt_python.MolecularInterAtomContactSummary_ID1_residue_icode_get, _voronotalt_python.MolecularInterAtomContactSummary_ID1_residue_icode_set)
+    ID1_residue_name = property(_voronotalt_python.MolecularInterAtomContactSummary_ID1_residue_name_get, _voronotalt_python.MolecularInterAtomContactSummary_ID1_residue_name_set)
+    ID1_atom_name = property(_voronotalt_python.MolecularInterAtomContactSummary_ID1_atom_name_get, _voronotalt_python.MolecularInterAtomContactSummary_ID1_atom_name_set)
+    ID2_chain = property(_voronotalt_python.MolecularInterAtomContactSummary_ID2_chain_get, _voronotalt_python.MolecularInterAtomContactSummary_ID2_chain_set)
+    ID2_residue_seq_number = property(_voronotalt_python.MolecularInterAtomContactSummary_ID2_residue_seq_number_get, _voronotalt_python.MolecularInterAtomContactSummary_ID2_residue_seq_number_set)
+    ID2_residue_icode = property(_voronotalt_python.MolecularInterAtomContactSummary_ID2_residue_icode_get, _voronotalt_python.MolecularInterAtomContactSummary_ID2_residue_icode_set)
+    ID2_residue_name = property(_voronotalt_python.MolecularInterAtomContactSummary_ID2_residue_name_get, _voronotalt_python.MolecularInterAtomContactSummary_ID2_residue_name_set)
+    ID2_atom_name = property(_voronotalt_python.MolecularInterAtomContactSummary_ID2_atom_name_get, _voronotalt_python.MolecularInterAtomContactSummary_ID2_atom_name_set)
+    area = property(_voronotalt_python.MolecularInterAtomContactSummary_area_get, _voronotalt_python.MolecularInterAtomContactSummary_area_set)
+    arc_length = property(_voronotalt_python.MolecularInterAtomContactSummary_arc_length_get, _voronotalt_python.MolecularInterAtomContactSummary_arc_length_set)
+
+    def __init__(self):
+        _voronotalt_python.MolecularInterAtomContactSummary_swiginit(self, _voronotalt_python.new_MolecularInterAtomContactSummary())
+    __swig_destroy__ = _voronotalt_python.delete_MolecularInterAtomContactSummary
+
+# Register MolecularInterAtomContactSummary in _voronotalt_python:
+_voronotalt_python.MolecularInterAtomContactSummary_swigregister(MolecularInterAtomContactSummary)
+class MolecularInterResidueContactSummary(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    ID1_chain = property(_voronotalt_python.MolecularInterResidueContactSummary_ID1_chain_get, _voronotalt_python.MolecularInterResidueContactSummary_ID1_chain_set)
+    ID1_residue_seq_number = property(_voronotalt_python.MolecularInterResidueContactSummary_ID1_residue_seq_number_get, _voronotalt_python.MolecularInterResidueContactSummary_ID1_residue_seq_number_set)
+    ID1_residue_icode = property(_voronotalt_python.MolecularInterResidueContactSummary_ID1_residue_icode_get, _voronotalt_python.MolecularInterResidueContactSummary_ID1_residue_icode_set)
+    ID1_residue_name = property(_voronotalt_python.MolecularInterResidueContactSummary_ID1_residue_name_get, _voronotalt_python.MolecularInterResidueContactSummary_ID1_residue_name_set)
+    ID2_chain = property(_voronotalt_python.MolecularInterResidueContactSummary_ID2_chain_get, _voronotalt_python.MolecularInterResidueContactSummary_ID2_chain_set)
+    ID2_residue_seq_number = property(_voronotalt_python.MolecularInterResidueContactSummary_ID2_residue_seq_number_get, _voronotalt_python.MolecularInterResidueContactSummary_ID2_residue_seq_number_set)
+    ID2_residue_icode = property(_voronotalt_python.MolecularInterResidueContactSummary_ID2_residue_icode_get, _voronotalt_python.MolecularInterResidueContactSummary_ID2_residue_icode_set)
+    ID2_residue_name = property(_voronotalt_python.MolecularInterResidueContactSummary_ID2_residue_name_get, _voronotalt_python.MolecularInterResidueContactSummary_ID2_residue_name_set)
+    area = property(_voronotalt_python.MolecularInterResidueContactSummary_area_get, _voronotalt_python.MolecularInterResidueContactSummary_area_set)
+    arc_length = property(_voronotalt_python.MolecularInterResidueContactSummary_arc_length_get, _voronotalt_python.MolecularInterResidueContactSummary_arc_length_set)
+
+    def __init__(self):
+        _voronotalt_python.MolecularInterResidueContactSummary_swiginit(self, _voronotalt_python.new_MolecularInterResidueContactSummary())
+    __swig_destroy__ = _voronotalt_python.delete_MolecularInterResidueContactSummary
+
+# Register MolecularInterResidueContactSummary in _voronotalt_python:
+_voronotalt_python.MolecularInterResidueContactSummary_swigregister(MolecularInterResidueContactSummary)
+class MolecularInterChainContactSummary(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    ID1_chain = property(_voronotalt_python.MolecularInterChainContactSummary_ID1_chain_get, _voronotalt_python.MolecularInterChainContactSummary_ID1_chain_set)
+    ID2_chain = property(_voronotalt_python.MolecularInterChainContactSummary_ID2_chain_get, _voronotalt_python.MolecularInterChainContactSummary_ID2_chain_set)
+    area = property(_voronotalt_python.MolecularInterChainContactSummary_area_get, _voronotalt_python.MolecularInterChainContactSummary_area_set)
+    arc_length = property(_voronotalt_python.MolecularInterChainContactSummary_arc_length_get, _voronotalt_python.MolecularInterChainContactSummary_arc_length_set)
+
+    def __init__(self):
+        _voronotalt_python.MolecularInterChainContactSummary_swiginit(self, _voronotalt_python.new_MolecularInterChainContactSummary())
+    __swig_destroy__ = _voronotalt_python.delete_MolecularInterChainContactSummary
+
+# Register MolecularInterChainContactSummary in _voronotalt_python:
+_voronotalt_python.MolecularInterChainContactSummary_swigregister(MolecularInterChainContactSummary)
+class MolecularAtomCellSummary(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    ID_chain = property(_voronotalt_python.MolecularAtomCellSummary_ID_chain_get, _voronotalt_python.MolecularAtomCellSummary_ID_chain_set)
+    ID_residue_seq_number = property(_voronotalt_python.MolecularAtomCellSummary_ID_residue_seq_number_get, _voronotalt_python.MolecularAtomCellSummary_ID_residue_seq_number_set)
+    ID_residue_icode = property(_voronotalt_python.MolecularAtomCellSummary_ID_residue_icode_get, _voronotalt_python.MolecularAtomCellSummary_ID_residue_icode_set)
+    ID_residue_name = property(_voronotalt_python.MolecularAtomCellSummary_ID_residue_name_get, _voronotalt_python.MolecularAtomCellSummary_ID_residue_name_set)
+    ID_atom_name = property(_voronotalt_python.MolecularAtomCellSummary_ID_atom_name_get, _voronotalt_python.MolecularAtomCellSummary_ID_atom_name_set)
+    sas_area = property(_voronotalt_python.MolecularAtomCellSummary_sas_area_get, _voronotalt_python.MolecularAtomCellSummary_sas_area_set)
+    volume = property(_voronotalt_python.MolecularAtomCellSummary_volume_get, _voronotalt_python.MolecularAtomCellSummary_volume_set)
+
+    def __init__(self):
+        _voronotalt_python.MolecularAtomCellSummary_swiginit(self, _voronotalt_python.new_MolecularAtomCellSummary())
+    __swig_destroy__ = _voronotalt_python.delete_MolecularAtomCellSummary
+
+# Register MolecularAtomCellSummary in _voronotalt_python:
+_voronotalt_python.MolecularAtomCellSummary_swigregister(MolecularAtomCellSummary)
+class MolecularResidueCellSummary(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    ID_chain = property(_voronotalt_python.MolecularResidueCellSummary_ID_chain_get, _voronotalt_python.MolecularResidueCellSummary_ID_chain_set)
+    ID_residue_seq_number = property(_voronotalt_python.MolecularResidueCellSummary_ID_residue_seq_number_get, _voronotalt_python.MolecularResidueCellSummary_ID_residue_seq_number_set)
+    ID_residue_icode = property(_voronotalt_python.MolecularResidueCellSummary_ID_residue_icode_get, _voronotalt_python.MolecularResidueCellSummary_ID_residue_icode_set)
+    ID_residue_name = property(_voronotalt_python.MolecularResidueCellSummary_ID_residue_name_get, _voronotalt_python.MolecularResidueCellSummary_ID_residue_name_set)
+    sas_area = property(_voronotalt_python.MolecularResidueCellSummary_sas_area_get, _voronotalt_python.MolecularResidueCellSummary_sas_area_set)
+    volume = property(_voronotalt_python.MolecularResidueCellSummary_volume_get, _voronotalt_python.MolecularResidueCellSummary_volume_set)
+
+    def __init__(self):
+        _voronotalt_python.MolecularResidueCellSummary_swiginit(self, _voronotalt_python.new_MolecularResidueCellSummary())
+    __swig_destroy__ = _voronotalt_python.delete_MolecularResidueCellSummary
+
+# Register MolecularResidueCellSummary in _voronotalt_python:
+_voronotalt_python.MolecularResidueCellSummary_swigregister(MolecularResidueCellSummary)
+class MolecularChainCellSummary(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    ID_chain = property(_voronotalt_python.MolecularChainCellSummary_ID_chain_get, _voronotalt_python.MolecularChainCellSummary_ID_chain_set)
+    sas_area = property(_voronotalt_python.MolecularChainCellSummary_sas_area_get, _voronotalt_python.MolecularChainCellSummary_sas_area_set)
+    volume = property(_voronotalt_python.MolecularChainCellSummary_volume_get, _voronotalt_python.MolecularChainCellSummary_volume_set)
+
+    def __init__(self):
+        _voronotalt_python.MolecularChainCellSummary_swiginit(self, _voronotalt_python.new_MolecularChainCellSummary())
+    __swig_destroy__ = _voronotalt_python.delete_MolecularChainCellSummary
+
+# Register MolecularChainCellSummary in _voronotalt_python:
+_voronotalt_python.MolecularChainCellSummary_swigregister(MolecularChainCellSummary)
+class MolecularFileInput(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    input_file_path = property(_voronotalt_python.MolecularFileInput_input_file_path_get, _voronotalt_python.MolecularFileInput_input_file_path_set)
+    include_heteroatoms = property(_voronotalt_python.MolecularFileInput_include_heteroatoms_get, _voronotalt_python.MolecularFileInput_include_heteroatoms_set)
+    read_as_assembly = property(_voronotalt_python.MolecularFileInput_read_as_assembly_get, _voronotalt_python.MolecularFileInput_read_as_assembly_set)
+
+    def __init__(self, *args):
+        _voronotalt_python.MolecularFileInput_swiginit(self, _voronotalt_python.new_MolecularFileInput(*args))
+    __swig_destroy__ = _voronotalt_python.delete_MolecularFileInput
+
+# Register MolecularFileInput in _voronotalt_python:
+_voronotalt_python.MolecularFileInput_swigregister(MolecularFileInput)
+class MolecularRadicalTessellationParameters(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    restrict_input_atoms = property(_voronotalt_python.MolecularRadicalTessellationParameters_restrict_input_atoms_get, _voronotalt_python.MolecularRadicalTessellationParameters_restrict_input_atoms_set)
+    restrict_contacts_to_construct = property(_voronotalt_python.MolecularRadicalTessellationParameters_restrict_contacts_to_construct_get, _voronotalt_python.MolecularRadicalTessellationParameters_restrict_contacts_to_construct_set)
+    restrict_contacts_for_output = property(_voronotalt_python.MolecularRadicalTessellationParameters_restrict_contacts_for_output_get, _voronotalt_python.MolecularRadicalTessellationParameters_restrict_contacts_for_output_set)
+    restrict_cells_for_output = property(_voronotalt_python.MolecularRadicalTessellationParameters_restrict_cells_for_output_get, _voronotalt_python.MolecularRadicalTessellationParameters_restrict_cells_for_output_set)
+    probe = property(_voronotalt_python.MolecularRadicalTessellationParameters_probe_get, _voronotalt_python.MolecularRadicalTessellationParameters_probe_set)
+    compute_only_inter_chain_contacts = property(_voronotalt_python.MolecularRadicalTessellationParameters_compute_only_inter_chain_contacts_get, _voronotalt_python.MolecularRadicalTessellationParameters_compute_only_inter_chain_contacts_set)
+    compute_only_inter_residue_contacts = property(_voronotalt_python.MolecularRadicalTessellationParameters_compute_only_inter_residue_contacts_get, _voronotalt_python.MolecularRadicalTessellationParameters_compute_only_inter_residue_contacts_set)
+    record_atom_balls = property(_voronotalt_python.MolecularRadicalTessellationParameters_record_atom_balls_get, _voronotalt_python.MolecularRadicalTessellationParameters_record_atom_balls_set)
+    record_inter_atom_contact_summaries = property(_voronotalt_python.MolecularRadicalTessellationParameters_record_inter_atom_contact_summaries_get, _voronotalt_python.MolecularRadicalTessellationParameters_record_inter_atom_contact_summaries_set)
+    record_inter_residue_contact_summaries = property(_voronotalt_python.MolecularRadicalTessellationParameters_record_inter_residue_contact_summaries_get, _voronotalt_python.MolecularRadicalTessellationParameters_record_inter_residue_contact_summaries_set)
+    record_inter_chain_contact_summaries = property(_voronotalt_python.MolecularRadicalTessellationParameters_record_inter_chain_contact_summaries_get, _voronotalt_python.MolecularRadicalTessellationParameters_record_inter_chain_contact_summaries_set)
+    record_atom_cell_summaries = property(_voronotalt_python.MolecularRadicalTessellationParameters_record_atom_cell_summaries_get, _voronotalt_python.MolecularRadicalTessellationParameters_record_atom_cell_summaries_set)
+    record_residue_cell_summaries = property(_voronotalt_python.MolecularRadicalTessellationParameters_record_residue_cell_summaries_get, _voronotalt_python.MolecularRadicalTessellationParameters_record_residue_cell_summaries_set)
+    record_chain_cell_summaries = property(_voronotalt_python.MolecularRadicalTessellationParameters_record_chain_cell_summaries_get, _voronotalt_python.MolecularRadicalTessellationParameters_record_chain_cell_summaries_set)
+    record_everything_possible = property(_voronotalt_python.MolecularRadicalTessellationParameters_record_everything_possible_get, _voronotalt_python.MolecularRadicalTessellationParameters_record_everything_possible_set)
+
+    def __init__(self):
+        _voronotalt_python.MolecularRadicalTessellationParameters_swiginit(self, _voronotalt_python.new_MolecularRadicalTessellationParameters())
+    __swig_destroy__ = _voronotalt_python.delete_MolecularRadicalTessellationParameters
+
+# Register MolecularRadicalTessellationParameters in _voronotalt_python:
+_voronotalt_python.MolecularRadicalTessellationParameters_swigregister(MolecularRadicalTessellationParameters)
+class MolecularRadicalTessellation(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    params = property(_voronotalt_python.MolecularRadicalTessellation_params_get, _voronotalt_python.MolecularRadicalTessellation_params_set)
+    atom_balls = property(_voronotalt_python.MolecularRadicalTessellation_atom_balls_get, _voronotalt_python.MolecularRadicalTessellation_atom_balls_set)
+    inter_atom_contact_summaries = property(_voronotalt_python.MolecularRadicalTessellation_inter_atom_contact_summaries_get, _voronotalt_python.MolecularRadicalTessellation_inter_atom_contact_summaries_set)
+    inter_residue_contact_summaries = property(_voronotalt_python.MolecularRadicalTessellation_inter_residue_contact_summaries_get, _voronotalt_python.MolecularRadicalTessellation_inter_residue_contact_summaries_set)
+    inter_chain_contact_summaries = property(_voronotalt_python.MolecularRadicalTessellation_inter_chain_contact_summaries_get, _voronotalt_python.MolecularRadicalTessellation_inter_chain_contact_summaries_set)
+    atom_cell_summaries = property(_voronotalt_python.MolecularRadicalTessellation_atom_cell_summaries_get, _voronotalt_python.MolecularRadicalTessellation_atom_cell_summaries_set)
+    residue_cell_summaries = property(_voronotalt_python.MolecularRadicalTessellation_residue_cell_summaries_get, _voronotalt_python.MolecularRadicalTessellation_residue_cell_summaries_set)
+    chain_cell_summaries = property(_voronotalt_python.MolecularRadicalTessellation_chain_cell_summaries_get, _voronotalt_python.MolecularRadicalTessellation_chain_cell_summaries_set)
+
+    def __init__(self, molecular_file_input, init_params):
+        _voronotalt_python.MolecularRadicalTessellation_swiginit(self, _voronotalt_python.new_MolecularRadicalTessellation(molecular_file_input, init_params))
+    __swig_destroy__ = _voronotalt_python.delete_MolecularRadicalTessellation
+
+# Register MolecularRadicalTessellation in _voronotalt_python:
+_voronotalt_python.MolecularRadicalTessellation_swigregister(MolecularRadicalTessellation)
 

@@ -3154,23 +3154,47 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_Ball swig_types[0]
 #define SWIGTYPE_p_Cell swig_types[1]
 #define SWIGTYPE_p_Contact swig_types[2]
-#define SWIGTYPE_p_RadicalTessellation swig_types[3]
-#define SWIGTYPE_p_allocator_type swig_types[4]
-#define SWIGTYPE_p_char swig_types[5]
-#define SWIGTYPE_p_difference_type swig_types[6]
-#define SWIGTYPE_p_p_PyObject swig_types[7]
-#define SWIGTYPE_p_size_type swig_types[8]
-#define SWIGTYPE_p_std__allocatorT_Ball_t swig_types[9]
-#define SWIGTYPE_p_std__allocatorT_Cell_t swig_types[10]
-#define SWIGTYPE_p_std__allocatorT_Contact_t swig_types[11]
-#define SWIGTYPE_p_std__invalid_argument swig_types[12]
-#define SWIGTYPE_p_std__vectorT_Ball_t swig_types[13]
-#define SWIGTYPE_p_std__vectorT_Cell_t swig_types[14]
-#define SWIGTYPE_p_std__vectorT_Contact_t swig_types[15]
-#define SWIGTYPE_p_swig__SwigPyIterator swig_types[16]
-#define SWIGTYPE_p_value_type swig_types[17]
-static swig_type_info *swig_types[19];
-static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
+#define SWIGTYPE_p_MolecularAtomBall swig_types[3]
+#define SWIGTYPE_p_MolecularAtomCellSummary swig_types[4]
+#define SWIGTYPE_p_MolecularChainCellSummary swig_types[5]
+#define SWIGTYPE_p_MolecularFileInput swig_types[6]
+#define SWIGTYPE_p_MolecularInterAtomContactSummary swig_types[7]
+#define SWIGTYPE_p_MolecularInterChainContactSummary swig_types[8]
+#define SWIGTYPE_p_MolecularInterResidueContactSummary swig_types[9]
+#define SWIGTYPE_p_MolecularRadicalTessellation swig_types[10]
+#define SWIGTYPE_p_MolecularRadicalTessellationParameters swig_types[11]
+#define SWIGTYPE_p_MolecularResidueCellSummary swig_types[12]
+#define SWIGTYPE_p_RadicalTessellation swig_types[13]
+#define SWIGTYPE_p_allocator_type swig_types[14]
+#define SWIGTYPE_p_char swig_types[15]
+#define SWIGTYPE_p_difference_type swig_types[16]
+#define SWIGTYPE_p_p_PyObject swig_types[17]
+#define SWIGTYPE_p_size_type swig_types[18]
+#define SWIGTYPE_p_std__allocatorT_Ball_t swig_types[19]
+#define SWIGTYPE_p_std__allocatorT_Cell_t swig_types[20]
+#define SWIGTYPE_p_std__allocatorT_Contact_t swig_types[21]
+#define SWIGTYPE_p_std__allocatorT_MolecularAtomBall_t swig_types[22]
+#define SWIGTYPE_p_std__allocatorT_MolecularAtomCellSummary_t swig_types[23]
+#define SWIGTYPE_p_std__allocatorT_MolecularChainCellSummary_t swig_types[24]
+#define SWIGTYPE_p_std__allocatorT_MolecularInterAtomContactSummary_t swig_types[25]
+#define SWIGTYPE_p_std__allocatorT_MolecularInterChainContactSummary_t swig_types[26]
+#define SWIGTYPE_p_std__allocatorT_MolecularInterResidueContactSummary_t swig_types[27]
+#define SWIGTYPE_p_std__allocatorT_MolecularResidueCellSummary_t swig_types[28]
+#define SWIGTYPE_p_std__invalid_argument swig_types[29]
+#define SWIGTYPE_p_std__vectorT_Ball_t swig_types[30]
+#define SWIGTYPE_p_std__vectorT_Cell_t swig_types[31]
+#define SWIGTYPE_p_std__vectorT_Contact_t swig_types[32]
+#define SWIGTYPE_p_std__vectorT_MolecularAtomBall_t swig_types[33]
+#define SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t swig_types[34]
+#define SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t swig_types[35]
+#define SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t swig_types[36]
+#define SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t swig_types[37]
+#define SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t swig_types[38]
+#define SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t swig_types[39]
+#define SWIGTYPE_p_swig__SwigPyIterator swig_types[40]
+#define SWIGTYPE_p_value_type swig_types[41]
+static swig_type_info *swig_types[43];
+static swig_module_info swig_module = {swig_types, 42, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3321,6 +3345,9 @@ namespace swig {
 #include "voronotalt.h"
 
 
+#include <string>
+
+
 #include <iostream>
 
 #if PY_VERSION_HEX >= 0x03020000
@@ -3339,9 +3366,6 @@ namespace swig {
 #     define SWIG_STD_NOMODERN_STL
 #  endif
 #endif
-
-
-#include <string>
 
 
 #include <stddef.h>
@@ -5219,6 +5243,769 @@ SWIGINTERN std::vector< Cell >::iterator std_vector_Sl_Cell_Sg__erase__SWIG_1(st
 SWIGINTERN std::vector< Cell >::iterator std_vector_Sl_Cell_Sg__insert__SWIG_0(std::vector< Cell > *self,std::vector< Cell >::iterator pos,std::vector< Cell >::value_type const &x){ return self->insert(pos, x); }
 SWIGINTERN void std_vector_Sl_Cell_Sg__insert__SWIG_1(std::vector< Cell > *self,std::vector< Cell >::iterator pos,std::vector< Cell >::size_type n,std::vector< Cell >::value_type const &x){ self->insert(pos, n, x); }
 
+  namespace swig {
+    template <>  struct traits< MolecularAtomBall > {
+      typedef pointer_category category;
+      static const char* type_name() { return"MolecularAtomBall"; }
+    };
+  }
+
+
+      namespace swig {
+	template <>  struct traits<std::vector< MolecularAtomBall, std::allocator< MolecularAtomBall > > > {
+	  typedef pointer_category category;
+	  static const char* type_name() {
+	    return "std::vector<" "MolecularAtomBall" "," "std::allocator< MolecularAtomBall >" " >";
+	  }
+	};
+      }
+    
+SWIGINTERN swig::SwigPyIterator *std_vector_Sl_MolecularAtomBall_Sg__iterator(std::vector< MolecularAtomBall > *self,PyObject **PYTHON_SELF){
+      return swig::make_output_iterator(self->begin(), self->begin(), self->end(), *PYTHON_SELF);
+    }
+SWIGINTERN bool std_vector_Sl_MolecularAtomBall_Sg____nonzero__(std::vector< MolecularAtomBall > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN bool std_vector_Sl_MolecularAtomBall_Sg____bool__(std::vector< MolecularAtomBall > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN std::vector< MolecularAtomBall >::size_type std_vector_Sl_MolecularAtomBall_Sg____len__(std::vector< MolecularAtomBall > const *self){
+      return self->size();
+    }
+SWIGINTERN std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *std_vector_Sl_MolecularAtomBall_Sg____getslice__(std::vector< MolecularAtomBall > *self,std::vector< MolecularAtomBall >::difference_type i,std::vector< MolecularAtomBall >::difference_type j){
+      return swig::getslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomBall_Sg____setslice____SWIG_0(std::vector< MolecularAtomBall > *self,std::vector< MolecularAtomBall >::difference_type i,std::vector< MolecularAtomBall >::difference_type j){
+      swig::setslice(self, i, j, 1, std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >());
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomBall_Sg____setslice____SWIG_1(std::vector< MolecularAtomBall > *self,std::vector< MolecularAtomBall >::difference_type i,std::vector< MolecularAtomBall >::difference_type j,std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &v){
+      swig::setslice(self, i, j, 1, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomBall_Sg____delslice__(std::vector< MolecularAtomBall > *self,std::vector< MolecularAtomBall >::difference_type i,std::vector< MolecularAtomBall >::difference_type j){
+      swig::delslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomBall_Sg____delitem____SWIG_0(std::vector< MolecularAtomBall > *self,std::vector< MolecularAtomBall >::difference_type i){
+      swig::erase(self, swig::getpos(self, i));
+    }
+SWIGINTERN std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *std_vector_Sl_MolecularAtomBall_Sg____getitem____SWIG_0(std::vector< MolecularAtomBall > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return NULL;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >::difference_type id = i;
+      std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >::difference_type jd = j;
+      return swig::getslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomBall_Sg____setitem____SWIG_0(std::vector< MolecularAtomBall > *self,PySliceObject *slice,std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &v){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >::difference_type id = i;
+      std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >::difference_type jd = j;
+      swig::setslice(self, id, jd, step, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomBall_Sg____setitem____SWIG_1(std::vector< MolecularAtomBall > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >::difference_type id = i;
+      std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomBall_Sg____delitem____SWIG_1(std::vector< MolecularAtomBall > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >::difference_type id = i;
+      std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN std::vector< MolecularAtomBall >::value_type const &std_vector_Sl_MolecularAtomBall_Sg____getitem____SWIG_1(std::vector< MolecularAtomBall > const *self,std::vector< MolecularAtomBall >::difference_type i){
+      return *(swig::cgetpos(self, i));
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomBall_Sg____setitem____SWIG_2(std::vector< MolecularAtomBall > *self,std::vector< MolecularAtomBall >::difference_type i,std::vector< MolecularAtomBall >::value_type const &x){
+      *(swig::getpos(self,i)) = x;
+    }
+SWIGINTERN std::vector< MolecularAtomBall >::value_type std_vector_Sl_MolecularAtomBall_Sg__pop(std::vector< MolecularAtomBall > *self){
+      if (self->size() == 0)
+	throw std::out_of_range("pop from empty container");
+      std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >::value_type x = self->back();
+      self->pop_back();
+      return x;
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomBall_Sg__append(std::vector< MolecularAtomBall > *self,std::vector< MolecularAtomBall >::value_type const &x){
+      self->push_back(x);
+    }
+SWIGINTERN std::vector< MolecularAtomBall >::iterator std_vector_Sl_MolecularAtomBall_Sg__erase__SWIG_0(std::vector< MolecularAtomBall > *self,std::vector< MolecularAtomBall >::iterator pos){ return self->erase(pos); }
+SWIGINTERN std::vector< MolecularAtomBall >::iterator std_vector_Sl_MolecularAtomBall_Sg__erase__SWIG_1(std::vector< MolecularAtomBall > *self,std::vector< MolecularAtomBall >::iterator first,std::vector< MolecularAtomBall >::iterator last){ return self->erase(first, last); }
+SWIGINTERN std::vector< MolecularAtomBall >::iterator std_vector_Sl_MolecularAtomBall_Sg__insert__SWIG_0(std::vector< MolecularAtomBall > *self,std::vector< MolecularAtomBall >::iterator pos,std::vector< MolecularAtomBall >::value_type const &x){ return self->insert(pos, x); }
+SWIGINTERN void std_vector_Sl_MolecularAtomBall_Sg__insert__SWIG_1(std::vector< MolecularAtomBall > *self,std::vector< MolecularAtomBall >::iterator pos,std::vector< MolecularAtomBall >::size_type n,std::vector< MolecularAtomBall >::value_type const &x){ self->insert(pos, n, x); }
+
+  namespace swig {
+    template <>  struct traits< MolecularInterAtomContactSummary > {
+      typedef pointer_category category;
+      static const char* type_name() { return"MolecularInterAtomContactSummary"; }
+    };
+  }
+
+
+      namespace swig {
+	template <>  struct traits<std::vector< MolecularInterAtomContactSummary, std::allocator< MolecularInterAtomContactSummary > > > {
+	  typedef pointer_category category;
+	  static const char* type_name() {
+	    return "std::vector<" "MolecularInterAtomContactSummary" "," "std::allocator< MolecularInterAtomContactSummary >" " >";
+	  }
+	};
+      }
+    
+SWIGINTERN swig::SwigPyIterator *std_vector_Sl_MolecularInterAtomContactSummary_Sg__iterator(std::vector< MolecularInterAtomContactSummary > *self,PyObject **PYTHON_SELF){
+      return swig::make_output_iterator(self->begin(), self->begin(), self->end(), *PYTHON_SELF);
+    }
+SWIGINTERN bool std_vector_Sl_MolecularInterAtomContactSummary_Sg____nonzero__(std::vector< MolecularInterAtomContactSummary > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN bool std_vector_Sl_MolecularInterAtomContactSummary_Sg____bool__(std::vector< MolecularInterAtomContactSummary > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN std::vector< MolecularInterAtomContactSummary >::size_type std_vector_Sl_MolecularInterAtomContactSummary_Sg____len__(std::vector< MolecularInterAtomContactSummary > const *self){
+      return self->size();
+    }
+SWIGINTERN std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *std_vector_Sl_MolecularInterAtomContactSummary_Sg____getslice__(std::vector< MolecularInterAtomContactSummary > *self,std::vector< MolecularInterAtomContactSummary >::difference_type i,std::vector< MolecularInterAtomContactSummary >::difference_type j){
+      return swig::getslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterAtomContactSummary_Sg____setslice____SWIG_0(std::vector< MolecularInterAtomContactSummary > *self,std::vector< MolecularInterAtomContactSummary >::difference_type i,std::vector< MolecularInterAtomContactSummary >::difference_type j){
+      swig::setslice(self, i, j, 1, std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >());
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterAtomContactSummary_Sg____setslice____SWIG_1(std::vector< MolecularInterAtomContactSummary > *self,std::vector< MolecularInterAtomContactSummary >::difference_type i,std::vector< MolecularInterAtomContactSummary >::difference_type j,std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > const &v){
+      swig::setslice(self, i, j, 1, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterAtomContactSummary_Sg____delslice__(std::vector< MolecularInterAtomContactSummary > *self,std::vector< MolecularInterAtomContactSummary >::difference_type i,std::vector< MolecularInterAtomContactSummary >::difference_type j){
+      swig::delslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterAtomContactSummary_Sg____delitem____SWIG_0(std::vector< MolecularInterAtomContactSummary > *self,std::vector< MolecularInterAtomContactSummary >::difference_type i){
+      swig::erase(self, swig::getpos(self, i));
+    }
+SWIGINTERN std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *std_vector_Sl_MolecularInterAtomContactSummary_Sg____getitem____SWIG_0(std::vector< MolecularInterAtomContactSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return NULL;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >::difference_type id = i;
+      std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >::difference_type jd = j;
+      return swig::getslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterAtomContactSummary_Sg____setitem____SWIG_0(std::vector< MolecularInterAtomContactSummary > *self,PySliceObject *slice,std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > const &v){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >::difference_type id = i;
+      std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >::difference_type jd = j;
+      swig::setslice(self, id, jd, step, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterAtomContactSummary_Sg____setitem____SWIG_1(std::vector< MolecularInterAtomContactSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >::difference_type id = i;
+      std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterAtomContactSummary_Sg____delitem____SWIG_1(std::vector< MolecularInterAtomContactSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >::difference_type id = i;
+      std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN std::vector< MolecularInterAtomContactSummary >::value_type const &std_vector_Sl_MolecularInterAtomContactSummary_Sg____getitem____SWIG_1(std::vector< MolecularInterAtomContactSummary > const *self,std::vector< MolecularInterAtomContactSummary >::difference_type i){
+      return *(swig::cgetpos(self, i));
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterAtomContactSummary_Sg____setitem____SWIG_2(std::vector< MolecularInterAtomContactSummary > *self,std::vector< MolecularInterAtomContactSummary >::difference_type i,std::vector< MolecularInterAtomContactSummary >::value_type const &x){
+      *(swig::getpos(self,i)) = x;
+    }
+SWIGINTERN std::vector< MolecularInterAtomContactSummary >::value_type std_vector_Sl_MolecularInterAtomContactSummary_Sg__pop(std::vector< MolecularInterAtomContactSummary > *self){
+      if (self->size() == 0)
+	throw std::out_of_range("pop from empty container");
+      std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >::value_type x = self->back();
+      self->pop_back();
+      return x;
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterAtomContactSummary_Sg__append(std::vector< MolecularInterAtomContactSummary > *self,std::vector< MolecularInterAtomContactSummary >::value_type const &x){
+      self->push_back(x);
+    }
+SWIGINTERN std::vector< MolecularInterAtomContactSummary >::iterator std_vector_Sl_MolecularInterAtomContactSummary_Sg__erase__SWIG_0(std::vector< MolecularInterAtomContactSummary > *self,std::vector< MolecularInterAtomContactSummary >::iterator pos){ return self->erase(pos); }
+SWIGINTERN std::vector< MolecularInterAtomContactSummary >::iterator std_vector_Sl_MolecularInterAtomContactSummary_Sg__erase__SWIG_1(std::vector< MolecularInterAtomContactSummary > *self,std::vector< MolecularInterAtomContactSummary >::iterator first,std::vector< MolecularInterAtomContactSummary >::iterator last){ return self->erase(first, last); }
+SWIGINTERN std::vector< MolecularInterAtomContactSummary >::iterator std_vector_Sl_MolecularInterAtomContactSummary_Sg__insert__SWIG_0(std::vector< MolecularInterAtomContactSummary > *self,std::vector< MolecularInterAtomContactSummary >::iterator pos,std::vector< MolecularInterAtomContactSummary >::value_type const &x){ return self->insert(pos, x); }
+SWIGINTERN void std_vector_Sl_MolecularInterAtomContactSummary_Sg__insert__SWIG_1(std::vector< MolecularInterAtomContactSummary > *self,std::vector< MolecularInterAtomContactSummary >::iterator pos,std::vector< MolecularInterAtomContactSummary >::size_type n,std::vector< MolecularInterAtomContactSummary >::value_type const &x){ self->insert(pos, n, x); }
+
+  namespace swig {
+    template <>  struct traits< MolecularInterResidueContactSummary > {
+      typedef pointer_category category;
+      static const char* type_name() { return"MolecularInterResidueContactSummary"; }
+    };
+  }
+
+
+      namespace swig {
+	template <>  struct traits<std::vector< MolecularInterResidueContactSummary, std::allocator< MolecularInterResidueContactSummary > > > {
+	  typedef pointer_category category;
+	  static const char* type_name() {
+	    return "std::vector<" "MolecularInterResidueContactSummary" "," "std::allocator< MolecularInterResidueContactSummary >" " >";
+	  }
+	};
+      }
+    
+SWIGINTERN swig::SwigPyIterator *std_vector_Sl_MolecularInterResidueContactSummary_Sg__iterator(std::vector< MolecularInterResidueContactSummary > *self,PyObject **PYTHON_SELF){
+      return swig::make_output_iterator(self->begin(), self->begin(), self->end(), *PYTHON_SELF);
+    }
+SWIGINTERN bool std_vector_Sl_MolecularInterResidueContactSummary_Sg____nonzero__(std::vector< MolecularInterResidueContactSummary > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN bool std_vector_Sl_MolecularInterResidueContactSummary_Sg____bool__(std::vector< MolecularInterResidueContactSummary > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN std::vector< MolecularInterResidueContactSummary >::size_type std_vector_Sl_MolecularInterResidueContactSummary_Sg____len__(std::vector< MolecularInterResidueContactSummary > const *self){
+      return self->size();
+    }
+SWIGINTERN std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *std_vector_Sl_MolecularInterResidueContactSummary_Sg____getslice__(std::vector< MolecularInterResidueContactSummary > *self,std::vector< MolecularInterResidueContactSummary >::difference_type i,std::vector< MolecularInterResidueContactSummary >::difference_type j){
+      return swig::getslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterResidueContactSummary_Sg____setslice____SWIG_0(std::vector< MolecularInterResidueContactSummary > *self,std::vector< MolecularInterResidueContactSummary >::difference_type i,std::vector< MolecularInterResidueContactSummary >::difference_type j){
+      swig::setslice(self, i, j, 1, std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >());
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterResidueContactSummary_Sg____setslice____SWIG_1(std::vector< MolecularInterResidueContactSummary > *self,std::vector< MolecularInterResidueContactSummary >::difference_type i,std::vector< MolecularInterResidueContactSummary >::difference_type j,std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > const &v){
+      swig::setslice(self, i, j, 1, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterResidueContactSummary_Sg____delslice__(std::vector< MolecularInterResidueContactSummary > *self,std::vector< MolecularInterResidueContactSummary >::difference_type i,std::vector< MolecularInterResidueContactSummary >::difference_type j){
+      swig::delslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterResidueContactSummary_Sg____delitem____SWIG_0(std::vector< MolecularInterResidueContactSummary > *self,std::vector< MolecularInterResidueContactSummary >::difference_type i){
+      swig::erase(self, swig::getpos(self, i));
+    }
+SWIGINTERN std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *std_vector_Sl_MolecularInterResidueContactSummary_Sg____getitem____SWIG_0(std::vector< MolecularInterResidueContactSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return NULL;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >::difference_type id = i;
+      std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >::difference_type jd = j;
+      return swig::getslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterResidueContactSummary_Sg____setitem____SWIG_0(std::vector< MolecularInterResidueContactSummary > *self,PySliceObject *slice,std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > const &v){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >::difference_type id = i;
+      std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >::difference_type jd = j;
+      swig::setslice(self, id, jd, step, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterResidueContactSummary_Sg____setitem____SWIG_1(std::vector< MolecularInterResidueContactSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >::difference_type id = i;
+      std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterResidueContactSummary_Sg____delitem____SWIG_1(std::vector< MolecularInterResidueContactSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >::difference_type id = i;
+      std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN std::vector< MolecularInterResidueContactSummary >::value_type const &std_vector_Sl_MolecularInterResidueContactSummary_Sg____getitem____SWIG_1(std::vector< MolecularInterResidueContactSummary > const *self,std::vector< MolecularInterResidueContactSummary >::difference_type i){
+      return *(swig::cgetpos(self, i));
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterResidueContactSummary_Sg____setitem____SWIG_2(std::vector< MolecularInterResidueContactSummary > *self,std::vector< MolecularInterResidueContactSummary >::difference_type i,std::vector< MolecularInterResidueContactSummary >::value_type const &x){
+      *(swig::getpos(self,i)) = x;
+    }
+SWIGINTERN std::vector< MolecularInterResidueContactSummary >::value_type std_vector_Sl_MolecularInterResidueContactSummary_Sg__pop(std::vector< MolecularInterResidueContactSummary > *self){
+      if (self->size() == 0)
+	throw std::out_of_range("pop from empty container");
+      std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >::value_type x = self->back();
+      self->pop_back();
+      return x;
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterResidueContactSummary_Sg__append(std::vector< MolecularInterResidueContactSummary > *self,std::vector< MolecularInterResidueContactSummary >::value_type const &x){
+      self->push_back(x);
+    }
+SWIGINTERN std::vector< MolecularInterResidueContactSummary >::iterator std_vector_Sl_MolecularInterResidueContactSummary_Sg__erase__SWIG_0(std::vector< MolecularInterResidueContactSummary > *self,std::vector< MolecularInterResidueContactSummary >::iterator pos){ return self->erase(pos); }
+SWIGINTERN std::vector< MolecularInterResidueContactSummary >::iterator std_vector_Sl_MolecularInterResidueContactSummary_Sg__erase__SWIG_1(std::vector< MolecularInterResidueContactSummary > *self,std::vector< MolecularInterResidueContactSummary >::iterator first,std::vector< MolecularInterResidueContactSummary >::iterator last){ return self->erase(first, last); }
+SWIGINTERN std::vector< MolecularInterResidueContactSummary >::iterator std_vector_Sl_MolecularInterResidueContactSummary_Sg__insert__SWIG_0(std::vector< MolecularInterResidueContactSummary > *self,std::vector< MolecularInterResidueContactSummary >::iterator pos,std::vector< MolecularInterResidueContactSummary >::value_type const &x){ return self->insert(pos, x); }
+SWIGINTERN void std_vector_Sl_MolecularInterResidueContactSummary_Sg__insert__SWIG_1(std::vector< MolecularInterResidueContactSummary > *self,std::vector< MolecularInterResidueContactSummary >::iterator pos,std::vector< MolecularInterResidueContactSummary >::size_type n,std::vector< MolecularInterResidueContactSummary >::value_type const &x){ self->insert(pos, n, x); }
+
+  namespace swig {
+    template <>  struct traits< MolecularInterChainContactSummary > {
+      typedef pointer_category category;
+      static const char* type_name() { return"MolecularInterChainContactSummary"; }
+    };
+  }
+
+
+      namespace swig {
+	template <>  struct traits<std::vector< MolecularInterChainContactSummary, std::allocator< MolecularInterChainContactSummary > > > {
+	  typedef pointer_category category;
+	  static const char* type_name() {
+	    return "std::vector<" "MolecularInterChainContactSummary" "," "std::allocator< MolecularInterChainContactSummary >" " >";
+	  }
+	};
+      }
+    
+SWIGINTERN swig::SwigPyIterator *std_vector_Sl_MolecularInterChainContactSummary_Sg__iterator(std::vector< MolecularInterChainContactSummary > *self,PyObject **PYTHON_SELF){
+      return swig::make_output_iterator(self->begin(), self->begin(), self->end(), *PYTHON_SELF);
+    }
+SWIGINTERN bool std_vector_Sl_MolecularInterChainContactSummary_Sg____nonzero__(std::vector< MolecularInterChainContactSummary > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN bool std_vector_Sl_MolecularInterChainContactSummary_Sg____bool__(std::vector< MolecularInterChainContactSummary > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN std::vector< MolecularInterChainContactSummary >::size_type std_vector_Sl_MolecularInterChainContactSummary_Sg____len__(std::vector< MolecularInterChainContactSummary > const *self){
+      return self->size();
+    }
+SWIGINTERN std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *std_vector_Sl_MolecularInterChainContactSummary_Sg____getslice__(std::vector< MolecularInterChainContactSummary > *self,std::vector< MolecularInterChainContactSummary >::difference_type i,std::vector< MolecularInterChainContactSummary >::difference_type j){
+      return swig::getslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterChainContactSummary_Sg____setslice____SWIG_0(std::vector< MolecularInterChainContactSummary > *self,std::vector< MolecularInterChainContactSummary >::difference_type i,std::vector< MolecularInterChainContactSummary >::difference_type j){
+      swig::setslice(self, i, j, 1, std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >());
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterChainContactSummary_Sg____setslice____SWIG_1(std::vector< MolecularInterChainContactSummary > *self,std::vector< MolecularInterChainContactSummary >::difference_type i,std::vector< MolecularInterChainContactSummary >::difference_type j,std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > const &v){
+      swig::setslice(self, i, j, 1, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterChainContactSummary_Sg____delslice__(std::vector< MolecularInterChainContactSummary > *self,std::vector< MolecularInterChainContactSummary >::difference_type i,std::vector< MolecularInterChainContactSummary >::difference_type j){
+      swig::delslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterChainContactSummary_Sg____delitem____SWIG_0(std::vector< MolecularInterChainContactSummary > *self,std::vector< MolecularInterChainContactSummary >::difference_type i){
+      swig::erase(self, swig::getpos(self, i));
+    }
+SWIGINTERN std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *std_vector_Sl_MolecularInterChainContactSummary_Sg____getitem____SWIG_0(std::vector< MolecularInterChainContactSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return NULL;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >::difference_type id = i;
+      std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >::difference_type jd = j;
+      return swig::getslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterChainContactSummary_Sg____setitem____SWIG_0(std::vector< MolecularInterChainContactSummary > *self,PySliceObject *slice,std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > const &v){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >::difference_type id = i;
+      std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >::difference_type jd = j;
+      swig::setslice(self, id, jd, step, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterChainContactSummary_Sg____setitem____SWIG_1(std::vector< MolecularInterChainContactSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >::difference_type id = i;
+      std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterChainContactSummary_Sg____delitem____SWIG_1(std::vector< MolecularInterChainContactSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >::difference_type id = i;
+      std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN std::vector< MolecularInterChainContactSummary >::value_type const &std_vector_Sl_MolecularInterChainContactSummary_Sg____getitem____SWIG_1(std::vector< MolecularInterChainContactSummary > const *self,std::vector< MolecularInterChainContactSummary >::difference_type i){
+      return *(swig::cgetpos(self, i));
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterChainContactSummary_Sg____setitem____SWIG_2(std::vector< MolecularInterChainContactSummary > *self,std::vector< MolecularInterChainContactSummary >::difference_type i,std::vector< MolecularInterChainContactSummary >::value_type const &x){
+      *(swig::getpos(self,i)) = x;
+    }
+SWIGINTERN std::vector< MolecularInterChainContactSummary >::value_type std_vector_Sl_MolecularInterChainContactSummary_Sg__pop(std::vector< MolecularInterChainContactSummary > *self){
+      if (self->size() == 0)
+	throw std::out_of_range("pop from empty container");
+      std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >::value_type x = self->back();
+      self->pop_back();
+      return x;
+    }
+SWIGINTERN void std_vector_Sl_MolecularInterChainContactSummary_Sg__append(std::vector< MolecularInterChainContactSummary > *self,std::vector< MolecularInterChainContactSummary >::value_type const &x){
+      self->push_back(x);
+    }
+SWIGINTERN std::vector< MolecularInterChainContactSummary >::iterator std_vector_Sl_MolecularInterChainContactSummary_Sg__erase__SWIG_0(std::vector< MolecularInterChainContactSummary > *self,std::vector< MolecularInterChainContactSummary >::iterator pos){ return self->erase(pos); }
+SWIGINTERN std::vector< MolecularInterChainContactSummary >::iterator std_vector_Sl_MolecularInterChainContactSummary_Sg__erase__SWIG_1(std::vector< MolecularInterChainContactSummary > *self,std::vector< MolecularInterChainContactSummary >::iterator first,std::vector< MolecularInterChainContactSummary >::iterator last){ return self->erase(first, last); }
+SWIGINTERN std::vector< MolecularInterChainContactSummary >::iterator std_vector_Sl_MolecularInterChainContactSummary_Sg__insert__SWIG_0(std::vector< MolecularInterChainContactSummary > *self,std::vector< MolecularInterChainContactSummary >::iterator pos,std::vector< MolecularInterChainContactSummary >::value_type const &x){ return self->insert(pos, x); }
+SWIGINTERN void std_vector_Sl_MolecularInterChainContactSummary_Sg__insert__SWIG_1(std::vector< MolecularInterChainContactSummary > *self,std::vector< MolecularInterChainContactSummary >::iterator pos,std::vector< MolecularInterChainContactSummary >::size_type n,std::vector< MolecularInterChainContactSummary >::value_type const &x){ self->insert(pos, n, x); }
+
+  namespace swig {
+    template <>  struct traits< MolecularAtomCellSummary > {
+      typedef pointer_category category;
+      static const char* type_name() { return"MolecularAtomCellSummary"; }
+    };
+  }
+
+
+      namespace swig {
+	template <>  struct traits<std::vector< MolecularAtomCellSummary, std::allocator< MolecularAtomCellSummary > > > {
+	  typedef pointer_category category;
+	  static const char* type_name() {
+	    return "std::vector<" "MolecularAtomCellSummary" "," "std::allocator< MolecularAtomCellSummary >" " >";
+	  }
+	};
+      }
+    
+SWIGINTERN swig::SwigPyIterator *std_vector_Sl_MolecularAtomCellSummary_Sg__iterator(std::vector< MolecularAtomCellSummary > *self,PyObject **PYTHON_SELF){
+      return swig::make_output_iterator(self->begin(), self->begin(), self->end(), *PYTHON_SELF);
+    }
+SWIGINTERN bool std_vector_Sl_MolecularAtomCellSummary_Sg____nonzero__(std::vector< MolecularAtomCellSummary > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN bool std_vector_Sl_MolecularAtomCellSummary_Sg____bool__(std::vector< MolecularAtomCellSummary > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN std::vector< MolecularAtomCellSummary >::size_type std_vector_Sl_MolecularAtomCellSummary_Sg____len__(std::vector< MolecularAtomCellSummary > const *self){
+      return self->size();
+    }
+SWIGINTERN std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *std_vector_Sl_MolecularAtomCellSummary_Sg____getslice__(std::vector< MolecularAtomCellSummary > *self,std::vector< MolecularAtomCellSummary >::difference_type i,std::vector< MolecularAtomCellSummary >::difference_type j){
+      return swig::getslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomCellSummary_Sg____setslice____SWIG_0(std::vector< MolecularAtomCellSummary > *self,std::vector< MolecularAtomCellSummary >::difference_type i,std::vector< MolecularAtomCellSummary >::difference_type j){
+      swig::setslice(self, i, j, 1, std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >());
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomCellSummary_Sg____setslice____SWIG_1(std::vector< MolecularAtomCellSummary > *self,std::vector< MolecularAtomCellSummary >::difference_type i,std::vector< MolecularAtomCellSummary >::difference_type j,std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > const &v){
+      swig::setslice(self, i, j, 1, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomCellSummary_Sg____delslice__(std::vector< MolecularAtomCellSummary > *self,std::vector< MolecularAtomCellSummary >::difference_type i,std::vector< MolecularAtomCellSummary >::difference_type j){
+      swig::delslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomCellSummary_Sg____delitem____SWIG_0(std::vector< MolecularAtomCellSummary > *self,std::vector< MolecularAtomCellSummary >::difference_type i){
+      swig::erase(self, swig::getpos(self, i));
+    }
+SWIGINTERN std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *std_vector_Sl_MolecularAtomCellSummary_Sg____getitem____SWIG_0(std::vector< MolecularAtomCellSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return NULL;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >::difference_type id = i;
+      std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >::difference_type jd = j;
+      return swig::getslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomCellSummary_Sg____setitem____SWIG_0(std::vector< MolecularAtomCellSummary > *self,PySliceObject *slice,std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > const &v){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >::difference_type id = i;
+      std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >::difference_type jd = j;
+      swig::setslice(self, id, jd, step, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomCellSummary_Sg____setitem____SWIG_1(std::vector< MolecularAtomCellSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >::difference_type id = i;
+      std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomCellSummary_Sg____delitem____SWIG_1(std::vector< MolecularAtomCellSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >::difference_type id = i;
+      std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN std::vector< MolecularAtomCellSummary >::value_type const &std_vector_Sl_MolecularAtomCellSummary_Sg____getitem____SWIG_1(std::vector< MolecularAtomCellSummary > const *self,std::vector< MolecularAtomCellSummary >::difference_type i){
+      return *(swig::cgetpos(self, i));
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomCellSummary_Sg____setitem____SWIG_2(std::vector< MolecularAtomCellSummary > *self,std::vector< MolecularAtomCellSummary >::difference_type i,std::vector< MolecularAtomCellSummary >::value_type const &x){
+      *(swig::getpos(self,i)) = x;
+    }
+SWIGINTERN std::vector< MolecularAtomCellSummary >::value_type std_vector_Sl_MolecularAtomCellSummary_Sg__pop(std::vector< MolecularAtomCellSummary > *self){
+      if (self->size() == 0)
+	throw std::out_of_range("pop from empty container");
+      std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >::value_type x = self->back();
+      self->pop_back();
+      return x;
+    }
+SWIGINTERN void std_vector_Sl_MolecularAtomCellSummary_Sg__append(std::vector< MolecularAtomCellSummary > *self,std::vector< MolecularAtomCellSummary >::value_type const &x){
+      self->push_back(x);
+    }
+SWIGINTERN std::vector< MolecularAtomCellSummary >::iterator std_vector_Sl_MolecularAtomCellSummary_Sg__erase__SWIG_0(std::vector< MolecularAtomCellSummary > *self,std::vector< MolecularAtomCellSummary >::iterator pos){ return self->erase(pos); }
+SWIGINTERN std::vector< MolecularAtomCellSummary >::iterator std_vector_Sl_MolecularAtomCellSummary_Sg__erase__SWIG_1(std::vector< MolecularAtomCellSummary > *self,std::vector< MolecularAtomCellSummary >::iterator first,std::vector< MolecularAtomCellSummary >::iterator last){ return self->erase(first, last); }
+SWIGINTERN std::vector< MolecularAtomCellSummary >::iterator std_vector_Sl_MolecularAtomCellSummary_Sg__insert__SWIG_0(std::vector< MolecularAtomCellSummary > *self,std::vector< MolecularAtomCellSummary >::iterator pos,std::vector< MolecularAtomCellSummary >::value_type const &x){ return self->insert(pos, x); }
+SWIGINTERN void std_vector_Sl_MolecularAtomCellSummary_Sg__insert__SWIG_1(std::vector< MolecularAtomCellSummary > *self,std::vector< MolecularAtomCellSummary >::iterator pos,std::vector< MolecularAtomCellSummary >::size_type n,std::vector< MolecularAtomCellSummary >::value_type const &x){ self->insert(pos, n, x); }
+
+  namespace swig {
+    template <>  struct traits< MolecularResidueCellSummary > {
+      typedef pointer_category category;
+      static const char* type_name() { return"MolecularResidueCellSummary"; }
+    };
+  }
+
+
+      namespace swig {
+	template <>  struct traits<std::vector< MolecularResidueCellSummary, std::allocator< MolecularResidueCellSummary > > > {
+	  typedef pointer_category category;
+	  static const char* type_name() {
+	    return "std::vector<" "MolecularResidueCellSummary" "," "std::allocator< MolecularResidueCellSummary >" " >";
+	  }
+	};
+      }
+    
+SWIGINTERN swig::SwigPyIterator *std_vector_Sl_MolecularResidueCellSummary_Sg__iterator(std::vector< MolecularResidueCellSummary > *self,PyObject **PYTHON_SELF){
+      return swig::make_output_iterator(self->begin(), self->begin(), self->end(), *PYTHON_SELF);
+    }
+SWIGINTERN bool std_vector_Sl_MolecularResidueCellSummary_Sg____nonzero__(std::vector< MolecularResidueCellSummary > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN bool std_vector_Sl_MolecularResidueCellSummary_Sg____bool__(std::vector< MolecularResidueCellSummary > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN std::vector< MolecularResidueCellSummary >::size_type std_vector_Sl_MolecularResidueCellSummary_Sg____len__(std::vector< MolecularResidueCellSummary > const *self){
+      return self->size();
+    }
+SWIGINTERN std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *std_vector_Sl_MolecularResidueCellSummary_Sg____getslice__(std::vector< MolecularResidueCellSummary > *self,std::vector< MolecularResidueCellSummary >::difference_type i,std::vector< MolecularResidueCellSummary >::difference_type j){
+      return swig::getslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularResidueCellSummary_Sg____setslice____SWIG_0(std::vector< MolecularResidueCellSummary > *self,std::vector< MolecularResidueCellSummary >::difference_type i,std::vector< MolecularResidueCellSummary >::difference_type j){
+      swig::setslice(self, i, j, 1, std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >());
+    }
+SWIGINTERN void std_vector_Sl_MolecularResidueCellSummary_Sg____setslice____SWIG_1(std::vector< MolecularResidueCellSummary > *self,std::vector< MolecularResidueCellSummary >::difference_type i,std::vector< MolecularResidueCellSummary >::difference_type j,std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > const &v){
+      swig::setslice(self, i, j, 1, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularResidueCellSummary_Sg____delslice__(std::vector< MolecularResidueCellSummary > *self,std::vector< MolecularResidueCellSummary >::difference_type i,std::vector< MolecularResidueCellSummary >::difference_type j){
+      swig::delslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularResidueCellSummary_Sg____delitem____SWIG_0(std::vector< MolecularResidueCellSummary > *self,std::vector< MolecularResidueCellSummary >::difference_type i){
+      swig::erase(self, swig::getpos(self, i));
+    }
+SWIGINTERN std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *std_vector_Sl_MolecularResidueCellSummary_Sg____getitem____SWIG_0(std::vector< MolecularResidueCellSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return NULL;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >::difference_type id = i;
+      std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >::difference_type jd = j;
+      return swig::getslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularResidueCellSummary_Sg____setitem____SWIG_0(std::vector< MolecularResidueCellSummary > *self,PySliceObject *slice,std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > const &v){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >::difference_type id = i;
+      std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >::difference_type jd = j;
+      swig::setslice(self, id, jd, step, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularResidueCellSummary_Sg____setitem____SWIG_1(std::vector< MolecularResidueCellSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >::difference_type id = i;
+      std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularResidueCellSummary_Sg____delitem____SWIG_1(std::vector< MolecularResidueCellSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >::difference_type id = i;
+      std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN std::vector< MolecularResidueCellSummary >::value_type const &std_vector_Sl_MolecularResidueCellSummary_Sg____getitem____SWIG_1(std::vector< MolecularResidueCellSummary > const *self,std::vector< MolecularResidueCellSummary >::difference_type i){
+      return *(swig::cgetpos(self, i));
+    }
+SWIGINTERN void std_vector_Sl_MolecularResidueCellSummary_Sg____setitem____SWIG_2(std::vector< MolecularResidueCellSummary > *self,std::vector< MolecularResidueCellSummary >::difference_type i,std::vector< MolecularResidueCellSummary >::value_type const &x){
+      *(swig::getpos(self,i)) = x;
+    }
+SWIGINTERN std::vector< MolecularResidueCellSummary >::value_type std_vector_Sl_MolecularResidueCellSummary_Sg__pop(std::vector< MolecularResidueCellSummary > *self){
+      if (self->size() == 0)
+	throw std::out_of_range("pop from empty container");
+      std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >::value_type x = self->back();
+      self->pop_back();
+      return x;
+    }
+SWIGINTERN void std_vector_Sl_MolecularResidueCellSummary_Sg__append(std::vector< MolecularResidueCellSummary > *self,std::vector< MolecularResidueCellSummary >::value_type const &x){
+      self->push_back(x);
+    }
+SWIGINTERN std::vector< MolecularResidueCellSummary >::iterator std_vector_Sl_MolecularResidueCellSummary_Sg__erase__SWIG_0(std::vector< MolecularResidueCellSummary > *self,std::vector< MolecularResidueCellSummary >::iterator pos){ return self->erase(pos); }
+SWIGINTERN std::vector< MolecularResidueCellSummary >::iterator std_vector_Sl_MolecularResidueCellSummary_Sg__erase__SWIG_1(std::vector< MolecularResidueCellSummary > *self,std::vector< MolecularResidueCellSummary >::iterator first,std::vector< MolecularResidueCellSummary >::iterator last){ return self->erase(first, last); }
+SWIGINTERN std::vector< MolecularResidueCellSummary >::iterator std_vector_Sl_MolecularResidueCellSummary_Sg__insert__SWIG_0(std::vector< MolecularResidueCellSummary > *self,std::vector< MolecularResidueCellSummary >::iterator pos,std::vector< MolecularResidueCellSummary >::value_type const &x){ return self->insert(pos, x); }
+SWIGINTERN void std_vector_Sl_MolecularResidueCellSummary_Sg__insert__SWIG_1(std::vector< MolecularResidueCellSummary > *self,std::vector< MolecularResidueCellSummary >::iterator pos,std::vector< MolecularResidueCellSummary >::size_type n,std::vector< MolecularResidueCellSummary >::value_type const &x){ self->insert(pos, n, x); }
+
+  namespace swig {
+    template <>  struct traits< MolecularChainCellSummary > {
+      typedef pointer_category category;
+      static const char* type_name() { return"MolecularChainCellSummary"; }
+    };
+  }
+
+
+      namespace swig {
+	template <>  struct traits<std::vector< MolecularChainCellSummary, std::allocator< MolecularChainCellSummary > > > {
+	  typedef pointer_category category;
+	  static const char* type_name() {
+	    return "std::vector<" "MolecularChainCellSummary" "," "std::allocator< MolecularChainCellSummary >" " >";
+	  }
+	};
+      }
+    
+SWIGINTERN swig::SwigPyIterator *std_vector_Sl_MolecularChainCellSummary_Sg__iterator(std::vector< MolecularChainCellSummary > *self,PyObject **PYTHON_SELF){
+      return swig::make_output_iterator(self->begin(), self->begin(), self->end(), *PYTHON_SELF);
+    }
+SWIGINTERN bool std_vector_Sl_MolecularChainCellSummary_Sg____nonzero__(std::vector< MolecularChainCellSummary > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN bool std_vector_Sl_MolecularChainCellSummary_Sg____bool__(std::vector< MolecularChainCellSummary > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN std::vector< MolecularChainCellSummary >::size_type std_vector_Sl_MolecularChainCellSummary_Sg____len__(std::vector< MolecularChainCellSummary > const *self){
+      return self->size();
+    }
+SWIGINTERN std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *std_vector_Sl_MolecularChainCellSummary_Sg____getslice__(std::vector< MolecularChainCellSummary > *self,std::vector< MolecularChainCellSummary >::difference_type i,std::vector< MolecularChainCellSummary >::difference_type j){
+      return swig::getslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularChainCellSummary_Sg____setslice____SWIG_0(std::vector< MolecularChainCellSummary > *self,std::vector< MolecularChainCellSummary >::difference_type i,std::vector< MolecularChainCellSummary >::difference_type j){
+      swig::setslice(self, i, j, 1, std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >());
+    }
+SWIGINTERN void std_vector_Sl_MolecularChainCellSummary_Sg____setslice____SWIG_1(std::vector< MolecularChainCellSummary > *self,std::vector< MolecularChainCellSummary >::difference_type i,std::vector< MolecularChainCellSummary >::difference_type j,std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > const &v){
+      swig::setslice(self, i, j, 1, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularChainCellSummary_Sg____delslice__(std::vector< MolecularChainCellSummary > *self,std::vector< MolecularChainCellSummary >::difference_type i,std::vector< MolecularChainCellSummary >::difference_type j){
+      swig::delslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_MolecularChainCellSummary_Sg____delitem____SWIG_0(std::vector< MolecularChainCellSummary > *self,std::vector< MolecularChainCellSummary >::difference_type i){
+      swig::erase(self, swig::getpos(self, i));
+    }
+SWIGINTERN std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *std_vector_Sl_MolecularChainCellSummary_Sg____getitem____SWIG_0(std::vector< MolecularChainCellSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return NULL;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >::difference_type id = i;
+      std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >::difference_type jd = j;
+      return swig::getslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularChainCellSummary_Sg____setitem____SWIG_0(std::vector< MolecularChainCellSummary > *self,PySliceObject *slice,std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > const &v){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >::difference_type id = i;
+      std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >::difference_type jd = j;
+      swig::setslice(self, id, jd, step, v);
+    }
+SWIGINTERN void std_vector_Sl_MolecularChainCellSummary_Sg____setitem____SWIG_1(std::vector< MolecularChainCellSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >::difference_type id = i;
+      std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_MolecularChainCellSummary_Sg____delitem____SWIG_1(std::vector< MolecularChainCellSummary > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >::difference_type id = i;
+      std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN std::vector< MolecularChainCellSummary >::value_type const &std_vector_Sl_MolecularChainCellSummary_Sg____getitem____SWIG_1(std::vector< MolecularChainCellSummary > const *self,std::vector< MolecularChainCellSummary >::difference_type i){
+      return *(swig::cgetpos(self, i));
+    }
+SWIGINTERN void std_vector_Sl_MolecularChainCellSummary_Sg____setitem____SWIG_2(std::vector< MolecularChainCellSummary > *self,std::vector< MolecularChainCellSummary >::difference_type i,std::vector< MolecularChainCellSummary >::value_type const &x){
+      *(swig::getpos(self,i)) = x;
+    }
+SWIGINTERN std::vector< MolecularChainCellSummary >::value_type std_vector_Sl_MolecularChainCellSummary_Sg__pop(std::vector< MolecularChainCellSummary > *self){
+      if (self->size() == 0)
+	throw std::out_of_range("pop from empty container");
+      std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >::value_type x = self->back();
+      self->pop_back();
+      return x;
+    }
+SWIGINTERN void std_vector_Sl_MolecularChainCellSummary_Sg__append(std::vector< MolecularChainCellSummary > *self,std::vector< MolecularChainCellSummary >::value_type const &x){
+      self->push_back(x);
+    }
+SWIGINTERN std::vector< MolecularChainCellSummary >::iterator std_vector_Sl_MolecularChainCellSummary_Sg__erase__SWIG_0(std::vector< MolecularChainCellSummary > *self,std::vector< MolecularChainCellSummary >::iterator pos){ return self->erase(pos); }
+SWIGINTERN std::vector< MolecularChainCellSummary >::iterator std_vector_Sl_MolecularChainCellSummary_Sg__erase__SWIG_1(std::vector< MolecularChainCellSummary > *self,std::vector< MolecularChainCellSummary >::iterator first,std::vector< MolecularChainCellSummary >::iterator last){ return self->erase(first, last); }
+SWIGINTERN std::vector< MolecularChainCellSummary >::iterator std_vector_Sl_MolecularChainCellSummary_Sg__insert__SWIG_0(std::vector< MolecularChainCellSummary > *self,std::vector< MolecularChainCellSummary >::iterator pos,std::vector< MolecularChainCellSummary >::value_type const &x){ return self->insert(pos, x); }
+SWIGINTERN void std_vector_Sl_MolecularChainCellSummary_Sg__insert__SWIG_1(std::vector< MolecularChainCellSummary > *self,std::vector< MolecularChainCellSummary >::iterator pos,std::vector< MolecularChainCellSummary >::size_type n,std::vector< MolecularChainCellSummary >::value_type const &x){ self->insert(pos, n, x); }
+
   #define SWIG_From_double   PyFloat_FromDouble 
 
 
@@ -5256,6 +6043,169 @@ SWIG_AsVal_bool (PyObject *obj, bool *val)
     return SWIG_ERROR;
   if (val) *val = r ? true : false;
   return SWIG_OK;
+}
+
+
+SWIGINTERN swig_type_info*
+SWIG_pchar_descriptor(void)
+{
+  static int init = 0;
+  static swig_type_info* info = 0;
+  if (!init) {
+    info = SWIG_TypeQuery("_p_char");
+    init = 1;
+  }
+  return info;
+}
+
+
+/* Return string from Python obj. NOTE: obj must remain in scope in order
+   to use the returned cptr (but only when alloc is set to SWIG_OLDOBJ) */
+SWIGINTERN int
+SWIG_AsCharPtrAndSize(PyObject *obj, char **cptr, size_t *psize, int *alloc)
+{
+#if PY_VERSION_HEX>=0x03000000
+#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+  if (PyBytes_Check(obj))
+#else
+  if (PyUnicode_Check(obj))
+#endif
+#else  
+  if (PyString_Check(obj))
+#endif
+  {
+    char *cstr; Py_ssize_t len;
+    PyObject *bytes = NULL;
+    int ret = SWIG_OK;
+    if (alloc)
+      *alloc = SWIG_OLDOBJ;
+#if PY_VERSION_HEX>=0x03000000 && defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+    if (PyBytes_AsStringAndSize(obj, &cstr, &len) == -1)
+      return SWIG_TypeError;
+#else
+    cstr = (char *)SWIG_PyUnicode_AsUTF8AndSize(obj, &len, &bytes);
+    if (!cstr)
+      return SWIG_TypeError;
+    /* The returned string is only duplicated if the char * returned is not owned and memory managed by obj */
+    if (bytes && cptr) {
+      if (alloc) {
+        cstr = reinterpret_cast< char* >(memcpy(new char[len + 1], cstr, sizeof(char)*(len + 1)));
+        *alloc = SWIG_NEWOBJ;
+      } else {
+        /* alloc must be set in order to clean up allocated memory */
+        return SWIG_RuntimeError;
+      }
+    }
+#endif
+    if (cptr) *cptr = cstr;
+    if (psize) *psize = len + 1;
+    Py_XDECREF(bytes);
+    return ret;
+  } else {
+#if defined(SWIG_PYTHON_2_UNICODE)
+#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+#error "Cannot use both SWIG_PYTHON_2_UNICODE and SWIG_PYTHON_STRICT_BYTE_CHAR at once"
+#endif
+#if PY_VERSION_HEX<0x03000000
+    if (PyUnicode_Check(obj)) {
+      char *cstr; Py_ssize_t len;
+      if (!alloc && cptr) {
+        return SWIG_RuntimeError;
+      }
+      obj = PyUnicode_AsUTF8String(obj);
+      if (!obj)
+        return SWIG_TypeError;
+      if (PyString_AsStringAndSize(obj, &cstr, &len) != -1) {
+        if (cptr) {
+          if (alloc) *alloc = SWIG_NEWOBJ;
+          *cptr = reinterpret_cast< char* >(memcpy(new char[len + 1], cstr, sizeof(char)*(len + 1)));
+        }
+        if (psize) *psize = len + 1;
+
+        Py_XDECREF(obj);
+        return SWIG_OK;
+      } else {
+        Py_XDECREF(obj);
+      }
+    }
+#endif
+#endif
+
+    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+    if (pchar_descriptor) {
+      void* vptr = 0;
+      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
+	if (cptr) *cptr = (char *) vptr;
+	if (psize) *psize = vptr ? (strlen((char *)vptr) + 1) : 0;
+	if (alloc) *alloc = SWIG_OLDOBJ;
+	return SWIG_OK;
+      }
+    }
+  }
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsPtr_std_string (PyObject * obj, std::string **val) 
+{
+  char* buf = 0 ; size_t size = 0; int alloc = SWIG_OLDOBJ;
+  if (SWIG_IsOK((SWIG_AsCharPtrAndSize(obj, &buf, &size, &alloc)))) {
+    if (buf) {
+      if (val) *val = new std::string(buf, size - 1);
+      if (alloc == SWIG_NEWOBJ) delete[] buf;
+      return SWIG_NEWOBJ;
+    } else {
+      if (val) *val = 0;
+      return SWIG_OLDOBJ;
+    }
+  } else {
+    static int init = 0;
+    static swig_type_info* descriptor = 0;
+    if (!init) {
+      descriptor = SWIG_TypeQuery("std::string" " *");
+      init = 1;
+    }
+    if (descriptor) {
+      std::string *vptr;
+      int res = SWIG_ConvertPtr(obj, (void**)&vptr, descriptor, 0);
+      if (SWIG_IsOK(res) && val) *val = vptr;
+      return res;
+    }
+  }
+  return SWIG_ERROR;
+}
+
+
+SWIGINTERNINLINE PyObject *
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  if (carray) {
+    if (size > INT_MAX) {
+      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+      return pchar_descriptor ? 
+	SWIG_InternalNewPointerObj(const_cast< char * >(carray), pchar_descriptor, 0) : SWIG_Py_Void();
+    } else {
+#if PY_VERSION_HEX >= 0x03000000
+#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+      return PyBytes_FromStringAndSize(carray, static_cast< Py_ssize_t >(size));
+#else
+      return PyUnicode_DecodeUTF8(carray, static_cast< Py_ssize_t >(size), "surrogateescape");
+#endif
+#else
+      return PyString_FromStringAndSize(carray, static_cast< Py_ssize_t >(size));
+#endif
+    }
+  } else {
+    return SWIG_Py_Void();
+  }
+}
+
+
+SWIGINTERNINLINE PyObject *
+SWIG_From_std_string  (const std::string& s)
+{
+  return SWIG_FromCharPtrAndSize(s.data(), s.size());
 }
 
 #ifdef __cplusplus
@@ -11730,6 +12680,13138 @@ SWIGINTERN PyObject *VectorCell_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObjec
   return SWIG_Python_InitShadowInstance(args);
 }
 
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_iterator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  PyObject **arg2 = (PyObject **) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  swig::SwigPyIterator *result = 0 ;
+  
+  arg2 = &swig_obj[0];
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_iterator" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = (swig::SwigPyIterator *)std_vector_Sl_MolecularAtomBall_Sg__iterator(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_swig__SwigPyIterator, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___nonzero__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___nonzero__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularAtomBall_Sg____nonzero__((std::vector< MolecularAtomBall > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___bool__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___bool__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularAtomBall_Sg____bool__((std::vector< MolecularAtomBall > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___len__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomBall >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___len__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = std_vector_Sl_MolecularAtomBall_Sg____len__((std::vector< MolecularAtomBall > const *)arg1);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___getslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::difference_type arg2 ;
+  std::vector< MolecularAtomBall >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall___getslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___getslice__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomBall___getslice__" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomBall >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularAtomBall___getslice__" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularAtomBall >::difference_type >(val3);
+  try {
+    result = (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *)std_vector_Sl_MolecularAtomBall_Sg____getslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___setslice____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::difference_type arg2 ;
+  std::vector< MolecularAtomBall >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___setslice__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomBall___setslice__" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomBall >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularAtomBall___setslice__" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularAtomBall >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularAtomBall_Sg____setslice____SWIG_0(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___setslice____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::difference_type arg2 ;
+  std::vector< MolecularAtomBall >::difference_type arg3 ;
+  std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  int res4 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___setslice__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomBall___setslice__" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomBall >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularAtomBall___setslice__" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularAtomBall >::difference_type >(val3);
+  {
+    std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *ptr = (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *)0;
+    res4 = swig::asptr(swig_obj[3], &ptr);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularAtomBall___setslice__" "', argument " "4"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomBall___setslice__" "', argument " "4"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+    }
+    arg4 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularAtomBall_Sg____setslice____SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &)*arg4);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___setslice__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall___setslice__", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_VectorMolecularAtomBall___setslice____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = swig::asptr(argv[3], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularAtomBall___setslice____SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomBall___setslice__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomBall >::__setslice__(std::vector< MolecularAtomBall >::difference_type,std::vector< MolecularAtomBall >::difference_type)\n"
+    "    std::vector< MolecularAtomBall >::__setslice__(std::vector< MolecularAtomBall >::difference_type,std::vector< MolecularAtomBall >::difference_type,std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___delslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::difference_type arg2 ;
+  std::vector< MolecularAtomBall >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall___delslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___delslice__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomBall___delslice__" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomBall >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularAtomBall___delslice__" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularAtomBall >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularAtomBall_Sg____delslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___delitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___delitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomBall___delitem__" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomBall >::difference_type >(val2);
+  try {
+    std_vector_Sl_MolecularAtomBall_Sg____delitem____SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___getitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___getitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall___getitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    result = (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *)std_vector_Sl_MolecularAtomBall_Sg____getitem____SWIG_0(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___setitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___setitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  {
+    std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *ptr = (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *)0;
+    res3 = swig::asptr(swig_obj[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularAtomBall___setitem__" "', argument " "3"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomBall___setitem__" "', argument " "3"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularAtomBall_Sg____setitem____SWIG_0(arg1,arg2,(std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___setitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___setitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularAtomBall_Sg____setitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___delitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___delitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall___delitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularAtomBall_Sg____delitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___delitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall___delitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularAtomBall___delitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularAtomBall___delitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomBall___delitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomBall >::__delitem__(std::vector< MolecularAtomBall >::difference_type)\n"
+    "    std::vector< MolecularAtomBall >::__delitem__(PySliceObject *)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___getitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  std::vector< MolecularAtomBall >::value_type *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___getitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomBall___getitem__" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomBall >::difference_type >(val2);
+  try {
+    result = (std::vector< MolecularAtomBall >::value_type *) &std_vector_Sl_MolecularAtomBall_Sg____getitem____SWIG_1((std::vector< MolecularAtomBall > const *)arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularAtomBall >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___getitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall___getitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularAtomBall___getitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularAtomBall___getitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomBall___getitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomBall >::__getitem__(PySliceObject *)\n"
+    "    std::vector< MolecularAtomBall >::__getitem__(std::vector< MolecularAtomBall >::difference_type) const\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___setitem____SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::difference_type arg2 ;
+  std::vector< MolecularAtomBall >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall___setitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomBall___setitem__" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomBall >::difference_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularAtomBall,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularAtomBall___setitem__" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomBall___setitem__" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularAtomBall >::value_type * >(argp3);
+  try {
+    std_vector_Sl_MolecularAtomBall_Sg____setitem____SWIG_2(arg1,SWIG_STD_MOVE(arg2),(MolecularAtomBall const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall___setitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall___setitem__", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularAtomBall___setitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        int res = swig::asptr(argv[2], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularAtomBall___setitem____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularAtomBall, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularAtomBall___setitem____SWIG_2(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomBall___setitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomBall >::__setitem__(PySliceObject *,std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &)\n"
+    "    std::vector< MolecularAtomBall >::__setitem__(PySliceObject *)\n"
+    "    std::vector< MolecularAtomBall >::__setitem__(std::vector< MolecularAtomBall >::difference_type,std::vector< MolecularAtomBall >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_pop(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomBall >::value_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_pop" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  try {
+    result = std_vector_Sl_MolecularAtomBall_Sg__pop(arg1);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularAtomBall >::value_type(result)), SWIGTYPE_p_MolecularAtomBall, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_append(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall_append", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_append" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularAtomBall,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularAtomBall_append" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomBall_append" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularAtomBall >::value_type * >(argp2);
+  std_vector_Sl_MolecularAtomBall_Sg__append(arg1,(MolecularAtomBall const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularAtomBall__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **SWIGUNUSEDPARM(swig_obj)) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 0) || (nobjs > 0)) SWIG_fail;
+  result = (std::vector< MolecularAtomBall > *)new std::vector< MolecularAtomBall >();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularAtomBall__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  std::vector< MolecularAtomBall > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  {
+    std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *ptr = (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *)0;
+    res1 = swig::asptr(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_VectorMolecularAtomBall" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularAtomBall" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  result = (std::vector< MolecularAtomBall > *)new std::vector< MolecularAtomBall >((std::vector< MolecularAtomBall > const &)*arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_empty(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_empty" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = (bool)((std::vector< MolecularAtomBall > const *)arg1)->empty();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_size(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomBall >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_size" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = ((std::vector< MolecularAtomBall > const *)arg1)->size();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_swap(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall > *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall_swap", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_swap" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_std__vectorT_MolecularAtomBall_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularAtomBall_swap" "', argument " "2"" of type '" "std::vector< MolecularAtomBall > &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomBall_swap" "', argument " "2"" of type '" "std::vector< MolecularAtomBall > &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp2);
+  (arg1)->swap(*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_begin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomBall >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_begin" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = (arg1)->begin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomBall >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_end(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomBall >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_end" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = (arg1)->end();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomBall >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_rbegin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomBall >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_rbegin" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = (arg1)->rbegin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomBall >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_rend(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomBall >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_rend" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = (arg1)->rend();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomBall >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_clear(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_clear" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  (arg1)->clear();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_get_allocator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  SwigValueWrapper< std::allocator< MolecularAtomBall > > result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_get_allocator" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = ((std::vector< MolecularAtomBall > const *)arg1)->get_allocator();
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularAtomBall >::allocator_type(result)), SWIGTYPE_p_std__allocatorT_MolecularAtomBall_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularAtomBall__SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall >::size_type arg1 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  std::vector< MolecularAtomBall > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularAtomBall" "', argument " "1"" of type '" "std::vector< MolecularAtomBall >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularAtomBall >::size_type >(val1);
+  result = (std::vector< MolecularAtomBall > *)new std::vector< MolecularAtomBall >(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_pop_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_pop_back" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  (arg1)->pop_back();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_resize__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_resize" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomBall_resize" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomBall >::size_type >(val2);
+  (arg1)->resize(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_erase__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::iterator arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  std::vector< MolecularAtomBall >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_erase" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall_erase" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall_erase" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularAtomBall_Sg__erase__SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomBall >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_erase__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::iterator arg2 ;
+  std::vector< MolecularAtomBall >::iterator arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  swig::SwigPyIterator *iter3 = 0 ;
+  int res3 ;
+  std::vector< MolecularAtomBall >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_erase" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall_erase" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall_erase" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], SWIG_as_voidptrptr(&iter3), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res3) || !iter3) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall_erase" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *>(iter3);
+    if (iter_t) {
+      arg3 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall_erase" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularAtomBall_Sg__erase__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomBall >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_erase(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall_erase", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *>(iter) != 0));
+      if (_v) {
+        return _wrap_VectorMolecularAtomBall_erase__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *>(iter) != 0));
+      if (_v) {
+        swig::SwigPyIterator *iter = 0;
+        int res = SWIG_ConvertPtr(argv[2], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *>(iter) != 0));
+        if (_v) {
+          return _wrap_VectorMolecularAtomBall_erase__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomBall_erase'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomBall >::erase(std::vector< MolecularAtomBall >::iterator)\n"
+    "    std::vector< MolecularAtomBall >::erase(std::vector< MolecularAtomBall >::iterator,std::vector< MolecularAtomBall >::iterator)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularAtomBall__SWIG_3(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall >::size_type arg1 ;
+  std::vector< MolecularAtomBall >::value_type *arg2 = 0 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  std::vector< MolecularAtomBall > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularAtomBall" "', argument " "1"" of type '" "std::vector< MolecularAtomBall >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularAtomBall >::size_type >(val1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularAtomBall,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_VectorMolecularAtomBall" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularAtomBall" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularAtomBall >::value_type * >(argp2);
+  result = (std::vector< MolecularAtomBall > *)new std::vector< MolecularAtomBall >(arg1,(std::vector< MolecularAtomBall >::value_type const &)*arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularAtomBall(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_VectorMolecularAtomBall", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 0) {
+    return _wrap_new_VectorMolecularAtomBall__SWIG_0(self, argc, argv);
+  }
+  if (argc == 1) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      return _wrap_new_VectorMolecularAtomBall__SWIG_2(self, argc, argv);
+    }
+  }
+  if (argc == 1) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_VectorMolecularAtomBall__SWIG_1(self, argc, argv);
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularAtomBall, SWIG_POINTER_NO_NULL | 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_VectorMolecularAtomBall__SWIG_3(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_VectorMolecularAtomBall'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomBall >::vector()\n"
+    "    std::vector< MolecularAtomBall >::vector(std::vector< MolecularAtomBall > const &)\n"
+    "    std::vector< MolecularAtomBall >::vector(std::vector< MolecularAtomBall >::size_type)\n"
+    "    std::vector< MolecularAtomBall >::vector(std::vector< MolecularAtomBall >::size_type,std::vector< MolecularAtomBall >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_push_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall_push_back", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_push_back" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularAtomBall,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularAtomBall_push_back" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomBall_push_back" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularAtomBall >::value_type * >(argp2);
+  (arg1)->push_back((std::vector< MolecularAtomBall >::value_type const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_front(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomBall >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_front" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = (std::vector< MolecularAtomBall >::value_type *) &((std::vector< MolecularAtomBall > const *)arg1)->front();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularAtomBall >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomBall >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_back" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = (std::vector< MolecularAtomBall >::value_type *) &((std::vector< MolecularAtomBall > const *)arg1)->back();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularAtomBall >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_assign(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::size_type arg2 ;
+  std::vector< MolecularAtomBall >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall_assign", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_assign" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomBall_assign" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomBall >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularAtomBall,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularAtomBall_assign" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomBall_assign" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularAtomBall >::value_type * >(argp3);
+  (arg1)->assign(arg2,(std::vector< MolecularAtomBall >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_resize__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::size_type arg2 ;
+  std::vector< MolecularAtomBall >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_resize" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomBall_resize" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomBall >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularAtomBall,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularAtomBall_resize" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomBall_resize" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularAtomBall >::value_type * >(argp3);
+  (arg1)->resize(arg2,(std::vector< MolecularAtomBall >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_resize(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall_resize", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularAtomBall_resize__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularAtomBall, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularAtomBall_resize__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomBall_resize'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomBall >::resize(std::vector< MolecularAtomBall >::size_type)\n"
+    "    std::vector< MolecularAtomBall >::resize(std::vector< MolecularAtomBall >::size_type,std::vector< MolecularAtomBall >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_insert__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::iterator arg2 ;
+  std::vector< MolecularAtomBall >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  std::vector< MolecularAtomBall >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_insert" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall_insert" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall_insert" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularAtomBall,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularAtomBall_insert" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomBall_insert" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularAtomBall >::value_type * >(argp3);
+  result = std_vector_Sl_MolecularAtomBall_Sg__insert__SWIG_0(arg1,SWIG_STD_MOVE(arg2),(MolecularAtomBall const &)*arg3);
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomBall >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_insert__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::iterator arg2 ;
+  std::vector< MolecularAtomBall >::size_type arg3 ;
+  std::vector< MolecularAtomBall >::value_type *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_insert" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall_insert" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomBall_insert" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::iterator""'");
+    }
+  }
+  ecode3 = SWIG_AsVal_size_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularAtomBall_insert" "', argument " "3"" of type '" "std::vector< MolecularAtomBall >::size_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularAtomBall >::size_type >(val3);
+  res4 = SWIG_ConvertPtr(swig_obj[3], &argp4, SWIGTYPE_p_MolecularAtomBall,  0  | 0);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularAtomBall_insert" "', argument " "4"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  if (!argp4) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomBall_insert" "', argument " "4"" of type '" "std::vector< MolecularAtomBall >::value_type const &""'"); 
+  }
+  arg4 = reinterpret_cast< std::vector< MolecularAtomBall >::value_type * >(argp4);
+  std_vector_Sl_MolecularAtomBall_Sg__insert__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(MolecularAtomBall const &)*arg4);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_insert(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall_insert", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *>(iter) != 0));
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularAtomBall, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularAtomBall_insert__SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomBall >::iterator > *>(iter) != 0));
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_MolecularAtomBall, SWIG_POINTER_NO_NULL | 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularAtomBall_insert__SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomBall_insert'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomBall >::insert(std::vector< MolecularAtomBall >::iterator,std::vector< MolecularAtomBall >::value_type const &)\n"
+    "    std::vector< MolecularAtomBall >::insert(std::vector< MolecularAtomBall >::iterator,std::vector< MolecularAtomBall >::size_type,std::vector< MolecularAtomBall >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_reserve(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  std::vector< MolecularAtomBall >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomBall_reserve", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_reserve" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomBall_reserve" "', argument " "2"" of type '" "std::vector< MolecularAtomBall >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomBall >::size_type >(val2);
+  (arg1)->reserve(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomBall_capacity(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomBall >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomBall_capacity" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  result = ((std::vector< MolecularAtomBall > const *)arg1)->capacity();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_VectorMolecularAtomBall(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall > *arg1 = (std::vector< MolecularAtomBall > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_VectorMolecularAtomBall" "', argument " "1"" of type '" "std::vector< MolecularAtomBall > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomBall > * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *VectorMolecularAtomBall_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *VectorMolecularAtomBall_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_iterator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  PyObject **arg2 = (PyObject **) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  swig::SwigPyIterator *result = 0 ;
+  
+  arg2 = &swig_obj[0];
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_iterator" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = (swig::SwigPyIterator *)std_vector_Sl_MolecularInterAtomContactSummary_Sg__iterator(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_swig__SwigPyIterator, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___nonzero__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___nonzero__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularInterAtomContactSummary_Sg____nonzero__((std::vector< MolecularInterAtomContactSummary > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___bool__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___bool__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularInterAtomContactSummary_Sg____bool__((std::vector< MolecularInterAtomContactSummary > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___len__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterAtomContactSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___len__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = std_vector_Sl_MolecularInterAtomContactSummary_Sg____len__((std::vector< MolecularInterAtomContactSummary > const *)arg1);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___getslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterAtomContactSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary___getslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___getslice__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterAtomContactSummary___getslice__" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterAtomContactSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterAtomContactSummary___getslice__" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterAtomContactSummary >::difference_type >(val3);
+  try {
+    result = (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *)std_vector_Sl_MolecularInterAtomContactSummary_Sg____getslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___setslice____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterAtomContactSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___setslice__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterAtomContactSummary___setslice__" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterAtomContactSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterAtomContactSummary___setslice__" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterAtomContactSummary >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularInterAtomContactSummary_Sg____setslice____SWIG_0(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___setslice____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterAtomContactSummary >::difference_type arg3 ;
+  std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  int res4 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___setslice__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterAtomContactSummary___setslice__" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterAtomContactSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterAtomContactSummary___setslice__" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterAtomContactSummary >::difference_type >(val3);
+  {
+    std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *ptr = (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *)0;
+    res4 = swig::asptr(swig_obj[3], &ptr);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularInterAtomContactSummary___setslice__" "', argument " "4"" of type '" "std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterAtomContactSummary___setslice__" "', argument " "4"" of type '" "std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > const &""'"); 
+    }
+    arg4 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularInterAtomContactSummary_Sg____setslice____SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > const &)*arg4);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___setslice__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary___setslice__", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_VectorMolecularInterAtomContactSummary___setslice____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = swig::asptr(argv[3], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularInterAtomContactSummary___setslice____SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterAtomContactSummary___setslice__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterAtomContactSummary >::__setslice__(std::vector< MolecularInterAtomContactSummary >::difference_type,std::vector< MolecularInterAtomContactSummary >::difference_type)\n"
+    "    std::vector< MolecularInterAtomContactSummary >::__setslice__(std::vector< MolecularInterAtomContactSummary >::difference_type,std::vector< MolecularInterAtomContactSummary >::difference_type,std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___delslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterAtomContactSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary___delslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___delslice__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterAtomContactSummary___delslice__" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterAtomContactSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterAtomContactSummary___delslice__" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterAtomContactSummary >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularInterAtomContactSummary_Sg____delslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___delitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___delitem__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterAtomContactSummary___delitem__" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterAtomContactSummary >::difference_type >(val2);
+  try {
+    std_vector_Sl_MolecularInterAtomContactSummary_Sg____delitem____SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___getitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___getitem__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary___getitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    result = (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *)std_vector_Sl_MolecularInterAtomContactSummary_Sg____getitem____SWIG_0(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___setitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  {
+    std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *ptr = (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *)0;
+    res3 = swig::asptr(swig_obj[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterAtomContactSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterAtomContactSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularInterAtomContactSummary_Sg____setitem____SWIG_0(arg1,arg2,(std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___setitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularInterAtomContactSummary_Sg____setitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___delitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___delitem__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary___delitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularInterAtomContactSummary_Sg____delitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___delitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary___delitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterAtomContactSummary___delitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterAtomContactSummary___delitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterAtomContactSummary___delitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterAtomContactSummary >::__delitem__(std::vector< MolecularInterAtomContactSummary >::difference_type)\n"
+    "    std::vector< MolecularInterAtomContactSummary >::__delitem__(PySliceObject *)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___getitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  std::vector< MolecularInterAtomContactSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___getitem__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterAtomContactSummary___getitem__" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterAtomContactSummary >::difference_type >(val2);
+  try {
+    result = (std::vector< MolecularInterAtomContactSummary >::value_type *) &std_vector_Sl_MolecularInterAtomContactSummary_Sg____getitem____SWIG_1((std::vector< MolecularInterAtomContactSummary > const *)arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularInterAtomContactSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___getitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary___getitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterAtomContactSummary___getitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterAtomContactSummary___getitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterAtomContactSummary___getitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterAtomContactSummary >::__getitem__(PySliceObject *)\n"
+    "    std::vector< MolecularInterAtomContactSummary >::__getitem__(std::vector< MolecularInterAtomContactSummary >::difference_type) const\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___setitem____SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterAtomContactSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterAtomContactSummary___setitem__" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterAtomContactSummary >::difference_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularInterAtomContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterAtomContactSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterAtomContactSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary >::value_type * >(argp3);
+  try {
+    std_vector_Sl_MolecularInterAtomContactSummary_Sg____setitem____SWIG_2(arg1,SWIG_STD_MOVE(arg2),(MolecularInterAtomContactSummary const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary___setitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary___setitem__", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterAtomContactSummary___setitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        int res = swig::asptr(argv[2], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularInterAtomContactSummary___setitem____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularInterAtomContactSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularInterAtomContactSummary___setitem____SWIG_2(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterAtomContactSummary___setitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterAtomContactSummary >::__setitem__(PySliceObject *,std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > const &)\n"
+    "    std::vector< MolecularInterAtomContactSummary >::__setitem__(PySliceObject *)\n"
+    "    std::vector< MolecularInterAtomContactSummary >::__setitem__(std::vector< MolecularInterAtomContactSummary >::difference_type,std::vector< MolecularInterAtomContactSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_pop(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterAtomContactSummary >::value_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_pop" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  try {
+    result = std_vector_Sl_MolecularInterAtomContactSummary_Sg__pop(arg1);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularInterAtomContactSummary >::value_type(result)), SWIGTYPE_p_MolecularInterAtomContactSummary, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_append(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary_append", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_append" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularInterAtomContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularInterAtomContactSummary_append" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterAtomContactSummary_append" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary >::value_type * >(argp2);
+  std_vector_Sl_MolecularInterAtomContactSummary_Sg__append(arg1,(MolecularInterAtomContactSummary const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterAtomContactSummary__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **SWIGUNUSEDPARM(swig_obj)) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 0) || (nobjs > 0)) SWIG_fail;
+  result = (std::vector< MolecularInterAtomContactSummary > *)new std::vector< MolecularInterAtomContactSummary >();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterAtomContactSummary__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  std::vector< MolecularInterAtomContactSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  {
+    std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *ptr = (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *)0;
+    res1 = swig::asptr(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_VectorMolecularInterAtomContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularInterAtomContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  result = (std::vector< MolecularInterAtomContactSummary > *)new std::vector< MolecularInterAtomContactSummary >((std::vector< MolecularInterAtomContactSummary > const &)*arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_empty(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_empty" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = (bool)((std::vector< MolecularInterAtomContactSummary > const *)arg1)->empty();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_size(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterAtomContactSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_size" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = ((std::vector< MolecularInterAtomContactSummary > const *)arg1)->size();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_swap(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary > *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary_swap", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_swap" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularInterAtomContactSummary_swap" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary > &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterAtomContactSummary_swap" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary > &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp2);
+  (arg1)->swap(*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_begin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterAtomContactSummary >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_begin" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = (arg1)->begin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterAtomContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_end(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterAtomContactSummary >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_end" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = (arg1)->end();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterAtomContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_rbegin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterAtomContactSummary >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_rbegin" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = (arg1)->rbegin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterAtomContactSummary >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_rend(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterAtomContactSummary >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_rend" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = (arg1)->rend();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterAtomContactSummary >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_clear(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_clear" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  (arg1)->clear();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_get_allocator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  SwigValueWrapper< std::allocator< MolecularInterAtomContactSummary > > result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_get_allocator" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = ((std::vector< MolecularInterAtomContactSummary > const *)arg1)->get_allocator();
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularInterAtomContactSummary >::allocator_type(result)), SWIGTYPE_p_std__allocatorT_MolecularInterAtomContactSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterAtomContactSummary__SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary >::size_type arg1 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  std::vector< MolecularInterAtomContactSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularInterAtomContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularInterAtomContactSummary >::size_type >(val1);
+  result = (std::vector< MolecularInterAtomContactSummary > *)new std::vector< MolecularInterAtomContactSummary >(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_pop_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_pop_back" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  (arg1)->pop_back();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_resize__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_resize" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterAtomContactSummary_resize" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterAtomContactSummary >::size_type >(val2);
+  (arg1)->resize(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_erase__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::iterator arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  std::vector< MolecularInterAtomContactSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_erase" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularInterAtomContactSummary_Sg__erase__SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterAtomContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_erase__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::iterator arg2 ;
+  std::vector< MolecularInterAtomContactSummary >::iterator arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  swig::SwigPyIterator *iter3 = 0 ;
+  int res3 ;
+  std::vector< MolecularInterAtomContactSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_erase" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], SWIG_as_voidptrptr(&iter3), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res3) || !iter3) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary_erase" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *>(iter3);
+    if (iter_t) {
+      arg3 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary_erase" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularInterAtomContactSummary_Sg__erase__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterAtomContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_erase(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary_erase", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        return _wrap_VectorMolecularInterAtomContactSummary_erase__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        swig::SwigPyIterator *iter = 0;
+        int res = SWIG_ConvertPtr(argv[2], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *>(iter) != 0));
+        if (_v) {
+          return _wrap_VectorMolecularInterAtomContactSummary_erase__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterAtomContactSummary_erase'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterAtomContactSummary >::erase(std::vector< MolecularInterAtomContactSummary >::iterator)\n"
+    "    std::vector< MolecularInterAtomContactSummary >::erase(std::vector< MolecularInterAtomContactSummary >::iterator,std::vector< MolecularInterAtomContactSummary >::iterator)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterAtomContactSummary__SWIG_3(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary >::size_type arg1 ;
+  std::vector< MolecularInterAtomContactSummary >::value_type *arg2 = 0 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  std::vector< MolecularInterAtomContactSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularInterAtomContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularInterAtomContactSummary >::size_type >(val1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularInterAtomContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_VectorMolecularInterAtomContactSummary" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularInterAtomContactSummary" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary >::value_type * >(argp2);
+  result = (std::vector< MolecularInterAtomContactSummary > *)new std::vector< MolecularInterAtomContactSummary >(arg1,(std::vector< MolecularInterAtomContactSummary >::value_type const &)*arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterAtomContactSummary(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_VectorMolecularInterAtomContactSummary", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 0) {
+    return _wrap_new_VectorMolecularInterAtomContactSummary__SWIG_0(self, argc, argv);
+  }
+  if (argc == 1) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      return _wrap_new_VectorMolecularInterAtomContactSummary__SWIG_2(self, argc, argv);
+    }
+  }
+  if (argc == 1) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_VectorMolecularInterAtomContactSummary__SWIG_1(self, argc, argv);
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularInterAtomContactSummary, SWIG_POINTER_NO_NULL | 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_VectorMolecularInterAtomContactSummary__SWIG_3(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_VectorMolecularInterAtomContactSummary'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterAtomContactSummary >::vector()\n"
+    "    std::vector< MolecularInterAtomContactSummary >::vector(std::vector< MolecularInterAtomContactSummary > const &)\n"
+    "    std::vector< MolecularInterAtomContactSummary >::vector(std::vector< MolecularInterAtomContactSummary >::size_type)\n"
+    "    std::vector< MolecularInterAtomContactSummary >::vector(std::vector< MolecularInterAtomContactSummary >::size_type,std::vector< MolecularInterAtomContactSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_push_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary_push_back", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_push_back" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularInterAtomContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularInterAtomContactSummary_push_back" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterAtomContactSummary_push_back" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary >::value_type * >(argp2);
+  (arg1)->push_back((std::vector< MolecularInterAtomContactSummary >::value_type const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_front(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterAtomContactSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_front" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = (std::vector< MolecularInterAtomContactSummary >::value_type *) &((std::vector< MolecularInterAtomContactSummary > const *)arg1)->front();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularInterAtomContactSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterAtomContactSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_back" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = (std::vector< MolecularInterAtomContactSummary >::value_type *) &((std::vector< MolecularInterAtomContactSummary > const *)arg1)->back();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularInterAtomContactSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_assign(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::size_type arg2 ;
+  std::vector< MolecularInterAtomContactSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary_assign", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_assign" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterAtomContactSummary_assign" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterAtomContactSummary >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularInterAtomContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterAtomContactSummary_assign" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterAtomContactSummary_assign" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary >::value_type * >(argp3);
+  (arg1)->assign(arg2,(std::vector< MolecularInterAtomContactSummary >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_resize__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::size_type arg2 ;
+  std::vector< MolecularInterAtomContactSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_resize" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterAtomContactSummary_resize" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterAtomContactSummary >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularInterAtomContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterAtomContactSummary_resize" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterAtomContactSummary_resize" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary >::value_type * >(argp3);
+  (arg1)->resize(arg2,(std::vector< MolecularInterAtomContactSummary >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_resize(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary_resize", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterAtomContactSummary_resize__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularInterAtomContactSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularInterAtomContactSummary_resize__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterAtomContactSummary_resize'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterAtomContactSummary >::resize(std::vector< MolecularInterAtomContactSummary >::size_type)\n"
+    "    std::vector< MolecularInterAtomContactSummary >::resize(std::vector< MolecularInterAtomContactSummary >::size_type,std::vector< MolecularInterAtomContactSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_insert__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::iterator arg2 ;
+  std::vector< MolecularInterAtomContactSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  std::vector< MolecularInterAtomContactSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_insert" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularInterAtomContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterAtomContactSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterAtomContactSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary >::value_type * >(argp3);
+  result = std_vector_Sl_MolecularInterAtomContactSummary_Sg__insert__SWIG_0(arg1,SWIG_STD_MOVE(arg2),(MolecularInterAtomContactSummary const &)*arg3);
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterAtomContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_insert__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::iterator arg2 ;
+  std::vector< MolecularInterAtomContactSummary >::size_type arg3 ;
+  std::vector< MolecularInterAtomContactSummary >::value_type *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_insert" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterAtomContactSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::iterator""'");
+    }
+  }
+  ecode3 = SWIG_AsVal_size_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterAtomContactSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularInterAtomContactSummary >::size_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterAtomContactSummary >::size_type >(val3);
+  res4 = SWIG_ConvertPtr(swig_obj[3], &argp4, SWIGTYPE_p_MolecularInterAtomContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularInterAtomContactSummary_insert" "', argument " "4"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  if (!argp4) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterAtomContactSummary_insert" "', argument " "4"" of type '" "std::vector< MolecularInterAtomContactSummary >::value_type const &""'"); 
+  }
+  arg4 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary >::value_type * >(argp4);
+  std_vector_Sl_MolecularInterAtomContactSummary_Sg__insert__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(MolecularInterAtomContactSummary const &)*arg4);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_insert(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary_insert", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularInterAtomContactSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularInterAtomContactSummary_insert__SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterAtomContactSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_MolecularInterAtomContactSummary, SWIG_POINTER_NO_NULL | 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularInterAtomContactSummary_insert__SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterAtomContactSummary_insert'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterAtomContactSummary >::insert(std::vector< MolecularInterAtomContactSummary >::iterator,std::vector< MolecularInterAtomContactSummary >::value_type const &)\n"
+    "    std::vector< MolecularInterAtomContactSummary >::insert(std::vector< MolecularInterAtomContactSummary >::iterator,std::vector< MolecularInterAtomContactSummary >::size_type,std::vector< MolecularInterAtomContactSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_reserve(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  std::vector< MolecularInterAtomContactSummary >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterAtomContactSummary_reserve", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_reserve" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterAtomContactSummary_reserve" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterAtomContactSummary >::size_type >(val2);
+  (arg1)->reserve(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterAtomContactSummary_capacity(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterAtomContactSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterAtomContactSummary_capacity" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  result = ((std::vector< MolecularInterAtomContactSummary > const *)arg1)->capacity();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_VectorMolecularInterAtomContactSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterAtomContactSummary > *arg1 = (std::vector< MolecularInterAtomContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_VectorMolecularInterAtomContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterAtomContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary > * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *VectorMolecularInterAtomContactSummary_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *VectorMolecularInterAtomContactSummary_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_iterator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  PyObject **arg2 = (PyObject **) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  swig::SwigPyIterator *result = 0 ;
+  
+  arg2 = &swig_obj[0];
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_iterator" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = (swig::SwigPyIterator *)std_vector_Sl_MolecularInterResidueContactSummary_Sg__iterator(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_swig__SwigPyIterator, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___nonzero__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___nonzero__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularInterResidueContactSummary_Sg____nonzero__((std::vector< MolecularInterResidueContactSummary > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___bool__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___bool__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularInterResidueContactSummary_Sg____bool__((std::vector< MolecularInterResidueContactSummary > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___len__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterResidueContactSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___len__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = std_vector_Sl_MolecularInterResidueContactSummary_Sg____len__((std::vector< MolecularInterResidueContactSummary > const *)arg1);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___getslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterResidueContactSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary___getslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___getslice__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterResidueContactSummary___getslice__" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterResidueContactSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterResidueContactSummary___getslice__" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterResidueContactSummary >::difference_type >(val3);
+  try {
+    result = (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *)std_vector_Sl_MolecularInterResidueContactSummary_Sg____getslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___setslice____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterResidueContactSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___setslice__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterResidueContactSummary___setslice__" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterResidueContactSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterResidueContactSummary___setslice__" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterResidueContactSummary >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularInterResidueContactSummary_Sg____setslice____SWIG_0(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___setslice____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterResidueContactSummary >::difference_type arg3 ;
+  std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  int res4 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___setslice__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterResidueContactSummary___setslice__" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterResidueContactSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterResidueContactSummary___setslice__" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterResidueContactSummary >::difference_type >(val3);
+  {
+    std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *ptr = (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *)0;
+    res4 = swig::asptr(swig_obj[3], &ptr);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularInterResidueContactSummary___setslice__" "', argument " "4"" of type '" "std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterResidueContactSummary___setslice__" "', argument " "4"" of type '" "std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > const &""'"); 
+    }
+    arg4 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularInterResidueContactSummary_Sg____setslice____SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > const &)*arg4);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___setslice__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary___setslice__", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_VectorMolecularInterResidueContactSummary___setslice____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = swig::asptr(argv[3], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularInterResidueContactSummary___setslice____SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterResidueContactSummary___setslice__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterResidueContactSummary >::__setslice__(std::vector< MolecularInterResidueContactSummary >::difference_type,std::vector< MolecularInterResidueContactSummary >::difference_type)\n"
+    "    std::vector< MolecularInterResidueContactSummary >::__setslice__(std::vector< MolecularInterResidueContactSummary >::difference_type,std::vector< MolecularInterResidueContactSummary >::difference_type,std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___delslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterResidueContactSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary___delslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___delslice__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterResidueContactSummary___delslice__" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterResidueContactSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterResidueContactSummary___delslice__" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterResidueContactSummary >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularInterResidueContactSummary_Sg____delslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___delitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___delitem__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterResidueContactSummary___delitem__" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterResidueContactSummary >::difference_type >(val2);
+  try {
+    std_vector_Sl_MolecularInterResidueContactSummary_Sg____delitem____SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___getitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___getitem__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary___getitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    result = (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *)std_vector_Sl_MolecularInterResidueContactSummary_Sg____getitem____SWIG_0(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___setitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  {
+    std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *ptr = (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *)0;
+    res3 = swig::asptr(swig_obj[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterResidueContactSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterResidueContactSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularInterResidueContactSummary_Sg____setitem____SWIG_0(arg1,arg2,(std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___setitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularInterResidueContactSummary_Sg____setitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___delitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___delitem__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary___delitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularInterResidueContactSummary_Sg____delitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___delitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary___delitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterResidueContactSummary___delitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterResidueContactSummary___delitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterResidueContactSummary___delitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterResidueContactSummary >::__delitem__(std::vector< MolecularInterResidueContactSummary >::difference_type)\n"
+    "    std::vector< MolecularInterResidueContactSummary >::__delitem__(PySliceObject *)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___getitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  std::vector< MolecularInterResidueContactSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___getitem__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterResidueContactSummary___getitem__" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterResidueContactSummary >::difference_type >(val2);
+  try {
+    result = (std::vector< MolecularInterResidueContactSummary >::value_type *) &std_vector_Sl_MolecularInterResidueContactSummary_Sg____getitem____SWIG_1((std::vector< MolecularInterResidueContactSummary > const *)arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularInterResidueContactSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___getitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary___getitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterResidueContactSummary___getitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterResidueContactSummary___getitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterResidueContactSummary___getitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterResidueContactSummary >::__getitem__(PySliceObject *)\n"
+    "    std::vector< MolecularInterResidueContactSummary >::__getitem__(std::vector< MolecularInterResidueContactSummary >::difference_type) const\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___setitem____SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterResidueContactSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterResidueContactSummary___setitem__" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterResidueContactSummary >::difference_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularInterResidueContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterResidueContactSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterResidueContactSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary >::value_type * >(argp3);
+  try {
+    std_vector_Sl_MolecularInterResidueContactSummary_Sg____setitem____SWIG_2(arg1,SWIG_STD_MOVE(arg2),(MolecularInterResidueContactSummary const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary___setitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary___setitem__", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterResidueContactSummary___setitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        int res = swig::asptr(argv[2], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularInterResidueContactSummary___setitem____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularInterResidueContactSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularInterResidueContactSummary___setitem____SWIG_2(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterResidueContactSummary___setitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterResidueContactSummary >::__setitem__(PySliceObject *,std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > const &)\n"
+    "    std::vector< MolecularInterResidueContactSummary >::__setitem__(PySliceObject *)\n"
+    "    std::vector< MolecularInterResidueContactSummary >::__setitem__(std::vector< MolecularInterResidueContactSummary >::difference_type,std::vector< MolecularInterResidueContactSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_pop(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterResidueContactSummary >::value_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_pop" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  try {
+    result = std_vector_Sl_MolecularInterResidueContactSummary_Sg__pop(arg1);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularInterResidueContactSummary >::value_type(result)), SWIGTYPE_p_MolecularInterResidueContactSummary, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_append(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary_append", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_append" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularInterResidueContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularInterResidueContactSummary_append" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterResidueContactSummary_append" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary >::value_type * >(argp2);
+  std_vector_Sl_MolecularInterResidueContactSummary_Sg__append(arg1,(MolecularInterResidueContactSummary const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterResidueContactSummary__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **SWIGUNUSEDPARM(swig_obj)) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 0) || (nobjs > 0)) SWIG_fail;
+  result = (std::vector< MolecularInterResidueContactSummary > *)new std::vector< MolecularInterResidueContactSummary >();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterResidueContactSummary__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  std::vector< MolecularInterResidueContactSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  {
+    std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *ptr = (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *)0;
+    res1 = swig::asptr(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_VectorMolecularInterResidueContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularInterResidueContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  result = (std::vector< MolecularInterResidueContactSummary > *)new std::vector< MolecularInterResidueContactSummary >((std::vector< MolecularInterResidueContactSummary > const &)*arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_empty(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_empty" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = (bool)((std::vector< MolecularInterResidueContactSummary > const *)arg1)->empty();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_size(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterResidueContactSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_size" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = ((std::vector< MolecularInterResidueContactSummary > const *)arg1)->size();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_swap(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary > *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary_swap", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_swap" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularInterResidueContactSummary_swap" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary > &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterResidueContactSummary_swap" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary > &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp2);
+  (arg1)->swap(*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_begin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterResidueContactSummary >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_begin" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = (arg1)->begin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterResidueContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_end(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterResidueContactSummary >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_end" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = (arg1)->end();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterResidueContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_rbegin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterResidueContactSummary >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_rbegin" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = (arg1)->rbegin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterResidueContactSummary >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_rend(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterResidueContactSummary >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_rend" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = (arg1)->rend();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterResidueContactSummary >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_clear(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_clear" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  (arg1)->clear();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_get_allocator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  SwigValueWrapper< std::allocator< MolecularInterResidueContactSummary > > result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_get_allocator" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = ((std::vector< MolecularInterResidueContactSummary > const *)arg1)->get_allocator();
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularInterResidueContactSummary >::allocator_type(result)), SWIGTYPE_p_std__allocatorT_MolecularInterResidueContactSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterResidueContactSummary__SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary >::size_type arg1 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  std::vector< MolecularInterResidueContactSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularInterResidueContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularInterResidueContactSummary >::size_type >(val1);
+  result = (std::vector< MolecularInterResidueContactSummary > *)new std::vector< MolecularInterResidueContactSummary >(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_pop_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_pop_back" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  (arg1)->pop_back();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_resize__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_resize" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterResidueContactSummary_resize" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterResidueContactSummary >::size_type >(val2);
+  (arg1)->resize(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_erase__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::iterator arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  std::vector< MolecularInterResidueContactSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_erase" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularInterResidueContactSummary_Sg__erase__SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterResidueContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_erase__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::iterator arg2 ;
+  std::vector< MolecularInterResidueContactSummary >::iterator arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  swig::SwigPyIterator *iter3 = 0 ;
+  int res3 ;
+  std::vector< MolecularInterResidueContactSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_erase" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], SWIG_as_voidptrptr(&iter3), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res3) || !iter3) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary_erase" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *>(iter3);
+    if (iter_t) {
+      arg3 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary_erase" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularInterResidueContactSummary_Sg__erase__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterResidueContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_erase(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary_erase", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        return _wrap_VectorMolecularInterResidueContactSummary_erase__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        swig::SwigPyIterator *iter = 0;
+        int res = SWIG_ConvertPtr(argv[2], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *>(iter) != 0));
+        if (_v) {
+          return _wrap_VectorMolecularInterResidueContactSummary_erase__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterResidueContactSummary_erase'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterResidueContactSummary >::erase(std::vector< MolecularInterResidueContactSummary >::iterator)\n"
+    "    std::vector< MolecularInterResidueContactSummary >::erase(std::vector< MolecularInterResidueContactSummary >::iterator,std::vector< MolecularInterResidueContactSummary >::iterator)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterResidueContactSummary__SWIG_3(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary >::size_type arg1 ;
+  std::vector< MolecularInterResidueContactSummary >::value_type *arg2 = 0 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  std::vector< MolecularInterResidueContactSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularInterResidueContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularInterResidueContactSummary >::size_type >(val1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularInterResidueContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_VectorMolecularInterResidueContactSummary" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularInterResidueContactSummary" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary >::value_type * >(argp2);
+  result = (std::vector< MolecularInterResidueContactSummary > *)new std::vector< MolecularInterResidueContactSummary >(arg1,(std::vector< MolecularInterResidueContactSummary >::value_type const &)*arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterResidueContactSummary(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_VectorMolecularInterResidueContactSummary", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 0) {
+    return _wrap_new_VectorMolecularInterResidueContactSummary__SWIG_0(self, argc, argv);
+  }
+  if (argc == 1) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      return _wrap_new_VectorMolecularInterResidueContactSummary__SWIG_2(self, argc, argv);
+    }
+  }
+  if (argc == 1) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_VectorMolecularInterResidueContactSummary__SWIG_1(self, argc, argv);
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularInterResidueContactSummary, SWIG_POINTER_NO_NULL | 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_VectorMolecularInterResidueContactSummary__SWIG_3(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_VectorMolecularInterResidueContactSummary'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterResidueContactSummary >::vector()\n"
+    "    std::vector< MolecularInterResidueContactSummary >::vector(std::vector< MolecularInterResidueContactSummary > const &)\n"
+    "    std::vector< MolecularInterResidueContactSummary >::vector(std::vector< MolecularInterResidueContactSummary >::size_type)\n"
+    "    std::vector< MolecularInterResidueContactSummary >::vector(std::vector< MolecularInterResidueContactSummary >::size_type,std::vector< MolecularInterResidueContactSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_push_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary_push_back", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_push_back" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularInterResidueContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularInterResidueContactSummary_push_back" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterResidueContactSummary_push_back" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary >::value_type * >(argp2);
+  (arg1)->push_back((std::vector< MolecularInterResidueContactSummary >::value_type const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_front(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterResidueContactSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_front" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = (std::vector< MolecularInterResidueContactSummary >::value_type *) &((std::vector< MolecularInterResidueContactSummary > const *)arg1)->front();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularInterResidueContactSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterResidueContactSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_back" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = (std::vector< MolecularInterResidueContactSummary >::value_type *) &((std::vector< MolecularInterResidueContactSummary > const *)arg1)->back();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularInterResidueContactSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_assign(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::size_type arg2 ;
+  std::vector< MolecularInterResidueContactSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary_assign", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_assign" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterResidueContactSummary_assign" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterResidueContactSummary >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularInterResidueContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterResidueContactSummary_assign" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterResidueContactSummary_assign" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary >::value_type * >(argp3);
+  (arg1)->assign(arg2,(std::vector< MolecularInterResidueContactSummary >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_resize__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::size_type arg2 ;
+  std::vector< MolecularInterResidueContactSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_resize" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterResidueContactSummary_resize" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterResidueContactSummary >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularInterResidueContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterResidueContactSummary_resize" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterResidueContactSummary_resize" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary >::value_type * >(argp3);
+  (arg1)->resize(arg2,(std::vector< MolecularInterResidueContactSummary >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_resize(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary_resize", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterResidueContactSummary_resize__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularInterResidueContactSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularInterResidueContactSummary_resize__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterResidueContactSummary_resize'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterResidueContactSummary >::resize(std::vector< MolecularInterResidueContactSummary >::size_type)\n"
+    "    std::vector< MolecularInterResidueContactSummary >::resize(std::vector< MolecularInterResidueContactSummary >::size_type,std::vector< MolecularInterResidueContactSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_insert__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::iterator arg2 ;
+  std::vector< MolecularInterResidueContactSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  std::vector< MolecularInterResidueContactSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_insert" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularInterResidueContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterResidueContactSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterResidueContactSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary >::value_type * >(argp3);
+  result = std_vector_Sl_MolecularInterResidueContactSummary_Sg__insert__SWIG_0(arg1,SWIG_STD_MOVE(arg2),(MolecularInterResidueContactSummary const &)*arg3);
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterResidueContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_insert__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::iterator arg2 ;
+  std::vector< MolecularInterResidueContactSummary >::size_type arg3 ;
+  std::vector< MolecularInterResidueContactSummary >::value_type *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_insert" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterResidueContactSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::iterator""'");
+    }
+  }
+  ecode3 = SWIG_AsVal_size_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterResidueContactSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularInterResidueContactSummary >::size_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterResidueContactSummary >::size_type >(val3);
+  res4 = SWIG_ConvertPtr(swig_obj[3], &argp4, SWIGTYPE_p_MolecularInterResidueContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularInterResidueContactSummary_insert" "', argument " "4"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  if (!argp4) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterResidueContactSummary_insert" "', argument " "4"" of type '" "std::vector< MolecularInterResidueContactSummary >::value_type const &""'"); 
+  }
+  arg4 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary >::value_type * >(argp4);
+  std_vector_Sl_MolecularInterResidueContactSummary_Sg__insert__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(MolecularInterResidueContactSummary const &)*arg4);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_insert(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary_insert", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularInterResidueContactSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularInterResidueContactSummary_insert__SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterResidueContactSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_MolecularInterResidueContactSummary, SWIG_POINTER_NO_NULL | 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularInterResidueContactSummary_insert__SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterResidueContactSummary_insert'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterResidueContactSummary >::insert(std::vector< MolecularInterResidueContactSummary >::iterator,std::vector< MolecularInterResidueContactSummary >::value_type const &)\n"
+    "    std::vector< MolecularInterResidueContactSummary >::insert(std::vector< MolecularInterResidueContactSummary >::iterator,std::vector< MolecularInterResidueContactSummary >::size_type,std::vector< MolecularInterResidueContactSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_reserve(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  std::vector< MolecularInterResidueContactSummary >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterResidueContactSummary_reserve", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_reserve" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterResidueContactSummary_reserve" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterResidueContactSummary >::size_type >(val2);
+  (arg1)->reserve(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterResidueContactSummary_capacity(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterResidueContactSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterResidueContactSummary_capacity" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  result = ((std::vector< MolecularInterResidueContactSummary > const *)arg1)->capacity();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_VectorMolecularInterResidueContactSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterResidueContactSummary > *arg1 = (std::vector< MolecularInterResidueContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_VectorMolecularInterResidueContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterResidueContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary > * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *VectorMolecularInterResidueContactSummary_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *VectorMolecularInterResidueContactSummary_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_iterator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  PyObject **arg2 = (PyObject **) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  swig::SwigPyIterator *result = 0 ;
+  
+  arg2 = &swig_obj[0];
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_iterator" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = (swig::SwigPyIterator *)std_vector_Sl_MolecularInterChainContactSummary_Sg__iterator(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_swig__SwigPyIterator, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___nonzero__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___nonzero__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularInterChainContactSummary_Sg____nonzero__((std::vector< MolecularInterChainContactSummary > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___bool__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___bool__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularInterChainContactSummary_Sg____bool__((std::vector< MolecularInterChainContactSummary > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___len__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterChainContactSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___len__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = std_vector_Sl_MolecularInterChainContactSummary_Sg____len__((std::vector< MolecularInterChainContactSummary > const *)arg1);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___getslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterChainContactSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary___getslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___getslice__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterChainContactSummary___getslice__" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterChainContactSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterChainContactSummary___getslice__" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterChainContactSummary >::difference_type >(val3);
+  try {
+    result = (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *)std_vector_Sl_MolecularInterChainContactSummary_Sg____getslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___setslice____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterChainContactSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___setslice__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterChainContactSummary___setslice__" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterChainContactSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterChainContactSummary___setslice__" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterChainContactSummary >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularInterChainContactSummary_Sg____setslice____SWIG_0(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___setslice____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterChainContactSummary >::difference_type arg3 ;
+  std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  int res4 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___setslice__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterChainContactSummary___setslice__" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterChainContactSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterChainContactSummary___setslice__" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterChainContactSummary >::difference_type >(val3);
+  {
+    std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *ptr = (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *)0;
+    res4 = swig::asptr(swig_obj[3], &ptr);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularInterChainContactSummary___setslice__" "', argument " "4"" of type '" "std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterChainContactSummary___setslice__" "', argument " "4"" of type '" "std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > const &""'"); 
+    }
+    arg4 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularInterChainContactSummary_Sg____setslice____SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > const &)*arg4);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___setslice__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary___setslice__", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_VectorMolecularInterChainContactSummary___setslice____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = swig::asptr(argv[3], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularInterChainContactSummary___setslice____SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterChainContactSummary___setslice__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterChainContactSummary >::__setslice__(std::vector< MolecularInterChainContactSummary >::difference_type,std::vector< MolecularInterChainContactSummary >::difference_type)\n"
+    "    std::vector< MolecularInterChainContactSummary >::__setslice__(std::vector< MolecularInterChainContactSummary >::difference_type,std::vector< MolecularInterChainContactSummary >::difference_type,std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___delslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterChainContactSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary___delslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___delslice__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterChainContactSummary___delslice__" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterChainContactSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterChainContactSummary___delslice__" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterChainContactSummary >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularInterChainContactSummary_Sg____delslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___delitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___delitem__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterChainContactSummary___delitem__" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterChainContactSummary >::difference_type >(val2);
+  try {
+    std_vector_Sl_MolecularInterChainContactSummary_Sg____delitem____SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___getitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___getitem__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary___getitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    result = (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *)std_vector_Sl_MolecularInterChainContactSummary_Sg____getitem____SWIG_0(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___setitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  {
+    std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *ptr = (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *)0;
+    res3 = swig::asptr(swig_obj[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterChainContactSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterChainContactSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularInterChainContactSummary_Sg____setitem____SWIG_0(arg1,arg2,(std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___setitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularInterChainContactSummary_Sg____setitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___delitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___delitem__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary___delitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularInterChainContactSummary_Sg____delitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___delitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary___delitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterChainContactSummary___delitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterChainContactSummary___delitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterChainContactSummary___delitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterChainContactSummary >::__delitem__(std::vector< MolecularInterChainContactSummary >::difference_type)\n"
+    "    std::vector< MolecularInterChainContactSummary >::__delitem__(PySliceObject *)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___getitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  std::vector< MolecularInterChainContactSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___getitem__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterChainContactSummary___getitem__" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterChainContactSummary >::difference_type >(val2);
+  try {
+    result = (std::vector< MolecularInterChainContactSummary >::value_type *) &std_vector_Sl_MolecularInterChainContactSummary_Sg____getitem____SWIG_1((std::vector< MolecularInterChainContactSummary > const *)arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularInterChainContactSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularInterChainContactSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___getitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary___getitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterChainContactSummary___getitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterChainContactSummary___getitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterChainContactSummary___getitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterChainContactSummary >::__getitem__(PySliceObject *)\n"
+    "    std::vector< MolecularInterChainContactSummary >::__getitem__(std::vector< MolecularInterChainContactSummary >::difference_type) const\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___setitem____SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::difference_type arg2 ;
+  std::vector< MolecularInterChainContactSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterChainContactSummary___setitem__" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterChainContactSummary >::difference_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularInterChainContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterChainContactSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterChainContactSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularInterChainContactSummary >::value_type * >(argp3);
+  try {
+    std_vector_Sl_MolecularInterChainContactSummary_Sg____setitem____SWIG_2(arg1,SWIG_STD_MOVE(arg2),(MolecularInterChainContactSummary const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary___setitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary___setitem__", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterChainContactSummary___setitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        int res = swig::asptr(argv[2], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularInterChainContactSummary___setitem____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularInterChainContactSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularInterChainContactSummary___setitem____SWIG_2(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterChainContactSummary___setitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterChainContactSummary >::__setitem__(PySliceObject *,std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > const &)\n"
+    "    std::vector< MolecularInterChainContactSummary >::__setitem__(PySliceObject *)\n"
+    "    std::vector< MolecularInterChainContactSummary >::__setitem__(std::vector< MolecularInterChainContactSummary >::difference_type,std::vector< MolecularInterChainContactSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_pop(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterChainContactSummary >::value_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_pop" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  try {
+    result = std_vector_Sl_MolecularInterChainContactSummary_Sg__pop(arg1);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularInterChainContactSummary >::value_type(result)), SWIGTYPE_p_MolecularInterChainContactSummary, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_append(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary_append", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_append" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularInterChainContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularInterChainContactSummary_append" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterChainContactSummary_append" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterChainContactSummary >::value_type * >(argp2);
+  std_vector_Sl_MolecularInterChainContactSummary_Sg__append(arg1,(MolecularInterChainContactSummary const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterChainContactSummary__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **SWIGUNUSEDPARM(swig_obj)) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 0) || (nobjs > 0)) SWIG_fail;
+  result = (std::vector< MolecularInterChainContactSummary > *)new std::vector< MolecularInterChainContactSummary >();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterChainContactSummary__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  std::vector< MolecularInterChainContactSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  {
+    std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *ptr = (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *)0;
+    res1 = swig::asptr(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_VectorMolecularInterChainContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularInterChainContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  result = (std::vector< MolecularInterChainContactSummary > *)new std::vector< MolecularInterChainContactSummary >((std::vector< MolecularInterChainContactSummary > const &)*arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_empty(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_empty" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = (bool)((std::vector< MolecularInterChainContactSummary > const *)arg1)->empty();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_size(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterChainContactSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_size" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = ((std::vector< MolecularInterChainContactSummary > const *)arg1)->size();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_swap(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary > *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary_swap", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_swap" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularInterChainContactSummary_swap" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary > &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterChainContactSummary_swap" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary > &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp2);
+  (arg1)->swap(*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_begin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterChainContactSummary >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_begin" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = (arg1)->begin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterChainContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_end(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterChainContactSummary >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_end" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = (arg1)->end();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterChainContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_rbegin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterChainContactSummary >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_rbegin" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = (arg1)->rbegin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterChainContactSummary >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_rend(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterChainContactSummary >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_rend" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = (arg1)->rend();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterChainContactSummary >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_clear(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_clear" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  (arg1)->clear();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_get_allocator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  SwigValueWrapper< std::allocator< MolecularInterChainContactSummary > > result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_get_allocator" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = ((std::vector< MolecularInterChainContactSummary > const *)arg1)->get_allocator();
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularInterChainContactSummary >::allocator_type(result)), SWIGTYPE_p_std__allocatorT_MolecularInterChainContactSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterChainContactSummary__SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary >::size_type arg1 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  std::vector< MolecularInterChainContactSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularInterChainContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularInterChainContactSummary >::size_type >(val1);
+  result = (std::vector< MolecularInterChainContactSummary > *)new std::vector< MolecularInterChainContactSummary >(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_pop_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_pop_back" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  (arg1)->pop_back();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_resize__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_resize" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterChainContactSummary_resize" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterChainContactSummary >::size_type >(val2);
+  (arg1)->resize(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_erase__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::iterator arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  std::vector< MolecularInterChainContactSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_erase" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularInterChainContactSummary_Sg__erase__SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterChainContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_erase__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::iterator arg2 ;
+  std::vector< MolecularInterChainContactSummary >::iterator arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  swig::SwigPyIterator *iter3 = 0 ;
+  int res3 ;
+  std::vector< MolecularInterChainContactSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_erase" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], SWIG_as_voidptrptr(&iter3), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res3) || !iter3) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary_erase" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *>(iter3);
+    if (iter_t) {
+      arg3 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary_erase" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularInterChainContactSummary_Sg__erase__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterChainContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_erase(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary_erase", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        return _wrap_VectorMolecularInterChainContactSummary_erase__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        swig::SwigPyIterator *iter = 0;
+        int res = SWIG_ConvertPtr(argv[2], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *>(iter) != 0));
+        if (_v) {
+          return _wrap_VectorMolecularInterChainContactSummary_erase__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterChainContactSummary_erase'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterChainContactSummary >::erase(std::vector< MolecularInterChainContactSummary >::iterator)\n"
+    "    std::vector< MolecularInterChainContactSummary >::erase(std::vector< MolecularInterChainContactSummary >::iterator,std::vector< MolecularInterChainContactSummary >::iterator)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterChainContactSummary__SWIG_3(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary >::size_type arg1 ;
+  std::vector< MolecularInterChainContactSummary >::value_type *arg2 = 0 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  std::vector< MolecularInterChainContactSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularInterChainContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularInterChainContactSummary >::size_type >(val1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularInterChainContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_VectorMolecularInterChainContactSummary" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularInterChainContactSummary" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterChainContactSummary >::value_type * >(argp2);
+  result = (std::vector< MolecularInterChainContactSummary > *)new std::vector< MolecularInterChainContactSummary >(arg1,(std::vector< MolecularInterChainContactSummary >::value_type const &)*arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularInterChainContactSummary(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_VectorMolecularInterChainContactSummary", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 0) {
+    return _wrap_new_VectorMolecularInterChainContactSummary__SWIG_0(self, argc, argv);
+  }
+  if (argc == 1) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      return _wrap_new_VectorMolecularInterChainContactSummary__SWIG_2(self, argc, argv);
+    }
+  }
+  if (argc == 1) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_VectorMolecularInterChainContactSummary__SWIG_1(self, argc, argv);
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularInterChainContactSummary, SWIG_POINTER_NO_NULL | 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_VectorMolecularInterChainContactSummary__SWIG_3(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_VectorMolecularInterChainContactSummary'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterChainContactSummary >::vector()\n"
+    "    std::vector< MolecularInterChainContactSummary >::vector(std::vector< MolecularInterChainContactSummary > const &)\n"
+    "    std::vector< MolecularInterChainContactSummary >::vector(std::vector< MolecularInterChainContactSummary >::size_type)\n"
+    "    std::vector< MolecularInterChainContactSummary >::vector(std::vector< MolecularInterChainContactSummary >::size_type,std::vector< MolecularInterChainContactSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_push_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary_push_back", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_push_back" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularInterChainContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularInterChainContactSummary_push_back" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterChainContactSummary_push_back" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterChainContactSummary >::value_type * >(argp2);
+  (arg1)->push_back((std::vector< MolecularInterChainContactSummary >::value_type const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_front(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterChainContactSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_front" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = (std::vector< MolecularInterChainContactSummary >::value_type *) &((std::vector< MolecularInterChainContactSummary > const *)arg1)->front();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularInterChainContactSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularInterChainContactSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterChainContactSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_back" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = (std::vector< MolecularInterChainContactSummary >::value_type *) &((std::vector< MolecularInterChainContactSummary > const *)arg1)->back();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularInterChainContactSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularInterChainContactSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_assign(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::size_type arg2 ;
+  std::vector< MolecularInterChainContactSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary_assign", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_assign" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterChainContactSummary_assign" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterChainContactSummary >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularInterChainContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterChainContactSummary_assign" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterChainContactSummary_assign" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularInterChainContactSummary >::value_type * >(argp3);
+  (arg1)->assign(arg2,(std::vector< MolecularInterChainContactSummary >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_resize__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::size_type arg2 ;
+  std::vector< MolecularInterChainContactSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_resize" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterChainContactSummary_resize" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterChainContactSummary >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularInterChainContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterChainContactSummary_resize" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterChainContactSummary_resize" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularInterChainContactSummary >::value_type * >(argp3);
+  (arg1)->resize(arg2,(std::vector< MolecularInterChainContactSummary >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_resize(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary_resize", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularInterChainContactSummary_resize__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularInterChainContactSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularInterChainContactSummary_resize__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterChainContactSummary_resize'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterChainContactSummary >::resize(std::vector< MolecularInterChainContactSummary >::size_type)\n"
+    "    std::vector< MolecularInterChainContactSummary >::resize(std::vector< MolecularInterChainContactSummary >::size_type,std::vector< MolecularInterChainContactSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_insert__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::iterator arg2 ;
+  std::vector< MolecularInterChainContactSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  std::vector< MolecularInterChainContactSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_insert" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularInterChainContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularInterChainContactSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterChainContactSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularInterChainContactSummary >::value_type * >(argp3);
+  result = std_vector_Sl_MolecularInterChainContactSummary_Sg__insert__SWIG_0(arg1,SWIG_STD_MOVE(arg2),(MolecularInterChainContactSummary const &)*arg3);
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularInterChainContactSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_insert__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::iterator arg2 ;
+  std::vector< MolecularInterChainContactSummary >::size_type arg3 ;
+  std::vector< MolecularInterChainContactSummary >::value_type *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_insert" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularInterChainContactSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::iterator""'");
+    }
+  }
+  ecode3 = SWIG_AsVal_size_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularInterChainContactSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularInterChainContactSummary >::size_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularInterChainContactSummary >::size_type >(val3);
+  res4 = SWIG_ConvertPtr(swig_obj[3], &argp4, SWIGTYPE_p_MolecularInterChainContactSummary,  0  | 0);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularInterChainContactSummary_insert" "', argument " "4"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  if (!argp4) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularInterChainContactSummary_insert" "', argument " "4"" of type '" "std::vector< MolecularInterChainContactSummary >::value_type const &""'"); 
+  }
+  arg4 = reinterpret_cast< std::vector< MolecularInterChainContactSummary >::value_type * >(argp4);
+  std_vector_Sl_MolecularInterChainContactSummary_Sg__insert__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(MolecularInterChainContactSummary const &)*arg4);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_insert(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary_insert", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularInterChainContactSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularInterChainContactSummary_insert__SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularInterChainContactSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_MolecularInterChainContactSummary, SWIG_POINTER_NO_NULL | 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularInterChainContactSummary_insert__SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularInterChainContactSummary_insert'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularInterChainContactSummary >::insert(std::vector< MolecularInterChainContactSummary >::iterator,std::vector< MolecularInterChainContactSummary >::value_type const &)\n"
+    "    std::vector< MolecularInterChainContactSummary >::insert(std::vector< MolecularInterChainContactSummary >::iterator,std::vector< MolecularInterChainContactSummary >::size_type,std::vector< MolecularInterChainContactSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_reserve(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  std::vector< MolecularInterChainContactSummary >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularInterChainContactSummary_reserve", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_reserve" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularInterChainContactSummary_reserve" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularInterChainContactSummary >::size_type >(val2);
+  (arg1)->reserve(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularInterChainContactSummary_capacity(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterChainContactSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularInterChainContactSummary_capacity" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  result = ((std::vector< MolecularInterChainContactSummary > const *)arg1)->capacity();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_VectorMolecularInterChainContactSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularInterChainContactSummary > *arg1 = (std::vector< MolecularInterChainContactSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_VectorMolecularInterChainContactSummary" "', argument " "1"" of type '" "std::vector< MolecularInterChainContactSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularInterChainContactSummary > * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *VectorMolecularInterChainContactSummary_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *VectorMolecularInterChainContactSummary_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_iterator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  PyObject **arg2 = (PyObject **) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  swig::SwigPyIterator *result = 0 ;
+  
+  arg2 = &swig_obj[0];
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_iterator" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = (swig::SwigPyIterator *)std_vector_Sl_MolecularAtomCellSummary_Sg__iterator(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_swig__SwigPyIterator, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___nonzero__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___nonzero__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularAtomCellSummary_Sg____nonzero__((std::vector< MolecularAtomCellSummary > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___bool__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___bool__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularAtomCellSummary_Sg____bool__((std::vector< MolecularAtomCellSummary > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___len__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomCellSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___len__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = std_vector_Sl_MolecularAtomCellSummary_Sg____len__((std::vector< MolecularAtomCellSummary > const *)arg1);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___getslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::difference_type arg2 ;
+  std::vector< MolecularAtomCellSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary___getslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___getslice__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomCellSummary___getslice__" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomCellSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularAtomCellSummary___getslice__" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularAtomCellSummary >::difference_type >(val3);
+  try {
+    result = (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *)std_vector_Sl_MolecularAtomCellSummary_Sg____getslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___setslice____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::difference_type arg2 ;
+  std::vector< MolecularAtomCellSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___setslice__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomCellSummary___setslice__" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomCellSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularAtomCellSummary___setslice__" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularAtomCellSummary >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularAtomCellSummary_Sg____setslice____SWIG_0(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___setslice____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::difference_type arg2 ;
+  std::vector< MolecularAtomCellSummary >::difference_type arg3 ;
+  std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  int res4 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___setslice__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomCellSummary___setslice__" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomCellSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularAtomCellSummary___setslice__" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularAtomCellSummary >::difference_type >(val3);
+  {
+    std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *ptr = (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *)0;
+    res4 = swig::asptr(swig_obj[3], &ptr);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularAtomCellSummary___setslice__" "', argument " "4"" of type '" "std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomCellSummary___setslice__" "', argument " "4"" of type '" "std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > const &""'"); 
+    }
+    arg4 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularAtomCellSummary_Sg____setslice____SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > const &)*arg4);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___setslice__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary___setslice__", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_VectorMolecularAtomCellSummary___setslice____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = swig::asptr(argv[3], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularAtomCellSummary___setslice____SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomCellSummary___setslice__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomCellSummary >::__setslice__(std::vector< MolecularAtomCellSummary >::difference_type,std::vector< MolecularAtomCellSummary >::difference_type)\n"
+    "    std::vector< MolecularAtomCellSummary >::__setslice__(std::vector< MolecularAtomCellSummary >::difference_type,std::vector< MolecularAtomCellSummary >::difference_type,std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___delslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::difference_type arg2 ;
+  std::vector< MolecularAtomCellSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary___delslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___delslice__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomCellSummary___delslice__" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomCellSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularAtomCellSummary___delslice__" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularAtomCellSummary >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularAtomCellSummary_Sg____delslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___delitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___delitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomCellSummary___delitem__" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomCellSummary >::difference_type >(val2);
+  try {
+    std_vector_Sl_MolecularAtomCellSummary_Sg____delitem____SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___getitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___getitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary___getitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    result = (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *)std_vector_Sl_MolecularAtomCellSummary_Sg____getitem____SWIG_0(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___setitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  {
+    std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *ptr = (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *)0;
+    res3 = swig::asptr(swig_obj[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularAtomCellSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomCellSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularAtomCellSummary_Sg____setitem____SWIG_0(arg1,arg2,(std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___setitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularAtomCellSummary_Sg____setitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___delitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___delitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary___delitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularAtomCellSummary_Sg____delitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___delitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary___delitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularAtomCellSummary___delitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularAtomCellSummary___delitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomCellSummary___delitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomCellSummary >::__delitem__(std::vector< MolecularAtomCellSummary >::difference_type)\n"
+    "    std::vector< MolecularAtomCellSummary >::__delitem__(PySliceObject *)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___getitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  std::vector< MolecularAtomCellSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___getitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomCellSummary___getitem__" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomCellSummary >::difference_type >(val2);
+  try {
+    result = (std::vector< MolecularAtomCellSummary >::value_type *) &std_vector_Sl_MolecularAtomCellSummary_Sg____getitem____SWIG_1((std::vector< MolecularAtomCellSummary > const *)arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularAtomCellSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___getitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary___getitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularAtomCellSummary___getitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularAtomCellSummary___getitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomCellSummary___getitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomCellSummary >::__getitem__(PySliceObject *)\n"
+    "    std::vector< MolecularAtomCellSummary >::__getitem__(std::vector< MolecularAtomCellSummary >::difference_type) const\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___setitem____SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::difference_type arg2 ;
+  std::vector< MolecularAtomCellSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomCellSummary___setitem__" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomCellSummary >::difference_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularAtomCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularAtomCellSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomCellSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularAtomCellSummary >::value_type * >(argp3);
+  try {
+    std_vector_Sl_MolecularAtomCellSummary_Sg____setitem____SWIG_2(arg1,SWIG_STD_MOVE(arg2),(MolecularAtomCellSummary const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary___setitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary___setitem__", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularAtomCellSummary___setitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        int res = swig::asptr(argv[2], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularAtomCellSummary___setitem____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularAtomCellSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularAtomCellSummary___setitem____SWIG_2(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomCellSummary___setitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomCellSummary >::__setitem__(PySliceObject *,std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > const &)\n"
+    "    std::vector< MolecularAtomCellSummary >::__setitem__(PySliceObject *)\n"
+    "    std::vector< MolecularAtomCellSummary >::__setitem__(std::vector< MolecularAtomCellSummary >::difference_type,std::vector< MolecularAtomCellSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_pop(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomCellSummary >::value_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_pop" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  try {
+    result = std_vector_Sl_MolecularAtomCellSummary_Sg__pop(arg1);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularAtomCellSummary >::value_type(result)), SWIGTYPE_p_MolecularAtomCellSummary, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_append(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary_append", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_append" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularAtomCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularAtomCellSummary_append" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomCellSummary_append" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularAtomCellSummary >::value_type * >(argp2);
+  std_vector_Sl_MolecularAtomCellSummary_Sg__append(arg1,(MolecularAtomCellSummary const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularAtomCellSummary__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **SWIGUNUSEDPARM(swig_obj)) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 0) || (nobjs > 0)) SWIG_fail;
+  result = (std::vector< MolecularAtomCellSummary > *)new std::vector< MolecularAtomCellSummary >();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularAtomCellSummary__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  std::vector< MolecularAtomCellSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  {
+    std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *ptr = (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *)0;
+    res1 = swig::asptr(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_VectorMolecularAtomCellSummary" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularAtomCellSummary" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  result = (std::vector< MolecularAtomCellSummary > *)new std::vector< MolecularAtomCellSummary >((std::vector< MolecularAtomCellSummary > const &)*arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_empty(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_empty" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = (bool)((std::vector< MolecularAtomCellSummary > const *)arg1)->empty();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_size(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomCellSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_size" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = ((std::vector< MolecularAtomCellSummary > const *)arg1)->size();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_swap(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary > *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary_swap", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_swap" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularAtomCellSummary_swap" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary > &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomCellSummary_swap" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary > &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp2);
+  (arg1)->swap(*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_begin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomCellSummary >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_begin" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = (arg1)->begin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_end(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomCellSummary >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_end" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = (arg1)->end();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_rbegin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomCellSummary >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_rbegin" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = (arg1)->rbegin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomCellSummary >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_rend(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomCellSummary >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_rend" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = (arg1)->rend();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomCellSummary >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_clear(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_clear" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  (arg1)->clear();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_get_allocator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  SwigValueWrapper< std::allocator< MolecularAtomCellSummary > > result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_get_allocator" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = ((std::vector< MolecularAtomCellSummary > const *)arg1)->get_allocator();
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularAtomCellSummary >::allocator_type(result)), SWIGTYPE_p_std__allocatorT_MolecularAtomCellSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularAtomCellSummary__SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary >::size_type arg1 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  std::vector< MolecularAtomCellSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularAtomCellSummary" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularAtomCellSummary >::size_type >(val1);
+  result = (std::vector< MolecularAtomCellSummary > *)new std::vector< MolecularAtomCellSummary >(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_pop_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_pop_back" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  (arg1)->pop_back();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_resize__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_resize" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomCellSummary_resize" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomCellSummary >::size_type >(val2);
+  (arg1)->resize(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_erase__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::iterator arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  std::vector< MolecularAtomCellSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_erase" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularAtomCellSummary_Sg__erase__SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_erase__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::iterator arg2 ;
+  std::vector< MolecularAtomCellSummary >::iterator arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  swig::SwigPyIterator *iter3 = 0 ;
+  int res3 ;
+  std::vector< MolecularAtomCellSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_erase" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], SWIG_as_voidptrptr(&iter3), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res3) || !iter3) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary_erase" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *>(iter3);
+    if (iter_t) {
+      arg3 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary_erase" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularAtomCellSummary_Sg__erase__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_erase(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary_erase", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        return _wrap_VectorMolecularAtomCellSummary_erase__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        swig::SwigPyIterator *iter = 0;
+        int res = SWIG_ConvertPtr(argv[2], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *>(iter) != 0));
+        if (_v) {
+          return _wrap_VectorMolecularAtomCellSummary_erase__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomCellSummary_erase'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomCellSummary >::erase(std::vector< MolecularAtomCellSummary >::iterator)\n"
+    "    std::vector< MolecularAtomCellSummary >::erase(std::vector< MolecularAtomCellSummary >::iterator,std::vector< MolecularAtomCellSummary >::iterator)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularAtomCellSummary__SWIG_3(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary >::size_type arg1 ;
+  std::vector< MolecularAtomCellSummary >::value_type *arg2 = 0 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  std::vector< MolecularAtomCellSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularAtomCellSummary" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularAtomCellSummary >::size_type >(val1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularAtomCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_VectorMolecularAtomCellSummary" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularAtomCellSummary" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularAtomCellSummary >::value_type * >(argp2);
+  result = (std::vector< MolecularAtomCellSummary > *)new std::vector< MolecularAtomCellSummary >(arg1,(std::vector< MolecularAtomCellSummary >::value_type const &)*arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularAtomCellSummary(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_VectorMolecularAtomCellSummary", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 0) {
+    return _wrap_new_VectorMolecularAtomCellSummary__SWIG_0(self, argc, argv);
+  }
+  if (argc == 1) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      return _wrap_new_VectorMolecularAtomCellSummary__SWIG_2(self, argc, argv);
+    }
+  }
+  if (argc == 1) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_VectorMolecularAtomCellSummary__SWIG_1(self, argc, argv);
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularAtomCellSummary, SWIG_POINTER_NO_NULL | 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_VectorMolecularAtomCellSummary__SWIG_3(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_VectorMolecularAtomCellSummary'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomCellSummary >::vector()\n"
+    "    std::vector< MolecularAtomCellSummary >::vector(std::vector< MolecularAtomCellSummary > const &)\n"
+    "    std::vector< MolecularAtomCellSummary >::vector(std::vector< MolecularAtomCellSummary >::size_type)\n"
+    "    std::vector< MolecularAtomCellSummary >::vector(std::vector< MolecularAtomCellSummary >::size_type,std::vector< MolecularAtomCellSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_push_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary_push_back", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_push_back" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularAtomCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularAtomCellSummary_push_back" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomCellSummary_push_back" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularAtomCellSummary >::value_type * >(argp2);
+  (arg1)->push_back((std::vector< MolecularAtomCellSummary >::value_type const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_front(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomCellSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_front" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = (std::vector< MolecularAtomCellSummary >::value_type *) &((std::vector< MolecularAtomCellSummary > const *)arg1)->front();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularAtomCellSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomCellSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_back" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = (std::vector< MolecularAtomCellSummary >::value_type *) &((std::vector< MolecularAtomCellSummary > const *)arg1)->back();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularAtomCellSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_assign(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::size_type arg2 ;
+  std::vector< MolecularAtomCellSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary_assign", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_assign" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomCellSummary_assign" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomCellSummary >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularAtomCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularAtomCellSummary_assign" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomCellSummary_assign" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularAtomCellSummary >::value_type * >(argp3);
+  (arg1)->assign(arg2,(std::vector< MolecularAtomCellSummary >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_resize__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::size_type arg2 ;
+  std::vector< MolecularAtomCellSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_resize" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomCellSummary_resize" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomCellSummary >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularAtomCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularAtomCellSummary_resize" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomCellSummary_resize" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularAtomCellSummary >::value_type * >(argp3);
+  (arg1)->resize(arg2,(std::vector< MolecularAtomCellSummary >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_resize(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary_resize", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularAtomCellSummary_resize__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularAtomCellSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularAtomCellSummary_resize__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomCellSummary_resize'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomCellSummary >::resize(std::vector< MolecularAtomCellSummary >::size_type)\n"
+    "    std::vector< MolecularAtomCellSummary >::resize(std::vector< MolecularAtomCellSummary >::size_type,std::vector< MolecularAtomCellSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_insert__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::iterator arg2 ;
+  std::vector< MolecularAtomCellSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  std::vector< MolecularAtomCellSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_insert" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularAtomCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularAtomCellSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomCellSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularAtomCellSummary >::value_type * >(argp3);
+  result = std_vector_Sl_MolecularAtomCellSummary_Sg__insert__SWIG_0(arg1,SWIG_STD_MOVE(arg2),(MolecularAtomCellSummary const &)*arg3);
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularAtomCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_insert__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::iterator arg2 ;
+  std::vector< MolecularAtomCellSummary >::size_type arg3 ;
+  std::vector< MolecularAtomCellSummary >::value_type *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_insert" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularAtomCellSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::iterator""'");
+    }
+  }
+  ecode3 = SWIG_AsVal_size_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularAtomCellSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularAtomCellSummary >::size_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularAtomCellSummary >::size_type >(val3);
+  res4 = SWIG_ConvertPtr(swig_obj[3], &argp4, SWIGTYPE_p_MolecularAtomCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularAtomCellSummary_insert" "', argument " "4"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  if (!argp4) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularAtomCellSummary_insert" "', argument " "4"" of type '" "std::vector< MolecularAtomCellSummary >::value_type const &""'"); 
+  }
+  arg4 = reinterpret_cast< std::vector< MolecularAtomCellSummary >::value_type * >(argp4);
+  std_vector_Sl_MolecularAtomCellSummary_Sg__insert__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(MolecularAtomCellSummary const &)*arg4);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_insert(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary_insert", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularAtomCellSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularAtomCellSummary_insert__SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularAtomCellSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_MolecularAtomCellSummary, SWIG_POINTER_NO_NULL | 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularAtomCellSummary_insert__SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularAtomCellSummary_insert'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularAtomCellSummary >::insert(std::vector< MolecularAtomCellSummary >::iterator,std::vector< MolecularAtomCellSummary >::value_type const &)\n"
+    "    std::vector< MolecularAtomCellSummary >::insert(std::vector< MolecularAtomCellSummary >::iterator,std::vector< MolecularAtomCellSummary >::size_type,std::vector< MolecularAtomCellSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_reserve(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  std::vector< MolecularAtomCellSummary >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularAtomCellSummary_reserve", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_reserve" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularAtomCellSummary_reserve" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularAtomCellSummary >::size_type >(val2);
+  (arg1)->reserve(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularAtomCellSummary_capacity(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomCellSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularAtomCellSummary_capacity" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  result = ((std::vector< MolecularAtomCellSummary > const *)arg1)->capacity();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_VectorMolecularAtomCellSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomCellSummary > *arg1 = (std::vector< MolecularAtomCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_VectorMolecularAtomCellSummary" "', argument " "1"" of type '" "std::vector< MolecularAtomCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularAtomCellSummary > * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *VectorMolecularAtomCellSummary_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *VectorMolecularAtomCellSummary_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_iterator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  PyObject **arg2 = (PyObject **) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  swig::SwigPyIterator *result = 0 ;
+  
+  arg2 = &swig_obj[0];
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_iterator" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = (swig::SwigPyIterator *)std_vector_Sl_MolecularResidueCellSummary_Sg__iterator(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_swig__SwigPyIterator, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___nonzero__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___nonzero__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularResidueCellSummary_Sg____nonzero__((std::vector< MolecularResidueCellSummary > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___bool__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___bool__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularResidueCellSummary_Sg____bool__((std::vector< MolecularResidueCellSummary > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___len__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularResidueCellSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___len__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = std_vector_Sl_MolecularResidueCellSummary_Sg____len__((std::vector< MolecularResidueCellSummary > const *)arg1);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___getslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::difference_type arg2 ;
+  std::vector< MolecularResidueCellSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary___getslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___getslice__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularResidueCellSummary___getslice__" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularResidueCellSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularResidueCellSummary___getslice__" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularResidueCellSummary >::difference_type >(val3);
+  try {
+    result = (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *)std_vector_Sl_MolecularResidueCellSummary_Sg____getslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___setslice____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::difference_type arg2 ;
+  std::vector< MolecularResidueCellSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___setslice__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularResidueCellSummary___setslice__" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularResidueCellSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularResidueCellSummary___setslice__" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularResidueCellSummary >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularResidueCellSummary_Sg____setslice____SWIG_0(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___setslice____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::difference_type arg2 ;
+  std::vector< MolecularResidueCellSummary >::difference_type arg3 ;
+  std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  int res4 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___setslice__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularResidueCellSummary___setslice__" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularResidueCellSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularResidueCellSummary___setslice__" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularResidueCellSummary >::difference_type >(val3);
+  {
+    std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *ptr = (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *)0;
+    res4 = swig::asptr(swig_obj[3], &ptr);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularResidueCellSummary___setslice__" "', argument " "4"" of type '" "std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularResidueCellSummary___setslice__" "', argument " "4"" of type '" "std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > const &""'"); 
+    }
+    arg4 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularResidueCellSummary_Sg____setslice____SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > const &)*arg4);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___setslice__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary___setslice__", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_VectorMolecularResidueCellSummary___setslice____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = swig::asptr(argv[3], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularResidueCellSummary___setslice____SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularResidueCellSummary___setslice__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularResidueCellSummary >::__setslice__(std::vector< MolecularResidueCellSummary >::difference_type,std::vector< MolecularResidueCellSummary >::difference_type)\n"
+    "    std::vector< MolecularResidueCellSummary >::__setslice__(std::vector< MolecularResidueCellSummary >::difference_type,std::vector< MolecularResidueCellSummary >::difference_type,std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___delslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::difference_type arg2 ;
+  std::vector< MolecularResidueCellSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary___delslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___delslice__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularResidueCellSummary___delslice__" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularResidueCellSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularResidueCellSummary___delslice__" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularResidueCellSummary >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularResidueCellSummary_Sg____delslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___delitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___delitem__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularResidueCellSummary___delitem__" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularResidueCellSummary >::difference_type >(val2);
+  try {
+    std_vector_Sl_MolecularResidueCellSummary_Sg____delitem____SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___getitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___getitem__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary___getitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    result = (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *)std_vector_Sl_MolecularResidueCellSummary_Sg____getitem____SWIG_0(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___setitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  {
+    std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *ptr = (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *)0;
+    res3 = swig::asptr(swig_obj[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularResidueCellSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularResidueCellSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularResidueCellSummary_Sg____setitem____SWIG_0(arg1,arg2,(std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___setitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularResidueCellSummary_Sg____setitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___delitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___delitem__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary___delitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularResidueCellSummary_Sg____delitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___delitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary___delitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularResidueCellSummary___delitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularResidueCellSummary___delitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularResidueCellSummary___delitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularResidueCellSummary >::__delitem__(std::vector< MolecularResidueCellSummary >::difference_type)\n"
+    "    std::vector< MolecularResidueCellSummary >::__delitem__(PySliceObject *)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___getitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  std::vector< MolecularResidueCellSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___getitem__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularResidueCellSummary___getitem__" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularResidueCellSummary >::difference_type >(val2);
+  try {
+    result = (std::vector< MolecularResidueCellSummary >::value_type *) &std_vector_Sl_MolecularResidueCellSummary_Sg____getitem____SWIG_1((std::vector< MolecularResidueCellSummary > const *)arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularResidueCellSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___getitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary___getitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularResidueCellSummary___getitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularResidueCellSummary___getitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularResidueCellSummary___getitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularResidueCellSummary >::__getitem__(PySliceObject *)\n"
+    "    std::vector< MolecularResidueCellSummary >::__getitem__(std::vector< MolecularResidueCellSummary >::difference_type) const\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___setitem____SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::difference_type arg2 ;
+  std::vector< MolecularResidueCellSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularResidueCellSummary___setitem__" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularResidueCellSummary >::difference_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularResidueCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularResidueCellSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularResidueCellSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularResidueCellSummary >::value_type * >(argp3);
+  try {
+    std_vector_Sl_MolecularResidueCellSummary_Sg____setitem____SWIG_2(arg1,SWIG_STD_MOVE(arg2),(MolecularResidueCellSummary const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary___setitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary___setitem__", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularResidueCellSummary___setitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        int res = swig::asptr(argv[2], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularResidueCellSummary___setitem____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularResidueCellSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularResidueCellSummary___setitem____SWIG_2(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularResidueCellSummary___setitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularResidueCellSummary >::__setitem__(PySliceObject *,std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > const &)\n"
+    "    std::vector< MolecularResidueCellSummary >::__setitem__(PySliceObject *)\n"
+    "    std::vector< MolecularResidueCellSummary >::__setitem__(std::vector< MolecularResidueCellSummary >::difference_type,std::vector< MolecularResidueCellSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_pop(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularResidueCellSummary >::value_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_pop" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  try {
+    result = std_vector_Sl_MolecularResidueCellSummary_Sg__pop(arg1);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularResidueCellSummary >::value_type(result)), SWIGTYPE_p_MolecularResidueCellSummary, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_append(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary_append", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_append" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularResidueCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularResidueCellSummary_append" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularResidueCellSummary_append" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularResidueCellSummary >::value_type * >(argp2);
+  std_vector_Sl_MolecularResidueCellSummary_Sg__append(arg1,(MolecularResidueCellSummary const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularResidueCellSummary__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **SWIGUNUSEDPARM(swig_obj)) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 0) || (nobjs > 0)) SWIG_fail;
+  result = (std::vector< MolecularResidueCellSummary > *)new std::vector< MolecularResidueCellSummary >();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularResidueCellSummary__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  std::vector< MolecularResidueCellSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  {
+    std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *ptr = (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *)0;
+    res1 = swig::asptr(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_VectorMolecularResidueCellSummary" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularResidueCellSummary" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  result = (std::vector< MolecularResidueCellSummary > *)new std::vector< MolecularResidueCellSummary >((std::vector< MolecularResidueCellSummary > const &)*arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_empty(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_empty" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = (bool)((std::vector< MolecularResidueCellSummary > const *)arg1)->empty();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_size(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularResidueCellSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_size" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = ((std::vector< MolecularResidueCellSummary > const *)arg1)->size();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_swap(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary > *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary_swap", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_swap" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularResidueCellSummary_swap" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary > &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularResidueCellSummary_swap" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary > &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp2);
+  (arg1)->swap(*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_begin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularResidueCellSummary >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_begin" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = (arg1)->begin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularResidueCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_end(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularResidueCellSummary >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_end" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = (arg1)->end();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularResidueCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_rbegin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularResidueCellSummary >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_rbegin" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = (arg1)->rbegin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularResidueCellSummary >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_rend(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularResidueCellSummary >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_rend" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = (arg1)->rend();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularResidueCellSummary >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_clear(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_clear" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  (arg1)->clear();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_get_allocator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  SwigValueWrapper< std::allocator< MolecularResidueCellSummary > > result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_get_allocator" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = ((std::vector< MolecularResidueCellSummary > const *)arg1)->get_allocator();
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularResidueCellSummary >::allocator_type(result)), SWIGTYPE_p_std__allocatorT_MolecularResidueCellSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularResidueCellSummary__SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary >::size_type arg1 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  std::vector< MolecularResidueCellSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularResidueCellSummary" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularResidueCellSummary >::size_type >(val1);
+  result = (std::vector< MolecularResidueCellSummary > *)new std::vector< MolecularResidueCellSummary >(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_pop_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_pop_back" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  (arg1)->pop_back();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_resize__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_resize" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularResidueCellSummary_resize" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularResidueCellSummary >::size_type >(val2);
+  (arg1)->resize(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_erase__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::iterator arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  std::vector< MolecularResidueCellSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_erase" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularResidueCellSummary_Sg__erase__SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularResidueCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_erase__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::iterator arg2 ;
+  std::vector< MolecularResidueCellSummary >::iterator arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  swig::SwigPyIterator *iter3 = 0 ;
+  int res3 ;
+  std::vector< MolecularResidueCellSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_erase" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], SWIG_as_voidptrptr(&iter3), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res3) || !iter3) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary_erase" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *>(iter3);
+    if (iter_t) {
+      arg3 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary_erase" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularResidueCellSummary_Sg__erase__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularResidueCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_erase(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary_erase", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        return _wrap_VectorMolecularResidueCellSummary_erase__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        swig::SwigPyIterator *iter = 0;
+        int res = SWIG_ConvertPtr(argv[2], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *>(iter) != 0));
+        if (_v) {
+          return _wrap_VectorMolecularResidueCellSummary_erase__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularResidueCellSummary_erase'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularResidueCellSummary >::erase(std::vector< MolecularResidueCellSummary >::iterator)\n"
+    "    std::vector< MolecularResidueCellSummary >::erase(std::vector< MolecularResidueCellSummary >::iterator,std::vector< MolecularResidueCellSummary >::iterator)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularResidueCellSummary__SWIG_3(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary >::size_type arg1 ;
+  std::vector< MolecularResidueCellSummary >::value_type *arg2 = 0 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  std::vector< MolecularResidueCellSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularResidueCellSummary" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularResidueCellSummary >::size_type >(val1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularResidueCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_VectorMolecularResidueCellSummary" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularResidueCellSummary" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularResidueCellSummary >::value_type * >(argp2);
+  result = (std::vector< MolecularResidueCellSummary > *)new std::vector< MolecularResidueCellSummary >(arg1,(std::vector< MolecularResidueCellSummary >::value_type const &)*arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularResidueCellSummary(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_VectorMolecularResidueCellSummary", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 0) {
+    return _wrap_new_VectorMolecularResidueCellSummary__SWIG_0(self, argc, argv);
+  }
+  if (argc == 1) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      return _wrap_new_VectorMolecularResidueCellSummary__SWIG_2(self, argc, argv);
+    }
+  }
+  if (argc == 1) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_VectorMolecularResidueCellSummary__SWIG_1(self, argc, argv);
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularResidueCellSummary, SWIG_POINTER_NO_NULL | 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_VectorMolecularResidueCellSummary__SWIG_3(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_VectorMolecularResidueCellSummary'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularResidueCellSummary >::vector()\n"
+    "    std::vector< MolecularResidueCellSummary >::vector(std::vector< MolecularResidueCellSummary > const &)\n"
+    "    std::vector< MolecularResidueCellSummary >::vector(std::vector< MolecularResidueCellSummary >::size_type)\n"
+    "    std::vector< MolecularResidueCellSummary >::vector(std::vector< MolecularResidueCellSummary >::size_type,std::vector< MolecularResidueCellSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_push_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary_push_back", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_push_back" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularResidueCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularResidueCellSummary_push_back" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularResidueCellSummary_push_back" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularResidueCellSummary >::value_type * >(argp2);
+  (arg1)->push_back((std::vector< MolecularResidueCellSummary >::value_type const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_front(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularResidueCellSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_front" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = (std::vector< MolecularResidueCellSummary >::value_type *) &((std::vector< MolecularResidueCellSummary > const *)arg1)->front();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularResidueCellSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularResidueCellSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_back" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = (std::vector< MolecularResidueCellSummary >::value_type *) &((std::vector< MolecularResidueCellSummary > const *)arg1)->back();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularResidueCellSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_assign(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::size_type arg2 ;
+  std::vector< MolecularResidueCellSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary_assign", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_assign" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularResidueCellSummary_assign" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularResidueCellSummary >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularResidueCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularResidueCellSummary_assign" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularResidueCellSummary_assign" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularResidueCellSummary >::value_type * >(argp3);
+  (arg1)->assign(arg2,(std::vector< MolecularResidueCellSummary >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_resize__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::size_type arg2 ;
+  std::vector< MolecularResidueCellSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_resize" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularResidueCellSummary_resize" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularResidueCellSummary >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularResidueCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularResidueCellSummary_resize" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularResidueCellSummary_resize" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularResidueCellSummary >::value_type * >(argp3);
+  (arg1)->resize(arg2,(std::vector< MolecularResidueCellSummary >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_resize(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary_resize", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularResidueCellSummary_resize__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularResidueCellSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularResidueCellSummary_resize__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularResidueCellSummary_resize'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularResidueCellSummary >::resize(std::vector< MolecularResidueCellSummary >::size_type)\n"
+    "    std::vector< MolecularResidueCellSummary >::resize(std::vector< MolecularResidueCellSummary >::size_type,std::vector< MolecularResidueCellSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_insert__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::iterator arg2 ;
+  std::vector< MolecularResidueCellSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  std::vector< MolecularResidueCellSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_insert" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularResidueCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularResidueCellSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularResidueCellSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularResidueCellSummary >::value_type * >(argp3);
+  result = std_vector_Sl_MolecularResidueCellSummary_Sg__insert__SWIG_0(arg1,SWIG_STD_MOVE(arg2),(MolecularResidueCellSummary const &)*arg3);
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularResidueCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_insert__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::iterator arg2 ;
+  std::vector< MolecularResidueCellSummary >::size_type arg3 ;
+  std::vector< MolecularResidueCellSummary >::value_type *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_insert" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularResidueCellSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::iterator""'");
+    }
+  }
+  ecode3 = SWIG_AsVal_size_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularResidueCellSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularResidueCellSummary >::size_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularResidueCellSummary >::size_type >(val3);
+  res4 = SWIG_ConvertPtr(swig_obj[3], &argp4, SWIGTYPE_p_MolecularResidueCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularResidueCellSummary_insert" "', argument " "4"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  if (!argp4) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularResidueCellSummary_insert" "', argument " "4"" of type '" "std::vector< MolecularResidueCellSummary >::value_type const &""'"); 
+  }
+  arg4 = reinterpret_cast< std::vector< MolecularResidueCellSummary >::value_type * >(argp4);
+  std_vector_Sl_MolecularResidueCellSummary_Sg__insert__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(MolecularResidueCellSummary const &)*arg4);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_insert(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary_insert", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularResidueCellSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularResidueCellSummary_insert__SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularResidueCellSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_MolecularResidueCellSummary, SWIG_POINTER_NO_NULL | 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularResidueCellSummary_insert__SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularResidueCellSummary_insert'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularResidueCellSummary >::insert(std::vector< MolecularResidueCellSummary >::iterator,std::vector< MolecularResidueCellSummary >::value_type const &)\n"
+    "    std::vector< MolecularResidueCellSummary >::insert(std::vector< MolecularResidueCellSummary >::iterator,std::vector< MolecularResidueCellSummary >::size_type,std::vector< MolecularResidueCellSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_reserve(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  std::vector< MolecularResidueCellSummary >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularResidueCellSummary_reserve", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_reserve" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularResidueCellSummary_reserve" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularResidueCellSummary >::size_type >(val2);
+  (arg1)->reserve(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularResidueCellSummary_capacity(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularResidueCellSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularResidueCellSummary_capacity" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  result = ((std::vector< MolecularResidueCellSummary > const *)arg1)->capacity();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_VectorMolecularResidueCellSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularResidueCellSummary > *arg1 = (std::vector< MolecularResidueCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_VectorMolecularResidueCellSummary" "', argument " "1"" of type '" "std::vector< MolecularResidueCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularResidueCellSummary > * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *VectorMolecularResidueCellSummary_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *VectorMolecularResidueCellSummary_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_iterator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  PyObject **arg2 = (PyObject **) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  swig::SwigPyIterator *result = 0 ;
+  
+  arg2 = &swig_obj[0];
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_iterator" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = (swig::SwigPyIterator *)std_vector_Sl_MolecularChainCellSummary_Sg__iterator(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_swig__SwigPyIterator, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___nonzero__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___nonzero__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularChainCellSummary_Sg____nonzero__((std::vector< MolecularChainCellSummary > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___bool__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___bool__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = (bool)std_vector_Sl_MolecularChainCellSummary_Sg____bool__((std::vector< MolecularChainCellSummary > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___len__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularChainCellSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___len__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = std_vector_Sl_MolecularChainCellSummary_Sg____len__((std::vector< MolecularChainCellSummary > const *)arg1);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___getslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::difference_type arg2 ;
+  std::vector< MolecularChainCellSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary___getslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___getslice__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularChainCellSummary___getslice__" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularChainCellSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularChainCellSummary___getslice__" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularChainCellSummary >::difference_type >(val3);
+  try {
+    result = (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *)std_vector_Sl_MolecularChainCellSummary_Sg____getslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___setslice____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::difference_type arg2 ;
+  std::vector< MolecularChainCellSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___setslice__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularChainCellSummary___setslice__" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularChainCellSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularChainCellSummary___setslice__" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularChainCellSummary >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularChainCellSummary_Sg____setslice____SWIG_0(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___setslice____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::difference_type arg2 ;
+  std::vector< MolecularChainCellSummary >::difference_type arg3 ;
+  std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  int res4 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___setslice__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularChainCellSummary___setslice__" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularChainCellSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularChainCellSummary___setslice__" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularChainCellSummary >::difference_type >(val3);
+  {
+    std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *ptr = (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *)0;
+    res4 = swig::asptr(swig_obj[3], &ptr);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularChainCellSummary___setslice__" "', argument " "4"" of type '" "std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularChainCellSummary___setslice__" "', argument " "4"" of type '" "std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > const &""'"); 
+    }
+    arg4 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularChainCellSummary_Sg____setslice____SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > const &)*arg4);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___setslice__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary___setslice__", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_VectorMolecularChainCellSummary___setslice____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = swig::asptr(argv[3], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularChainCellSummary___setslice____SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularChainCellSummary___setslice__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularChainCellSummary >::__setslice__(std::vector< MolecularChainCellSummary >::difference_type,std::vector< MolecularChainCellSummary >::difference_type)\n"
+    "    std::vector< MolecularChainCellSummary >::__setslice__(std::vector< MolecularChainCellSummary >::difference_type,std::vector< MolecularChainCellSummary >::difference_type,std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___delslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::difference_type arg2 ;
+  std::vector< MolecularChainCellSummary >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary___delslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___delslice__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularChainCellSummary___delslice__" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularChainCellSummary >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularChainCellSummary___delslice__" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularChainCellSummary >::difference_type >(val3);
+  try {
+    std_vector_Sl_MolecularChainCellSummary_Sg____delslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___delitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___delitem__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularChainCellSummary___delitem__" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularChainCellSummary >::difference_type >(val2);
+  try {
+    std_vector_Sl_MolecularChainCellSummary_Sg____delitem____SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___getitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___getitem__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary___getitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    result = (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *)std_vector_Sl_MolecularChainCellSummary_Sg____getitem____SWIG_0(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___setitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  {
+    std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *ptr = (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *)0;
+    res3 = swig::asptr(swig_obj[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularChainCellSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularChainCellSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  try {
+    std_vector_Sl_MolecularChainCellSummary_Sg____setitem____SWIG_0(arg1,arg2,(std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___setitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularChainCellSummary_Sg____setitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___delitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___delitem__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary___delitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_MolecularChainCellSummary_Sg____delitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___delitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary___delitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularChainCellSummary___delitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularChainCellSummary___delitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularChainCellSummary___delitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularChainCellSummary >::__delitem__(std::vector< MolecularChainCellSummary >::difference_type)\n"
+    "    std::vector< MolecularChainCellSummary >::__delitem__(PySliceObject *)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___getitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  std::vector< MolecularChainCellSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___getitem__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularChainCellSummary___getitem__" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularChainCellSummary >::difference_type >(val2);
+  try {
+    result = (std::vector< MolecularChainCellSummary >::value_type *) &std_vector_Sl_MolecularChainCellSummary_Sg____getitem____SWIG_1((std::vector< MolecularChainCellSummary > const *)arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularChainCellSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularChainCellSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___getitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary___getitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularChainCellSummary___getitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularChainCellSummary___getitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularChainCellSummary___getitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularChainCellSummary >::__getitem__(PySliceObject *)\n"
+    "    std::vector< MolecularChainCellSummary >::__getitem__(std::vector< MolecularChainCellSummary >::difference_type) const\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___setitem____SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::difference_type arg2 ;
+  std::vector< MolecularChainCellSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary___setitem__" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularChainCellSummary___setitem__" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularChainCellSummary >::difference_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularChainCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularChainCellSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularChainCellSummary___setitem__" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularChainCellSummary >::value_type * >(argp3);
+  try {
+    std_vector_Sl_MolecularChainCellSummary_Sg____setitem____SWIG_2(arg1,SWIG_STD_MOVE(arg2),(MolecularChainCellSummary const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary___setitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary___setitem__", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularChainCellSummary___setitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        int res = swig::asptr(argv[2], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularChainCellSummary___setitem____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularChainCellSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularChainCellSummary___setitem____SWIG_2(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularChainCellSummary___setitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularChainCellSummary >::__setitem__(PySliceObject *,std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > const &)\n"
+    "    std::vector< MolecularChainCellSummary >::__setitem__(PySliceObject *)\n"
+    "    std::vector< MolecularChainCellSummary >::__setitem__(std::vector< MolecularChainCellSummary >::difference_type,std::vector< MolecularChainCellSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_pop(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularChainCellSummary >::value_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_pop" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  try {
+    result = std_vector_Sl_MolecularChainCellSummary_Sg__pop(arg1);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularChainCellSummary >::value_type(result)), SWIGTYPE_p_MolecularChainCellSummary, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_append(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary_append", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_append" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularChainCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularChainCellSummary_append" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularChainCellSummary_append" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularChainCellSummary >::value_type * >(argp2);
+  std_vector_Sl_MolecularChainCellSummary_Sg__append(arg1,(MolecularChainCellSummary const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularChainCellSummary__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **SWIGUNUSEDPARM(swig_obj)) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 0) || (nobjs > 0)) SWIG_fail;
+  result = (std::vector< MolecularChainCellSummary > *)new std::vector< MolecularChainCellSummary >();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularChainCellSummary__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  std::vector< MolecularChainCellSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  {
+    std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *ptr = (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *)0;
+    res1 = swig::asptr(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_VectorMolecularChainCellSummary" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularChainCellSummary" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  result = (std::vector< MolecularChainCellSummary > *)new std::vector< MolecularChainCellSummary >((std::vector< MolecularChainCellSummary > const &)*arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_empty(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_empty" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = (bool)((std::vector< MolecularChainCellSummary > const *)arg1)->empty();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_size(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularChainCellSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_size" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = ((std::vector< MolecularChainCellSummary > const *)arg1)->size();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_swap(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary > *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary_swap", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_swap" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularChainCellSummary_swap" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary > &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularChainCellSummary_swap" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary > &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp2);
+  (arg1)->swap(*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_begin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularChainCellSummary >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_begin" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = (arg1)->begin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularChainCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_end(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularChainCellSummary >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_end" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = (arg1)->end();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularChainCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_rbegin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularChainCellSummary >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_rbegin" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = (arg1)->rbegin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularChainCellSummary >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_rend(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularChainCellSummary >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_rend" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = (arg1)->rend();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularChainCellSummary >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_clear(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_clear" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  (arg1)->clear();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_get_allocator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  SwigValueWrapper< std::allocator< MolecularChainCellSummary > > result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_get_allocator" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = ((std::vector< MolecularChainCellSummary > const *)arg1)->get_allocator();
+  resultobj = SWIG_NewPointerObj((new std::vector< MolecularChainCellSummary >::allocator_type(result)), SWIGTYPE_p_std__allocatorT_MolecularChainCellSummary_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularChainCellSummary__SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary >::size_type arg1 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  std::vector< MolecularChainCellSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularChainCellSummary" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularChainCellSummary >::size_type >(val1);
+  result = (std::vector< MolecularChainCellSummary > *)new std::vector< MolecularChainCellSummary >(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_pop_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_pop_back" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  (arg1)->pop_back();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_resize__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_resize" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularChainCellSummary_resize" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularChainCellSummary >::size_type >(val2);
+  (arg1)->resize(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_erase__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::iterator arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  std::vector< MolecularChainCellSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_erase" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularChainCellSummary_Sg__erase__SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularChainCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_erase__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::iterator arg2 ;
+  std::vector< MolecularChainCellSummary >::iterator arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  swig::SwigPyIterator *iter3 = 0 ;
+  int res3 ;
+  std::vector< MolecularChainCellSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_erase" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary_erase" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], SWIG_as_voidptrptr(&iter3), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res3) || !iter3) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary_erase" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *>(iter3);
+    if (iter_t) {
+      arg3 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary_erase" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_MolecularChainCellSummary_Sg__erase__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularChainCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_erase(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary_erase", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        return _wrap_VectorMolecularChainCellSummary_erase__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        swig::SwigPyIterator *iter = 0;
+        int res = SWIG_ConvertPtr(argv[2], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *>(iter) != 0));
+        if (_v) {
+          return _wrap_VectorMolecularChainCellSummary_erase__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularChainCellSummary_erase'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularChainCellSummary >::erase(std::vector< MolecularChainCellSummary >::iterator)\n"
+    "    std::vector< MolecularChainCellSummary >::erase(std::vector< MolecularChainCellSummary >::iterator,std::vector< MolecularChainCellSummary >::iterator)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularChainCellSummary__SWIG_3(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary >::size_type arg1 ;
+  std::vector< MolecularChainCellSummary >::value_type *arg2 = 0 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  std::vector< MolecularChainCellSummary > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorMolecularChainCellSummary" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< MolecularChainCellSummary >::size_type >(val1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularChainCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_VectorMolecularChainCellSummary" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorMolecularChainCellSummary" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularChainCellSummary >::value_type * >(argp2);
+  result = (std::vector< MolecularChainCellSummary > *)new std::vector< MolecularChainCellSummary >(arg1,(std::vector< MolecularChainCellSummary >::value_type const &)*arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorMolecularChainCellSummary(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_VectorMolecularChainCellSummary", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 0) {
+    return _wrap_new_VectorMolecularChainCellSummary__SWIG_0(self, argc, argv);
+  }
+  if (argc == 1) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      return _wrap_new_VectorMolecularChainCellSummary__SWIG_2(self, argc, argv);
+    }
+  }
+  if (argc == 1) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_VectorMolecularChainCellSummary__SWIG_1(self, argc, argv);
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularChainCellSummary, SWIG_POINTER_NO_NULL | 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_VectorMolecularChainCellSummary__SWIG_3(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_VectorMolecularChainCellSummary'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularChainCellSummary >::vector()\n"
+    "    std::vector< MolecularChainCellSummary >::vector(std::vector< MolecularChainCellSummary > const &)\n"
+    "    std::vector< MolecularChainCellSummary >::vector(std::vector< MolecularChainCellSummary >::size_type)\n"
+    "    std::vector< MolecularChainCellSummary >::vector(std::vector< MolecularChainCellSummary >::size_type,std::vector< MolecularChainCellSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_push_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary_push_back", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_push_back" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularChainCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorMolecularChainCellSummary_push_back" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularChainCellSummary_push_back" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularChainCellSummary >::value_type * >(argp2);
+  (arg1)->push_back((std::vector< MolecularChainCellSummary >::value_type const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_front(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularChainCellSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_front" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = (std::vector< MolecularChainCellSummary >::value_type *) &((std::vector< MolecularChainCellSummary > const *)arg1)->front();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularChainCellSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularChainCellSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularChainCellSummary >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_back" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = (std::vector< MolecularChainCellSummary >::value_type *) &((std::vector< MolecularChainCellSummary > const *)arg1)->back();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularChainCellSummary, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< MolecularChainCellSummary >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_assign(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::size_type arg2 ;
+  std::vector< MolecularChainCellSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary_assign", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_assign" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularChainCellSummary_assign" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularChainCellSummary >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularChainCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularChainCellSummary_assign" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularChainCellSummary_assign" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularChainCellSummary >::value_type * >(argp3);
+  (arg1)->assign(arg2,(std::vector< MolecularChainCellSummary >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_resize__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::size_type arg2 ;
+  std::vector< MolecularChainCellSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_resize" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularChainCellSummary_resize" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularChainCellSummary >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularChainCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularChainCellSummary_resize" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularChainCellSummary_resize" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularChainCellSummary >::value_type * >(argp3);
+  (arg1)->resize(arg2,(std::vector< MolecularChainCellSummary >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_resize(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary_resize", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorMolecularChainCellSummary_resize__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularChainCellSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularChainCellSummary_resize__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularChainCellSummary_resize'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularChainCellSummary >::resize(std::vector< MolecularChainCellSummary >::size_type)\n"
+    "    std::vector< MolecularChainCellSummary >::resize(std::vector< MolecularChainCellSummary >::size_type,std::vector< MolecularChainCellSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_insert__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::iterator arg2 ;
+  std::vector< MolecularChainCellSummary >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  std::vector< MolecularChainCellSummary >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_insert" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_MolecularChainCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorMolecularChainCellSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularChainCellSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< MolecularChainCellSummary >::value_type * >(argp3);
+  result = std_vector_Sl_MolecularChainCellSummary_Sg__insert__SWIG_0(arg1,SWIG_STD_MOVE(arg2),(MolecularChainCellSummary const &)*arg3);
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< MolecularChainCellSummary >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_insert__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::iterator arg2 ;
+  std::vector< MolecularChainCellSummary >::size_type arg3 ;
+  std::vector< MolecularChainCellSummary >::value_type *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_insert" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorMolecularChainCellSummary_insert" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::iterator""'");
+    }
+  }
+  ecode3 = SWIG_AsVal_size_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorMolecularChainCellSummary_insert" "', argument " "3"" of type '" "std::vector< MolecularChainCellSummary >::size_type""'");
+  } 
+  arg3 = static_cast< std::vector< MolecularChainCellSummary >::size_type >(val3);
+  res4 = SWIG_ConvertPtr(swig_obj[3], &argp4, SWIGTYPE_p_MolecularChainCellSummary,  0  | 0);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorMolecularChainCellSummary_insert" "', argument " "4"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  if (!argp4) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorMolecularChainCellSummary_insert" "', argument " "4"" of type '" "std::vector< MolecularChainCellSummary >::value_type const &""'"); 
+  }
+  arg4 = reinterpret_cast< std::vector< MolecularChainCellSummary >::value_type * >(argp4);
+  std_vector_Sl_MolecularChainCellSummary_Sg__insert__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(MolecularChainCellSummary const &)*arg4);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_insert(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary_insert", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_MolecularChainCellSummary, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorMolecularChainCellSummary_insert__SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< MolecularChainCellSummary >::iterator > *>(iter) != 0));
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_MolecularChainCellSummary, SWIG_POINTER_NO_NULL | 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorMolecularChainCellSummary_insert__SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorMolecularChainCellSummary_insert'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< MolecularChainCellSummary >::insert(std::vector< MolecularChainCellSummary >::iterator,std::vector< MolecularChainCellSummary >::value_type const &)\n"
+    "    std::vector< MolecularChainCellSummary >::insert(std::vector< MolecularChainCellSummary >::iterator,std::vector< MolecularChainCellSummary >::size_type,std::vector< MolecularChainCellSummary >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_reserve(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  std::vector< MolecularChainCellSummary >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorMolecularChainCellSummary_reserve", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_reserve" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorMolecularChainCellSummary_reserve" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< MolecularChainCellSummary >::size_type >(val2);
+  (arg1)->reserve(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorMolecularChainCellSummary_capacity(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularChainCellSummary >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorMolecularChainCellSummary_capacity" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  result = ((std::vector< MolecularChainCellSummary > const *)arg1)->capacity();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_VectorMolecularChainCellSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularChainCellSummary > *arg1 = (std::vector< MolecularChainCellSummary > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_VectorMolecularChainCellSummary" "', argument " "1"" of type '" "std::vector< MolecularChainCellSummary > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< MolecularChainCellSummary > * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *VectorMolecularChainCellSummary_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *VectorMolecularChainCellSummary_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
 SWIGINTERN PyObject *_wrap_new_Ball__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **SWIGUNUSEDPARM(swig_obj)) {
   PyObject *resultobj = 0;
   Ball *result = 0 ;
@@ -12795,60 +26877,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_RadicalTessellation_probe_set(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  RadicalTessellation *arg1 = (RadicalTessellation *) 0 ;
-  double arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  double val2 ;
-  int ecode2 = 0 ;
-  PyObject *swig_obj[2] ;
-  
-  (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "RadicalTessellation_probe_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_RadicalTessellation, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RadicalTessellation_probe_set" "', argument " "1"" of type '" "RadicalTessellation *""'"); 
-  }
-  arg1 = reinterpret_cast< RadicalTessellation * >(argp1);
-  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "RadicalTessellation_probe_set" "', argument " "2"" of type '" "double""'");
-  } 
-  arg2 = static_cast< double >(val2);
-  if (arg1) (arg1)->probe = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_RadicalTessellation_probe_get(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  RadicalTessellation *arg1 = (RadicalTessellation *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject *swig_obj[1] ;
-  double result;
-  
-  (void)self;
-  if (!args) SWIG_fail;
-  swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_RadicalTessellation, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RadicalTessellation_probe_get" "', argument " "1"" of type '" "RadicalTessellation *""'"); 
-  }
-  arg1 = reinterpret_cast< RadicalTessellation * >(argp1);
-  result = (double) ((arg1)->probe);
-  resultobj = SWIG_From_double(static_cast< double >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_new_RadicalTessellation(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   std::vector< Ball,std::allocator< Ball > > *arg1 = 0 ;
@@ -12982,6 +27010,5166 @@ SWIGINTERN PyObject *RadicalTessellation_swiginit(PyObject *SWIGUNUSEDPARM(self)
   return SWIG_Python_InitShadowInstance(args);
 }
 
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_ID_chain_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomBall_ID_chain_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_ID_chain_set" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularAtomBall_ID_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularAtomBall_ID_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID_chain = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_ID_chain_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_ID_chain_get" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  result = (std::string *) & ((arg1)->ID_chain);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_ID_residue_seq_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomBall_ID_residue_seq_number_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_ID_residue_seq_number_set" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularAtomBall_ID_residue_seq_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->ID_residue_seq_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_ID_residue_seq_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_ID_residue_seq_number_get" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  result = (int) ((arg1)->ID_residue_seq_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_ID_residue_icode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomBall_ID_residue_icode_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_ID_residue_icode_set" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularAtomBall_ID_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularAtomBall_ID_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID_residue_icode = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_ID_residue_icode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_ID_residue_icode_get" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  result = (std::string *) & ((arg1)->ID_residue_icode);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_ID_residue_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomBall_ID_residue_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_ID_residue_name_set" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularAtomBall_ID_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularAtomBall_ID_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID_residue_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_ID_residue_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_ID_residue_name_get" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  result = (std::string *) & ((arg1)->ID_residue_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_ID_atom_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomBall_ID_atom_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_ID_atom_name_set" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularAtomBall_ID_atom_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularAtomBall_ID_atom_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID_atom_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_ID_atom_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_ID_atom_name_get" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  result = (std::string *) & ((arg1)->ID_atom_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_x_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomBall_x_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_x_set" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularAtomBall_x_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->x = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_x_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_x_get" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  result = (double) ((arg1)->x);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_y_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomBall_y_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_y_set" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularAtomBall_y_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->y = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_y_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_y_get" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  result = (double) ((arg1)->y);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_z_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomBall_z_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_z_set" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularAtomBall_z_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->z = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_z_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_z_get" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  result = (double) ((arg1)->z);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_r_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomBall_r_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_r_set" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularAtomBall_r_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->r = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomBall_r_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomBall_r_get" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  result = (double) ((arg1)->r);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularAtomBall(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "new_MolecularAtomBall", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      result = (MolecularAtomBall *)new MolecularAtomBall();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularAtomBall, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_MolecularAtomBall(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomBall *arg1 = (MolecularAtomBall *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomBall, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_MolecularAtomBall" "', argument " "1"" of type '" "MolecularAtomBall *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomBall * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *MolecularAtomBall_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_MolecularAtomBall, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *MolecularAtomBall_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID1_chain_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterAtomContactSummary_ID1_chain_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID1_chain_set" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterAtomContactSummary_ID1_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterAtomContactSummary_ID1_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID1_chain = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID1_chain_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID1_chain_get" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID1_chain);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID1_residue_seq_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterAtomContactSummary_ID1_residue_seq_number_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID1_residue_seq_number_set" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularInterAtomContactSummary_ID1_residue_seq_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->ID1_residue_seq_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID1_residue_seq_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID1_residue_seq_number_get" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  result = (int) ((arg1)->ID1_residue_seq_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID1_residue_icode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterAtomContactSummary_ID1_residue_icode_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID1_residue_icode_set" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterAtomContactSummary_ID1_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterAtomContactSummary_ID1_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID1_residue_icode = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID1_residue_icode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID1_residue_icode_get" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID1_residue_icode);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID1_residue_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterAtomContactSummary_ID1_residue_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID1_residue_name_set" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterAtomContactSummary_ID1_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterAtomContactSummary_ID1_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID1_residue_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID1_residue_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID1_residue_name_get" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID1_residue_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID1_atom_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterAtomContactSummary_ID1_atom_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID1_atom_name_set" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterAtomContactSummary_ID1_atom_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterAtomContactSummary_ID1_atom_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID1_atom_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID1_atom_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID1_atom_name_get" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID1_atom_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID2_chain_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterAtomContactSummary_ID2_chain_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID2_chain_set" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterAtomContactSummary_ID2_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterAtomContactSummary_ID2_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID2_chain = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID2_chain_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID2_chain_get" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID2_chain);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID2_residue_seq_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterAtomContactSummary_ID2_residue_seq_number_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID2_residue_seq_number_set" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularInterAtomContactSummary_ID2_residue_seq_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->ID2_residue_seq_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID2_residue_seq_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID2_residue_seq_number_get" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  result = (int) ((arg1)->ID2_residue_seq_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID2_residue_icode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterAtomContactSummary_ID2_residue_icode_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID2_residue_icode_set" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterAtomContactSummary_ID2_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterAtomContactSummary_ID2_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID2_residue_icode = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID2_residue_icode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID2_residue_icode_get" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID2_residue_icode);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID2_residue_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterAtomContactSummary_ID2_residue_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID2_residue_name_set" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterAtomContactSummary_ID2_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterAtomContactSummary_ID2_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID2_residue_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID2_residue_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID2_residue_name_get" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID2_residue_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID2_atom_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterAtomContactSummary_ID2_atom_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID2_atom_name_set" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterAtomContactSummary_ID2_atom_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterAtomContactSummary_ID2_atom_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID2_atom_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_ID2_atom_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_ID2_atom_name_get" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID2_atom_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_area_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterAtomContactSummary_area_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_area_set" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularInterAtomContactSummary_area_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->area = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_area_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_area_get" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  result = (double) ((arg1)->area);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_arc_length_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterAtomContactSummary_arc_length_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_arc_length_set" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularInterAtomContactSummary_arc_length_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->arc_length = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterAtomContactSummary_arc_length_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterAtomContactSummary_arc_length_get" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  result = (double) ((arg1)->arc_length);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularInterAtomContactSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "new_MolecularInterAtomContactSummary", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      result = (MolecularInterAtomContactSummary *)new MolecularInterAtomContactSummary();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularInterAtomContactSummary, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_MolecularInterAtomContactSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterAtomContactSummary *arg1 = (MolecularInterAtomContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterAtomContactSummary, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_MolecularInterAtomContactSummary" "', argument " "1"" of type '" "MolecularInterAtomContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterAtomContactSummary * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *MolecularInterAtomContactSummary_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_MolecularInterAtomContactSummary, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *MolecularInterAtomContactSummary_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID1_chain_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterResidueContactSummary_ID1_chain_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID1_chain_set" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterResidueContactSummary_ID1_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterResidueContactSummary_ID1_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID1_chain = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID1_chain_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID1_chain_get" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID1_chain);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID1_residue_seq_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterResidueContactSummary_ID1_residue_seq_number_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID1_residue_seq_number_set" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularInterResidueContactSummary_ID1_residue_seq_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->ID1_residue_seq_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID1_residue_seq_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID1_residue_seq_number_get" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  result = (int) ((arg1)->ID1_residue_seq_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID1_residue_icode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterResidueContactSummary_ID1_residue_icode_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID1_residue_icode_set" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterResidueContactSummary_ID1_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterResidueContactSummary_ID1_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID1_residue_icode = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID1_residue_icode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID1_residue_icode_get" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID1_residue_icode);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID1_residue_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterResidueContactSummary_ID1_residue_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID1_residue_name_set" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterResidueContactSummary_ID1_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterResidueContactSummary_ID1_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID1_residue_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID1_residue_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID1_residue_name_get" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID1_residue_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID2_chain_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterResidueContactSummary_ID2_chain_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID2_chain_set" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterResidueContactSummary_ID2_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterResidueContactSummary_ID2_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID2_chain = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID2_chain_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID2_chain_get" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID2_chain);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID2_residue_seq_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterResidueContactSummary_ID2_residue_seq_number_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID2_residue_seq_number_set" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularInterResidueContactSummary_ID2_residue_seq_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->ID2_residue_seq_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID2_residue_seq_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID2_residue_seq_number_get" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  result = (int) ((arg1)->ID2_residue_seq_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID2_residue_icode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterResidueContactSummary_ID2_residue_icode_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID2_residue_icode_set" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterResidueContactSummary_ID2_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterResidueContactSummary_ID2_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID2_residue_icode = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID2_residue_icode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID2_residue_icode_get" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID2_residue_icode);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID2_residue_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterResidueContactSummary_ID2_residue_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID2_residue_name_set" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterResidueContactSummary_ID2_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterResidueContactSummary_ID2_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID2_residue_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_ID2_residue_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_ID2_residue_name_get" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID2_residue_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_area_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterResidueContactSummary_area_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_area_set" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularInterResidueContactSummary_area_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->area = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_area_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_area_get" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  result = (double) ((arg1)->area);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_arc_length_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterResidueContactSummary_arc_length_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_arc_length_set" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularInterResidueContactSummary_arc_length_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->arc_length = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterResidueContactSummary_arc_length_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterResidueContactSummary_arc_length_get" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  result = (double) ((arg1)->arc_length);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularInterResidueContactSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "new_MolecularInterResidueContactSummary", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      result = (MolecularInterResidueContactSummary *)new MolecularInterResidueContactSummary();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularInterResidueContactSummary, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_MolecularInterResidueContactSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterResidueContactSummary *arg1 = (MolecularInterResidueContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterResidueContactSummary, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_MolecularInterResidueContactSummary" "', argument " "1"" of type '" "MolecularInterResidueContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterResidueContactSummary * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *MolecularInterResidueContactSummary_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_MolecularInterResidueContactSummary, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *MolecularInterResidueContactSummary_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_MolecularInterChainContactSummary_ID1_chain_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterChainContactSummary *arg1 = (MolecularInterChainContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterChainContactSummary_ID1_chain_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterChainContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterChainContactSummary_ID1_chain_set" "', argument " "1"" of type '" "MolecularInterChainContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterChainContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterChainContactSummary_ID1_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterChainContactSummary_ID1_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID1_chain = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterChainContactSummary_ID1_chain_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterChainContactSummary *arg1 = (MolecularInterChainContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterChainContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterChainContactSummary_ID1_chain_get" "', argument " "1"" of type '" "MolecularInterChainContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterChainContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID1_chain);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterChainContactSummary_ID2_chain_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterChainContactSummary *arg1 = (MolecularInterChainContactSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterChainContactSummary_ID2_chain_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterChainContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterChainContactSummary_ID2_chain_set" "', argument " "1"" of type '" "MolecularInterChainContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterChainContactSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularInterChainContactSummary_ID2_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularInterChainContactSummary_ID2_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID2_chain = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterChainContactSummary_ID2_chain_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterChainContactSummary *arg1 = (MolecularInterChainContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterChainContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterChainContactSummary_ID2_chain_get" "', argument " "1"" of type '" "MolecularInterChainContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterChainContactSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID2_chain);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterChainContactSummary_area_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterChainContactSummary *arg1 = (MolecularInterChainContactSummary *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterChainContactSummary_area_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterChainContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterChainContactSummary_area_set" "', argument " "1"" of type '" "MolecularInterChainContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterChainContactSummary * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularInterChainContactSummary_area_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->area = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterChainContactSummary_area_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterChainContactSummary *arg1 = (MolecularInterChainContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterChainContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterChainContactSummary_area_get" "', argument " "1"" of type '" "MolecularInterChainContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterChainContactSummary * >(argp1);
+  result = (double) ((arg1)->area);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterChainContactSummary_arc_length_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterChainContactSummary *arg1 = (MolecularInterChainContactSummary *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularInterChainContactSummary_arc_length_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterChainContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterChainContactSummary_arc_length_set" "', argument " "1"" of type '" "MolecularInterChainContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterChainContactSummary * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularInterChainContactSummary_arc_length_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->arc_length = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularInterChainContactSummary_arc_length_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterChainContactSummary *arg1 = (MolecularInterChainContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterChainContactSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularInterChainContactSummary_arc_length_get" "', argument " "1"" of type '" "MolecularInterChainContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterChainContactSummary * >(argp1);
+  result = (double) ((arg1)->arc_length);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularInterChainContactSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterChainContactSummary *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "new_MolecularInterChainContactSummary", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      result = (MolecularInterChainContactSummary *)new MolecularInterChainContactSummary();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularInterChainContactSummary, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_MolecularInterChainContactSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularInterChainContactSummary *arg1 = (MolecularInterChainContactSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularInterChainContactSummary, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_MolecularInterChainContactSummary" "', argument " "1"" of type '" "MolecularInterChainContactSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularInterChainContactSummary * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *MolecularInterChainContactSummary_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_MolecularInterChainContactSummary, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *MolecularInterChainContactSummary_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_ID_chain_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomCellSummary_ID_chain_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_ID_chain_set" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularAtomCellSummary_ID_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularAtomCellSummary_ID_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID_chain = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_ID_chain_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_ID_chain_get" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID_chain);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_ID_residue_seq_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomCellSummary_ID_residue_seq_number_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_ID_residue_seq_number_set" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularAtomCellSummary_ID_residue_seq_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->ID_residue_seq_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_ID_residue_seq_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_ID_residue_seq_number_get" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  result = (int) ((arg1)->ID_residue_seq_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_ID_residue_icode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomCellSummary_ID_residue_icode_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_ID_residue_icode_set" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularAtomCellSummary_ID_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularAtomCellSummary_ID_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID_residue_icode = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_ID_residue_icode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_ID_residue_icode_get" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID_residue_icode);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_ID_residue_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomCellSummary_ID_residue_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_ID_residue_name_set" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularAtomCellSummary_ID_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularAtomCellSummary_ID_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID_residue_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_ID_residue_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_ID_residue_name_get" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID_residue_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_ID_atom_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomCellSummary_ID_atom_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_ID_atom_name_set" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularAtomCellSummary_ID_atom_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularAtomCellSummary_ID_atom_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID_atom_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_ID_atom_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_ID_atom_name_get" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID_atom_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_sas_area_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomCellSummary_sas_area_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_sas_area_set" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularAtomCellSummary_sas_area_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->sas_area = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_sas_area_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_sas_area_get" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  result = (double) ((arg1)->sas_area);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_volume_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularAtomCellSummary_volume_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_volume_set" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularAtomCellSummary_volume_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->volume = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularAtomCellSummary_volume_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularAtomCellSummary_volume_get" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  result = (double) ((arg1)->volume);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularAtomCellSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "new_MolecularAtomCellSummary", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      result = (MolecularAtomCellSummary *)new MolecularAtomCellSummary();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularAtomCellSummary, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_MolecularAtomCellSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularAtomCellSummary *arg1 = (MolecularAtomCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularAtomCellSummary, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_MolecularAtomCellSummary" "', argument " "1"" of type '" "MolecularAtomCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularAtomCellSummary * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *MolecularAtomCellSummary_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_MolecularAtomCellSummary, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *MolecularAtomCellSummary_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_MolecularResidueCellSummary_ID_chain_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularResidueCellSummary_ID_chain_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularResidueCellSummary_ID_chain_set" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularResidueCellSummary_ID_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularResidueCellSummary_ID_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID_chain = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularResidueCellSummary_ID_chain_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularResidueCellSummary_ID_chain_get" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID_chain);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularResidueCellSummary_ID_residue_seq_number_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularResidueCellSummary_ID_residue_seq_number_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularResidueCellSummary_ID_residue_seq_number_set" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularResidueCellSummary_ID_residue_seq_number_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->ID_residue_seq_number = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularResidueCellSummary_ID_residue_seq_number_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularResidueCellSummary_ID_residue_seq_number_get" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  result = (int) ((arg1)->ID_residue_seq_number);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularResidueCellSummary_ID_residue_icode_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularResidueCellSummary_ID_residue_icode_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularResidueCellSummary_ID_residue_icode_set" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularResidueCellSummary_ID_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularResidueCellSummary_ID_residue_icode_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID_residue_icode = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularResidueCellSummary_ID_residue_icode_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularResidueCellSummary_ID_residue_icode_get" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID_residue_icode);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularResidueCellSummary_ID_residue_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularResidueCellSummary_ID_residue_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularResidueCellSummary_ID_residue_name_set" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularResidueCellSummary_ID_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularResidueCellSummary_ID_residue_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID_residue_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularResidueCellSummary_ID_residue_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularResidueCellSummary_ID_residue_name_get" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID_residue_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularResidueCellSummary_sas_area_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularResidueCellSummary_sas_area_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularResidueCellSummary_sas_area_set" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularResidueCellSummary_sas_area_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->sas_area = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularResidueCellSummary_sas_area_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularResidueCellSummary_sas_area_get" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  result = (double) ((arg1)->sas_area);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularResidueCellSummary_volume_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularResidueCellSummary_volume_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularResidueCellSummary_volume_set" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularResidueCellSummary_volume_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->volume = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularResidueCellSummary_volume_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularResidueCellSummary_volume_get" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  result = (double) ((arg1)->volume);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularResidueCellSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "new_MolecularResidueCellSummary", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      result = (MolecularResidueCellSummary *)new MolecularResidueCellSummary();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularResidueCellSummary, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_MolecularResidueCellSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularResidueCellSummary *arg1 = (MolecularResidueCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularResidueCellSummary, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_MolecularResidueCellSummary" "', argument " "1"" of type '" "MolecularResidueCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularResidueCellSummary * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *MolecularResidueCellSummary_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_MolecularResidueCellSummary, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *MolecularResidueCellSummary_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_MolecularChainCellSummary_ID_chain_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularChainCellSummary *arg1 = (MolecularChainCellSummary *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularChainCellSummary_ID_chain_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularChainCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularChainCellSummary_ID_chain_set" "', argument " "1"" of type '" "MolecularChainCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularChainCellSummary * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularChainCellSummary_ID_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularChainCellSummary_ID_chain_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->ID_chain = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularChainCellSummary_ID_chain_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularChainCellSummary *arg1 = (MolecularChainCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularChainCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularChainCellSummary_ID_chain_get" "', argument " "1"" of type '" "MolecularChainCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularChainCellSummary * >(argp1);
+  result = (std::string *) & ((arg1)->ID_chain);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularChainCellSummary_sas_area_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularChainCellSummary *arg1 = (MolecularChainCellSummary *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularChainCellSummary_sas_area_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularChainCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularChainCellSummary_sas_area_set" "', argument " "1"" of type '" "MolecularChainCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularChainCellSummary * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularChainCellSummary_sas_area_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->sas_area = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularChainCellSummary_sas_area_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularChainCellSummary *arg1 = (MolecularChainCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularChainCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularChainCellSummary_sas_area_get" "', argument " "1"" of type '" "MolecularChainCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularChainCellSummary * >(argp1);
+  result = (double) ((arg1)->sas_area);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularChainCellSummary_volume_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularChainCellSummary *arg1 = (MolecularChainCellSummary *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularChainCellSummary_volume_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularChainCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularChainCellSummary_volume_set" "', argument " "1"" of type '" "MolecularChainCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularChainCellSummary * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularChainCellSummary_volume_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->volume = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularChainCellSummary_volume_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularChainCellSummary *arg1 = (MolecularChainCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularChainCellSummary, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularChainCellSummary_volume_get" "', argument " "1"" of type '" "MolecularChainCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularChainCellSummary * >(argp1);
+  result = (double) ((arg1)->volume);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularChainCellSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularChainCellSummary *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "new_MolecularChainCellSummary", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      result = (MolecularChainCellSummary *)new MolecularChainCellSummary();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularChainCellSummary, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_MolecularChainCellSummary(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularChainCellSummary *arg1 = (MolecularChainCellSummary *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularChainCellSummary, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_MolecularChainCellSummary" "', argument " "1"" of type '" "MolecularChainCellSummary *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularChainCellSummary * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *MolecularChainCellSummary_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_MolecularChainCellSummary, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *MolecularChainCellSummary_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_MolecularFileInput_input_file_path_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularFileInput *arg1 = (MolecularFileInput *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularFileInput_input_file_path_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularFileInput, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularFileInput_input_file_path_set" "', argument " "1"" of type '" "MolecularFileInput *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularFileInput * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularFileInput_input_file_path_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularFileInput_input_file_path_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->input_file_path = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularFileInput_input_file_path_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularFileInput *arg1 = (MolecularFileInput *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularFileInput, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularFileInput_input_file_path_get" "', argument " "1"" of type '" "MolecularFileInput *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularFileInput * >(argp1);
+  result = (std::string *) & ((arg1)->input_file_path);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularFileInput_include_heteroatoms_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularFileInput *arg1 = (MolecularFileInput *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularFileInput_include_heteroatoms_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularFileInput, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularFileInput_include_heteroatoms_set" "', argument " "1"" of type '" "MolecularFileInput *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularFileInput * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularFileInput_include_heteroatoms_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->include_heteroatoms = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularFileInput_include_heteroatoms_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularFileInput *arg1 = (MolecularFileInput *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularFileInput, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularFileInput_include_heteroatoms_get" "', argument " "1"" of type '" "MolecularFileInput *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularFileInput * >(argp1);
+  result = (bool) ((arg1)->include_heteroatoms);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularFileInput_read_as_assembly_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularFileInput *arg1 = (MolecularFileInput *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularFileInput_read_as_assembly_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularFileInput, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularFileInput_read_as_assembly_set" "', argument " "1"" of type '" "MolecularFileInput *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularFileInput * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularFileInput_read_as_assembly_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->read_as_assembly = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularFileInput_read_as_assembly_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularFileInput *arg1 = (MolecularFileInput *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularFileInput, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularFileInput_read_as_assembly_get" "', argument " "1"" of type '" "MolecularFileInput *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularFileInput * >(argp1);
+  result = (bool) ((arg1)->read_as_assembly);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularFileInput__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **SWIGUNUSEDPARM(swig_obj)) {
+  PyObject *resultobj = 0;
+  MolecularFileInput *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 0) || (nobjs > 0)) SWIG_fail;
+  {
+    try
+    {
+      result = (MolecularFileInput *)new MolecularFileInput();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularFileInput, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularFileInput__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::string *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  MolecularFileInput *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  {
+    std::string *ptr = (std::string *)0;
+    res1 = SWIG_AsPtr_std_string(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_MolecularFileInput" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularFileInput" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  {
+    try
+    {
+      result = (MolecularFileInput *)new MolecularFileInput((std::string const &)*arg1);
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularFileInput, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularFileInput(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[2] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_MolecularFileInput", 0, 1, argv))) SWIG_fail;
+  --argc;
+  if (argc == 0) {
+    return _wrap_new_MolecularFileInput__SWIG_0(self, argc, argv);
+  }
+  if (argc == 1) {
+    int _v = 0;
+    int res = SWIG_AsPtr_std_string(argv[0], (std::string**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_MolecularFileInput__SWIG_1(self, argc, argv);
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_MolecularFileInput'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    MolecularFileInput::MolecularFileInput()\n"
+    "    MolecularFileInput::MolecularFileInput(std::string const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_MolecularFileInput(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularFileInput *arg1 = (MolecularFileInput *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularFileInput, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_MolecularFileInput" "', argument " "1"" of type '" "MolecularFileInput *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularFileInput * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *MolecularFileInput_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_MolecularFileInput, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *MolecularFileInput_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_restrict_input_atoms_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_restrict_input_atoms_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_restrict_input_atoms_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularRadicalTessellationParameters_restrict_input_atoms_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularRadicalTessellationParameters_restrict_input_atoms_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->restrict_input_atoms = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_restrict_input_atoms_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_restrict_input_atoms_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (std::string *) & ((arg1)->restrict_input_atoms);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_restrict_contacts_to_construct_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_restrict_contacts_to_construct_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_restrict_contacts_to_construct_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularRadicalTessellationParameters_restrict_contacts_to_construct_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularRadicalTessellationParameters_restrict_contacts_to_construct_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->restrict_contacts_to_construct = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_restrict_contacts_to_construct_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_restrict_contacts_to_construct_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (std::string *) & ((arg1)->restrict_contacts_to_construct);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_restrict_contacts_for_output_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_restrict_contacts_for_output_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_restrict_contacts_for_output_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularRadicalTessellationParameters_restrict_contacts_for_output_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularRadicalTessellationParameters_restrict_contacts_for_output_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->restrict_contacts_for_output = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_restrict_contacts_for_output_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_restrict_contacts_for_output_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (std::string *) & ((arg1)->restrict_contacts_for_output);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_restrict_cells_for_output_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_restrict_cells_for_output_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_restrict_cells_for_output_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularRadicalTessellationParameters_restrict_cells_for_output_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularRadicalTessellationParameters_restrict_cells_for_output_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->restrict_cells_for_output = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_restrict_cells_for_output_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_restrict_cells_for_output_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (std::string *) & ((arg1)->restrict_cells_for_output);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_probe_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_probe_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_probe_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularRadicalTessellationParameters_probe_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->probe = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_probe_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_probe_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (double) ((arg1)->probe);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_compute_only_inter_chain_contacts_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_compute_only_inter_chain_contacts_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_compute_only_inter_chain_contacts_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularRadicalTessellationParameters_compute_only_inter_chain_contacts_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->compute_only_inter_chain_contacts = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_compute_only_inter_chain_contacts_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_compute_only_inter_chain_contacts_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (bool) ((arg1)->compute_only_inter_chain_contacts);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_compute_only_inter_residue_contacts_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_compute_only_inter_residue_contacts_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_compute_only_inter_residue_contacts_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularRadicalTessellationParameters_compute_only_inter_residue_contacts_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->compute_only_inter_residue_contacts = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_compute_only_inter_residue_contacts_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_compute_only_inter_residue_contacts_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (bool) ((arg1)->compute_only_inter_residue_contacts);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_atom_balls_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_record_atom_balls_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_atom_balls_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularRadicalTessellationParameters_record_atom_balls_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->record_atom_balls = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_atom_balls_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_atom_balls_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (bool) ((arg1)->record_atom_balls);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_inter_atom_contact_summaries_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_record_inter_atom_contact_summaries_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_inter_atom_contact_summaries_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularRadicalTessellationParameters_record_inter_atom_contact_summaries_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->record_inter_atom_contact_summaries = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_inter_atom_contact_summaries_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_inter_atom_contact_summaries_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (bool) ((arg1)->record_inter_atom_contact_summaries);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_inter_residue_contact_summaries_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_record_inter_residue_contact_summaries_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_inter_residue_contact_summaries_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularRadicalTessellationParameters_record_inter_residue_contact_summaries_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->record_inter_residue_contact_summaries = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_inter_residue_contact_summaries_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_inter_residue_contact_summaries_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (bool) ((arg1)->record_inter_residue_contact_summaries);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_inter_chain_contact_summaries_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_record_inter_chain_contact_summaries_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_inter_chain_contact_summaries_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularRadicalTessellationParameters_record_inter_chain_contact_summaries_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->record_inter_chain_contact_summaries = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_inter_chain_contact_summaries_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_inter_chain_contact_summaries_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (bool) ((arg1)->record_inter_chain_contact_summaries);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_atom_cell_summaries_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_record_atom_cell_summaries_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_atom_cell_summaries_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularRadicalTessellationParameters_record_atom_cell_summaries_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->record_atom_cell_summaries = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_atom_cell_summaries_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_atom_cell_summaries_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (bool) ((arg1)->record_atom_cell_summaries);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_residue_cell_summaries_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_record_residue_cell_summaries_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_residue_cell_summaries_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularRadicalTessellationParameters_record_residue_cell_summaries_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->record_residue_cell_summaries = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_residue_cell_summaries_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_residue_cell_summaries_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (bool) ((arg1)->record_residue_cell_summaries);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_chain_cell_summaries_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_record_chain_cell_summaries_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_chain_cell_summaries_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularRadicalTessellationParameters_record_chain_cell_summaries_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->record_chain_cell_summaries = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_chain_cell_summaries_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_chain_cell_summaries_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (bool) ((arg1)->record_chain_cell_summaries);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_everything_possible_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellationParameters_record_everything_possible_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_everything_possible_set" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "MolecularRadicalTessellationParameters_record_everything_possible_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->record_everything_possible = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellationParameters_record_everything_possible_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellationParameters_record_everything_possible_get" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  result = (bool) ((arg1)->record_everything_possible);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellationParameters(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "new_MolecularRadicalTessellationParameters", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      result = (MolecularRadicalTessellationParameters *)new MolecularRadicalTessellationParameters();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularRadicalTessellationParameters, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_MolecularRadicalTessellationParameters(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellationParameters *arg1 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellationParameters, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_MolecularRadicalTessellationParameters" "', argument " "1"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *MolecularRadicalTessellationParameters_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_MolecularRadicalTessellationParameters, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *MolecularRadicalTessellationParameters_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_params_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  MolecularRadicalTessellationParameters *arg2 = (MolecularRadicalTessellationParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellation_params_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_params_set" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularRadicalTessellation_params_set" "', argument " "2"" of type '" "MolecularRadicalTessellationParameters *""'"); 
+  }
+  arg2 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp2);
+  if (arg1) (arg1)->params = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_params_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  MolecularRadicalTessellationParameters *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_params_get" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  result = (MolecularRadicalTessellationParameters *)& ((arg1)->params);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularRadicalTessellationParameters, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_atom_balls_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *arg2 = (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellation_atom_balls_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_atom_balls_set" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularRadicalTessellation_atom_balls_set" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > * >(argp2);
+  if (arg1) (arg1)->atom_balls = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_atom_balls_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_atom_balls_get" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  result = (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *)& ((arg1)->atom_balls);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomBall_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_inter_atom_contact_summaries_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *arg2 = (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellation_inter_atom_contact_summaries_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_inter_atom_contact_summaries_set" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularRadicalTessellation_inter_atom_contact_summaries_set" "', argument " "2"" of type '" "std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > * >(argp2);
+  if (arg1) (arg1)->inter_atom_contact_summaries = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_inter_atom_contact_summaries_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_inter_atom_contact_summaries_get" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  result = (std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *)& ((arg1)->inter_atom_contact_summaries);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterAtomContactSummary_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_inter_residue_contact_summaries_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *arg2 = (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellation_inter_residue_contact_summaries_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_inter_residue_contact_summaries_set" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularRadicalTessellation_inter_residue_contact_summaries_set" "', argument " "2"" of type '" "std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > * >(argp2);
+  if (arg1) (arg1)->inter_residue_contact_summaries = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_inter_residue_contact_summaries_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_inter_residue_contact_summaries_get" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  result = (std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *)& ((arg1)->inter_residue_contact_summaries);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterResidueContactSummary_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_inter_chain_contact_summaries_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *arg2 = (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellation_inter_chain_contact_summaries_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_inter_chain_contact_summaries_set" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularRadicalTessellation_inter_chain_contact_summaries_set" "', argument " "2"" of type '" "std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > * >(argp2);
+  if (arg1) (arg1)->inter_chain_contact_summaries = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_inter_chain_contact_summaries_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_inter_chain_contact_summaries_get" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  result = (std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *)& ((arg1)->inter_chain_contact_summaries);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularInterChainContactSummary_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_atom_cell_summaries_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *arg2 = (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellation_atom_cell_summaries_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_atom_cell_summaries_set" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularRadicalTessellation_atom_cell_summaries_set" "', argument " "2"" of type '" "std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > * >(argp2);
+  if (arg1) (arg1)->atom_cell_summaries = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_atom_cell_summaries_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_atom_cell_summaries_get" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  result = (std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *)& ((arg1)->atom_cell_summaries);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularAtomCellSummary_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_residue_cell_summaries_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *arg2 = (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellation_residue_cell_summaries_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_residue_cell_summaries_set" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularRadicalTessellation_residue_cell_summaries_set" "', argument " "2"" of type '" "std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > * >(argp2);
+  if (arg1) (arg1)->residue_cell_summaries = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_residue_cell_summaries_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_residue_cell_summaries_get" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  result = (std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *)& ((arg1)->residue_cell_summaries);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularResidueCellSummary_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_chain_cell_summaries_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *arg2 = (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularRadicalTessellation_chain_cell_summaries_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_chain_cell_summaries_set" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularRadicalTessellation_chain_cell_summaries_set" "', argument " "2"" of type '" "std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > * >(argp2);
+  if (arg1) (arg1)->chain_cell_summaries = *arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularRadicalTessellation_chain_cell_summaries_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularRadicalTessellation_chain_cell_summaries_get" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  result = (std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *)& ((arg1)->chain_cell_summaries);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_MolecularChainCellSummary_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularFileInput *arg1 = 0 ;
+  MolecularRadicalTessellationParameters *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  MolecularRadicalTessellation *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "new_MolecularRadicalTessellation", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1, SWIGTYPE_p_MolecularFileInput,  0  | 0);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_MolecularRadicalTessellation" "', argument " "1"" of type '" "MolecularFileInput const &""'"); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularRadicalTessellation" "', argument " "1"" of type '" "MolecularFileInput const &""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularFileInput * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularRadicalTessellationParameters,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_MolecularRadicalTessellation" "', argument " "2"" of type '" "MolecularRadicalTessellationParameters const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularRadicalTessellation" "', argument " "2"" of type '" "MolecularRadicalTessellationParameters const &""'"); 
+  }
+  arg2 = reinterpret_cast< MolecularRadicalTessellationParameters * >(argp2);
+  {
+    try
+    {
+      result = (MolecularRadicalTessellation *)new MolecularRadicalTessellation((MolecularFileInput const &)*arg1,(MolecularRadicalTessellationParameters const &)*arg2);
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularRadicalTessellation, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_MolecularRadicalTessellation(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularRadicalTessellation *arg1 = (MolecularRadicalTessellation *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularRadicalTessellation, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_MolecularRadicalTessellation" "', argument " "1"" of type '" "MolecularRadicalTessellation *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularRadicalTessellation * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *MolecularRadicalTessellation_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_MolecularRadicalTessellation, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *MolecularRadicalTessellation_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
 static PyMethodDef SwigMethods[] = {
 	 { "delete_SwigPyIterator", _wrap_delete_SwigPyIterator, METH_O, NULL},
 	 { "SwigPyIterator_value", _wrap_SwigPyIterator_value, METH_O, NULL},
@@ -13106,6 +32294,251 @@ static PyMethodDef SwigMethods[] = {
 	 { "delete_VectorCell", _wrap_delete_VectorCell, METH_O, NULL},
 	 { "VectorCell_swigregister", VectorCell_swigregister, METH_O, NULL},
 	 { "VectorCell_swiginit", VectorCell_swiginit, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall_iterator", _wrap_VectorMolecularAtomBall_iterator, METH_O, NULL},
+	 { "VectorMolecularAtomBall___nonzero__", _wrap_VectorMolecularAtomBall___nonzero__, METH_O, NULL},
+	 { "VectorMolecularAtomBall___bool__", _wrap_VectorMolecularAtomBall___bool__, METH_O, NULL},
+	 { "VectorMolecularAtomBall___len__", _wrap_VectorMolecularAtomBall___len__, METH_O, NULL},
+	 { "VectorMolecularAtomBall___getslice__", _wrap_VectorMolecularAtomBall___getslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall___setslice__", _wrap_VectorMolecularAtomBall___setslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall___delslice__", _wrap_VectorMolecularAtomBall___delslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall___delitem__", _wrap_VectorMolecularAtomBall___delitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall___getitem__", _wrap_VectorMolecularAtomBall___getitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall___setitem__", _wrap_VectorMolecularAtomBall___setitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall_pop", _wrap_VectorMolecularAtomBall_pop, METH_O, NULL},
+	 { "VectorMolecularAtomBall_append", _wrap_VectorMolecularAtomBall_append, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall_empty", _wrap_VectorMolecularAtomBall_empty, METH_O, NULL},
+	 { "VectorMolecularAtomBall_size", _wrap_VectorMolecularAtomBall_size, METH_O, NULL},
+	 { "VectorMolecularAtomBall_swap", _wrap_VectorMolecularAtomBall_swap, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall_begin", _wrap_VectorMolecularAtomBall_begin, METH_O, NULL},
+	 { "VectorMolecularAtomBall_end", _wrap_VectorMolecularAtomBall_end, METH_O, NULL},
+	 { "VectorMolecularAtomBall_rbegin", _wrap_VectorMolecularAtomBall_rbegin, METH_O, NULL},
+	 { "VectorMolecularAtomBall_rend", _wrap_VectorMolecularAtomBall_rend, METH_O, NULL},
+	 { "VectorMolecularAtomBall_clear", _wrap_VectorMolecularAtomBall_clear, METH_O, NULL},
+	 { "VectorMolecularAtomBall_get_allocator", _wrap_VectorMolecularAtomBall_get_allocator, METH_O, NULL},
+	 { "VectorMolecularAtomBall_pop_back", _wrap_VectorMolecularAtomBall_pop_back, METH_O, NULL},
+	 { "VectorMolecularAtomBall_erase", _wrap_VectorMolecularAtomBall_erase, METH_VARARGS, NULL},
+	 { "new_VectorMolecularAtomBall", _wrap_new_VectorMolecularAtomBall, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall_push_back", _wrap_VectorMolecularAtomBall_push_back, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall_front", _wrap_VectorMolecularAtomBall_front, METH_O, NULL},
+	 { "VectorMolecularAtomBall_back", _wrap_VectorMolecularAtomBall_back, METH_O, NULL},
+	 { "VectorMolecularAtomBall_assign", _wrap_VectorMolecularAtomBall_assign, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall_resize", _wrap_VectorMolecularAtomBall_resize, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall_insert", _wrap_VectorMolecularAtomBall_insert, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall_reserve", _wrap_VectorMolecularAtomBall_reserve, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomBall_capacity", _wrap_VectorMolecularAtomBall_capacity, METH_O, NULL},
+	 { "delete_VectorMolecularAtomBall", _wrap_delete_VectorMolecularAtomBall, METH_O, NULL},
+	 { "VectorMolecularAtomBall_swigregister", VectorMolecularAtomBall_swigregister, METH_O, NULL},
+	 { "VectorMolecularAtomBall_swiginit", VectorMolecularAtomBall_swiginit, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary_iterator", _wrap_VectorMolecularInterAtomContactSummary_iterator, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary___nonzero__", _wrap_VectorMolecularInterAtomContactSummary___nonzero__, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary___bool__", _wrap_VectorMolecularInterAtomContactSummary___bool__, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary___len__", _wrap_VectorMolecularInterAtomContactSummary___len__, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary___getslice__", _wrap_VectorMolecularInterAtomContactSummary___getslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary___setslice__", _wrap_VectorMolecularInterAtomContactSummary___setslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary___delslice__", _wrap_VectorMolecularInterAtomContactSummary___delslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary___delitem__", _wrap_VectorMolecularInterAtomContactSummary___delitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary___getitem__", _wrap_VectorMolecularInterAtomContactSummary___getitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary___setitem__", _wrap_VectorMolecularInterAtomContactSummary___setitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary_pop", _wrap_VectorMolecularInterAtomContactSummary_pop, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_append", _wrap_VectorMolecularInterAtomContactSummary_append, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary_empty", _wrap_VectorMolecularInterAtomContactSummary_empty, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_size", _wrap_VectorMolecularInterAtomContactSummary_size, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_swap", _wrap_VectorMolecularInterAtomContactSummary_swap, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary_begin", _wrap_VectorMolecularInterAtomContactSummary_begin, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_end", _wrap_VectorMolecularInterAtomContactSummary_end, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_rbegin", _wrap_VectorMolecularInterAtomContactSummary_rbegin, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_rend", _wrap_VectorMolecularInterAtomContactSummary_rend, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_clear", _wrap_VectorMolecularInterAtomContactSummary_clear, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_get_allocator", _wrap_VectorMolecularInterAtomContactSummary_get_allocator, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_pop_back", _wrap_VectorMolecularInterAtomContactSummary_pop_back, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_erase", _wrap_VectorMolecularInterAtomContactSummary_erase, METH_VARARGS, NULL},
+	 { "new_VectorMolecularInterAtomContactSummary", _wrap_new_VectorMolecularInterAtomContactSummary, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary_push_back", _wrap_VectorMolecularInterAtomContactSummary_push_back, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary_front", _wrap_VectorMolecularInterAtomContactSummary_front, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_back", _wrap_VectorMolecularInterAtomContactSummary_back, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_assign", _wrap_VectorMolecularInterAtomContactSummary_assign, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary_resize", _wrap_VectorMolecularInterAtomContactSummary_resize, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary_insert", _wrap_VectorMolecularInterAtomContactSummary_insert, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary_reserve", _wrap_VectorMolecularInterAtomContactSummary_reserve, METH_VARARGS, NULL},
+	 { "VectorMolecularInterAtomContactSummary_capacity", _wrap_VectorMolecularInterAtomContactSummary_capacity, METH_O, NULL},
+	 { "delete_VectorMolecularInterAtomContactSummary", _wrap_delete_VectorMolecularInterAtomContactSummary, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_swigregister", VectorMolecularInterAtomContactSummary_swigregister, METH_O, NULL},
+	 { "VectorMolecularInterAtomContactSummary_swiginit", VectorMolecularInterAtomContactSummary_swiginit, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary_iterator", _wrap_VectorMolecularInterResidueContactSummary_iterator, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary___nonzero__", _wrap_VectorMolecularInterResidueContactSummary___nonzero__, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary___bool__", _wrap_VectorMolecularInterResidueContactSummary___bool__, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary___len__", _wrap_VectorMolecularInterResidueContactSummary___len__, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary___getslice__", _wrap_VectorMolecularInterResidueContactSummary___getslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary___setslice__", _wrap_VectorMolecularInterResidueContactSummary___setslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary___delslice__", _wrap_VectorMolecularInterResidueContactSummary___delslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary___delitem__", _wrap_VectorMolecularInterResidueContactSummary___delitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary___getitem__", _wrap_VectorMolecularInterResidueContactSummary___getitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary___setitem__", _wrap_VectorMolecularInterResidueContactSummary___setitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary_pop", _wrap_VectorMolecularInterResidueContactSummary_pop, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_append", _wrap_VectorMolecularInterResidueContactSummary_append, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary_empty", _wrap_VectorMolecularInterResidueContactSummary_empty, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_size", _wrap_VectorMolecularInterResidueContactSummary_size, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_swap", _wrap_VectorMolecularInterResidueContactSummary_swap, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary_begin", _wrap_VectorMolecularInterResidueContactSummary_begin, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_end", _wrap_VectorMolecularInterResidueContactSummary_end, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_rbegin", _wrap_VectorMolecularInterResidueContactSummary_rbegin, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_rend", _wrap_VectorMolecularInterResidueContactSummary_rend, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_clear", _wrap_VectorMolecularInterResidueContactSummary_clear, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_get_allocator", _wrap_VectorMolecularInterResidueContactSummary_get_allocator, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_pop_back", _wrap_VectorMolecularInterResidueContactSummary_pop_back, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_erase", _wrap_VectorMolecularInterResidueContactSummary_erase, METH_VARARGS, NULL},
+	 { "new_VectorMolecularInterResidueContactSummary", _wrap_new_VectorMolecularInterResidueContactSummary, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary_push_back", _wrap_VectorMolecularInterResidueContactSummary_push_back, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary_front", _wrap_VectorMolecularInterResidueContactSummary_front, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_back", _wrap_VectorMolecularInterResidueContactSummary_back, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_assign", _wrap_VectorMolecularInterResidueContactSummary_assign, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary_resize", _wrap_VectorMolecularInterResidueContactSummary_resize, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary_insert", _wrap_VectorMolecularInterResidueContactSummary_insert, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary_reserve", _wrap_VectorMolecularInterResidueContactSummary_reserve, METH_VARARGS, NULL},
+	 { "VectorMolecularInterResidueContactSummary_capacity", _wrap_VectorMolecularInterResidueContactSummary_capacity, METH_O, NULL},
+	 { "delete_VectorMolecularInterResidueContactSummary", _wrap_delete_VectorMolecularInterResidueContactSummary, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_swigregister", VectorMolecularInterResidueContactSummary_swigregister, METH_O, NULL},
+	 { "VectorMolecularInterResidueContactSummary_swiginit", VectorMolecularInterResidueContactSummary_swiginit, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary_iterator", _wrap_VectorMolecularInterChainContactSummary_iterator, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary___nonzero__", _wrap_VectorMolecularInterChainContactSummary___nonzero__, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary___bool__", _wrap_VectorMolecularInterChainContactSummary___bool__, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary___len__", _wrap_VectorMolecularInterChainContactSummary___len__, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary___getslice__", _wrap_VectorMolecularInterChainContactSummary___getslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary___setslice__", _wrap_VectorMolecularInterChainContactSummary___setslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary___delslice__", _wrap_VectorMolecularInterChainContactSummary___delslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary___delitem__", _wrap_VectorMolecularInterChainContactSummary___delitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary___getitem__", _wrap_VectorMolecularInterChainContactSummary___getitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary___setitem__", _wrap_VectorMolecularInterChainContactSummary___setitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary_pop", _wrap_VectorMolecularInterChainContactSummary_pop, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_append", _wrap_VectorMolecularInterChainContactSummary_append, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary_empty", _wrap_VectorMolecularInterChainContactSummary_empty, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_size", _wrap_VectorMolecularInterChainContactSummary_size, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_swap", _wrap_VectorMolecularInterChainContactSummary_swap, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary_begin", _wrap_VectorMolecularInterChainContactSummary_begin, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_end", _wrap_VectorMolecularInterChainContactSummary_end, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_rbegin", _wrap_VectorMolecularInterChainContactSummary_rbegin, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_rend", _wrap_VectorMolecularInterChainContactSummary_rend, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_clear", _wrap_VectorMolecularInterChainContactSummary_clear, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_get_allocator", _wrap_VectorMolecularInterChainContactSummary_get_allocator, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_pop_back", _wrap_VectorMolecularInterChainContactSummary_pop_back, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_erase", _wrap_VectorMolecularInterChainContactSummary_erase, METH_VARARGS, NULL},
+	 { "new_VectorMolecularInterChainContactSummary", _wrap_new_VectorMolecularInterChainContactSummary, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary_push_back", _wrap_VectorMolecularInterChainContactSummary_push_back, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary_front", _wrap_VectorMolecularInterChainContactSummary_front, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_back", _wrap_VectorMolecularInterChainContactSummary_back, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_assign", _wrap_VectorMolecularInterChainContactSummary_assign, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary_resize", _wrap_VectorMolecularInterChainContactSummary_resize, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary_insert", _wrap_VectorMolecularInterChainContactSummary_insert, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary_reserve", _wrap_VectorMolecularInterChainContactSummary_reserve, METH_VARARGS, NULL},
+	 { "VectorMolecularInterChainContactSummary_capacity", _wrap_VectorMolecularInterChainContactSummary_capacity, METH_O, NULL},
+	 { "delete_VectorMolecularInterChainContactSummary", _wrap_delete_VectorMolecularInterChainContactSummary, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_swigregister", VectorMolecularInterChainContactSummary_swigregister, METH_O, NULL},
+	 { "VectorMolecularInterChainContactSummary_swiginit", VectorMolecularInterChainContactSummary_swiginit, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary_iterator", _wrap_VectorMolecularAtomCellSummary_iterator, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary___nonzero__", _wrap_VectorMolecularAtomCellSummary___nonzero__, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary___bool__", _wrap_VectorMolecularAtomCellSummary___bool__, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary___len__", _wrap_VectorMolecularAtomCellSummary___len__, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary___getslice__", _wrap_VectorMolecularAtomCellSummary___getslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary___setslice__", _wrap_VectorMolecularAtomCellSummary___setslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary___delslice__", _wrap_VectorMolecularAtomCellSummary___delslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary___delitem__", _wrap_VectorMolecularAtomCellSummary___delitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary___getitem__", _wrap_VectorMolecularAtomCellSummary___getitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary___setitem__", _wrap_VectorMolecularAtomCellSummary___setitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary_pop", _wrap_VectorMolecularAtomCellSummary_pop, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_append", _wrap_VectorMolecularAtomCellSummary_append, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary_empty", _wrap_VectorMolecularAtomCellSummary_empty, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_size", _wrap_VectorMolecularAtomCellSummary_size, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_swap", _wrap_VectorMolecularAtomCellSummary_swap, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary_begin", _wrap_VectorMolecularAtomCellSummary_begin, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_end", _wrap_VectorMolecularAtomCellSummary_end, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_rbegin", _wrap_VectorMolecularAtomCellSummary_rbegin, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_rend", _wrap_VectorMolecularAtomCellSummary_rend, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_clear", _wrap_VectorMolecularAtomCellSummary_clear, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_get_allocator", _wrap_VectorMolecularAtomCellSummary_get_allocator, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_pop_back", _wrap_VectorMolecularAtomCellSummary_pop_back, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_erase", _wrap_VectorMolecularAtomCellSummary_erase, METH_VARARGS, NULL},
+	 { "new_VectorMolecularAtomCellSummary", _wrap_new_VectorMolecularAtomCellSummary, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary_push_back", _wrap_VectorMolecularAtomCellSummary_push_back, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary_front", _wrap_VectorMolecularAtomCellSummary_front, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_back", _wrap_VectorMolecularAtomCellSummary_back, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_assign", _wrap_VectorMolecularAtomCellSummary_assign, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary_resize", _wrap_VectorMolecularAtomCellSummary_resize, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary_insert", _wrap_VectorMolecularAtomCellSummary_insert, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary_reserve", _wrap_VectorMolecularAtomCellSummary_reserve, METH_VARARGS, NULL},
+	 { "VectorMolecularAtomCellSummary_capacity", _wrap_VectorMolecularAtomCellSummary_capacity, METH_O, NULL},
+	 { "delete_VectorMolecularAtomCellSummary", _wrap_delete_VectorMolecularAtomCellSummary, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_swigregister", VectorMolecularAtomCellSummary_swigregister, METH_O, NULL},
+	 { "VectorMolecularAtomCellSummary_swiginit", VectorMolecularAtomCellSummary_swiginit, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary_iterator", _wrap_VectorMolecularResidueCellSummary_iterator, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary___nonzero__", _wrap_VectorMolecularResidueCellSummary___nonzero__, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary___bool__", _wrap_VectorMolecularResidueCellSummary___bool__, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary___len__", _wrap_VectorMolecularResidueCellSummary___len__, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary___getslice__", _wrap_VectorMolecularResidueCellSummary___getslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary___setslice__", _wrap_VectorMolecularResidueCellSummary___setslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary___delslice__", _wrap_VectorMolecularResidueCellSummary___delslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary___delitem__", _wrap_VectorMolecularResidueCellSummary___delitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary___getitem__", _wrap_VectorMolecularResidueCellSummary___getitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary___setitem__", _wrap_VectorMolecularResidueCellSummary___setitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary_pop", _wrap_VectorMolecularResidueCellSummary_pop, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_append", _wrap_VectorMolecularResidueCellSummary_append, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary_empty", _wrap_VectorMolecularResidueCellSummary_empty, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_size", _wrap_VectorMolecularResidueCellSummary_size, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_swap", _wrap_VectorMolecularResidueCellSummary_swap, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary_begin", _wrap_VectorMolecularResidueCellSummary_begin, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_end", _wrap_VectorMolecularResidueCellSummary_end, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_rbegin", _wrap_VectorMolecularResidueCellSummary_rbegin, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_rend", _wrap_VectorMolecularResidueCellSummary_rend, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_clear", _wrap_VectorMolecularResidueCellSummary_clear, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_get_allocator", _wrap_VectorMolecularResidueCellSummary_get_allocator, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_pop_back", _wrap_VectorMolecularResidueCellSummary_pop_back, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_erase", _wrap_VectorMolecularResidueCellSummary_erase, METH_VARARGS, NULL},
+	 { "new_VectorMolecularResidueCellSummary", _wrap_new_VectorMolecularResidueCellSummary, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary_push_back", _wrap_VectorMolecularResidueCellSummary_push_back, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary_front", _wrap_VectorMolecularResidueCellSummary_front, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_back", _wrap_VectorMolecularResidueCellSummary_back, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_assign", _wrap_VectorMolecularResidueCellSummary_assign, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary_resize", _wrap_VectorMolecularResidueCellSummary_resize, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary_insert", _wrap_VectorMolecularResidueCellSummary_insert, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary_reserve", _wrap_VectorMolecularResidueCellSummary_reserve, METH_VARARGS, NULL},
+	 { "VectorMolecularResidueCellSummary_capacity", _wrap_VectorMolecularResidueCellSummary_capacity, METH_O, NULL},
+	 { "delete_VectorMolecularResidueCellSummary", _wrap_delete_VectorMolecularResidueCellSummary, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_swigregister", VectorMolecularResidueCellSummary_swigregister, METH_O, NULL},
+	 { "VectorMolecularResidueCellSummary_swiginit", VectorMolecularResidueCellSummary_swiginit, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary_iterator", _wrap_VectorMolecularChainCellSummary_iterator, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary___nonzero__", _wrap_VectorMolecularChainCellSummary___nonzero__, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary___bool__", _wrap_VectorMolecularChainCellSummary___bool__, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary___len__", _wrap_VectorMolecularChainCellSummary___len__, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary___getslice__", _wrap_VectorMolecularChainCellSummary___getslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary___setslice__", _wrap_VectorMolecularChainCellSummary___setslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary___delslice__", _wrap_VectorMolecularChainCellSummary___delslice__, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary___delitem__", _wrap_VectorMolecularChainCellSummary___delitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary___getitem__", _wrap_VectorMolecularChainCellSummary___getitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary___setitem__", _wrap_VectorMolecularChainCellSummary___setitem__, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary_pop", _wrap_VectorMolecularChainCellSummary_pop, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_append", _wrap_VectorMolecularChainCellSummary_append, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary_empty", _wrap_VectorMolecularChainCellSummary_empty, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_size", _wrap_VectorMolecularChainCellSummary_size, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_swap", _wrap_VectorMolecularChainCellSummary_swap, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary_begin", _wrap_VectorMolecularChainCellSummary_begin, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_end", _wrap_VectorMolecularChainCellSummary_end, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_rbegin", _wrap_VectorMolecularChainCellSummary_rbegin, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_rend", _wrap_VectorMolecularChainCellSummary_rend, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_clear", _wrap_VectorMolecularChainCellSummary_clear, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_get_allocator", _wrap_VectorMolecularChainCellSummary_get_allocator, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_pop_back", _wrap_VectorMolecularChainCellSummary_pop_back, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_erase", _wrap_VectorMolecularChainCellSummary_erase, METH_VARARGS, NULL},
+	 { "new_VectorMolecularChainCellSummary", _wrap_new_VectorMolecularChainCellSummary, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary_push_back", _wrap_VectorMolecularChainCellSummary_push_back, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary_front", _wrap_VectorMolecularChainCellSummary_front, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_back", _wrap_VectorMolecularChainCellSummary_back, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_assign", _wrap_VectorMolecularChainCellSummary_assign, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary_resize", _wrap_VectorMolecularChainCellSummary_resize, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary_insert", _wrap_VectorMolecularChainCellSummary_insert, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary_reserve", _wrap_VectorMolecularChainCellSummary_reserve, METH_VARARGS, NULL},
+	 { "VectorMolecularChainCellSummary_capacity", _wrap_VectorMolecularChainCellSummary_capacity, METH_O, NULL},
+	 { "delete_VectorMolecularChainCellSummary", _wrap_delete_VectorMolecularChainCellSummary, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_swigregister", VectorMolecularChainCellSummary_swigregister, METH_O, NULL},
+	 { "VectorMolecularChainCellSummary_swiginit", VectorMolecularChainCellSummary_swiginit, METH_VARARGS, NULL},
 	 { "new_Ball", _wrap_new_Ball, METH_VARARGS, NULL},
 	 { "Ball_x_set", _wrap_Ball_x_set, METH_VARARGS, NULL},
 	 { "Ball_x_get", _wrap_Ball_x_get, METH_O, NULL},
@@ -13146,13 +32579,205 @@ static PyMethodDef SwigMethods[] = {
 	 { "RadicalTessellation_contacts_get", _wrap_RadicalTessellation_contacts_get, METH_O, NULL},
 	 { "RadicalTessellation_cells_set", _wrap_RadicalTessellation_cells_set, METH_VARARGS, NULL},
 	 { "RadicalTessellation_cells_get", _wrap_RadicalTessellation_cells_get, METH_O, NULL},
-	 { "RadicalTessellation_probe_set", _wrap_RadicalTessellation_probe_set, METH_VARARGS, NULL},
-	 { "RadicalTessellation_probe_get", _wrap_RadicalTessellation_probe_get, METH_O, NULL},
 	 { "new_RadicalTessellation", _wrap_new_RadicalTessellation, METH_VARARGS, NULL},
 	 { "RadicalTessellation_recompute", _wrap_RadicalTessellation_recompute, METH_VARARGS, NULL},
 	 { "delete_RadicalTessellation", _wrap_delete_RadicalTessellation, METH_O, NULL},
 	 { "RadicalTessellation_swigregister", RadicalTessellation_swigregister, METH_O, NULL},
 	 { "RadicalTessellation_swiginit", RadicalTessellation_swiginit, METH_VARARGS, NULL},
+	 { "MolecularAtomBall_ID_chain_set", _wrap_MolecularAtomBall_ID_chain_set, METH_VARARGS, NULL},
+	 { "MolecularAtomBall_ID_chain_get", _wrap_MolecularAtomBall_ID_chain_get, METH_O, NULL},
+	 { "MolecularAtomBall_ID_residue_seq_number_set", _wrap_MolecularAtomBall_ID_residue_seq_number_set, METH_VARARGS, NULL},
+	 { "MolecularAtomBall_ID_residue_seq_number_get", _wrap_MolecularAtomBall_ID_residue_seq_number_get, METH_O, NULL},
+	 { "MolecularAtomBall_ID_residue_icode_set", _wrap_MolecularAtomBall_ID_residue_icode_set, METH_VARARGS, NULL},
+	 { "MolecularAtomBall_ID_residue_icode_get", _wrap_MolecularAtomBall_ID_residue_icode_get, METH_O, NULL},
+	 { "MolecularAtomBall_ID_residue_name_set", _wrap_MolecularAtomBall_ID_residue_name_set, METH_VARARGS, NULL},
+	 { "MolecularAtomBall_ID_residue_name_get", _wrap_MolecularAtomBall_ID_residue_name_get, METH_O, NULL},
+	 { "MolecularAtomBall_ID_atom_name_set", _wrap_MolecularAtomBall_ID_atom_name_set, METH_VARARGS, NULL},
+	 { "MolecularAtomBall_ID_atom_name_get", _wrap_MolecularAtomBall_ID_atom_name_get, METH_O, NULL},
+	 { "MolecularAtomBall_x_set", _wrap_MolecularAtomBall_x_set, METH_VARARGS, NULL},
+	 { "MolecularAtomBall_x_get", _wrap_MolecularAtomBall_x_get, METH_O, NULL},
+	 { "MolecularAtomBall_y_set", _wrap_MolecularAtomBall_y_set, METH_VARARGS, NULL},
+	 { "MolecularAtomBall_y_get", _wrap_MolecularAtomBall_y_get, METH_O, NULL},
+	 { "MolecularAtomBall_z_set", _wrap_MolecularAtomBall_z_set, METH_VARARGS, NULL},
+	 { "MolecularAtomBall_z_get", _wrap_MolecularAtomBall_z_get, METH_O, NULL},
+	 { "MolecularAtomBall_r_set", _wrap_MolecularAtomBall_r_set, METH_VARARGS, NULL},
+	 { "MolecularAtomBall_r_get", _wrap_MolecularAtomBall_r_get, METH_O, NULL},
+	 { "new_MolecularAtomBall", _wrap_new_MolecularAtomBall, METH_NOARGS, NULL},
+	 { "delete_MolecularAtomBall", _wrap_delete_MolecularAtomBall, METH_O, NULL},
+	 { "MolecularAtomBall_swigregister", MolecularAtomBall_swigregister, METH_O, NULL},
+	 { "MolecularAtomBall_swiginit", MolecularAtomBall_swiginit, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_ID1_chain_set", _wrap_MolecularInterAtomContactSummary_ID1_chain_set, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_ID1_chain_get", _wrap_MolecularInterAtomContactSummary_ID1_chain_get, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_ID1_residue_seq_number_set", _wrap_MolecularInterAtomContactSummary_ID1_residue_seq_number_set, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_ID1_residue_seq_number_get", _wrap_MolecularInterAtomContactSummary_ID1_residue_seq_number_get, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_ID1_residue_icode_set", _wrap_MolecularInterAtomContactSummary_ID1_residue_icode_set, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_ID1_residue_icode_get", _wrap_MolecularInterAtomContactSummary_ID1_residue_icode_get, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_ID1_residue_name_set", _wrap_MolecularInterAtomContactSummary_ID1_residue_name_set, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_ID1_residue_name_get", _wrap_MolecularInterAtomContactSummary_ID1_residue_name_get, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_ID1_atom_name_set", _wrap_MolecularInterAtomContactSummary_ID1_atom_name_set, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_ID1_atom_name_get", _wrap_MolecularInterAtomContactSummary_ID1_atom_name_get, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_ID2_chain_set", _wrap_MolecularInterAtomContactSummary_ID2_chain_set, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_ID2_chain_get", _wrap_MolecularInterAtomContactSummary_ID2_chain_get, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_ID2_residue_seq_number_set", _wrap_MolecularInterAtomContactSummary_ID2_residue_seq_number_set, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_ID2_residue_seq_number_get", _wrap_MolecularInterAtomContactSummary_ID2_residue_seq_number_get, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_ID2_residue_icode_set", _wrap_MolecularInterAtomContactSummary_ID2_residue_icode_set, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_ID2_residue_icode_get", _wrap_MolecularInterAtomContactSummary_ID2_residue_icode_get, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_ID2_residue_name_set", _wrap_MolecularInterAtomContactSummary_ID2_residue_name_set, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_ID2_residue_name_get", _wrap_MolecularInterAtomContactSummary_ID2_residue_name_get, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_ID2_atom_name_set", _wrap_MolecularInterAtomContactSummary_ID2_atom_name_set, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_ID2_atom_name_get", _wrap_MolecularInterAtomContactSummary_ID2_atom_name_get, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_area_set", _wrap_MolecularInterAtomContactSummary_area_set, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_area_get", _wrap_MolecularInterAtomContactSummary_area_get, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_arc_length_set", _wrap_MolecularInterAtomContactSummary_arc_length_set, METH_VARARGS, NULL},
+	 { "MolecularInterAtomContactSummary_arc_length_get", _wrap_MolecularInterAtomContactSummary_arc_length_get, METH_O, NULL},
+	 { "new_MolecularInterAtomContactSummary", _wrap_new_MolecularInterAtomContactSummary, METH_NOARGS, NULL},
+	 { "delete_MolecularInterAtomContactSummary", _wrap_delete_MolecularInterAtomContactSummary, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_swigregister", MolecularInterAtomContactSummary_swigregister, METH_O, NULL},
+	 { "MolecularInterAtomContactSummary_swiginit", MolecularInterAtomContactSummary_swiginit, METH_VARARGS, NULL},
+	 { "MolecularInterResidueContactSummary_ID1_chain_set", _wrap_MolecularInterResidueContactSummary_ID1_chain_set, METH_VARARGS, NULL},
+	 { "MolecularInterResidueContactSummary_ID1_chain_get", _wrap_MolecularInterResidueContactSummary_ID1_chain_get, METH_O, NULL},
+	 { "MolecularInterResidueContactSummary_ID1_residue_seq_number_set", _wrap_MolecularInterResidueContactSummary_ID1_residue_seq_number_set, METH_VARARGS, NULL},
+	 { "MolecularInterResidueContactSummary_ID1_residue_seq_number_get", _wrap_MolecularInterResidueContactSummary_ID1_residue_seq_number_get, METH_O, NULL},
+	 { "MolecularInterResidueContactSummary_ID1_residue_icode_set", _wrap_MolecularInterResidueContactSummary_ID1_residue_icode_set, METH_VARARGS, NULL},
+	 { "MolecularInterResidueContactSummary_ID1_residue_icode_get", _wrap_MolecularInterResidueContactSummary_ID1_residue_icode_get, METH_O, NULL},
+	 { "MolecularInterResidueContactSummary_ID1_residue_name_set", _wrap_MolecularInterResidueContactSummary_ID1_residue_name_set, METH_VARARGS, NULL},
+	 { "MolecularInterResidueContactSummary_ID1_residue_name_get", _wrap_MolecularInterResidueContactSummary_ID1_residue_name_get, METH_O, NULL},
+	 { "MolecularInterResidueContactSummary_ID2_chain_set", _wrap_MolecularInterResidueContactSummary_ID2_chain_set, METH_VARARGS, NULL},
+	 { "MolecularInterResidueContactSummary_ID2_chain_get", _wrap_MolecularInterResidueContactSummary_ID2_chain_get, METH_O, NULL},
+	 { "MolecularInterResidueContactSummary_ID2_residue_seq_number_set", _wrap_MolecularInterResidueContactSummary_ID2_residue_seq_number_set, METH_VARARGS, NULL},
+	 { "MolecularInterResidueContactSummary_ID2_residue_seq_number_get", _wrap_MolecularInterResidueContactSummary_ID2_residue_seq_number_get, METH_O, NULL},
+	 { "MolecularInterResidueContactSummary_ID2_residue_icode_set", _wrap_MolecularInterResidueContactSummary_ID2_residue_icode_set, METH_VARARGS, NULL},
+	 { "MolecularInterResidueContactSummary_ID2_residue_icode_get", _wrap_MolecularInterResidueContactSummary_ID2_residue_icode_get, METH_O, NULL},
+	 { "MolecularInterResidueContactSummary_ID2_residue_name_set", _wrap_MolecularInterResidueContactSummary_ID2_residue_name_set, METH_VARARGS, NULL},
+	 { "MolecularInterResidueContactSummary_ID2_residue_name_get", _wrap_MolecularInterResidueContactSummary_ID2_residue_name_get, METH_O, NULL},
+	 { "MolecularInterResidueContactSummary_area_set", _wrap_MolecularInterResidueContactSummary_area_set, METH_VARARGS, NULL},
+	 { "MolecularInterResidueContactSummary_area_get", _wrap_MolecularInterResidueContactSummary_area_get, METH_O, NULL},
+	 { "MolecularInterResidueContactSummary_arc_length_set", _wrap_MolecularInterResidueContactSummary_arc_length_set, METH_VARARGS, NULL},
+	 { "MolecularInterResidueContactSummary_arc_length_get", _wrap_MolecularInterResidueContactSummary_arc_length_get, METH_O, NULL},
+	 { "new_MolecularInterResidueContactSummary", _wrap_new_MolecularInterResidueContactSummary, METH_NOARGS, NULL},
+	 { "delete_MolecularInterResidueContactSummary", _wrap_delete_MolecularInterResidueContactSummary, METH_O, NULL},
+	 { "MolecularInterResidueContactSummary_swigregister", MolecularInterResidueContactSummary_swigregister, METH_O, NULL},
+	 { "MolecularInterResidueContactSummary_swiginit", MolecularInterResidueContactSummary_swiginit, METH_VARARGS, NULL},
+	 { "MolecularInterChainContactSummary_ID1_chain_set", _wrap_MolecularInterChainContactSummary_ID1_chain_set, METH_VARARGS, NULL},
+	 { "MolecularInterChainContactSummary_ID1_chain_get", _wrap_MolecularInterChainContactSummary_ID1_chain_get, METH_O, NULL},
+	 { "MolecularInterChainContactSummary_ID2_chain_set", _wrap_MolecularInterChainContactSummary_ID2_chain_set, METH_VARARGS, NULL},
+	 { "MolecularInterChainContactSummary_ID2_chain_get", _wrap_MolecularInterChainContactSummary_ID2_chain_get, METH_O, NULL},
+	 { "MolecularInterChainContactSummary_area_set", _wrap_MolecularInterChainContactSummary_area_set, METH_VARARGS, NULL},
+	 { "MolecularInterChainContactSummary_area_get", _wrap_MolecularInterChainContactSummary_area_get, METH_O, NULL},
+	 { "MolecularInterChainContactSummary_arc_length_set", _wrap_MolecularInterChainContactSummary_arc_length_set, METH_VARARGS, NULL},
+	 { "MolecularInterChainContactSummary_arc_length_get", _wrap_MolecularInterChainContactSummary_arc_length_get, METH_O, NULL},
+	 { "new_MolecularInterChainContactSummary", _wrap_new_MolecularInterChainContactSummary, METH_NOARGS, NULL},
+	 { "delete_MolecularInterChainContactSummary", _wrap_delete_MolecularInterChainContactSummary, METH_O, NULL},
+	 { "MolecularInterChainContactSummary_swigregister", MolecularInterChainContactSummary_swigregister, METH_O, NULL},
+	 { "MolecularInterChainContactSummary_swiginit", MolecularInterChainContactSummary_swiginit, METH_VARARGS, NULL},
+	 { "MolecularAtomCellSummary_ID_chain_set", _wrap_MolecularAtomCellSummary_ID_chain_set, METH_VARARGS, NULL},
+	 { "MolecularAtomCellSummary_ID_chain_get", _wrap_MolecularAtomCellSummary_ID_chain_get, METH_O, NULL},
+	 { "MolecularAtomCellSummary_ID_residue_seq_number_set", _wrap_MolecularAtomCellSummary_ID_residue_seq_number_set, METH_VARARGS, NULL},
+	 { "MolecularAtomCellSummary_ID_residue_seq_number_get", _wrap_MolecularAtomCellSummary_ID_residue_seq_number_get, METH_O, NULL},
+	 { "MolecularAtomCellSummary_ID_residue_icode_set", _wrap_MolecularAtomCellSummary_ID_residue_icode_set, METH_VARARGS, NULL},
+	 { "MolecularAtomCellSummary_ID_residue_icode_get", _wrap_MolecularAtomCellSummary_ID_residue_icode_get, METH_O, NULL},
+	 { "MolecularAtomCellSummary_ID_residue_name_set", _wrap_MolecularAtomCellSummary_ID_residue_name_set, METH_VARARGS, NULL},
+	 { "MolecularAtomCellSummary_ID_residue_name_get", _wrap_MolecularAtomCellSummary_ID_residue_name_get, METH_O, NULL},
+	 { "MolecularAtomCellSummary_ID_atom_name_set", _wrap_MolecularAtomCellSummary_ID_atom_name_set, METH_VARARGS, NULL},
+	 { "MolecularAtomCellSummary_ID_atom_name_get", _wrap_MolecularAtomCellSummary_ID_atom_name_get, METH_O, NULL},
+	 { "MolecularAtomCellSummary_sas_area_set", _wrap_MolecularAtomCellSummary_sas_area_set, METH_VARARGS, NULL},
+	 { "MolecularAtomCellSummary_sas_area_get", _wrap_MolecularAtomCellSummary_sas_area_get, METH_O, NULL},
+	 { "MolecularAtomCellSummary_volume_set", _wrap_MolecularAtomCellSummary_volume_set, METH_VARARGS, NULL},
+	 { "MolecularAtomCellSummary_volume_get", _wrap_MolecularAtomCellSummary_volume_get, METH_O, NULL},
+	 { "new_MolecularAtomCellSummary", _wrap_new_MolecularAtomCellSummary, METH_NOARGS, NULL},
+	 { "delete_MolecularAtomCellSummary", _wrap_delete_MolecularAtomCellSummary, METH_O, NULL},
+	 { "MolecularAtomCellSummary_swigregister", MolecularAtomCellSummary_swigregister, METH_O, NULL},
+	 { "MolecularAtomCellSummary_swiginit", MolecularAtomCellSummary_swiginit, METH_VARARGS, NULL},
+	 { "MolecularResidueCellSummary_ID_chain_set", _wrap_MolecularResidueCellSummary_ID_chain_set, METH_VARARGS, NULL},
+	 { "MolecularResidueCellSummary_ID_chain_get", _wrap_MolecularResidueCellSummary_ID_chain_get, METH_O, NULL},
+	 { "MolecularResidueCellSummary_ID_residue_seq_number_set", _wrap_MolecularResidueCellSummary_ID_residue_seq_number_set, METH_VARARGS, NULL},
+	 { "MolecularResidueCellSummary_ID_residue_seq_number_get", _wrap_MolecularResidueCellSummary_ID_residue_seq_number_get, METH_O, NULL},
+	 { "MolecularResidueCellSummary_ID_residue_icode_set", _wrap_MolecularResidueCellSummary_ID_residue_icode_set, METH_VARARGS, NULL},
+	 { "MolecularResidueCellSummary_ID_residue_icode_get", _wrap_MolecularResidueCellSummary_ID_residue_icode_get, METH_O, NULL},
+	 { "MolecularResidueCellSummary_ID_residue_name_set", _wrap_MolecularResidueCellSummary_ID_residue_name_set, METH_VARARGS, NULL},
+	 { "MolecularResidueCellSummary_ID_residue_name_get", _wrap_MolecularResidueCellSummary_ID_residue_name_get, METH_O, NULL},
+	 { "MolecularResidueCellSummary_sas_area_set", _wrap_MolecularResidueCellSummary_sas_area_set, METH_VARARGS, NULL},
+	 { "MolecularResidueCellSummary_sas_area_get", _wrap_MolecularResidueCellSummary_sas_area_get, METH_O, NULL},
+	 { "MolecularResidueCellSummary_volume_set", _wrap_MolecularResidueCellSummary_volume_set, METH_VARARGS, NULL},
+	 { "MolecularResidueCellSummary_volume_get", _wrap_MolecularResidueCellSummary_volume_get, METH_O, NULL},
+	 { "new_MolecularResidueCellSummary", _wrap_new_MolecularResidueCellSummary, METH_NOARGS, NULL},
+	 { "delete_MolecularResidueCellSummary", _wrap_delete_MolecularResidueCellSummary, METH_O, NULL},
+	 { "MolecularResidueCellSummary_swigregister", MolecularResidueCellSummary_swigregister, METH_O, NULL},
+	 { "MolecularResidueCellSummary_swiginit", MolecularResidueCellSummary_swiginit, METH_VARARGS, NULL},
+	 { "MolecularChainCellSummary_ID_chain_set", _wrap_MolecularChainCellSummary_ID_chain_set, METH_VARARGS, NULL},
+	 { "MolecularChainCellSummary_ID_chain_get", _wrap_MolecularChainCellSummary_ID_chain_get, METH_O, NULL},
+	 { "MolecularChainCellSummary_sas_area_set", _wrap_MolecularChainCellSummary_sas_area_set, METH_VARARGS, NULL},
+	 { "MolecularChainCellSummary_sas_area_get", _wrap_MolecularChainCellSummary_sas_area_get, METH_O, NULL},
+	 { "MolecularChainCellSummary_volume_set", _wrap_MolecularChainCellSummary_volume_set, METH_VARARGS, NULL},
+	 { "MolecularChainCellSummary_volume_get", _wrap_MolecularChainCellSummary_volume_get, METH_O, NULL},
+	 { "new_MolecularChainCellSummary", _wrap_new_MolecularChainCellSummary, METH_NOARGS, NULL},
+	 { "delete_MolecularChainCellSummary", _wrap_delete_MolecularChainCellSummary, METH_O, NULL},
+	 { "MolecularChainCellSummary_swigregister", MolecularChainCellSummary_swigregister, METH_O, NULL},
+	 { "MolecularChainCellSummary_swiginit", MolecularChainCellSummary_swiginit, METH_VARARGS, NULL},
+	 { "MolecularFileInput_input_file_path_set", _wrap_MolecularFileInput_input_file_path_set, METH_VARARGS, NULL},
+	 { "MolecularFileInput_input_file_path_get", _wrap_MolecularFileInput_input_file_path_get, METH_O, NULL},
+	 { "MolecularFileInput_include_heteroatoms_set", _wrap_MolecularFileInput_include_heteroatoms_set, METH_VARARGS, NULL},
+	 { "MolecularFileInput_include_heteroatoms_get", _wrap_MolecularFileInput_include_heteroatoms_get, METH_O, NULL},
+	 { "MolecularFileInput_read_as_assembly_set", _wrap_MolecularFileInput_read_as_assembly_set, METH_VARARGS, NULL},
+	 { "MolecularFileInput_read_as_assembly_get", _wrap_MolecularFileInput_read_as_assembly_get, METH_O, NULL},
+	 { "new_MolecularFileInput", _wrap_new_MolecularFileInput, METH_VARARGS, NULL},
+	 { "delete_MolecularFileInput", _wrap_delete_MolecularFileInput, METH_O, NULL},
+	 { "MolecularFileInput_swigregister", MolecularFileInput_swigregister, METH_O, NULL},
+	 { "MolecularFileInput_swiginit", MolecularFileInput_swiginit, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_restrict_input_atoms_set", _wrap_MolecularRadicalTessellationParameters_restrict_input_atoms_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_restrict_input_atoms_get", _wrap_MolecularRadicalTessellationParameters_restrict_input_atoms_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_restrict_contacts_to_construct_set", _wrap_MolecularRadicalTessellationParameters_restrict_contacts_to_construct_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_restrict_contacts_to_construct_get", _wrap_MolecularRadicalTessellationParameters_restrict_contacts_to_construct_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_restrict_contacts_for_output_set", _wrap_MolecularRadicalTessellationParameters_restrict_contacts_for_output_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_restrict_contacts_for_output_get", _wrap_MolecularRadicalTessellationParameters_restrict_contacts_for_output_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_restrict_cells_for_output_set", _wrap_MolecularRadicalTessellationParameters_restrict_cells_for_output_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_restrict_cells_for_output_get", _wrap_MolecularRadicalTessellationParameters_restrict_cells_for_output_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_probe_set", _wrap_MolecularRadicalTessellationParameters_probe_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_probe_get", _wrap_MolecularRadicalTessellationParameters_probe_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_compute_only_inter_chain_contacts_set", _wrap_MolecularRadicalTessellationParameters_compute_only_inter_chain_contacts_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_compute_only_inter_chain_contacts_get", _wrap_MolecularRadicalTessellationParameters_compute_only_inter_chain_contacts_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_compute_only_inter_residue_contacts_set", _wrap_MolecularRadicalTessellationParameters_compute_only_inter_residue_contacts_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_compute_only_inter_residue_contacts_get", _wrap_MolecularRadicalTessellationParameters_compute_only_inter_residue_contacts_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_record_atom_balls_set", _wrap_MolecularRadicalTessellationParameters_record_atom_balls_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_record_atom_balls_get", _wrap_MolecularRadicalTessellationParameters_record_atom_balls_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_record_inter_atom_contact_summaries_set", _wrap_MolecularRadicalTessellationParameters_record_inter_atom_contact_summaries_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_record_inter_atom_contact_summaries_get", _wrap_MolecularRadicalTessellationParameters_record_inter_atom_contact_summaries_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_record_inter_residue_contact_summaries_set", _wrap_MolecularRadicalTessellationParameters_record_inter_residue_contact_summaries_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_record_inter_residue_contact_summaries_get", _wrap_MolecularRadicalTessellationParameters_record_inter_residue_contact_summaries_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_record_inter_chain_contact_summaries_set", _wrap_MolecularRadicalTessellationParameters_record_inter_chain_contact_summaries_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_record_inter_chain_contact_summaries_get", _wrap_MolecularRadicalTessellationParameters_record_inter_chain_contact_summaries_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_record_atom_cell_summaries_set", _wrap_MolecularRadicalTessellationParameters_record_atom_cell_summaries_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_record_atom_cell_summaries_get", _wrap_MolecularRadicalTessellationParameters_record_atom_cell_summaries_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_record_residue_cell_summaries_set", _wrap_MolecularRadicalTessellationParameters_record_residue_cell_summaries_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_record_residue_cell_summaries_get", _wrap_MolecularRadicalTessellationParameters_record_residue_cell_summaries_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_record_chain_cell_summaries_set", _wrap_MolecularRadicalTessellationParameters_record_chain_cell_summaries_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_record_chain_cell_summaries_get", _wrap_MolecularRadicalTessellationParameters_record_chain_cell_summaries_get, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_record_everything_possible_set", _wrap_MolecularRadicalTessellationParameters_record_everything_possible_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellationParameters_record_everything_possible_get", _wrap_MolecularRadicalTessellationParameters_record_everything_possible_get, METH_O, NULL},
+	 { "new_MolecularRadicalTessellationParameters", _wrap_new_MolecularRadicalTessellationParameters, METH_NOARGS, NULL},
+	 { "delete_MolecularRadicalTessellationParameters", _wrap_delete_MolecularRadicalTessellationParameters, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_swigregister", MolecularRadicalTessellationParameters_swigregister, METH_O, NULL},
+	 { "MolecularRadicalTessellationParameters_swiginit", MolecularRadicalTessellationParameters_swiginit, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellation_params_set", _wrap_MolecularRadicalTessellation_params_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellation_params_get", _wrap_MolecularRadicalTessellation_params_get, METH_O, NULL},
+	 { "MolecularRadicalTessellation_atom_balls_set", _wrap_MolecularRadicalTessellation_atom_balls_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellation_atom_balls_get", _wrap_MolecularRadicalTessellation_atom_balls_get, METH_O, NULL},
+	 { "MolecularRadicalTessellation_inter_atom_contact_summaries_set", _wrap_MolecularRadicalTessellation_inter_atom_contact_summaries_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellation_inter_atom_contact_summaries_get", _wrap_MolecularRadicalTessellation_inter_atom_contact_summaries_get, METH_O, NULL},
+	 { "MolecularRadicalTessellation_inter_residue_contact_summaries_set", _wrap_MolecularRadicalTessellation_inter_residue_contact_summaries_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellation_inter_residue_contact_summaries_get", _wrap_MolecularRadicalTessellation_inter_residue_contact_summaries_get, METH_O, NULL},
+	 { "MolecularRadicalTessellation_inter_chain_contact_summaries_set", _wrap_MolecularRadicalTessellation_inter_chain_contact_summaries_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellation_inter_chain_contact_summaries_get", _wrap_MolecularRadicalTessellation_inter_chain_contact_summaries_get, METH_O, NULL},
+	 { "MolecularRadicalTessellation_atom_cell_summaries_set", _wrap_MolecularRadicalTessellation_atom_cell_summaries_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellation_atom_cell_summaries_get", _wrap_MolecularRadicalTessellation_atom_cell_summaries_get, METH_O, NULL},
+	 { "MolecularRadicalTessellation_residue_cell_summaries_set", _wrap_MolecularRadicalTessellation_residue_cell_summaries_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellation_residue_cell_summaries_get", _wrap_MolecularRadicalTessellation_residue_cell_summaries_get, METH_O, NULL},
+	 { "MolecularRadicalTessellation_chain_cell_summaries_set", _wrap_MolecularRadicalTessellation_chain_cell_summaries_set, METH_VARARGS, NULL},
+	 { "MolecularRadicalTessellation_chain_cell_summaries_get", _wrap_MolecularRadicalTessellation_chain_cell_summaries_get, METH_O, NULL},
+	 { "new_MolecularRadicalTessellation", _wrap_new_MolecularRadicalTessellation, METH_VARARGS, NULL},
+	 { "delete_MolecularRadicalTessellation", _wrap_delete_MolecularRadicalTessellation, METH_O, NULL},
+	 { "MolecularRadicalTessellation_swigregister", MolecularRadicalTessellation_swigregister, METH_O, NULL},
+	 { "MolecularRadicalTessellation_swiginit", MolecularRadicalTessellation_swiginit, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
@@ -13162,6 +32787,16 @@ static PyMethodDef SwigMethods[] = {
 static swig_type_info _swigt__p_Ball = {"_p_Ball", "std::vector< Ball >::value_type *|Ball *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_Cell = {"_p_Cell", "std::vector< Cell >::value_type *|Cell *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_Contact = {"_p_Contact", "std::vector< Contact >::value_type *|Contact *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_MolecularAtomBall = {"_p_MolecularAtomBall", "std::vector< MolecularAtomBall >::value_type *|MolecularAtomBall *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_MolecularAtomCellSummary = {"_p_MolecularAtomCellSummary", "std::vector< MolecularAtomCellSummary >::value_type *|MolecularAtomCellSummary *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_MolecularChainCellSummary = {"_p_MolecularChainCellSummary", "std::vector< MolecularChainCellSummary >::value_type *|MolecularChainCellSummary *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_MolecularFileInput = {"_p_MolecularFileInput", "MolecularFileInput *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_MolecularInterAtomContactSummary = {"_p_MolecularInterAtomContactSummary", "std::vector< MolecularInterAtomContactSummary >::value_type *|MolecularInterAtomContactSummary *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_MolecularInterChainContactSummary = {"_p_MolecularInterChainContactSummary", "std::vector< MolecularInterChainContactSummary >::value_type *|MolecularInterChainContactSummary *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_MolecularInterResidueContactSummary = {"_p_MolecularInterResidueContactSummary", "std::vector< MolecularInterResidueContactSummary >::value_type *|MolecularInterResidueContactSummary *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_MolecularRadicalTessellation = {"_p_MolecularRadicalTessellation", "MolecularRadicalTessellation *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_MolecularRadicalTessellationParameters = {"_p_MolecularRadicalTessellationParameters", "MolecularRadicalTessellationParameters *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_MolecularResidueCellSummary = {"_p_MolecularResidueCellSummary", "std::vector< MolecularResidueCellSummary >::value_type *|MolecularResidueCellSummary *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_RadicalTessellation = {"_p_RadicalTessellation", "RadicalTessellation *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_allocator_type = {"_p_allocator_type", "allocator_type *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
@@ -13171,10 +32806,24 @@ static swig_type_info _swigt__p_size_type = {"_p_size_type", "size_type *", 0, 0
 static swig_type_info _swigt__p_std__allocatorT_Ball_t = {"_p_std__allocatorT_Ball_t", "std::vector< Ball >::allocator_type *|std::allocator< Ball > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__allocatorT_Cell_t = {"_p_std__allocatorT_Cell_t", "std::vector< Cell >::allocator_type *|std::allocator< Cell > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__allocatorT_Contact_t = {"_p_std__allocatorT_Contact_t", "std::vector< Contact >::allocator_type *|std::allocator< Contact > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__allocatorT_MolecularAtomBall_t = {"_p_std__allocatorT_MolecularAtomBall_t", "std::vector< MolecularAtomBall >::allocator_type *|std::allocator< MolecularAtomBall > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__allocatorT_MolecularAtomCellSummary_t = {"_p_std__allocatorT_MolecularAtomCellSummary_t", "std::vector< MolecularAtomCellSummary >::allocator_type *|std::allocator< MolecularAtomCellSummary > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__allocatorT_MolecularChainCellSummary_t = {"_p_std__allocatorT_MolecularChainCellSummary_t", "std::vector< MolecularChainCellSummary >::allocator_type *|std::allocator< MolecularChainCellSummary > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__allocatorT_MolecularInterAtomContactSummary_t = {"_p_std__allocatorT_MolecularInterAtomContactSummary_t", "std::vector< MolecularInterAtomContactSummary >::allocator_type *|std::allocator< MolecularInterAtomContactSummary > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__allocatorT_MolecularInterChainContactSummary_t = {"_p_std__allocatorT_MolecularInterChainContactSummary_t", "std::vector< MolecularInterChainContactSummary >::allocator_type *|std::allocator< MolecularInterChainContactSummary > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__allocatorT_MolecularInterResidueContactSummary_t = {"_p_std__allocatorT_MolecularInterResidueContactSummary_t", "std::vector< MolecularInterResidueContactSummary >::allocator_type *|std::allocator< MolecularInterResidueContactSummary > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__allocatorT_MolecularResidueCellSummary_t = {"_p_std__allocatorT_MolecularResidueCellSummary_t", "std::vector< MolecularResidueCellSummary >::allocator_type *|std::allocator< MolecularResidueCellSummary > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__invalid_argument = {"_p_std__invalid_argument", "std::invalid_argument *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_Ball_t = {"_p_std__vectorT_Ball_t", "std::vector< Ball,std::allocator< Ball > > *|std::vector< Ball > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_Cell_t = {"_p_std__vectorT_Cell_t", "std::vector< Cell,std::allocator< Cell > > *|std::vector< Cell > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_Contact_t = {"_p_std__vectorT_Contact_t", "std::vector< Contact,std::allocator< Contact > > *|std::vector< Contact > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_MolecularAtomBall_t = {"_p_std__vectorT_MolecularAtomBall_t", "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *|std::vector< MolecularAtomBall > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_MolecularAtomCellSummary_t = {"_p_std__vectorT_MolecularAtomCellSummary_t", "std::vector< MolecularAtomCellSummary,std::allocator< MolecularAtomCellSummary > > *|std::vector< MolecularAtomCellSummary > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_MolecularChainCellSummary_t = {"_p_std__vectorT_MolecularChainCellSummary_t", "std::vector< MolecularChainCellSummary,std::allocator< MolecularChainCellSummary > > *|std::vector< MolecularChainCellSummary > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_MolecularInterAtomContactSummary_t = {"_p_std__vectorT_MolecularInterAtomContactSummary_t", "std::vector< MolecularInterAtomContactSummary,std::allocator< MolecularInterAtomContactSummary > > *|std::vector< MolecularInterAtomContactSummary > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_MolecularInterChainContactSummary_t = {"_p_std__vectorT_MolecularInterChainContactSummary_t", "std::vector< MolecularInterChainContactSummary,std::allocator< MolecularInterChainContactSummary > > *|std::vector< MolecularInterChainContactSummary > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_MolecularInterResidueContactSummary_t = {"_p_std__vectorT_MolecularInterResidueContactSummary_t", "std::vector< MolecularInterResidueContactSummary,std::allocator< MolecularInterResidueContactSummary > > *|std::vector< MolecularInterResidueContactSummary > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_MolecularResidueCellSummary_t = {"_p_std__vectorT_MolecularResidueCellSummary_t", "std::vector< MolecularResidueCellSummary,std::allocator< MolecularResidueCellSummary > > *|std::vector< MolecularResidueCellSummary > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_swig__SwigPyIterator = {"_p_swig__SwigPyIterator", "swig::SwigPyIterator *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_value_type = {"_p_value_type", "value_type *", 0, 0, (void*)0, 0};
 
@@ -13182,6 +32831,16 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_Ball,
   &_swigt__p_Cell,
   &_swigt__p_Contact,
+  &_swigt__p_MolecularAtomBall,
+  &_swigt__p_MolecularAtomCellSummary,
+  &_swigt__p_MolecularChainCellSummary,
+  &_swigt__p_MolecularFileInput,
+  &_swigt__p_MolecularInterAtomContactSummary,
+  &_swigt__p_MolecularInterChainContactSummary,
+  &_swigt__p_MolecularInterResidueContactSummary,
+  &_swigt__p_MolecularRadicalTessellation,
+  &_swigt__p_MolecularRadicalTessellationParameters,
+  &_swigt__p_MolecularResidueCellSummary,
   &_swigt__p_RadicalTessellation,
   &_swigt__p_allocator_type,
   &_swigt__p_char,
@@ -13191,10 +32850,24 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_std__allocatorT_Ball_t,
   &_swigt__p_std__allocatorT_Cell_t,
   &_swigt__p_std__allocatorT_Contact_t,
+  &_swigt__p_std__allocatorT_MolecularAtomBall_t,
+  &_swigt__p_std__allocatorT_MolecularAtomCellSummary_t,
+  &_swigt__p_std__allocatorT_MolecularChainCellSummary_t,
+  &_swigt__p_std__allocatorT_MolecularInterAtomContactSummary_t,
+  &_swigt__p_std__allocatorT_MolecularInterChainContactSummary_t,
+  &_swigt__p_std__allocatorT_MolecularInterResidueContactSummary_t,
+  &_swigt__p_std__allocatorT_MolecularResidueCellSummary_t,
   &_swigt__p_std__invalid_argument,
   &_swigt__p_std__vectorT_Ball_t,
   &_swigt__p_std__vectorT_Cell_t,
   &_swigt__p_std__vectorT_Contact_t,
+  &_swigt__p_std__vectorT_MolecularAtomBall_t,
+  &_swigt__p_std__vectorT_MolecularAtomCellSummary_t,
+  &_swigt__p_std__vectorT_MolecularChainCellSummary_t,
+  &_swigt__p_std__vectorT_MolecularInterAtomContactSummary_t,
+  &_swigt__p_std__vectorT_MolecularInterChainContactSummary_t,
+  &_swigt__p_std__vectorT_MolecularInterResidueContactSummary_t,
+  &_swigt__p_std__vectorT_MolecularResidueCellSummary_t,
   &_swigt__p_swig__SwigPyIterator,
   &_swigt__p_value_type,
 };
@@ -13202,6 +32875,16 @@ static swig_type_info *swig_type_initial[] = {
 static swig_cast_info _swigc__p_Ball[] = {  {&_swigt__p_Ball, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Cell[] = {  {&_swigt__p_Cell, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Contact[] = {  {&_swigt__p_Contact, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_MolecularAtomBall[] = {  {&_swigt__p_MolecularAtomBall, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_MolecularAtomCellSummary[] = {  {&_swigt__p_MolecularAtomCellSummary, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_MolecularChainCellSummary[] = {  {&_swigt__p_MolecularChainCellSummary, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_MolecularFileInput[] = {  {&_swigt__p_MolecularFileInput, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_MolecularInterAtomContactSummary[] = {  {&_swigt__p_MolecularInterAtomContactSummary, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_MolecularInterChainContactSummary[] = {  {&_swigt__p_MolecularInterChainContactSummary, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_MolecularInterResidueContactSummary[] = {  {&_swigt__p_MolecularInterResidueContactSummary, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_MolecularRadicalTessellation[] = {  {&_swigt__p_MolecularRadicalTessellation, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_MolecularRadicalTessellationParameters[] = {  {&_swigt__p_MolecularRadicalTessellationParameters, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_MolecularResidueCellSummary[] = {  {&_swigt__p_MolecularResidueCellSummary, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_RadicalTessellation[] = {  {&_swigt__p_RadicalTessellation, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_allocator_type[] = {  {&_swigt__p_allocator_type, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
@@ -13211,10 +32894,24 @@ static swig_cast_info _swigc__p_size_type[] = {  {&_swigt__p_size_type, 0, 0, 0}
 static swig_cast_info _swigc__p_std__allocatorT_Ball_t[] = {  {&_swigt__p_std__allocatorT_Ball_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__allocatorT_Cell_t[] = {  {&_swigt__p_std__allocatorT_Cell_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__allocatorT_Contact_t[] = {  {&_swigt__p_std__allocatorT_Contact_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__allocatorT_MolecularAtomBall_t[] = {  {&_swigt__p_std__allocatorT_MolecularAtomBall_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__allocatorT_MolecularAtomCellSummary_t[] = {  {&_swigt__p_std__allocatorT_MolecularAtomCellSummary_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__allocatorT_MolecularChainCellSummary_t[] = {  {&_swigt__p_std__allocatorT_MolecularChainCellSummary_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__allocatorT_MolecularInterAtomContactSummary_t[] = {  {&_swigt__p_std__allocatorT_MolecularInterAtomContactSummary_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__allocatorT_MolecularInterChainContactSummary_t[] = {  {&_swigt__p_std__allocatorT_MolecularInterChainContactSummary_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__allocatorT_MolecularInterResidueContactSummary_t[] = {  {&_swigt__p_std__allocatorT_MolecularInterResidueContactSummary_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__allocatorT_MolecularResidueCellSummary_t[] = {  {&_swigt__p_std__allocatorT_MolecularResidueCellSummary_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__invalid_argument[] = {  {&_swigt__p_std__invalid_argument, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_Ball_t[] = {  {&_swigt__p_std__vectorT_Ball_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_Cell_t[] = {  {&_swigt__p_std__vectorT_Cell_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_Contact_t[] = {  {&_swigt__p_std__vectorT_Contact_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_MolecularAtomBall_t[] = {  {&_swigt__p_std__vectorT_MolecularAtomBall_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_MolecularAtomCellSummary_t[] = {  {&_swigt__p_std__vectorT_MolecularAtomCellSummary_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_MolecularChainCellSummary_t[] = {  {&_swigt__p_std__vectorT_MolecularChainCellSummary_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_MolecularInterAtomContactSummary_t[] = {  {&_swigt__p_std__vectorT_MolecularInterAtomContactSummary_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_MolecularInterChainContactSummary_t[] = {  {&_swigt__p_std__vectorT_MolecularInterChainContactSummary_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_MolecularInterResidueContactSummary_t[] = {  {&_swigt__p_std__vectorT_MolecularInterResidueContactSummary_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_MolecularResidueCellSummary_t[] = {  {&_swigt__p_std__vectorT_MolecularResidueCellSummary_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_swig__SwigPyIterator[] = {  {&_swigt__p_swig__SwigPyIterator, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_value_type[] = {  {&_swigt__p_value_type, 0, 0, 0},{0, 0, 0, 0}};
 
@@ -13222,6 +32919,16 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_Ball,
   _swigc__p_Cell,
   _swigc__p_Contact,
+  _swigc__p_MolecularAtomBall,
+  _swigc__p_MolecularAtomCellSummary,
+  _swigc__p_MolecularChainCellSummary,
+  _swigc__p_MolecularFileInput,
+  _swigc__p_MolecularInterAtomContactSummary,
+  _swigc__p_MolecularInterChainContactSummary,
+  _swigc__p_MolecularInterResidueContactSummary,
+  _swigc__p_MolecularRadicalTessellation,
+  _swigc__p_MolecularRadicalTessellationParameters,
+  _swigc__p_MolecularResidueCellSummary,
   _swigc__p_RadicalTessellation,
   _swigc__p_allocator_type,
   _swigc__p_char,
@@ -13231,10 +32938,24 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_std__allocatorT_Ball_t,
   _swigc__p_std__allocatorT_Cell_t,
   _swigc__p_std__allocatorT_Contact_t,
+  _swigc__p_std__allocatorT_MolecularAtomBall_t,
+  _swigc__p_std__allocatorT_MolecularAtomCellSummary_t,
+  _swigc__p_std__allocatorT_MolecularChainCellSummary_t,
+  _swigc__p_std__allocatorT_MolecularInterAtomContactSummary_t,
+  _swigc__p_std__allocatorT_MolecularInterChainContactSummary_t,
+  _swigc__p_std__allocatorT_MolecularInterResidueContactSummary_t,
+  _swigc__p_std__allocatorT_MolecularResidueCellSummary_t,
   _swigc__p_std__invalid_argument,
   _swigc__p_std__vectorT_Ball_t,
   _swigc__p_std__vectorT_Cell_t,
   _swigc__p_std__vectorT_Contact_t,
+  _swigc__p_std__vectorT_MolecularAtomBall_t,
+  _swigc__p_std__vectorT_MolecularAtomCellSummary_t,
+  _swigc__p_std__vectorT_MolecularChainCellSummary_t,
+  _swigc__p_std__vectorT_MolecularInterAtomContactSummary_t,
+  _swigc__p_std__vectorT_MolecularInterChainContactSummary_t,
+  _swigc__p_std__vectorT_MolecularInterResidueContactSummary_t,
+  _swigc__p_std__vectorT_MolecularResidueCellSummary_t,
   _swigc__p_swig__SwigPyIterator,
   _swigc__p_value_type,
 };
