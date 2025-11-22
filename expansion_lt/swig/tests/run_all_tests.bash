@@ -24,7 +24,9 @@ source ./testvenv/bin/activate
 
 export PYTHONPATH="${PYTHONPATH}:${SWIGDIR}"
 
-python3 -B "./input/run_voronotalt_python.py" > "./output/run_voronotalt_python.py.output.txt"
+python3 -B "./input/run_voronotalt_python_simple.py" > "./output/run_voronotalt_python_simple.py.output.txt"
+
+python3 -B "./input/run_voronotalt_python_simple_biotite.py" > "./output/run_voronotalt_python_simple_biotite.py.output.txt"
 
 python3 -B "./input/run_voronotalt_python_molecular.py" > "./output/run_voronotalt_python_molecular.py.output.txt"
 
