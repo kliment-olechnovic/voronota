@@ -28,6 +28,8 @@ python3 -B "./input/run_voronotalt_python_simple.py" > "./output/run_voronotalt_
 
 python3 -B "./input/run_voronotalt_python_simple_biotite.py" > "./output/run_voronotalt_python_simple_biotite.py.output.txt"
 
+python3 -B "./input/run_voronotalt_python_simple_pandas.py" > "./output/run_voronotalt_python_simple_pandas.py.output.txt"
+
 python3 -B "./input/run_voronotalt_python_molecular.py" > "./output/run_voronotalt_python_molecular.py.output.txt"
 
 python3 -B "./input/run_voronotalt_python_molecular_biotite.py" > "./output/run_voronotalt_python_molecular_biotite.py.output.txt"
