@@ -1,0 +1,844 @@
+inter_residue_contacts:
+ir_contact A 53 GLU A 54 PHE 41.7696
+ir_contact A 53 GLU A 98 VAL 6.6074
+ir_contact A 53 GLU A 99 SER 5.8087
+ir_contact A 53 GLU A 97 GLY 27.4252
+ir_contact A 53 GLU A 120 LYS 4.3881
+ir_contact A 53 GLU A 55 ASP 1.6136
+ir_contact A 54 PHE A 55 ASP 24.9977
+ir_contact A 54 PHE A 98 VAL 22.6954
+ir_contact A 54 PHE A 103 ALA 10.8857
+ir_contact A 54 PHE A 56 VAL 0.0988
+ir_contact A 54 PHE A 96 GLU 1.7682
+ir_contact A 54 PHE A 95 LYS 0.2769
+ir_contact A 54 PHE A 100 LYS 37.9182
+ir_contact A 54 PHE A 119 VAL 16.3080
+ir_contact A 54 PHE A 99 SER 4.7729
+ir_contact A 54 PHE A 120 LYS 19.9717
+ir_contact A 55 ASP A 56 VAL 22.1998
+ir_contact A 55 ASP A 103 ALA 0.2911
+ir_contact A 55 ASP A 119 VAL 7.7737
+ir_contact A 55 ASP A 57 ILE 13.7087
+ir_contact A 55 ASP A 95 LYS 4.8995
+ir_contact A 55 ASP A 93 ALA 3.1391
+ir_contact A 55 ASP A 96 GLU 26.7909
+ir_contact A 55 ASP A 97 GLY 6.9819
+ir_contact A 55 ASP A 120 LYS 27.3867
+ir_contact A 56 VAL A 98 VAL 8.3302
+ir_contact A 56 VAL A 57 ILE 23.0153
+ir_contact A 56 VAL A 58 LEU 0.2412
+ir_contact A 56 VAL A 94 LEU 14.4873
+ir_contact A 56 VAL A 93 ALA 3.5752
+ir_contact A 56 VAL A 95 LYS 19.8139
+ir_contact A 56 VAL A 107 LYS 5.1052
+ir_contact A 56 VAL A 103 ALA 14.2973
+ir_contact A 57 ILE A 117 VAL 9.3433
+ir_contact A 57 ILE A 58 LEU 22.2368
+ir_contact A 57 ILE A 118 GLU 30.7653
+ir_contact A 57 ILE A 59 LYS 14.9269
+ir_contact A 57 ILE A 93 ALA 19.0850
+ir_contact A 57 ILE A 92 ALA 11.4411
+ir_contact A 57 ILE A 119 VAL 0.1327
+ir_contact A 58 LEU A 117 VAL 7.6715
+ir_contact A 58 LEU A 59 LYS 16.0975
+ir_contact A 58 LEU A 92 ALA 17.5318
+ir_contact A 58 LEU A 90 ALA 14.3168
+ir_contact A 58 LEU A 115 ALA 11.0831
+ir_contact A 58 LEU A 68 VAL 10.1713
+ir_contact A 58 LEU A 110 LEU 8.6559
+ir_contact A 58 LEU A 87 VAL 15.7137
+ir_contact A 58 LEU A 72 VAL 5.2845
+ir_contact A 59 LYS A 90 ALA 7.6643
+ir_contact A 59 LYS A 60 ALA 24.0473
+ir_contact A 59 LYS A 91 PRO 32.6250
+ir_contact A 59 LYS A 117 VAL 5.7425
+ir_contact A 59 LYS A 118 GLU 24.3394
+ir_contact A 58 LEU A 60 ALA 9.5951
+ir_contact A 60 ALA A 90 ALA 9.5055
+ir_contact A 60 ALA A 61 ALA 23.6917
+ir_contact A 60 ALA A 116 GLU 30.8350
+ir_contact A 60 ALA A 115 ALA 3.8045
+ir_contact A 58 LEU A 61 ALA 6.8008
+ir_contact A 61 ALA A 90 ALA 2.9571
+ir_contact A 61 ALA A 87 VAL 12.2426
+ir_contact A 61 ALA A 115 ALA 6.2148
+ir_contact A 61 ALA A 68 VAL 12.7136
+ir_contact A 61 ALA A 65 LYS 16.9262
+ir_contact A 61 ALA A 64 ASN 13.0426
+ir_contact A 61 ALA A 62 GLY 24.9970
+ir_contact A 60 ALA A 62 GLY 7.5984
+ir_contact A 62 GLY A 65 LYS 30.1471
+ir_contact A 62 GLY A 64 ASN 1.7888
+ir_contact A 62 GLY A 63 ALA 28.2815
+ir_contact A 63 ALA A 64 ASN 33.8481
+ir_contact A 61 ALA A 63 ALA 1.2543
+ir_contact A 63 ALA A 65 LYS 6.2885
+ir_contact A 63 ALA A 66 VAL 0.3421
+ir_contact A 64 ASN A 65 LYS 16.5661
+ir_contact A 64 ASN A 68 VAL 13.0760
+ir_contact A 64 ASN A 114 GLY 26.4409
+ir_contact A 64 ASN A 113 ALA 6.8266
+ir_contact A 65 LYS A 68 VAL 7.4499
+ir_contact A 65 LYS A 87 VAL 20.3414
+ir_contact A 65 LYS A 69 ILE 19.2955
+ir_contact A 65 LYS A 88 GLU 23.4721
+ir_contact A 65 LYS A 66 VAL 24.1099
+ir_contact A 66 VAL A 67 ALA 24.9291
+ir_contact A 64 ASN A 66 VAL 3.8316
+ir_contact A 66 VAL A 69 ILE 18.4632
+ir_contact A 66 VAL A 68 VAL 0.8465
+ir_contact A 66 VAL A 70 LYS 15.1507
+ir_contact A 67 ALA A 68 VAL 15.4512
+ir_contact A 65 LYS A 67 ALA 0.7192
+ir_contact A 64 ASN A 67 ALA 11.6860
+ir_contact A 67 ALA A 69 ILE 0.8376
+ir_contact A 67 ALA A 113 ALA 24.4933
+ir_contact A 67 ALA A 70 LYS 17.8399
+ir_contact A 67 ALA A 71 ALA 7.1755
+ir_contact A 68 VAL A 69 ILE 15.6987
+ir_contact A 68 VAL A 113 ALA 14.6395
+ir_contact A 68 VAL A 72 VAL 13.4776
+ir_contact A 68 VAL A 71 ALA 7.6393
+ir_contact A 68 VAL A 87 VAL 10.8807
+ir_contact A 68 VAL A 110 LEU 10.2023
+ir_contact A 69 ILE A 87 VAL 20.5798
+ir_contact A 69 ILE A 72 VAL 8.8582
+ir_contact A 69 ILE A 83 ALA 11.6649
+ir_contact A 69 ILE A 73 ARG 15.8415
+ir_contact A 69 ILE A 70 LYS 19.6726
+ir_contact A 69 ILE A 84 LYS 24.7139
+ir_contact A 68 VAL A 70 LYS 1.2959
+ir_contact A 70 LYS A 73 ARG 14.1991
+ir_contact A 70 LYS A 71 ALA 21.6931
+ir_contact A 70 LYS A 72 VAL 0.8805
+ir_contact A 70 LYS A 74 GLY 9.6528
+ir_contact A 71 ALA A 72 VAL 16.8330
+ir_contact A 69 ILE A 71 ALA 0.6425
+ir_contact A 71 ALA A 73 ARG 1.0321
+ir_contact A 71 ALA A 110 LEU 13.0527
+ir_contact A 71 ALA A 74 GLY 7.3420
+ir_contact A 71 ALA A 75 ALA 12.5168
+ir_contact A 71 ALA A 106 LEU 0.2078
+ir_contact A 71 ALA A 109 ALA 11.4897
+ir_contact A 72 VAL A 73 ARG 16.9995
+ir_contact A 72 VAL A 110 LEU 12.4052
+ir_contact A 72 VAL A 76 THR 18.8629
+ir_contact A 72 VAL A 83 ALA 12.1210
+ir_contact A 72 VAL A 87 VAL 10.7229
+ir_contact A 72 VAL A 78 LEU 6.6588
+ir_contact A 73 ARG A 83 ALA 12.0206
+ir_contact A 73 ARG A 78 LEU 19.7766
+ir_contact A 73 ARG A 77 GLY 15.2312
+ir_contact A 73 ARG A 79 GLY 6.0479
+ir_contact A 73 ARG A 80 LEU 33.1057
+ir_contact A 73 ARG A-2 96 GLU 16.2809
+ir_contact A 73 ARG A 74 GLY 24.4169
+ir_contact A 72 VAL A 74 GLY 0.8709
+ir_contact A 74 GLY A 75 ALA 25.4512
+ir_contact A 74 GLY A 76 THR 1.6873
+ir_contact A 74 GLY A 77 GLY 1.6890
+ir_contact A 75 ALA A 76 THR 31.4852
+ir_contact A 73 ARG A 75 ALA 1.0566
+ir_contact A 72 VAL A 75 ALA 8.0626
+ir_contact A 75 ALA A 77 GLY 0.0379
+ir_contact A 75 ALA A 95 LYS 8.4053
+ir_contact A 75 ALA A 106 LEU 24.3202
+ir_contact A 75 ALA A 110 LEU 0.1030
+ir_contact A 75 ALA A 109 ALA 1.5385
+ir_contact A 75 ALA A 94 LEU 0.2328
+ir_contact A 76 THR A 77 GLY 20.3140
+ir_contact A 73 ARG A 76 THR 4.3066
+ir_contact A 76 THR A 78 LEU 24.6779
+ir_contact A 76 THR A-2 95 LYS 19.7759
+ir_contact A 76 THR A-2 94 LEU 0.9286
+ir_contact A 76 THR A-2 76 THR 0.3327
+ir_contact A 76 THR A-2 78 LEU 1.4957
+ir_contact A 77 GLY A 78 LEU 23.6107
+ir_contact A 77 GLY A-2 96 GLU 23.8944
+ir_contact A 77 GLY A-2 95 LYS 15.1729
+ir_contact A 77 GLY A 79 GLY 0.5166
+ir_contact A 77 GLY A-2 94 LEU 1.1820
+ir_contact A 78 LEU A 83 ALA 12.2028
+ir_contact A 78 LEU A 79 GLY 21.5972
+ir_contact A 78 LEU A-2 96 GLU 4.1737
+ir_contact A 78 LEU A 82 GLU 16.2283
+ir_contact A 78 LEU A-2 78 LEU 15.5223
+ir_contact A 78 LEU A 86 LEU 13.7617
+ir_contact A 78 LEU A-2 86 LEU 11.1166
+ir_contact A 78 LEU A-2 94 LEU 20.2905
+ir_contact A 79 GLY A 82 GLU 15.0613
+ir_contact A 79 GLY A 83 ALA 7.1782
+ir_contact A 79 GLY A 80 LEU 18.7371
+ir_contact A 80 LEU A 83 ALA 5.6554
+ir_contact A 69 ILE A 80 LEU 16.6867
+ir_contact A 80 LEU A 81 LYS 25.5727
+ir_contact A 80 LEU A 82 GLU 2.1627
+ir_contact A 80 LEU A 84 LYS 21.9687
+ir_contact A 81 LYS A 82 GLU 42.7608
+ir_contact A 79 GLY A 81 LYS 0.9118
+ir_contact A 81 LYS A 84 LYS 14.8875
+ir_contact A 81 LYS A 83 ALA 0.4424
+ir_contact A 81 LYS A 85 ASP 28.5681
+ir_contact A 81 LYS A-2 91 PRO 11.2126
+ir_contact A 81 LYS A-2 89 SER 22.0480
+ir_contact A 81 LYS A-2 92 ALA 7.6167
+ir_contact A 81 LYS A-2 86 LEU 0.4982
+ir_contact A 82 GLU A 83 ALA 16.6792
+ir_contact A 82 GLU A 84 LYS 1.1278
+ir_contact A 82 GLU A 85 ASP 11.0968
+ir_contact A 82 GLU A 86 LEU 12.0190
+ir_contact A 82 GLU A-2 92 ALA 15.0794
+ir_contact A 82 GLU A-2 93 ALA 19.6383
+ir_contact A 82 GLU A-2 94 LEU 0.2751
+ir_contact A 83 ALA A 84 LYS 15.5823
+ir_contact A 83 ALA A 87 VAL 11.3528
+ir_contact A 83 ALA A 86 LEU 10.0793
+ir_contact A 84 LYS A 85 ASP 29.0403
+ir_contact A 84 LYS A 87 VAL 6.4189
+ir_contact A 84 LYS A 88 GLU 38.2473
+ir_contact A 83 ALA A 85 ASP 0.8236
+ir_contact A 85 ASP A 86 LEU 18.8723
+ir_contact A 85 ASP A 87 VAL 0.6569
+ir_contact A 85 ASP A 89 SER 16.4199
+ir_contact A 85 ASP A 88 GLU 13.6096
+ir_contact A 85 ASP A-2 85 ASP 1.3770
+ir_contact A 85 ASP A-2 89 SER 7.0020
+ir_contact A 86 LEU A 87 VAL 21.9064
+ir_contact A 84 LYS A 86 LEU 1.0248
+ir_contact A 86 LEU A 92 ALA 18.0210
+ir_contact A 86 LEU A-2 82 GLU 13.8876
+ir_contact A 86 LEU A 88 GLU 1.0618
+ir_contact A 58 LEU A 86 LEU 12.3520
+ir_contact A 86 LEU A 90 ALA 4.4852
+ir_contact A 72 VAL A 86 LEU 9.3841
+ir_contact A 86 LEU A-2 78 LEU 11.1166
+ir_contact A 86 LEU A 94 LEU 20.0293
+ir_contact A 87 VAL A 88 GLU 21.3308
+ir_contact A 87 VAL A 90 ALA 12.7273
+ir_contact A 88 GLU A 89 SER 23.3659
+ir_contact A 88 GLU A 90 ALA 5.1884
+ir_contact A 69 ILE A 88 GLU 5.2664
+ir_contact A 89 SER A 90 ALA 24.2409
+ir_contact A 87 VAL A 89 SER 1.8918
+ir_contact A 86 LEU A 89 SER 13.2583
+ir_contact A 89 SER A 92 ALA 3.7571
+ir_contact A 89 SER A-2 81 LYS 22.0480
+ir_contact A 89 SER A 91 PRO 4.2721
+ir_contact A 89 SER A-2 85 ASP 7.0020
+ir_contact A 90 ALA A 92 ALA 5.9281
+ir_contact A 90 ALA A 91 PRO 29.8458
+ir_contact A 91 PRO A 92 ALA 20.7083
+ir_contact A 58 LEU A 91 PRO 3.6018
+ir_contact A 57 ILE A 91 PRO 7.8822
+ir_contact A 91 PRO A-2 81 LYS 11.2126
+ir_contact A 91 PRO A-2 82 GLU 0.3553
+ir_contact A 92 ALA A 93 ALA 18.7248
+ir_contact A 92 ALA A 94 LEU 5.4807
+ir_contact A 93 ALA A-2 82 GLU 19.6383
+ir_contact A 93 ALA A 94 LEU 19.1867
+ir_contact A 93 ALA A 95 LYS 2.8474
+ir_contact A 93 ALA A-2 79 GLY 13.7282
+ir_contact A 93 ALA A-2 78 LEU 3.5564
+ir_contact A 57 ILE A 94 LEU 0.8221
+ir_contact A 58 LEU A 94 LEU 15.6835
+ir_contact A 94 LEU A 95 LYS 27.8573
+ir_contact A 94 LEU A-2 78 LEU 20.2905
+ir_contact A 94 LEU A-2 79 GLY 0.0899
+ir_contact A 94 LEU A-2 77 GLY 1.1820
+ir_contact A 76 THR A 94 LEU 19.0704
+ir_contact A 72 VAL A 94 LEU 18.3593
+ir_contact A 78 LEU A 94 LEU 1.5456
+ir_contact A 94 LEU A 110 LEU 14.7324
+ir_contact A 94 LEU A 106 LEU 12.1143
+ir_contact A 95 LYS A-2 79 GLY 0.0212
+ir_contact A 95 LYS A 98 VAL 29.7036
+ir_contact A 95 LYS A 96 GLU 23.9703
+ir_contact A 76 THR A 95 LYS 17.3236
+ir_contact A 95 LYS A-2 77 GLY 15.1729
+ir_contact A 95 LYS A 106 LEU 17.3029
+ir_contact A 95 LYS A-2 76 THR 19.7759
+ir_contact A 95 LYS A-2 95 LYS 6.6044
+ir_contact A 96 GLU A 98 VAL 8.8511
+ir_contact A 96 GLU A 97 GLY 25.8506
+ir_contact A 96 GLU A-2 77 GLY 23.8944
+ir_contact A 96 GLU A-2 78 LEU 4.1737
+ir_contact A 93 ALA A 96 GLU 17.9702
+ir_contact A 96 GLU A-2 79 GLY 14.2823
+ir_contact A 96 GLU A-2 80 LEU 0.9955
+ir_contact A 97 GLY A 98 VAL 24.5996
+ir_contact A 54 PHE A 97 GLY 6.5079
+ir_contact A 97 GLY A 99 SER 0.6265
+ir_contact A 98 VAL A 99 SER 27.5246
+ir_contact A 98 VAL A 103 ALA 11.5277
+ir_contact A 98 VAL A 106 LEU 2.3475
+ir_contact A 55 ASP A 98 VAL 0.6025
+ir_contact A 99 SER A 100 LYS 21.4595
+ir_contact A 99 SER A 103 ALA 6.7343
+ir_contact A 99 SER A 102 ASP 23.0146
+ir_contact A 99 SER A 101 ASP 9.9261
+ir_contact A 100 LYS A 103 ALA 9.4835
+ir_contact A 100 LYS A 104 GLU 27.9559
+ir_contact A 100 LYS A 101 ASP 30.6457
+ir_contact A 100 LYS A 119 VAL 0.6180
+ir_contact A 101 ASP A 102 ASP 24.0139
+ir_contact A 101 ASP A 104 GLU 12.3459
+ir_contact A 101 ASP A 103 ALA 0.9866
+ir_contact A 101 ASP A 105 ALA 13.2079
+ir_contact A 102 ASP A 103 ALA 16.4693
+ir_contact A 100 LYS A 102 ASP 0.8421
+ir_contact A 102 ASP A 104 GLU 0.8807
+ir_contact A 98 VAL A 102 ASP 18.2613
+ir_contact A 102 ASP A 106 LEU 12.9745
+ir_contact A 102 ASP A 105 ALA 12.0304
+ir_contact A 103 ALA A 104 GLU 18.3173
+ir_contact A 103 ALA A 107 LYS 7.8291
+ir_contact A 103 ALA A 119 VAL 16.9351
+ir_contact A 103 ALA A 106 LEU 6.7231
+ir_contact A 104 GLU A 107 LYS 30.5302
+ir_contact A 104 GLU A 105 ALA 19.7415
+ir_contact A 104 GLU A 108 LYS 17.2268
+ir_contact A 104 GLU A 119 VAL 18.0009
+ir_contact A 105 ALA A 106 LEU 19.6683
+ir_contact A 103 ALA A 105 ALA 0.8746
+ir_contact A 105 ALA A 108 LYS 14.3836
+ir_contact A 105 ALA A 107 LYS 0.8943
+ir_contact A 105 ALA A 109 ALA 11.6185
+ir_contact A 106 LEU A 107 LYS 16.8303
+ir_contact A 104 GLU A 106 LEU 0.7574
+ir_contact A 106 LEU A 108 LYS 1.0204
+ir_contact A 56 VAL A 106 LEU 19.7555
+ir_contact A 106 LEU A 110 LEU 24.9814
+ir_contact A 106 LEU A 109 ALA 15.8781
+ir_contact A 76 THR A 106 LEU 1.8476
+ir_contact A 72 VAL A 106 LEU 0.2943
+ir_contact A 107 LYS A 108 LYS 26.0618
+ir_contact A 107 LYS A 117 VAL 23.1078
+ir_contact A 107 LYS A 110 LEU 6.6356
+ir_contact A 107 LYS A 111 GLU 31.8579
+ir_contact A 107 LYS A 119 VAL 21.2389
+ir_contact A 107 LYS A 118 GLU 1.4938
+ir_contact A 108 LYS A 109 ALA 19.0262
+ir_contact A 108 LYS A 110 LEU 0.8186
+ir_contact A 108 LYS A 111 GLU 18.4305
+ir_contact A 108 LYS A 112 GLU 23.9518
+ir_contact A 107 LYS A 109 ALA 0.8162
+ir_contact A 109 ALA A 110 LEU 19.0844
+ir_contact A 109 ALA A 111 GLU 0.9159
+ir_contact A 109 ALA A 113 ALA 8.8563
+ir_contact A 109 ALA A 112 GLU 16.1651
+ir_contact A 110 LEU A 111 GLU 15.8163
+ir_contact A 110 LEU A 115 ALA 15.2917
+ir_contact A 110 LEU A 117 VAL 17.7145
+ir_contact A 110 LEU A 113 ALA 10.5671
+ir_contact A 56 VAL A 110 LEU 7.6601
+ir_contact A 57 ILE A 110 LEU 0.0810
+ir_contact A 111 GLU A 117 VAL 18.6771
+ir_contact A 111 GLU A 115 ALA 15.6158
+ir_contact A 111 GLU A 112 GLU 23.3982
+ir_contact A 111 GLU A 114 GLY 11.6577
+ir_contact A 110 LEU A 112 GLU 0.9095
+ir_contact A 112 GLU A 113 ALA 24.6349
+ir_contact A 112 GLU A 114 GLY 3.9969
+ir_contact A 113 ALA A 114 GLY 17.4864
+ir_contact A 111 GLU A 113 ALA 1.1012
+ir_contact A 71 ALA A 113 ALA 12.8869
+ir_contact A 114 GLY A 115 ALA 23.7009
+ir_contact A 110 LEU A 114 GLY 2.8049
+ir_contact A 68 VAL A 114 GLY 4.2695
+ir_contact A 114 GLY A 116 GLU 0.9989
+ir_contact A 61 ALA A 114 GLY 5.7071
+ir_contact A 60 ALA A 114 GLY 0.0761
+ir_contact A 68 VAL A 115 ALA 14.9714
+ir_contact A 115 ALA A 116 GLU 24.5168
+ir_contact A 115 ALA A 117 VAL 11.7593
+ir_contact A 58 LEU A 116 GLU 4.0231
+ir_contact A 116 GLU A 117 VAL 27.0797
+ir_contact A 111 GLU A 116 GLU 0.0157
+ir_contact A 59 LYS A 116 GLU 33.0578
+ir_contact A 117 VAL A 118 GLU 31.3762
+ir_contact A 56 VAL A 117 VAL 10.4233
+ir_contact A 118 GLU A 119 VAL 30.9166
+ir_contact A 56 VAL A 118 GLU 3.7069
+ir_contact A 55 ASP A 118 GLU 0.5158
+ir_contact A 118 GLU A 120 LYS 22.8495
+ir_contact A 56 VAL A 119 VAL 10.5519
+ir_contact A 119 VAL A 120 LYS 29.5942
+ir_contact A 117 VAL A 119 VAL 2.4013
+ir_contact A 57 ILE A 120 LYS 23.1840
+ir_contact A-2 53 GLU A-2 54 PHE 41.7696
+ir_contact A-2 53 GLU A-2 98 VAL 6.6074
+ir_contact A-2 53 GLU A-2 99 SER 5.8087
+ir_contact A-2 53 GLU A-2 97 GLY 27.4252
+ir_contact A-2 53 GLU A-2 120 LYS 4.3881
+ir_contact A-2 53 GLU A-2 55 ASP 1.6136
+ir_contact A-2 54 PHE A-2 55 ASP 24.9977
+ir_contact A-2 54 PHE A-2 98 VAL 22.6954
+ir_contact A-2 54 PHE A-2 103 ALA 10.8857
+ir_contact A-2 54 PHE A-2 56 VAL 0.0988
+ir_contact A-2 54 PHE A-2 96 GLU 1.7682
+ir_contact A-2 54 PHE A-2 95 LYS 0.2769
+ir_contact A-2 54 PHE A-2 100 LYS 37.9182
+ir_contact A-2 54 PHE A-2 119 VAL 16.3080
+ir_contact A-2 54 PHE A-2 99 SER 4.7729
+ir_contact A-2 54 PHE A-2 120 LYS 19.9717
+ir_contact A-2 55 ASP A-2 56 VAL 22.1998
+ir_contact A-2 55 ASP A-2 103 ALA 0.2911
+ir_contact A-2 55 ASP A-2 119 VAL 7.7737
+ir_contact A-2 55 ASP A-2 57 ILE 13.7087
+ir_contact A-2 55 ASP A-2 95 LYS 4.8995
+ir_contact A-2 55 ASP A-2 93 ALA 3.1391
+ir_contact A-2 55 ASP A-2 96 GLU 26.7909
+ir_contact A-2 55 ASP A-2 97 GLY 6.9819
+ir_contact A-2 55 ASP A-2 120 LYS 27.3867
+ir_contact A-2 56 VAL A-2 98 VAL 8.3302
+ir_contact A-2 56 VAL A-2 57 ILE 23.0153
+ir_contact A-2 56 VAL A-2 58 LEU 0.2412
+ir_contact A-2 56 VAL A-2 94 LEU 14.4873
+ir_contact A-2 56 VAL A-2 93 ALA 3.5752
+ir_contact A-2 56 VAL A-2 95 LYS 19.8139
+ir_contact A-2 56 VAL A-2 107 LYS 5.1052
+ir_contact A-2 56 VAL A-2 103 ALA 14.2973
+ir_contact A-2 57 ILE A-2 117 VAL 9.3433
+ir_contact A-2 57 ILE A-2 58 LEU 22.2368
+ir_contact A-2 57 ILE A-2 118 GLU 30.7653
+ir_contact A-2 57 ILE A-2 59 LYS 14.9269
+ir_contact A-2 57 ILE A-2 93 ALA 19.0850
+ir_contact A-2 57 ILE A-2 92 ALA 11.4411
+ir_contact A-2 57 ILE A-2 119 VAL 0.1327
+ir_contact A-2 58 LEU A-2 117 VAL 7.6715
+ir_contact A-2 58 LEU A-2 59 LYS 16.0975
+ir_contact A-2 58 LEU A-2 92 ALA 17.5318
+ir_contact A-2 58 LEU A-2 90 ALA 14.3168
+ir_contact A-2 58 LEU A-2 115 ALA 11.0831
+ir_contact A-2 58 LEU A-2 68 VAL 10.1713
+ir_contact A-2 58 LEU A-2 110 LEU 8.6559
+ir_contact A-2 58 LEU A-2 87 VAL 15.7137
+ir_contact A-2 58 LEU A-2 72 VAL 5.2845
+ir_contact A-2 59 LYS A-2 90 ALA 7.6643
+ir_contact A-2 59 LYS A-2 60 ALA 24.0473
+ir_contact A-2 59 LYS A-2 91 PRO 32.6250
+ir_contact A-2 59 LYS A-2 117 VAL 5.7425
+ir_contact A-2 59 LYS A-2 118 GLU 24.3394
+ir_contact A-2 58 LEU A-2 60 ALA 9.5951
+ir_contact A-2 60 ALA A-2 90 ALA 9.5055
+ir_contact A-2 60 ALA A-2 61 ALA 23.6917
+ir_contact A-2 60 ALA A-2 116 GLU 30.8350
+ir_contact A-2 60 ALA A-2 115 ALA 3.8045
+ir_contact A-2 58 LEU A-2 61 ALA 6.8008
+ir_contact A-2 61 ALA A-2 90 ALA 2.9571
+ir_contact A-2 61 ALA A-2 87 VAL 12.2426
+ir_contact A-2 61 ALA A-2 115 ALA 6.2148
+ir_contact A-2 61 ALA A-2 68 VAL 12.7136
+ir_contact A-2 61 ALA A-2 65 LYS 16.9262
+ir_contact A-2 61 ALA A-2 64 ASN 13.0426
+ir_contact A-2 61 ALA A-2 62 GLY 24.9970
+ir_contact A-2 60 ALA A-2 62 GLY 7.5984
+ir_contact A-2 62 GLY A-2 65 LYS 30.1471
+ir_contact A-2 62 GLY A-2 64 ASN 1.7888
+ir_contact A-2 62 GLY A-2 63 ALA 28.2815
+ir_contact A-2 63 ALA A-2 64 ASN 33.8481
+ir_contact A-2 61 ALA A-2 63 ALA 1.2543
+ir_contact A-2 63 ALA A-2 65 LYS 6.2885
+ir_contact A-2 63 ALA A-2 66 VAL 0.3421
+ir_contact A-2 64 ASN A-2 65 LYS 16.5661
+ir_contact A-2 64 ASN A-2 68 VAL 13.0760
+ir_contact A-2 64 ASN A-2 114 GLY 26.4409
+ir_contact A-2 64 ASN A-2 113 ALA 6.8266
+ir_contact A-2 65 LYS A-2 68 VAL 7.4499
+ir_contact A-2 65 LYS A-2 87 VAL 20.3414
+ir_contact A-2 65 LYS A-2 69 ILE 19.2955
+ir_contact A-2 65 LYS A-2 88 GLU 23.4721
+ir_contact A-2 65 LYS A-2 66 VAL 24.1099
+ir_contact A-2 66 VAL A-2 67 ALA 24.9291
+ir_contact A-2 64 ASN A-2 66 VAL 3.8316
+ir_contact A-2 66 VAL A-2 69 ILE 18.4632
+ir_contact A-2 66 VAL A-2 68 VAL 0.8465
+ir_contact A-2 66 VAL A-2 70 LYS 15.1507
+ir_contact A-2 67 ALA A-2 68 VAL 15.4512
+ir_contact A-2 65 LYS A-2 67 ALA 0.7192
+ir_contact A-2 64 ASN A-2 67 ALA 11.6860
+ir_contact A-2 67 ALA A-2 69 ILE 0.8376
+ir_contact A-2 67 ALA A-2 113 ALA 24.4933
+ir_contact A-2 67 ALA A-2 70 LYS 17.8399
+ir_contact A-2 67 ALA A-2 71 ALA 7.1755
+ir_contact A-2 68 VAL A-2 69 ILE 15.6987
+ir_contact A-2 68 VAL A-2 113 ALA 14.6395
+ir_contact A-2 68 VAL A-2 72 VAL 13.4776
+ir_contact A-2 68 VAL A-2 71 ALA 7.6393
+ir_contact A-2 68 VAL A-2 87 VAL 10.8807
+ir_contact A-2 68 VAL A-2 110 LEU 10.2023
+ir_contact A-2 69 ILE A-2 87 VAL 20.5798
+ir_contact A-2 69 ILE A-2 72 VAL 8.8582
+ir_contact A-2 69 ILE A-2 83 ALA 11.6649
+ir_contact A-2 69 ILE A-2 73 ARG 15.8415
+ir_contact A-2 69 ILE A-2 70 LYS 19.6726
+ir_contact A-2 69 ILE A-2 84 LYS 24.7139
+ir_contact A-2 68 VAL A-2 70 LYS 1.2959
+ir_contact A-2 70 LYS A-2 73 ARG 14.1991
+ir_contact A-2 70 LYS A-2 71 ALA 21.6931
+ir_contact A-2 70 LYS A-2 72 VAL 0.8805
+ir_contact A-2 70 LYS A-2 74 GLY 9.6528
+ir_contact A-2 71 ALA A-2 72 VAL 16.8330
+ir_contact A-2 69 ILE A-2 71 ALA 0.6425
+ir_contact A-2 71 ALA A-2 73 ARG 1.0321
+ir_contact A-2 71 ALA A-2 110 LEU 13.0527
+ir_contact A-2 71 ALA A-2 74 GLY 7.3420
+ir_contact A-2 71 ALA A-2 75 ALA 12.5168
+ir_contact A-2 71 ALA A-2 106 LEU 0.2078
+ir_contact A-2 71 ALA A-2 109 ALA 11.4897
+ir_contact A-2 72 VAL A-2 73 ARG 16.9995
+ir_contact A-2 72 VAL A-2 110 LEU 12.4052
+ir_contact A-2 72 VAL A-2 76 THR 18.8629
+ir_contact A-2 72 VAL A-2 83 ALA 12.1210
+ir_contact A-2 72 VAL A-2 87 VAL 10.7229
+ir_contact A-2 72 VAL A-2 78 LEU 6.6588
+ir_contact A-2 73 ARG A-2 83 ALA 12.0206
+ir_contact A-2 73 ARG A-2 78 LEU 19.7766
+ir_contact A-2 73 ARG A-2 77 GLY 15.2312
+ir_contact A-2 73 ARG A-2 79 GLY 6.0479
+ir_contact A-2 73 ARG A-2 80 LEU 33.1057
+ir_contact A 96 GLU A-2 73 ARG 16.2809
+ir_contact A-2 73 ARG A-2 74 GLY 24.4169
+ir_contact A-2 72 VAL A-2 74 GLY 0.8709
+ir_contact A-2 74 GLY A-2 75 ALA 25.4512
+ir_contact A-2 74 GLY A-2 76 THR 1.6873
+ir_contact A-2 74 GLY A-2 77 GLY 1.6890
+ir_contact A-2 75 ALA A-2 76 THR 31.4852
+ir_contact A-2 73 ARG A-2 75 ALA 1.0566
+ir_contact A-2 72 VAL A-2 75 ALA 8.0626
+ir_contact A-2 75 ALA A-2 77 GLY 0.0379
+ir_contact A-2 75 ALA A-2 95 LYS 8.4053
+ir_contact A-2 75 ALA A-2 106 LEU 24.3202
+ir_contact A-2 75 ALA A-2 110 LEU 0.1030
+ir_contact A-2 75 ALA A-2 109 ALA 1.5385
+ir_contact A-2 75 ALA A-2 94 LEU 0.2328
+ir_contact A-2 76 THR A-2 77 GLY 20.3140
+ir_contact A-2 73 ARG A-2 76 THR 4.3066
+ir_contact A-2 76 THR A-2 78 LEU 24.6779
+ir_contact A 94 LEU A-2 76 THR 0.9286
+ir_contact A 78 LEU A-2 76 THR 1.4957
+ir_contact A-2 77 GLY A-2 78 LEU 23.6107
+ir_contact A-2 77 GLY A-2 79 GLY 0.5166
+ir_contact A-2 78 LEU A-2 83 ALA 12.2028
+ir_contact A-2 78 LEU A-2 79 GLY 21.5972
+ir_contact A-2 78 LEU A-2 82 GLU 16.2283
+ir_contact A-2 78 LEU A-2 86 LEU 13.7617
+ir_contact A-2 79 GLY A-2 82 GLU 15.0613
+ir_contact A-2 79 GLY A-2 83 ALA 7.1782
+ir_contact A-2 79 GLY A-2 80 LEU 18.7371
+ir_contact A-2 80 LEU A-2 83 ALA 5.6554
+ir_contact A-2 69 ILE A-2 80 LEU 16.6867
+ir_contact A-2 80 LEU A-2 81 LYS 25.5727
+ir_contact A-2 80 LEU A-2 82 GLU 2.1627
+ir_contact A-2 80 LEU A-2 84 LYS 21.9687
+ir_contact A-2 81 LYS A-2 82 GLU 42.7608
+ir_contact A-2 79 GLY A-2 81 LYS 0.9118
+ir_contact A-2 81 LYS A-2 84 LYS 14.8875
+ir_contact A-2 81 LYS A-2 83 ALA 0.4424
+ir_contact A-2 81 LYS A-2 85 ASP 28.5681
+ir_contact A 92 ALA A-2 81 LYS 7.6167
+ir_contact A 86 LEU A-2 81 LYS 0.4982
+ir_contact A-2 82 GLU A-2 83 ALA 16.6792
+ir_contact A-2 82 GLU A-2 84 LYS 1.1278
+ir_contact A-2 82 GLU A-2 85 ASP 11.0968
+ir_contact A-2 82 GLU A-2 86 LEU 12.0190
+ir_contact A 92 ALA A-2 82 GLU 15.0794
+ir_contact A 94 LEU A-2 82 GLU 0.2751
+ir_contact A-2 83 ALA A-2 84 LYS 15.5823
+ir_contact A-2 83 ALA A-2 87 VAL 11.3528
+ir_contact A-2 83 ALA A-2 86 LEU 10.0793
+ir_contact A-2 84 LYS A-2 85 ASP 29.0403
+ir_contact A-2 84 LYS A-2 87 VAL 6.4189
+ir_contact A-2 84 LYS A-2 88 GLU 38.2473
+ir_contact A-2 83 ALA A-2 85 ASP 0.8236
+ir_contact A-2 85 ASP A-2 86 LEU 18.8723
+ir_contact A-2 85 ASP A-2 87 VAL 0.6569
+ir_contact A-2 85 ASP A-2 89 SER 16.4199
+ir_contact A-2 85 ASP A-2 88 GLU 13.6096
+ir_contact A-2 86 LEU A-2 87 VAL 21.9064
+ir_contact A-2 84 LYS A-2 86 LEU 1.0248
+ir_contact A-2 86 LEU A-2 92 ALA 18.0210
+ir_contact A 82 GLU A-2 86 LEU 13.8876
+ir_contact A-2 86 LEU A-2 88 GLU 1.0618
+ir_contact A-2 58 LEU A-2 86 LEU 12.3520
+ir_contact A-2 86 LEU A-2 90 ALA 4.4852
+ir_contact A-2 72 VAL A-2 86 LEU 9.3841
+ir_contact A-2 86 LEU A-2 94 LEU 20.0293
+ir_contact A-2 87 VAL A-2 88 GLU 21.3308
+ir_contact A-2 87 VAL A-2 90 ALA 12.7273
+ir_contact A-2 88 GLU A-2 89 SER 23.3659
+ir_contact A-2 88 GLU A-2 90 ALA 5.1884
+ir_contact A-2 69 ILE A-2 88 GLU 5.2664
+ir_contact A-2 89 SER A-2 90 ALA 24.2409
+ir_contact A-2 87 VAL A-2 89 SER 1.8918
+ir_contact A-2 86 LEU A-2 89 SER 13.2583
+ir_contact A-2 89 SER A-2 92 ALA 3.7571
+ir_contact A-2 89 SER A-2 91 PRO 4.2721
+ir_contact A-2 90 ALA A-2 92 ALA 5.9281
+ir_contact A-2 90 ALA A-2 91 PRO 29.8458
+ir_contact A-2 91 PRO A-2 92 ALA 20.7083
+ir_contact A-2 58 LEU A-2 91 PRO 3.6018
+ir_contact A-2 57 ILE A-2 91 PRO 7.8822
+ir_contact A 82 GLU A-2 91 PRO 0.3553
+ir_contact A-2 92 ALA A-2 93 ALA 18.7248
+ir_contact A-2 92 ALA A-2 94 LEU 5.4807
+ir_contact A-2 93 ALA A-2 94 LEU 19.1867
+ir_contact A-2 93 ALA A-2 95 LYS 2.8474
+ir_contact A 79 GLY A-2 93 ALA 13.7282
+ir_contact A 78 LEU A-2 93 ALA 3.5564
+ir_contact A-2 57 ILE A-2 94 LEU 0.8221
+ir_contact A-2 58 LEU A-2 94 LEU 15.6835
+ir_contact A-2 94 LEU A-2 95 LYS 27.8573
+ir_contact A 79 GLY A-2 94 LEU 0.0899
+ir_contact A-2 76 THR A-2 94 LEU 19.0704
+ir_contact A-2 72 VAL A-2 94 LEU 18.3593
+ir_contact A-2 78 LEU A-2 94 LEU 1.5456
+ir_contact A-2 94 LEU A-2 110 LEU 14.7324
+ir_contact A-2 94 LEU A-2 106 LEU 12.1143
+ir_contact A 79 GLY A-2 95 LYS 0.0212
+ir_contact A-2 95 LYS A-2 98 VAL 29.7036
+ir_contact A-2 95 LYS A-2 96 GLU 23.9703
+ir_contact A-2 76 THR A-2 95 LYS 17.3236
+ir_contact A-2 95 LYS A-2 106 LEU 17.3029
+ir_contact A-2 96 GLU A-2 98 VAL 8.8511
+ir_contact A-2 96 GLU A-2 97 GLY 25.8506
+ir_contact A-2 93 ALA A-2 96 GLU 17.9702
+ir_contact A 79 GLY A-2 96 GLU 14.2823
+ir_contact A 80 LEU A-2 96 GLU 0.9955
+ir_contact A-2 97 GLY A-2 98 VAL 24.5996
+ir_contact A-2 54 PHE A-2 97 GLY 6.5079
+ir_contact A-2 97 GLY A-2 99 SER 0.6265
+ir_contact A-2 98 VAL A-2 99 SER 27.5246
+ir_contact A-2 98 VAL A-2 103 ALA 11.5277
+ir_contact A-2 98 VAL A-2 106 LEU 2.3475
+ir_contact A-2 55 ASP A-2 98 VAL 0.6025
+ir_contact A-2 99 SER A-2 100 LYS 21.4595
+ir_contact A-2 99 SER A-2 103 ALA 6.7343
+ir_contact A-2 99 SER A-2 102 ASP 23.0146
+ir_contact A-2 99 SER A-2 101 ASP 9.9261
+ir_contact A-2 100 LYS A-2 103 ALA 9.4835
+ir_contact A-2 100 LYS A-2 104 GLU 27.9559
+ir_contact A-2 100 LYS A-2 101 ASP 30.6457
+ir_contact A-2 100 LYS A-2 119 VAL 0.6180
+ir_contact A-2 101 ASP A-2 102 ASP 24.0139
+ir_contact A-2 101 ASP A-2 104 GLU 12.3459
+ir_contact A-2 101 ASP A-2 103 ALA 0.9866
+ir_contact A-2 101 ASP A-2 105 ALA 13.2079
+ir_contact A-2 102 ASP A-2 103 ALA 16.4693
+ir_contact A-2 100 LYS A-2 102 ASP 0.8421
+ir_contact A-2 102 ASP A-2 104 GLU 0.8807
+ir_contact A-2 98 VAL A-2 102 ASP 18.2613
+ir_contact A-2 102 ASP A-2 106 LEU 12.9745
+ir_contact A-2 102 ASP A-2 105 ALA 12.0304
+ir_contact A-2 103 ALA A-2 104 GLU 18.3173
+ir_contact A-2 103 ALA A-2 107 LYS 7.8291
+ir_contact A-2 103 ALA A-2 119 VAL 16.9351
+ir_contact A-2 103 ALA A-2 106 LEU 6.7231
+ir_contact A-2 104 GLU A-2 107 LYS 30.5302
+ir_contact A-2 104 GLU A-2 105 ALA 19.7415
+ir_contact A-2 104 GLU A-2 108 LYS 17.2268
+ir_contact A-2 104 GLU A-2 119 VAL 18.0009
+ir_contact A-2 105 ALA A-2 106 LEU 19.6683
+ir_contact A-2 103 ALA A-2 105 ALA 0.8746
+ir_contact A-2 105 ALA A-2 108 LYS 14.3836
+ir_contact A-2 105 ALA A-2 107 LYS 0.8943
+ir_contact A-2 105 ALA A-2 109 ALA 11.6185
+ir_contact A-2 106 LEU A-2 107 LYS 16.8303
+ir_contact A-2 104 GLU A-2 106 LEU 0.7574
+ir_contact A-2 106 LEU A-2 108 LYS 1.0204
+ir_contact A-2 56 VAL A-2 106 LEU 19.7555
+ir_contact A-2 106 LEU A-2 110 LEU 24.9814
+ir_contact A-2 106 LEU A-2 109 ALA 15.8781
+ir_contact A-2 76 THR A-2 106 LEU 1.8476
+ir_contact A-2 72 VAL A-2 106 LEU 0.2943
+ir_contact A-2 107 LYS A-2 108 LYS 26.0618
+ir_contact A-2 107 LYS A-2 117 VAL 23.1078
+ir_contact A-2 107 LYS A-2 110 LEU 6.6356
+ir_contact A-2 107 LYS A-2 111 GLU 31.8579
+ir_contact A-2 107 LYS A-2 119 VAL 21.2389
+ir_contact A-2 107 LYS A-2 118 GLU 1.4938
+ir_contact A-2 108 LYS A-2 109 ALA 19.0262
+ir_contact A-2 108 LYS A-2 110 LEU 0.8186
+ir_contact A-2 108 LYS A-2 111 GLU 18.4305
+ir_contact A-2 108 LYS A-2 112 GLU 23.9518
+ir_contact A-2 107 LYS A-2 109 ALA 0.8162
+ir_contact A-2 109 ALA A-2 110 LEU 19.0844
+ir_contact A-2 109 ALA A-2 111 GLU 0.9159
+ir_contact A-2 109 ALA A-2 113 ALA 8.8563
+ir_contact A-2 109 ALA A-2 112 GLU 16.1651
+ir_contact A-2 110 LEU A-2 111 GLU 15.8163
+ir_contact A-2 110 LEU A-2 115 ALA 15.2917
+ir_contact A-2 110 LEU A-2 117 VAL 17.7145
+ir_contact A-2 110 LEU A-2 113 ALA 10.5671
+ir_contact A-2 56 VAL A-2 110 LEU 7.6601
+ir_contact A-2 57 ILE A-2 110 LEU 0.0810
+ir_contact A-2 111 GLU A-2 117 VAL 18.6771
+ir_contact A-2 111 GLU A-2 115 ALA 15.6158
+ir_contact A-2 111 GLU A-2 112 GLU 23.3982
+ir_contact A-2 111 GLU A-2 114 GLY 11.6577
+ir_contact A-2 110 LEU A-2 112 GLU 0.9095
+ir_contact A-2 112 GLU A-2 113 ALA 24.6349
+ir_contact A-2 112 GLU A-2 114 GLY 3.9969
+ir_contact A-2 113 ALA A-2 114 GLY 17.4864
+ir_contact A-2 111 GLU A-2 113 ALA 1.1012
+ir_contact A-2 71 ALA A-2 113 ALA 12.8869
+ir_contact A-2 114 GLY A-2 115 ALA 23.7009
+ir_contact A-2 110 LEU A-2 114 GLY 2.8049
+ir_contact A-2 68 VAL A-2 114 GLY 4.2695
+ir_contact A-2 114 GLY A-2 116 GLU 0.9989
+ir_contact A-2 61 ALA A-2 114 GLY 5.7071
+ir_contact A-2 60 ALA A-2 114 GLY 0.0761
+ir_contact A-2 68 VAL A-2 115 ALA 14.9714
+ir_contact A-2 115 ALA A-2 116 GLU 24.5168
+ir_contact A-2 115 ALA A-2 117 VAL 11.7593
+ir_contact A-2 58 LEU A-2 116 GLU 4.0231
+ir_contact A-2 116 GLU A-2 117 VAL 27.0797
+ir_contact A-2 111 GLU A-2 116 GLU 0.0157
+ir_contact A-2 59 LYS A-2 116 GLU 33.0578
+ir_contact A-2 117 VAL A-2 118 GLU 31.3762
+ir_contact A-2 56 VAL A-2 117 VAL 10.4233
+ir_contact A-2 118 GLU A-2 119 VAL 30.9166
+ir_contact A-2 56 VAL A-2 118 GLU 3.7069
+ir_contact A-2 55 ASP A-2 118 GLU 0.5158
+ir_contact A-2 118 GLU A-2 120 LYS 22.8495
+ir_contact A-2 56 VAL A-2 119 VAL 10.5519
+ir_contact A-2 119 VAL A-2 120 LYS 29.5942
+ir_contact A-2 117 VAL A-2 119 VAL 2.4013
+ir_contact A-2 57 ILE A-2 120 LYS 23.1840
+residue_cells:
+r_cell A 53 GLU 177.0128 325.2236
+r_cell A 54 PHE 58.0118 251.7894
+r_cell A 55 ASP 41.1680 171.3647
+r_cell A 56 VAL 0.0000 147.2834
+r_cell A 57 ILE 20.6124 194.4053
+r_cell A 58 LEU 0.0000 177.0165
+r_cell A 59 LYS 85.1490 269.4431
+r_cell A 60 ALA 39.8847 131.0839
+r_cell A 61 ALA 5.1999 105.0795
+r_cell A 62 GLY 45.8102 110.0653
+r_cell A 63 ALA 112.2227 192.6914
+r_cell A 64 ASN 66.5364 192.4767
+r_cell A 65 LYS 71.3926 248.3543
+r_cell A 66 VAL 126.8864 253.9404
+r_cell A 67 ALA 43.7116 136.4356
+r_cell A 68 VAL 0.0000 136.3339
+r_cell A 69 ILE 15.8391 185.9891
+r_cell A 70 LYS 153.8833 317.0630
+r_cell A 71 ALA 24.4576 121.9934
+r_cell A 72 VAL 0.0000 144.5201
+r_cell A 73 ARG 79.8132 274.3300
+r_cell A 74 GLY 72.1369 130.3936
+r_cell A 75 ALA 48.6918 146.8359
+r_cell A 76 THR 12.4367 156.8785
+r_cell A 77 GLY 14.3902 87.5725
+r_cell A 78 LEU 4.3716 188.2839
+r_cell A 79 GLY 0.5497 65.7794
+r_cell A 80 LEU 100.3661 254.0510
+r_cell A 81 LYS 79.1812 253.5244
+r_cell A 82 GLU 14.1255 159.8220
+r_cell A 83 ALA 0.0000 88.6609
+r_cell A 84 LYS 77.7694 247.0021
+r_cell A 85 ASP 61.2317 195.7407
+r_cell A 86 LEU 12.3618 192.0041
+r_cell A 87 VAL 1.6167 147.0061
+r_cell A 88 GLU 99.3952 247.3067
+r_cell A 89 SER 45.8550 150.2809
+r_cell A 90 ALA 31.4374 127.4516
+r_cell A 91 PRO 77.2971 200.8676
+r_cell A 92 ALA 2.1236 99.5794
+r_cell A 93 ALA 16.1245 113.8247
+r_cell A 94 LEU 0.7128 183.2087
+r_cell A 95 LYS 45.1521 244.9249
+r_cell A 96 GLU 51.6839 206.8980
+r_cell A 97 GLY 45.0420 114.5468
+r_cell A 98 VAL 17.9392 168.0524
+r_cell A 99 SER 61.4399 154.5827
+r_cell A 100 LYS 128.5615 298.3420
+r_cell A 101 ASP 114.4587 232.9676
+r_cell A 102 ASP 89.1010 209.3031
+r_cell A 103 ALA 0.0000 88.7923
+r_cell A 104 GLU 59.6298 214.4615
+r_cell A 105 ALA 63.3490 150.7789
+r_cell A 106 LEU 16.2732 190.3044
+r_cell A 107 LYS 53.5565 228.9183
+r_cell A 108 LYS 130.1390 301.6722
+r_cell A 109 ALA 44.6652 141.6877
+r_cell A 110 LEU 0.0928 169.0643
+r_cell A 111 GLU 84.9814 233.2990
+r_cell A 112 GLU 153.1007 286.6951
+r_cell A 113 ALA 20.1575 115.2914
+r_cell A 114 GLY 26.8647 93.5560
+r_cell A 115 ALA 9.3939 102.8978
+r_cell A 116 GLU 103.4112 239.8866
+r_cell A 117 VAL 21.1183 173.2713
+r_cell A 118 GLU 69.0129 213.3142
+r_cell A 119 VAL 39.2807 192.2648
+r_cell A 120 LYS 147.0227 330.2502
+r_cell A-2 53 GLU 177.0128 325.2236
+r_cell A-2 54 PHE 58.0118 251.7894
+r_cell A-2 55 ASP 41.1680 171.3647
+r_cell A-2 56 VAL 0.0000 147.2834
+r_cell A-2 57 ILE 20.6124 194.4053
+r_cell A-2 58 LEU 0.0000 177.0165
+r_cell A-2 59 LYS 85.1490 269.4431
+r_cell A-2 60 ALA 39.8847 131.0839
+r_cell A-2 61 ALA 5.1999 105.0795
+r_cell A-2 62 GLY 45.8102 110.0653
+r_cell A-2 63 ALA 112.2227 192.6914
+r_cell A-2 64 ASN 66.5364 192.4767
+r_cell A-2 65 LYS 71.3926 248.3543
+r_cell A-2 66 VAL 126.8864 253.9404
+r_cell A-2 67 ALA 43.7116 136.4356
+r_cell A-2 68 VAL 0.0000 136.3339
+r_cell A-2 69 ILE 15.8391 185.9891
+r_cell A-2 70 LYS 153.8833 317.0630
+r_cell A-2 71 ALA 24.4576 121.9934
+r_cell A-2 72 VAL 0.0000 144.5201
+r_cell A-2 73 ARG 79.8132 274.3300
+r_cell A-2 74 GLY 72.1369 130.3936
+r_cell A-2 75 ALA 48.6918 146.8359
+r_cell A-2 76 THR 12.4367 156.8785
+r_cell A-2 77 GLY 14.3902 87.5725
+r_cell A-2 78 LEU 4.3716 188.2839
+r_cell A-2 79 GLY 0.5497 65.7794
+r_cell A-2 80 LEU 100.3661 254.0510
+r_cell A-2 81 LYS 79.1812 253.5244
+r_cell A-2 82 GLU 14.1255 159.8220
+r_cell A-2 83 ALA 0.0000 88.6609
+r_cell A-2 84 LYS 77.7694 247.0021
+r_cell A-2 85 ASP 61.2317 195.7407
+r_cell A-2 86 LEU 12.3618 192.0041
+r_cell A-2 87 VAL 1.6167 147.0061
+r_cell A-2 88 GLU 99.3952 247.3067
+r_cell A-2 89 SER 45.8550 150.2809
+r_cell A-2 90 ALA 31.4374 127.4516
+r_cell A-2 91 PRO 77.2971 200.8676
+r_cell A-2 92 ALA 2.1236 99.5794
+r_cell A-2 93 ALA 16.1245 113.8247
+r_cell A-2 94 LEU 0.7128 183.2087
+r_cell A-2 95 LYS 45.1521 244.9249
+r_cell A-2 96 GLU 51.6839 206.8980
+r_cell A-2 97 GLY 45.0420 114.5468
+r_cell A-2 98 VAL 17.9392 168.0524
+r_cell A-2 99 SER 61.4399 154.5827
+r_cell A-2 100 LYS 128.5615 298.3420
+r_cell A-2 101 ASP 114.4587 232.9676
+r_cell A-2 102 ASP 89.1010 209.3031
+r_cell A-2 103 ALA 0.0000 88.7923
+r_cell A-2 104 GLU 59.6298 214.4615
+r_cell A-2 105 ALA 63.3490 150.7789
+r_cell A-2 106 LEU 16.2732 190.3044
+r_cell A-2 107 LYS 53.5565 228.9183
+r_cell A-2 108 LYS 130.1390 301.6722
+r_cell A-2 109 ALA 44.6652 141.6877
+r_cell A-2 110 LEU 0.0928 169.0643
+r_cell A-2 111 GLU 84.9814 233.2990
+r_cell A-2 112 GLU 153.1007 286.6951
+r_cell A-2 113 ALA 20.1575 115.2914
+r_cell A-2 114 GLY 26.8647 93.5560
+r_cell A-2 115 ALA 9.3939 102.8978
+r_cell A-2 116 GLU 103.4112 239.8866
+r_cell A-2 117 VAL 21.1183 173.2713
+r_cell A-2 118 GLU 69.0129 213.3142
+r_cell A-2 119 VAL 39.2807 192.2648
+r_cell A-2 120 LYS 147.0227 330.2502

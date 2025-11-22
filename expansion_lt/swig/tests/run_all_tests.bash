@@ -12,7 +12,7 @@ fi
 
 cd ../
 
-./compile_voronotalt_python.bash
+#./compile_voronotalt_python.bash
 
 SWIGDIR="$(pwd)"
 
@@ -33,6 +33,8 @@ python3 -B "./input/run_voronotalt_python_simple_pandas.py" > "./output/run_voro
 python3 -B "./input/run_voronotalt_python_molecular.py" > "./output/run_voronotalt_python_molecular.py.output.txt"
 
 python3 -B "./input/run_voronotalt_python_molecular_biotite.py" > "./output/run_voronotalt_python_molecular_biotite.py.output.txt"
+
+python3 -B "./input/run_voronotalt_python_molecular_biopython.py" > "./output/run_voronotalt_python_molecular_biopython.py.output.txt"
 
 python3 -B "./input/run_voronotalt_python_molecular_pandas.py" > "./output/run_voronotalt_python_molecular_pandas.py.output.txt"
 
