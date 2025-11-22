@@ -1,4 +1,4 @@
-from . import voronotalt_python as voronotalt
+from . import voronotalt_python as _voronotalt_backend
 from biotite.structure import AtomArray
 from biotite.structure.info import vdw_radius_single
 
@@ -20,7 +20,7 @@ def simple_balls_from_atom_array(atom_array: AtomArray, include_heteroatoms=True
         if r is None:
             r = default_radius
         
-        balls.append(voronotalt.Ball(x, y, z, float(r)))
+        balls.append(_voronotalt_backend.Ball(x, y, z, float(r)))
     return balls
 
 def molecular_atom_balls_from_atom_array(atom_array: AtomArray, include_heteroatoms=True, include_hydrogens=False, include_waters=False):
@@ -36,6 +36,6 @@ def molecular_atom_balls_from_atom_array(atom_array: AtomArray, include_heteroat
             continue
         
         x, y, z = map(float, atom.coord)
-        balls.append(voronotalt.MolecularAtomBall(str(atom.chain_id), int(atom.res_id), str(atom.ins_code), str(atom.res_name), str(atom.atom_name), x, y, z))
+        balls.append(_voronotalt_backend.MolecularAtomBall(str(atom.chain_id), int(atom.res_id), str(atom.ins_code), str(atom.res_name), str(atom.atom_name), x, y, z))
     return balls
 

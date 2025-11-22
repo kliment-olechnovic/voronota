@@ -1,0 +1,41 @@
+--------------------------------------------------------------------------------
+ID_chain  ID_residue_seq_number ID_residue_icode ID_residue_name ID_atom_name      x      y       z    r
+       A                     53                              GLU            N 18.222 18.496 -16.203 1.70
+       A                     53                              GLU           CA 17.706 17.982 -14.905 1.90
+       A                     53                              GLU            C 17.368 16.466 -15.121 1.75
+       A                     53                              GLU            O 16.780 16.073 -16.175 1.49
+       A                     53                              GLU           CB 16.552 18.744 -14.351 1.91
+--------------------------------------------------------------------------------
+ID1_chain  ID1_residue_seq_number ID1_residue_icode ID1_residue_name ID1_atom_name ID2_chain  ID2_residue_seq_number ID2_residue_icode ID2_residue_name ID2_atom_name      area  arc_length
+        A                      73                                ARG           NH2        A2                      96                                GLU           OE2 14.905449    7.341749
+        A                      73                                ARG           NH2        A2                      96                                GLU            CD  0.004027    0.000000
+        A                      73                                ARG           NH2        A2                      96                                GLU           OE1  1.371407    1.854750
+        A                      76                                THR             O        A2                      95                                LYS            CG  2.572559    0.140159
+        A                      76                                THR             O        A2                      94                                LEU             O  0.928608    0.811131
+--------------------------------------------------------------------------------
+ID1_chain  ID1_residue_seq_number ID1_residue_icode ID1_residue_name ID2_chain  ID2_residue_seq_number ID2_residue_icode ID2_residue_name      area  arc_length
+        A                      73                                ARG        A2                      96                                GLU 16.280884    9.196499
+        A                      76                                THR        A2                      95                                LYS 19.775918    6.540677
+        A                      76                                THR        A2                      94                                LEU  0.928608    0.811131
+        A                      76                                THR        A2                      76                                THR  0.332720    2.294988
+        A                      76                                THR        A2                      78                                LEU  1.495741    1.843253
+--------------------------------------------------------------------------------
+ID1_chain ID2_chain       area  arc_length
+        A        A2 513.032238  142.699094
+--------------------------------------------------------------------------------
+ID_chain  ID_residue_seq_number ID_residue_icode ID_residue_name ID_atom_name  sas_area    volume
+       A                     53                              GLU            N 37.306970 54.912102
+       A                     53                              GLU           CA  0.438568 22.731721
+       A                     53                              GLU            C  0.144452 13.358562
+       A                     53                              GLU            O 23.266196 34.997136
+       A                     53                              GLU           CB 10.472698 37.590390
+--------------------------------------------------------------------------------
+ID_chain  ID_residue_seq_number ID_residue_icode ID_residue_name   sas_area     volume
+       A                     53                              GLU 177.012784 325.223665
+       A                     54                              PHE  58.011765 251.789378
+       A                     55                              ASP  41.167994 171.364733
+       A                     56                              VAL   0.000000 147.283384
+       A                     57                              ILE  20.612441 194.405312
+--------------------------------------------------------------------------------
+ID_chain    sas_area       volume
+       A 3547.848808 12726.637176

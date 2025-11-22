@@ -10,6 +10,8 @@ source ./testvenv/bin/activate
 
 pip install biotite
 
+pip install pandas
+
 deactivate
 
 exit 0
