@@ -27524,12 +27524,12 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_MolecularAtomBall(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_MolecularAtomBall__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **SWIGUNUSEDPARM(swig_obj)) {
   PyObject *resultobj = 0;
   MolecularAtomBall *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "new_MolecularAtomBall", 0, 0, 0)) SWIG_fail;
+  if ((nobjs < 0) || (nobjs > 0)) SWIG_fail;
   {
     try
     {
@@ -27545,6 +27545,187 @@ SWIGINTERN PyObject *_wrap_new_MolecularAtomBall(PyObject *self, PyObject *args)
   return resultobj;
 fail:
   return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularAtomBall__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::string *arg1 = 0 ;
+  int arg2 ;
+  std::string *arg3 = 0 ;
+  std::string *arg4 = 0 ;
+  std::string *arg5 = 0 ;
+  double arg6 ;
+  double arg7 ;
+  double arg8 ;
+  int res1 = SWIG_OLDOBJ ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
+  int res4 = SWIG_OLDOBJ ;
+  int res5 = SWIG_OLDOBJ ;
+  double val6 ;
+  int ecode6 = 0 ;
+  double val7 ;
+  int ecode7 = 0 ;
+  double val8 ;
+  int ecode8 = 0 ;
+  MolecularAtomBall *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 8) || (nobjs > 8)) SWIG_fail;
+  {
+    std::string *ptr = (std::string *)0;
+    res1 = SWIG_AsPtr_std_string(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_MolecularAtomBall" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularAtomBall" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_MolecularAtomBall" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  {
+    std::string *ptr = (std::string *)0;
+    res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_MolecularAtomBall" "', argument " "3"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularAtomBall" "', argument " "3"" of type '" "std::string const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  {
+    std::string *ptr = (std::string *)0;
+    res4 = SWIG_AsPtr_std_string(swig_obj[3], &ptr);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "new_MolecularAtomBall" "', argument " "4"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularAtomBall" "', argument " "4"" of type '" "std::string const &""'"); 
+    }
+    arg4 = ptr;
+  }
+  {
+    std::string *ptr = (std::string *)0;
+    res5 = SWIG_AsPtr_std_string(swig_obj[4], &ptr);
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "new_MolecularAtomBall" "', argument " "5"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularAtomBall" "', argument " "5"" of type '" "std::string const &""'"); 
+    }
+    arg5 = ptr;
+  }
+  ecode6 = SWIG_AsVal_double(swig_obj[5], &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "new_MolecularAtomBall" "', argument " "6"" of type '" "double""'");
+  } 
+  arg6 = static_cast< double >(val6);
+  ecode7 = SWIG_AsVal_double(swig_obj[6], &val7);
+  if (!SWIG_IsOK(ecode7)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "new_MolecularAtomBall" "', argument " "7"" of type '" "double""'");
+  } 
+  arg7 = static_cast< double >(val7);
+  ecode8 = SWIG_AsVal_double(swig_obj[7], &val8);
+  if (!SWIG_IsOK(ecode8)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "new_MolecularAtomBall" "', argument " "8"" of type '" "double""'");
+  } 
+  arg8 = static_cast< double >(val8);
+  {
+    try
+    {
+      result = (MolecularAtomBall *)new MolecularAtomBall((std::string const &)*arg1,arg2,(std::string const &)*arg3,(std::string const &)*arg4,(std::string const &)*arg5,arg6,arg7,arg8);
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularAtomBall, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  if (SWIG_IsNewObj(res5)) delete arg5;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  if (SWIG_IsNewObj(res5)) delete arg5;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularAtomBall(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[9] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_MolecularAtomBall", 0, 8, argv))) SWIG_fail;
+  --argc;
+  if (argc == 0) {
+    return _wrap_new_MolecularAtomBall__SWIG_0(self, argc, argv);
+  }
+  if (argc == 8) {
+    int _v = 0;
+    int res = SWIG_AsPtr_std_string(argv[0], (std::string**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          int res = SWIG_AsPtr_std_string(argv[3], (std::string**)(0));
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            int res = SWIG_AsPtr_std_string(argv[4], (std::string**)(0));
+            _v = SWIG_CheckState(res);
+            if (_v) {
+              {
+                int res = SWIG_AsVal_double(argv[5], NULL);
+                _v = SWIG_CheckState(res);
+              }
+              if (_v) {
+                {
+                  int res = SWIG_AsVal_double(argv[6], NULL);
+                  _v = SWIG_CheckState(res);
+                }
+                if (_v) {
+                  {
+                    int res = SWIG_AsVal_double(argv[7], NULL);
+                    _v = SWIG_CheckState(res);
+                  }
+                  if (_v) {
+                    return _wrap_new_MolecularAtomBall__SWIG_1(self, argc, argv);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_MolecularAtomBall'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    MolecularAtomBall::MolecularAtomBall()\n"
+    "    MolecularAtomBall::MolecularAtomBall(std::string const &,int const,std::string const &,std::string const &,std::string const &,double const,double const,double const)\n");
+  return 0;
 }
 
 
@@ -32081,6 +32262,84 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
   PyObject *resultobj = 0;
+  std::string *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  MolecularRadicalTessellation *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  {
+    std::string *ptr = (std::string *)0;
+    res1 = SWIG_AsPtr_std_string(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_MolecularRadicalTessellation" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularRadicalTessellation" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  {
+    try
+    {
+      result = (MolecularRadicalTessellation *)new MolecularRadicalTessellation((std::string const &)*arg1);
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularRadicalTessellation, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  MolecularRadicalTessellation *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  {
+    std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *ptr = (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *)0;
+    res1 = swig::asptr(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_MolecularRadicalTessellation" "', argument " "1"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularRadicalTessellation" "', argument " "1"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  {
+    try
+    {
+      result = (MolecularRadicalTessellation *)new MolecularRadicalTessellation((std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &)*arg1);
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularRadicalTessellation, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation__SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
   MolecularFileInput *arg1 = 0 ;
   MolecularRadicalTessellationParameters *arg2 = 0 ;
   void *argp1 = 0 ;
@@ -32125,7 +32384,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation__SWIG_3(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
   PyObject *resultobj = 0;
   std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *arg1 = 0 ;
   MolecularRadicalTessellationParameters *arg2 = 0 ;
@@ -32183,6 +32442,22 @@ SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation(PyObject *self, PyOb
   
   if (!(argc = SWIG_Python_UnpackTuple(args, "new_MolecularRadicalTessellation", 0, 2, argv))) SWIG_fail;
   --argc;
+  if (argc == 1) {
+    int _v = 0;
+    int res = SWIG_AsPtr_std_string(argv[0], (std::string**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_MolecularRadicalTessellation__SWIG_0(self, argc, argv);
+    }
+  }
+  if (argc == 1) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_MolecularRadicalTessellation__SWIG_1(self, argc, argv);
+    }
+  }
   if (argc == 2) {
     int _v = 0;
     int res = SWIG_ConvertPtr(argv[0], 0, SWIGTYPE_p_MolecularFileInput, SWIG_POINTER_NO_NULL | 0);
@@ -32191,7 +32466,7 @@ SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation(PyObject *self, PyOb
       int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularRadicalTessellationParameters, SWIG_POINTER_NO_NULL | 0);
       _v = SWIG_CheckState(res);
       if (_v) {
-        return _wrap_new_MolecularRadicalTessellation__SWIG_0(self, argc, argv);
+        return _wrap_new_MolecularRadicalTessellation__SWIG_2(self, argc, argv);
       }
     }
   }
@@ -32203,7 +32478,7 @@ SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation(PyObject *self, PyOb
       int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularRadicalTessellationParameters, SWIG_POINTER_NO_NULL | 0);
       _v = SWIG_CheckState(res);
       if (_v) {
-        return _wrap_new_MolecularRadicalTessellation__SWIG_1(self, argc, argv);
+        return _wrap_new_MolecularRadicalTessellation__SWIG_3(self, argc, argv);
       }
     }
   }
@@ -32211,6 +32486,8 @@ SWIGINTERN PyObject *_wrap_new_MolecularRadicalTessellation(PyObject *self, PyOb
 fail:
   SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_MolecularRadicalTessellation'.\n"
     "  Possible C/C++ prototypes are:\n"
+    "    MolecularRadicalTessellation::MolecularRadicalTessellation(std::string const &)\n"
+    "    MolecularRadicalTessellation::MolecularRadicalTessellation(std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &)\n"
     "    MolecularRadicalTessellation::MolecularRadicalTessellation(MolecularFileInput const &,MolecularRadicalTessellationParameters const &)\n"
     "    MolecularRadicalTessellation::MolecularRadicalTessellation(std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &,MolecularRadicalTessellationParameters const &)\n");
   return 0;
@@ -32693,7 +32970,7 @@ static PyMethodDef SwigMethods[] = {
 	 { "MolecularAtomBall_z_get", _wrap_MolecularAtomBall_z_get, METH_O, NULL},
 	 { "MolecularAtomBall_r_set", _wrap_MolecularAtomBall_r_set, METH_VARARGS, NULL},
 	 { "MolecularAtomBall_r_get", _wrap_MolecularAtomBall_r_get, METH_O, NULL},
-	 { "new_MolecularAtomBall", _wrap_new_MolecularAtomBall, METH_NOARGS, NULL},
+	 { "new_MolecularAtomBall", _wrap_new_MolecularAtomBall, METH_VARARGS, NULL},
 	 { "delete_MolecularAtomBall", _wrap_delete_MolecularAtomBall, METH_O, NULL},
 	 { "MolecularAtomBall_swigregister", MolecularAtomBall_swigregister, METH_O, NULL},
 	 { "MolecularAtomBall_swiginit", MolecularAtomBall_swiginit, METH_VARARGS, NULL},

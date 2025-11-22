@@ -5,7 +5,6 @@ input_file=voronotalt.MolecularFileInput("./input/assembly_1ctf.pdb1")
 input_file.read_as_assembly=True
 
 params=voronotalt.MolecularRadicalTessellationParameters()
-params.record_everything_possible=True
 params.restrict_contacts_for_output="[-a1 [-chain A] -a2 [-chain A2]]"
 params.restrict_cells_for_output="[-chain A]"
 

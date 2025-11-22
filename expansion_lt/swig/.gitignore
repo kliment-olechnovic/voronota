@@ -1,2 +1,3 @@
 /__pycache__/
 /voronotalt/_voronotalt_python.so
+/tests/testvenv/

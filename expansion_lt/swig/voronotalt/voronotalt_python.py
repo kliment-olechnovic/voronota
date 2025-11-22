@@ -1238,8 +1238,8 @@ class MolecularAtomBall(object):
     z = property(_voronotalt_python.MolecularAtomBall_z_get, _voronotalt_python.MolecularAtomBall_z_set)
     r = property(_voronotalt_python.MolecularAtomBall_r_get, _voronotalt_python.MolecularAtomBall_r_set)
 
-    def __init__(self):
-        _voronotalt_python.MolecularAtomBall_swiginit(self, _voronotalt_python.new_MolecularAtomBall())
+    def __init__(self, *args):
+        _voronotalt_python.MolecularAtomBall_swiginit(self, _voronotalt_python.new_MolecularAtomBall(*args))
     __swig_destroy__ = _voronotalt_python.delete_MolecularAtomBall
 
 # Register MolecularAtomBall in _voronotalt_python:

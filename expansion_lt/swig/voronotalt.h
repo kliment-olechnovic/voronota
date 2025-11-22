@@ -123,6 +123,27 @@ struct MolecularAtomBall
 	MolecularAtomBall() : ID_residue_seq_number(0), x(0.0), y(0.0), z(0.0), r(0.0)
 	{
 	}
+
+	MolecularAtomBall(
+			const std::string& ID_chain,
+			const int ID_residue_seq_number,
+			const std::string& ID_residue_icode,
+			const std::string& ID_residue_name,
+			const std::string& ID_atom_name,
+			const double x,
+			const double y,
+			const double z) :
+		ID_chain(ID_chain),
+		ID_residue_seq_number(ID_residue_seq_number),
+		ID_residue_icode(ID_residue_icode),
+		ID_residue_name(ID_residue_name),
+		ID_atom_name(ID_atom_name),
+		x(x),
+		y(y),
+		z(z),
+		r(0.0)
+	{
+	}
 };
 
 struct MolecularInterAtomContactSummary
@@ -227,7 +248,7 @@ struct MolecularFileInput
 	{
 	}
 
-	MolecularFileInput(const std::string& input_file) :
+	explicit MolecularFileInput(const std::string& input_file) :
 		input_file_path(input_file),
 		include_heteroatoms(true),
 		read_as_assembly(false)
@@ -280,6 +301,16 @@ public:
 	std::vector<MolecularAtomCellSummary> atom_cell_summaries;
 	std::vector<MolecularResidueCellSummary> residue_cell_summaries;
 	std::vector<MolecularChainCellSummary> chain_cell_summaries;
+
+	MolecularRadicalTessellation(const std::string& input_file)
+	{
+		reconstruct(std::vector<MolecularAtomBall>(), MolecularFileInput(input_file), MolecularRadicalTessellationParameters());
+	}
+
+	MolecularRadicalTessellation(const std::vector<MolecularAtomBall>& input_atom_balls)
+	{
+		reconstruct(input_atom_balls, MolecularFileInput(), MolecularRadicalTessellationParameters());
+	}
 
 	MolecularRadicalTessellation(const MolecularFileInput& molecular_file_input, const MolecularRadicalTessellationParameters& init_params)
 	{
