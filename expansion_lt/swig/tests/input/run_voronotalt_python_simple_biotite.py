@@ -1,12 +1,9 @@
 import voronotalt
-import voronotalt.biotite_interface
 import biotite.structure.io
 
 structure = biotite.structure.io.load_structure("./input/assembly_1ctf.cif")
 
-balls=voronotalt.biotite_interface.simple_balls_from_atom_array(structure, include_heteroatoms=False)
-
-rt = voronotalt.RadicalTessellation(balls, probe=1.4)
+rt = voronotalt.RadicalTessellation.from_biotite_atoms(structure, include_heteroatoms=False, probe=1.4)
 
 print("contacts:")
 

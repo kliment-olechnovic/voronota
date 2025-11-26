@@ -1,5 +1,4 @@
 import voronotalt
-import voronotalt.pandas_interface
 
 balls = []
 balls.append(voronotalt.Ball(0, 0, 2, 1))

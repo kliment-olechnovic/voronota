@@ -12,7 +12,7 @@ fi
 
 cd ../
 
-./compile_voronotalt_python.bash
+#./compile_voronotalt_python.bash
 
 SWIGDIR="$(pwd)"
 
