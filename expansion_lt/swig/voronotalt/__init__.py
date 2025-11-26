@@ -99,6 +99,14 @@ else:
     __all__.append("biotite_interface")
 
 try:
+    import gemmi
+except ImportError:
+    pass
+else:
+    from . import gemmi_interface
+    __all__.append("gemmi_interface")
+
+try:
     import Bio.PDB
 except ImportError:
     pass

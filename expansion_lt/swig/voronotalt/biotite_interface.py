@@ -63,7 +63,6 @@ def _from_molecular_atom_balls_from_biotite_atoms(
         include_heteroatoms=True,
         include_hydrogens=False,
         include_waters=False,
-        default_radius=1.7,
         **kwargs):
     return cls.from_atoms(
         molecular_atom_balls_from_atom_array(
