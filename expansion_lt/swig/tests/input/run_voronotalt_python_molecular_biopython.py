@@ -8,7 +8,7 @@ atoms=structure.get_atoms()
 
 atom_balls=voronotalt.biopython_interface.molecular_atom_balls_from_atom_iterable(atoms, include_heteroatoms=False)
 
-mrt = voronotalt.MolecularRadicalTessellation(atom_balls)
+mrt = voronotalt.MolecularRadicalTessellation.from_atoms(input_atom_balls=atom_balls)
 
 print("inter_residue_contacts:")
 

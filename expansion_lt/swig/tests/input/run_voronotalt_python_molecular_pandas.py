@@ -1,14 +1,12 @@
 import voronotalt
 import voronotalt.pandas_interface
 
-input_file=voronotalt.MolecularFileInput("./input/assembly_1ctf.pdb1")
-input_file.read_as_assembly=True
-
-params=voronotalt.MolecularRadicalTessellationParameters()
-params.restrict_contacts_for_output="[-a1 [-chain A] -a2 [-chain A2]]"
-params.restrict_cells_for_output="[-chain A]"
-
-mrt = voronotalt.MolecularRadicalTessellation(input_file, params)
+mrt = voronotalt.MolecularRadicalTessellation.from_file(
+    input_file="./input/assembly_1ctf.pdb1",
+    read_as_assembly=True,
+    restrict_contacts_for_output="[-a1 [-chain A] -a2 [-chain A2]]",
+    restrict_cells_for_output="[-chain A]"
+)
 
 df_atoms = mrt.atom_balls.to_pandas()
 df_inter_atom_contacts = mrt.inter_atom_contact_summaries.to_pandas()
