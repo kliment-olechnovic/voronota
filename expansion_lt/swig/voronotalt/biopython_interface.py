@@ -64,4 +64,21 @@ def molecular_atom_balls_from_atom_iterable(atom_iterable: Iterable[Atom], inclu
         )
     return balls
 
+def _from_biopython_atoms(
+        cls,
+        atom_iterable,
+        include_heteroatoms=True,
+        include_hydrogens=False,
+        include_waters=False,
+        **kwargs):
+    return cls.from_atoms(
+        molecular_atom_balls_from_atom_iterable(
+            atom_iterable,
+            include_heteroatoms=include_heteroatoms,
+            include_hydrogens=include_hydrogens,
+            include_waters=include_waters),
+        **kwargs)
+
+_voronotalt_backend.MolecularRadicalTessellation.from_biopython_atoms = classmethod(_from_biopython_atoms)
+
 

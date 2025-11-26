@@ -4,9 +4,7 @@ import biotite.structure.io
 
 structure = biotite.structure.io.load_structure("./input/assembly_1ctf.cif")
 
-atom_balls=voronotalt.biotite_interface.molecular_atom_balls_from_atom_array(structure, include_heteroatoms=False)
-
-mrt = voronotalt.MolecularRadicalTessellation.from_atoms(input_atom_balls=atom_balls)
+mrt = voronotalt.MolecularRadicalTessellation.from_biotite_atoms(structure, include_heteroatoms=False)
 
 print("inter_residue_contacts:")
 

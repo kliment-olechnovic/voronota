@@ -39,3 +39,21 @@ def molecular_atom_balls_from_atom_array(atom_array: AtomArray, include_heteroat
         balls.append(_voronotalt_backend.MolecularAtomBall(str(atom.chain_id), int(atom.res_id), str(atom.ins_code), str(atom.res_name), str(atom.atom_name), x, y, z))
     return balls
 
+def _from_biotite_atoms(
+        cls,
+        atom_array,
+        include_heteroatoms=True,
+        include_hydrogens=False,
+        include_waters=False,
+        default_radius=1.7,
+        **kwargs):
+    return cls.from_atoms(
+        molecular_atom_balls_from_atom_array(
+            atom_array,
+            include_heteroatoms=include_heteroatoms,
+            include_hydrogens=include_hydrogens,
+            include_waters=include_waters),
+        **kwargs)
+
+_voronotalt_backend.MolecularRadicalTessellation.from_biotite_atoms = classmethod(_from_biotite_atoms)
+

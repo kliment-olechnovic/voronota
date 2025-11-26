@@ -6,9 +6,7 @@ parser = Bio.PDB.MMCIFParser(QUIET=True)
 structure = parser.get_structure("id", "./input/assembly_1ctf.cif")
 atoms=structure.get_atoms()
 
-atom_balls=voronotalt.biopython_interface.molecular_atom_balls_from_atom_iterable(atoms, include_heteroatoms=False)
-
-mrt = voronotalt.MolecularRadicalTessellation.from_atoms(input_atom_balls=atom_balls)
+mrt = voronotalt.MolecularRadicalTessellation.from_biopython_atoms(atoms, include_heteroatoms=False)
 
 print("inter_residue_contacts:")
 
