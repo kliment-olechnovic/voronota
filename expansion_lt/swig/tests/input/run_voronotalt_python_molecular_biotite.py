@@ -1,5 +1,4 @@
 import voronotalt
-import voronotalt.biotite_interface
 import biotite.structure.io
 
 structure = biotite.structure.io.load_structure("./input/assembly_1ctf.cif")

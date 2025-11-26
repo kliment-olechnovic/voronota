@@ -1,5 +1,4 @@
 import voronotalt
-import voronotalt.pandas_interface
 
 mrt = voronotalt.MolecularRadicalTessellation.from_file(
     input_file="./input/assembly_1ctf.pdb1",

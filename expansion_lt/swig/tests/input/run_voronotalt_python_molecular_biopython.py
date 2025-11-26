@@ -1,5 +1,4 @@
 import voronotalt
-import voronotalt.biopython_interface
 import Bio.PDB
 
 parser = Bio.PDB.MMCIFParser(QUIET=True)

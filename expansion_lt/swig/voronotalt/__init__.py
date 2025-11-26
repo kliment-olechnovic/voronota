@@ -80,4 +80,29 @@ def _from_atoms(
 MolecularRadicalTessellation.from_file = classmethod(_from_file)
 MolecularRadicalTessellation.from_atoms = classmethod(_from_atoms)
 
+__all__ = []
+
+try:
+    import pandas
+except ImportError:
+    pass
+else:
+    from . import pandas_interface
+    __all__.append("pandas_interface")
+
+try:
+    import biotite
+except ImportError:
+    pass
+else:
+    from . import biotite_interface
+    __all__.append("biotite_interface")
+
+try:
+    import Bio.PDB
+except ImportError:
+    pass
+else:
+    from . import biopython_interface
+    __all__.append("biopython_interface")
 
