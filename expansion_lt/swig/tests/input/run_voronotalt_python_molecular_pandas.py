@@ -1,4 +1,5 @@
 import voronotalt
+from voronotalt.pandas_interface import print_head_of_table as preview_table
 
 mrt = voronotalt.MolecularRadicalTessellation.from_file(
     input_file="./input/assembly_1ctf.pdb1",
@@ -16,23 +17,23 @@ df_residue_cells = mrt.residue_cell_summaries.to_pandas()
 df_chain_cells = mrt.chain_cell_summaries.to_pandas()
 
 print("--------------------------------------------------------------------------------")
-voronotalt.pandas_interface.print_head_of_table(df_atoms.head())
+preview_table(df_atoms.head())
 
 print("--------------------------------------------------------------------------------")
-voronotalt.pandas_interface.print_head_of_table(df_inter_atom_contacts.head())
+preview_table(df_inter_atom_contacts.head())
 
 print("--------------------------------------------------------------------------------")
-voronotalt.pandas_interface.print_head_of_table(df_inter_residue_contacts.head())
+preview_table(df_inter_residue_contacts.head())
 
 print("--------------------------------------------------------------------------------")
-voronotalt.pandas_interface.print_head_of_table(df_inter_chain_contacts.head())
+preview_table(df_inter_chain_contacts.head())
 
 print("--------------------------------------------------------------------------------")
-voronotalt.pandas_interface.print_head_of_table(df_atom_cells.head())
+preview_table(df_atom_cells.head())
 
 print("--------------------------------------------------------------------------------")
-voronotalt.pandas_interface.print_head_of_table(df_residue_cells.head())
+preview_table(df_residue_cells.head())
 
 print("--------------------------------------------------------------------------------")
-voronotalt.pandas_interface.print_head_of_table(df_chain_cells.head())
+preview_table(df_chain_cells.head())
 
