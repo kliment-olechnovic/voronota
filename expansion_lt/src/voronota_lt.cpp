@@ -267,15 +267,25 @@ public:
 						error_log_for_options_parsing << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.0 to 30.0.\n";
 					}
 				}
-				else if(voronotalt::openmp_enabled() && opt.name=="processors" && opt.args_ints.size()==1)
+				else if(opt.name=="processors" && opt.args_ints.size()==1)
 				{
 					max_number_of_processors=static_cast<unsigned int>(opt.args_ints.front());
-					if(!(max_number_of_processors>=1 && max_number_of_processors<=1000))
+					if(voronotalt::openmp_enabled())
 					{
-						error_log_for_options_parsing << "Error: invalid command line argument for the maximum number of processors, must be an integer from 1 to 1000.\n";
+						if(!(max_number_of_processors>=1 && max_number_of_processors<=1024))
+						{
+							error_log_for_options_parsing << "Error: invalid command line argument for the maximum number of processors, must be an integer from 1 to 1024.\n";
+						}
+					}
+					else
+					{
+						if(max_number_of_processors!=1)
+						{
+							error_log_for_options_parsing << "Error: OpenMP is not enabled, therefore specifying the maximum number of processors other than 1 is not allowed.\n";
+						}
 					}
 				}
-				else if((opt.name=="input" || opt.name=="i")  && opt.args_strings.size()==1)
+				else if((opt.name=="input" || opt.name=="i") && opt.args_strings.size()==1)
 				{
 					input_from_file=opt.args_strings.front();
 				}
@@ -517,9 +527,13 @@ public:
 					}
 				}
 #endif /* VORONOTALT_WITH_TEST_MODES */
+				else if(opt.name.empty() && i==0 && opt.args_strings.size()==1)
+				{
+					input_from_file=opt.args_strings.front();
+				}
 				else if(opt.name.empty())
 				{
-					error_log_for_options_parsing << "Error: unnamed command line arguments detected.\n";
+					error_log_for_options_parsing << "Error: misplaced unnamed command line arguments detected.\n";
 				}
 				else
 				{

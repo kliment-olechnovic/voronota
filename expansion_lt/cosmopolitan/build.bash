@@ -15,7 +15,7 @@ rm -f "./voronota-lt"
 rm -f "./voronota-lt.aarch64.elf"
 rm -f "./voronota-lt.com.dbg"
 
-./cosmocc/bin/cosmoc++ -O3 -o ./voronota-lt ../src/voronota_lt.cpp
+./cosmocc/bin/cosmoc++ -O3 -fopenmp -o ./voronota-lt ../src/voronota_lt.cpp
 
 rm -f "./voronota-lt.aarch64.elf"
 rm -f "./voronota-lt.com.dbg"
