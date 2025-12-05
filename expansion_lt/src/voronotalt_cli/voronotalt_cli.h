@@ -9,5 +9,6 @@
 #include "time_recorder_chrono.h"
 #include "terminal_utilities.h"
 #include "filtering_by_sphere_labels.h"
+#include "color_assigner.h"
 
 #endif /* VORONOTALT_CLI_VORONOTALT_CLI_H_ */

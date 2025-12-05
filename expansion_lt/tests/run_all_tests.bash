@@ -19,8 +19,6 @@ cd - &> /dev/null
 
 voronota-lt --help &> "./output/help_message.txt"
 
-voronota-lt --help-full &> "./output/help_message_full.txt"
-
 ####################################################################
 
 voronota-lt -processors 40 -probe 1.4 -print-everything < "./input/balls_2zsk.xyzr" 2> "./output/contacts_2zsk_summary.txt" > "./output/contacts_2zsk_tables.txt"
@@ -382,8 +380,7 @@ EOF
   -graphics-output-file "./output/tricky_cases_graphics/draw_case_8.py" \
   -graphics-title "case_8" \
   -graphics-restrict-representations balls faces wireframe \
-  -graphics-color-balls 0xC0C0C0 \
-  -graphics-color-faces 0x000000 \
+  -graphics-coloring-config "ball balls C0C0C0; contact faces 000000" \
 2> /dev/null
 
 ########################################
@@ -415,9 +412,7 @@ EOF
   -graphics-output-file "./output/tricky_cases_graphics/draw_case_9.py" \
   -graphics-title "case_9" \
   -graphics-restrict-representations balls faces wireframe lattice \
-  -graphics-color-balls 0xC0C0C0 \
-  -graphics-color-faces 0x000000 \
-  -graphics-color-lattice 0xFF0000 \
+  -graphics-coloring-config "ball balls C0C0C0; contact faces 000000; other lattice FF0000" \
 2> /dev/null
 
 ################################################################################

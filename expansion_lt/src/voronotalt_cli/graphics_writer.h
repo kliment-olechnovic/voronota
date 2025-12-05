@@ -17,7 +17,7 @@ namespace voronotalt
 class GraphicsWriter
 {
 public:
-	explicit GraphicsWriter(const bool enabled) noexcept : enabled_(enabled), color_randomization_state_(static_cast<uint64_t>(42))
+	explicit GraphicsWriter(const bool enabled) noexcept : enabled_(enabled), color_randomization_state_(static_cast<uint64_t>(42)), last_color_part_index_(false, 0)
 	{
 	}
 
@@ -121,7 +121,21 @@ public:
 		{
 			return;
 		}
-		parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::Color(r, g, b)));
+		bool need_to_add=true;
+		if(last_color_part_index_.first)
+		{
+			const PrimitivePart& lcp=parts_[last_color_part_index_.second];
+			if(lcp.obj_color_.r==r && lcp.obj_color_.g==g && lcp.obj_color_.b==b && lcp.bundling_id.category_name==category_name && (lcp.bundling_id.group_name.empty() || lcp.bundling_id.group_name==group_name))
+			{
+				need_to_add=false;
+			}
+		}
+		if(need_to_add)
+		{
+			parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::Color(r, g, b)));
+			last_color_part_index_.first=true;
+			last_color_part_index_.second=(parts_.size()-1);
+		}
 	}
 
 	void add_color(const std::string& category_name, const std::string& group_name, const unsigned int rgb) noexcept
@@ -130,7 +144,14 @@ public:
 		{
 			return;
 		}
-		add_color(category_name, group_name, static_cast<double>((rgb&0xFF0000) >> 16)/static_cast<double>(0xFF), static_cast<double>((rgb&0x00FF00) >> 8)/static_cast<double>(0xFF), static_cast<double>(rgb&0x0000FF)/static_cast<double>(0xFF));
+		if(rgb==0 && !group_name.empty())
+		{
+			add_random_color(category_name, group_name);
+		}
+		else
+		{
+			add_color(category_name, group_name, static_cast<double>((rgb&0xFF0000) >> 16)/static_cast<double>(0xFF), static_cast<double>((rgb&0x00FF00) >> 8)/static_cast<double>(0xFF), static_cast<double>(rgb&0x0000FF)/static_cast<double>(0xFF));
+		}
 	}
 
 	void add_random_color(const std::string& category_name, const std::string& group_name) noexcept
@@ -144,7 +165,8 @@ public:
 		x ^= x >> 17;
 		x ^= x << 5;
 		color_randomization_state_=x;
-		add_color(category_name, group_name, static_cast<unsigned int>(x%static_cast<uint64_t>(0xFFFFFF)));
+		const unsigned int rgb=static_cast<unsigned int>(x%static_cast<uint64_t>(0xFFFFFF));
+		add_color(category_name, group_name, static_cast<double>((rgb&0xFF0000) >> 16)/static_cast<double>(0xFF), static_cast<double>((rgb&0x00FF00) >> 8)/static_cast<double>(0xFF), static_cast<double>(rgb&0x0000FF)/static_cast<double>(0xFF));
 	}
 
 	void add_alpha(const std::string& category_name, const std::string& group_name, const double a) noexcept
@@ -740,6 +762,7 @@ private:
 
 	bool enabled_;
 	uint64_t color_randomization_state_;
+	std::pair<bool, std::size_t> last_color_part_index_;
 	std::vector<PrimitivePart> parts_;
 };
 
