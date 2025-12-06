@@ -178,6 +178,16 @@ public:
 		parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::Alpha(a)));
 	}
 
+	bool write_to_file_for_pymol(const std::string& title, const std::string& filename) const noexcept
+	{
+		return write_to_file(title, filename, OutputFormat::pymol_cgo);
+	}
+
+	bool write_to_file_for_chimera(const std::string& title, const std::string& filename) const noexcept
+	{
+		return write_to_file(title, filename, OutputFormat::chimera_bild);
+	}
+
 	bool write_to_file(const std::string& title, const std::string& filename) const noexcept
 	{
 		if(!enabled_)
@@ -190,24 +200,7 @@ public:
 			return false;
 		}
 
-		const OutputFormat::ID output_format=detect_output_format_from_name(filename);
-
-		std::ofstream output(filename, std::ios::out);
-		if(!output.good())
-		{
-			return false;
-		}
-
-		if(output_format==OutputFormat::chimera_bild)
-		{
-			PrinterForChimeraBILD printer;
-			return printer.print(parts_, output);
-		}
-
-		{
-			PrinterForPymolCGO printer;
-			return printer.print(title, parts_, output);
-		}
+		return write_to_file(title, filename, detect_output_format_from_name(filename));
 	}
 
 private:
@@ -758,6 +751,43 @@ private:
 			return OutputFormat::chimera_bild;
 		}
 		return OutputFormat::undefined;
+	}
+
+	bool write_to_file(const std::string& title, const std::string& filename, const OutputFormat::ID output_format) const noexcept
+	{
+		if(!enabled_)
+		{
+			return false;
+		}
+
+		if(filename.empty())
+		{
+			return false;
+		}
+
+		if(output_format!=OutputFormat::chimera_bild && output_format!=OutputFormat::pymol_cgo)
+		{
+			return false;
+		}
+
+		std::ofstream output(filename, std::ios::out);
+		if(!output.good())
+		{
+			return false;
+		}
+
+		if(output_format==OutputFormat::chimera_bild)
+		{
+			PrinterForChimeraBILD printer;
+			return printer.print(parts_, output);
+		}
+		else if(output_format==OutputFormat::pymol_cgo)
+		{
+			PrinterForPymolCGO printer;
+			return printer.print(title, parts_, output);
+		}
+
+		return false;
 	}
 
 	bool enabled_;
