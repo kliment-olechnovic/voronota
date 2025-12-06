@@ -7,6 +7,8 @@
 #include <cctype>
 #include <cstring>
 #include <cstdio>
+#include <iostream>
+#include <fstream>
 
 #ifdef VORONOTALT_OPENMP
 #include <omp.h>
@@ -265,23 +267,23 @@ inline bool read_string_ids_and_double_values_from_text_string(const std::size_t
 	return (total_failures==0);
 }
 
-inline static void string_append_char(std::string& dest, const char c) noexcept
+inline void string_append_char(std::string& dest, const char c) noexcept
 {
 	dest.push_back(c);
 }
 
-inline static void string_append_cstring(std::string& dest, const char* s) noexcept
+inline void string_append_cstring(std::string& dest, const char* s) noexcept
 {
 	dest.append(s);
 }
 
-inline static void string_append_string(std::string& dest, const std::string& s) noexcept
+inline void string_append_string(std::string& dest, const std::string& s) noexcept
 {
 	dest.append(s);
 }
 
 template<typename IntType>
-inline static void string_append_int(std::string& dest, const IntType v) noexcept
+inline void string_append_int(std::string& dest, const IntType v) noexcept
 {
     char buf[32];
     const int n=std::snprintf(buf, sizeof(buf), "%d", static_cast<int>(v));
@@ -296,7 +298,7 @@ inline static void string_append_int(std::string& dest, const IntType v) noexcep
 }
 
 template<typename FloatType>
-inline static void string_append_double(std::string& dest, const FloatType v)
+inline void string_append_double(std::string& dest, const FloatType v) noexcept
 {
     char buf[32];
     const int n=std::snprintf(buf, sizeof(buf), "%.6g", static_cast<double>(v));
@@ -311,7 +313,7 @@ inline static void string_append_double(std::string& dest, const FloatType v)
 }
 
 template<typename FloatType>
-inline static void string_append_doubles(std::string& dest, const FloatType v1, const FloatType v2)
+inline void string_append_doubles(std::string& dest, const FloatType v1, const FloatType v2) noexcept
 {
     char buf[64];
     const int n=std::snprintf(buf, sizeof(buf), "%.6g\t%.6g", static_cast<double>(v1), static_cast<double>(v2));
@@ -326,7 +328,7 @@ inline static void string_append_doubles(std::string& dest, const FloatType v1, 
 }
 
 template<typename FloatType>
-inline static void string_append_doubles(std::string& dest, const FloatType v1, const FloatType v2, const FloatType v3)
+inline void string_append_doubles(std::string& dest, const FloatType v1, const FloatType v2, const FloatType v3) noexcept
 {
     char buf[96];
     const int n=std::snprintf(buf, sizeof(buf), "%.6g\t%.6g\t%.6g", static_cast<double>(v1), static_cast<double>(v2), static_cast<double>(v3));
@@ -341,7 +343,7 @@ inline static void string_append_doubles(std::string& dest, const FloatType v1, 
 }
 
 template<typename FloatType>
-inline static void string_append_doubles(std::string& dest, const FloatType v1, const FloatType v2, const FloatType v3, const FloatType v4)
+inline void string_append_doubles(std::string& dest, const FloatType v1, const FloatType v2, const FloatType v3, const FloatType v4) noexcept
 {
     char buf[128];
     const int n=std::snprintf(buf, sizeof(buf), "%.6g\t%.6g\t%.6g\t%.6g", static_cast<double>(v1), static_cast<double>(v2), static_cast<double>(v3), static_cast<double>(v4));
@@ -356,7 +358,7 @@ inline static void string_append_doubles(std::string& dest, const FloatType v1, 
 }
 
 template<typename FloatType>
-inline static void string_append_doubles(std::string& dest, const FloatType v1, const FloatType v2, const FloatType v3, const FloatType v4, const FloatType v5)
+inline void string_append_doubles(std::string& dest, const FloatType v1, const FloatType v2, const FloatType v3, const FloatType v4, const FloatType v5) noexcept
 {
     char buf[160];
     const int n=std::snprintf(buf, sizeof(buf), "%.6g\t%.6g\t%.6g\t%.6g\t%.6g", static_cast<double>(v1), static_cast<double>(v2), static_cast<double>(v3), static_cast<double>(v4), static_cast<double>(v5));
@@ -368,6 +370,48 @@ inline static void string_append_doubles(std::string& dest, const FloatType v1, 
     {
     	dest.append(".\t.\t.\t.\t.");
     }
+}
+
+bool read_whole_file_or_pipe_or_stdin_to_string(const std::string& filepath, std::string& result_data) noexcept
+{
+	if(filepath.empty() || filepath=="_stdin")
+	{
+		std::istreambuf_iterator<char> stdin_eos;
+		std::string stdin_data(std::istreambuf_iterator<char>(std::cin), stdin_eos);
+		result_data.swap(stdin_data);
+	}
+	else
+	{
+		std::ifstream infile(filepath.c_str(), std::ios::in|std::ios::binary);
+		if(infile.is_open())
+		{
+			infile.seekg(0, std::ios::end);
+			std::streampos end_pos=infile.tellg();
+			if(end_pos>=0)
+			{
+				std::string file_data;
+				file_data.resize(infile.tellg());
+				infile.seekg(0, std::ios::beg);
+				infile.read(&file_data[0], file_data.size());
+				infile.close();
+				result_data.swap(file_data);
+			}
+			else
+			{
+				infile.clear();
+				infile.seekg(0, std::ios::beg);
+				std::istreambuf_iterator<char> pipe_eos;
+				std::string pipe_data(std::istreambuf_iterator<char>(infile), pipe_eos);
+				result_data.swap(pipe_data);
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 }

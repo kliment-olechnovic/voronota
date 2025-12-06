@@ -412,7 +412,7 @@ EOF
   -graphics-output-file "./output/tricky_cases_graphics/draw_case_9.py" \
   -graphics-title "case_9" \
   -graphics-restrict-representations balls faces wireframe lattice \
-  -graphics-coloring-config "ball balls C0C0C0; contact faces 000000; other lattice FF0000" \
+  -graphics-coloring-config-file <(echo -e "ball balls C0C0C0\ncontact faces 000000\nother lattice FF0000") \
 2> /dev/null
 
 ################################################################################

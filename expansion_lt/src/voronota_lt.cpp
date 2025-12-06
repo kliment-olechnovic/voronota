@@ -1,6 +1,3 @@
-#include <iostream>
-#include <fstream>
-
 #include "voronotalt/parallelization_configuration.h"
 
 #ifdef VORONOTALT_OPENMP
@@ -2074,28 +2071,16 @@ int main(const int argc, const char** argv)
 		if(!app_params.graphics_coloring_config_file.empty())
 		{
 			std::string input_data;
+
+			if(!voronotalt::read_whole_file_or_pipe_or_stdin_to_string(app_params.graphics_coloring_config_file, input_data))
 			{
-				std::ifstream infile(app_params.graphics_coloring_config_file.c_str(), std::ios::in|std::ios::binary);
-				if(infile.is_open())
-				{
-					std::string file_data;
-					infile.seekg(0, std::ios::end);
-					file_data.resize(infile.tellg());
-					infile.seekg(0, std::ios::beg);
-					infile.read(&file_data[0], file_data.size());
-					infile.close();
-					input_data.swap(file_data);
-				}
-				else
-				{
-					std::cerr << "Error: failed to open coloring configuration file '" << app_params.graphics_coloring_config_file << "' without errors\n";
-					return 1;
-				}
+				std::cerr << "Error: failed to open coloring configuration file '" << app_params.graphics_coloring_config_file << "' without errors\n";
+				return 1;
 			}
 
 			if(input_data.empty())
 			{
-				std::cerr << "Error: empty input provided\n";
+				std::cerr << "Error: no data read from coloring configuration file '" << app_params.graphics_coloring_config_file << "'\n";
 				return 1;
 			}
 
@@ -2125,32 +2110,10 @@ int main(const int argc, const char** argv)
 	{
 		std::string input_data;
 
-		if(app_params.input_from_file.empty() || app_params.input_from_file=="_stdin")
+		if(!voronotalt::read_whole_file_or_pipe_or_stdin_to_string(app_params.input_from_file, input_data))
 		{
-			std::istreambuf_iterator<char> stdin_eos;
-			std::string stdin_data(std::istreambuf_iterator<char>(std::cin), stdin_eos);
-			input_data.swap(stdin_data);
-			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("read stdin data to memory");
-		}
-		else
-		{
-			std::ifstream infile(app_params.input_from_file.c_str(), std::ios::in|std::ios::binary);
-			if(infile.is_open())
-			{
-				std::string file_data;
-				infile.seekg(0, std::ios::end);
-				file_data.resize(infile.tellg());
-				infile.seekg(0, std::ios::beg);
-				infile.read(&file_data[0], file_data.size());
-				infile.close();
-				input_data.swap(file_data);
-				app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("read file data to memory");
-			}
-			else
-			{
-				std::cerr << "Error: failed to open file '" << app_params.input_from_file << "' without errors\n";
-				return 1;
-			}
+			std::cerr << "Error: failed to open input file '" << app_params.input_from_file << "' without errors\n";
+			return 1;
 		}
 
 		if(input_data.empty())
