@@ -211,7 +211,6 @@ def _molecular_chain_cell_summaries_vector_to_df(vec):
         "volume":   [c.volume   for c in vec],
     })
 
-
 def _attach_methods():
     if hasattr(_voronotalt_backend, "VectorBall"):
         _voronotalt_backend.VectorBall.to_pandas = _simple_balls_vector_to_df
@@ -242,12 +241,6 @@ def _attach_methods():
 
     if hasattr(_voronotalt_backend, "VectorMolecularChainCellSummary"):
         _voronotalt_backend.VectorMolecularChainCellSummary.to_pandas = _molecular_chain_cell_summaries_vector_to_df
-
-
-def print_head_of_table(df, n=5):
-    with _pd.option_context("display.max_columns", None, "display.width", None):
-        print(df.head(n).to_string(index=False))
-
 
 _attach_methods()
 

@@ -90,6 +90,10 @@ else:
     from . import pandas_interface
     __all__.append("pandas_interface")
 
+    def print_head_of_pandas_data_frame(df, n=5):
+        with pandas.option_context("display.max_columns", None, "display.width", None):
+            print(df.head(n).to_string(index=False))
+
 try:
     import biotite
 except ImportError:

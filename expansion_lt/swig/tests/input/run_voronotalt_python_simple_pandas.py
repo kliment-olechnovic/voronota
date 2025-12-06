@@ -29,11 +29,11 @@ df_contacts = rt.contacts.to_pandas()
 df_cells = rt.cells.to_pandas()
 
 print("--------------------------------------------------------------------------------")
-voronotalt.pandas_interface.print_head_of_table(df_balls.head())
+voronotalt.print_head_of_pandas_data_frame(df_balls.head())
 
 print("--------------------------------------------------------------------------------")
-voronotalt.pandas_interface.print_head_of_table(df_contacts.head())
+voronotalt.print_head_of_pandas_data_frame(df_contacts.head())
 
 print("--------------------------------------------------------------------------------")
-voronotalt.pandas_interface.print_head_of_table(df_cells.head())
+voronotalt.print_head_of_pandas_data_frame(df_cells.head())
 
