@@ -417,66 +417,6 @@ EOF
 
 ################################################################################
 
-g++ -std=c++14 -Ofast -march=native -fopenmp -DVORONOTALT_WITH_TEST_MODES -o ./output/voronota-lt-with-test-modes ../src/voronota_lt.cpp
-
-###########################################
-
-./output/voronota-lt-with-test-modes -processors 40 -probe 1.4 -test-updateable-tessellation < "./input/balls_2zsk.xyzr" 2> "./output/contacts_2zsk_summary_updateable_test.txt"
-
-./output/voronota-lt-with-test-modes -processors 40 -probe 1.4 -test-updateable-tessellation < "./input/balls_3dlb.xyzr" 2> "./output/contacts_3dlb_summary_updateable_test.txt"
-
-./output/voronota-lt-with-test-modes -processors 40 -probe 1.4 -test-updateable-tessellation < "./input/balls_7br8.xyzr" 2> "./output/contacts_7br8_summary_updateable_test.txt"
-
-./output/voronota-lt-with-test-modes \
-  -processors 40 \
-  -probe 2 \
-  -periodic-box-corners 0 0 0 200 250 300 \
-  -test-updateable-tessellation \
-< "./input/balls_cs_1x1.xyzr" \
-2> "./output/contacts_cs_1x1_periodic_summary_updateable_test.txt"
-
-###########################################
-
-./output/voronota-lt-with-test-modes -processors 40 -probe 1.4 -test-updateable-tessellation-with-backup < "./input/balls_2zsk.xyzr" 2> "./output/contacts_2zsk_summary_updateable_test_with_backup.txt"
-
-./output/voronota-lt-with-test-modes -processors 40 -probe 1.4 -test-updateable-tessellation-with-backup < "./input/balls_3dlb.xyzr" 2> "./output/contacts_3dlb_summary_updateable_test_with_backup.txt"
-
-./output/voronota-lt-with-test-modes -processors 40 -probe 1.4 -test-updateable-tessellation-with-backup < "./input/balls_7br8.xyzr" 2> "./output/contacts_7br8_summary_updateable_test_with_backup.txt"
-
-./output/voronota-lt-with-test-modes \
-  -processors 40 \
-  -probe 2 \
-  -periodic-box-corners 0 0 0 200 250 300 \
-  -test-updateable-tessellation-with-backup \
-< "./input/balls_cs_1x1.xyzr" \
-2> "./output/contacts_cs_1x1_periodic_summary_updateable_test_with_backup.txt"
-
-###########################################
-
-./output/voronota-lt-with-test-modes -processors 40 -probe 1.4 -test-maskable-tessellation < "./input/balls_2zsk.xyzr" 2> "./output/contacts_2zsk_summary_maskable_test.txt"
-
-./output/voronota-lt-with-test-modes -processors 40 -probe 1.4 -test-maskable-tessellation < "./input/balls_3dlb.xyzr" 2> "./output/contacts_3dlb_summary_maskable_test.txt"
-
-./output/voronota-lt-with-test-modes -processors 40 -probe 1.4 -test-maskable-tessellation < "./input/balls_7br8.xyzr" 2> "./output/contacts_7br8_summary_maskable_test.txt"
-
-./output/voronota-lt-with-test-modes \
-  -processors 40 \
-  -probe 2 \
-  -periodic-box-corners 0 0 0 200 250 300 \
-  -test-maskable-tessellation \
-< "./input/balls_cs_1x1.xyzr" \
-2> "./output/contacts_cs_1x1_periodic_summary_maskable_test.txt"
-
-###########################################
-
-./output/voronota-lt-with-test-modes -processors 1 -probe 1.4 -test-second-order-cell-volumes-calculation < "./input/balls_2zsk.xyzr" > "./output/contacts_2zsk_second_order_cell_volumes_test.txt"
-
-###########################################
-
-rm ././output/voronota-lt-with-test-modes
-
-################################################################################
-
 git status -s ./output/
 
 ################################################################################
