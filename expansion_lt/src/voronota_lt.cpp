@@ -30,6 +30,7 @@ Options:
     --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-radii-config-file                 string     input file path for reading atom radii assignment rules
     --restrict-input-balls                           string     selection expression to restrict input balls
     --restrict-contacts                              string     selection expression to restrict contacts before construction
     --restrict-contacts-for-output                   string     selection expression to restrict contacts for output
@@ -131,6 +132,7 @@ public:
 	bool exit_before_calculations;
 	bool read_successfuly;
 	std::string input_from_file;
+	std::string pdb_or_mmcif_radii_config_file;
 	std::vector<voronotalt::SimplePoint> periodic_box_directions;
 	std::vector<voronotalt::SimplePoint> periodic_box_corners;
 	std::string write_input_balls_to_file;
@@ -285,6 +287,10 @@ public:
 				else if(opt.name=="pdb-or-mmcif-join-models" && opt.is_flag())
 				{
 					pdb_or_mmcif_as_assembly=opt.is_flag_and_true();
+				}
+				else if(opt.name=="pdb-or-mmcif-radii-config-file" && opt.args_strings.size()==1)
+				{
+					pdb_or_mmcif_radii_config_file=opt.args_strings.front();
 				}
 				else if(opt.name=="restrict-input-balls" && opt.args_strings.size()==1)
 				{
@@ -1543,6 +1549,33 @@ int main(const int argc, const char** argv)
 	ApplicationLogRecorders app_log_recorders(app_params);
 
 	app_log_recorders.time_recoder_for_input.reset();
+
+	if(!app_params.pdb_or_mmcif_radii_config_file.empty())
+	{
+		std::string input_data;
+
+		if(!voronotalt::read_whole_file_or_pipe_or_stdin_to_string(app_params.pdb_or_mmcif_radii_config_file, input_data))
+		{
+			std::cerr << "Error: failed to open atom radii configuration file '" << app_params.pdb_or_mmcif_radii_config_file << "' without errors\n";
+			return 1;
+		}
+
+		if(input_data.empty())
+		{
+			std::cerr << "Error: no data read from atom radii configuration file '" << app_params.pdb_or_mmcif_radii_config_file << "'\n";
+			return 1;
+		}
+
+		voronotalt::MolecularRadiiAssignment::clear_radius_value_rules();
+
+		if(!voronotalt::MolecularRadiiAssignment::set_radius_value_rules(input_data))
+		{
+			std::cerr << "Error: invalid atom radii configuration file.\n";
+			return 1;
+		}
+
+		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("setting atom radii configuration from file");
+	}
 
 	if(!app_params.graphics_output_file_for_pymol.empty() || !app_params.graphics_output_file_for_chimera.empty())
 	{

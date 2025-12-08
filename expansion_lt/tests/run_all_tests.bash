@@ -58,6 +58,14 @@ voronota-lt \
 < "./input/assembly_1ctf.pdb1" \
 2> "./output/contacts_1ctf_pdb_as_assembly_with_heteroatoms_summary.txt"
 
+voronota-lt \
+  --pdb-or-mmcif-join-models \
+  --pdb-or-mmcif-heteroatoms \
+  --pdb-or-mmcif-radii-config-file "./input/custom_radii.txt" \
+  --write-input-balls-to-file "./output/contacts_1ctf_pdb_as_assembly_with_heteroatoms_using_custom_radii_input_balls.txt" \
+< "./input/assembly_1ctf.pdb1" \
+2> "./output/contacts_1ctf_pdb_as_assembly_with_heteroatoms_using_custom_radii_summary.txt"
+
 ####################################################################
 
 voronota-lt \

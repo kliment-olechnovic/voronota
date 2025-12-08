@@ -3,6 +3,8 @@
 
 #include <string>
 #include <map>
+#include <sstream>
+#include <cstdlib>
 
 namespace voronotalt
 {
@@ -10,9 +12,15 @@ namespace voronotalt
 class MolecularRadiiAssignment
 {
 public:
+	static double& default_radius_value() noexcept
+	{
+		static double default_radius=1.8;
+		return default_radius;
+	}
+
 	static double get_atom_radius(const std::string& resName, const std::string& name) noexcept
 	{
-		const double default_radius=1.8;
+		const double default_radius=default_radius_value();
 		static const std::string wcany="*";
 
 		if(name.empty() || name==wcany)
@@ -42,7 +50,73 @@ public:
 			}
 		}
 
+		for(int v=0;v<2;v++)
+		{
+			std::map<Descriptor, double>::const_iterator it=mrd.find(Descriptor((v==0 ? resName : wcany), wcany));
+			if(it!=mrd.end())
+			{
+				return it->second;
+			}
+		}
+
 		return default_radius;
+	}
+
+	static void clear_radius_value_rules() noexcept
+	{
+		radii_by_descriptors().clear();
+	}
+
+	static bool set_radius_value_rules(const std::string& input_string) noexcept
+	{
+		if(input_string.empty())
+		{
+			return false;
+		}
+		int count=0;
+		std::istringstream input(input_string);
+		while(input.good())
+		{
+			std::string line;
+			std::getline(input, line);
+			if(!line.empty() && line[0]!='#')
+			{
+				if(set_radius_value_rule(line))
+				{
+					++count;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+		return (count>0);
+	}
+
+	static bool set_radius_value_rule(const std::string& resName, const std::string& name, const double radius_value) noexcept
+	{
+		if(resName.empty() || name.empty() || radius_value<0.0)
+		{
+			return false;
+		}
+		std::map<Descriptor, double>& mrd=radii_by_descriptors();
+		mrd[Descriptor(resName, name)]=radius_value;
+		return true;
+	}
+
+	static bool set_radius_value_rule(const std::string& input) noexcept
+	{
+		std::string resName;
+		std::string name;
+		double radius_value=default_radius_value();
+
+		if(!read_config_line(input, resName, name, radius_value))
+		{
+			return false;
+		}
+
+		return set_radius_value_rule(resName, name, radius_value);
 	}
 
 private:
@@ -228,6 +302,71 @@ private:
 			mrd[Descriptor("ZR", "ZR")]=0.72;
 		}
 		return mrd;
+	}
+
+	static bool read_config_line(const std::string& input, std::string& resName, std::string& name, double& radius_value) noexcept
+	{
+	    const std::string::size_type n=input.size();
+	    std::string::size_type start=0;
+	    std::string::size_type pos=0;
+
+	    while(pos<n && std::isspace(static_cast<unsigned char>(input[pos])))
+	    {
+	    	++pos;
+	    }
+	    if(pos>=n)
+	    {
+	        return false;
+	    }
+	    start=pos;
+	    while(pos<n && !std::isspace(static_cast<unsigned char>(input[pos])))
+	    {
+	    	++pos;
+	    }
+	    resName=input.substr(start, pos-start);
+
+	    while(pos<n && std::isspace(static_cast<unsigned char>(input[pos])))
+	    {
+	    	++pos;
+	    }
+	    if(pos>=n)
+	    {
+	        return false;
+	    }
+	    start=pos;
+	    while(pos<n && !std::isspace(static_cast<unsigned char>(input[pos])))
+	    {
+	    	++pos;
+	    }
+	    name=input.substr(start, pos-start);
+
+	    while(pos<n && std::isspace(static_cast<unsigned char>(input[pos])))
+	    {
+	    	++pos;
+	    }
+	    if(pos>=n)
+	    {
+	        return false;
+	    }
+	    start=pos;
+	    while(pos<n && !std::isspace(static_cast<unsigned char>(input[pos])))
+	    {
+	    	++pos;
+	    }
+	    const std::string value_str=input.substr(start, pos-start);
+	    const char* str=&value_str[0];
+	    char* str_next=0;
+	    const double value=std::strtod(str, &str_next);
+		if(str==str_next)
+		{
+			return false;
+		}
+		else
+		{
+			radius_value=value;
+		}
+
+	    return (!(resName.empty() || name.empty() || radius_value<0.0));
 	}
 };
 

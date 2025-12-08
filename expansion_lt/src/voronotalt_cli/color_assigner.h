@@ -237,7 +237,6 @@ private:
 
 	static bool read_config_line(const std::string& input, std::string& category, std::string& rep, unsigned int& color, std::string& expression) noexcept
 	{
-		std::string tokens[3];
 	    const std::string::size_type n=input.size();
 	    std::string::size_type start=0;
 	    std::string::size_type pos=0;
