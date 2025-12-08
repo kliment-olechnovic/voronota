@@ -1566,8 +1566,6 @@ int main(const int argc, const char** argv)
 			return 1;
 		}
 
-		voronotalt::MolecularRadiiAssignment::clear_radius_value_rules();
-
 		if(!voronotalt::MolecularRadiiAssignment::set_radius_value_rules(input_data))
 		{
 			std::cerr << "Error: invalid atom radii configuration file.\n";

@@ -1403,3 +1403,9 @@ class MolecularRadicalTessellation(object):
 # Register MolecularRadicalTessellation in _voronotalt_python:
 _voronotalt_python.MolecularRadicalTessellation_swigregister(MolecularRadicalTessellation)
 
+def reset_molecular_radii_assignment_rules():
+    return _voronotalt_python.reset_molecular_radii_assignment_rules()
+
+def configure_molecular_radii_assignment_rules(configuration_file_path):
+    return _voronotalt_python.configure_molecular_radii_assignment_rules(configuration_file_path)
+

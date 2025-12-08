@@ -445,18 +445,7 @@ private:
 		{
 			std::string input_data;
 
-			std::ifstream infile(molecular_file_input.input_file_path.c_str(), std::ios::in|std::ios::binary);
-			if(infile.is_open())
-			{
-				std::string file_data;
-				infile.seekg(0, std::ios::end);
-				file_data.resize(infile.tellg());
-				infile.seekg(0, std::ios::beg);
-				infile.read(&file_data[0], file_data.size());
-				infile.close();
-				input_data.swap(file_data);
-			}
-			else
+			if(!voronotalt::read_whole_file_or_pipe_or_stdin_to_string(molecular_file_input.input_file_path, input_data))
 			{
 				throw std::runtime_error(std::string("Failed to open file '")+molecular_file_input.input_file_path+"'");
 			}
@@ -709,5 +698,30 @@ private:
 		}
 	}
 };
+
+void reset_molecular_radii_assignment_rules()
+{
+	voronotalt::MolecularRadiiAssignment::clear_radius_value_rules();
+}
+
+void configure_molecular_radii_assignment_rules(const std::string& configuration_file_path)
+{
+	std::string input_data;
+
+	if(!voronotalt::read_whole_file_or_pipe_or_stdin_to_string(configuration_file_path, input_data))
+	{
+		throw std::runtime_error(std::string("Failed to open file '")+configuration_file_path+"'");
+	}
+
+	if(input_data.empty())
+	{
+		throw std::runtime_error(std::string("No data in file '")+configuration_file_path+"'");
+	}
+
+	if(!voronotalt::MolecularRadiiAssignment::set_radius_value_rules(input_data))
+	{
+		throw std::runtime_error(std::string("Invalid atom radii configuration file '")+configuration_file_path+"'");
+	}
+}
 
 #endif /* VORONOTALT_H_ */

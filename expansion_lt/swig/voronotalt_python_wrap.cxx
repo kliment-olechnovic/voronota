@@ -32538,6 +32538,69 @@ SWIGINTERN PyObject *MolecularRadicalTessellation_swiginit(PyObject *SWIGUNUSEDP
   return SWIG_Python_InitShadowInstance(args);
 }
 
+SWIGINTERN PyObject *_wrap_reset_molecular_radii_assignment_rules(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "reset_molecular_radii_assignment_rules", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      reset_molecular_radii_assignment_rules();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_configure_molecular_radii_assignment_rules(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::string *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  {
+    std::string *ptr = (std::string *)0;
+    res1 = SWIG_AsPtr_std_string(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "configure_molecular_radii_assignment_rules" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "configure_molecular_radii_assignment_rules" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  {
+    try
+    {
+      configure_molecular_radii_assignment_rules((std::string const &)*arg1);
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
 static PyMethodDef SwigMethods[] = {
 	 { "delete_SwigPyIterator", _wrap_delete_SwigPyIterator, METH_O, NULL},
 	 { "SwigPyIterator_value", _wrap_SwigPyIterator_value, METH_O, NULL},
@@ -33146,6 +33209,8 @@ static PyMethodDef SwigMethods[] = {
 	 { "delete_MolecularRadicalTessellation", _wrap_delete_MolecularRadicalTessellation, METH_O, NULL},
 	 { "MolecularRadicalTessellation_swigregister", MolecularRadicalTessellation_swigregister, METH_O, NULL},
 	 { "MolecularRadicalTessellation_swiginit", MolecularRadicalTessellation_swiginit, METH_VARARGS, NULL},
+	 { "reset_molecular_radii_assignment_rules", _wrap_reset_molecular_radii_assignment_rules, METH_NOARGS, NULL},
+	 { "configure_molecular_radii_assignment_rules", _wrap_configure_molecular_radii_assignment_rules, METH_O, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 

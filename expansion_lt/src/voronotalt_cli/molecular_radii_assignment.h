@@ -73,7 +73,7 @@ public:
 		{
 			return false;
 		}
-		int count=0;
+		std::map<Descriptor, double> map_of_rules;
 		std::istringstream input(input_string);
 		while(input.good())
 		{
@@ -81,42 +81,18 @@ public:
 			std::getline(input, line);
 			if(!line.empty() && line[0]!='#')
 			{
-				if(set_radius_value_rule(line))
-				{
-					++count;
-				}
-				else
+				if(!set_radius_value_rule(line, map_of_rules))
 				{
 					return false;
 				}
 			}
 		}
-		return (count>0);
-	}
-
-	static bool set_radius_value_rule(const std::string& resName, const std::string& name, const double radius_value) noexcept
-	{
-		if(resName.empty() || name.empty() || radius_value<0.0)
+		if(map_of_rules.empty())
 		{
 			return false;
 		}
-		std::map<Descriptor, double>& mrd=radii_by_descriptors();
-		mrd[Descriptor(resName, name)]=radius_value;
+		radii_by_descriptors()=map_of_rules;
 		return true;
-	}
-
-	static bool set_radius_value_rule(const std::string& input) noexcept
-	{
-		std::string resName;
-		std::string name;
-		double radius_value=default_radius_value();
-
-		if(!read_config_line(input, resName, name, radius_value))
-		{
-			return false;
-		}
-
-		return set_radius_value_rule(resName, name, radius_value);
 	}
 
 private:
@@ -367,6 +343,30 @@ private:
 		}
 
 	    return (!(resName.empty() || name.empty() || radius_value<0.0));
+	}
+
+	static bool set_radius_value_rule(const std::string& resName, const std::string& name, const double radius_value, std::map<Descriptor, double>& map_of_rules) noexcept
+	{
+		if(resName.empty() || name.empty() || radius_value<0.0)
+		{
+			return false;
+		}
+		map_of_rules[Descriptor(resName, name)]=radius_value;
+		return true;
+	}
+
+	static bool set_radius_value_rule(const std::string& input, std::map<Descriptor, double>& map_of_rules) noexcept
+	{
+		std::string resName;
+		std::string name;
+		double radius_value=default_radius_value();
+
+		if(!read_config_line(input, resName, name, radius_value))
+		{
+			return false;
+		}
+
+		return set_radius_value_rule(resName, name, radius_value, map_of_rules);
 	}
 };
 
