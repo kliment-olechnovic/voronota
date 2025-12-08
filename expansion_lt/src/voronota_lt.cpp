@@ -1,9 +1,5 @@
 #include "voronotalt/parallelization_configuration.h"
 
-#ifdef VORONOTALT_OPENMP
-#include <omp.h>
-#endif
-
 #include "voronotalt/voronotalt.h"
 
 #include "voronotalt_cli/voronotalt_cli.h"
@@ -596,9 +592,7 @@ public:
 	{
 		if(app_params.measure_running_time)
 		{
-#ifdef VORONOTALT_OPENMP
-			log_output << "log_openmp_threads\t" << omp_get_max_threads() << "\n";
-#endif
+			log_output << "log_threads\t" << voronotalt::openmp_get_max_threads() << "\n";
 			time_recoder_for_input.print_recordings(log_output, "log time input stage", true);
 			time_recoder_for_tessellation.print_recordings(log_output, "log time tessellation stage", true);
 			time_recoder_for_output.print_recordings(log_output, "log time output stage", true);
@@ -1544,9 +1538,7 @@ int main(const int argc, const char** argv)
 		return 1;
 	}
 
-#ifdef VORONOTALT_OPENMP
-		omp_set_num_threads(app_params.max_number_of_processors);
-#endif
+	voronotalt::openmp_set_num_threads_if_possible(app_params.max_number_of_processors);
 
 	ApplicationLogRecorders app_log_recorders(app_params);
 
