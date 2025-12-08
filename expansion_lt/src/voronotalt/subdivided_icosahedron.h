@@ -64,7 +64,7 @@ struct SubdividedIcosahedron
 	std::vector<Triple> triples;
 	Float max_edge_length;
 
-	SubdividedIcosahedron(const UnsignedInt depth) noexcept : max_edge_length(FLOATCONST(0.0))
+	explicit SubdividedIcosahedron(const UnsignedInt depth) noexcept : max_edge_length(FLOATCONST(0.0))
 	{
 		const double t=(1+sqrt(5.0))/2.0;
 

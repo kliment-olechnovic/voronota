@@ -336,7 +336,7 @@ private:
 		{
 		}
 
-		PrimitivePart(const BundlingID& bundling_id) noexcept : bundling_id(bundling_id)
+		explicit PrimitivePart(const BundlingID& bundling_id) noexcept : bundling_id(bundling_id)
 		{
 		}
 

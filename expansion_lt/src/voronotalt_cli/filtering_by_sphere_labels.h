@@ -26,7 +26,7 @@ public:
 		{
 		}
 
-		ExpressionResult(const bool expression_matched) noexcept : expression_valid(true), expression_matched(expression_matched)
+		explicit ExpressionResult(const bool expression_matched) noexcept : expression_valid(true), expression_matched(expression_matched)
 		{
 		}
 	};
@@ -225,11 +225,6 @@ private:
 		bool is_operator() const noexcept
 		{
 			return (is_binary_operator() || is_unary_operator());
-		}
-
-		bool is_bracket() const noexcept
-		{
-			return (type==TYPE_BRACKET_OPEN || type==TYPE_BRACKET_CLOSE);
 		}
 	};
 
@@ -884,7 +879,7 @@ public:
 		{
 		}
 
-		ExpressionForSingle(const std::string& expression_str) noexcept : allow_all_(expression_str.empty() || expression_str=="[]")
+		explicit ExpressionForSingle(const std::string& expression_str) noexcept : allow_all_(expression_str.empty() || expression_str=="[]")
 		{
 			if(!allow_all_)
 			{
@@ -958,7 +953,7 @@ public:
 		{
 		}
 
-		ExpressionForPair(const std::string& expression_str) noexcept : allow_all_(expression_str.empty() || expression_str=="[]")
+		explicit ExpressionForPair(const std::string& expression_str) noexcept : allow_all_(expression_str.empty() || expression_str=="[]")
 		{
 			if(!allow_all_)
 			{
