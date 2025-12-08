@@ -142,6 +142,9 @@ public:
 	std::string write_cells_to_file;
 	std::string write_cells_residue_level_to_file;
 	std::string write_cells_chain_level_to_file;
+	std::string plot_contacts_to_file;
+	std::string plot_contacts_residue_level_to_file;
+	std::string plot_contacts_chain_level_to_file;
 	std::string graphics_output_file_for_pymol;
 	std::string graphics_output_file_for_chimera;
 	std::string graphics_title;
@@ -376,6 +379,18 @@ public:
 				{
 					write_cells_chain_level_to_file=opt.args_strings.front();
 				}
+				else if(opt.name=="plot-contacts-to-file" && opt.args_strings.size()==1)
+				{
+					plot_contacts_to_file=opt.args_strings.front();
+				}
+				else if(opt.name=="plot-contacts-residue-level-to-file" && opt.args_strings.size()==1)
+				{
+					plot_contacts_residue_level_to_file=opt.args_strings.front();
+				}
+				else if(opt.name=="plot-contacts-chain-level-to-file" && opt.args_strings.size()==1)
+				{
+					plot_contacts_chain_level_to_file=opt.args_strings.front();
+				}
 				else if(opt.name=="graphics-output-file-for-pymol" && opt.args_strings.size()==1)
 				{
 					graphics_output_file_for_pymol=opt.args_strings.front();
@@ -539,8 +554,8 @@ public:
 
 		if(read_successfuly)
 		{
-			need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty());
-			need_summaries_on_chain_level=(print_contacts_chain_level || print_cells_chain_level || !write_contacts_chain_level_to_file.empty() || !write_cells_chain_level_to_file.empty());
+			need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty() || !plot_contacts_residue_level_to_file.empty());
+			need_summaries_on_chain_level=(print_contacts_chain_level || print_cells_chain_level || !write_contacts_chain_level_to_file.empty() || !write_cells_chain_level_to_file.empty() || !plot_contacts_chain_level_to_file.empty());
 		}
 
 		return read_successfuly;
@@ -1005,6 +1020,60 @@ void run_mode_radical(
 			}
 		}
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("write tessellation vertices");
+	}
+
+	if(!app_params.plot_contacts_to_file.empty())
+	{
+		voronotalt::ContactPlotter plotter;
+		bool all_good=true;
+		for(std::size_t i=0;all_good && i<result.contacts_summaries.size();i++)
+		{
+			all_good=all_good && plotter.add_contact(i, result.contacts_summaries, spheres_input_result.sphere_labels);
+		}
+		if(!all_good)
+		{
+			std::cerr << "Error (non-terminating): failed to plot contacts\n";
+		}
+		else if(!plotter.write_to_file(app_params.plot_contacts_to_file))
+		{
+			std::cerr << "Error (non-terminating): failed to write plot of contacts to file '" << app_params.plot_contacts_to_file << "'\n";
+		}
+	}
+
+	if(!app_params.plot_contacts_residue_level_to_file.empty())
+	{
+		voronotalt::ContactPlotter plotter;
+		bool all_good=true;
+		for(std::size_t i=0;all_good && i<result_grouped_by_residue.grouped_contacts_summaries.size();i++)
+		{
+			all_good=all_good && plotter.add_contact_residue_level(i, result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries);
+		}
+		if(!all_good)
+		{
+			std::cerr << "Error (non-terminating): failed to plot contacts on residue level\n";
+		}
+		else if(!plotter.write_to_file(app_params.plot_contacts_residue_level_to_file))
+		{
+			std::cerr << "Error (non-terminating): failed to write plot of contacts on residue level to file '" << app_params.plot_contacts_residue_level_to_file << "'\n";
+		}
+	}
+
+	if(!app_params.plot_contacts_chain_level_to_file.empty())
+	{
+		voronotalt::ContactPlotter plotter;
+		bool all_good=true;
+		for(std::size_t i=0;all_good && i<result_grouped_by_chain.grouped_contacts_summaries.size();i++)
+		{
+			all_good=all_good && plotter.add_contact_chain_level(i, result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries);
+		}
+		if(!all_good)
+		{
+			std::cerr << "Error (non-terminating): failed to plot contacts on chain level\n";
+		}
+		else if(!plotter.write_to_file(app_params.plot_contacts_chain_level_to_file))
+		{
+			std::cerr << "Error (non-terminating): failed to write plot of contacts on chain level to file '" << app_params.plot_contacts_chain_level_to_file << "'\n";
+		}
 	}
 
 	if(app_graphics_recorder.graphics_writer.enabled())

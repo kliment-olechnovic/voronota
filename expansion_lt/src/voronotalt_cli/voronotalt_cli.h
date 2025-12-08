@@ -10,5 +10,6 @@
 #include "terminal_utilities.h"
 #include "filtering_by_sphere_labels.h"
 #include "color_assigner.h"
+#include "contact_plotter.h"
 
 #endif /* VORONOTALT_CLI_VORONOTALT_CLI_H_ */
