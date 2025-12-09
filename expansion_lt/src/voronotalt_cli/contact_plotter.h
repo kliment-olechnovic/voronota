@@ -15,76 +15,27 @@ namespace voronotalt
 class ContactPlotter
 {
 public:
+	struct LevelMode
+	{
+		enum ID
+		{
+			inter_atom,
+			inter_residue,
+			inter_chain
+		};
+	};
+
+	ContactPlotter(const LevelMode::ID mode) : mode_(mode)
+	{
+	}
+
 	template<class ContactsContainer>
-	bool add_contact(
-			const std::size_t i,
-			const ContactsContainer& contacts,
-			const std::vector<SphereLabeling::SphereLabel>& sphere_labels) noexcept
+	bool add_contact(const std::size_t i, const ContactsContainer& contacts, const std::vector<SphereLabeling::SphereLabel>& sphere_labels) noexcept
 	{
 		if(i<contacts.size() && contacts[i].id_a<sphere_labels.size() && contacts[i].id_b<sphere_labels.size())
 		{
-			const SphereLabeling::SphereLabel& sl1=sphere_labels[contacts[i].id_a];
-			const SphereLabeling::SphereLabel& sl2=sphere_labels[contacts[i].id_b];
-			if(sl1.expanded_residue_id.valid && sl2.expanded_residue_id.valid)
-			{
-				add_point(CoordKey(sl1.chain_id, sl1.expanded_residue_id.rnum, sl1.expanded_residue_id.icode, sl1.atom_name), CoordKey(sl2.chain_id, sl2.expanded_residue_id.rnum, sl2.expanded_residue_id.icode, sl2.atom_name), contacts[i].area);
-			}
-			else
-			{
-				add_point(CoordKey(sl1.chain_id, sl1.residue_id, sl1.atom_name), CoordKey(sl2.chain_id, sl2.residue_id, sl2.atom_name), contacts[i].area);
-			}
+			add_point(sphere_labels[contacts[i].id_a], sphere_labels[contacts[i].id_b], contacts[i].area);
 			return true;
-		}
-		return false;
-	}
-
-	template<class ContactsContainer, class GroupedContactsContainer>
-	bool add_contact_residue_level(
-			const std::size_t i,
-			const ContactsContainer& contacts,
-			const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
-			const std::vector<UnsignedInt>& grouped_contacts_representative_ids,
-			const GroupedContactsContainer& grouped_contacts) noexcept
-	{
-		if(i<grouped_contacts_representative_ids.size() && i<grouped_contacts.size())
-		{
-			const std::size_t j=grouped_contacts_representative_ids[i];
-			if(j<contacts.size() && contacts[j].id_a<sphere_labels.size() && contacts[j].id_b<sphere_labels.size())
-			{
-				const SphereLabeling::SphereLabel& sl1=sphere_labels[contacts[j].id_a];
-				const SphereLabeling::SphereLabel& sl2=sphere_labels[contacts[j].id_b];
-				if(sl1.expanded_residue_id.valid && sl2.expanded_residue_id.valid)
-				{
-					add_point(CoordKey(sl1.chain_id, sl1.expanded_residue_id.rnum, sl1.expanded_residue_id.icode), CoordKey(sl2.chain_id, sl2.expanded_residue_id.rnum, sl2.expanded_residue_id.icode), grouped_contacts[i].area);
-				}
-				else
-				{
-					add_point(CoordKey(sl1.chain_id, sl1.residue_id), CoordKey(sl2.chain_id, sl2.residue_id), grouped_contacts[i].area);
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
-	template<class ContactsContainer, class GroupedContactsContainer>
-	bool add_contact_chain_level(
-			const std::size_t i,
-			const ContactsContainer& contacts,
-			const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
-			const std::vector<UnsignedInt>& grouped_contacts_representative_ids,
-			const GroupedContactsContainer& grouped_contacts) noexcept
-	{
-		if(i<grouped_contacts_representative_ids.size() && i<grouped_contacts.size())
-		{
-			const std::size_t j=grouped_contacts_representative_ids[i];
-			if(j<contacts.size() && contacts[j].id_a<sphere_labels.size() && contacts[j].id_b<sphere_labels.size())
-			{
-				const SphereLabeling::SphereLabel& sl1=sphere_labels[contacts[j].id_a];
-				const SphereLabeling::SphereLabel& sl2=sphere_labels[contacts[j].id_b];
-				add_point(CoordKey(sl1.chain_id), CoordKey(sl2.chain_id), grouped_contacts[i].area);
-				return true;
-			}
 		}
 		return false;
 	}
@@ -102,34 +53,42 @@ public:
 			return false;
 		}
 
-		const double scale=1.0;
+		std::map<CoordKey, double> map_of_coords;
+		for(std::map<PointKey, PointValue>::iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
+		{
+			map_of_coords[it->first.a]=0.0;
+			map_of_coords[it->first.b]=0.0;
+		}
+
+		const double scale=20.0;
 
 		double length=0;
-		for(std::map<CoordKey, double>::iterator it=map_of_coords_.begin();it!=map_of_coords_.end();++it)
+		double max_caption_width=0.0;
+		for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
 		{
 			it->second=length;
 			length+=scale;
+			max_caption_width=std::max(max_caption_width, it->first.unscaled_caption_width()*scale);
 		}
 
-		SVGWriter svg(length, length);
-		//svg.set("style", "font-family:monospace;");
-		svg.add_rect(0, 0, length, length, std::string("fill:#CCCCCC;"));
+		SVGWriter svg(length+max_caption_width, length);
+		svg.set("style", "font-family:monospace;");
+		svg.add_rect(0, 0, length, length, std::string("fill:#FFFFFF;"));
 
 		for(std::map<PointKey, PointValue>::const_iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
 		{
-			const double x=map_of_coords_[it->first.a];
-			const double y=map_of_coords_[it->first.b];
+			const double x=map_of_coords[it->first.a];
+			const double y=map_of_coords[it->first.b];
 			svg.add_rect(x, y, scale, scale, std::string("fill:#000000;"));
 			svg.add_rect(y, x, scale, scale, std::string("fill:#000000;"));
 		}
 
-//		for(std::map<CoordKey, double>::iterator it=map_of_coords_.begin();it!=map_of_coords_.end();++it)
-//		{
-//			const double x=length+5.0;
-//			const double y=it->second;
-//			const std::string text=it->first.chain;
-//			svg.add_text(text, x, y, std::string("font-size:20px; fill:#000000;"));
-//		}
+		for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
+		{
+			const double x=length+scale*0.1;
+			const double y=scale+it->second-scale*0.2;
+			svg.add_text(it->first.caption(), x, y, std::string("font-size:20px; fill:#000000;"));
+		}
 
 		svg.write(output);
 
@@ -289,33 +248,42 @@ private:
 		std::string residue_id;
 		std::string atom_name;
 
-		CoordKey() : residue_number(0)
+		CoordKey(const LevelMode::ID mode, const SphereLabeling::SphereLabel& sl) : residue_number(0)
 		{
+			chain=sl.chain_id;
+			if(mode==LevelMode::inter_residue || mode==LevelMode::inter_atom)
+			{
+				if(sl.expanded_residue_id.valid)
+				{
+					residue_number=sl.expanded_residue_id.rnum;
+					icode=sl.expanded_residue_id.icode;
+				}
+				residue_id=sl.residue_id;
+				if(mode==LevelMode::inter_atom)
+				{
+					atom_name=sl.atom_name;
+				}
+			}
 		}
 
-		CoordKey(const std::string& chain) : chain(chain), residue_number(0)
-		{
-		}
-
-		CoordKey(const std::string& chain, const std::string& residue_id) : chain(chain), residue_number(0), residue_id(residue_id)
-		{
-		}
-
-		CoordKey(const std::string& chain, const std::string& residue_id, const std::string& atom_name) : chain(chain), residue_number(0), residue_id(residue_id), atom_name(atom_name)
-		{
-		}
-
-		CoordKey(const std::string& chain, const int residue_number, const std::string& icode) : chain(chain), residue_number(residue_number), icode(icode)
-		{
-		}
-
-		CoordKey(const std::string& chain, const int residue_number, const std::string& icode, const std::string& atom_name) : chain(chain), residue_number(residue_number), icode(icode), atom_name(atom_name)
-		{
-		}
+//		CoordKey(const LevelMode::ID mode, const CoordKey& ck) : residue_number(0)
+//		{
+//			chain=ck.chain;
+//			if(mode==LevelMode::inter_residue || mode==LevelMode::inter_atom)
+//			{
+//				residue_number=ck.residue_number;
+//				icode=ck.icode;
+//				residue_id=ck.residue_id;
+//				if(mode==LevelMode::inter_atom)
+//				{
+//					atom_name=ck.atom_name;
+//				}
+//			}
+//		}
 
 		bool operator==(const CoordKey& v) const
 		{
-			return (chain==v.chain && residue_number==v.residue_number && icode==v.icode && atom_name==v.atom_name);
+			return (chain==v.chain && residue_number==v.residue_number && icode==v.icode && residue_id==v.residue_id && atom_name==v.atom_name);
 		}
 
 		bool operator!=(const CoordKey& v) const
@@ -356,13 +324,23 @@ private:
 			}
 			return false;
 		}
+
+		std::string caption() const
+		{
+			return (chain+(residue_id.empty() ? std::string() : std::string(" ")+residue_id)+(atom_name.empty() ? std::string() : std::string(" ")+atom_name));
+		}
+
+		double unscaled_caption_width() const
+		{
+			return (static_cast<double>(chain.size()+residue_id.size()+atom_name.size()+2));
+		}
 	};
 
 	struct PointKey
 	{
 		CoordKey a;
 		CoordKey b;
-		PointKey(const CoordKey& phk1, const CoordKey& phk2) : a(phk1<phk2 ? phk1 : phk2), b(phk1<phk2 ? phk2 : phk1)
+		PointKey(const CoordKey& ck1, const CoordKey& ck2) : a(ck1<ck2 ? ck1 : ck2), b(ck1<ck2 ? ck2 : ck1)
 		{
 		}
 
@@ -388,20 +366,24 @@ private:
 		{
 		}
 
-		PointValue(const double area) : area(area)
+		void add(const double more_area)
 		{
+			area+=more_area;
 		}
 	};
 
-	void add_point(const CoordKey& a, const CoordKey& b, const double area)
+	void add_point(const SphereLabeling::SphereLabel& sl1, const SphereLabeling::SphereLabel& sl2, const double area)
 	{
-		map_of_points_[PointKey(a, b)].area=area;
-		map_of_coords_[a]=0;
-		map_of_coords_[b]=0;
+		CoordKey a(mode_, sl1);
+		CoordKey b(mode_, sl2);
+		if(a!=b)
+		{
+			map_of_points_[PointKey(a, b)].add(area);
+		}
 	}
 
+	LevelMode::ID mode_;
 	std::map<PointKey, PointValue> map_of_points_;
-	std::map<CoordKey, double> map_of_coords_;
 };
 
 }
