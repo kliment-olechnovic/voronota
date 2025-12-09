@@ -524,7 +524,10 @@ private:
 		string_append_cstring(output, (chain_level ? "cu\t" : "cr\t"));
 		const SphereLabeling::SphereLabel& sl1=(contacts[j].id_a<sphere_labels.size() ? sphere_labels[contacts[j].id_a] : null_label);
 		const SphereLabeling::SphereLabel& sl2=(contacts[j].id_b<sphere_labels.size() ? sphere_labels[contacts[j].id_b] : null_label);
-		const bool no_reverse=(sl1.chain_id<sl2.chain_id || (sl1.chain_id==sl2.chain_id && sl1.residue_id<sl2.residue_id));
+		const bool no_reverse=(sl1.chain_id<sl2.chain_id || (sl1.chain_id==sl2.chain_id &&
+								((sl1.expanded_residue_id.valid && sl2.expanded_residue_id.valid) ?
+										(sl1.expanded_residue_id.rnum<sl2.expanded_residue_id.rnum || (sl1.expanded_residue_id.rnum==sl2.expanded_residue_id.rnum && sl1.expanded_residue_id.icode==sl2.expanded_residue_id.icode))
+										: sl1.residue_id<sl2.residue_id)));
 		print_label((no_reverse ? sl1 : sl2), true, chain_level, output);
 		string_append_char(output, '\t');
 		print_label((no_reverse ? sl2 : sl1), true, chain_level, output);
