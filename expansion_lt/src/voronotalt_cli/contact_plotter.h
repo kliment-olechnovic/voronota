@@ -40,7 +40,7 @@ public:
 		return false;
 	}
 
-	bool write_to_file(const std::string& filename) noexcept
+	bool write_to_file(const std::string& filename, const std::string& config) noexcept
 	{
 		if(map_of_points_.empty())
 		{
@@ -52,6 +52,8 @@ public:
 		{
 			return false;
 		}
+
+		const bool labeled=(config.find("labeled")!=std::string::npos);
 
 		std::map<CoordKey, double> map_of_coords;
 		for(std::map<PointKey, PointValue>::iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
@@ -71,9 +73,70 @@ public:
 			max_caption_width=std::max(max_caption_width, it->first.unscaled_caption_width()*scale);
 		}
 
-		SVGWriter svg(length+max_caption_width, length);
+		const double full_width=(labeled ? (length+max_caption_width) : length);
+		const double full_height=length;
+
+		SVGWriter svg(full_width, full_height);
 		svg.set("style", "font-family:monospace;");
-		svg.add_rect(0, 0, length, length, std::string("fill:#FFFFFF;"));
+		svg.add_rect(0, 0, length, length, std::string("fill:#F0F0F0;"));
+
+		if(mode_==LevelMode::inter_atom || mode_==LevelMode::inter_residue)
+		{
+			std::map<PointKey, PointValue> map_of_points_on_chain_level;
+			for(std::map<PointKey, PointValue>::iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
+			{
+				CoordKey a(LevelMode::inter_chain, it->first.a);
+				CoordKey b(LevelMode::inter_chain, it->first.b);
+				if(a!=b)
+				{
+					map_of_points_on_chain_level[PointKey(a, b)].add(it->second.area);
+				}
+			}
+
+			std::map<CoordKey, RegionValue> map_of_coord_regions_on_chain_level;
+			for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
+			{
+				RegionValue& rv=map_of_coord_regions_on_chain_level[CoordKey(LevelMode::inter_chain, it->first)];
+				rv.update(it->second);
+			}
+
+			for(std::map<PointKey, PointValue>::iterator it=map_of_points_on_chain_level.begin();it!=map_of_points_on_chain_level.end();++it)
+			{
+				const RegionValue& x=map_of_coord_regions_on_chain_level[it->first.a];
+				const RegionValue& y=map_of_coord_regions_on_chain_level[it->first.b];
+				svg.add_rect(x.a, y.a, x.b+scale-x.a, y.b+scale-y.a, std::string("fill:#E0E0E0;"));
+				svg.add_rect(y.a, x.a, y.b+scale-y.a, x.b+scale-x.a, std::string("fill:#E0E0E0;"));
+			}
+		}
+
+		if(mode_==LevelMode::inter_atom)
+		{
+			std::map<PointKey, PointValue> map_of_points_on_residue_level;
+			for(std::map<PointKey, PointValue>::iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
+			{
+				CoordKey a(LevelMode::inter_residue, it->first.a);
+				CoordKey b(LevelMode::inter_residue, it->first.b);
+				if(a!=b)
+				{
+					map_of_points_on_residue_level[PointKey(a, b)].add(it->second.area);
+				}
+			}
+
+			std::map<CoordKey, RegionValue> map_of_coord_regions_on_residue_level;
+			for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
+			{
+				RegionValue& rv=map_of_coord_regions_on_residue_level[CoordKey(LevelMode::inter_residue, it->first)];
+				rv.update(it->second);
+			}
+
+			for(std::map<PointKey, PointValue>::iterator it=map_of_points_on_residue_level.begin();it!=map_of_points_on_residue_level.end();++it)
+			{
+				const RegionValue& x=map_of_coord_regions_on_residue_level[it->first.a];
+				const RegionValue& y=map_of_coord_regions_on_residue_level[it->first.b];
+				svg.add_rect(x.a, y.a, x.b+scale-x.a, y.b+scale-y.a, std::string("fill:#D0D0D0;"));
+				svg.add_rect(y.a, x.a, y.b+scale-y.a, x.b+scale-x.a, std::string("fill:#D0D0D0;"));
+			}
+		}
 
 		for(std::map<PointKey, PointValue>::const_iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
 		{
@@ -83,11 +146,14 @@ public:
 			svg.add_rect(y, x, scale, scale, std::string("fill:#000000;"));
 		}
 
-		for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
+		if(labeled)
 		{
-			const double x=length+scale*0.1;
-			const double y=scale+it->second-scale*0.2;
-			svg.add_text(it->first.caption(), x, y, std::string("font-size:20px; fill:#000000;"));
+			for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
+			{
+				const double x=length+scale*0.1;
+				const double y=scale+it->second-scale*0.2;
+				svg.add_text(it->first.caption(), x, y, std::string("font-size:20px; fill:#000000;"));
+			}
 		}
 
 		svg.write(output);
@@ -266,20 +332,20 @@ private:
 			}
 		}
 
-//		CoordKey(const LevelMode::ID mode, const CoordKey& ck) : residue_number(0)
-//		{
-//			chain=ck.chain;
-//			if(mode==LevelMode::inter_residue || mode==LevelMode::inter_atom)
-//			{
-//				residue_number=ck.residue_number;
-//				icode=ck.icode;
-//				residue_id=ck.residue_id;
-//				if(mode==LevelMode::inter_atom)
-//				{
-//					atom_name=ck.atom_name;
-//				}
-//			}
-//		}
+		CoordKey(const LevelMode::ID mode, const CoordKey& ck) : residue_number(0)
+		{
+			chain=ck.chain;
+			if(mode==LevelMode::inter_residue || mode==LevelMode::inter_atom)
+			{
+				residue_number=ck.residue_number;
+				icode=ck.icode;
+				residue_id=ck.residue_id;
+				if(mode==LevelMode::inter_atom)
+				{
+					atom_name=ck.atom_name;
+				}
+			}
+		}
 
 		bool operator==(const CoordKey& v) const
 		{
@@ -369,6 +435,32 @@ private:
 		void add(const double more_area)
 		{
 			area+=more_area;
+		}
+	};
+
+	struct RegionValue
+	{
+		bool initialized;
+		double a;
+		double b;
+
+		RegionValue() : initialized(false), a(0.0), b(0.0)
+		{
+		}
+
+		void update(const double v)
+		{
+			if(!initialized)
+			{
+				a=v;
+				b=v;
+				initialized=true;
+			}
+			else
+			{
+				a=std::min(a, v);
+				b=std::max(b, v);
+			}
 		}
 	};
 
