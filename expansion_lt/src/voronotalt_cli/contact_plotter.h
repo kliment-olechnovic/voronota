@@ -53,7 +53,8 @@ public:
 			return false;
 		}
 
-		const bool labeled=(config.find("labeled")!=std::string::npos);
+		const bool xlabeled=(config.find("xlabeled")!=std::string::npos);
+		const bool ylabeled=(config.find("ylabeled")!=std::string::npos);
 
 		std::map<CoordKey, double> map_of_coords;
 		for(std::map<PointKey, PointValue>::iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
@@ -73,12 +74,13 @@ public:
 			max_caption_width=std::max(max_caption_width, it->first.unscaled_caption_width()*scale);
 		}
 
-		const double full_width=(labeled ? (length+max_caption_width) : length);
-		const double full_height=length;
+		const double full_width=(ylabeled ? (length+max_caption_width) : length);
+		const double full_height=(xlabeled ? (length+max_caption_width) : length);
+		const double shift_y=(xlabeled ? max_caption_width : 0.0);
 
 		SVGWriter svg(full_width, full_height);
 		svg.set("style", "font-family:monospace;");
-		svg.add_rect(0, 0, length, length, std::string("fill:#F0F0F0;"));
+		svg.add_rect(0, 0+shift_y, length, length, std::string("fill:#F0F0F0;"));
 
 		if(mode_==LevelMode::inter_atom || mode_==LevelMode::inter_residue)
 		{
@@ -104,8 +106,8 @@ public:
 			{
 				const RegionValue& x=map_of_coord_regions_on_chain_level[it->first.a];
 				const RegionValue& y=map_of_coord_regions_on_chain_level[it->first.b];
-				svg.add_rect(x.a, y.a, x.b+scale-x.a, y.b+scale-y.a, std::string("fill:#E0E0E0;"));
-				svg.add_rect(y.a, x.a, y.b+scale-y.a, x.b+scale-x.a, std::string("fill:#E0E0E0;"));
+				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, std::string("fill:#E0E0E0;"));
+				svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, std::string("fill:#E0E0E0;"));
 			}
 		}
 
@@ -133,8 +135,8 @@ public:
 			{
 				const RegionValue& x=map_of_coord_regions_on_residue_level[it->first.a];
 				const RegionValue& y=map_of_coord_regions_on_residue_level[it->first.b];
-				svg.add_rect(x.a, y.a, x.b+scale-x.a, y.b+scale-y.a, std::string("fill:#D0D0D0;"));
-				svg.add_rect(y.a, x.a, y.b+scale-y.a, x.b+scale-x.a, std::string("fill:#D0D0D0;"));
+				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, std::string("fill:#D0D0D0;"));
+				svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, std::string("fill:#D0D0D0;"));
 			}
 		}
 
@@ -142,16 +144,26 @@ public:
 		{
 			const double x=map_of_coords[it->first.a];
 			const double y=map_of_coords[it->first.b];
-			svg.add_rect(x, y, scale, scale, std::string("fill:#000000;"));
-			svg.add_rect(y, x, scale, scale, std::string("fill:#000000;"));
+			svg.add_rect(x, y+shift_y, scale, scale, std::string("fill:#000000;"));
+			svg.add_rect(y, x+shift_y, scale, scale, std::string("fill:#000000;"));
 		}
 
-		if(labeled)
+		if(xlabeled)
+		{
+			for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
+			{
+				const double x=it->second+scale;
+				const double y=0.0-scale*0.1+shift_y;
+				svg.add_text(it->first.caption(), x, y, -90.0, x, y, std::string("font-size:20px; fill:#000000;"));
+			}
+		}
+
+		if(ylabeled)
 		{
 			for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
 			{
 				const double x=length+scale*0.1;
-				const double y=scale+it->second-scale*0.2;
+				const double y=scale+it->second-scale*0.2+shift_y;
 				svg.add_text(it->first.caption(), x, y, std::string("font-size:20px; fill:#000000;"));
 			}
 		}
@@ -302,6 +314,14 @@ private:
 		SVGWriter& add_text(const std::string& text, const double x, const double y, const std::string& style)
 		{
 			add_child(XMLWriter("text").set("x", x).set("y", y).set("style", style).set(text));
+			return (*this);
+		}
+
+		SVGWriter& add_text(const std::string& text, const double x, const double y, const double rotation_angle, const double rotation_cx, const double rotation_cy, const std::string& style)
+		{
+			std::ostringstream rotation_output;
+			rotation_output << "rotate(" << rotation_angle << " " << rotation_cx << " " << rotation_cy << ")";
+			add_child(XMLWriter("text").set("x", x).set("y", y).set("transform", rotation_output.str()).set("style", style).set(text));
 			return (*this);
 		}
 	};
