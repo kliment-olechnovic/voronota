@@ -521,6 +521,8 @@ public:
 			color_assigner.add_rule("ball", "sas", 0x00FF00);
 			color_assigner.add_rule("ball", "sasmesh", 0x808080);
 			color_assigner.add_rule("other", "lattice", 0x00FF00);
+			color_assigner.add_rule("other", "truecollisions", 0x3030FF);
+			color_assigner.add_rule("other", "falsecollisions", 0xFFA0FF);
 		}
 
 		if(!restrict_input_balls.empty())
@@ -757,6 +759,8 @@ void run_mode_radical(
 
 	const voronotalt::PeriodicBox periodic_box=voronotalt::PeriodicBox::create_periodic_box_from_shift_directions_or_from_corners(app_params.periodic_box_directions, app_params.periodic_box_corners);
 
+	voronotalt::SpheresContainer::ResultOfPreparationForTessellation preparation_result;
+
 	voronotalt::RadicalTessellation::Result result;
 	voronotalt::RadicalTessellation::ResultGraphics result_graphics;
 
@@ -767,7 +771,6 @@ void run_mode_radical(
 		voronotalt::SpheresContainer spheres_container;
 		spheres_container.init(spheres_input_result.spheres, periodic_box, app_log_recorders.time_recoder_for_tessellation);
 
-		voronotalt::SpheresContainer::ResultOfPreparationForTessellation preparation_result;
 		spheres_container.prepare_for_tessellation(grouping_for_filtering, preparation_result, app_log_recorders.time_recoder_for_tessellation);
 
 		if(!app_params.filtering_expression_for_restricting_collisions.allow_all())
@@ -1304,6 +1307,59 @@ void run_mode_radical(
 							o=voronotalt::sum_of_points(o, voronotalt::point_and_number_product(directions[2], static_cast<voronotalt::Float>(wz)));
 							app_graphics_recorder.graphics_writer.add_line("lattice", "borders", o, voronotalt::sum_of_points(o, voronotalt::point_and_number_product(directions[i], FLOATCONST(3.0))));
 						}
+					}
+				}
+			}
+		}
+		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "truecollisions") || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "falsecollisions"))
+		{
+			std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> > map_of_collisions_to_contacts;
+			for(voronotalt::UnsignedInt i=0;i<preparation_result.relevant_collision_ids.size();i++)
+			{
+				std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt> collision_id=preparation_result.relevant_collision_ids[i];
+				if(collision_id.first>collision_id.second)
+				{
+					std::swap(collision_id.first, collision_id.second);
+				}
+				std::pair<bool, voronotalt::UnsignedInt>& contact_id=map_of_collisions_to_contacts[collision_id];
+				contact_id.first=false;
+				contact_id.second=0;
+			}
+			for(voronotalt::UnsignedInt i=0;i<result.contacts_summaries.size();i++)
+			{
+				const voronotalt::RadicalTessellation::ContactDescriptorSummary& cd=result.contacts_summaries[i];
+				std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt> collision_id(cd.id_a, cd.id_b);
+				if(collision_id.first>collision_id.second)
+				{
+					std::swap(collision_id.first, collision_id.second);
+				}
+				std::pair<bool, voronotalt::UnsignedInt>& contact_id=map_of_collisions_to_contacts[collision_id];
+				contact_id.first=true;
+				contact_id.second=i;
+			}
+			if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "truecollisions"))
+			{
+				app_graphics_recorder.graphics_writer.add_color("truecollisions", "", app_params.color_assigner.get_color("truecollisions"));
+				for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_collisions_to_contacts.begin();it!=map_of_collisions_to_contacts.end();++it)
+				{
+					const voronotalt::UnsignedInt a=it->first.first;
+					const voronotalt::UnsignedInt b=it->first.second;
+					if(it->second.first)
+					{
+						app_graphics_recorder.graphics_writer.add_line("truecollisions", "all", spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
+					}
+				}
+			}
+			if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "falsecollisions"))
+			{
+				app_graphics_recorder.graphics_writer.add_color("falsecollisions", "", app_params.color_assigner.get_color("falsecollisions"));
+				for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_collisions_to_contacts.begin();it!=map_of_collisions_to_contacts.end();++it)
+				{
+					const voronotalt::UnsignedInt a=it->first.first;
+					const voronotalt::UnsignedInt b=it->first.second;
+					if(!it->second.first)
+					{
+						app_graphics_recorder.graphics_writer.add_line("falsecollisions", "all", spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
 					}
 				}
 			}
