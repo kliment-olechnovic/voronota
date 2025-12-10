@@ -55,15 +55,26 @@ public:
 
 		const bool xlabeled=(config.find("xlabeled")!=std::string::npos);
 		const bool ylabeled=(config.find("ylabeled")!=std::string::npos);
+		const bool allgradient=(config.find("allgradient")!=std::string::npos);
+		const bool halfgradient=(config.find("halfgradient")!=std::string::npos);
+		const bool dark=(config.find("dark")!=std::string::npos);
+
+		const double scale=20.0;
+
+		const std::string style_background_level0(dark ? "fill:#090909;" : "fill:#F0F0F0;");
+		const std::string style_background_level1(dark ? "fill:#393939;" : "fill:#D9D9D9;");
+		const std::string style_background_level2(dark ? "fill:#696969;" : "fill:#C0C0C0;");
+		const std::string style_rect_default(dark ? "fill:#F9F9F9;" : "fill:#090909;");
+		const std::string style_text_default("font-size:20px; fill:#000000;");
 
 		std::map<CoordKey, double> map_of_coords;
+		double max_area=0.0;
 		for(std::map<PointKey, PointValue>::iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
 		{
 			map_of_coords[it->first.a]=0.0;
 			map_of_coords[it->first.b]=0.0;
+			max_area=std::max(max_area, it->second.area);
 		}
-
-		const double scale=20.0;
 
 		double length=0;
 		double max_caption_width=0.0;
@@ -80,7 +91,7 @@ public:
 
 		SVGWriter svg(full_width, full_height);
 		svg.set("style", "font-family:monospace;");
-		svg.add_rect(0, 0+shift_y, length, length, std::string("fill:#F0F0F0;"));
+		svg.add_rect(0, 0+shift_y, length, length, style_background_level0);
 
 		if(mode_==LevelMode::inter_atom || mode_==LevelMode::inter_residue)
 		{
@@ -106,8 +117,8 @@ public:
 			{
 				const RegionValue& x=map_of_coord_regions_on_chain_level[it->first.a];
 				const RegionValue& y=map_of_coord_regions_on_chain_level[it->first.b];
-				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, std::string("fill:#E0E0E0;"));
-				svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, std::string("fill:#E0E0E0;"));
+				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_background_level1);
+				svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_background_level1);
 			}
 		}
 
@@ -135,8 +146,8 @@ public:
 			{
 				const RegionValue& x=map_of_coord_regions_on_residue_level[it->first.a];
 				const RegionValue& y=map_of_coord_regions_on_residue_level[it->first.b];
-				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, std::string("fill:#D0D0D0;"));
-				svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, std::string("fill:#D0D0D0;"));
+				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_background_level2);
+				svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_background_level2);
 			}
 		}
 
@@ -144,8 +155,18 @@ public:
 		{
 			const double x=map_of_coords[it->first.a];
 			const double y=map_of_coords[it->first.b];
-			svg.add_rect(x, y+shift_y, scale, scale, std::string("fill:#000000;"));
-			svg.add_rect(y, x+shift_y, scale, scale, std::string("fill:#000000;"));
+
+			if(allgradient || halfgradient)
+			{
+				const std::string style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area)+std::string(";");
+				svg.add_rect(x, y+shift_y, scale, scale, (allgradient ? style_rect_colored : (y<x ? style_rect_colored : style_rect_default)));
+				svg.add_rect(y, x+shift_y, scale, scale, (allgradient ? style_rect_colored : (x<y ? style_rect_colored : style_rect_default)));
+			}
+			else
+			{
+				svg.add_rect(x, y+shift_y, scale, scale, style_rect_default);
+				svg.add_rect(y, x+shift_y, scale, scale, style_rect_default);
+			}
 		}
 
 		if(xlabeled)
@@ -154,7 +175,7 @@ public:
 			{
 				const double x=it->second+scale;
 				const double y=0.0-scale*0.1+shift_y;
-				svg.add_text(it->first.caption(), x, y, -90.0, x, y, std::string("font-size:20px; fill:#000000;"));
+				svg.add_text(it->first.caption(), x, y, -90.0, x, y, style_text_default);
 			}
 		}
 
@@ -164,7 +185,7 @@ public:
 			{
 				const double x=length+scale*0.1;
 				const double y=scale+it->second-scale*0.2+shift_y;
-				svg.add_text(it->first.caption(), x, y, std::string("font-size:20px; fill:#000000;"));
+				svg.add_text(it->first.caption(), x, y, style_text_default);
 			}
 		}
 
@@ -256,39 +277,33 @@ private:
 			return output.str();
 		}
 
-		static std::string color_from_blue_white_red_gradient(const double input_value, const double blue_value, const double red_value)
+		static std::string color_from_gradient(const double input_value, const double left_value, const double right_value)
 		{
 			double value=input_value;
-			if(blue_value<red_value)
+			if(left_value<right_value)
 			{
-				value=(value-blue_value)/(red_value-blue_value);
+				value=(value-left_value)/(right_value-left_value);
 			}
 			else
 			{
-				value=1.0-((value-red_value)/(blue_value-red_value));
+				value=1.0-((value-right_value)/(left_value-right_value));
 			}
 			double r=0;
 			double g=0;
 			double b=0;
 			if(value<0.0)
 			{
-				b=1.0;
+				r=1.0;
+				g=1.0;
 			}
 			else if(value>1.0)
 			{
 				r=1.0;
 			}
-			else if(value<=0.5)
-			{
-				b=1.0;
-				r=(value/0.5);
-				g=r;
-			}
 			else
 			{
 				r=1.0;
-				b=(1.0-(value-0.5)/0.5);
-				g=b;
+				g=1.0-value;
 			}
 			return color_from_red_green_blue_components(r, g, b, 255.0);
 		}
