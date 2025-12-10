@@ -59,13 +59,14 @@ public:
 		const bool halfgradient=(config.find("halfgradient")!=std::string::npos);
 		const bool dark=(config.find("dark")!=std::string::npos);
 
-		const double scale=20.0;
+		const double scale=10.0;
 
-		const std::string style_background_level0(dark ? "fill:#090909;" : "fill:#F0F0F0;");
-		const std::string style_background_level1(dark ? "fill:#393939;" : "fill:#D9D9D9;");
-		const std::string style_background_level2(dark ? "fill:#696969;" : "fill:#C0C0C0;");
+		const std::string style_background_base(dark ? "fill:#000000;" : "fill:#FFFFFF;");
+		const std::string style_background_level0(dark ? "fill:#191919;" : "fill:#F9F9F9;");
+		const std::string style_background_level1(dark ? "fill:#494949;" : "fill:#E0E0E0;");
+		const std::string style_background_level2(dark ? "fill:#797979;" : "fill:#C0C0C0;");
 		const std::string style_rect_default(dark ? "fill:#F9F9F9;" : "fill:#090909;");
-		const std::string style_text_default("font-size:20px; fill:#000000;");
+		const std::string style_text_default(dark ? "font-size:10px; fill:#FFFFFF;" : "font-size:10px; fill:#000000;");
 
 		std::map<CoordKey, double> map_of_coords;
 		double max_area=0.0;
@@ -82,7 +83,7 @@ public:
 		{
 			it->second=length;
 			length+=scale;
-			max_caption_width=std::max(max_caption_width, it->first.unscaled_caption_width()*scale);
+			max_caption_width=std::max(max_caption_width, it->first.unscaled_caption_width()*scale*0.9);
 		}
 
 		const double full_width=(ylabeled ? (length+max_caption_width) : length);
@@ -91,6 +92,7 @@ public:
 
 		SVGWriter svg(full_width, full_height);
 		svg.set("style", "font-family:monospace;");
+		svg.add_rect(0, 0, full_width, full_height, style_background_base);
 		svg.add_rect(0, 0+shift_y, length, length, style_background_level0);
 
 		if(mode_==LevelMode::inter_atom || mode_==LevelMode::inter_residue)
@@ -433,7 +435,7 @@ private:
 
 		double unscaled_caption_width() const
 		{
-			return (static_cast<double>(chain.size()+residue_id.size()+atom_name.size()+2));
+			return (static_cast<double>(chain.size()+residue_id.size()+atom_name.size()+(residue_id.empty() ? 0 : 1)+(atom_name.empty() ? 0 : 1)));
 		}
 	};
 
