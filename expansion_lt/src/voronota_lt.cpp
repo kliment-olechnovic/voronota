@@ -51,6 +51,7 @@ Options:
     --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
+    --write-raw-collisions-to-file                   string     output file path to write a table of both true (contact) and false (no contact) collisions
     --plot-contacts-to-file                          string     output file path to write SVG plot of contacts
     --plot-contacts-residue-level-to-file            string     output file path to write SVG plot of residue-level grouped contacts
     --plot-contacts-chain-level-to-file              string     output file path to write SVG plot of chain-level grouped contacts
@@ -159,6 +160,7 @@ public:
 	std::string mesh_output_obj_file;
 	std::string write_tessellation_edges_to_file;
 	std::string write_tessellation_vertices_to_file;
+	std::string write_raw_collisions_to_file;
 	std::string write_log_to_file;
 	std::string restrict_input_balls;
 	std::string restrict_contacts;
@@ -448,6 +450,10 @@ public:
 				{
 					write_tessellation_vertices_to_file=opt.args_strings.front();
 				}
+				else if(opt.name=="write-raw-collisions-to-file" && opt.args_strings.size()==1)
+				{
+					write_raw_collisions_to_file=opt.args_strings.front();
+				}
 				else if(opt.name=="write-log-to-file" && opt.args_strings.size()==1)
 				{
 					write_log_to_file=opt.args_strings.front();
@@ -485,6 +491,11 @@ public:
 		if(running_mode==RunningMode::simplified_aw && !(write_tessellation_edges_to_file.empty() && write_tessellation_vertices_to_file.empty()))
 		{
 			error_log_for_options_parsing << "Error: in this version tessellation edges and vertices output is disabled for the simplified additively weighted Voronoi diagram regime.\n";
+		}
+
+		if(running_mode==RunningMode::simplified_aw && !write_raw_collisions_to_file.empty())
+		{
+			error_log_for_options_parsing << "Error: in this version raw collisions output is disabled for the simplified additively weighted Voronoi diagram regime.\n";
 		}
 
 		if(!periodic_box_directions.empty() && !periodic_box_corners.empty())
@@ -781,7 +792,7 @@ void run_mode_radical(
 				std::cerr << "Error: failed to restrict contacts for construction\n";
 				return;
 			}
-			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("restrict collisions for construction using filtering expression");
+			app_log_recorders.time_recoder_for_tessellation.record_elapsed_miliseconds_and_reset("restrict collisions for construction using filtering expression");
 		}
 
 		const bool summarize_cells=!preparation_result.collision_ids_constrained;
@@ -808,7 +819,7 @@ void run_mode_radical(
 				std::cerr << "Error: failed to restrict contacts for output\n";
 				return;
 			}
-			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("restrict contacts for output using filtering expression");
+			app_log_recorders.time_recoder_for_tessellation.record_elapsed_miliseconds_and_reset("restrict contacts for output using filtering expression");
 		}
 
 		if(!result.cells_summaries.empty() && !app_params.filtering_expression_for_restricting_balls_and_cells_for_output.allow_all())
@@ -819,7 +830,7 @@ void run_mode_radical(
 				std::cerr << "Error: failed to restrict cells for output\n";
 				return;
 			}
-			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("restrict cells for output using filtering expression");
+			app_log_recorders.time_recoder_for_tessellation.record_elapsed_miliseconds_and_reset("restrict cells for output using filtering expression");
 		}
 	}
 
@@ -836,6 +847,36 @@ void run_mode_radical(
 	}
 
 	app_log_recorders.time_recoder_for_output.reset();
+
+	std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> > map_of_raw_collisions_to_contact_ids;
+
+	if(!app_params.write_raw_collisions_to_file.empty() || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "truecollisions") || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "falsecollisions"))
+	{
+		for(voronotalt::UnsignedInt i=0;i<preparation_result.relevant_collision_ids.size();i++)
+		{
+			std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt> collision_id=preparation_result.relevant_collision_ids[i];
+			if(collision_id.first>collision_id.second)
+			{
+				std::swap(collision_id.first, collision_id.second);
+			}
+			std::pair<bool, voronotalt::UnsignedInt>& contact_id=map_of_raw_collisions_to_contact_ids[collision_id];
+			contact_id.first=false;
+			contact_id.second=0;
+		}
+		for(voronotalt::UnsignedInt i=0;i<result.contacts_summaries.size();i++)
+		{
+			const voronotalt::RadicalTessellation::ContactDescriptorSummary& cd=result.contacts_summaries[i];
+			std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt> collision_id(cd.id_a, cd.id_b);
+			if(collision_id.first>collision_id.second)
+			{
+				std::swap(collision_id.first, collision_id.second);
+			}
+			std::pair<bool, voronotalt::UnsignedInt>& contact_id=map_of_raw_collisions_to_contact_ids[collision_id];
+			contact_id.first=true;
+			contact_id.second=i;
+		}
+		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("collect true and false raw collisions");
+	}
 
 	app_log_recorders.print_tessellation_full_construction_result_log_basic(result, result_grouped_by_residue, result_grouped_by_chain);
 	app_log_recorders.print_tessellation_full_construction_result_log_about_cells(result, result_grouped_by_residue, result_grouped_by_chain);
@@ -1032,6 +1073,51 @@ void run_mode_radical(
 			}
 		}
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("write tessellation vertices");
+	}
+
+	if(!app_params.write_raw_collisions_to_file.empty())
+	{
+		std::ofstream foutput(app_params.write_raw_collisions_to_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			foutput << "rawc_header";
+			if(!spheres_input_result.sphere_labels.empty())
+			{
+				foutput << "\tID1_chain\tID1_residue\tID1_atom\tID2_chain\tID2_residue\tID2_atom";
+			}
+			foutput << "\tID1_index\tID2_index\tdistance\tdistance_vdw\tarea\tarc_length\n";
+			for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_raw_collisions_to_contact_ids.begin();it!=map_of_raw_collisions_to_contact_ids.end();++it)
+			{
+				const voronotalt::UnsignedInt a=it->first.first;
+				const voronotalt::UnsignedInt b=it->first.second;
+				const voronotalt::Float distance=voronotalt::distance_from_point_to_point(spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
+				const voronotalt::Float distance_vdw=distance-(spheres_input_result.spheres[a].r-app_params.probe)-(spheres_input_result.spheres[b].r-app_params.probe);
+				foutput << "rawc";
+				if(!spheres_input_result.sphere_labels.empty())
+				{
+					const voronotalt::SphereLabeling::SphereLabel& sl1=spheres_input_result.sphere_labels[a];
+					const voronotalt::SphereLabeling::SphereLabel& sl2=spheres_input_result.sphere_labels[b];
+					foutput << "\t" << sl1.chain_id << "\t" << sl1.residue_id << "\t" << sl1.atom_name;
+					foutput << "\t" << sl2.chain_id << "\t" << sl2.residue_id << "\t" << sl2.atom_name;
+				}
+				foutput << "\t" << a << "\t" << b << "\t" << distance << "\t" << distance_vdw;
+				const std::pair<bool, voronotalt::UnsignedInt>& contact_id=it->second;
+				if(contact_id.first)
+				{
+					const voronotalt::RadicalTessellation::ContactDescriptorSummary& cd=result.contacts_summaries[contact_id.second];
+					foutput << "\t" << cd.area << "\t" << cd.arc_length;
+				}
+				else
+				{
+					foutput << "\t0\t0";
+				}
+				foutput << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << "Error (non-terminating): failed to write raw collisions to file '" << app_params.write_raw_collisions_to_file << "'\n";
+		}
 	}
 
 	if(!app_params.plot_contacts_to_file.empty() || !app_params.plot_contacts_residue_level_to_file.empty() || !app_params.plot_contacts_chain_level_to_file.empty())
@@ -1311,56 +1397,29 @@ void run_mode_radical(
 				}
 			}
 		}
-		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "truecollisions") || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "falsecollisions"))
+		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "truecollisions"))
 		{
-			std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> > map_of_collisions_to_contacts;
-			for(voronotalt::UnsignedInt i=0;i<preparation_result.relevant_collision_ids.size();i++)
+			app_graphics_recorder.graphics_writer.add_color("truecollisions", "", app_params.color_assigner.get_color("truecollisions"));
+			for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_raw_collisions_to_contact_ids.begin();it!=map_of_raw_collisions_to_contact_ids.end();++it)
 			{
-				std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt> collision_id=preparation_result.relevant_collision_ids[i];
-				if(collision_id.first>collision_id.second)
+				const voronotalt::UnsignedInt a=it->first.first;
+				const voronotalt::UnsignedInt b=it->first.second;
+				if(it->second.first)
 				{
-					std::swap(collision_id.first, collision_id.second);
-				}
-				std::pair<bool, voronotalt::UnsignedInt>& contact_id=map_of_collisions_to_contacts[collision_id];
-				contact_id.first=false;
-				contact_id.second=0;
-			}
-			for(voronotalt::UnsignedInt i=0;i<result.contacts_summaries.size();i++)
-			{
-				const voronotalt::RadicalTessellation::ContactDescriptorSummary& cd=result.contacts_summaries[i];
-				std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt> collision_id(cd.id_a, cd.id_b);
-				if(collision_id.first>collision_id.second)
-				{
-					std::swap(collision_id.first, collision_id.second);
-				}
-				std::pair<bool, voronotalt::UnsignedInt>& contact_id=map_of_collisions_to_contacts[collision_id];
-				contact_id.first=true;
-				contact_id.second=i;
-			}
-			if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "truecollisions"))
-			{
-				app_graphics_recorder.graphics_writer.add_color("truecollisions", "", app_params.color_assigner.get_color("truecollisions"));
-				for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_collisions_to_contacts.begin();it!=map_of_collisions_to_contacts.end();++it)
-				{
-					const voronotalt::UnsignedInt a=it->first.first;
-					const voronotalt::UnsignedInt b=it->first.second;
-					if(it->second.first)
-					{
-						app_graphics_recorder.graphics_writer.add_line("truecollisions", "all", spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
-					}
+					app_graphics_recorder.graphics_writer.add_line("truecollisions", "all", spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
 				}
 			}
-			if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "falsecollisions"))
+		}
+		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "falsecollisions"))
+		{
+			app_graphics_recorder.graphics_writer.add_color("falsecollisions", "", app_params.color_assigner.get_color("falsecollisions"));
+			for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_raw_collisions_to_contact_ids.begin();it!=map_of_raw_collisions_to_contact_ids.end();++it)
 			{
-				app_graphics_recorder.graphics_writer.add_color("falsecollisions", "", app_params.color_assigner.get_color("falsecollisions"));
-				for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_collisions_to_contacts.begin();it!=map_of_collisions_to_contacts.end();++it)
+				const voronotalt::UnsignedInt a=it->first.first;
+				const voronotalt::UnsignedInt b=it->first.second;
+				if(!it->second.first)
 				{
-					const voronotalt::UnsignedInt a=it->first.first;
-					const voronotalt::UnsignedInt b=it->first.second;
-					if(!it->second.first)
-					{
-						app_graphics_recorder.graphics_writer.add_line("falsecollisions", "all", spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
-					}
+					app_graphics_recorder.graphics_writer.add_line("falsecollisions", "all", spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
 				}
 			}
 		}
@@ -1452,7 +1511,7 @@ void run_mode_simplified_aw(
 			{
 				preparation_result=voronotalt::SpheresContainer::ResultOfPreparationForTessellation();
 			}
-			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("restrict collisions using filtering expression");
+			app_log_recorders.time_recoder_for_tessellation.record_elapsed_miliseconds_and_reset("restrict collisions using filtering expression");
 		}
 
 		voronotalt::SimplifiedAWTessellation::construct_full_tessellation(
@@ -1471,7 +1530,7 @@ void run_mode_simplified_aw(
 				std::cerr << "Error: failed to restrict contacts for output\n";
 				return;
 			}
-			app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("restrict contacts for output using filtering expression");
+			app_log_recorders.time_recoder_for_tessellation.record_elapsed_miliseconds_and_reset("restrict contacts for output using filtering expression");
 		}
 	}
 
