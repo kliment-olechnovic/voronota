@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <fstream>
 
 #include "spheres_input.h"
@@ -40,7 +41,7 @@ public:
 		return false;
 	}
 
-	bool write_to_file(const std::string& filename, const std::string& config) noexcept
+	bool write_to_file(const std::string& filename, const std::set<std::string>& config) noexcept
 	{
 		if(map_of_points_.empty())
 		{
@@ -53,17 +54,16 @@ public:
 			return false;
 		}
 
-		const bool xlabeled=(config.find("xlabeled")!=std::string::npos);
-		const bool ylabeled=(config.find("ylabeled")!=std::string::npos);
-		const bool allgradient=(config.find("allgradient")!=std::string::npos);
-		const bool halfgradient=(config.find("halfgradient")!=std::string::npos);
-		const bool dark=(config.find("dark")!=std::string::npos);
+		const bool xlabeled=(config.count("xlabeled")>0);
+		const bool ylabeled=(config.count("ylabeled")>0);
+		const bool gradient=(config.count("gradient")>0);
+		const bool dark=(config.count("dark")>0);
 
 		const double scale=10.0;
 
 		const std::string style_background_base(dark ? "fill:#000000;" : "fill:#FFFFFF;");
 		const std::string style_background_level0(dark ? "fill:#191919;" : "fill:#F9F9F9;");
-		const std::string style_background_level1(dark ? "fill:#494949;" : "fill:#E0E0E0;");
+		const std::string style_background_level1(dark ? "fill:#494949;" : "fill:#E9E9E9;");
 		const std::string style_background_level2(dark ? "fill:#797979;" : "fill:#C0C0C0;");
 		const std::string style_rect_default(dark ? "fill:#F9F9F9;" : "fill:#090909;");
 		const std::string style_text_default(dark ? "font-size:10px; fill:#FFFFFF;" : "font-size:10px; fill:#000000;");
@@ -158,11 +158,11 @@ public:
 			const double x=map_of_coords[it->first.a];
 			const double y=map_of_coords[it->first.b];
 
-			if(allgradient || halfgradient)
+			if(gradient)
 			{
 				const std::string style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area)+std::string(";");
-				svg.add_rect(x, y+shift_y, scale, scale, (allgradient ? style_rect_colored : (y<x ? style_rect_colored : style_rect_default)));
-				svg.add_rect(y, x+shift_y, scale, scale, (allgradient ? style_rect_colored : (x<y ? style_rect_colored : style_rect_default)));
+				svg.add_rect(x, y+shift_y, scale, scale, style_rect_colored);
+				svg.add_rect(y, x+shift_y, scale, scale, style_rect_colored);
 			}
 			else
 			{
