@@ -26,7 +26,7 @@ public:
 		};
 	};
 
-	ContactPlotter(const LevelMode::ID mode) : mode_(mode)
+	ContactPlotter(const LevelMode::ID mode) noexcept : mode_(mode)
 	{
 	}
 
@@ -56,6 +56,7 @@ public:
 
 		const bool xlabeled=(config.count("xlabeled")>0);
 		const bool ylabeled=(config.count("ylabeled")>0);
+		const bool gradient_in_background=(config.count("gradient-in-background")>0);
 		const bool gradient=(config.count("gradient")>0);
 		const bool dark=(config.count("dark")>0);
 
@@ -108,6 +109,12 @@ public:
 				}
 			}
 
+			double max_area_on_chain_level=0.0;
+			for(std::map<PointKey, PointValue>::iterator it=map_of_points_on_chain_level.begin();it!=map_of_points_on_chain_level.end();++it)
+			{
+				max_area_on_chain_level=std::max(max_area_on_chain_level, it->second.area);
+			}
+
 			std::map<CoordKey, RegionValue> map_of_coord_regions_on_chain_level;
 			for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
 			{
@@ -119,8 +126,17 @@ public:
 			{
 				const RegionValue& x=map_of_coord_regions_on_chain_level[it->first.a];
 				const RegionValue& y=map_of_coord_regions_on_chain_level[it->first.b];
-				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_background_level1);
-				svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_background_level1);
+				if(gradient_in_background && mode_==LevelMode::inter_residue)
+				{
+					const std::string style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area_on_chain_level, GradientMode::cyan_blue)+std::string(";");
+					svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_rect_colored);
+					svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_rect_colored);
+				}
+				else
+				{
+					svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_background_level1);
+					svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_background_level1);
+				}
 			}
 		}
 
@@ -137,6 +153,12 @@ public:
 				}
 			}
 
+			double max_area_on_residue_level=0.0;
+			for(std::map<PointKey, PointValue>::iterator it=map_of_points_on_residue_level.begin();it!=map_of_points_on_residue_level.end();++it)
+			{
+				max_area_on_residue_level=std::max(max_area_on_residue_level, it->second.area);
+			}
+
 			std::map<CoordKey, RegionValue> map_of_coord_regions_on_residue_level;
 			for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
 			{
@@ -148,8 +170,17 @@ public:
 			{
 				const RegionValue& x=map_of_coord_regions_on_residue_level[it->first.a];
 				const RegionValue& y=map_of_coord_regions_on_residue_level[it->first.b];
-				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_background_level2);
-				svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_background_level2);
+				if(gradient_in_background)
+				{
+					const std::string style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area_on_residue_level, GradientMode::cyan_blue)+std::string(";");
+					svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_rect_colored);
+					svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_rect_colored);
+				}
+				else
+				{
+					svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_background_level2);
+					svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_background_level2);
+				}
 			}
 		}
 
@@ -160,7 +191,7 @@ public:
 
 			if(gradient)
 			{
-				const std::string style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area)+std::string(";");
+				const std::string style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area, GradientMode::yellow_red)+std::string(";");
 				svg.add_rect(x, y+shift_y, scale, scale, style_rect_colored);
 				svg.add_rect(y, x+shift_y, scale, scale, style_rect_colored);
 			}
@@ -200,12 +231,12 @@ private:
 	class XMLWriter
 	{
 	public:
-		explicit XMLWriter(const std::string& type) : type_(type)
+		explicit XMLWriter(const std::string& type) noexcept : type_(type)
 		{
 		}
 
 		template<typename T>
-		XMLWriter& set(const std::string& name, const T& value, const std::string& units="")
+		XMLWriter& set(const std::string& name, const T& value, const std::string& units="") noexcept
 		{
 			std::ostringstream output;
 			output << value << units;
@@ -213,19 +244,19 @@ private:
 			return (*this);
 		}
 
-		XMLWriter& set(const std::string& contents)
+		XMLWriter& set(const std::string& contents) noexcept
 		{
 			contents_=contents;
 			return (*this);
 		}
 
-		XMLWriter& add_child(const XMLWriter& child)
+		XMLWriter& add_child(const XMLWriter& child) noexcept
 		{
 			children_.push_back(child);
 			return (*this);
 		}
 
-		void write(std::ostream& output, const std::size_t tabs) const
+		void write(std::ostream& output, const std::size_t tabs) const noexcept
 		{
 			output << std::string(tabs, ' ') << "<" << type_;
 			for(std::map<std::string, std::string>::const_iterator it=parameters_.begin();it!=parameters_.end();++it)
@@ -263,23 +294,33 @@ private:
 		std::vector<XMLWriter> children_;
 	};
 
+	struct GradientMode
+	{
+		enum ID
+		{
+			yellow_red,
+			cyan_green,
+			cyan_blue
+		};
+	};
+
 	class SVGWriter : public XMLWriter
 	{
 	public:
-		SVGWriter(const double width, const double height) : XMLWriter("svg")
+		SVGWriter(const double width, const double height) noexcept : XMLWriter("svg")
 		{
 			set("width", width);
 			set("height", height);
 		}
 
-		static std::string color_from_red_green_blue_components(const double r, const double g, const double b, const double scale)
+		static std::string color_from_red_green_blue_components(const double r, const double g, const double b, const double scale) noexcept
 		{
 			std::ostringstream output;
 			output << "rgb(" << static_cast<unsigned int>(r*scale) << "," << static_cast<unsigned int>(g*scale) << "," << static_cast<unsigned int>(b*scale) << ")";
 			return output.str();
 		}
 
-		static std::string color_from_gradient(const double input_value, const double left_value, const double right_value)
+		static std::string color_from_gradient(const double input_value, const double left_value, const double right_value, const GradientMode::ID gradient_mode) noexcept
 		{
 			double value=input_value;
 			if(left_value<right_value)
@@ -293,48 +334,87 @@ private:
 			double r=0;
 			double g=0;
 			double b=0;
-			if(value<0.0)
+			if(gradient_mode==GradientMode::yellow_red)
 			{
-				r=1.0;
-				g=1.0;
+				if(value<0.0)
+				{
+					r=1.0;
+					g=1.0;
+				}
+				else if(value>1.0)
+				{
+					r=1.0;
+				}
+				else
+				{
+					r=1.0;
+					g=1.0-value;
+				}
 			}
-			else if(value>1.0)
+			else if(gradient_mode==GradientMode::cyan_green)
 			{
-				r=1.0;
+				r=0.1;
+				if(value<0.0)
+				{
+					g=1.0;
+					b=1.0;
+				}
+				else if(value>1.0)
+				{
+					g=1.0;
+				}
+				else
+				{
+					g=1.0;
+					b=1.0-value;
+				}
 			}
-			else
+			else if(gradient_mode==GradientMode::cyan_blue)
 			{
-				r=1.0;
-				g=1.0-value;
+				r=0.25;
+				if(value<0.0)
+				{
+					g=1.0;
+					b=1.0;
+				}
+				else if(value>1.0)
+				{
+					b=1.0;
+				}
+				else
+				{
+					g=1.0-value;
+					b=1.0;
+				}
 			}
 			return color_from_red_green_blue_components(r, g, b, 255.0);
 		}
 
-		SVGWriter& add_rect(const double x, const double y, const double width, const double height, const std::string& style)
+		SVGWriter& add_rect(const double x, const double y, const double width, const double height, const std::string& style) noexcept
 		{
 			add_child(XMLWriter("rect").set("x", x).set("y", y).set("width", width).set("height", height).set("style", style));
 			return (*this);
 		}
 
-		SVGWriter& add_circle(const double cx, const double cy, const double r, const std::string& style)
+		SVGWriter& add_circle(const double cx, const double cy, const double r, const std::string& style) noexcept
 		{
 			add_child(XMLWriter("circle").set("cx", cx).set("cy", cy).set("r", r).set("style", style));
 			return (*this);
 		}
 
-		SVGWriter& add_line(const double x1, const double y1, const double x2, const double y2, const std::string& style)
+		SVGWriter& add_line(const double x1, const double y1, const double x2, const double y2, const std::string& style) noexcept
 		{
 			add_child(XMLWriter("line").set("x1", x1).set("y1", y1).set("x2", x2).set("y2", y2).set("style", style));
 			return (*this);
 		}
 
-		SVGWriter& add_text(const std::string& text, const double x, const double y, const std::string& style)
+		SVGWriter& add_text(const std::string& text, const double x, const double y, const std::string& style) noexcept
 		{
 			add_child(XMLWriter("text").set("x", x).set("y", y).set("style", style).set(text));
 			return (*this);
 		}
 
-		SVGWriter& add_text(const std::string& text, const double x, const double y, const double rotation_angle, const double rotation_cx, const double rotation_cy, const std::string& style)
+		SVGWriter& add_text(const std::string& text, const double x, const double y, const double rotation_angle, const double rotation_cx, const double rotation_cy, const std::string& style) noexcept
 		{
 			std::ostringstream rotation_output;
 			rotation_output << "rotate(" << rotation_angle << " " << rotation_cx << " " << rotation_cy << ")";
@@ -351,7 +431,7 @@ private:
 		std::string residue_id;
 		std::string atom_name;
 
-		CoordKey(const LevelMode::ID mode, const SphereLabeling::SphereLabel& sl) : residue_number(0)
+		CoordKey(const LevelMode::ID mode, const SphereLabeling::SphereLabel& sl) noexcept : residue_number(0)
 		{
 			chain=sl.chain_id;
 			if(mode==LevelMode::inter_residue || mode==LevelMode::inter_atom)
@@ -369,7 +449,7 @@ private:
 			}
 		}
 
-		CoordKey(const LevelMode::ID mode, const CoordKey& ck) : residue_number(0)
+		CoordKey(const LevelMode::ID mode, const CoordKey& ck) noexcept : residue_number(0)
 		{
 			chain=ck.chain;
 			if(mode==LevelMode::inter_residue || mode==LevelMode::inter_atom)
@@ -384,17 +464,17 @@ private:
 			}
 		}
 
-		bool operator==(const CoordKey& v) const
+		bool operator==(const CoordKey& v) const noexcept
 		{
 			return (chain==v.chain && residue_number==v.residue_number && icode==v.icode && residue_id==v.residue_id && atom_name==v.atom_name);
 		}
 
-		bool operator!=(const CoordKey& v) const
+		bool operator!=(const CoordKey& v) const noexcept
 		{
 			return (!((*this)==v));
 		}
 
-		bool operator<(const CoordKey& v) const
+		bool operator<(const CoordKey& v) const noexcept
 		{
 			if(chain<v.chain)
 			{
@@ -428,12 +508,12 @@ private:
 			return false;
 		}
 
-		std::string caption() const
+		std::string caption() const noexcept
 		{
 			return (chain+(residue_id.empty() ? std::string() : std::string(" ")+residue_id)+(atom_name.empty() ? std::string() : std::string(" ")+atom_name));
 		}
 
-		double unscaled_caption_width() const
+		double unscaled_caption_width() const noexcept
 		{
 			return (static_cast<double>(chain.size()+residue_id.size()+atom_name.size()+(residue_id.empty() ? 0 : 1)+(atom_name.empty() ? 0 : 1)));
 		}
@@ -443,11 +523,11 @@ private:
 	{
 		CoordKey a;
 		CoordKey b;
-		PointKey(const CoordKey& ck1, const CoordKey& ck2) : a(ck1<ck2 ? ck1 : ck2), b(ck1<ck2 ? ck2 : ck1)
+		PointKey(const CoordKey& ck1, const CoordKey& ck2) noexcept : a(ck1<ck2 ? ck1 : ck2), b(ck1<ck2 ? ck2 : ck1)
 		{
 		}
 
-		bool operator<(const PointKey& v) const
+		bool operator<(const PointKey& v) const noexcept
 		{
 			if(a<v.a)
 			{
@@ -465,11 +545,11 @@ private:
 	{
 		double area;
 
-		PointValue() : area(0.0)
+		PointValue() noexcept : area(0.0)
 		{
 		}
 
-		void add(const double more_area)
+		void add(const double more_area) noexcept
 		{
 			area+=more_area;
 		}
@@ -481,11 +561,11 @@ private:
 		double a;
 		double b;
 
-		RegionValue() : initialized(false), a(0.0), b(0.0)
+		RegionValue() noexcept : initialized(false), a(0.0), b(0.0)
 		{
 		}
 
-		void update(const double v)
+		void update(const double v) noexcept
 		{
 			if(!initialized)
 			{
@@ -501,7 +581,7 @@ private:
 		}
 	};
 
-	void add_point(const SphereLabeling::SphereLabel& sl1, const SphereLabeling::SphereLabel& sl2, const double area)
+	void add_point(const SphereLabeling::SphereLabel& sl1, const SphereLabeling::SphereLabel& sl2, const double area) noexcept
 	{
 		CoordKey a(mode_, sl1);
 		CoordKey b(mode_, sl2);
