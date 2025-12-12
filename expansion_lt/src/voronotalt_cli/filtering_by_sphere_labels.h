@@ -470,6 +470,60 @@ private:
 						return false;
 					}
 				}
+				else if(token=="-protein")
+				{
+					tester.rname_yes.insert("LEU");
+					tester.rname_yes.insert("ALA");
+					tester.rname_yes.insert("GLY");
+					tester.rname_yes.insert("VAL");
+					tester.rname_yes.insert("GLU");
+					tester.rname_yes.insert("SER");
+					tester.rname_yes.insert("LYS");
+					tester.rname_yes.insert("ILE");
+					tester.rname_yes.insert("ASP");
+					tester.rname_yes.insert("THR");
+					tester.rname_yes.insert("ARG");
+					tester.rname_yes.insert("PRO");
+					tester.rname_yes.insert("ASN");
+					tester.rname_yes.insert("PHE");
+					tester.rname_yes.insert("GLN");
+					tester.rname_yes.insert("TYR");
+					tester.rname_yes.insert("HIS");
+					tester.rname_yes.insert("MET");
+					tester.rname_yes.insert("TRP");
+					tester.rname_yes.insert("CYS");
+					tester.rname_yes.insert("MSE");
+					tester.rname_yes.insert("SEC");
+				}
+				else if(token=="-nucleic")
+				{
+					tester.rname_yes.insert("DA");
+					tester.rname_yes.insert("DC");
+					tester.rname_yes.insert("DG");
+					tester.rname_yes.insert("DT");
+					tester.rname_yes.insert("DI");
+					tester.rname_yes.insert("A");
+					tester.rname_yes.insert("C");
+					tester.rname_yes.insert("G");
+					tester.rname_yes.insert("U");
+					tester.rname_yes.insert("I");
+				}
+				else if(token=="-nucleic-dna")
+				{
+					tester.rname_yes.insert("DA");
+					tester.rname_yes.insert("DC");
+					tester.rname_yes.insert("DG");
+					tester.rname_yes.insert("DT");
+					tester.rname_yes.insert("DI");
+				}
+				else if(token=="-nucleic-rna")
+				{
+					tester.rname_yes.insert("A");
+					tester.rname_yes.insert("C");
+					tester.rname_yes.insert("G");
+					tester.rname_yes.insert("U");
+					tester.rname_yes.insert("I");
+				}
 				else
 				{
 					return false;
