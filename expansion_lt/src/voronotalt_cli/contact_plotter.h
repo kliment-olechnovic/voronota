@@ -59,6 +59,7 @@ public:
 		const bool gradient_in_background=(config.count("gradient-in-background")>0);
 		const bool gradient=(config.count("gradient")>0);
 		const bool dark=(config.count("dark")>0);
+		const bool interactive=(config.count("interactive")>0);
 
 		const double scale=10.0;
 
@@ -68,6 +69,7 @@ public:
 		const std::string style_background_level2(dark ? "fill:#797979;" : "fill:#C0C0C0;");
 		const std::string style_rect_default(dark ? "fill:#F9F9F9;" : "fill:#090909;");
 		const std::string style_text_default(dark ? "font-size:10px; fill:#FFFFFF;" : "font-size:10px; fill:#000000;");
+		const std::string style_info_text_default(dark ? "font-size:20px; fill:#FFFFFF;" : "font-size:20px; fill:#000000;");
 
 		std::map<CoordKey, double> map_of_coords;
 		double max_area=0.0;
@@ -88,11 +90,16 @@ public:
 		}
 
 		const double full_width=(ylabeled ? (length+max_caption_width) : length);
-		const double full_height=(xlabeled ? (length+max_caption_width) : length);
+		const double full_height=(xlabeled ? (length+max_caption_width) : length)+(interactive ? scale*3.0 : 0.0);
 		const double shift_y=(xlabeled ? max_caption_width : 0.0);
 
-		SVGWriter svg(full_width, full_height);
-		svg.set("style", "font-family:monospace;");
+		SVGWriter svg(full_width, full_height, "font-family:monospace;", interactive);
+
+		if(interactive)
+		{
+			svg.add_child(XMLWriter("script").set("<![CDATA[ function init(evt) { window.info = document.getElementById('info'); } function show(text) { info.textContent = text; } ]]>"));
+		}
+
 		svg.add_rect(0, 0, full_width, full_height, style_background_base);
 		svg.add_rect(0, 0+shift_y, length, length, style_background_level0);
 
@@ -126,17 +133,13 @@ public:
 			{
 				const RegionValue& x=map_of_coord_regions_on_chain_level[it->first.a];
 				const RegionValue& y=map_of_coord_regions_on_chain_level[it->first.b];
+				std::string style_rect_colored;
 				if(gradient_in_background && mode_==LevelMode::inter_residue)
 				{
-					const std::string style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area_on_chain_level, GradientMode::cyan_blue)+std::string(";");
-					svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_rect_colored);
-					svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_rect_colored);
+					style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area_on_chain_level, GradientMode::cyan_blue)+std::string(";");
 				}
-				else
-				{
-					svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_background_level1);
-					svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_background_level1);
-				}
+				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_rect_colored.empty() ? style_background_level1 : style_rect_colored);
+				svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_rect_colored.empty() ? style_background_level1 : style_rect_colored);
 			}
 		}
 
@@ -170,17 +173,13 @@ public:
 			{
 				const RegionValue& x=map_of_coord_regions_on_residue_level[it->first.a];
 				const RegionValue& y=map_of_coord_regions_on_residue_level[it->first.b];
+				std::string style_rect_colored;
 				if(gradient_in_background)
 				{
-					const std::string style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area_on_residue_level, GradientMode::cyan_blue)+std::string(";");
-					svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_rect_colored);
-					svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_rect_colored);
+					style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area_on_residue_level, GradientMode::cyan_blue)+std::string(";");
 				}
-				else
-				{
-					svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_background_level2);
-					svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_background_level2);
-				}
+				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_rect_colored.empty() ? style_background_level2 : style_rect_colored);
+				svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_rect_colored.empty() ? style_background_level2 : style_rect_colored);
 			}
 		}
 
@@ -188,18 +187,20 @@ public:
 		{
 			const double x=map_of_coords[it->first.a];
 			const double y=map_of_coords[it->first.b];
-
+			std::string style_rect_colored;
+			std::string onclick_action;
 			if(gradient)
 			{
-				const std::string style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area, GradientMode::yellow_red)+std::string(";");
-				svg.add_rect(x, y+shift_y, scale, scale, style_rect_colored);
-				svg.add_rect(y, x+shift_y, scale, scale, style_rect_colored);
+				style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area, GradientMode::yellow_red)+std::string(";");
 			}
-			else
+			if(interactive)
 			{
-				svg.add_rect(x, y+shift_y, scale, scale, style_rect_default);
-				svg.add_rect(y, x+shift_y, scale, scale, style_rect_default);
+				std::ostringstream info_output;
+				info_output << "show('area([" << it->first.a.caption() << "], [" << it->first.b.caption() << "]) = " << it->second.area << "')";
+				onclick_action=info_output.str();
 			}
+			svg.add_rect(x, y+shift_y, scale, scale, (style_rect_colored.empty() ? style_rect_default : style_rect_colored), onclick_action);
+			svg.add_rect(y, x+shift_y, scale, scale, (style_rect_colored.empty() ? style_rect_default : style_rect_colored), onclick_action);
 		}
 
 		if(xlabeled)
@@ -222,6 +223,12 @@ public:
 			}
 		}
 
+		if(interactive)
+		{
+			svg.add_child(XMLWriter("text").set("id", "info").set("x", scale).set("y", full_height-scale).set("style", style_info_text_default).set(""));
+		}
+
+		output << "<?xml version='1.0' encoding='UTF-8'?>\n";
 		svg.write(output);
 
 		return true;
@@ -307,10 +314,19 @@ private:
 	class SVGWriter : public XMLWriter
 	{
 	public:
-		SVGWriter(const double width, const double height) noexcept : XMLWriter("svg")
+		SVGWriter(const double width, const double height, const std::string& style, const bool interactive) noexcept : XMLWriter("svg")
 		{
+			set("xmlns", "http://www.w3.org/2000/svg");
 			set("width", width);
 			set("height", height);
+			if(!style.empty())
+			{
+				set("style", style);
+			}
+			if(interactive)
+			{
+				set("onload", "init(evt)");
+			}
 		}
 
 		static std::string color_from_red_green_blue_components(const double r, const double g, const double b, const double scale) noexcept
@@ -390,10 +406,21 @@ private:
 			return color_from_red_green_blue_components(r, g, b, 255.0);
 		}
 
+		SVGWriter& add_rect(const double x, const double y, const double width, const double height, const std::string& style, const std::string& onclick) noexcept
+		{
+			XMLWriter obj("rect");
+			obj.set("x", x).set("y", y).set("width", width).set("height", height).set("style", style);
+			if(!onclick.empty())
+			{
+				obj.set("onclick", onclick);
+			}
+			add_child(obj);
+			return (*this);
+		}
+
 		SVGWriter& add_rect(const double x, const double y, const double width, const double height, const std::string& style) noexcept
 		{
-			add_child(XMLWriter("rect").set("x", x).set("y", y).set("width", width).set("height", height).set("style", style));
-			return (*this);
+			return add_rect(x, y, width, height, style, std::string());
 		}
 
 		SVGWriter& add_circle(const double cx, const double cy, const double r, const std::string& style) noexcept
@@ -408,18 +435,24 @@ private:
 			return (*this);
 		}
 
-		SVGWriter& add_text(const std::string& text, const double x, const double y, const std::string& style) noexcept
+		SVGWriter& add_text(const std::string& text, const double x, const double y, const double rotation_angle, const double rotation_cx, const double rotation_cy, const std::string& style) noexcept
 		{
-			add_child(XMLWriter("text").set("x", x).set("y", y).set("style", style).set(text));
+			XMLWriter obj("text");
+			obj.set("x", x).set("y", y);
+			if(rotation_angle!=0.0)
+			{
+				std::ostringstream rotation_output;
+				rotation_output << "rotate(" << rotation_angle << " " << rotation_cx << " " << rotation_cy << ")";
+				obj.set("transform", rotation_output.str());
+			}
+			obj.set("style", style).set(text);
+			add_child(obj);
 			return (*this);
 		}
 
-		SVGWriter& add_text(const std::string& text, const double x, const double y, const double rotation_angle, const double rotation_cx, const double rotation_cy, const std::string& style) noexcept
+		SVGWriter& add_text(const std::string& text, const double x, const double y, const std::string& style) noexcept
 		{
-			std::ostringstream rotation_output;
-			rotation_output << "rotate(" << rotation_angle << " " << rotation_cx << " " << rotation_cy << ")";
-			add_child(XMLWriter("text").set("x", x).set("y", y).set("transform", rotation_output.str()).set("style", style).set(text));
-			return (*this);
+			return add_text(text, x, y, 0.0, 0.0, 0.0, style);
 		}
 	};
 
