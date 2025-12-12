@@ -20,6 +20,8 @@ Options:
     --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
     --pdb-or-mmcif-radii-config-file                 string     input file path for reading atom radii assignment rules
+    --grouping-directives                            string     string with grouping directives separated by ';'
+    --grouping-directives-file                       string     input file path for grouping directives
     --restrict-input-balls                           string     selection expression to restrict input balls
     --restrict-contacts                              string     selection expression to restrict contacts before construction
     --restrict-contacts-for-output                   string     selection expression to restrict contacts for output

@@ -359,6 +359,31 @@ public:
 		return (!result.spheres.empty() && result.spheres.size()==result.sphere_labels.size());
 	}
 
+	static void refresh_groupings_of_labeled_spheres(Result& result) noexcept
+	{
+		if(result.sphere_labels.size()==result.spheres.size())
+		{
+			if(result.label_size>0)
+			{
+				result.number_of_chain_groups=assign_groups_to_sphere_labels_by_chain(result.sphere_labels, result.grouping_by_chain);
+
+				if(result.label_size>1)
+				{
+					result.number_of_residue_groups=assign_groups_to_sphere_labels_by_residue(result.sphere_labels, result.grouping_by_residue);
+				}
+			}
+		}
+		else
+		{
+			result.sphere_labels.clear();
+			result.grouping_by_chain.clear();
+			result.grouping_by_residue.clear();
+			result.label_size=0;
+			result.number_of_chain_groups=0;
+			result.number_of_residue_groups=0;
+		}
+	}
+
 private:
 	static int assign_groups_to_sphere_labels_by_chain(const std::vector<SphereLabeling::SphereLabel>& sphere_labels, std::vector<int>& groups) noexcept
 	{

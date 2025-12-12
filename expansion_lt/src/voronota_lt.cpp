@@ -31,6 +31,8 @@ Options:
     --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
     --pdb-or-mmcif-radii-config-file                 string     input file path for reading atom radii assignment rules
+    --grouping-directives                            string     string with grouping directives separated by ';'
+    --grouping-directives-file                       string     input file path for grouping directives
     --restrict-input-balls                           string     selection expression to restrict input balls
     --restrict-contacts                              string     selection expression to restrict contacts before construction
     --restrict-contacts-for-output                   string     selection expression to restrict contacts for output
@@ -140,6 +142,8 @@ public:
 	std::string pdb_or_mmcif_radii_config_file;
 	std::vector<voronotalt::SimplePoint> periodic_box_directions;
 	std::vector<voronotalt::SimplePoint> periodic_box_corners;
+	std::string grouping_directives;
+	std::string grouping_directives_file;
 	std::string write_input_balls_to_file;
 	std::string write_contacts_to_file;
 	std::string write_contacts_residue_level_to_file;
@@ -171,6 +175,7 @@ public:
 	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_contacts_for_output;
 	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_balls_and_cells_for_output;
 	voronotalt::ColorAssigner color_assigner;
+	voronotalt::GroupChainsAssigner group_chains_assigner;
 	std::ostringstream error_log_for_options_parsing;
 
 	ApplicationParameters() noexcept :
@@ -357,6 +362,14 @@ public:
 						print_cells_residue_level=true;
 						print_cells_chain_level=true;
 					}
+				}
+				else if(opt.name=="grouping-directives" && opt.args_strings.size()==1)
+				{
+					grouping_directives=opt.args_strings.front();
+				}
+				else if(opt.name=="grouping-directives-file" && opt.args_strings.size()==1)
+				{
+					grouping_directives_file=opt.args_strings.front();
 				}
 				else if(opt.name=="write-input-balls-to-file" && opt.args_strings.size()==1)
 				{
@@ -1766,6 +1779,42 @@ int main(const int argc, const char** argv)
 		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("setting atom radii configuration from file");
 	}
 
+	if(!app_params.grouping_directives_file.empty())
+	{
+		std::string input_data;
+
+		if(!voronotalt::read_whole_file_or_pipe_or_stdin_to_string(app_params.grouping_directives_file, input_data))
+		{
+			std::cerr << "Error: failed to open group directives file '" << app_params.grouping_directives_file << "' without errors\n";
+			return 1;
+		}
+
+		if(input_data.empty())
+		{
+			std::cerr << "Error: no data read from group directives file '" << app_params.grouping_directives_file << "'\n";
+			return 1;
+		}
+
+		if(!app_params.group_chains_assigner.add_rules(input_data))
+		{
+			std::cerr << "Error: invalid group directives file.\n";
+			return 1;
+		}
+
+		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("setting coloring configuration from file");
+	}
+
+	if(!app_params.grouping_directives.empty())
+	{
+		if(!app_params.group_chains_assigner.add_rules(app_params.grouping_directives))
+		{
+			std::cerr << "Error: invalid group directives string.\n";
+			return 1;
+		}
+
+		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("setting coloring configuration from string");
+	}
+
 	if(!app_params.graphics_output_file_for_pymol.empty() || !app_params.graphics_output_file_for_chimera.empty())
 	{
 		if(!app_params.graphics_coloring_config_file.empty())
@@ -1858,6 +1907,19 @@ int main(const int argc, const char** argv)
 			return 1;
 		}
 		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("restrict input using filtering expression");
+	}
+
+	if(!app_params.group_chains_assigner.empty())
+	{
+		if(!app_params.group_chains_assigner.assign_group_chains(spheres_input_result.sphere_labels))
+		{
+			std::cerr << "No grouping directives matched the input.\n";
+			return 1;
+		}
+		else
+		{
+			voronotalt::SpheresInput::refresh_groupings_of_labeled_spheres(spheres_input_result);
+		}
 	}
 
 	if(!app_params.write_input_balls_to_file.empty())
