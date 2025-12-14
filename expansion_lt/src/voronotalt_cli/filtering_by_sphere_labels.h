@@ -61,6 +61,8 @@ private:
 		std::set<std::string> rname_no;
 		std::set<std::string> aname_yes;
 		std::set<std::string> aname_no;
+		std::set<std::string> elem_yes;
+		std::set<std::string> elem_no;
 
 		bool empty() const noexcept
 		{
@@ -73,15 +75,18 @@ private:
 			{
 				return false;
 			}
-			else if(!((aname_yes.empty() || aname_yes.count(v.atom_name)>0) && (aname_no.empty() || aname_no.count(v.atom_name)==0)))
+
+			if(!((aname_yes.empty() || aname_yes.count(v.atom_name)>0) && (aname_no.empty() || aname_no.count(v.atom_name)==0)))
 			{
 				return false;
 			}
+
 			if(!((rid_yes.empty() || rid_yes.count(v.residue_id)>0) && (rid_no.empty() || rid_no.count(v.residue_id)==0)))
 			{
 				return false;
 			}
-			else if(!(rname_yes.empty() && rname_no.empty() && rnum_yes.empty() && rnum_no.empty()))
+
+			if(!(rname_yes.empty() && rname_no.empty() && rnum_yes.empty() && rnum_no.empty()))
 			{
 				if(!v.expanded_residue_id.valid)
 				{
@@ -100,6 +105,40 @@ private:
 					return false;
 				}
 			}
+
+			if(!elem_yes.empty())
+			{
+				if(v.atom_name.empty())
+				{
+					return false;
+				}
+				bool found=false;
+				for(std::set<std::string>::const_iterator it=elem_yes.begin();it!=elem_yes.end() && !found;++it)
+				{
+					found=(v.atom_name.rfind(*it, 0)==0);
+				}
+				if(!found)
+				{
+					return false;
+				}
+			}
+
+			if(!elem_no.empty())
+			{
+				if(!v.atom_name.empty())
+				{
+					bool found=false;
+					for(std::set<std::string>::const_iterator it=elem_no.begin();it!=elem_no.end() && !found;++it)
+					{
+						found=(v.atom_name.rfind(*it, 0)==0);
+					}
+					if(found)
+					{
+						return false;
+					}
+				}
+			}
+
 			return true;
 		}
 
@@ -466,6 +505,20 @@ private:
 				else if(token=="-atom-name-not" || token=="-aname!")
 				{
 					if(!read_bundle_of_strings(input, tester.aname_no))
+					{
+						return false;
+					}
+				}
+				else if(token=="-element" || token=="-elem")
+				{
+					if(!read_bundle_of_strings(input, tester.elem_yes))
+					{
+						return false;
+					}
+				}
+				else if(token=="-element-not" || token=="-elem!")
+				{
+					if(!read_bundle_of_strings(input, tester.elem_no))
 					{
 						return false;
 					}
