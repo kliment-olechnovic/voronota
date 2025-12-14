@@ -54,6 +54,7 @@ public:
 			return false;
 		}
 
+		const bool compact=(config.count("compact")>0);
 		const bool xlabeled=(config.count("xlabeled")>0);
 		const bool ylabeled=(config.count("ylabeled")>0);
 		const bool gradient_in_background=(config.count("gradient-in-background")>0);
@@ -69,29 +70,43 @@ public:
 		const std::string style_background_level2(dark ? "fill:#797979;" : "fill:#C0C0C0;");
 		const std::string style_rect_default(dark ? "fill:#F9F9F9;" : "fill:#090909;");
 		const std::string style_text_default(dark ? "font-size:10px; fill:#FFFFFF;" : "font-size:10px; fill:#000000;");
-		const std::string style_info_text_default(dark ? "font-size:20px; fill:#FFFFFF;" : "font-size:20px; fill:#000000;");
+		const std::string style_info_text_default(dark ? "font-size:10px; fill:#FFFFFF;" : "font-size:10px; fill:#000000;");
 
-		std::map<CoordKey, double> map_of_coords;
+		std::map<CoordKey, double> map_of_coords_main;
+		std::map<CoordKey, double> map_of_coords_secondary;
+
+		std::map<CoordKey, double>& map_of_coords_horizontal=map_of_coords_main;
+		std::map<CoordKey, double>& map_of_coords_vertical=(compact ? map_of_coords_secondary : map_of_coords_main);
+
 		double max_area=0.0;
 		for(std::map<PointKey, PointValue>::iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
 		{
-			map_of_coords[it->first.a]=0.0;
-			map_of_coords[it->first.b]=0.0;
+			map_of_coords_horizontal[it->first.a]=0.0;
+			map_of_coords_vertical[it->first.b]=0.0;
 			max_area=std::max(max_area, it->second.area);
 		}
 
-		double length=0;
-		double max_caption_width=0.0;
-		for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
+		double length_horizontal=0;
+		double max_caption_width_horizontal=0.0;
+		for(std::map<CoordKey, double>::iterator it=map_of_coords_horizontal.begin();it!=map_of_coords_horizontal.end();++it)
 		{
-			it->second=length;
-			length+=scale;
-			max_caption_width=std::max(max_caption_width, it->first.unscaled_caption_width()*scale*0.9);
+			it->second=length_horizontal;
+			length_horizontal+=scale;
+			max_caption_width_horizontal=std::max(max_caption_width_horizontal, it->first.unscaled_caption_width()*scale*0.9);
 		}
 
-		const double full_width=(ylabeled ? (length+max_caption_width) : length);
-		const double full_height=(xlabeled ? (length+max_caption_width) : length)+(interactive ? scale*3.0 : 0.0);
-		const double shift_y=(xlabeled ? max_caption_width : 0.0);
+		double length_vertical=0;
+		double max_caption_width_vertical=0.0;
+		for(std::map<CoordKey, double>::iterator it=map_of_coords_vertical.begin();it!=map_of_coords_vertical.end();++it)
+		{
+			it->second=length_vertical;
+			length_vertical+=scale;
+			max_caption_width_vertical=std::max(max_caption_width_vertical, it->first.unscaled_caption_width()*scale*0.9);
+		}
+
+		const double full_width=(ylabeled ? (length_horizontal+max_caption_width_horizontal) : length_horizontal);
+		const double full_height=(xlabeled ? (length_vertical+max_caption_width_vertical) : length_vertical)+(interactive ? scale*3.0 : 0.0);
+		const double shift_y=(xlabeled ? max_caption_width_vertical : 0.0);
 
 		SVGWriter svg(full_width, full_height, "font-family:monospace;", interactive);
 
@@ -101,7 +116,7 @@ public:
 		}
 
 		svg.add_rect(0, 0, full_width, full_height, style_background_base);
-		svg.add_rect(0, 0+shift_y, length, length, style_background_level0);
+		svg.add_rect(0, 0+shift_y, length_horizontal, length_vertical, style_background_level0);
 
 		if(mode_==LevelMode::inter_atom || mode_==LevelMode::inter_residue)
 		{
@@ -122,24 +137,34 @@ public:
 				max_area_on_chain_level=std::max(max_area_on_chain_level, it->second.area);
 			}
 
-			std::map<CoordKey, RegionValue> map_of_coord_regions_on_chain_level;
-			for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
+			std::map<CoordKey, RegionValue> map_of_coord_regions_on_chain_level_horizontal;
+			for(std::map<CoordKey, double>::iterator it=map_of_coords_horizontal.begin();it!=map_of_coords_horizontal.end();++it)
 			{
-				RegionValue& rv=map_of_coord_regions_on_chain_level[CoordKey(LevelMode::inter_chain, it->first)];
+				RegionValue& rv=map_of_coord_regions_on_chain_level_horizontal[CoordKey(LevelMode::inter_chain, it->first)];
+				rv.update(it->second);
+			}
+
+			std::map<CoordKey, RegionValue> map_of_coord_regions_on_chain_level_vertical;
+			for(std::map<CoordKey, double>::iterator it=map_of_coords_vertical.begin();it!=map_of_coords_vertical.end();++it)
+			{
+				RegionValue& rv=map_of_coord_regions_on_chain_level_vertical[CoordKey(LevelMode::inter_chain, it->first)];
 				rv.update(it->second);
 			}
 
 			for(std::map<PointKey, PointValue>::iterator it=map_of_points_on_chain_level.begin();it!=map_of_points_on_chain_level.end();++it)
 			{
-				const RegionValue& x=map_of_coord_regions_on_chain_level[it->first.a];
-				const RegionValue& y=map_of_coord_regions_on_chain_level[it->first.b];
+				const RegionValue& x=map_of_coord_regions_on_chain_level_horizontal[it->first.a];
+				const RegionValue& y=map_of_coord_regions_on_chain_level_vertical[it->first.b];
 				std::string style_rect_colored;
 				if(gradient_in_background && mode_==LevelMode::inter_residue)
 				{
 					style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area_on_chain_level, GradientMode::cyan_blue)+std::string(";");
 				}
 				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_rect_colored.empty() ? style_background_level1 : style_rect_colored);
-				svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_rect_colored.empty() ? style_background_level1 : style_rect_colored);
+				if(!compact)
+				{
+					svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_rect_colored.empty() ? style_background_level1 : style_rect_colored);
+				}
 			}
 		}
 
@@ -162,31 +187,41 @@ public:
 				max_area_on_residue_level=std::max(max_area_on_residue_level, it->second.area);
 			}
 
-			std::map<CoordKey, RegionValue> map_of_coord_regions_on_residue_level;
-			for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
+			std::map<CoordKey, RegionValue> map_of_coord_regions_on_residue_level_horizontal;
+			for(std::map<CoordKey, double>::iterator it=map_of_coords_horizontal.begin();it!=map_of_coords_horizontal.end();++it)
 			{
-				RegionValue& rv=map_of_coord_regions_on_residue_level[CoordKey(LevelMode::inter_residue, it->first)];
+				RegionValue& rv=map_of_coord_regions_on_residue_level_horizontal[CoordKey(LevelMode::inter_residue, it->first)];
+				rv.update(it->second);
+			}
+
+			std::map<CoordKey, RegionValue> map_of_coord_regions_on_residue_level_vertical;
+			for(std::map<CoordKey, double>::iterator it=map_of_coords_vertical.begin();it!=map_of_coords_vertical.end();++it)
+			{
+				RegionValue& rv=map_of_coord_regions_on_residue_level_vertical[CoordKey(LevelMode::inter_residue, it->first)];
 				rv.update(it->second);
 			}
 
 			for(std::map<PointKey, PointValue>::iterator it=map_of_points_on_residue_level.begin();it!=map_of_points_on_residue_level.end();++it)
 			{
-				const RegionValue& x=map_of_coord_regions_on_residue_level[it->first.a];
-				const RegionValue& y=map_of_coord_regions_on_residue_level[it->first.b];
+				const RegionValue& x=map_of_coord_regions_on_residue_level_horizontal[it->first.a];
+				const RegionValue& y=map_of_coord_regions_on_residue_level_vertical[it->first.b];
 				std::string style_rect_colored;
 				if(gradient_in_background)
 				{
 					style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area_on_residue_level, GradientMode::cyan_blue)+std::string(";");
 				}
 				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_rect_colored.empty() ? style_background_level2 : style_rect_colored);
-				svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_rect_colored.empty() ? style_background_level2 : style_rect_colored);
+				if(!compact)
+				{
+					svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_rect_colored.empty() ? style_background_level2 : style_rect_colored);
+				}
 			}
 		}
 
 		for(std::map<PointKey, PointValue>::const_iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
 		{
-			const double x=map_of_coords[it->first.a];
-			const double y=map_of_coords[it->first.b];
+			const double x=map_of_coords_horizontal[it->first.a];
+			const double y=map_of_coords_vertical[it->first.b];
 			std::string style_rect_colored;
 			std::string onclick_action;
 			if(gradient)
@@ -200,12 +235,15 @@ public:
 				onclick_action=info_output.str();
 			}
 			svg.add_rect(x, y+shift_y, scale, scale, (style_rect_colored.empty() ? style_rect_default : style_rect_colored), onclick_action);
-			svg.add_rect(y, x+shift_y, scale, scale, (style_rect_colored.empty() ? style_rect_default : style_rect_colored), onclick_action);
+			if(!compact)
+			{
+				svg.add_rect(y, x+shift_y, scale, scale, (style_rect_colored.empty() ? style_rect_default : style_rect_colored), onclick_action);
+			}
 		}
 
 		if(xlabeled)
 		{
-			for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
+			for(std::map<CoordKey, double>::iterator it=map_of_coords_horizontal.begin();it!=map_of_coords_horizontal.end();++it)
 			{
 				const double x=it->second+scale;
 				const double y=0.0-scale*0.1+shift_y;
@@ -215,9 +253,9 @@ public:
 
 		if(ylabeled)
 		{
-			for(std::map<CoordKey, double>::iterator it=map_of_coords.begin();it!=map_of_coords.end();++it)
+			for(std::map<CoordKey, double>::iterator it=map_of_coords_vertical.begin();it!=map_of_coords_vertical.end();++it)
 			{
-				const double x=length+scale*0.1;
+				const double x=length_horizontal+scale*0.1;
 				const double y=scale+it->second-scale*0.2+shift_y;
 				svg.add_text(it->first.caption(), x, y, style_text_default);
 			}
