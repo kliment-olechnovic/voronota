@@ -470,7 +470,7 @@ private:
 						return false;
 					}
 				}
-				else if(token=="-protein")
+				else if(token=="-protein" || token=="-protein-backbone" || token=="-protein-sidechain")
 				{
 					tester.rname_yes.insert("LEU");
 					tester.rname_yes.insert("ALA");
@@ -494,35 +494,73 @@ private:
 					tester.rname_yes.insert("CYS");
 					tester.rname_yes.insert("MSE");
 					tester.rname_yes.insert("SEC");
+
+					if(token=="-protein-backbone")
+					{
+						tester.aname_yes.insert("C");
+						tester.aname_yes.insert("N");
+						tester.aname_yes.insert("O");
+						tester.aname_yes.insert("CA");
+					}
+
+					if(token=="-protein-sidechain")
+					{
+						tester.aname_no.insert("C");
+						tester.aname_no.insert("N");
+						tester.aname_no.insert("O");
+						tester.aname_no.insert("CA");
+					}
 				}
-				else if(token=="-nucleic")
+				else if(token=="-nucleic" || token=="-nucleic-dna" || token=="-nucleic-rna" || token=="-nucleic-backbone" || token=="-nucleic-sidechain" || token=="-nucleic-dna-backbone" || token=="-nucleic-dna-sidechain" || token=="-nucleic-rna-backbone" || token=="-nucleic-rna-sidechain")
 				{
-					tester.rname_yes.insert("DA");
-					tester.rname_yes.insert("DC");
-					tester.rname_yes.insert("DG");
-					tester.rname_yes.insert("DT");
-					tester.rname_yes.insert("DI");
-					tester.rname_yes.insert("A");
-					tester.rname_yes.insert("C");
-					tester.rname_yes.insert("G");
-					tester.rname_yes.insert("U");
-					tester.rname_yes.insert("I");
-				}
-				else if(token=="-nucleic-dna")
-				{
-					tester.rname_yes.insert("DA");
-					tester.rname_yes.insert("DC");
-					tester.rname_yes.insert("DG");
-					tester.rname_yes.insert("DT");
-					tester.rname_yes.insert("DI");
-				}
-				else if(token=="-nucleic-rna")
-				{
-					tester.rname_yes.insert("A");
-					tester.rname_yes.insert("C");
-					tester.rname_yes.insert("G");
-					tester.rname_yes.insert("U");
-					tester.rname_yes.insert("I");
+					if(token=="-nucleic" || token=="-nucleic-backbone" || token=="-nucleic-sidechain" || token=="-nucleic-dna" || token=="-nucleic-dna-backbone" || token=="-nucleic-dna-sidechain")
+					{
+						tester.rname_yes.insert("DA");
+						tester.rname_yes.insert("DC");
+						tester.rname_yes.insert("DG");
+						tester.rname_yes.insert("DT");
+						tester.rname_yes.insert("DI");
+					}
+					if(token=="-nucleic" || token=="-nucleic-backbone" || token=="-nucleic-sidechain" || token=="-nucleic-rna" || token=="-nucleic-rna-backbone" || token=="-nucleic-rna-sidechain")
+					{
+						tester.rname_yes.insert("A");
+						tester.rname_yes.insert("C");
+						tester.rname_yes.insert("G");
+						tester.rname_yes.insert("U");
+						tester.rname_yes.insert("I");
+					}
+					if(token=="-nucleic-backbone" || token=="-nucleic-dna-backbone" || token=="-nucleic-rna-backbone")
+					{
+						tester.aname_yes.insert("OP3");
+						tester.aname_yes.insert("P");
+						tester.aname_yes.insert("OP1");
+						tester.aname_yes.insert("OP2");
+						tester.aname_yes.insert("O5'");
+						tester.aname_yes.insert("C5'");
+						tester.aname_yes.insert("C4'");
+						tester.aname_yes.insert("O4'");
+						tester.aname_yes.insert("C3'");
+						tester.aname_yes.insert("O3'");
+						tester.aname_yes.insert("C2'");
+						tester.aname_yes.insert("O2'");
+						tester.aname_yes.insert("C1'");
+					}
+					if(token=="-nucleic-sidechain" || token=="-nucleic-dna-sidechain" || token=="-nucleic-rna-sidechain")
+					{
+						tester.aname_no.insert("OP3");
+						tester.aname_no.insert("P");
+						tester.aname_no.insert("OP1");
+						tester.aname_no.insert("OP2");
+						tester.aname_no.insert("O5'");
+						tester.aname_no.insert("C5'");
+						tester.aname_no.insert("C4'");
+						tester.aname_no.insert("O4'");
+						tester.aname_no.insert("C3'");
+						tester.aname_no.insert("O3'");
+						tester.aname_no.insert("C2'");
+						tester.aname_no.insert("O2'");
+						tester.aname_no.insert("C1'");
+					}
 				}
 				else
 				{
