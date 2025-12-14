@@ -87,21 +87,21 @@ public:
 		}
 
 		double length_horizontal=0;
-		double max_caption_width_horizontal=0.0;
+		double max_caption_width_vertical=0.0;
 		for(std::map<CoordKey, double>::iterator it=map_of_coords_horizontal.begin();it!=map_of_coords_horizontal.end();++it)
 		{
 			it->second=length_horizontal;
 			length_horizontal+=scale;
-			max_caption_width_horizontal=std::max(max_caption_width_horizontal, it->first.unscaled_caption_width()*scale*0.9);
+			max_caption_width_vertical=std::max(max_caption_width_vertical, it->first.unscaled_caption_width()*scale*0.9);
 		}
 
 		double length_vertical=0;
-		double max_caption_width_vertical=0.0;
+		double max_caption_width_horizontal=0.0;
 		for(std::map<CoordKey, double>::iterator it=map_of_coords_vertical.begin();it!=map_of_coords_vertical.end();++it)
 		{
 			it->second=length_vertical;
 			length_vertical+=scale;
-			max_caption_width_vertical=std::max(max_caption_width_vertical, it->first.unscaled_caption_width()*scale*0.9);
+			max_caption_width_horizontal=std::max(max_caption_width_horizontal, it->first.unscaled_caption_width()*scale*0.9);
 		}
 
 		const double full_width=(ylabeled ? (length_horizontal+max_caption_width_horizontal) : length_horizontal);
