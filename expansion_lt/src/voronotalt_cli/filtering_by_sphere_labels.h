@@ -164,7 +164,7 @@ private:
 	class PairOfSphereLabels
 	{
 	public:
-		PairOfSphereLabels(const SphereLabeling::SphereLabel& a, const SphereLabeling::SphereLabel& b) noexcept : a_ptr_(&a), b_ptr_(&b)
+		PairOfSphereLabels(const SphereLabeling::SphereLabel& a, const SphereLabeling::SphereLabel& b, const SimpleSphere& sa, const SimpleSphere& sb) noexcept : a_ptr_(&a), b_ptr_(&b), sa_ptr_(&sa), sb_ptr_(&sb)
 		{
 		}
 
@@ -178,9 +178,16 @@ private:
 			return (*b_ptr_);
 		}
 
+		double squared_dist() const noexcept
+		{
+			return squared_distance_from_point_to_point(sa_ptr_->p, sb_ptr_->p);
+		}
+
 	private:
 		const SphereLabeling::SphereLabel* a_ptr_;
 		const SphereLabeling::SphereLabel* b_ptr_;
+		const SimpleSphere* sa_ptr_;
+		const SimpleSphere* sb_ptr_;
 	};
 
 	class FilterPair
@@ -191,12 +198,13 @@ private:
 		bool intra_chain;
 		int min_seq_sep;
 		int max_seq_sep;
+		double max_dist;
 		FilterSingle filter1_yes;
 		FilterSingle filter1_no;
 		FilterSingle filter2_yes;
 		FilterSingle filter2_no;
 
-		FilterPair() noexcept : inter_residue(false), inter_chain(false), intra_chain(false), min_seq_sep(-1), max_seq_sep(-1)
+		FilterPair() noexcept : inter_residue(false), inter_chain(false), intra_chain(false), min_seq_sep(-1), max_seq_sep(-1), max_dist(-1.0)
 		{
 		}
 
@@ -207,6 +215,7 @@ private:
 				(!inter_residue || p.a().residue_id!=p.b().residue_id) &&
 				(!inter_chain || p.a().chain_id!=p.b().chain_id) &&
 				(!intra_chain || p.a().chain_id==p.b().chain_id) &&
+				(max_dist<0.0 || ((max_dist*max_dist)>p.squared_dist())) &&
 				(min_seq_sep<0 || p.a().chain_id!=p.b().chain_id || (p.a().expanded_residue_id.valid && p.b().expanded_residue_id.valid && std::abs(p.a().expanded_residue_id.rnum-p.b().expanded_residue_id.rnum)>=min_seq_sep)) &&
 				(max_seq_sep<0 || (p.a().chain_id==p.b().chain_id && p.a().expanded_residue_id.valid && p.b().expanded_residue_id.valid && std::abs(p.a().expanded_residue_id.rnum-p.b().expanded_residue_id.rnum)<=max_seq_sep)) &&
 				(
@@ -277,6 +286,25 @@ private:
 			return false;
 		}
 		output_value=v_val;
+		return true;
+	}
+
+	static bool read_double_value(std::istream& input, double& output_value) noexcept
+	{
+		std::string v_str;
+		input >> v_str;
+		if(v_str.empty())
+		{
+			return false;
+		}
+		const char* str=&v_str[0];
+		char* str_next=0;
+		const double value=std::strtod(str, &str_next);
+		if(str==str_next)
+		{
+			return false;
+		}
+		output_value=value;
 		return true;
 	}
 
@@ -673,6 +701,13 @@ private:
 				else if(token=="-max-sep")
 				{
 					if(!read_integer_value(input, tester.max_seq_sep))
+					{
+						return false;
+					}
+				}
+				else if(token=="-max-dist")
+				{
+					if(!read_double_value(input, tester.max_dist))
 					{
 						return false;
 					}
@@ -1116,17 +1151,17 @@ public:
 			return allow_all_;
 		}
 
-		ExpressionResult filter(const SphereLabeling::SphereLabel& a, const SphereLabeling::SphereLabel& b) const noexcept
+		ExpressionResult filter(const SphereLabeling::SphereLabel& a, const SphereLabeling::SphereLabel& b, const SimpleSphere& sa, const SimpleSphere& sb) const noexcept
 		{
 			if(allow_all_)
 			{
 				return ExpressionResult(true);
 			}
-			return evaluate_filtering_expression_in_postfix_form<FilterPair, PairOfSphereLabels>(postfix_expression_, PairOfSphereLabels(a, b));
+			return evaluate_filtering_expression_in_postfix_form<FilterPair, PairOfSphereLabels>(postfix_expression_, PairOfSphereLabels(a, b, sa, sb));
 		}
 
 		template<class ContainerType>
-		VectorExpressionResult filter_vector(const std::vector<SphereLabeling::SphereLabel>& labels, const ContainerType& container) const noexcept
+		VectorExpressionResult filter_vector(const std::vector<SphereLabeling::SphereLabel>& labels, const std::vector<SimpleSphere>& spheres, const ContainerType& container) const noexcept
 		{
 			VectorExpressionResult ver;
 			ver.expression_valid=valid();
@@ -1140,7 +1175,7 @@ public:
 				{
 					const std::size_t id_a=static_cast<std::size_t>(container[i].first);
 					const std::size_t id_b=static_cast<std::size_t>(container[i].second);
-					const ExpressionResult er=(id_a<labels.size() && id_b<labels.size()) ? filter(labels[id_a], labels[id_b]) : ExpressionResult();
+					const ExpressionResult er=(id_a<labels.size() && id_b<labels.size() && id_a<spheres.size() && id_b<spheres.size()) ? filter(labels[id_a], labels[id_b], spheres[id_a], spheres[id_b]) : ExpressionResult();
 					if(er.expression_valid && er.expression_matched)
 					{
 						ver.expression_matched_ids.push_back(i);

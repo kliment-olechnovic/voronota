@@ -799,7 +799,7 @@ void run_mode_radical(
 
 		if(!app_params.filtering_expression_for_restricting_collisions.allow_all())
 		{
-			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_collisions.filter_vector(spheres_input_result.sphere_labels, preparation_result.relevant_collision_ids);
+			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_collisions.filter_vector(spheres_input_result.sphere_labels, spheres_input_result.spheres, preparation_result.relevant_collision_ids);
 			if(!ver.expression_matched() || !preparation_result.restrict_relevant_collision_ids(ver.expression_matched_all, ver.expression_matched_ids))
 			{
 				std::cerr << "Error: failed to restrict contacts for construction\n";
@@ -826,7 +826,7 @@ void run_mode_radical(
 
 		if(!app_params.filtering_expression_for_restricting_contacts_for_output.allow_all())
 		{
-			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_contacts_for_output.filter_vector(spheres_input_result.sphere_labels, voronotalt::FilteringBySphereLabels::ExpressionForPair::adapt_indices_container(result.contacts_summaries));
+			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_contacts_for_output.filter_vector(spheres_input_result.sphere_labels, spheres_input_result.spheres, voronotalt::FilteringBySphereLabels::ExpressionForPair::adapt_indices_container(result.contacts_summaries));
 			if(!ver.expression_matched() || !voronotalt::RadicalTessellation::restrict_result_contacts(ver.expression_matched_all, ver.expression_matched_ids, result, result_graphics))
 			{
 				std::cerr << "Error: failed to restrict contacts for output\n";
@@ -1185,7 +1185,7 @@ void run_mode_radical(
 				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=(i<result.contacts_summaries_with_redundancy_in_periodic_box.size() ? result.contacts_summaries_with_redundancy_in_periodic_box[i] : result.contacts_summaries[i]);
 				{
 					const std::string group_name=ApplicationGraphicsRecorder::name_contact_group("contacts", spheres_input_result, pair_summary.id_a, pair_summary.id_b);
-					const unsigned int current_color=((pair_summary.id_a<spheres_input_result.sphere_labels.size() && pair_summary.id_b<spheres_input_result.sphere_labels.size()) ? app_params.color_assigner.get_color("faces", spheres_input_result.sphere_labels[pair_summary.id_a], spheres_input_result.sphere_labels[pair_summary.id_b]) : base_color);
+					const unsigned int current_color=((pair_summary.id_a<spheres_input_result.sphere_labels.size() && pair_summary.id_b<spheres_input_result.sphere_labels.size() && pair_summary.id_a<spheres_input_result.spheres.size() && pair_summary.id_b<spheres_input_result.spheres.size()) ? app_params.color_assigner.get_color("faces", spheres_input_result.sphere_labels[pair_summary.id_a], spheres_input_result.sphere_labels[pair_summary.id_b], spheres_input_result.spheres[pair_summary.id_a], spheres_input_result.spheres[pair_summary.id_b]) : base_color);
 					app_graphics_recorder.graphics_writer.add_color("faces", group_name, current_color);
 					const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 					app_graphics_recorder.graphics_writer.add_triangle_fan("faces", group_name, pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
@@ -1201,7 +1201,7 @@ void run_mode_radical(
 				const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary=(i<result.contacts_summaries_with_redundancy_in_periodic_box.size() ? result.contacts_summaries_with_redundancy_in_periodic_box[i] : result.contacts_summaries[i]);
 				{
 					const std::string group_name=ApplicationGraphicsRecorder::name_contact_group("contacts", spheres_input_result, pair_summary.id_a, pair_summary.id_b);
-					const unsigned int current_color=((pair_summary.id_a<spheres_input_result.sphere_labels.size() && pair_summary.id_b<spheres_input_result.sphere_labels.size()) ? app_params.color_assigner.get_color("wireframe", spheres_input_result.sphere_labels[pair_summary.id_a], spheres_input_result.sphere_labels[pair_summary.id_b]) : base_color);
+					const unsigned int current_color=((pair_summary.id_a<spheres_input_result.sphere_labels.size() && pair_summary.id_b<spheres_input_result.sphere_labels.size() && pair_summary.id_a<spheres_input_result.spheres.size() && pair_summary.id_b<spheres_input_result.spheres.size()) ? app_params.color_assigner.get_color("wireframe", spheres_input_result.sphere_labels[pair_summary.id_a], spheres_input_result.sphere_labels[pair_summary.id_b], spheres_input_result.spheres[pair_summary.id_a], spheres_input_result.spheres[pair_summary.id_b]) : base_color);
 					app_graphics_recorder.graphics_writer.add_color("wireframe", group_name, current_color);
 					const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 					app_graphics_recorder.graphics_writer.add_line_loop("wireframe", group_name, pair_graphics.outer_points);
@@ -1515,7 +1515,7 @@ void run_mode_simplified_aw(
 
 		if(!app_params.filtering_expression_for_restricting_collisions.allow_all())
 		{
-			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_collisions.filter_vector(spheres_input_result.sphere_labels, preparation_result.relevant_collision_ids);
+			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_collisions.filter_vector(spheres_input_result.sphere_labels, spheres_input_result.spheres, preparation_result.relevant_collision_ids);
 			if(ver.expression_matched())
 			{
 				preparation_result.restrict_relevant_collision_ids(ver.expression_matched_all, ver.expression_matched_ids);
@@ -1537,7 +1537,7 @@ void run_mode_simplified_aw(
 
 		if(!app_params.filtering_expression_for_restricting_contacts_for_output.allow_all())
 		{
-			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_contacts_for_output.filter_vector(spheres_input_result.sphere_labels, voronotalt::FilteringBySphereLabels::ExpressionForPair::adapt_indices_container(result.contacts_summaries));
+			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_contacts_for_output.filter_vector(spheres_input_result.sphere_labels, spheres_input_result.spheres, voronotalt::FilteringBySphereLabels::ExpressionForPair::adapt_indices_container(result.contacts_summaries));
 			if(!ver.expression_matched() || !voronotalt::SimplifiedAWTessellation::restrict_result_contacts(ver.expression_matched_all, ver.expression_matched_ids, result, result_graphics))
 			{
 				std::cerr << "Error: failed to restrict contacts for output\n";
@@ -1694,7 +1694,7 @@ void run_mode_simplified_aw(
 				const voronotalt::SimplifiedAWTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 				{
 					const std::string group_name=ApplicationGraphicsRecorder::name_contact_group("contacts", spheres_input_result, pair_summary.id_a, pair_summary.id_b);
-					const unsigned int current_color=((pair_summary.id_a<spheres_input_result.sphere_labels.size() && pair_summary.id_b<spheres_input_result.sphere_labels.size()) ? app_params.color_assigner.get_color("faces", spheres_input_result.sphere_labels[pair_summary.id_a], spheres_input_result.sphere_labels[pair_summary.id_b]) : base_color);
+					const unsigned int current_color=((pair_summary.id_a<spheres_input_result.sphere_labels.size() && pair_summary.id_b<spheres_input_result.sphere_labels.size() && pair_summary.id_a<spheres_input_result.spheres.size() && pair_summary.id_b<spheres_input_result.spheres.size()) ? app_params.color_assigner.get_color("faces", spheres_input_result.sphere_labels[pair_summary.id_a], spheres_input_result.sphere_labels[pair_summary.id_b], spheres_input_result.spheres[pair_summary.id_a], spheres_input_result.spheres[pair_summary.id_b]) : base_color);
 					app_graphics_recorder.graphics_writer.add_color("faces", group_name, current_color);
 					const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 					for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)
@@ -1713,7 +1713,7 @@ void run_mode_simplified_aw(
 				const voronotalt::SimplifiedAWTessellation::ContactDescriptorSummary& pair_summary=result.contacts_summaries[i];
 				{
 					const std::string group_name=ApplicationGraphicsRecorder::name_contact_group("contacts", spheres_input_result, pair_summary.id_a, pair_summary.id_b);
-					const unsigned int current_color=((pair_summary.id_a<spheres_input_result.sphere_labels.size() && pair_summary.id_b<spheres_input_result.sphere_labels.size()) ? app_params.color_assigner.get_color("wireframe", spheres_input_result.sphere_labels[pair_summary.id_a], spheres_input_result.sphere_labels[pair_summary.id_b]) : base_color);
+					const unsigned int current_color=((pair_summary.id_a<spheres_input_result.sphere_labels.size() && pair_summary.id_b<spheres_input_result.sphere_labels.size() && pair_summary.id_a<spheres_input_result.spheres.size() && pair_summary.id_b<spheres_input_result.spheres.size()) ? app_params.color_assigner.get_color("wireframe", spheres_input_result.sphere_labels[pair_summary.id_a], spheres_input_result.sphere_labels[pair_summary.id_b], spheres_input_result.spheres[pair_summary.id_a], spheres_input_result.spheres[pair_summary.id_b]) : base_color);
 					app_graphics_recorder.graphics_writer.add_color("wireframe", group_name, current_color);
 					const voronotalt::SimplifiedAWTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=result_graphics.contacts_graphics[i];
 					for(std::size_t j=0;j<pair_graphics.contours_graphics.size();j++)

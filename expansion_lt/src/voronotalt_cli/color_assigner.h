@@ -184,7 +184,7 @@ public:
 		return get_color(rep);
 	}
 
-	unsigned int get_color(const std::string& rep, const SphereLabeling::SphereLabel& a, const SphereLabeling::SphereLabel& b) const noexcept
+	unsigned int get_color(const std::string& rep, const SphereLabeling::SphereLabel& a, const SphereLabeling::SphereLabel& b, const SimpleSphere& sa, const SimpleSphere& sb) const noexcept
 	{
 		std::map< std::string, std::vector< std::pair<FilteringBySphereLabels::ExpressionForPair, unsigned int> > >::const_iterator it=map_for_pairs_.find(rep);
 		if(it==map_for_pairs_.end())
@@ -194,7 +194,7 @@ public:
 		const std::vector< std::pair<FilteringBySphereLabels::ExpressionForPair, unsigned int> >& v=it->second;
 		for(std::vector< std::pair<FilteringBySphereLabels::ExpressionForPair, unsigned int> >::const_reverse_iterator rit=v.rbegin();rit!=v.rend();++rit)
 		{
-			if(rit->first.filter(a, b).expression_matched)
+			if(rit->first.filter(a, b, sa, sb).expression_matched)
 			{
 				return rit->second;
 			}

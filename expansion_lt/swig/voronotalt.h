@@ -505,7 +505,7 @@ private:
 
 			if(!filtering_expression_for_restricting_contacts_to_construct.allow_all())
 			{
-				const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=filtering_expression_for_restricting_contacts_to_construct.filter_vector(spheres_input_result.sphere_labels, preparation_result.relevant_collision_ids);
+				const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=filtering_expression_for_restricting_contacts_to_construct.filter_vector(spheres_input_result.sphere_labels, spheres_input_result.spheres, preparation_result.relevant_collision_ids);
 				if(!ver.expression_matched() || !preparation_result.restrict_relevant_collision_ids(ver.expression_matched_all, ver.expression_matched_ids))
 				{
 					throw std::runtime_error(std::string("Failed to restrict contacts for construction"));
@@ -530,7 +530,7 @@ private:
 
 			if(!filtering_expression_for_restricting_contacts_for_output.allow_all())
 			{
-				const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=filtering_expression_for_restricting_contacts_for_output.filter_vector(spheres_input_result.sphere_labels, voronotalt::FilteringBySphereLabels::ExpressionForPair::adapt_indices_container(result.contacts_summaries));
+				const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=filtering_expression_for_restricting_contacts_for_output.filter_vector(spheres_input_result.sphere_labels, spheres_input_result.spheres, voronotalt::FilteringBySphereLabels::ExpressionForPair::adapt_indices_container(result.contacts_summaries));
 				if(!ver.expression_matched() || !voronotalt::RadicalTessellation::restrict_result_contacts(ver.expression_matched_all, ver.expression_matched_ids, result, result_graphics))
 				{
 					throw std::runtime_error(std::string("Failed to restrict contacts for output"));
