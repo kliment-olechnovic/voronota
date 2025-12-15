@@ -255,6 +255,90 @@ public:
 		print_cells_residue_level_or_chain_level(true,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, output);
 	}
 
+	template<class SitesContainer>
+	static void print_sites(
+			const SitesContainer& sites, const std::vector<SphereLabeling::SphereLabel>& sphere_labels, const bool labels_enabled, std::string& output) noexcept
+	{
+		const SphereLabeling::SphereLabel null_label;
+		if(!sites.empty())
+		{
+			output.reserve(sites.size()*100);
+			if(labels_enabled)
+			{
+				string_append_cstring(output, "ba_header\t");
+				print_label_header("", output);
+				string_append_cstring(output, "ID_index\tarea\tarc_legth\tdistance\n");
+			}
+			else
+			{
+				string_append_cstring(output, "ba_header\tID_index\tarea\tarc_legth\tdistance\n");
+			}
+			bool printed_in_parallel=false;
+#ifdef VORONOTALT_OPENMP
+			if(sites.size()>1000)
+			{
+				const int data_size=static_cast<int>(sites.size());
+				const int n_threads=omp_get_max_threads();
+				if(n_threads>1)
+				{
+					const int approximate_portion_size=(data_size/n_threads);
+					if(approximate_portion_size>100)
+					{
+						std::vector<int> thread_data_starts(n_threads, 0);
+						for(int i=1;i<n_threads;i++)
+						{
+							thread_data_starts[i]=thread_data_starts[i-1]+approximate_portion_size;
+						}
+
+						std::vector<std::string> suboutputs(n_threads);
+
+						{
+							#pragma omp parallel for schedule(static,1)
+							for(int i=0;i<n_threads;i++)
+							{
+								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
+								{
+									print_site_data(static_cast<std::size_t>(j), sites, sphere_labels, labels_enabled, null_label, suboutputs[i]);
+								}
+							}
+						}
+
+						for(int i=0;i<n_threads;i++)
+						{
+							string_append_string(output, suboutputs[i]);
+						}
+
+						printed_in_parallel=true;
+					}
+				}
+			}
+#endif
+			if(!printed_in_parallel)
+			{
+				for(std::size_t i=0;i<sites.size();i++)
+				{
+					print_site_data(i, sites, sphere_labels, labels_enabled, null_label, output);
+				}
+			}
+		}
+	}
+
+	template<class SitesContainer, class GroupedSitesContainer>
+	static void print_sites_residue_level(
+			const SitesContainer& sites, const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
+			const std::vector<UnsignedInt>& grouped_sites_representative_ids, const GroupedSitesContainer& grouped_sites, std::string& output) noexcept
+	{
+		print_sites_residue_level_or_chain_level(false,  sites, sphere_labels, grouped_sites_representative_ids, grouped_sites, output);
+	}
+
+	template<class SitesContainer, class GroupedSitesContainer>
+	static void print_sites_chain_level(
+			const SitesContainer& sites, const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
+			const std::vector<UnsignedInt>& grouped_sites_representative_ids, const GroupedSitesContainer& grouped_sites, std::string& output) noexcept
+	{
+		print_sites_residue_level_or_chain_level(true,  sites, sphere_labels, grouped_sites_representative_ids, grouped_sites, output);
+	}
+
 	template<class SequentialContainer>
 	inline static void print_sequential_container_simply(const SequentialContainer& v, std::string& output) noexcept
 	{
@@ -474,6 +558,72 @@ private:
 		}
 	}
 
+	template<class SitesContainer, class GroupedSitesContainer>
+	static void print_sites_residue_level_or_chain_level(
+			const bool chain_level,
+			const SitesContainer& sites,
+			const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
+			const std::vector<UnsignedInt>& grouped_sites_representative_ids,
+			const GroupedSitesContainer& grouped_sites,
+			std::string& output) noexcept
+	{
+		const SphereLabeling::SphereLabel null_label;
+		if(!grouped_sites.empty())
+		{
+			string_append_cstring(output, (chain_level ? "bu" : "br"));
+			string_append_cstring(output, "_header\t");
+			print_label_header("", output);
+			string_append_cstring(output, "area\tarc_legth\tdistance\tcount\n");
+			bool printed_in_parallel=false;
+#ifdef VORONOTALT_OPENMP
+			if(grouped_sites.size()>1000)
+			{
+				const int data_size=static_cast<int>(grouped_sites.size());
+				const int n_threads=omp_get_max_threads();
+				if(n_threads>1)
+				{
+					const int approximate_portion_size=(data_size/n_threads);
+					if(approximate_portion_size>100)
+					{
+						std::vector<int> thread_data_starts(n_threads, 0);
+						for(int i=1;i<n_threads;i++)
+						{
+							thread_data_starts[i]=thread_data_starts[i-1]+approximate_portion_size;
+						}
+
+						std::vector<std::string> suboutputs(n_threads);
+
+						{
+							#pragma omp parallel for schedule(static,1)
+							for(int i=0;i<n_threads;i++)
+							{
+								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
+								{
+									print_site_data_residue_level_or_chain_level(static_cast<std::size_t>(j), chain_level, sites, sphere_labels, grouped_sites_representative_ids, grouped_sites, null_label, suboutputs[i]);
+								}
+							}
+						}
+
+						for(int i=0;i<n_threads;i++)
+						{
+							string_append_string(output, suboutputs[i]);
+						}
+
+						printed_in_parallel=true;
+					}
+				}
+			}
+#endif
+			if(!printed_in_parallel)
+			{
+				for(std::size_t i=0;i<grouped_sites.size();i++)
+				{
+					print_site_data_residue_level_or_chain_level(i, chain_level, sites, sphere_labels, grouped_sites_representative_ids, grouped_sites, null_label, output);
+				}
+			}
+		}
+	}
+
 	static void print_ball(
 			const std::size_t i,
 			const std::vector<SimpleSphere>& spheres,
@@ -577,6 +727,44 @@ private:
 		string_append_char(output, '\n');
 	}
 
+	template<class SitesContainer>
+	static void print_site_data(
+			const std::size_t i,
+			const SitesContainer& sites,
+			const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
+			const bool labels_enabled,
+			const SphereLabeling::SphereLabel& null_label,
+			std::string& output) noexcept
+	{
+		string_append_cstring(output, "ba\t");
+		if(labels_enabled)
+		{
+			print_label((sites[i].id<sphere_labels.size() ? sphere_labels[sites[i].id] : null_label), false, false, output);
+			string_append_char(output, '\t');
+		}
+		print(sites[i], output);
+		string_append_char(output, '\n');
+	}
+
+	template<class SitesContainer, class GroupedSitesContainer>
+	static void print_site_data_residue_level_or_chain_level(
+			const std::size_t i,
+			const bool chain_level,
+			const SitesContainer& sites,
+			const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
+			const std::vector<UnsignedInt>& grouped_sites_representative_ids,
+			const GroupedSitesContainer& grouped_sites,
+			const SphereLabeling::SphereLabel& null_label,
+			std::string& output) noexcept
+	{
+		const std::size_t j=grouped_sites_representative_ids[i];
+		string_append_cstring(output, (chain_level ? "bu\t" : "br\t"));
+		print_label((sites[j].id<sphere_labels.size() ? sphere_labels[sites[j].id] : null_label), true, chain_level, output);
+		string_append_char(output, '\t');
+		print(grouped_sites[i], output);
+		string_append_char(output, '\n');
+	}
+
 	inline static void print(const RadicalTessellation::ContactDescriptorSummary& obj, std::string& output) noexcept
 	{
 		string_append_int(output, obj.id_a);
@@ -603,6 +791,20 @@ private:
 	inline static void print(const RadicalTessellation::TotalCellContactDescriptorsSummary& obj, std::string& output) noexcept
 	{
 		string_append_doubles(output, obj.sas_area, obj.sas_inside_volume);
+		string_append_char(output, '\t');
+		string_append_int(output, obj.count);
+	}
+
+	inline static void print(const RadicalTessellation::SiteContactDescriptorsSummary& obj, std::string& output) noexcept
+	{
+		string_append_int(output, obj.id);
+		string_append_char(output, '\t');
+		string_append_doubles(output, obj.area, obj.arc_length, obj.distance);
+	}
+
+	inline static void print(const RadicalTessellation::TotalSiteContactDescriptorsSummary& obj, std::string& output) noexcept
+	{
+		string_append_doubles(output, obj.area, obj.arc_length, obj.distance);
 		string_append_char(output, '\t');
 		string_append_int(output, obj.count);
 	}

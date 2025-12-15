@@ -192,6 +192,35 @@ public:
 		}
 	};
 
+	struct SiteContactDescriptorsSummary
+	{
+		Float area;
+		Float arc_length;
+		Float distance;
+		UnsignedInt id;
+		UnsignedInt count;
+
+		SiteContactDescriptorsSummary() noexcept :
+			area(FLOATCONST(0.0)),
+			arc_length(FLOATCONST(0.0)),
+			distance(FLOATCONST(-1.0)),
+			id(0),
+			count(0)
+		{
+		}
+
+		void add(const ContactDescriptorSummary& cds) noexcept
+		{
+			if(cds.area>FLOATCONST(0.0))
+			{
+				count++;
+				area+=cds.area;
+				arc_length+=cds.arc_length;
+				distance=((distance<FLOATCONST(0.0)) ? cds.distance : std::min(distance, cds.distance));
+			}
+		}
+	};
+
 	struct TotalContactDescriptorsSummary
 	{
 		Float area;
@@ -243,6 +272,33 @@ public:
 		}
 	};
 
+	struct TotalSiteContactDescriptorsSummary
+	{
+		Float area;
+		Float arc_length;
+		Float distance;
+		UnsignedInt count;
+
+		TotalSiteContactDescriptorsSummary() noexcept :
+			area(FLOATCONST(0.0)),
+			arc_length(FLOATCONST(0.0)),
+			distance(FLOATCONST(-1.0)),
+			count(0)
+		{
+		}
+
+		void add(const ContactDescriptorSummary& cds) noexcept
+		{
+			if(cds.area>FLOATCONST(0.0))
+			{
+				count++;
+				area+=cds.area;
+				arc_length+=cds.arc_length;
+				distance=((distance<FLOATCONST(0.0)) ? cds.distance : std::min(distance, cds.distance));
+			}
+		}
+	};
+
 	struct TessellationNet
 	{
 		std::vector<RadicalTessellationContactConstruction::TessellationVertex> tes_vertices;
@@ -263,6 +319,7 @@ public:
 		std::vector<ContactDescriptorSummary> contacts_summaries;
 		std::vector<ContactDescriptorSummaryAdjunct> adjuncts_for_contacts_summaries;
 		TotalContactDescriptorsSummary total_contacts_summary;
+		std::vector<SiteContactDescriptorsSummary> sites_summaries;
 		std::vector<CellContactDescriptorsSummary> cells_summaries;
 		TotalCellContactDescriptorsSummary total_cells_summary;
 		std::vector<ContactDescriptorSummary> contacts_summaries_with_redundancy_in_periodic_box;
@@ -281,6 +338,7 @@ public:
 			contacts_summaries.clear();
 			adjuncts_for_contacts_summaries.clear();
 			total_contacts_summary=TotalContactDescriptorsSummary();
+			sites_summaries.clear();
 			cells_summaries.clear();
 			total_cells_summary=TotalCellContactDescriptorsSummary();
 			contacts_summaries_with_redundancy_in_periodic_box.clear();
@@ -299,6 +357,8 @@ public:
 	{
 		std::vector<UnsignedInt> grouped_contacts_representative_ids;
 		std::vector<TotalContactDescriptorsSummary> grouped_contacts_summaries;
+		std::vector<UnsignedInt> grouped_sites_representative_ids;
+		std::vector<TotalSiteContactDescriptorsSummary> grouped_sites_summaries;
 		std::vector<UnsignedInt> grouped_cells_representative_ids;
 		std::vector<TotalCellContactDescriptorsSummary> grouped_cells_summaries;
 
@@ -306,6 +366,8 @@ public:
 		{
 			grouped_contacts_representative_ids.clear();
 			grouped_contacts_summaries.clear();
+			grouped_sites_representative_ids.clear();
+			grouped_sites_summaries.clear();
 			grouped_cells_representative_ids.clear();
 			grouped_cells_summaries.clear();
 		}
@@ -939,6 +1001,28 @@ public:
 
 		time_recorder.record_elapsed_miliseconds_and_reset("accumulate total contacts summary");
 
+		{
+			std::vector<SiteContactDescriptorsSummary> all_sites_summaries(result.total_spheres);
+			for(UnsignedInt i=0;i<result.contacts_summaries.size();i++)
+			{
+				const ContactDescriptorSummary& cds=result.contacts_summaries[i];
+				all_sites_summaries[cds.id_a].id=cds.id_a;
+				all_sites_summaries[cds.id_a].add(cds);
+				all_sites_summaries[cds.id_b].id=cds.id_b;
+				all_sites_summaries[cds.id_b].add(cds);
+			}
+			result.sites_summaries.reserve(result.total_spheres);
+			for(UnsignedInt i=0;i<all_sites_summaries.size();i++)
+			{
+				if(all_sites_summaries[i].area>0.0)
+				{
+					result.sites_summaries.push_back(all_sites_summaries[i]);
+				}
+			}
+		}
+
+		time_recorder.record_elapsed_miliseconds_and_reset("accumulate site summaries");
+
 		if(summarize_cells && !preparation_result.collision_ids_constrained)
 		{
 			const std::vector<ContactDescriptorSummary>& all_contacts_summaries=(result.contacts_summaries_with_redundancy_in_periodic_box.empty() ? result.contacts_summaries : result.contacts_summaries_with_redundancy_in_periodic_box);
@@ -1087,6 +1171,53 @@ public:
 				time_recorder.record_elapsed_miliseconds_and_reset("grouped contacts summaries");
 			}
 
+			if(!full_result.sites_summaries.empty())
+			{
+				grouped_result.grouped_sites_representative_ids.reserve(full_result.sites_summaries.size()/5);
+				grouped_result.grouped_sites_summaries.reserve(full_result.sites_summaries.size()/5);
+
+				std::vector<UnsignedInt> map_of_global_ids_to_site_ids(full_result.total_spheres, full_result.sites_summaries.size());
+				for(UnsignedInt i=0;i<full_result.sites_summaries.size();i++)
+				{
+					map_of_global_ids_to_site_ids[full_result.sites_summaries[i].id]=i;
+				}
+
+				std::map< int, UnsignedInt > map_of_groups;
+
+				for(UnsignedInt i=0;i<full_result.contacts_summaries.size();i++)
+				{
+					const ContactDescriptorSummary& cds=full_result.contacts_summaries[i];
+					if(cds.id_a<grouping_of_spheres.size() && cds.id_b<grouping_of_spheres.size())
+					{
+						for(int j=0;j<2;j++)
+						{
+							const UnsignedInt global_id=(j==0 ? cds.id_a : cds.id_b);
+							const UnsignedInt site_id=map_of_global_ids_to_site_ids[global_id];
+							if(site_id<full_result.sites_summaries.size())
+							{
+								const int group_id=grouping_of_spheres[global_id];
+								UnsignedInt group_index=0;
+								std::map< int, UnsignedInt >::const_iterator it=map_of_groups.find(group_id);
+								if(it==map_of_groups.end())
+								{
+									group_index=grouped_result.grouped_sites_summaries.size();
+									grouped_result.grouped_sites_representative_ids.push_back(site_id);
+									grouped_result.grouped_sites_summaries.push_back(TotalSiteContactDescriptorsSummary());
+									map_of_groups[group_id]=group_index;
+								}
+								else
+								{
+									group_index=it->second;
+								}
+								grouped_result.grouped_sites_summaries[group_index].add(cds);
+							}
+						}
+					}
+				}
+
+				time_recorder.record_elapsed_miliseconds_and_reset("grouped sites summaries");
+			}
+
 			if(!full_result.cells_summaries.empty())
 			{
 				grouped_result.grouped_cells_representative_ids.reserve(full_result.cells_summaries.size()/5);
@@ -1220,6 +1351,35 @@ public:
 			result.adjuncts_for_contacts_summaries.swap(sub_result.adjuncts_for_contacts_summaries);
 			result.total_contacts_summary=sub_result.total_contacts_summary;
 			result_graphics.contacts_graphics.swap(sub_result_graphics.contacts_graphics);
+		}
+		return something_selected;
+	}
+
+	static bool restrict_result_sites(const bool select_all, const std::vector<std::size_t>& indices, Result& result) noexcept
+	{
+		if(select_all)
+		{
+			return !result.sites_summaries.empty();
+		}
+		if(indices.empty() || result.sites_summaries.empty())
+		{
+			return false;
+		}
+		bool something_selected=false;
+		Result sub_result;
+		sub_result.sites_summaries.reserve(indices.size());
+		for(std::size_t i=0;i<indices.size();i++)
+		{
+			const std::size_t id=indices[i];
+			if(id<result.sites_summaries.size())
+			{
+				something_selected=true;
+				sub_result.sites_summaries.push_back(result.sites_summaries[id]);
+			}
+		}
+		if(something_selected)
+		{
+			result.sites_summaries.swap(sub_result.sites_summaries);
 		}
 		return something_selected;
 	}

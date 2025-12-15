@@ -151,6 +151,9 @@ public:
 	std::string write_cells_to_file;
 	std::string write_cells_residue_level_to_file;
 	std::string write_cells_chain_level_to_file;
+	std::string write_bsites_to_file;
+	std::string write_bsites_residue_level_to_file;
+	std::string write_bsites_chain_level_to_file;
 	std::string plot_contacts_to_file;
 	std::string plot_contacts_residue_level_to_file;
 	std::string plot_contacts_chain_level_to_file;
@@ -399,6 +402,18 @@ public:
 				{
 					write_cells_chain_level_to_file=opt.args_strings.front();
 				}
+				else if(opt.name=="write-bsites-to-file" && opt.args_strings.size()==1)
+				{
+					write_bsites_to_file=opt.args_strings.front();
+				}
+				else if(opt.name=="write-bsites-residue-level-to-file" && opt.args_strings.size()==1)
+				{
+					write_bsites_residue_level_to_file=opt.args_strings.front();
+				}
+				else if(opt.name=="write-bsites-chain-level-to-file" && opt.args_strings.size()==1)
+				{
+					write_bsites_chain_level_to_file=opt.args_strings.front();
+				}
 				else if(opt.name=="plot-contacts-to-file" && opt.args_strings.size()==1)
 				{
 					plot_contacts_to_file=opt.args_strings.front();
@@ -589,8 +604,8 @@ public:
 
 		if(read_successfuly)
 		{
-			need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty() || !plot_contacts_residue_level_to_file.empty());
-			need_summaries_on_chain_level=(print_contacts_chain_level || print_cells_chain_level || !write_contacts_chain_level_to_file.empty() || !write_cells_chain_level_to_file.empty() || !plot_contacts_chain_level_to_file.empty());
+			need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty() || !write_bsites_residue_level_to_file.empty() || !plot_contacts_residue_level_to_file.empty());
+			need_summaries_on_chain_level=(print_contacts_chain_level || print_cells_chain_level || !write_contacts_chain_level_to_file.empty() || !write_cells_chain_level_to_file.empty() || !write_bsites_chain_level_to_file.empty() || !plot_contacts_chain_level_to_file.empty());
 		}
 
 		return read_successfuly;
@@ -845,6 +860,17 @@ void run_mode_radical(
 			}
 			app_log_recorders.time_recoder_for_tessellation.record_elapsed_miliseconds_and_reset("restrict cells for output using filtering expression");
 		}
+
+		if(!result.sites_summaries.empty() && !app_params.filtering_expression_for_restricting_balls_and_cells_for_output.allow_all())
+		{
+			const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=app_params.filtering_expression_for_restricting_balls_and_cells_for_output.filter_vector(spheres_input_result.sphere_labels);
+			if(!ver.expression_matched() || !voronotalt::RadicalTessellation::restrict_result_sites(ver.expression_matched_all, ver.expression_matched_ids, result))
+			{
+				std::cerr << "Error: failed to restrict sites for output\n";
+				return;
+			}
+			app_log_recorders.time_recoder_for_tessellation.record_elapsed_miliseconds_and_reset("restrict sites for output using filtering expression");
+		}
 	}
 
 	voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;
@@ -1048,7 +1074,84 @@ void run_mode_radical(
 		}
 	}
 
-	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result sas and volumes");
+	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result cells sas and volumes");
+
+	if(!app_params.write_bsites_to_file.empty())
+	{
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_sites(result.sites_summaries, spheres_input_result.sphere_labels, true, output_string);
+		if(!output_string.empty())
+		{
+			if(app_params.write_bsites_to_file=="_stdout")
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			else
+			{
+				std::ofstream foutput(app_params.write_bsites_to_file.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+				}
+				else
+				{
+					std::cerr << "Error (non-terminating): failed to write bsites to file '" << app_params.write_bsites_to_file << "'\n";
+				}
+			}
+		}
+	}
+
+	if(!app_params.write_bsites_residue_level_to_file.empty())
+	{
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_sites_residue_level(result.sites_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_sites_representative_ids, result_grouped_by_residue.grouped_sites_summaries, output_string);
+		if(!output_string.empty())
+		{
+			if(app_params.write_bsites_residue_level_to_file=="_stdout")
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			else
+			{
+				std::ofstream foutput(app_params.write_bsites_residue_level_to_file.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+				}
+				else
+				{
+					std::cerr << "Error (non-terminating): failed to write bsites on residue level to file '" << app_params.write_bsites_residue_level_to_file << "'\n";
+				}
+			}
+		}
+	}
+
+	if(!app_params.write_bsites_chain_level_to_file.empty())
+	{
+		std::string output_string;
+		voronotalt::PrintingCustomTypes::print_sites_chain_level(result.sites_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_sites_representative_ids, result_grouped_by_chain.grouped_sites_summaries, output_string);
+		if(!output_string.empty())
+		{
+			if(app_params.write_bsites_chain_level_to_file=="_stdout")
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			else
+			{
+				std::ofstream foutput(app_params.write_bsites_chain_level_to_file.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+				}
+				else
+				{
+					std::cerr << "Error (non-terminating): failed to write bsites on chain level to file '" << app_params.write_bsites_chain_level_to_file << "'\n";
+				}
+			}
+		}
+	}
+
+	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result sites");
 
 	if(!app_params.write_tessellation_edges_to_file.empty())
 	{
