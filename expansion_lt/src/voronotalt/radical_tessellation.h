@@ -1376,6 +1376,26 @@ public:
 				}
 			}
 		}
+		if(something_selected && !result.sites_summaries.empty())
+		{
+			std::vector<SiteContactDescriptorsSummary> all_sites_summaries(result.total_spheres);
+			for(UnsignedInt i=0;i<sub_result.contacts_summaries.size();i++)
+			{
+				const ContactDescriptorSummary& cds=sub_result.contacts_summaries[i];
+				all_sites_summaries[cds.id_a].id=cds.id_a;
+				all_sites_summaries[cds.id_a].add(cds);
+				all_sites_summaries[cds.id_b].id=cds.id_b;
+				all_sites_summaries[cds.id_b].add(cds);
+			}
+			sub_result.sites_summaries.reserve(result.total_spheres);
+			for(UnsignedInt i=0;i<all_sites_summaries.size();i++)
+			{
+				if(all_sites_summaries[i].area>0.0)
+				{
+					sub_result.sites_summaries.push_back(all_sites_summaries[i]);
+				}
+			}
+		}
 		if(something_selected)
 		{
 			result.contacts_summaries.swap(sub_result.contacts_summaries);
@@ -1383,6 +1403,7 @@ public:
 			result.contacts_summaries_with_redundancy_in_periodic_box.swap(sub_result.contacts_summaries_with_redundancy_in_periodic_box);
 			result.adjuncts_for_contacts_summaries.swap(sub_result.adjuncts_for_contacts_summaries);
 			result.total_contacts_summary=sub_result.total_contacts_summary;
+			result.sites_summaries.swap(sub_result.sites_summaries);
 			result_graphics.contacts_graphics.swap(sub_result_graphics.contacts_graphics);
 		}
 		return something_selected;
