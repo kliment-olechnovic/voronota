@@ -597,7 +597,6 @@ public:
 		{
 			if(graphics_restrict_representations.empty())
 			{
-				graphics_restrict_representations.insert("balls");
 				graphics_restrict_representations.insert("faces");
 				graphics_restrict_representations.insert("wireframe");
 				if(!periodic_box_directions.empty() || !periodic_box_corners.empty())
