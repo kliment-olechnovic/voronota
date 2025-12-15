@@ -57,7 +57,7 @@ Options:
     --write-sites-to-file                            string     output file path to write table of binding site summaries
     --write-sites-residue-level-to-file              string     output file path to write table of residue-level grouped binding site summaries
     --write-sites-chain-level-to-file                string     output file path to write table of chain-level grouped binding site summaries
-    --write-sites-selection-script-to-file           string     output file path to write sites selection script for PyMol
+    --write-sites-selection-script-to-file           string     output file path to write sites selection script for PyMol (.pml) or ChimeraX (.cxc)
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
     --write-raw-collisions-to-file                   string     output file path to write a table of both true (contact) and false (no contact) collisions
@@ -1208,35 +1208,78 @@ void run_mode_radical(
 	if(!app_params.write_sites_selection_script_to_file.empty())
 	{
 		std::ofstream foutput(app_params.write_sites_selection_script_to_file.c_str(), std::ios::out);
-		foutput << "select site_residues, none\n";
-		for(std::size_t i=0;i<result_grouped_by_residue.grouped_sites_representative_ids.size();i++)
+		const std::string ending_for_chimerax=".cxc";
+		if(app_params.write_sites_selection_script_to_file.size()>ending_for_chimerax.size() && std::equal(ending_for_chimerax.rbegin(), ending_for_chimerax.rend(), app_params.write_sites_selection_script_to_file.rbegin()))
 		{
-			voronotalt::UnsignedInt id=result.sites_summaries[result_grouped_by_residue.grouped_sites_representative_ids[i]].id;
-			if(id<spheres_input_result.sphere_labels.size())
+			foutput << "select clear\n";
+			bool started=false;
+			for(std::size_t i=0;i<result_grouped_by_residue.grouped_sites_representative_ids.size();i++)
 			{
-				const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
-				if(sl.expanded_residue_id.valid && !sl.chain_id.empty())
+				voronotalt::UnsignedInt id=result.sites_summaries[result_grouped_by_residue.grouped_sites_representative_ids[i]].id;
+				if(id<spheres_input_result.sphere_labels.size())
 				{
-					foutput << "select site_residues, site_residues or (chain " << sl.chain_id << " and resi " << sl.expanded_residue_id.rnum << ")\n";
+					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
+					if(sl.expanded_residue_id.valid && !sl.chain_id.empty())
+					{
+						foutput << "select " << (started ? "add" : "") << " /" << sl.chain_id << ":" << sl.expanded_residue_id.rnum << "\n";
+						started=true;
+					}
 				}
 			}
-		}
-		foutput << "select site_atoms, none\n";
-		for(std::size_t i=0;i<result.sites_summaries.size();i++)
-		{
-			voronotalt::UnsignedInt id=result.sites_summaries[i].id;
-			if(id<spheres_input_result.sphere_labels.size())
+			foutput << "name site_residues sel\n";
+			foutput << "show site_residues atoms\n";
+			foutput << "color site_residues green\n";
+			foutput << "select clear\n";
+			started=false;
+			for(std::size_t i=0;i<result.sites_summaries.size();i++)
 			{
-				const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
-				if(sl.expanded_residue_id.valid && !sl.chain_id.empty() && !sl.atom_name.empty())
+				voronotalt::UnsignedInt id=result.sites_summaries[i].id;
+				if(id<spheres_input_result.sphere_labels.size())
 				{
-					foutput << "select site_atoms, site_atoms or (chain " << sl.chain_id << " and resi " << sl.expanded_residue_id.rnum << " and name \"" << sl.atom_name << "\")\n";
+					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
+					if(sl.expanded_residue_id.valid && !sl.chain_id.empty() && !sl.atom_name.empty())
+					{
+						foutput << "select " << (started ? "add" : "") << " /" << sl.chain_id << ":" << sl.expanded_residue_id.rnum << "@" << sl.atom_name << "\n";
+						started=true;
+					}
 				}
 			}
+			foutput << "name site_atoms sel\n";
+			foutput << "show site_atoms atoms\n";
+			foutput << "color site_atoms red\n";
 		}
-		foutput << "show sticks, site_residues\n";
-		foutput << "color green, site_residues\n";
-		foutput << "color red, site_atoms\n";
+		else
+		{
+			foutput << "select site_residues, none\n";
+			for(std::size_t i=0;i<result_grouped_by_residue.grouped_sites_representative_ids.size();i++)
+			{
+				voronotalt::UnsignedInt id=result.sites_summaries[result_grouped_by_residue.grouped_sites_representative_ids[i]].id;
+				if(id<spheres_input_result.sphere_labels.size())
+				{
+					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
+					if(sl.expanded_residue_id.valid && !sl.chain_id.empty())
+					{
+						foutput << "select site_residues, site_residues or (chain " << sl.chain_id << " and resi " << sl.expanded_residue_id.rnum << ")\n";
+					}
+				}
+			}
+			foutput << "select site_atoms, none\n";
+			for(std::size_t i=0;i<result.sites_summaries.size();i++)
+			{
+				voronotalt::UnsignedInt id=result.sites_summaries[i].id;
+				if(id<spheres_input_result.sphere_labels.size())
+				{
+					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
+					if(sl.expanded_residue_id.valid && !sl.chain_id.empty() && !sl.atom_name.empty())
+					{
+						foutput << "select site_atoms, site_atoms or (chain " << sl.chain_id << " and resi " << sl.expanded_residue_id.rnum << " and name \"" << sl.atom_name << "\")\n";
+					}
+				}
+			}
+			foutput << "show sticks, site_residues\n";
+			foutput << "color green, site_residues\n";
+			foutput << "color red, site_atoms\n";
+		}
 	}
 
 	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result sites");
