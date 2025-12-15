@@ -27,19 +27,25 @@ Options:
     --restrict-contacts-for-output                   string     selection expression to restrict contacts for output
     --restrict-balls-and-cells-for-output            string     selection expression to restrict cells for output
     --print-contacts                                            flag to print table of contacts to stdout
-    --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
-    --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout
+    --print-contacts-residue-level                              flag to print table of residue-level grouped contacts to stdout
+    --print-contacts-chain-level                                flag to print table of chain-level grouped contacts to stdout
     --print-cells                                               flag to print table of per-cell summaries to stdout
-    --print-cells-residue-level                                 flag to print residue-level grouped per-cell summaries to stdout
-    --print-cells-chain-level                                   flag to print chain-level grouped per-cell summaries to stdout
+    --print-cells-residue-level                                 flag to print table of residue-level grouped per-cell summaries to stdout
+    --print-cells-chain-level                                   flag to print table of chain-level grouped per-cell summaries to stdout
+    --print-sites                                               flag to print table of binding site summaries to stdout
+    --print-sites-residue-level                                 flag to print table of residue-level grouped binding site summaries to stdout
+    --print-sites-chain-level                                   flag to print table of chain-level grouped binding site summaries to stdout
     --print-everything                                          flag to print everything to stdout, terminate if printing everything is not possible
     --write-input-balls-to-file                                 output file path to write input balls to file
     --write-contacts-to-file                         string     output file path to write table of contacts
-    --write-contacts-residue-level-to-file           string     output file path to write residue-level grouped contacts
-    --write-contacts-chain-level-to-file             string     output file path to write chain-level grouped contacts
-    --write-cells-to-file                            string     output file path to write of per-cell summaries
-    --write-cells-residue-level-to-file              string     output file path to write residue-level grouped per-cell summaries
-    --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
+    --write-contacts-residue-level-to-file           string     output file path to write table of residue-level grouped contacts
+    --write-contacts-chain-level-to-file             string     output file path to write table of chain-level grouped contacts
+    --write-cells-to-file                            string     output file path to write table of per-cell summaries
+    --write-cells-residue-level-to-file              string     output file path to write table of residue-level grouped per-cell summaries
+    --write-cells-chain-level-to-file                string     output file path to write table of chain-level grouped per-cell summaries
+    --write-sites-to-file                            string     output file path to write table of binding site summaries
+    --write-sites-residue-level-to-file              string     output file path to write table of residue-level grouped binding site summaries
+    --write-sites-chain-level-to-file                string     output file path to write table of chain-level grouped binding site summaries
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
     --write-raw-collisions-to-file                   string     output file path to write a table of both true (contact) and false (no contact) collisions

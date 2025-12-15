@@ -45,3 +45,15 @@ sr_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	sas_area	volume	count
 sr	A	54	.	PHE	.	324.724	482.809	11
 su_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	sas_area	volume	count
 su	A	.	.	.	.	324.724	482.809	11
+ba_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	ID_index	area	arc_legth	distance
+ba	A	54	.	PHE	N	0	38.4116	21.332	1.51119
+ba	A	54	.	PHE	CA	1	51.3645	17.6477	1.51119
+ba	A	54	.	PHE	C	2	44.4249	22.267	1.2289
+ba	A	54	.	PHE	O	3	28.3108	18.5403	1.2289
+ba	A	54	.	PHE	CB	4	49.903	22.0045	1.51747
+ba	A	54	.	PHE	CG	5	25.8647	5.66802	1.3852
+ba	A	54	.	PHE	CD1	6	52.2296	23.0933	1.38405
+ba	A	54	.	PHE	CD2	7	49.5507	25.5073	1.3931
+ba	A	54	.	PHE	CE1	8	46.0636	24.7339	1.37516
+ba	A	54	.	PHE	CE2	9	45.5555	24.5775	1.39995
+ba	A	54	.	PHE	CZ	10	45.3439	24.5061	1.37516

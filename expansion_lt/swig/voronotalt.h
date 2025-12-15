@@ -523,7 +523,7 @@ private:
 					preparation_result,
 					with_tessellation_net,
 					voronotalt::RadicalTessellation::ParametersForGraphics(with_graphics, with_sas_graphics_if_possible),
-					summarize_cells,
+					voronotalt::RadicalTessellation::ParametersForGeneratingSummaries(false, summarize_cells),
 					result,
 					result_graphics,
 					time_recorder);

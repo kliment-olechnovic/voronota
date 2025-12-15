@@ -38,19 +38,25 @@ Options:
     --restrict-contacts-for-output                   string     selection expression to restrict contacts for output
     --restrict-balls-and-cells-for-output            string     selection expression to restrict cells for output
     --print-contacts                                            flag to print table of contacts to stdout
-    --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
-    --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout
+    --print-contacts-residue-level                              flag to print table of residue-level grouped contacts to stdout
+    --print-contacts-chain-level                                flag to print table of chain-level grouped contacts to stdout
     --print-cells                                               flag to print table of per-cell summaries to stdout
-    --print-cells-residue-level                                 flag to print residue-level grouped per-cell summaries to stdout
-    --print-cells-chain-level                                   flag to print chain-level grouped per-cell summaries to stdout
+    --print-cells-residue-level                                 flag to print table of residue-level grouped per-cell summaries to stdout
+    --print-cells-chain-level                                   flag to print table of chain-level grouped per-cell summaries to stdout
+    --print-sites                                               flag to print table of binding site summaries to stdout
+    --print-sites-residue-level                                 flag to print table of residue-level grouped binding site summaries to stdout
+    --print-sites-chain-level                                   flag to print table of chain-level grouped binding site summaries to stdout
     --print-everything                                          flag to print everything to stdout, terminate if printing everything is not possible
     --write-input-balls-to-file                                 output file path to write input balls to file
     --write-contacts-to-file                         string     output file path to write table of contacts
-    --write-contacts-residue-level-to-file           string     output file path to write residue-level grouped contacts
-    --write-contacts-chain-level-to-file             string     output file path to write chain-level grouped contacts
-    --write-cells-to-file                            string     output file path to write of per-cell summaries
-    --write-cells-residue-level-to-file              string     output file path to write residue-level grouped per-cell summaries
-    --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
+    --write-contacts-residue-level-to-file           string     output file path to write table of residue-level grouped contacts
+    --write-contacts-chain-level-to-file             string     output file path to write table of chain-level grouped contacts
+    --write-cells-to-file                            string     output file path to write table of per-cell summaries
+    --write-cells-residue-level-to-file              string     output file path to write table of residue-level grouped per-cell summaries
+    --write-cells-chain-level-to-file                string     output file path to write table of chain-level grouped per-cell summaries
+    --write-sites-to-file                            string     output file path to write table of binding site summaries
+    --write-sites-residue-level-to-file              string     output file path to write table of residue-level grouped binding site summaries
+    --write-sites-chain-level-to-file                string     output file path to write table of chain-level grouped binding site summaries
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
     --write-raw-collisions-to-file                   string     output file path to write a table of both true (contact) and false (no contact) collisions
@@ -131,6 +137,11 @@ public:
 	bool print_cells;
 	bool print_cells_residue_level;
 	bool print_cells_chain_level;
+	bool print_sites;
+	bool print_sites_residue_level;
+	bool print_sites_chain_level;
+	bool print_everything;
+	bool need_sites;
 	bool need_summaries_on_residue_level;
 	bool need_summaries_on_chain_level;
 	RunningMode::ID running_mode;
@@ -151,9 +162,9 @@ public:
 	std::string write_cells_to_file;
 	std::string write_cells_residue_level_to_file;
 	std::string write_cells_chain_level_to_file;
-	std::string write_bsites_to_file;
-	std::string write_bsites_residue_level_to_file;
-	std::string write_bsites_chain_level_to_file;
+	std::string write_sites_to_file;
+	std::string write_sites_residue_level_to_file;
+	std::string write_sites_chain_level_to_file;
 	std::string plot_contacts_to_file;
 	std::string plot_contacts_residue_level_to_file;
 	std::string plot_contacts_chain_level_to_file;
@@ -196,6 +207,11 @@ public:
 		print_cells(false),
 		print_cells_residue_level(false),
 		print_cells_chain_level(false),
+		print_sites(false),
+		print_sites_residue_level(false),
+		print_sites_chain_level(false),
+		print_everything(false),
+		need_sites(false),
 		need_summaries_on_residue_level(false),
 		need_summaries_on_chain_level(false),
 		running_mode(RunningMode::radical),
@@ -354,17 +370,21 @@ public:
 				{
 					print_cells_chain_level=opt.is_flag_and_true();
 				}
+				else if(opt.name=="print-sites" && opt.is_flag())
+				{
+					print_sites=opt.is_flag_and_true();
+				}
+				else if(opt.name=="print-sites-residue-level" && opt.is_flag())
+				{
+					print_sites_residue_level=opt.is_flag_and_true();
+				}
+				else if(opt.name=="print-sites-chain-level" && opt.is_flag())
+				{
+					print_sites_chain_level=opt.is_flag_and_true();
+				}
 				else if(opt.name=="print-everything" && opt.is_flag())
 				{
-					if(opt.is_flag_and_true())
-					{
-						print_contacts=true;
-						print_contacts_residue_level=true;
-						print_contacts_chain_level=true;
-						print_cells=true;
-						print_cells_residue_level=true;
-						print_cells_chain_level=true;
-					}
+					print_everything=(opt.is_flag_and_true());
 				}
 				else if(opt.name=="grouping-directives" && opt.args_strings.size()==1)
 				{
@@ -402,17 +422,17 @@ public:
 				{
 					write_cells_chain_level_to_file=opt.args_strings.front();
 				}
-				else if(opt.name=="write-bsites-to-file" && opt.args_strings.size()==1)
+				else if(opt.name=="write-sites-to-file" && opt.args_strings.size()==1)
 				{
-					write_bsites_to_file=opt.args_strings.front();
+					write_sites_to_file=opt.args_strings.front();
 				}
-				else if(opt.name=="write-bsites-residue-level-to-file" && opt.args_strings.size()==1)
+				else if(opt.name=="write-sites-residue-level-to-file" && opt.args_strings.size()==1)
 				{
-					write_bsites_residue_level_to_file=opt.args_strings.front();
+					write_sites_residue_level_to_file=opt.args_strings.front();
 				}
-				else if(opt.name=="write-bsites-chain-level-to-file" && opt.args_strings.size()==1)
+				else if(opt.name=="write-sites-chain-level-to-file" && opt.args_strings.size()==1)
 				{
-					write_bsites_chain_level_to_file=opt.args_strings.front();
+					write_sites_chain_level_to_file=opt.args_strings.front();
 				}
 				else if(opt.name=="plot-contacts-to-file" && opt.args_strings.size()==1)
 				{
@@ -501,6 +521,22 @@ public:
 			}
 		}
 
+		if(print_everything)
+		{
+			print_contacts=true;
+			print_contacts_residue_level=true;
+			print_contacts_chain_level=true;
+			if(running_mode==RunningMode::radical)
+			{
+				print_cells=true;
+				print_cells_residue_level=true;
+				print_cells_chain_level=true;
+				print_sites=true;
+				print_sites_residue_level=true;
+				print_sites_chain_level=true;
+			}
+		}
+
 		if((input_from_file.empty() || input_from_file=="_stdin") && voronotalt::is_stdin_from_terminal())
 		{
 			error_log_for_options_parsing << "Error: no input provided to stdin or from a file, please provide input or run with an -h or --help flag to see documentation and examples.\n";
@@ -509,6 +545,16 @@ public:
 		if(running_mode==RunningMode::simplified_aw && !(periodic_box_directions.empty() && periodic_box_corners.empty()))
 		{
 			error_log_for_options_parsing << "Error: in this version a periodic box cannot be used in the simplified additively weighted Voronoi diagram regime.\n";
+		}
+
+		if(running_mode==RunningMode::simplified_aw && !(!print_cells && !print_cells_residue_level && !print_cells_chain_level && write_cells_to_file.empty() && write_cells_residue_level_to_file.empty() && write_cells_chain_level_to_file.empty()))
+		{
+			error_log_for_options_parsing << "Error: in this version cells output is disabled for the simplified additively weighted Voronoi diagram regime.\n";
+		}
+
+		if(running_mode==RunningMode::simplified_aw && !(!print_sites && !print_sites_residue_level && !print_sites_chain_level && write_sites_to_file.empty() && write_sites_residue_level_to_file.empty() && write_sites_chain_level_to_file.empty()))
+		{
+			error_log_for_options_parsing << "Error: in this version sites output is disabled for the simplified additively weighted Voronoi diagram regime.\n";
 		}
 
 		if(running_mode==RunningMode::simplified_aw && (!mesh_output_obj_file.empty() || mesh_print_topology_summary))
@@ -604,8 +650,9 @@ public:
 
 		if(read_successfuly)
 		{
-			need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty() || !write_bsites_residue_level_to_file.empty() || !plot_contacts_residue_level_to_file.empty());
-			need_summaries_on_chain_level=(print_contacts_chain_level || print_cells_chain_level || !write_contacts_chain_level_to_file.empty() || !write_cells_chain_level_to_file.empty() || !write_bsites_chain_level_to_file.empty() || !plot_contacts_chain_level_to_file.empty());
+			need_sites=(print_sites || print_sites_residue_level || print_sites_chain_level || !write_sites_to_file.empty() || !write_sites_residue_level_to_file.empty() || !write_sites_chain_level_to_file.empty());
+			need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || print_sites_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty() || !write_sites_residue_level_to_file.empty() || !plot_contacts_residue_level_to_file.empty());
+			need_summaries_on_chain_level=(print_contacts_chain_level || print_cells_chain_level || print_sites_chain_level || !write_contacts_chain_level_to_file.empty() || !write_cells_chain_level_to_file.empty() || !write_sites_chain_level_to_file.empty() || !plot_contacts_chain_level_to_file.empty());
 		}
 
 		return read_successfuly;
@@ -823,6 +870,7 @@ void run_mode_radical(
 			app_log_recorders.time_recoder_for_tessellation.record_elapsed_miliseconds_and_reset("restrict collisions for construction using filtering expression");
 		}
 
+		const bool summarize_sites=app_params.need_sites;
 		const bool summarize_cells=!preparation_result.collision_ids_constrained;
 
 		const bool with_tessellation_net=!(app_params.write_tessellation_edges_to_file.empty() && app_params.write_tessellation_vertices_to_file.empty());
@@ -834,7 +882,7 @@ void run_mode_radical(
 				preparation_result,
 				with_tessellation_net,
 				voronotalt::RadicalTessellation::ParametersForGraphics(with_graphics, with_sas_graphics_if_possible),
-				summarize_cells,
+				voronotalt::RadicalTessellation::ParametersForGeneratingSummaries(summarize_sites, summarize_cells),
 				result,
 				result_graphics,
 				app_log_recorders.time_recoder_for_tessellation);
@@ -1076,76 +1124,76 @@ void run_mode_radical(
 
 	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result cells sas and volumes");
 
-	if(!app_params.write_bsites_to_file.empty())
+	if(app_params.print_sites || !app_params.write_sites_to_file.empty())
 	{
 		std::string output_string;
 		voronotalt::PrintingCustomTypes::print_sites(result.sites_summaries, spheres_input_result.sphere_labels, true, output_string);
 		if(!output_string.empty())
 		{
-			if(app_params.write_bsites_to_file=="_stdout")
+			if(app_params.print_sites)
 			{
 				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
 			}
-			else
+			if(!app_params.write_sites_to_file.empty())
 			{
-				std::ofstream foutput(app_params.write_bsites_to_file.c_str(), std::ios::out);
+				std::ofstream foutput(app_params.write_sites_to_file.c_str(), std::ios::out);
 				if(foutput.good())
 				{
 					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
 				}
 				else
 				{
-					std::cerr << "Error (non-terminating): failed to write bsites to file '" << app_params.write_bsites_to_file << "'\n";
+					std::cerr << "Error (non-terminating): failed to write bsites to file '" << app_params.write_sites_to_file << "'\n";
 				}
 			}
 		}
 	}
 
-	if(!app_params.write_bsites_residue_level_to_file.empty())
+	if(app_params.print_sites_residue_level || !app_params.write_sites_residue_level_to_file.empty())
 	{
 		std::string output_string;
 		voronotalt::PrintingCustomTypes::print_sites_residue_level(result.sites_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_sites_representative_ids, result_grouped_by_residue.grouped_sites_summaries, output_string);
 		if(!output_string.empty())
 		{
-			if(app_params.write_bsites_residue_level_to_file=="_stdout")
+			if(app_params.print_sites_residue_level)
 			{
 				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
 			}
-			else
+			if(!app_params.write_sites_residue_level_to_file.empty())
 			{
-				std::ofstream foutput(app_params.write_bsites_residue_level_to_file.c_str(), std::ios::out);
+				std::ofstream foutput(app_params.write_sites_residue_level_to_file.c_str(), std::ios::out);
 				if(foutput.good())
 				{
 					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
 				}
 				else
 				{
-					std::cerr << "Error (non-terminating): failed to write bsites on residue level to file '" << app_params.write_bsites_residue_level_to_file << "'\n";
+					std::cerr << "Error (non-terminating): failed to write bsites on residue level to file '" << app_params.write_sites_residue_level_to_file << "'\n";
 				}
 			}
 		}
 	}
 
-	if(!app_params.write_bsites_chain_level_to_file.empty())
+	if(app_params.print_sites_chain_level || !app_params.write_sites_chain_level_to_file.empty())
 	{
 		std::string output_string;
 		voronotalt::PrintingCustomTypes::print_sites_chain_level(result.sites_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_sites_representative_ids, result_grouped_by_chain.grouped_sites_summaries, output_string);
 		if(!output_string.empty())
 		{
-			if(app_params.write_bsites_chain_level_to_file=="_stdout")
+			if(app_params.print_sites_chain_level)
 			{
 				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
 			}
-			else
+			if(!app_params.write_sites_chain_level_to_file.empty())
 			{
-				std::ofstream foutput(app_params.write_bsites_chain_level_to_file.c_str(), std::ios::out);
+				std::ofstream foutput(app_params.write_sites_chain_level_to_file.c_str(), std::ios::out);
 				if(foutput.good())
 				{
 					foutput.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
 				}
 				else
 				{
-					std::cerr << "Error (non-terminating): failed to write bsites on chain level to file '" << app_params.write_bsites_chain_level_to_file << "'\n";
+					std::cerr << "Error (non-terminating): failed to write bsites on chain level to file '" << app_params.write_sites_chain_level_to_file << "'\n";
 				}
 			}
 		}
