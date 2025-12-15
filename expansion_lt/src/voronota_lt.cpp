@@ -57,6 +57,7 @@ Options:
     --write-sites-to-file                            string     output file path to write table of binding site summaries
     --write-sites-residue-level-to-file              string     output file path to write table of residue-level grouped binding site summaries
     --write-sites-chain-level-to-file                string     output file path to write table of chain-level grouped binding site summaries
+    --write-sites-selection-script-to-file           string     output file path to write sites selection script for PyMol
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
     --write-raw-collisions-to-file                   string     output file path to write a table of both true (contact) and false (no contact) collisions
@@ -165,6 +166,7 @@ public:
 	std::string write_sites_to_file;
 	std::string write_sites_residue_level_to_file;
 	std::string write_sites_chain_level_to_file;
+	std::string write_sites_selection_script_to_file;
 	std::string plot_contacts_to_file;
 	std::string plot_contacts_residue_level_to_file;
 	std::string plot_contacts_chain_level_to_file;
@@ -434,6 +436,10 @@ public:
 				{
 					write_sites_chain_level_to_file=opt.args_strings.front();
 				}
+				else if(opt.name=="write-sites-selection-script-to-file" && opt.args_strings.size()==1)
+				{
+					write_sites_selection_script_to_file=opt.args_strings.front();
+				}
 				else if(opt.name=="plot-contacts-to-file" && opt.args_strings.size()==1)
 				{
 					plot_contacts_to_file=opt.args_strings.front();
@@ -552,7 +558,7 @@ public:
 			error_log_for_options_parsing << "Error: in this version cells output is disabled for the simplified additively weighted Voronoi diagram regime.\n";
 		}
 
-		if(running_mode==RunningMode::simplified_aw && !(!print_sites && !print_sites_residue_level && !print_sites_chain_level && write_sites_to_file.empty() && write_sites_residue_level_to_file.empty() && write_sites_chain_level_to_file.empty()))
+		if(running_mode==RunningMode::simplified_aw && !(!print_sites && !print_sites_residue_level && !print_sites_chain_level && write_sites_to_file.empty() && write_sites_residue_level_to_file.empty() && write_sites_chain_level_to_file.empty() && write_sites_selection_script_to_file.empty()))
 		{
 			error_log_for_options_parsing << "Error: in this version sites output is disabled for the simplified additively weighted Voronoi diagram regime.\n";
 		}
@@ -650,8 +656,8 @@ public:
 
 		if(read_successfuly)
 		{
-			need_sites=(print_sites || print_sites_residue_level || print_sites_chain_level || !write_sites_to_file.empty() || !write_sites_residue_level_to_file.empty() || !write_sites_chain_level_to_file.empty());
-			need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || print_sites_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty() || !write_sites_residue_level_to_file.empty() || !plot_contacts_residue_level_to_file.empty());
+			need_sites=(print_sites || print_sites_residue_level || print_sites_chain_level || !write_sites_to_file.empty() || !write_sites_residue_level_to_file.empty() || !write_sites_chain_level_to_file.empty() || !write_sites_selection_script_to_file.empty());
+			need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || print_sites_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty() || !write_sites_residue_level_to_file.empty() || !write_sites_selection_script_to_file.empty() || !plot_contacts_residue_level_to_file.empty());
 			need_summaries_on_chain_level=(print_contacts_chain_level || print_cells_chain_level || print_sites_chain_level || !write_contacts_chain_level_to_file.empty() || !write_cells_chain_level_to_file.empty() || !write_sites_chain_level_to_file.empty() || !plot_contacts_chain_level_to_file.empty());
 		}
 
@@ -1197,6 +1203,40 @@ void run_mode_radical(
 				}
 			}
 		}
+	}
+
+	if(!app_params.write_sites_selection_script_to_file.empty())
+	{
+		std::ofstream foutput(app_params.write_sites_selection_script_to_file.c_str(), std::ios::out);
+		foutput << "select site_residues, none\n";
+		for(std::size_t i=0;i<result_grouped_by_residue.grouped_sites_representative_ids.size();i++)
+		{
+			voronotalt::UnsignedInt id=result.sites_summaries[result_grouped_by_residue.grouped_sites_representative_ids[i]].id;
+			if(id<spheres_input_result.sphere_labels.size())
+			{
+				const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
+				if(sl.expanded_residue_id.valid && !sl.chain_id.empty())
+				{
+					foutput << "select site_residues, site_residues or (chain " << sl.chain_id << " and resi " << sl.expanded_residue_id.rnum << ")\n";
+				}
+			}
+		}
+		foutput << "select site_atoms, none\n";
+		for(std::size_t i=0;i<result.sites_summaries.size();i++)
+		{
+			voronotalt::UnsignedInt id=result.sites_summaries[i].id;
+			if(id<spheres_input_result.sphere_labels.size())
+			{
+				const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
+				if(sl.expanded_residue_id.valid && !sl.chain_id.empty() && !sl.atom_name.empty())
+				{
+					foutput << "select site_atoms, site_atoms or (chain " << sl.chain_id << " and resi " << sl.expanded_residue_id.rnum << " and name \"" << sl.atom_name << "\")\n";
+				}
+			}
+		}
+		foutput << "show sticks, site_residues\n";
+		foutput << "color green, site_residues\n";
+		foutput << "color red, site_atoms\n";
 	}
 
 	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result sites");

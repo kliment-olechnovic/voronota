@@ -46,6 +46,7 @@ Options:
     --write-sites-to-file                            string     output file path to write table of binding site summaries
     --write-sites-residue-level-to-file              string     output file path to write table of residue-level grouped binding site summaries
     --write-sites-chain-level-to-file                string     output file path to write table of chain-level grouped binding site summaries
+    --write-sites-selection-script-to-file           string     output file path to write sites selection script for PyMol
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
     --write-raw-collisions-to-file                   string     output file path to write a table of both true (contact) and false (no contact) collisions
