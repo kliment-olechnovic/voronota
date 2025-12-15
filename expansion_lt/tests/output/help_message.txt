@@ -25,7 +25,7 @@ Options:
     --restrict-input-balls                           string     selection expression to restrict input balls
     --restrict-contacts                              string     selection expression to restrict contacts before construction
     --restrict-contacts-for-output                   string     selection expression to restrict contacts for output
-    --restrict-balls-and-cells-for-output            string     selection expression to restrict cells for output
+    --restrict-single-index-data-for-output          string     selection expression to restrict single-index data (balls, cells, sites) for output
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print table of residue-level grouped contacts to stdout
     --print-contacts-chain-level                                flag to print table of chain-level grouped contacts to stdout

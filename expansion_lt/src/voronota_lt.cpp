@@ -36,7 +36,7 @@ Options:
     --restrict-input-balls                           string     selection expression to restrict input balls
     --restrict-contacts                              string     selection expression to restrict contacts before construction
     --restrict-contacts-for-output                   string     selection expression to restrict contacts for output
-    --restrict-balls-and-cells-for-output            string     selection expression to restrict cells for output
+    --restrict-single-index-data-for-output          string     selection expression to restrict single-index data (balls, cells, sites) for output
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print table of residue-level grouped contacts to stdout
     --print-contacts-chain-level                                flag to print table of chain-level grouped contacts to stdout
@@ -183,7 +183,7 @@ public:
 	std::string restrict_input_balls;
 	std::string restrict_contacts;
 	std::string restrict_contacts_for_output;
-	std::string restrict_balls_and_cells_for_output;
+	std::string restrict_single_index_data_for_output;
 	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_input_balls;
 	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_collisions;
 	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_contacts_for_output;
@@ -338,9 +338,9 @@ public:
 				{
 					restrict_contacts_for_output=opt.args_strings.front();
 				}
-				else if(opt.name=="restrict-balls-and-cells-for-output" && opt.args_strings.size()==1)
+				else if(opt.name=="restrict-single-index-data-for-output" && opt.args_strings.size()==1)
 				{
-					restrict_balls_and_cells_for_output=opt.args_strings.front();
+					restrict_single_index_data_for_output=opt.args_strings.front();
 				}
 				else if(opt.name=="measure-running-time" && opt.is_flag())
 				{
@@ -637,9 +637,9 @@ public:
 			}
 		}
 
-		if(!restrict_balls_and_cells_for_output.empty())
+		if(!restrict_single_index_data_for_output.empty())
 		{
-			filtering_expression_for_restricting_balls_and_cells_for_output=voronotalt::FilteringBySphereLabels::ExpressionForSingle(restrict_balls_and_cells_for_output);
+			filtering_expression_for_restricting_balls_and_cells_for_output=voronotalt::FilteringBySphereLabels::ExpressionForSingle(restrict_single_index_data_for_output);
 			if(!filtering_expression_for_restricting_balls_and_cells_for_output.valid())
 			{
 				error_log_for_options_parsing << "Error: invalid cells restriction filtering expression for cells output.\n";
