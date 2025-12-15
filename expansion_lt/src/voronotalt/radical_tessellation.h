@@ -1230,6 +1230,24 @@ public:
 					}
 				}
 
+				{
+					std::vector< std::pair<UnsignedInt, UnsignedInt> > reordering(grouped_result.grouped_sites_representative_ids.size());
+					for(UnsignedInt i=0;i<reordering.size();i++)
+					{
+						reordering[i]=std::pair<UnsignedInt, UnsignedInt>(grouped_result.grouped_sites_representative_ids[i], i);
+					}
+					std::sort(reordering.begin(), reordering.end());
+					std::vector<UnsignedInt> reordered_grouped_sites_representative_ids(reordering.size());
+					std::vector<TotalSiteContactDescriptorsSummary> reordered_grouped_sites_summaries(reordering.size());
+					for(UnsignedInt i=0;i<reordering.size();i++)
+					{
+						reordered_grouped_sites_representative_ids[i]=grouped_result.grouped_sites_representative_ids[reordering[i].second];
+						reordered_grouped_sites_summaries[i]=grouped_result.grouped_sites_summaries[reordering[i].second];
+					}
+					grouped_result.grouped_sites_representative_ids.swap(reordered_grouped_sites_representative_ids);
+					grouped_result.grouped_sites_summaries.swap(reordered_grouped_sites_summaries);
+				}
+
 				time_recorder.record_elapsed_miliseconds_and_reset("grouped sites summaries");
 			}
 
