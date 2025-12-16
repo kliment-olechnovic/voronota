@@ -65,7 +65,7 @@ Options:
     --mesh-print-topology-summary                               flag to print mesh topology summary
     --measure-running-time                                      flag to measure and output running times
     --write-log-to-file                              string     output file path to write global log, does not turn off printing log to stderr
-    --minimum-columns | -m                                      flag to not print empty identifiers in summarized residue-level and chain-level tables
+    --extra-columns                                             flag to add extra columns with empty identifier parts to output tables
     --quiet | -q                                                flag to suppress printing non-error log messages to stderr
     --help | -h                                                 flag to print help info to stderr and exit
 

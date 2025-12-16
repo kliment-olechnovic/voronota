@@ -41,10 +41,10 @@ ac	A	54	.	PHE	CD2	7	27.5277	45.4649
 ac	A	54	.	PHE	CE1	8	36.3549	49.797
 ac	A	54	.	PHE	CE2	9	37.9037	51.3873
 ac	A	54	.	PHE	CZ	10	37.9964	51.2697
-rc_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	sas_area	volume	count
-rc	A	54	.	PHE	.	324.724	482.809	11
-cc_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	sas_area	volume	count
-cc	A	.	.	.	.	324.724	482.809	11
+rc_header	ID_chain	ID_rnum	ID_ic	ID_rname	sas_area	volume	count
+rc	A	54	.	PHE	324.724	482.809	11
+cc_header	ID_chain	sas_area	volume	count
+cc	A	324.724	482.809	11
 as_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	ID_index	area	arc_legth	distance
 as	A	54	.	PHE	N	0	38.4116	21.332	1.51119
 as	A	54	.	PHE	CA	1	51.3645	17.6477	1.51119

@@ -1,2 +1,2 @@
-ic_header	ID1_chain	ID1_rnum	ID1_ic	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_ic	ID2_rname	ID2_atom	area	arc_legth	distance	count
-ic	A	.	.	.	.	B	.	.	.	.	1407.36	248.965	2.42567	692
+ic_header	ID1_chain	ID2_chain	area	arc_legth	distance	count
+ic	A	B	1407.36	248.965	2.42567	692
