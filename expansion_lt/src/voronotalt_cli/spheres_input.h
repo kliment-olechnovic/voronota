@@ -28,8 +28,9 @@ public:
 		int label_size;
 		int number_of_chain_groups;
 		int number_of_residue_groups;
+		bool labels_have_icodes;
 
-		Result() noexcept : label_size(0), number_of_chain_groups(0), number_of_residue_groups(0)
+		Result() noexcept : label_size(0), number_of_chain_groups(0), number_of_residue_groups(0), labels_have_icodes(false)
 		{
 		}
 
@@ -86,6 +87,7 @@ public:
 				grouping_by_chain.swap(sub_result.grouping_by_chain);
 				grouping_by_residue.swap(sub_result.grouping_by_residue);
 			}
+			labels_have_icodes=check_if_labels_have_insertion_codes(sphere_labels);
 			return something_selected;
 		}
 	};
@@ -317,6 +319,8 @@ public:
 			time_recorder.record_elapsed_miliseconds_and_reset("parse residue id labels");
 		}
 
+		result.labels_have_icodes=check_if_labels_have_insertion_codes(result.sphere_labels);
+
 		return true;
 	}
 
@@ -356,6 +360,7 @@ public:
 			result.number_of_residue_groups=assign_groups_to_sphere_labels_by_residue(result.sphere_labels, result.grouping_by_residue);
 			SphereLabeling::parse_expanded_residue_ids_in_sphere_labels(result.sphere_labels);
 		}
+		result.labels_have_icodes=check_if_labels_have_insertion_codes(result.sphere_labels);
 		return (!result.spheres.empty() && result.spheres.size()==result.sphere_labels.size());
 	}
 
@@ -381,7 +386,21 @@ public:
 			result.label_size=0;
 			result.number_of_chain_groups=0;
 			result.number_of_residue_groups=0;
+			result.labels_have_icodes=false;
 		}
+	}
+
+	static bool check_if_labels_have_insertion_codes(const std::vector<SphereLabeling::SphereLabel>& sphere_labels) noexcept
+	{
+		for(std::size_t i=0;i<sphere_labels.size();i++)
+		{
+			const SphereLabeling::SphereLabel& sl=sphere_labels[i];
+			if(sl.expanded_residue_id.valid && !sl.expanded_residue_id.icode.empty() && sl.expanded_residue_id.icode!=".")
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 private:

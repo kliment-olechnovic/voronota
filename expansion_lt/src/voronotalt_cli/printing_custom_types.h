@@ -34,7 +34,7 @@ public:
 		output.reserve(spheres.size()*60);
 		if(with_header)
 		{
-			print_label_header("", false, false, output);
+			print_label_header("", false, false, false, output);
 			string_append_cstring(output, "x\ty\tz\tradius\n");
 		}
 		bool printed_in_parallel=false;
@@ -88,7 +88,7 @@ public:
 
 	template<class ContactsContainer>
 	static void print_contacts(
-			const ContactsContainer& contacts, const std::vector<SphereLabeling::SphereLabel>& sphere_labels, const bool labels_enabled, std::string& output) noexcept
+			const ContactsContainer& contacts, const std::vector<SphereLabeling::SphereLabel>& sphere_labels, const bool labels_enabled, const bool no_icode, std::string& output) noexcept
 	{
 		const SphereLabeling::SphereLabel null_label;
 		if(!contacts.empty())
@@ -97,8 +97,8 @@ public:
 			if(labels_enabled)
 			{
 				string_append_cstring(output, "ia_header\t");
-				print_label_header("1", false, false, output);
-				print_label_header("2", false, false, output);
+				print_label_header("1", false, false, no_icode, output);
+				print_label_header("2", false, false, no_icode, output);
 				string_append_cstring(output, "ID1_index\tID2_index\tarea\tarc_legth\tdistance\n");
 			}
 			else
@@ -130,7 +130,7 @@ public:
 							{
 								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
 								{
-									print_contact(static_cast<std::size_t>(j), contacts, sphere_labels, null_label, labels_enabled, suboutputs[i]);
+									print_contact(static_cast<std::size_t>(j), contacts, sphere_labels, null_label, labels_enabled, no_icode, suboutputs[i]);
 								}
 							}
 						}
@@ -149,7 +149,7 @@ public:
 			{
 				for(std::size_t i=0;i<contacts.size();i++)
 				{
-					print_contact(i, contacts, sphere_labels, null_label, labels_enabled, output);
+					print_contact(i, contacts, sphere_labels, null_label, labels_enabled, no_icode, output);
 				}
 			}
 		}
@@ -158,22 +158,22 @@ public:
 	template<class ContactsContainer, class GroupedContactsContainer>
 	static void print_contacts_residue_level(
 			const ContactsContainer& contacts, const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
-			const std::vector<UnsignedInt>& grouped_contacts_representative_ids, const GroupedContactsContainer& grouped_contacts, const bool minimum_columns, std::string& output) noexcept
+			const std::vector<UnsignedInt>& grouped_contacts_representative_ids, const GroupedContactsContainer& grouped_contacts, const bool minimum_columns, const bool no_icode, std::string& output) noexcept
 	{
-		print_contacts_residue_level_or_chain_level(false, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, minimum_columns, output);
+		print_contacts_residue_level_or_chain_level(false, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, minimum_columns, no_icode, output);
 	}
 
 	template<class ContactsContainer, class GroupedContactsContainer>
 	static void print_contacts_chain_level(
 			const ContactsContainer& contacts, const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
-			const std::vector<UnsignedInt>& grouped_contacts_representative_ids, const GroupedContactsContainer& grouped_contacts, const bool minimum_columns, std::string& output) noexcept
+			const std::vector<UnsignedInt>& grouped_contacts_representative_ids, const GroupedContactsContainer& grouped_contacts, const bool minimum_columns, const bool no_icode, std::string& output) noexcept
 	{
-		print_contacts_residue_level_or_chain_level(true, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, minimum_columns, output);
+		print_contacts_residue_level_or_chain_level(true, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, minimum_columns, no_icode, output);
 	}
 
 	template<class CellsContainer>
 	static void print_cells(
-			const CellsContainer& cells, const std::vector<SphereLabeling::SphereLabel>& sphere_labels, const bool labels_enabled, std::string& output) noexcept
+			const CellsContainer& cells, const std::vector<SphereLabeling::SphereLabel>& sphere_labels, const bool labels_enabled, const bool no_icode, std::string& output) noexcept
 	{
 		const SphereLabeling::SphereLabel null_label;
 		if(!cells.empty())
@@ -182,7 +182,7 @@ public:
 			if(labels_enabled)
 			{
 				string_append_cstring(output, "ac_header\t");
-				print_label_header("", false, false, output);
+				print_label_header("", false, false, no_icode, output);
 				string_append_cstring(output, "ID_index\tsas_area\tvolume\n");
 			}
 			else
@@ -214,7 +214,7 @@ public:
 							{
 								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
 								{
-									print_sas_and_volume(static_cast<std::size_t>(j), cells, sphere_labels, labels_enabled, null_label, suboutputs[i]);
+									print_sas_and_volume(static_cast<std::size_t>(j), cells, sphere_labels, labels_enabled, null_label, no_icode, suboutputs[i]);
 								}
 							}
 						}
@@ -233,7 +233,7 @@ public:
 			{
 				for(std::size_t i=0;i<cells.size();i++)
 				{
-					print_sas_and_volume(i, cells, sphere_labels, labels_enabled, null_label, output);
+					print_sas_and_volume(i, cells, sphere_labels, labels_enabled, null_label, no_icode, output);
 				}
 			}
 		}
@@ -242,22 +242,22 @@ public:
 	template<class CellsContainer, class GroupedCellsContainer>
 	static void print_cells_residue_level(
 			const CellsContainer& cells, const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
-			const std::vector<UnsignedInt>& grouped_cells_representative_ids, const GroupedCellsContainer& grouped_cells, const bool minimum_columns, std::string& output) noexcept
+			const std::vector<UnsignedInt>& grouped_cells_representative_ids, const GroupedCellsContainer& grouped_cells, const bool minimum_columns, const bool no_icode, std::string& output) noexcept
 	{
-		print_cells_residue_level_or_chain_level(false,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, minimum_columns,output);
+		print_cells_residue_level_or_chain_level(false,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, minimum_columns, no_icode, output);
 	}
 
 	template<class CellsContainer, class GroupedCellsContainer>
 	static void print_cells_chain_level(
 			const CellsContainer& cells, const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
-			const std::vector<UnsignedInt>& grouped_cells_representative_ids, const GroupedCellsContainer& grouped_cells, const bool minimum_columns, std::string& output) noexcept
+			const std::vector<UnsignedInt>& grouped_cells_representative_ids, const GroupedCellsContainer& grouped_cells, const bool minimum_columns, const bool no_icode, std::string& output) noexcept
 	{
-		print_cells_residue_level_or_chain_level(true,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, minimum_columns, output);
+		print_cells_residue_level_or_chain_level(true,  cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, minimum_columns, no_icode, output);
 	}
 
 	template<class SitesContainer>
 	static void print_sites(
-			const SitesContainer& sites, const std::vector<SphereLabeling::SphereLabel>& sphere_labels, const bool labels_enabled, std::string& output) noexcept
+			const SitesContainer& sites, const std::vector<SphereLabeling::SphereLabel>& sphere_labels, const bool labels_enabled, const bool no_icode, std::string& output) noexcept
 	{
 		const SphereLabeling::SphereLabel null_label;
 		if(!sites.empty())
@@ -266,7 +266,7 @@ public:
 			if(labels_enabled)
 			{
 				string_append_cstring(output, "as_header\t");
-				print_label_header("", false, false, output);
+				print_label_header("", false, false, no_icode, output);
 				string_append_cstring(output, "ID_index\tarea\tarc_legth\tdistance\n");
 			}
 			else
@@ -298,7 +298,7 @@ public:
 							{
 								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
 								{
-									print_site_data(static_cast<std::size_t>(j), sites, sphere_labels, labels_enabled, null_label, suboutputs[i]);
+									print_site_data(static_cast<std::size_t>(j), sites, sphere_labels, labels_enabled, null_label, no_icode, suboutputs[i]);
 								}
 							}
 						}
@@ -317,7 +317,7 @@ public:
 			{
 				for(std::size_t i=0;i<sites.size();i++)
 				{
-					print_site_data(i, sites, sphere_labels, labels_enabled, null_label, output);
+					print_site_data(i, sites, sphere_labels, labels_enabled, null_label, no_icode, output);
 				}
 			}
 		}
@@ -326,17 +326,17 @@ public:
 	template<class SitesContainer, class GroupedSitesContainer>
 	static void print_sites_residue_level(
 			const SitesContainer& sites, const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
-			const std::vector<UnsignedInt>& grouped_sites_representative_ids, const GroupedSitesContainer& grouped_sites, const bool minimum_columns, std::string& output) noexcept
+			const std::vector<UnsignedInt>& grouped_sites_representative_ids, const GroupedSitesContainer& grouped_sites, const bool minimum_columns, const bool no_icode, std::string& output) noexcept
 	{
-		print_sites_residue_level_or_chain_level(false,  sites, sphere_labels, grouped_sites_representative_ids, grouped_sites, minimum_columns, output);
+		print_sites_residue_level_or_chain_level(false,  sites, sphere_labels, grouped_sites_representative_ids, grouped_sites, minimum_columns, no_icode, output);
 	}
 
 	template<class SitesContainer, class GroupedSitesContainer>
 	static void print_sites_chain_level(
 			const SitesContainer& sites, const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
-			const std::vector<UnsignedInt>& grouped_sites_representative_ids, const GroupedSitesContainer& grouped_sites, const bool minimum_columns, std::string& output) noexcept
+			const std::vector<UnsignedInt>& grouped_sites_representative_ids, const GroupedSitesContainer& grouped_sites, const bool minimum_columns, const bool no_icode, std::string& output) noexcept
 	{
-		print_sites_residue_level_or_chain_level(true,  sites, sphere_labels, grouped_sites_representative_ids, grouped_sites, minimum_columns, output);
+		print_sites_residue_level_or_chain_level(true,  sites, sphere_labels, grouped_sites_representative_ids, grouped_sites, minimum_columns, no_icode, output);
 	}
 
 	template<class SequentialContainer>
@@ -349,7 +349,7 @@ public:
 		}
 	}
 
-	inline static void print_label_header(const char* id_suffix, const bool without_residue, const bool without_atom, std::string& output) noexcept
+	inline static void print_label_header(const char* id_suffix, const bool without_residue, const bool without_atom, const bool without_icode, std::string& output) noexcept
 	{
 		string_append_cstring(output, "ID");
 		string_append_cstring(output, id_suffix);
@@ -361,9 +361,12 @@ public:
 			string_append_cstring(output, id_suffix);
 			string_append_cstring(output, "_rnum\t");
 
-			string_append_cstring(output, "ID");
-			string_append_cstring(output, id_suffix);
-			string_append_cstring(output, "_ic\t");
+			if(!without_icode)
+			{
+				string_append_cstring(output, "ID");
+				string_append_cstring(output, id_suffix);
+				string_append_cstring(output, "_ic\t");
+			}
 
 			string_append_cstring(output, "ID");
 			string_append_cstring(output, id_suffix);
@@ -378,7 +381,7 @@ public:
 		}
 	}
 
-	inline static void print_label(const SphereLabeling::SphereLabel& obj, const bool no_atom, const bool no_residue, const bool minimum_columns, std::string& output) noexcept
+	inline static void print_label(const SphereLabeling::SphereLabel& obj, const bool no_atom, const bool no_residue, const bool minimum_columns, const bool without_icode, std::string& output) noexcept
 	{
 		if(obj.chain_id.empty())
 		{
@@ -395,22 +398,27 @@ public:
 
 			if(no_residue || obj.residue_id.empty() || obj.residue_id==".")
 			{
-				string_append_cstring(output, ".\t.\t.");
+				string_append_cstring(output, without_icode ? ".\t." : ".\t.\t.");
 			}
 			else
 			{
 				if(obj.expanded_residue_id.parsed && obj.expanded_residue_id.valid)
 				{
 					string_append_int(output, obj.expanded_residue_id.rnum);
-					string_append_char(output, '\t');
-					if(obj.expanded_residue_id.icode.empty())
+
+					if(!without_icode)
 					{
-						string_append_char(output, '.');
+						string_append_char(output, '\t');
+						if(obj.expanded_residue_id.icode.empty())
+						{
+							string_append_char(output, '.');
+						}
+						else
+						{
+							string_append_string(output, obj.expanded_residue_id.icode);
+						}
 					}
-					else
-					{
-						string_append_string(output, obj.expanded_residue_id.icode);
-					}
+
 					string_append_char(output, '\t');
 					if(obj.expanded_residue_id.rname.empty())
 					{
@@ -423,7 +431,7 @@ public:
 				}
 				else
 				{
-					string_append_cstring(output, ".\t.\t");
+					string_append_cstring(output, without_icode ? ".\t" : ".\t.\t");
 					string_append_string(output, obj.residue_id);
 				}
 			}
@@ -453,6 +461,7 @@ private:
 			const std::vector<UnsignedInt>& grouped_contacts_representative_ids,
 			const GroupedContactsContainer& grouped_contacts,
 			const bool minimum_columns,
+			const bool no_icode,
 			std::string& output) noexcept
 	{
 		const SphereLabeling::SphereLabel null_label;
@@ -460,8 +469,8 @@ private:
 		{
 			string_append_cstring(output, (chain_level ? "ic" : "ir"));
 			string_append_cstring(output, "_header\t");
-			print_label_header("1", (chain_level && minimum_columns), minimum_columns, output);
-			print_label_header("2", (chain_level && minimum_columns), minimum_columns, output);
+			print_label_header("1", (chain_level && minimum_columns), minimum_columns, no_icode, output);
+			print_label_header("2", (chain_level && minimum_columns), minimum_columns, no_icode, output);
 			string_append_cstring(output, "area\tarc_legth\tdistance\tcount\n");
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
@@ -488,7 +497,7 @@ private:
 							{
 								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
 								{
-									print_contact_residue_level_or_chain_level(static_cast<std::size_t>(j), chain_level, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, null_label, minimum_columns, suboutputs[i]);
+									print_contact_residue_level_or_chain_level(static_cast<std::size_t>(j), chain_level, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, null_label, minimum_columns, no_icode, suboutputs[i]);
 								}
 							}
 						}
@@ -507,7 +516,7 @@ private:
 			{
 				for(std::size_t i=0;i<grouped_contacts.size();i++)
 				{
-					print_contact_residue_level_or_chain_level(i, chain_level, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, null_label, minimum_columns, output);
+					print_contact_residue_level_or_chain_level(i, chain_level, contacts, sphere_labels, grouped_contacts_representative_ids, grouped_contacts, null_label, minimum_columns, no_icode, output);
 				}
 			}
 		}
@@ -521,6 +530,7 @@ private:
 			const std::vector<UnsignedInt>& grouped_cells_representative_ids,
 			const GroupedCellsContainer& grouped_cells,
 			const bool minimum_columns,
+			const bool no_icode,
 			std::string& output) noexcept
 	{
 		const SphereLabeling::SphereLabel null_label;
@@ -528,7 +538,7 @@ private:
 		{
 			string_append_cstring(output, (chain_level ? "cc" : "rc"));
 			string_append_cstring(output, "_header\t");
-			print_label_header("", (chain_level && minimum_columns), minimum_columns, output);
+			print_label_header("", (chain_level && minimum_columns), minimum_columns, no_icode, output);
 			string_append_cstring(output, "sas_area\tvolume\tcount\n");
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
@@ -555,7 +565,7 @@ private:
 							{
 								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
 								{
-									print_sas_and_volume_residue_level_or_chain_level(static_cast<std::size_t>(j), chain_level, cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, null_label, minimum_columns, suboutputs[i]);
+									print_sas_and_volume_residue_level_or_chain_level(static_cast<std::size_t>(j), chain_level, cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, null_label, minimum_columns, no_icode, suboutputs[i]);
 								}
 							}
 						}
@@ -574,7 +584,7 @@ private:
 			{
 				for(std::size_t i=0;i<grouped_cells.size();i++)
 				{
-					print_sas_and_volume_residue_level_or_chain_level(i, chain_level, cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, null_label, minimum_columns, output);
+					print_sas_and_volume_residue_level_or_chain_level(i, chain_level, cells, sphere_labels, grouped_cells_representative_ids, grouped_cells, null_label, minimum_columns, no_icode, output);
 				}
 			}
 		}
@@ -588,6 +598,7 @@ private:
 			const std::vector<UnsignedInt>& grouped_sites_representative_ids,
 			const GroupedSitesContainer& grouped_sites,
 			const bool minimum_columns,
+			const bool no_icode,
 			std::string& output) noexcept
 	{
 		const SphereLabeling::SphereLabel null_label;
@@ -595,7 +606,7 @@ private:
 		{
 			string_append_cstring(output, (chain_level ? "cs" : "rs"));
 			string_append_cstring(output, "_header\t");
-			print_label_header("", (chain_level && minimum_columns), minimum_columns, output);
+			print_label_header("", (chain_level && minimum_columns), minimum_columns, no_icode, output);
 			string_append_cstring(output, "area\tarc_legth\tdistance\tcount\n");
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
@@ -622,7 +633,7 @@ private:
 							{
 								for(int j=thread_data_starts[i];j<data_size && j<((i+1)<n_threads ? thread_data_starts[i+1] : data_size);j++)
 								{
-									print_site_data_residue_level_or_chain_level(static_cast<std::size_t>(j), chain_level, sites, sphere_labels, grouped_sites_representative_ids, grouped_sites, null_label, minimum_columns, suboutputs[i]);
+									print_site_data_residue_level_or_chain_level(static_cast<std::size_t>(j), chain_level, sites, sphere_labels, grouped_sites_representative_ids, grouped_sites, null_label, minimum_columns, no_icode, suboutputs[i]);
 								}
 							}
 						}
@@ -641,7 +652,7 @@ private:
 			{
 				for(std::size_t i=0;i<grouped_sites.size();i++)
 				{
-					print_site_data_residue_level_or_chain_level(i, chain_level, sites, sphere_labels, grouped_sites_representative_ids, grouped_sites, null_label, minimum_columns, output);
+					print_site_data_residue_level_or_chain_level(i, chain_level, sites, sphere_labels, grouped_sites_representative_ids, grouped_sites, null_label, minimum_columns, no_icode, output);
 				}
 			}
 		}
@@ -655,7 +666,7 @@ private:
 			const Float probe,
 			std::string& output)
 	{
-		print_label((i<sphere_labels.size() ? sphere_labels[i] : null_label), false, false, false, output);
+		print_label((i<sphere_labels.size() ? sphere_labels[i] : null_label), false, false, false, false, output);
 		string_append_char(output, '\t');
 		string_append_doubles(output, spheres[i].p.x, spheres[i].p.y, spheres[i].p.z, (spheres[i].r-probe));
 		string_append_char(output, '\n');
@@ -668,14 +679,15 @@ private:
 			const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
 			const SphereLabeling::SphereLabel& null_label,
 			const bool labels_enabled,
+			const bool no_icode,
 			std::string& output) noexcept
 	{
 		string_append_cstring(output, "ia\t");
 		if(labels_enabled)
 		{
-			print_label((contacts[i].id_a<sphere_labels.size() ? sphere_labels[contacts[i].id_a] : null_label), false, false, false, output);
+			print_label((contacts[i].id_a<sphere_labels.size() ? sphere_labels[contacts[i].id_a] : null_label), false, false, false, no_icode, output);
 			string_append_char(output, '\t');
-			print_label((contacts[i].id_b<sphere_labels.size() ? sphere_labels[contacts[i].id_b] : null_label), false, false, false, output);
+			print_label((contacts[i].id_b<sphere_labels.size() ? sphere_labels[contacts[i].id_b] : null_label), false, false, false, no_icode, output);
 			string_append_char(output, '\t');
 		}
 		print(contacts[i], output);
@@ -692,6 +704,7 @@ private:
 			const GroupedContactsContainer& grouped_contacts,
 			const SphereLabeling::SphereLabel& null_label,
 			const bool minimum_columns,
+			const bool no_icode,
 			std::string& output) noexcept
 	{
 		const std::size_t j=grouped_contacts_representative_ids[i];
@@ -702,9 +715,9 @@ private:
 								((sl1.expanded_residue_id.valid && sl2.expanded_residue_id.valid) ?
 										(sl1.expanded_residue_id.rnum<sl2.expanded_residue_id.rnum || (sl1.expanded_residue_id.rnum==sl2.expanded_residue_id.rnum && sl1.expanded_residue_id.icode==sl2.expanded_residue_id.icode))
 										: sl1.residue_id<sl2.residue_id)));
-		print_label((no_reverse ? sl1 : sl2), true, chain_level, minimum_columns, output);
+		print_label((no_reverse ? sl1 : sl2), true, chain_level, minimum_columns, no_icode, output);
 		string_append_char(output, '\t');
-		print_label((no_reverse ? sl2 : sl1), true, chain_level, minimum_columns, output);
+		print_label((no_reverse ? sl2 : sl1), true, chain_level, minimum_columns, no_icode, output);
 		string_append_char(output, '\t');
 		print(grouped_contacts[i], output);
 		string_append_char(output, '\n');
@@ -717,6 +730,7 @@ private:
 			const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
 			const bool labels_enabled,
 			const SphereLabeling::SphereLabel& null_label,
+			const bool no_icode,
 			std::string& output) noexcept
 	{
 		if(cells[i].stage>0)
@@ -724,7 +738,7 @@ private:
 			string_append_cstring(output, "ac\t");
 			if(labels_enabled)
 			{
-				print_label((cells[i].id<sphere_labels.size() ? sphere_labels[cells[i].id] : null_label), false, false, false, output);
+				print_label((cells[i].id<sphere_labels.size() ? sphere_labels[cells[i].id] : null_label), false, false, false, no_icode, output);
 				string_append_char(output, '\t');
 			}
 			print(cells[i], output);
@@ -742,11 +756,12 @@ private:
 			const GroupedCellsContainer& grouped_cells,
 			const SphereLabeling::SphereLabel& null_label,
 			const bool minimum_columns,
+			const bool no_icode,
 			std::string& output) noexcept
 	{
 		const std::size_t j=grouped_cells_representative_ids[i];
 		string_append_cstring(output, (chain_level ? "cc\t" : "rc\t"));
-		print_label((cells[j].id<sphere_labels.size() ? sphere_labels[cells[j].id] : null_label), true, chain_level, minimum_columns, output);
+		print_label((cells[j].id<sphere_labels.size() ? sphere_labels[cells[j].id] : null_label), true, chain_level, minimum_columns, no_icode, output);
 		string_append_char(output, '\t');
 		print(grouped_cells[i], output);
 		string_append_char(output, '\n');
@@ -759,12 +774,13 @@ private:
 			const std::vector<SphereLabeling::SphereLabel>& sphere_labels,
 			const bool labels_enabled,
 			const SphereLabeling::SphereLabel& null_label,
+			const bool no_icode,
 			std::string& output) noexcept
 	{
 		string_append_cstring(output, "as\t");
 		if(labels_enabled)
 		{
-			print_label((sites[i].id<sphere_labels.size() ? sphere_labels[sites[i].id] : null_label), false, false, false, output);
+			print_label((sites[i].id<sphere_labels.size() ? sphere_labels[sites[i].id] : null_label), false, false, false, no_icode, output);
 			string_append_char(output, '\t');
 		}
 		print(sites[i], output);
@@ -781,11 +797,12 @@ private:
 			const GroupedSitesContainer& grouped_sites,
 			const SphereLabeling::SphereLabel& null_label,
 			const bool minimum_columns,
+			const bool no_icode,
 			std::string& output) noexcept
 	{
 		const std::size_t j=grouped_sites_representative_ids[i];
 		string_append_cstring(output, (chain_level ? "cs\t" : "rs\t"));
-		print_label((sites[j].id<sphere_labels.size() ? sphere_labels[sites[j].id] : null_label), true, chain_level, minimum_columns, output);
+		print_label((sites[j].id<sphere_labels.size() ? sphere_labels[sites[j].id] : null_label), true, chain_level, minimum_columns, no_icode, output);
 		string_append_char(output, '\t');
 		print(grouped_sites[i], output);
 		string_append_char(output, '\n');
