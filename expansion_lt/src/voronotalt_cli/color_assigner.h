@@ -184,6 +184,11 @@ public:
 		return get_color(rep);
 	}
 
+	unsigned int get_color(const std::string& rep, const std::vector<SphereLabeling::SphereLabel>& sphere_labels, const unsigned int base_color, const UnsignedInt id) const noexcept
+	{
+		return (id<sphere_labels.size() ? get_color(rep, sphere_labels[id]) : base_color);
+	}
+
 	unsigned int get_color(const std::string& rep, const SphereLabeling::SphereLabel& a, const SphereLabeling::SphereLabel& b, const SimpleSphere& sa, const SimpleSphere& sb) const noexcept
 	{
 		std::map< std::string, std::vector< std::pair<FilteringBySphereLabels::ExpressionForPair, unsigned int> > >::const_iterator it=map_for_pairs_.find(rep);
@@ -200,6 +205,11 @@ public:
 			}
 		}
 		return get_color(rep);
+	}
+
+	unsigned int get_color(const std::string& rep, const std::vector<SphereLabeling::SphereLabel>& sphere_labels, const std::vector<SimpleSphere>& spheres, const unsigned int base_color, const UnsignedInt id_a, const UnsignedInt id_b) const noexcept
+	{
+		return ((id_a<sphere_labels.size() && id_b<sphere_labels.size() && id_a<spheres.size() && id_b<spheres.size()) ? get_color(rep, sphere_labels[id_a], sphere_labels[id_b], spheres[id_a], spheres[id_b]) : base_color);
 	}
 
 private:
