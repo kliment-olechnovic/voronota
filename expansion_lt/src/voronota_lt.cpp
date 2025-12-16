@@ -57,7 +57,6 @@ Options:
     --write-sites-to-file                            string     output file path to write table of binding site summaries
     --write-sites-residue-level-to-file              string     output file path to write table of residue-level grouped binding site summaries
     --write-sites-chain-level-to-file                string     output file path to write table of chain-level grouped binding site summaries
-    --write-sites-selection-script-to-file           string     output file path to write sites selection script for PyMol (.pml) or ChimeraX (.cxc)
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
     --write-raw-collisions-to-file                   string     output file path to write a table of both true (contact) and false (no contact) collisions
@@ -71,6 +70,8 @@ Options:
     --graphics-restrict-representations              strings    space-separated list of representations to output, e.g.: balls faces wireframe sas sasmesh lattice
     --graphics-coloring-config                       string     string with graphics coloring rules separated by ';'
     --graphics-coloring-config-file                  string     input file path for reading graphics coloring rules
+    --sites-view-scrip-for-pymol                     string     output file path to write sites view script for PyMol
+    --sites-view-scrip-for-chimera                   string     output file path to write sites view script for ChimeraX
     --mesh-output-obj-file                           string     output file path to write contacts surfaces mesh .obj file
     --mesh-print-topology-summary                               flag to print mesh topology summary
     --measure-running-time                                      flag to measure and output running times
@@ -166,7 +167,6 @@ public:
 	std::string write_sites_to_file;
 	std::string write_sites_residue_level_to_file;
 	std::string write_sites_chain_level_to_file;
-	std::string write_sites_selection_script_to_file;
 	std::string plot_contacts_to_file;
 	std::string plot_contacts_residue_level_to_file;
 	std::string plot_contacts_chain_level_to_file;
@@ -177,6 +177,8 @@ public:
 	std::set<std::string> graphics_restrict_representations;
 	std::string graphics_coloring_config;
 	std::string graphics_coloring_config_file;
+	std::string sites_view_script_for_pymol;
+	std::string sites_view_script_for_chimerax;
 	std::string mesh_output_obj_file;
 	std::string write_tessellation_edges_to_file;
 	std::string write_tessellation_vertices_to_file;
@@ -436,9 +438,13 @@ public:
 				{
 					write_sites_chain_level_to_file=opt.args_strings.front();
 				}
-				else if(opt.name=="write-sites-selection-script-to-file" && opt.args_strings.size()==1)
+				else if(opt.name=="sites-view-script-for-pymol" && opt.args_strings.size()==1)
 				{
-					write_sites_selection_script_to_file=opt.args_strings.front();
+					sites_view_script_for_pymol=opt.args_strings.front();
+				}
+				else if(opt.name=="sites-view-script-for-chimerax" && opt.args_strings.size()==1)
+				{
+					sites_view_script_for_chimerax=opt.args_strings.front();
 				}
 				else if(opt.name=="plot-contacts-to-file" && opt.args_strings.size()==1)
 				{
@@ -558,7 +564,7 @@ public:
 			error_log_for_options_parsing << "Error: in this version cells output is disabled for the simplified additively weighted Voronoi diagram regime.\n";
 		}
 
-		if(running_mode==RunningMode::simplified_aw && !(!print_sites && !print_sites_residue_level && !print_sites_chain_level && write_sites_to_file.empty() && write_sites_residue_level_to_file.empty() && write_sites_chain_level_to_file.empty() && write_sites_selection_script_to_file.empty()))
+		if(running_mode==RunningMode::simplified_aw && !(!print_sites && !print_sites_residue_level && !print_sites_chain_level && write_sites_to_file.empty() && write_sites_residue_level_to_file.empty() && write_sites_chain_level_to_file.empty() && sites_view_script_for_pymol.empty() && sites_view_script_for_chimerax.empty()))
 		{
 			error_log_for_options_parsing << "Error: in this version sites output is disabled for the simplified additively weighted Voronoi diagram regime.\n";
 		}
@@ -655,8 +661,8 @@ public:
 
 		if(read_successfuly)
 		{
-			need_sites=(print_sites || print_sites_residue_level || print_sites_chain_level || !write_sites_to_file.empty() || !write_sites_residue_level_to_file.empty() || !write_sites_chain_level_to_file.empty() || !write_sites_selection_script_to_file.empty());
-			need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || print_sites_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty() || !write_sites_residue_level_to_file.empty() || !write_sites_selection_script_to_file.empty() || !plot_contacts_residue_level_to_file.empty());
+			need_sites=(print_sites || print_sites_residue_level || print_sites_chain_level || !write_sites_to_file.empty() || !write_sites_residue_level_to_file.empty() || !write_sites_chain_level_to_file.empty() || !sites_view_script_for_pymol.empty() || !sites_view_script_for_chimerax.empty());
+			need_summaries_on_residue_level=(print_contacts_residue_level || print_cells_residue_level || print_sites_residue_level || !write_contacts_residue_level_to_file.empty() || !write_cells_residue_level_to_file.empty() || !write_sites_residue_level_to_file.empty() || !sites_view_script_for_pymol.empty() || !sites_view_script_for_chimerax.empty() || !plot_contacts_residue_level_to_file.empty());
 			need_summaries_on_chain_level=(print_contacts_chain_level || print_cells_chain_level || print_sites_chain_level || !write_contacts_chain_level_to_file.empty() || !write_cells_chain_level_to_file.empty() || !write_sites_chain_level_to_file.empty() || !plot_contacts_chain_level_to_file.empty());
 		}
 
@@ -1204,81 +1210,79 @@ void run_mode_radical(
 		}
 	}
 
-	if(!app_params.write_sites_selection_script_to_file.empty())
+	if(!app_params.sites_view_script_for_pymol.empty())
 	{
-		std::ofstream foutput(app_params.write_sites_selection_script_to_file.c_str(), std::ios::out);
-		const std::string ending_for_chimerax=".cxc";
-		if(app_params.write_sites_selection_script_to_file.size()>ending_for_chimerax.size() && std::equal(ending_for_chimerax.rbegin(), ending_for_chimerax.rend(), app_params.write_sites_selection_script_to_file.rbegin()))
+		std::ofstream foutput(app_params.sites_view_script_for_pymol.c_str(), std::ios::out);
+		foutput << "select site_residues, none\n";
+		for(std::size_t i=0;i<result_grouped_by_residue.grouped_sites_representative_ids.size();i++)
 		{
-			foutput << "select clear\n";
-			bool started=false;
-			for(std::size_t i=0;i<result_grouped_by_residue.grouped_sites_representative_ids.size();i++)
+			voronotalt::UnsignedInt id=result.sites_summaries[result_grouped_by_residue.grouped_sites_representative_ids[i]].id;
+			if(id<spheres_input_result.sphere_labels.size())
 			{
-				voronotalt::UnsignedInt id=result.sites_summaries[result_grouped_by_residue.grouped_sites_representative_ids[i]].id;
-				if(id<spheres_input_result.sphere_labels.size())
+				const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
+				if(sl.expanded_residue_id.valid && !sl.chain_id.empty())
 				{
-					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
-					if(sl.expanded_residue_id.valid && !sl.chain_id.empty())
-					{
-						foutput << "select " << (started ? "add" : "") << " /" << sl.chain_id << ":" << sl.expanded_residue_id.rnum << "\n";
-						started=true;
-					}
+					foutput << "select site_residues, site_residues or (chain " << sl.chain_id << " and resi " << sl.expanded_residue_id.rnum << ")\n";
 				}
 			}
-			foutput << "name site_residues sel\n";
-			foutput << "show site_residues atoms\n";
-			foutput << "color site_residues green\n";
-			foutput << "select clear\n";
-			started=false;
-			for(std::size_t i=0;i<result.sites_summaries.size();i++)
-			{
-				voronotalt::UnsignedInt id=result.sites_summaries[i].id;
-				if(id<spheres_input_result.sphere_labels.size())
-				{
-					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
-					if(sl.expanded_residue_id.valid && !sl.chain_id.empty() && !sl.atom_name.empty())
-					{
-						foutput << "select " << (started ? "add" : "") << " /" << sl.chain_id << ":" << sl.expanded_residue_id.rnum << "@" << sl.atom_name << "\n";
-						started=true;
-					}
-				}
-			}
-			foutput << "name site_atoms sel\n";
-			foutput << "show site_atoms atoms\n";
-			foutput << "color site_atoms red\n";
 		}
-		else
+		foutput << "select site_atoms, none\n";
+		for(std::size_t i=0;i<result.sites_summaries.size();i++)
 		{
-			foutput << "select site_residues, none\n";
-			for(std::size_t i=0;i<result_grouped_by_residue.grouped_sites_representative_ids.size();i++)
+			voronotalt::UnsignedInt id=result.sites_summaries[i].id;
+			if(id<spheres_input_result.sphere_labels.size())
 			{
-				voronotalt::UnsignedInt id=result.sites_summaries[result_grouped_by_residue.grouped_sites_representative_ids[i]].id;
-				if(id<spheres_input_result.sphere_labels.size())
+				const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
+				if(sl.expanded_residue_id.valid && !sl.chain_id.empty() && !sl.atom_name.empty())
 				{
-					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
-					if(sl.expanded_residue_id.valid && !sl.chain_id.empty())
-					{
-						foutput << "select site_residues, site_residues or (chain " << sl.chain_id << " and resi " << sl.expanded_residue_id.rnum << ")\n";
-					}
+					foutput << "select site_atoms, site_atoms or (chain " << sl.chain_id << " and resi " << sl.expanded_residue_id.rnum << " and name \"" << sl.atom_name << "\")\n";
 				}
 			}
-			foutput << "select site_atoms, none\n";
-			for(std::size_t i=0;i<result.sites_summaries.size();i++)
-			{
-				voronotalt::UnsignedInt id=result.sites_summaries[i].id;
-				if(id<spheres_input_result.sphere_labels.size())
-				{
-					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
-					if(sl.expanded_residue_id.valid && !sl.chain_id.empty() && !sl.atom_name.empty())
-					{
-						foutput << "select site_atoms, site_atoms or (chain " << sl.chain_id << " and resi " << sl.expanded_residue_id.rnum << " and name \"" << sl.atom_name << "\")\n";
-					}
-				}
-			}
-			foutput << "show sticks, site_residues\n";
-			foutput << "color green, site_residues\n";
-			foutput << "color red, site_atoms\n";
 		}
+		foutput << "show sticks, site_residues\n";
+		foutput << "color cyan, site_residues\n";
+		foutput << "color red, site_atoms\n";
+	}
+
+	if(!app_params.sites_view_script_for_chimerax.empty())
+	{
+		std::ofstream foutput(app_params.sites_view_script_for_chimerax.c_str(), std::ios::out);
+		foutput << "select clear\n";
+		bool started=false;
+		for(std::size_t i=0;i<result_grouped_by_residue.grouped_sites_representative_ids.size();i++)
+		{
+			voronotalt::UnsignedInt id=result.sites_summaries[result_grouped_by_residue.grouped_sites_representative_ids[i]].id;
+			if(id<spheres_input_result.sphere_labels.size())
+			{
+				const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
+				if(sl.expanded_residue_id.valid && !sl.chain_id.empty())
+				{
+					foutput << "select " << (started ? "add" : "") << " /" << sl.chain_id << ":" << sl.expanded_residue_id.rnum << "\n";
+					started=true;
+				}
+			}
+		}
+		foutput << "name site_residues sel\n";
+		foutput << "show site_residues atoms\n";
+		foutput << "color site_residues cyan\n";
+		foutput << "select clear\n";
+		started=false;
+		for(std::size_t i=0;i<result.sites_summaries.size();i++)
+		{
+			voronotalt::UnsignedInt id=result.sites_summaries[i].id;
+			if(id<spheres_input_result.sphere_labels.size())
+			{
+				const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[id];
+				if(sl.expanded_residue_id.valid && !sl.chain_id.empty() && !sl.atom_name.empty())
+				{
+					foutput << "select " << (started ? "add" : "") << " /" << sl.chain_id << ":" << sl.expanded_residue_id.rnum << "@" << sl.atom_name << "\n";
+					started=true;
+				}
+			}
+		}
+		foutput << "name site_atoms sel\n";
+		foutput << "show site_atoms atoms\n";
+		foutput << "color site_atoms red\n";
 	}
 
 	app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("print result sites");
