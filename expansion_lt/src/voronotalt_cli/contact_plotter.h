@@ -31,11 +31,11 @@ public:
 	}
 
 	template<class ContactsContainer>
-	bool add_contact(const std::size_t i, const ContactsContainer& contacts, const std::vector<SphereLabeling::SphereLabel>& sphere_labels) noexcept
+	bool add_contact(const std::size_t i, const ContactsContainer& contacts, const std::vector<SphereLabeling::SphereLabel>& sphere_labels, const unsigned int color) noexcept
 	{
 		if(i<contacts.size() && contacts[i].id_a<sphere_labels.size() && contacts[i].id_b<sphere_labels.size())
 		{
-			add_point(sphere_labels[contacts[i].id_a], sphere_labels[contacts[i].id_b], contacts[i].area);
+			add_point(sphere_labels[contacts[i].id_a], sphere_labels[contacts[i].id_b], contacts[i].area, color);
 			return true;
 		}
 		return false;
@@ -61,6 +61,7 @@ public:
 		const bool gradient=(config.count("gradient")>0);
 		const bool dark=(config.count("dark")>0);
 		const bool interactive=(config.count("interactive")>0);
+		const bool colored=(config.count("colored")>0);
 
 		const double scale=10.0;
 
@@ -158,7 +159,7 @@ public:
 				std::string style_rect_colored;
 				if(gradient_in_background && mode_==LevelMode::inter_residue)
 				{
-					style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area_on_chain_level, GradientMode::cyan_blue)+std::string(";");
+					style_rect_colored=std::string("fill:")+color_from_gradient(it->second.area, 0.0, max_area_on_chain_level, GradientMode::cyan_blue)+std::string(";");
 				}
 				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_rect_colored.empty() ? style_background_level1 : style_rect_colored);
 				if(!compact)
@@ -208,7 +209,7 @@ public:
 				std::string style_rect_colored;
 				if(gradient_in_background)
 				{
-					style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area_on_residue_level, GradientMode::cyan_blue)+std::string(";");
+					style_rect_colored=std::string("fill:")+color_from_gradient(it->second.area, 0.0, max_area_on_residue_level, GradientMode::cyan_blue)+std::string(";");
 				}
 				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_rect_colored.empty() ? style_background_level2 : style_rect_colored);
 				if(!compact)
@@ -224,17 +225,25 @@ public:
 			const double y=map_of_coords_vertical[it->first.b];
 			std::string style_rect_colored;
 			std::string onclick_action;
-			if(gradient)
+
+			if(colored)
 			{
-				style_rect_colored=std::string("fill:")+SVGWriter::color_from_gradient(it->second.area, 0.0, max_area, GradientMode::yellow_red)+std::string(";");
+				style_rect_colored=std::string("fill:")+it->second.mean_color()+std::string(";");
 			}
+			else if(gradient)
+			{
+				style_rect_colored=std::string("fill:")+color_from_gradient(it->second.area, 0.0, max_area, GradientMode::yellow_red)+std::string(";");
+			}
+
 			if(interactive)
 			{
 				std::ostringstream info_output;
 				info_output << "show('area([" << it->first.a.caption() << "], [" << it->first.b.caption() << "]) = " << it->second.area << "')";
 				onclick_action=info_output.str();
 			}
+
 			svg.add_rect(x, y+shift_y, scale, scale, (style_rect_colored.empty() ? style_rect_default : style_rect_colored), onclick_action);
+
 			if(!compact)
 			{
 				svg.add_rect(y, x+shift_y, scale, scale, (style_rect_colored.empty() ? style_rect_default : style_rect_colored), onclick_action);
@@ -365,83 +374,6 @@ private:
 			{
 				set("onload", "init(evt)");
 			}
-		}
-
-		static std::string color_from_red_green_blue_components(const double r, const double g, const double b, const double scale) noexcept
-		{
-			std::ostringstream output;
-			output << "rgb(" << static_cast<unsigned int>(r*scale) << "," << static_cast<unsigned int>(g*scale) << "," << static_cast<unsigned int>(b*scale) << ")";
-			return output.str();
-		}
-
-		static std::string color_from_gradient(const double input_value, const double left_value, const double right_value, const GradientMode::ID gradient_mode) noexcept
-		{
-			double value=input_value;
-			if(left_value<right_value)
-			{
-				value=(value-left_value)/(right_value-left_value);
-			}
-			else
-			{
-				value=1.0-((value-right_value)/(left_value-right_value));
-			}
-			double r=0;
-			double g=0;
-			double b=0;
-			if(gradient_mode==GradientMode::yellow_red)
-			{
-				if(value<0.0)
-				{
-					r=1.0;
-					g=1.0;
-				}
-				else if(value>1.0)
-				{
-					r=1.0;
-				}
-				else
-				{
-					r=1.0;
-					g=1.0-value;
-				}
-			}
-			else if(gradient_mode==GradientMode::cyan_green)
-			{
-				r=0.1;
-				if(value<0.0)
-				{
-					g=1.0;
-					b=1.0;
-				}
-				else if(value>1.0)
-				{
-					g=1.0;
-				}
-				else
-				{
-					g=1.0;
-					b=1.0-value;
-				}
-			}
-			else if(gradient_mode==GradientMode::cyan_blue)
-			{
-				r=0.25;
-				if(value<0.0)
-				{
-					g=1.0;
-					b=1.0;
-				}
-				else if(value>1.0)
-				{
-					b=1.0;
-				}
-				else
-				{
-					g=1.0-value;
-					b=1.0;
-				}
-			}
-			return color_from_red_green_blue_components(r, g, b, 255.0);
 		}
 
 		SVGWriter& add_rect(const double x, const double y, const double width, const double height, const std::string& style, const std::string& onclick) noexcept
@@ -615,14 +547,35 @@ private:
 	struct PointValue
 	{
 		double area;
+		double wr;
+		double wg;
+		double wb;
 
-		PointValue() noexcept : area(0.0)
+		PointValue() noexcept : area(0.0), wr(0.0), wg(0.0), wb(0.0)
 		{
+		}
+
+		void add(const double more_area, const double r, const double g, const double b) noexcept
+		{
+			area+=more_area;
+			wr+=r*more_area;
+			wg+=g*more_area;
+			wb+=b*more_area;
+		}
+
+		void add(const double more_area, const unsigned int rgb) noexcept
+		{
+			add(more_area, static_cast<double>((rgb&0xFF0000) >> 16)/static_cast<double>(0xFF), static_cast<double>((rgb&0x00FF00) >> 8)/static_cast<double>(0xFF), static_cast<double>(rgb&0x0000FF)/static_cast<double>(0xFF));
 		}
 
 		void add(const double more_area) noexcept
 		{
-			area+=more_area;
+			add(more_area, 0.0, 0.0, 0.0);
+		}
+
+		std::string mean_color() const noexcept
+		{
+			return color_from_red_green_blue_components(wr, wg, wb, (area>0.0 ? (255.0/area) : 255.0));
 		}
 	};
 
@@ -652,13 +605,90 @@ private:
 		}
 	};
 
-	void add_point(const SphereLabeling::SphereLabel& sl1, const SphereLabeling::SphereLabel& sl2, const double area) noexcept
+	static std::string color_from_red_green_blue_components(const double r, const double g, const double b, const double scale) noexcept
+	{
+		std::ostringstream output;
+		output << "rgb(" << static_cast<unsigned int>(r*scale) << "," << static_cast<unsigned int>(g*scale) << "," << static_cast<unsigned int>(b*scale) << ")";
+		return output.str();
+	}
+
+	static std::string color_from_gradient(const double input_value, const double left_value, const double right_value, const GradientMode::ID gradient_mode) noexcept
+	{
+		double value=input_value;
+		if(left_value<right_value)
+		{
+			value=(value-left_value)/(right_value-left_value);
+		}
+		else
+		{
+			value=1.0-((value-right_value)/(left_value-right_value));
+		}
+		double r=0;
+		double g=0;
+		double b=0;
+		if(gradient_mode==GradientMode::yellow_red)
+		{
+			if(value<0.0)
+			{
+				r=1.0;
+				g=1.0;
+			}
+			else if(value>1.0)
+			{
+				r=1.0;
+			}
+			else
+			{
+				r=1.0;
+				g=1.0-value;
+			}
+		}
+		else if(gradient_mode==GradientMode::cyan_green)
+		{
+			r=0.1;
+			if(value<0.0)
+			{
+				g=1.0;
+				b=1.0;
+			}
+			else if(value>1.0)
+			{
+				g=1.0;
+			}
+			else
+			{
+				g=1.0;
+				b=1.0-value;
+			}
+		}
+		else if(gradient_mode==GradientMode::cyan_blue)
+		{
+			r=0.25;
+			if(value<0.0)
+			{
+				g=1.0;
+				b=1.0;
+			}
+			else if(value>1.0)
+			{
+				b=1.0;
+			}
+			else
+			{
+				g=1.0-value;
+				b=1.0;
+			}
+		}
+		return color_from_red_green_blue_components(r, g, b, 255.0);
+	}
+
+	void add_point(const SphereLabeling::SphereLabel& sl1, const SphereLabeling::SphereLabel& sl2, const double area, const unsigned int color) noexcept
 	{
 		CoordKey a(mode_, sl1);
 		CoordKey b(mode_, sl2);
 		if(a!=b)
 		{
-			map_of_points_[PointKey(a, b)].add(area);
+			map_of_points_[PointKey(a, b)].add(area, color);
 		}
 	}
 

@@ -143,6 +143,7 @@ public:
 	bool print_sites_residue_level;
 	bool print_sites_chain_level;
 	bool print_everything;
+	bool plots_colorable;
 	bool need_sites;
 	bool need_summaries_on_residue_level;
 	bool need_summaries_on_chain_level;
@@ -215,6 +216,7 @@ public:
 		print_sites_residue_level(false),
 		print_sites_chain_level(false),
 		print_everything(false),
+		plots_colorable(false),
 		need_sites(false),
 		need_summaries_on_residue_level(false),
 		need_summaries_on_chain_level(false),
@@ -599,18 +601,20 @@ public:
 			error_log_for_options_parsing << "Error: not exactly two periodic box corners provided.\n";
 		}
 
-		if(!graphics_output_file_for_pymol.empty() || !graphics_output_file_for_chimera.empty())
+		if((!graphics_output_file_for_pymol.empty() || !graphics_output_file_for_chimera.empty()) && graphics_restrict_representations.empty())
 		{
-			if(graphics_restrict_representations.empty())
+			graphics_restrict_representations.insert("faces");
+			graphics_restrict_representations.insert("wireframe");
+			if(!periodic_box_directions.empty() || !periodic_box_corners.empty())
 			{
-				graphics_restrict_representations.insert("faces");
-				graphics_restrict_representations.insert("wireframe");
-				if(!periodic_box_directions.empty() || !periodic_box_corners.empty())
-				{
-					graphics_restrict_representations.insert("lattice");
-				}
+				graphics_restrict_representations.insert("lattice");
 			}
+		}
 
+		plots_colorable=(!plot_contacts_to_file.empty() || !plot_contacts_residue_level_to_file.empty() || !plot_contacts_chain_level_to_file.empty()) && plot_options_config.count("colored")>0;
+
+		if(!graphics_output_file_for_pymol.empty() || !graphics_output_file_for_chimera.empty() || plots_colorable)
+		{
 			color_assigner.add_rule("contact", "faces", 0xFFFF00);
 			color_assigner.add_rule("contact", "wireframe", 0x808080);
 			color_assigner.add_rule("ball", "balls", 0x00FFFF);
@@ -1381,7 +1385,8 @@ void run_mode_radical(
 				bool all_good=true;
 				for(std::size_t i=0;all_good && i<result.contacts_summaries.size();i++)
 				{
-					all_good=all_good && plotter.add_contact(i, result.contacts_summaries, spheres_input_result.sphere_labels);
+					const unsigned int current_color=(app_params.plots_colorable ? app_params.color_assigner.get_color("faces", spheres_input_result.sphere_labels, spheres_input_result.spheres, 0xFF00FF, result.contacts_summaries[i].id_a, result.contacts_summaries[i].id_b) : static_cast<unsigned int>(0));
+					all_good=all_good && plotter.add_contact(i, result.contacts_summaries, spheres_input_result.sphere_labels, current_color);
 				}
 				if(!all_good)
 				{
@@ -1890,7 +1895,8 @@ void run_mode_simplified_aw(
 				bool all_good=true;
 				for(std::size_t i=0;all_good && i<result.contacts_summaries.size();i++)
 				{
-					all_good=all_good && plotter.add_contact(i, result.contacts_summaries, spheres_input_result.sphere_labels);
+					const unsigned int current_color=(app_params.plots_colorable ? app_params.color_assigner.get_color("faces", spheres_input_result.sphere_labels, spheres_input_result.spheres, 0xFF00FF, result.contacts_summaries[i].id_a, result.contacts_summaries[i].id_b) : static_cast<unsigned int>(0));
+					all_good=all_good && plotter.add_contact(i, result.contacts_summaries, spheres_input_result.sphere_labels, current_color);
 				}
 				if(!all_good)
 				{
@@ -2052,7 +2058,7 @@ int main(const int argc, const char** argv)
 		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("setting coloring configuration from string");
 	}
 
-	if(!app_params.graphics_output_file_for_pymol.empty() || !app_params.graphics_output_file_for_chimera.empty())
+	if(!app_params.graphics_output_file_for_pymol.empty() || !app_params.graphics_output_file_for_chimera.empty() || app_params.plots_colorable)
 	{
 		if(!app_params.graphics_coloring_config_file.empty())
 		{
