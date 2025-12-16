@@ -1,3 +1,3 @@
-su_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	sas_area	volume	count
-su	A	.	.	.	.	9441.91	42590.6	1801
-su	B	.	.	.	.	9208.03	41365.9	1744
+cc_header	ID_chain	ID_rnum	ID_ic	ID_rname	ID_atom	sas_area	volume	count
+cc	A	.	.	.	.	9441.91	42590.6	1801
+cc	B	.	.	.	.	9208.03	41365.9	1744

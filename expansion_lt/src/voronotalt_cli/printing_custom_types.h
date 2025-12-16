@@ -96,14 +96,14 @@ public:
 			output.reserve(contacts.size()*100);
 			if(labels_enabled)
 			{
-				string_append_cstring(output, "ca_header\t");
+				string_append_cstring(output, "ia_header\t");
 				print_label_header("1", output);
 				print_label_header("2", output);
 				string_append_cstring(output, "ID1_index\tID2_index\tarea\tarc_legth\tdistance\n");
 			}
 			else
 			{
-				string_append_cstring(output, "ca_header\tID1_index\tID2_index\tarea\tarc_legth\tdistance\n");
+				string_append_cstring(output, "ia_header\tID1_index\tID2_index\tarea\tarc_legth\tdistance\n");
 			}
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
@@ -181,13 +181,13 @@ public:
 			output.reserve(cells.size()*100);
 			if(labels_enabled)
 			{
-				string_append_cstring(output, "sa_header\t");
+				string_append_cstring(output, "ac_header\t");
 				print_label_header("", output);
 				string_append_cstring(output, "ID_index\tsas_area\tvolume\n");
 			}
 			else
 			{
-				string_append_cstring(output, "sa_header\tID_index\tsas_area\tvolume\n");
+				string_append_cstring(output, "ac_header\tID_index\tsas_area\tvolume\n");
 			}
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
@@ -265,13 +265,13 @@ public:
 			output.reserve(sites.size()*100);
 			if(labels_enabled)
 			{
-				string_append_cstring(output, "ba_header\t");
+				string_append_cstring(output, "as_header\t");
 				print_label_header("", output);
 				string_append_cstring(output, "ID_index\tarea\tarc_legth\tdistance\n");
 			}
 			else
 			{
-				string_append_cstring(output, "ba_header\tID_index\tarea\tarc_legth\tdistance\n");
+				string_append_cstring(output, "as_header\tID_index\tarea\tarc_legth\tdistance\n");
 			}
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
@@ -437,7 +437,7 @@ private:
 		const SphereLabeling::SphereLabel null_label;
 		if(!grouped_contacts.empty())
 		{
-			string_append_cstring(output, (chain_level ? "cu" : "cr"));
+			string_append_cstring(output, (chain_level ? "ic" : "ir"));
 			string_append_cstring(output, "_header\t");
 			print_label_header("1", output);
 			print_label_header("2", output);
@@ -504,7 +504,7 @@ private:
 		const SphereLabeling::SphereLabel null_label;
 		if(!grouped_cells.empty())
 		{
-			string_append_cstring(output, (chain_level ? "su" : "sr"));
+			string_append_cstring(output, (chain_level ? "cc" : "rc"));
 			string_append_cstring(output, "_header\t");
 			print_label_header("", output);
 			string_append_cstring(output, "sas_area\tvolume\tcount\n");
@@ -570,7 +570,7 @@ private:
 		const SphereLabeling::SphereLabel null_label;
 		if(!grouped_sites.empty())
 		{
-			string_append_cstring(output, (chain_level ? "bu" : "br"));
+			string_append_cstring(output, (chain_level ? "cs" : "rs"));
 			string_append_cstring(output, "_header\t");
 			print_label_header("", output);
 			string_append_cstring(output, "area\tarc_legth\tdistance\tcount\n");
@@ -647,7 +647,7 @@ private:
 			const bool labels_enabled,
 			std::string& output) noexcept
 	{
-		string_append_cstring(output, "ca\t");
+		string_append_cstring(output, "ia\t");
 		if(labels_enabled)
 		{
 			print_label((contacts[i].id_a<sphere_labels.size() ? sphere_labels[contacts[i].id_a] : null_label), false, false, output);
@@ -671,7 +671,7 @@ private:
 			std::string& output) noexcept
 	{
 		const std::size_t j=grouped_contacts_representative_ids[i];
-		string_append_cstring(output, (chain_level ? "cu\t" : "cr\t"));
+		string_append_cstring(output, (chain_level ? "ic\t" : "ir\t"));
 		const SphereLabeling::SphereLabel& sl1=(contacts[j].id_a<sphere_labels.size() ? sphere_labels[contacts[j].id_a] : null_label);
 		const SphereLabeling::SphereLabel& sl2=(contacts[j].id_b<sphere_labels.size() ? sphere_labels[contacts[j].id_b] : null_label);
 		const bool no_reverse=(sl1.chain_id<sl2.chain_id || (sl1.chain_id==sl2.chain_id &&
@@ -697,7 +697,7 @@ private:
 	{
 		if(cells[i].stage>0)
 		{
-			string_append_cstring(output, "sa\t");
+			string_append_cstring(output, "ac\t");
 			if(labels_enabled)
 			{
 				print_label((cells[i].id<sphere_labels.size() ? sphere_labels[cells[i].id] : null_label), false, false, output);
@@ -720,7 +720,7 @@ private:
 			std::string& output) noexcept
 	{
 		const std::size_t j=grouped_cells_representative_ids[i];
-		string_append_cstring(output, (chain_level ? "su\t" : "sr\t"));
+		string_append_cstring(output, (chain_level ? "cc\t" : "rc\t"));
 		print_label((cells[j].id<sphere_labels.size() ? sphere_labels[cells[j].id] : null_label), true, chain_level, output);
 		string_append_char(output, '\t');
 		print(grouped_cells[i], output);
@@ -736,7 +736,7 @@ private:
 			const SphereLabeling::SphereLabel& null_label,
 			std::string& output) noexcept
 	{
-		string_append_cstring(output, "ba\t");
+		string_append_cstring(output, "as\t");
 		if(labels_enabled)
 		{
 			print_label((sites[i].id<sphere_labels.size() ? sphere_labels[sites[i].id] : null_label), false, false, output);
@@ -758,7 +758,7 @@ private:
 			std::string& output) noexcept
 	{
 		const std::size_t j=grouped_sites_representative_ids[i];
-		string_append_cstring(output, (chain_level ? "bu\t" : "br\t"));
+		string_append_cstring(output, (chain_level ? "cs\t" : "rs\t"));
 		print_label((sites[j].id<sphere_labels.size() ? sphere_labels[sites[j].id] : null_label), true, chain_level, output);
 		string_append_char(output, '\t');
 		print(grouped_sites[i], output);
