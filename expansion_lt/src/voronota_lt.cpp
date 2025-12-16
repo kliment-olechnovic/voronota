@@ -76,6 +76,7 @@ Options:
     --mesh-print-topology-summary                               flag to print mesh topology summary
     --measure-running-time                                      flag to measure and output running times
     --write-log-to-file                              string     output file path to write global log, does not turn off printing log to stderr
+    --minimum-columns | -m                                      flag to not print empty identifiers in summarized residue-level and chain-level tables
     --quiet | -q                                                flag to suppress printing non-error log messages to stderr
     --help | -h                                                 flag to print help info to stderr and exit
 
@@ -151,6 +152,7 @@ public:
 	long mesh_extract_connected_component;
 	bool mesh_print_topology_summary;
 	bool exit_before_calculations;
+	bool minimum_columns;
 	bool quiet;
 	bool read_successfuly;
 	std::string input_from_file;
@@ -225,6 +227,7 @@ public:
 		mesh_extract_connected_component(0),
 		mesh_print_topology_summary(false),
 		exit_before_calculations(false),
+		minimum_columns(false),
 		quiet(false),
 		read_successfuly(false)
 	{
@@ -501,6 +504,10 @@ public:
 				else if(opt.name=="exit-before-calculations" && opt.is_flag())
 				{
 					exit_before_calculations=opt.is_flag_and_true();
+				}
+				else if((opt.name=="minimum-columns" || opt.name=="m") && opt.is_flag())
+				{
+					minimum_columns=opt.is_flag_and_true();
 				}
 				else if((opt.name=="quiet" || opt.name=="q") && opt.is_flag())
 				{
@@ -1022,7 +1029,7 @@ void run_mode_radical(
 	if(app_params.print_contacts_residue_level || !app_params.write_contacts_residue_level_to_file.empty())
 	{
 		std::string output_string;
-		voronotalt::PrintingCustomTypes::print_contacts_residue_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, output_string);
+		voronotalt::PrintingCustomTypes::print_contacts_residue_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, app_params.minimum_columns, output_string);
 		if(!output_string.empty())
 		{
 			if(app_params.print_contacts_residue_level)
@@ -1047,7 +1054,7 @@ void run_mode_radical(
 	if(app_params.print_contacts_chain_level || !app_params.write_contacts_chain_level_to_file.empty())
 	{
 		std::string output_string;
-		voronotalt::PrintingCustomTypes::print_contacts_chain_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, output_string);
+		voronotalt::PrintingCustomTypes::print_contacts_chain_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, app_params.minimum_columns, output_string);
 		if(!output_string.empty())
 		{
 			if(app_params.print_contacts_chain_level)
@@ -1099,7 +1106,7 @@ void run_mode_radical(
 	if(app_params.print_cells_residue_level || !app_params.write_cells_residue_level_to_file.empty())
 	{
 		std::string output_string;
-		voronotalt::PrintingCustomTypes::print_cells_residue_level(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, output_string);
+		voronotalt::PrintingCustomTypes::print_cells_residue_level(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, app_params.minimum_columns, output_string);
 		if(!output_string.empty())
 		{
 			if(app_params.print_cells_residue_level)
@@ -1124,7 +1131,7 @@ void run_mode_radical(
 	if(app_params.print_cells_chain_level || !app_params.write_cells_chain_level_to_file.empty())
 	{
 		std::string output_string;
-		voronotalt::PrintingCustomTypes::print_cells_chain_level(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, output_string);
+		voronotalt::PrintingCustomTypes::print_cells_chain_level(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, app_params.minimum_columns, output_string);
 		if(!output_string.empty())
 		{
 			if(app_params.print_cells_chain_level)
@@ -1176,7 +1183,7 @@ void run_mode_radical(
 	if(app_params.print_sites_residue_level || !app_params.write_sites_residue_level_to_file.empty())
 	{
 		std::string output_string;
-		voronotalt::PrintingCustomTypes::print_sites_residue_level(result.sites_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_sites_representative_ids, result_grouped_by_residue.grouped_sites_summaries, output_string);
+		voronotalt::PrintingCustomTypes::print_sites_residue_level(result.sites_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_sites_representative_ids, result_grouped_by_residue.grouped_sites_summaries, app_params.minimum_columns, output_string);
 		if(!output_string.empty())
 		{
 			if(app_params.print_sites_residue_level)
@@ -1201,7 +1208,7 @@ void run_mode_radical(
 	if(app_params.print_sites_chain_level || !app_params.write_sites_chain_level_to_file.empty())
 	{
 		std::string output_string;
-		voronotalt::PrintingCustomTypes::print_sites_chain_level(result.sites_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_sites_representative_ids, result_grouped_by_chain.grouped_sites_summaries, output_string);
+		voronotalt::PrintingCustomTypes::print_sites_chain_level(result.sites_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_sites_representative_ids, result_grouped_by_chain.grouped_sites_summaries, app_params.minimum_columns, output_string);
 		if(!output_string.empty())
 		{
 			if(app_params.print_sites_chain_level)
@@ -1844,7 +1851,7 @@ void run_mode_simplified_aw(
 	if(app_params.print_contacts_residue_level || !app_params.write_contacts_residue_level_to_file.empty())
 	{
 		std::string output_string;
-		voronotalt::PrintingCustomTypes::print_contacts_residue_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, output_string);
+		voronotalt::PrintingCustomTypes::print_contacts_residue_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, app_params.minimum_columns, output_string);
 		if(!output_string.empty())
 		{
 			if(app_params.print_contacts_residue_level)
@@ -1869,7 +1876,7 @@ void run_mode_simplified_aw(
 	if(app_params.print_contacts_chain_level || !app_params.write_contacts_chain_level_to_file.empty())
 	{
 		std::string output_string;
-		voronotalt::PrintingCustomTypes::print_contacts_chain_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, output_string);
+		voronotalt::PrintingCustomTypes::print_contacts_chain_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, app_params.minimum_columns, output_string);
 		if(!output_string.empty())
 		{
 			if(app_params.print_contacts_chain_level)
