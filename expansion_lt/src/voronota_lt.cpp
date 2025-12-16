@@ -76,8 +76,8 @@ Options:
     --mesh-print-topology-summary                               flag to print mesh topology summary
     --measure-running-time                                      flag to measure and output running times
     --write-log-to-file                              string     output file path to write global log, does not turn off printing log to stderr
-    --help-full                                                 flag to print full help (for all options) to stderr and exit
-    --help | -h                                                 flag to print help (for basic options) to stderr and exit
+    --quiet | -q                                                flag to suppress printing non-error log messages to stderr
+    --help | -h                                                 flag to print help info to stderr and exit
 
 Standard input stream:
     Several input formats are supported:
@@ -151,6 +151,7 @@ public:
 	long mesh_extract_connected_component;
 	bool mesh_print_topology_summary;
 	bool exit_before_calculations;
+	bool quiet;
 	bool read_successfuly;
 	std::string input_from_file;
 	std::string pdb_or_mmcif_radii_config_file;
@@ -224,6 +225,7 @@ public:
 		mesh_extract_connected_component(0),
 		mesh_print_topology_summary(false),
 		exit_before_calculations(false),
+		quiet(false),
 		read_successfuly(false)
 	{
 	}
@@ -500,6 +502,10 @@ public:
 				{
 					exit_before_calculations=opt.is_flag_and_true();
 				}
+				else if((opt.name=="quiet" || opt.name=="q") && opt.is_flag())
+				{
+					quiet=opt.is_flag_and_true();
+				}
 				else if(opt.name=="mesh-extract-connected-component" && opt.args_ints.size()==1)
 				{
 					mesh_extract_connected_component=static_cast<long>(opt.args_ints.front());
@@ -732,7 +738,10 @@ public:
 			time_recoder_for_all.print_elapsed_time(log_output, "log time full program");
 		}
 
-		std::cerr << log_output.str();
+		if(!app_params.quiet)
+		{
+			std::cerr << log_output.str();
+		}
 
 		if(!app_params.write_log_to_file.empty())
 		{

@@ -65,8 +65,8 @@ Options:
     --mesh-print-topology-summary                               flag to print mesh topology summary
     --measure-running-time                                      flag to measure and output running times
     --write-log-to-file                              string     output file path to write global log, does not turn off printing log to stderr
-    --help-full                                                 flag to print full help (for all options) to stderr and exit
-    --help | -h                                                 flag to print help (for basic options) to stderr and exit
+    --quiet | -q                                                flag to suppress printing non-error log messages to stderr
+    --help | -h                                                 flag to print help info to stderr and exit
 
 Standard input stream:
     Several input formats are supported:
