@@ -1,8 +1,8 @@
-log_total_input_balls                      100
-log_total_collisions                       153
-log_total_relevant_collisions              153
-log_total_contacts_count                   153
-log_total_contacts_area                    3992.55
-log_total_cells_count                      100
-log_total_cells_sas_area                   21979.6
-log_total_cells_sas_inside_volume          46419.9
+log_total_input_balls ...................... 100
+log_total_collisions ....................... 153
+log_total_relevant_collisions .............. 153
+log_total_contacts_count ................... 153
+log_total_contacts_area .................... 3992.55
+log_total_cells_count ...................... 100
+log_total_cells_sas_area ................... 21979.6
+log_total_cells_sas_inside_volume  ......... 46419.9

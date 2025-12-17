@@ -1,10 +1,10 @@
-log_total_input_balls                      2700
-log_total_collisions                       4779
-log_total_relevant_collisions              4779
-log_total_contacts_count                   4779
-log_total_contacts_area                    122552
-log_total_chain_level_contacts_count       18
-log_total_cells_count                      2700
-log_total_cells_sas_area                   558232
-log_total_cells_sas_inside_volume          1.2309e+06
-log_total_chain_level_cells_count          27
+log_total_input_balls ...................... 2700
+log_total_collisions ....................... 4779
+log_total_relevant_collisions .............. 4779
+log_total_contacts_count ................... 4779
+log_total_contacts_area .................... 122552
+log_total_chain_level_contacts_count ....... 18
+log_total_cells_count ...................... 2700
+log_total_cells_sas_area ................... 558232
+log_total_cells_sas_inside_volume  ......... 1.2309e+06
+log_total_chain_level_cells_count  ......... 27

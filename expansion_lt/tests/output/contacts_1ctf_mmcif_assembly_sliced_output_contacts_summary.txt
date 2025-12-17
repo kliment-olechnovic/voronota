@@ -1,11 +1,11 @@
-log_total_input_balls                      974
-log_total_collisions                       20737
-log_total_relevant_collisions              20737
-log_total_contacts_count                   118
-log_total_contacts_area                    330.947
-log_total_residue_level_contacts_count     12
-log_total_cells_count                      974
-log_total_cells_sas_area                   7070.39
-log_total_cells_sas_inside_volume          25238
-log_total_residue_level_cells_count        136
-log_total_chain_level_cells_count          2
+log_total_input_balls ...................... 974
+log_total_collisions ....................... 20737
+log_total_relevant_collisions .............. 20737
+log_total_contacts_count ................... 118
+log_total_contacts_area .................... 330.947
+log_total_residue_level_contacts_count ..... 12
+log_total_cells_count ...................... 974
+log_total_cells_sas_area ................... 7070.39
+log_total_cells_sas_inside_volume  ......... 25238
+log_total_residue_level_cells_count ........ 136
+log_total_chain_level_cells_count  ......... 2

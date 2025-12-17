@@ -725,39 +725,45 @@ public:
 		if(enabled)
 		{
 			const std::size_t whitespace_length=static_cast<std::size_t>(43)-std::min(static_cast<std::size_t>(prefix.size()+name.size()), static_cast<std::size_t>(40));
-			output << prefix << name << std::string(whitespace_length, ' ') << value << "\n";
+			output << prefix << name << " " << std::string(whitespace_length, '.') << " " << value << "\n";
 		}
+	}
+
+	template<class Value>
+	void print_log_line(const std::string& prefix, const std::string& name, const Value& value, const bool enabled) noexcept
+	{
+		print_log_line(log_output, prefix, name, value, enabled);
 	}
 
 	template<class Result, class GroupedResult>
 	void print_tessellation_full_construction_result_log_basic(const Result& result, const GroupedResult& result_grouped_by_residue, const GroupedResult& result_grouped_by_chain) noexcept
 	{
 		const std::string prefix="log_total_";
-		print_log_line(log_output, prefix, "input_balls", result.total_spheres, true);
-		print_log_line(log_output, prefix, "collisions", result.total_collisions, true);
-		print_log_line(log_output, prefix, "relevant_collisions", result.total_relevant_collisions, true);
-		print_log_line(log_output, prefix, "contacts_count", result.total_contacts_summary.count, true);
-		print_log_line(log_output, prefix, "contacts_area", result.total_contacts_summary.area, true);
-		print_log_line(log_output, prefix, "residue_level_contacts_count", result_grouped_by_residue.grouped_contacts_summaries.size(), !result_grouped_by_residue.grouped_contacts_summaries.empty());
-		print_log_line(log_output, prefix, "chain_level_contacts_count", result_grouped_by_chain.grouped_contacts_summaries.size(), !result_grouped_by_chain.grouped_contacts_summaries.empty());
+		print_log_line(prefix, "input_balls", result.total_spheres, true);
+		print_log_line(prefix, "collisions", result.total_collisions, true);
+		print_log_line(prefix, "relevant_collisions", result.total_relevant_collisions, true);
+		print_log_line(prefix, "contacts_count", result.total_contacts_summary.count, true);
+		print_log_line(prefix, "contacts_area", result.total_contacts_summary.area, true);
+		print_log_line(prefix, "residue_level_contacts_count", result_grouped_by_residue.grouped_contacts_summaries.size(), !result_grouped_by_residue.grouped_contacts_summaries.empty());
+		print_log_line(prefix, "chain_level_contacts_count", result_grouped_by_chain.grouped_contacts_summaries.size(), !result_grouped_by_chain.grouped_contacts_summaries.empty());
 	}
 
 	template<class Result, class GroupedResult>
 	void print_tessellation_full_construction_result_log_about_cells(const Result& result, const GroupedResult& result_grouped_by_residue, const GroupedResult& result_grouped_by_chain) noexcept
 	{
 		const std::string prefix="log_total_";
-		print_log_line(log_output, prefix, "cells_count", result.total_cells_summary.count, result.total_cells_summary.count>0);
-		print_log_line(log_output, prefix, "cells_sas_area", result.total_cells_summary.sas_area, result.total_cells_summary.count>0);
-		print_log_line(log_output, prefix, "cells_sas_inside_volume ", result.total_cells_summary.sas_inside_volume, result.total_cells_summary.count>0);
-		print_log_line(log_output, prefix, "residue_level_cells_count", result_grouped_by_residue.grouped_cells_summaries.size(), !result_grouped_by_residue.grouped_cells_summaries.empty());
-		print_log_line(log_output, prefix, "chain_level_cells_count ", result_grouped_by_chain.grouped_cells_summaries.size(), !result_grouped_by_chain.grouped_cells_summaries.empty());
+		print_log_line(prefix, "cells_count", result.total_cells_summary.count, result.total_cells_summary.count>0);
+		print_log_line(prefix, "cells_sas_area", result.total_cells_summary.sas_area, result.total_cells_summary.count>0);
+		print_log_line(prefix, "cells_sas_inside_volume ", result.total_cells_summary.sas_inside_volume, result.total_cells_summary.count>0);
+		print_log_line(prefix, "residue_level_cells_count", result_grouped_by_residue.grouped_cells_summaries.size(), !result_grouped_by_residue.grouped_cells_summaries.empty());
+		print_log_line(prefix, "chain_level_cells_count ", result_grouped_by_chain.grouped_cells_summaries.size(), !result_grouped_by_chain.grouped_cells_summaries.empty());
 	}
 
 	void finalize_and_output(const ApplicationParameters& app_params) noexcept
 	{
 		if(app_params.measure_running_time)
 		{
-			print_log_line(log_output, "log_threads", "", voronotalt::openmp_get_max_threads(), true);
+			print_log_line("log_threads", "", voronotalt::openmp_get_max_threads(), true);
 			time_recoder_for_input.print_recordings(log_output, "log time input stage", true);
 			time_recoder_for_tessellation.print_recordings(log_output, "log time tessellation stage", true);
 			time_recoder_for_output.print_recordings(log_output, "log time output stage", true);
@@ -1762,11 +1768,11 @@ void run_mode_radical(
 		if(app_mesh_recorder.mesh_writer.enabled())
 		{
 			const std::string prefix="log_mesh_";
-			ApplicationLogRecorders::print_log_line(app_log_recorders.log_output, prefix, "number_of_vertices", app_mesh_recorder.mesh_writer.get_number_of_vertices(), true);
-			ApplicationLogRecorders::print_log_line(app_log_recorders.log_output, prefix, "connected_components", app_mesh_recorder.mesh_writer.get_number_of_connected_components(), true);
-			ApplicationLogRecorders::print_log_line(app_log_recorders.log_output, prefix, "boundary_components", app_mesh_recorder.mesh_writer.get_number_of_boundary_components(), true);
-			ApplicationLogRecorders::print_log_line(app_log_recorders.log_output, prefix, "euler_characteristic", app_mesh_recorder.mesh_writer.get_euler_characteristic(), true);
-			ApplicationLogRecorders::print_log_line(app_log_recorders.log_output, prefix, "genus", app_mesh_recorder.mesh_writer.calculate_genus(), true);
+			app_log_recorders.print_log_line(prefix, "number_of_vertices", app_mesh_recorder.mesh_writer.get_number_of_vertices(), true);
+			app_log_recorders.print_log_line(prefix, "connected_components", app_mesh_recorder.mesh_writer.get_number_of_connected_components(), true);
+			app_log_recorders.print_log_line(prefix, "boundary_components", app_mesh_recorder.mesh_writer.get_number_of_boundary_components(), true);
+			app_log_recorders.print_log_line(prefix, "euler_characteristic", app_mesh_recorder.mesh_writer.get_euler_characteristic(), true);
+			app_log_recorders.print_log_line(prefix, "genus", app_mesh_recorder.mesh_writer.calculate_genus(), true);
 		}
 
 		app_log_recorders.time_recoder_for_output.record_elapsed_miliseconds_and_reset("analyze mesh");

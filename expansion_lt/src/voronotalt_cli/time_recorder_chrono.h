@@ -65,7 +65,9 @@ public:
 		{
 			return;
 		}
-		output << string_without_whitespaces(prefix) << "_elapsed\t" << get_elapsed_miliseconds() << "\n";
+		const std::string str_descriptor=string_without_whitespaces(prefix)+std::string("_elapsed");
+		const std::string str_separator(static_cast<std::size_t>(83)-std::min(static_cast<std::size_t>(str_descriptor.size()), static_cast<std::size_t>(80)), '.');
+		output << str_descriptor << " " << str_separator << " " << get_elapsed_miliseconds() << "\n";
 	}
 
 	void print_recordings(std::ostream& output, const std::string& prefix, const bool with_sum) const noexcept
@@ -77,7 +79,9 @@ public:
 		const std::string prefix_without_whitespaces=string_without_whitespaces(prefix);
 		for(std::size_t i=0;i<recordings_.size();i++)
 		{
-			output << prefix_without_whitespaces << "__" << string_without_whitespaces(recordings_[i].first) << "\t" << recordings_[i].second << "\n";
+			const std::string str_descriptor=prefix_without_whitespaces+std::string("__")+string_without_whitespaces(recordings_[i].first);
+			const std::string str_separator(static_cast<std::size_t>(83)-std::min(static_cast<std::size_t>(str_descriptor.size()), static_cast<std::size_t>(80)), '.');
+			output << str_descriptor << " " << str_separator << " " << recordings_[i].second << "\n";
 		}
 		if(with_sum && recordings_.size()>1)
 		{
@@ -86,7 +90,9 @@ public:
 			{
 				sum+=recordings_[i].second;
 			}
-			output << prefix_without_whitespaces << "_total_sum\t" << sum << "\n";
+			const std::string str_descriptor=prefix_without_whitespaces+std::string("_total_sum");
+			const std::string str_separator(static_cast<std::size_t>(83)-std::min(static_cast<std::size_t>(str_descriptor.size()), static_cast<std::size_t>(80)), '.');
+			output << str_descriptor << " " << str_separator << " " << sum << "\n";
 		}
 	}
 
