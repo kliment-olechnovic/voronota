@@ -1422,13 +1422,22 @@ public:
 		bool something_selected=false;
 		Result sub_result;
 		sub_result.sites_summaries.reserve(indices.size());
+		std::vector<int> lookup(result.total_spheres, 0);
 		for(std::size_t i=0;i<indices.size();i++)
 		{
 			const std::size_t id=indices[i];
-			if(id<result.sites_summaries.size())
+			if(id<lookup.size())
+			{
+				lookup[id]=1;
+			}
+		}
+		for(std::size_t i=0;i<result.sites_summaries.size();i++)
+		{
+			const std::size_t id=result.sites_summaries[i].id;
+			if(id<lookup.size() && lookup[id]>0)
 			{
 				something_selected=true;
-				sub_result.sites_summaries.push_back(result.sites_summaries[id]);
+				sub_result.sites_summaries.push_back(result.sites_summaries[i]);
 			}
 		}
 		if(something_selected)
