@@ -176,7 +176,7 @@ voronota-lt \
 voronota-lt \
   -i "./input/assembly_1ctf.cif" \
   -probe 1.4 \
-  -restrict-input-balls '[-chain A -rname PHE]' \
+  -restrict-input-atoms '[-chain A -rname PHE]' \
   -print-everything \
 2> "./output/contacts_1ctf_mmcif_assembly_sliced_input_summary.txt" \
 > "./output/contacts_1ctf_mmcif_assembly_sliced_input_tables.txt"
@@ -201,7 +201,7 @@ voronota-lt \
 voronota-lt \
   -i "./input/assembly_1ctf.cif" \
   -probe 1.4 \
-  -restrict-single-index-data-for-output '[-chain A -rname PHE]' \
+  -restrict-atom-descriptors-for-output '[-chain A -rname PHE]' \
   -print-everything \
 2> "./output/contacts_1ctf_mmcif_assembly_sliced_cells_output_summary.txt" \
 > "./output/contacts_1ctf_mmcif_assembly_sliced_cells_output_tables.txt"

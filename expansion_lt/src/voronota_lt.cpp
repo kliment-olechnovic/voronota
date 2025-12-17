@@ -33,10 +33,10 @@ Options:
     --pdb-or-mmcif-radii-config-file                 string     input file path for reading atom radii assignment rules
     --grouping-directives                            string     string with grouping directives separated by ';'
     --grouping-directives-file                       string     input file path for grouping directives
-    --restrict-input-balls                           string     selection expression to restrict input balls
+    --restrict-input-atoms                           string     selection expression to restrict input balls
     --restrict-contacts                              string     selection expression to restrict contacts before construction
     --restrict-contacts-for-output                   string     selection expression to restrict contacts for output
-    --restrict-single-index-data-for-output          string     selection expression to restrict single-index data (balls, cells, sites) for output
+    --restrict-atom-descriptors-for-output           string     selection expression to restrict single-index data (balls, cells, sites) for output
     --print-contacts                                            flag to print table of contacts to stdout
     --print-contacts-residue-level                              flag to print table of residue-level grouped contacts to stdout
     --print-contacts-chain-level                                flag to print table of chain-level grouped contacts to stdout
@@ -190,10 +190,10 @@ public:
 	std::string write_tessellation_vertices_to_file;
 	std::string write_raw_collisions_to_file;
 	std::string write_log_to_file;
-	std::string restrict_input_balls;
+	std::string restrict_input_atoms;
 	std::string restrict_contacts;
 	std::string restrict_contacts_for_output;
-	std::string restrict_single_index_data_for_output;
+	std::string restrict_atom_descriptors_for_output;
 	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_input_balls;
 	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_collisions;
 	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_contacts_for_output;
@@ -340,9 +340,9 @@ public:
 				{
 					pdb_or_mmcif_radii_config_file=opt.args_strings.front();
 				}
-				else if(opt.name=="restrict-input-balls" && opt.args_strings.size()==1)
+				else if(opt.name=="restrict-input-atoms" && opt.args_strings.size()==1)
 				{
-					restrict_input_balls=opt.args_strings.front();
+					restrict_input_atoms=opt.args_strings.front();
 				}
 				else if(opt.name=="restrict-contacts" && opt.args_strings.size()==1)
 				{
@@ -352,9 +352,9 @@ public:
 				{
 					restrict_contacts_for_output=opt.args_strings.front();
 				}
-				else if(opt.name=="restrict-single-index-data-for-output" && opt.args_strings.size()==1)
+				else if(opt.name=="restrict-atom-descriptors-for-output" && opt.args_strings.size()==1)
 				{
-					restrict_single_index_data_for_output=opt.args_strings.front();
+					restrict_atom_descriptors_for_output=opt.args_strings.front();
 				}
 				else if(opt.name=="measure-running-time" && opt.is_flag())
 				{
@@ -645,9 +645,9 @@ public:
 			color_assigner.add_rule("other", "falsecollisions", 0xFFA0FF);
 		}
 
-		if(!restrict_input_balls.empty())
+		if(!restrict_input_atoms.empty())
 		{
-			filtering_expression_for_restricting_input_balls=voronotalt::FilteringBySphereLabels::ExpressionForSingle(restrict_input_balls);
+			filtering_expression_for_restricting_input_balls=voronotalt::FilteringBySphereLabels::ExpressionForSingle(restrict_input_atoms);
 			if(!filtering_expression_for_restricting_input_balls.valid())
 			{
 				error_log_for_options_parsing << "Error: invalid input balls filtering expression.\n";
@@ -672,9 +672,9 @@ public:
 			}
 		}
 
-		if(!restrict_single_index_data_for_output.empty())
+		if(!restrict_atom_descriptors_for_output.empty())
 		{
-			filtering_expression_for_restricting_balls_and_cells_for_output=voronotalt::FilteringBySphereLabels::ExpressionForSingle(restrict_single_index_data_for_output);
+			filtering_expression_for_restricting_balls_and_cells_for_output=voronotalt::FilteringBySphereLabels::ExpressionForSingle(restrict_atom_descriptors_for_output);
 			if(!filtering_expression_for_restricting_balls_and_cells_for_output.valid())
 			{
 				error_log_for_options_parsing << "Error: invalid cells restriction filtering expression for cells output.\n";
