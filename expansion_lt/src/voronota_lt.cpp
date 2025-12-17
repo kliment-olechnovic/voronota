@@ -27,8 +27,8 @@ Options:
     --input | -i                                     string     input file path to use instead of standard input, or '_stdin' to still use standard input
     --periodic-box-directions                        numbers    coordinates of three vectors (x1 y1 z1 x2 y2 z2 x3 y3 z3) to define and use a periodic box
     --periodic-box-corners                           numbers    coordinates of two corners (x1 y1 z1 x2 y2 z2) to define and use a periodic box
-    --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
-    --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-exclude-heteroatoms                          flag to exclude heteroatoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-include-hydrogens                            flag to include hydrogen atoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
     --pdb-or-mmcif-radii-config-file                 string     input file path for reading atom radii assignment rules
     --grouping-directives                            string     string with grouping directives separated by ';'
@@ -131,8 +131,8 @@ public:
 	voronotalt::Float probe;
 	bool compute_only_inter_residue_contacts;
 	bool compute_only_inter_chain_contacts;
-	bool pdb_or_mmcif_heteroatoms;
-	bool pdb_or_mmcif_hydrogens;
+	bool pdb_or_mmcif_exclude_heteroatoms;
+	bool pdb_or_mmcif_include_hydrogens;
 	bool pdb_or_mmcif_as_assembly;
 	bool measure_running_time;
 	bool print_contacts;
@@ -207,8 +207,8 @@ public:
 		probe(1.4),
 		compute_only_inter_residue_contacts(false),
 		compute_only_inter_chain_contacts(false),
-		pdb_or_mmcif_heteroatoms(false),
-		pdb_or_mmcif_hydrogens(false),
+		pdb_or_mmcif_exclude_heteroatoms(false),
+		pdb_or_mmcif_include_hydrogens(false),
 		pdb_or_mmcif_as_assembly(false),
 		measure_running_time(false),
 		print_contacts(false),
@@ -324,13 +324,13 @@ public:
 						running_mode=RunningMode::simplified_aw;
 					}
 				}
-				else if(opt.name=="pdb-or-mmcif-heteroatoms" && opt.is_flag())
+				else if(opt.name=="pdb-or-mmcif-exclude-heteroatoms" && opt.is_flag())
 				{
-					pdb_or_mmcif_heteroatoms=opt.is_flag_and_true();
+					pdb_or_mmcif_exclude_heteroatoms=opt.is_flag_and_true();
 				}
-				else if(opt.name=="pdb-or-mmcif-hydrogens" && opt.is_flag())
+				else if(opt.name=="pdb-or-mmcif-include-hydrogens" && opt.is_flag())
 				{
-					pdb_or_mmcif_hydrogens=opt.is_flag_and_true();
+					pdb_or_mmcif_include_hydrogens=opt.is_flag_and_true();
 				}
 				else if(opt.name=="pdb-or-mmcif-join-models" && opt.is_flag())
 				{
@@ -2145,7 +2145,7 @@ int main(const int argc, const char** argv)
 
 		app_log_recorders.time_recoder_for_input.record_elapsed_miliseconds_and_reset("read input file data to memory");
 
-		const voronotalt::MolecularFileReading::Parameters molecular_file_reading_parameters(app_params.pdb_or_mmcif_heteroatoms, app_params.pdb_or_mmcif_hydrogens, app_params.pdb_or_mmcif_as_assembly);
+		const voronotalt::MolecularFileReading::Parameters molecular_file_reading_parameters(!app_params.pdb_or_mmcif_exclude_heteroatoms, app_params.pdb_or_mmcif_include_hydrogens, app_params.pdb_or_mmcif_as_assembly);
 
 		if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_string(input_data, molecular_file_reading_parameters, app_params.probe, spheres_input_result, std::cerr, app_log_recorders.time_recoder_for_input))
 		{

@@ -38,29 +38,28 @@ voronota-lt -processors 40 --input "./input/balls_7br8.xyzr" 2> "./output/contac
 ####################################################################
 
 voronota-lt \
+  --pdb-or-mmcif-exclude-heteroatoms \
 < "./input/assembly_1ctf.pdb1" \
 2> "./output/contacts_1ctf_pdb_summary.txt"
 
 voronota-lt \
-  --pdb-or-mmcif-heteroatoms \
 < "./input/assembly_1ctf.pdb1" \
 2> "./output/contacts_1ctf_pdb_with_heteroatoms_summary.txt"
 
 voronota-lt \
+  --pdb-or-mmcif-exclude-heteroatoms \
   --pdb-or-mmcif-join-models \
 < "./input/assembly_1ctf.pdb1" \
 2> "./output/contacts_1ctf_pdb_as_assembly_summary.txt"
 
 voronota-lt \
   --pdb-or-mmcif-join-models \
-  --pdb-or-mmcif-heteroatoms \
   --write-input-balls-to-file "./output/contacts_1ctf_pdb_as_assembly_with_heteroatoms_input_balls.txt" \
 < "./input/assembly_1ctf.pdb1" \
 2> "./output/contacts_1ctf_pdb_as_assembly_with_heteroatoms_summary.txt"
 
 voronota-lt \
   --pdb-or-mmcif-join-models \
-  --pdb-or-mmcif-heteroatoms \
   --pdb-or-mmcif-radii-config-file "./input/custom_radii.txt" \
   --write-input-balls-to-file "./output/contacts_1ctf_pdb_as_assembly_with_heteroatoms_using_custom_radii_input_balls.txt" \
 < "./input/assembly_1ctf.pdb1" \
@@ -69,11 +68,11 @@ voronota-lt \
 ####################################################################
 
 voronota-lt \
+  --pdb-or-mmcif-exclude-heteroatoms \
 < "./input/assembly_1ctf.cif" \
 2> "./output/contacts_1ctf_mmcif_assembly_summary.txt"
 
 voronota-lt \
-  --pdb-or-mmcif-heteroatoms \
   --write-input-balls-to-file "./output/contacts_1ctf_mmcif_assembly_with_heteroatoms_input_balls.txt" \
 < "./input/assembly_1ctf.cif" \
 2> "./output/contacts_1ctf_mmcif_assembly_with_heteroatoms_summary.txt"
@@ -128,6 +127,7 @@ voronota-lt -processors 40 -probe 2  < "./input/balls_cs_3x3.xyzr" -write-cells-
 
 voronota-lt \
   -i "./input/assembly_1ctf.cif" \
+  --pdb-or-mmcif-exclude-heteroatoms \
   --compute-only-inter-chain-contacts \
   --probe 1.4 \
   --mesh-output-obj-file "./output/written_files/output_1ctf_inter_chain_mesh.obj" \
@@ -139,6 +139,7 @@ voronota-lt \
 
 voronota-lt \
   -i "./input/assembly_1ctf.cif" \
+  --pdb-or-mmcif-exclude-heteroatoms \
   --probe 1.4 \
   --write-tessellation-edges-to-file "./output/written_files/output_1ctf_full_tessellation_edges.txt" \
   --write-tessellation-vertices-to-file "./output/written_files/output_1ctf_full_tessellation_vertices.txt" \
@@ -146,6 +147,7 @@ voronota-lt \
 
 voronota-lt \
   -i "./input/assembly_1ctf.cif" \
+  --pdb-or-mmcif-exclude-heteroatoms \
   --compute-only-inter-chain-contacts \
   --probe 1.4 \
   --write-tessellation-edges-to-file "./output/written_files/output_1ctf_inter_chain_tessellation_edges.txt" \
@@ -175,6 +177,7 @@ voronota-lt \
 
 voronota-lt \
   -i "./input/assembly_1ctf.cif" \
+  -pdb-or-mmcif-exclude-heteroatoms \
   -probe 1.4 \
   -restrict-input-atoms '[-chain A -rname PHE]' \
   -print-everything \
@@ -183,6 +186,7 @@ voronota-lt \
 
 voronota-lt \
   -i "./input/assembly_1ctf.cif" \
+  -pdb-or-mmcif-exclude-heteroatoms \
   -probe 1.4 \
   -restrict-contacts '[-a1 [-rname PHE] -a2 [-chain A]]' \
   -write-raw-collisions-to-file "./output/contacts_1ctf_mmcif_assembly_sliced_candidate_contacts_raw_collisions.txt" \
@@ -192,6 +196,7 @@ voronota-lt \
 
 voronota-lt \
   -i "./input/assembly_1ctf.cif" \
+  -pdb-or-mmcif-exclude-heteroatoms \
   -probe 1.4 \
   -restrict-contacts-for-output '[-a1 [-rname PHE] -a2 [-chain A]]' \
   -print-everything \
@@ -200,6 +205,7 @@ voronota-lt \
 
 voronota-lt \
   -i "./input/assembly_1ctf.cif" \
+  -pdb-or-mmcif-exclude-heteroatoms \
   -probe 1.4 \
   -restrict-atom-descriptors-for-output '[-chain A -rname PHE]' \
   -print-everything \
