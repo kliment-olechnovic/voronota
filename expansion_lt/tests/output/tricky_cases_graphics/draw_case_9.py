@@ -1741,4 +1741,4 @@ END,
 ]
 cmd.load_cgo(cgo_graphics_list_wireframe_contacts_small_small, 'case_9_wireframe_contacts_small_small')
 cmd.set('two_sided_lighting', 1)
-cmd.set('cgo_line_width', 3)
+cmd.set('cgo_line_width', 1)

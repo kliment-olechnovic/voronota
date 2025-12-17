@@ -539,7 +539,7 @@ private:
 			}
 
 			output << "cmd.set('two_sided_lighting', 1)\n";
-			output << "cmd.set('cgo_line_width', 3)\n";
+			output << "cmd.set('cgo_line_width', 1)\n";
 
 			return true;
 		}

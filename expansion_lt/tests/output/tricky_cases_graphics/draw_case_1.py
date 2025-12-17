@@ -23571,4 +23571,4 @@ END,
 ]
 cmd.load_cgo(cgo_graphics_list_wireframe_contacts, 'case_1_wireframe_contacts')
 cmd.set('two_sided_lighting', 1)
-cmd.set('cgo_line_width', 3)
+cmd.set('cgo_line_width', 1)
