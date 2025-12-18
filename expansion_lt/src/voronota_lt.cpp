@@ -641,6 +641,7 @@ public:
 			color_assigner.add_rule("ball", "sas", 0x00FF00);
 			color_assigner.add_rule("ball", "sasmesh", 0x808080);
 			color_assigner.add_rule("other", "lattice", 0x00FF00);
+			color_assigner.add_rule("other", "collisions", 0xFFFF00);
 			color_assigner.add_rule("other", "truecollisions", 0x3030FF);
 			color_assigner.add_rule("other", "falsecollisions", 0xFFA0FF);
 		}
@@ -993,7 +994,7 @@ void run_mode_radical(
 
 	std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> > map_of_raw_collisions_to_contact_ids;
 
-	if(!app_params.write_raw_collisions_to_file.empty() || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "truecollisions") || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "falsecollisions"))
+	if(!app_params.write_raw_collisions_to_file.empty() || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "collisions")|| ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "truecollisions") || ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "falsecollisions"))
 	{
 		for(voronotalt::UnsignedInt i=0;i<preparation_result.relevant_collision_ids.size();i++)
 		{
@@ -1694,6 +1695,16 @@ void run_mode_radical(
 						}
 					}
 				}
+			}
+		}
+		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "collisions"))
+		{
+			app_graphics_recorder.graphics_writer.add_color("collisions", "", app_params.color_assigner.get_color("collisions"));
+			for(std::map< std::pair<voronotalt::UnsignedInt, voronotalt::UnsignedInt>, std::pair<bool, voronotalt::UnsignedInt> >::const_iterator it=map_of_raw_collisions_to_contact_ids.begin();it!=map_of_raw_collisions_to_contact_ids.end();++it)
+			{
+				const voronotalt::UnsignedInt a=it->first.first;
+				const voronotalt::UnsignedInt b=it->first.second;
+				app_graphics_recorder.graphics_writer.add_line("collisions", "all", spheres_input_result.spheres[a].p, spheres_input_result.spheres[b].p);
 			}
 		}
 		if(ApplicationGraphicsRecorder::allow_representation(app_params.graphics_restrict_representations, "truecollisions"))
