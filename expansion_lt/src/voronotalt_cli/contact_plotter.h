@@ -26,6 +26,74 @@ public:
 		};
 	};
 
+	struct ConfigFlags
+	{
+		bool valid;
+		bool dark;
+		bool compact;
+		bool interactive;
+		bool gradient;
+		bool gradient_in_background;
+		bool colored;
+		bool xlabeled;
+		bool ylabeled;
+
+		ConfigFlags() noexcept : valid(false), dark(false), compact(false), interactive(false), gradient(false), gradient_in_background(false), colored(false), xlabeled(false), ylabeled(false)
+		{
+		}
+
+		static ConfigFlags read(const std::set<std::string>& config) noexcept
+		{
+			ConfigFlags cf;
+			for(std::set<std::string>::const_iterator it=config.begin();it!=config.end();++it)
+			{
+				if((*it)=="dark")
+				{
+					cf.dark=true;
+				}
+				else if((*it)=="compact")
+				{
+					cf.compact=true;
+				}
+				else if((*it)=="interactive")
+				{
+					cf.interactive=true;
+				}
+				else if((*it)=="gradient")
+				{
+					cf.gradient=true;
+				}
+				else if((*it)=="gradient-in-background")
+				{
+					cf.gradient_in_background=true;
+				}
+				else if((*it)=="colored")
+				{
+					cf.colored=true;
+				}
+				else if((*it)=="labeled")
+				{
+					cf.xlabeled=true;
+					cf.ylabeled=true;
+				}
+				else if((*it)=="xlabeled")
+				{
+					cf.xlabeled=true;
+				}
+				else if((*it)=="ylabeled")
+				{
+					cf.ylabeled=true;
+				}
+				else
+				{
+					return cf;
+				}
+			}
+			cf.valid=true;
+			return cf;
+		}
+	};
+
 	ContactPlotter(const LevelMode::ID mode) noexcept : mode_(mode)
 	{
 	}
@@ -48,36 +116,33 @@ public:
 			return false;
 		}
 
+		const ConfigFlags cf=ConfigFlags::read(config);
+		if(!cf.valid)
+		{
+			return false;
+		}
+
 		std::ofstream output(filename, std::ios::out);
 		if(!output.good())
 		{
 			return false;
 		}
 
-		const bool compact=(config.count("compact")>0);
-		const bool xlabeled=(config.count("xlabeled")>0);
-		const bool ylabeled=(config.count("ylabeled")>0);
-		const bool gradient_in_background=(config.count("gradient-in-background")>0);
-		const bool gradient=(config.count("gradient")>0);
-		const bool dark=(config.count("dark")>0);
-		const bool interactive=(config.count("interactive")>0);
-		const bool colored=(config.count("colored")>0);
-
 		const double scale=10.0;
 
-		const std::string style_background_base(dark ? "fill:#000000;" : "fill:#FFFFFF;");
-		const std::string style_background_level0(dark ? "fill:#191919;" : "fill:#F9F9F9;");
-		const std::string style_background_level1(dark ? "fill:#494949;" : "fill:#E9E9E9;");
-		const std::string style_background_level2(dark ? "fill:#797979;" : "fill:#C0C0C0;");
-		const std::string style_rect_default(dark ? "fill:#F9F9F9;" : "fill:#090909;");
-		const std::string style_text_default(dark ? "font-size:10px; fill:#FFFFFF;" : "font-size:10px; fill:#000000;");
-		const std::string style_info_text_default(dark ? "font-size:10px; fill:#FFFFFF;" : "font-size:10px; fill:#000000;");
+		const std::string style_background_base(cf.dark ? "fill:#000000;" : "fill:#FFFFFF;");
+		const std::string style_background_level0(cf.dark ? "fill:#191919;" : "fill:#F9F9F9;");
+		const std::string style_background_level1(cf.dark ? "fill:#494949;" : "fill:#E9E9E9;");
+		const std::string style_background_level2(cf.dark ? "fill:#797979;" : "fill:#C0C0C0;");
+		const std::string style_rect_default(cf.dark ? "fill:#F9F9F9;" : "fill:#090909;");
+		const std::string style_text_default(cf.dark ? "font-size:10px; fill:#FFFFFF;" : "font-size:10px; fill:#000000;");
+		const std::string style_info_text_default(cf.dark ? "font-size:10px; fill:#FFFFFF;" : "font-size:10px; fill:#000000;");
 
 		std::map<CoordKey, double> map_of_coords_main;
 		std::map<CoordKey, double> map_of_coords_secondary;
 
 		std::map<CoordKey, double>& map_of_coords_horizontal=map_of_coords_main;
-		std::map<CoordKey, double>& map_of_coords_vertical=(compact ? map_of_coords_secondary : map_of_coords_main);
+		std::map<CoordKey, double>& map_of_coords_vertical=(cf.compact ? map_of_coords_secondary : map_of_coords_main);
 
 		double max_area=0.0;
 		for(std::map<PointKey, PointValue>::iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
@@ -105,13 +170,13 @@ public:
 			max_caption_width_horizontal=std::max(max_caption_width_horizontal, it->first.unscaled_caption_width()*scale*0.9);
 		}
 
-		const double full_width=(ylabeled ? (length_horizontal+max_caption_width_horizontal) : length_horizontal);
-		const double full_height=(xlabeled ? (length_vertical+max_caption_width_vertical) : length_vertical)+(interactive ? scale*3.0 : 0.0);
-		const double shift_y=(xlabeled ? max_caption_width_vertical : 0.0);
+		const double full_width=(cf.ylabeled ? (length_horizontal+max_caption_width_horizontal) : length_horizontal);
+		const double full_height=(cf.xlabeled ? (length_vertical+max_caption_width_vertical) : length_vertical)+(cf.interactive ? scale*3.0 : 0.0);
+		const double shift_y=(cf.xlabeled ? max_caption_width_vertical : 0.0);
 
-		SVGWriter svg(full_width, full_height, "font-family:monospace;", interactive);
+		SVGWriter svg(full_width, full_height, "font-family:monospace;", cf.interactive);
 
-		if(interactive)
+		if(cf.interactive)
 		{
 			svg.add_child(XMLWriter("script").set("<![CDATA[ function init(evt) { window.info = document.getElementById('info'); } function show(text) { info.textContent = text; } ]]>"));
 		}
@@ -157,12 +222,12 @@ public:
 				const RegionValue& x=map_of_coord_regions_on_chain_level_horizontal[it->first.a];
 				const RegionValue& y=map_of_coord_regions_on_chain_level_vertical[it->first.b];
 				std::string style_rect_colored;
-				if(gradient_in_background && mode_==LevelMode::inter_residue)
+				if(cf.gradient_in_background && mode_==LevelMode::inter_residue)
 				{
 					style_rect_colored=std::string("fill:")+color_from_gradient(it->second.area, 0.0, max_area_on_chain_level, GradientMode::cyan_blue)+std::string(";");
 				}
 				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_rect_colored.empty() ? style_background_level1 : style_rect_colored);
-				if(!compact)
+				if(!cf.compact)
 				{
 					svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_rect_colored.empty() ? style_background_level1 : style_rect_colored);
 				}
@@ -207,12 +272,12 @@ public:
 				const RegionValue& x=map_of_coord_regions_on_residue_level_horizontal[it->first.a];
 				const RegionValue& y=map_of_coord_regions_on_residue_level_vertical[it->first.b];
 				std::string style_rect_colored;
-				if(gradient_in_background)
+				if(cf.gradient_in_background)
 				{
 					style_rect_colored=std::string("fill:")+color_from_gradient(it->second.area, 0.0, max_area_on_residue_level, GradientMode::cyan_blue)+std::string(";");
 				}
 				svg.add_rect(x.a, y.a+shift_y, x.b+scale-x.a, y.b+scale-y.a, style_rect_colored.empty() ? style_background_level2 : style_rect_colored);
-				if(!compact)
+				if(!cf.compact)
 				{
 					svg.add_rect(y.a, x.a+shift_y, y.b+scale-y.a, x.b+scale-x.a, style_rect_colored.empty() ? style_background_level2 : style_rect_colored);
 				}
@@ -226,16 +291,16 @@ public:
 			std::string style_rect_colored;
 			std::string onclick_action;
 
-			if(colored)
+			if(cf.colored)
 			{
 				style_rect_colored=std::string("fill:")+it->second.mean_color()+std::string(";");
 			}
-			else if(gradient)
+			else if(cf.gradient)
 			{
 				style_rect_colored=std::string("fill:")+color_from_gradient(it->second.area, 0.0, max_area, GradientMode::yellow_red)+std::string(";");
 			}
 
-			if(interactive)
+			if(cf.interactive)
 			{
 				std::ostringstream info_output;
 				info_output << "show('area([" << it->first.a.caption() << "], [" << it->first.b.caption() << "]) = " << it->second.area << "')";
@@ -244,13 +309,13 @@ public:
 
 			svg.add_rect(x, y+shift_y, scale, scale, (style_rect_colored.empty() ? style_rect_default : style_rect_colored), onclick_action);
 
-			if(!compact)
+			if(!cf.compact)
 			{
 				svg.add_rect(y, x+shift_y, scale, scale, (style_rect_colored.empty() ? style_rect_default : style_rect_colored), onclick_action);
 			}
 		}
 
-		if(xlabeled)
+		if(cf.xlabeled)
 		{
 			for(std::map<CoordKey, double>::iterator it=map_of_coords_horizontal.begin();it!=map_of_coords_horizontal.end();++it)
 			{
@@ -260,7 +325,7 @@ public:
 			}
 		}
 
-		if(ylabeled)
+		if(cf.ylabeled)
 		{
 			for(std::map<CoordKey, double>::iterator it=map_of_coords_vertical.begin();it!=map_of_coords_vertical.end();++it)
 			{
@@ -270,7 +335,7 @@ public:
 			}
 		}
 
-		if(interactive)
+		if(cf.interactive)
 		{
 			svg.add_child(XMLWriter("text").set("id", "info").set("x", scale).set("y", full_height-scale).set("style", style_info_text_default).set(""));
 		}
