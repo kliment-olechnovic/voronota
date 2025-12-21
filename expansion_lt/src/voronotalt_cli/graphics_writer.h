@@ -17,7 +17,7 @@ namespace voronotalt
 class GraphicsWriter
 {
 public:
-	explicit GraphicsWriter(const bool enabled) noexcept : enabled_(enabled), color_randomization_state_(static_cast<uint64_t>(42)), last_color_part_index_(false, 0)
+	explicit GraphicsWriter(const bool enabled) noexcept : enabled_(enabled), color_randomization_state_(static_cast<uint64_t>(42)), last_color_part_index_(false, 0), last_alpha_part_index_(false, 0)
 	{
 	}
 
@@ -144,6 +144,7 @@ public:
 		{
 			return;
 		}
+
 		if(rgb==0 && !group_name.empty())
 		{
 			add_random_color(category_name, group_name);
@@ -151,6 +152,10 @@ public:
 		else
 		{
 			add_color(category_name, group_name, static_cast<double>((rgb&0xFF0000) >> 16)/static_cast<double>(0xFF), static_cast<double>((rgb&0x00FF00) >> 8)/static_cast<double>(0xFF), static_cast<double>(rgb&0x0000FF)/static_cast<double>(0xFF));
+			if(rgb>0xFFFFFF)
+			{
+				add_alpha(category_name, group_name, static_cast<double>((rgb&0xFF000000) >> 24)/static_cast<double>(0xFF));
+			}
 		}
 	}
 
@@ -175,7 +180,23 @@ public:
 		{
 			return;
 		}
-		parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::Alpha(a)));
+
+
+		bool need_to_add=true;
+		if(last_alpha_part_index_.first)
+		{
+			const PrimitivePart& lcp=parts_[last_alpha_part_index_.second];
+			if(lcp.obj_alpha_.a==a && lcp.bundling_id.category_name==category_name && (lcp.bundling_id.group_name.empty() || lcp.bundling_id.group_name==group_name))
+			{
+				need_to_add=false;
+			}
+		}
+		if(need_to_add)
+		{
+			parts_.push_back(PrimitivePart(BundlingID(category_name, group_name), PrimitivePart::Alpha(a)));
+			last_alpha_part_index_.first=true;
+			last_alpha_part_index_.second=(parts_.size()-1);
+		}
 	}
 
 	bool write_to_file_for_pymol(const std::string& title, const std::string& filename) const noexcept
@@ -483,7 +504,7 @@ private:
 			{
 				return;
 			}
-			output << prefix << "ALPHA, " << obj.a << postfix;
+			output << prefix << "ALPHA, " << (1.0-obj.a) << postfix;
 		}
 
 		void print(const PrimitivePart& part, std::ostream& output) const noexcept
@@ -655,7 +676,7 @@ private:
 			{
 				return;
 			}
-			output << ".transparency" << sep << (1.0-obj.a) << bigsep;
+			output << ".transparency" << sep << obj.a << bigsep;
 		}
 
 		void print(const PrimitivePart& part, std::ostream& output) const noexcept
@@ -793,6 +814,7 @@ private:
 	bool enabled_;
 	uint64_t color_randomization_state_;
 	std::pair<bool, std::size_t> last_color_part_index_;
+	std::pair<bool, std::size_t> last_alpha_part_index_;
 	std::vector<PrimitivePart> parts_;
 };
 

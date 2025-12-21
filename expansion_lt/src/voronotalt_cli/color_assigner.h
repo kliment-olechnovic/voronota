@@ -12,7 +12,7 @@ namespace voronotalt
 class ColorAssigner
 {
 public:
-	ColorAssigner() : default_color_(0xFFFFFF)
+	ColorAssigner() : default_color_(0x00FFFFFF)
 	{
 	}
 
@@ -215,7 +215,7 @@ public:
 private:
 	static bool read_unsigned_int_from_string_hex(const std::string& s, unsigned int& value) noexcept
 	{
-	    if(s.size()!=6)
+	    if(!(s.size()==6 || s.size()==8))
 	    {
 	        return false;
 	    }
@@ -312,7 +312,7 @@ private:
 	    	expression=input.substr(pos);
 	    }
 
-	    return (color<=static_cast<unsigned int>(0xFFFFFF) && !category.empty() && !rep.empty());
+	    return (color<=static_cast<unsigned int>(0xFFFFFFFF) && !category.empty() && !rep.empty());
 	}
 
 	std::map<std::string, unsigned int> map_for_rep_defaults_for_singles_;
