@@ -18,7 +18,7 @@ cat ./resources/texts/intro.markdown
 echo
 
 g++ -std=c++14 -fopenmp -o ./voronota-lt-for-docs ./src/voronota_lt.cpp
-./voronota-lt-for-docs --help-full 2>&1 | sed 's/^/    /'
+./voronota-lt-for-docs --help 2>&1 | sed 's/^/    /'
 rm ./voronota-lt-for-docs
 
 echo

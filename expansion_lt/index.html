@@ -190,50 +190,66 @@ and can be made even faster by running it using multiple processors.
 
 Options:
     --probe                                          number     rolling probe radius, default is 1.4
-    --processors                                     number     maximum number of OpenMP threads to use, default is 2
+    --processors                                     number     maximum number of OpenMP threads to use, default is 2 if OpenMP is enabled, 1 if disabled
     --compute-only-inter-residue-contacts                       flag to only compute inter-residue contacts, turns off per-cell summaries
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
     --input | -i                                     string     input file path to use instead of standard input, or &#39;_stdin&#39; to still use standard input
     --periodic-box-directions                        numbers    coordinates of three vectors (x1 y1 z1 x2 y2 z2 x3 y3 z3) to define and use a periodic box
     --periodic-box-corners                           numbers    coordinates of two corners (x1 y1 z1 x2 y2 z2) to define and use a periodic box
-    --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
-    --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-exclude-heteroatoms                          flag to exclude heteroatoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-include-hydrogens                            flag to include hydrogen atoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
-    --restrict-input-balls                           string     selection expression to restrict input balls
+    --pdb-or-mmcif-radii-config-file                 string     input file path for reading atom radii assignment rules
+    --grouping-directives                            string     string with grouping directives separated by &#39;;&#39;
+    --grouping-directives-file                       string     input file path for grouping directives
+    --restrict-input-atoms                           string     selection expression to restrict input balls
     --restrict-contacts                              string     selection expression to restrict contacts before construction
     --restrict-contacts-for-output                   string     selection expression to restrict contacts for output
-    --restrict-balls-and-cells-for-output            string     selection expression to restrict cells for output
+    --restrict-atom-descriptors-for-output           string     selection expression to restrict single-index data (balls, cells, sites) for output
     --print-contacts                                            flag to print table of contacts to stdout
-    --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
-    --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout
+    --print-contacts-residue-level                              flag to print table of residue-level grouped contacts to stdout
+    --print-contacts-chain-level                                flag to print table of chain-level grouped contacts to stdout
     --print-cells                                               flag to print table of per-cell summaries to stdout
-    --print-cells-residue-level                                 flag to print residue-level grouped per-cell summaries to stdout
-    --print-cells-chain-level                                   flag to print chain-level grouped per-cell summaries to stdout
+    --print-cells-residue-level                                 flag to print table of residue-level grouped per-cell summaries to stdout
+    --print-cells-chain-level                                   flag to print table of chain-level grouped per-cell summaries to stdout
+    --print-sites                                               flag to print table of binding site summaries to stdout
+    --print-sites-residue-level                                 flag to print table of residue-level grouped binding site summaries to stdout
+    --print-sites-chain-level                                   flag to print table of chain-level grouped binding site summaries to stdout
     --print-everything                                          flag to print everything to stdout, terminate if printing everything is not possible
     --write-input-balls-to-file                                 output file path to write input balls to file
     --write-contacts-to-file                         string     output file path to write table of contacts
-    --write-contacts-residue-level-to-file           string     output file path to write residue-level grouped contacts
-    --write-contacts-chain-level-to-file             string     output file path to write chain-level grouped contacts
-    --write-cells-to-file                            string     output file path to write of per-cell summaries
-    --write-cells-residue-level-to-file              string     output file path to write residue-level grouped per-cell summaries
-    --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
+    --write-contacts-residue-level-to-file           string     output file path to write table of residue-level grouped contacts
+    --write-contacts-chain-level-to-file             string     output file path to write table of chain-level grouped contacts
+    --write-cells-to-file                            string     output file path to write table of per-cell summaries
+    --write-cells-residue-level-to-file              string     output file path to write table of residue-level grouped per-cell summaries
+    --write-cells-chain-level-to-file                string     output file path to write table of chain-level grouped per-cell summaries
+    --write-sites-to-file                            string     output file path to write table of binding site summaries
+    --write-sites-residue-level-to-file              string     output file path to write table of residue-level grouped binding site summaries
+    --write-sites-chain-level-to-file                string     output file path to write table of chain-level grouped binding site summaries
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
-    --graphics-output-file                           string     output file path to write contacts drawing (.py script for PyMol or .bild script for Chimera)
+    --write-raw-collisions-to-file                   string     output file path to write a table of both true (contact) and false (no contact) collisions
+    --plot-contacts-to-file                          string     output file path to write SVG plot of contacts
+    --plot-contacts-residue-level-to-file            string     output file path to write SVG plot of residue-level grouped contacts
+    --plot-contacts-chain-level-to-file              string     output file path to write SVG plot of chain-level grouped contacts
+    --plot-config-flags                              strings    space-separated list of plotting flags, e.g. ylabeled xlabeled gradient dark compact
+    --graphics-output-file-for-pymol                 string     output file path to write contacts drawing script for PyMol
+    --graphics-output-file-for-chimera               string     output file path to write contacts drawing script for Chimera or ChimeraX
     --graphics-title                                 string     title to use for the graphics objects generated by the contacts drawing script
     --graphics-restrict-representations              strings    space-separated list of representations to output, e.g.: balls faces wireframe sas sasmesh lattice
-    --graphics-color-balls                           string     hex-coded color for balls, default is &#39;0x00FFFF&#39;
-    --graphics-color-faces                           string     hex-coded color for faces, default is &#39;0xFFFF00&#39;
-    --graphics-color-wireframe                       string     hex-coded color for wireframe and sasmesh, default is &#39;0x808080&#39;
-    --graphics-color-sas                             string     hex-coded color for SAS, default is &#39;0x00FF00&#39;
-    --graphics-color-lattice                         string     hex-coded color for lattice (periodic boundaries), default is &#39;0x00FF00&#39;
+    --graphics-coloring-config                       string     string with graphics coloring rules separated by &#39;;&#39;
+    --graphics-coloring-config-file                  string     input file path for reading graphics coloring rules
+    --sites-view-script-for-pymol                    string     output file path to write sites view script for PyMol
+    --sites-view-script-for-chimera                  string     output file path to write sites view script for ChimeraX
     --mesh-output-obj-file                           string     output file path to write contacts surfaces mesh .obj file
     --mesh-print-topology-summary                               flag to print mesh topology summary
     --measure-running-time                                      flag to measure and output running times
     --write-log-to-file                              string     output file path to write global log, does not turn off printing log to stderr
-    --help-full                                                 flag to print full help (for all options) to stderr and exit
-    --help | -h                                                 flag to print help (for basic options) to stderr and exit
+    --force-icode-column                                        flag to always add insertion code column to output tables even if there are no insertion codes
+    --extra-columns                                             flag to add extra columns with empty identifier parts to output tables
+    --quiet | -q                                                flag to suppress printing non-error log messages to stderr
+    --help | -h                                                 flag to print help info to stderr and exit
 
 Standard input stream:
     Several input formats are supported:
@@ -274,7 +290,7 @@ Usage examples:
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--write-contacts-to-file</span> ./interatomic_contacts.tsv <span class="dt">\</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--write-cells-to-file</span> ./atomic_cells.tsv <span class="dt">\</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--write-tessellation-vertices-to-file</span> ./tessellation_vertices.tsv</span></code></pre></div>
-<p>The main acceptable input file formats formats:</p>
+<p>The main acceptable input file formats are:</p>
 <ul>
 <li>PDB file</li>
 <li>mmCIF file</li>
@@ -288,28 +304,28 @@ chainID residueID atomName x y z radius
 chainID residueNum residueName atomName x y z radius
 chainID residueNum iCode residueName atomName x y z radius</code></pre>
 <p>The output file <code>interatomic_contacts.tsv</code> has named columns, below is an example of its first 10 lines:</p>
-<pre><code>ca_header  ID1_chain  ID1_rnum  ID1_ic  ID1_rname  ID1_atom  ID2_chain  ID2_rnum  ID2_ic  ID2_rname  ID2_atom  ID1_index  ID2_index  area     arc_legth  distance
-ca         A          1         .       MET        N         A          1         .       MET        CA        0          1          16.5137  6.06483    1.4962
-ca         A          1         .       MET        N         A          1         .       MET        CB        0          4          8.78012  6.97738    2.47926
-ca         A          1         .       MET        N         A          1         .       MET        C         0          2          2.26495  1.78545    2.51605
-ca         A          1         .       MET        N         A          1         .       MET        O         0          3          5.95355  5.4563     2.86488
-ca         A          1         .       MET        CA        A          1         .       MET        CB        1          4          14.3565  1.04322    1.53664
-ca         A          1         .       MET        CA        A          1         .       MET        C         1          2          9.42943  0.82315    1.53635
-ca         A          1         .       MET        CA        A          2         .       LYS        N         1          5          5.50647  1.01891    2.43603
-ca         A          1         .       MET        CA        A          224       .       ALA        O         1          1783       2.13187  0          3.58016
-ca         A          1         .       MET        CA        A          226       .       GLU        OXT       1          1800       5.78086  3.06435    4.80279</code></pre>
+<pre><code>ia_header  ID1_chain  ID1_rnum  ID1_rname  ID1_atom  ID2_chain  ID2_rnum  ID2_rname  ID2_atom  ID1_index  ID2_index  area     arc_legth  distance
+ia         A          1         MET        N         A          1         MET        CA        0          1          16.5137  6.06483    1.4962
+ia         A          1         MET        N         A          1         MET        CB        0          4          8.78012  6.97738    2.47926
+ia         A          1         MET        N         A          1         MET        C         0          2          2.26495  1.78545    2.51605
+ia         A          1         MET        N         A          1         MET        O         0          3          5.95355  5.4563     2.86488
+ia         A          1         MET        CA        A          1         MET        CB        1          4          14.3565  1.04322    1.53664
+ia         A          1         MET        CA        A          1         MET        C         1          2          9.42943  0.82315    1.53635
+ia         A          1         MET        CA        A          2         LYS        N         1          5          5.50647  1.01891    2.43603
+ia         A          1         MET        CA        A          224       ALA        O         1          1783       2.13187  0          3.58016
+ia         A          1         MET        CA        A          226       GLU        OXT       1          1800       5.78086  3.06435    4.80279</code></pre>
 <p>The output file <code>atomic_cells.tsv</code> has named columns, below is an example of its first 10 lines:</p>
-<pre><code>sa_header  ID_chain  ID_rnum  ID_ic  ID_rname  ID_atom  ID_index  sas_area   volume
-sa         A         1        .      MET       N        0         53.3426    63.8989
-sa         A         1        .      MET       CA       1         4.70418    30.7944
-sa         A         1        .      MET       C        2         2.62416    15.6203
-sa         A         1        .      MET       O        3         11.1833    27.3368
-sa         A         1        .      MET       CB       4         27.5103    75.9687
-sa         A         2        .      LYS       N        5         2.52533    14.778
-sa         A         2        .      LYS       CA       6         2.06606    23.2376
-sa         A         2        .      LYS       C        7         0.0340018  12.7911
-sa         A         2        .      LYS       O        8         1.12595    15.7616</code></pre>
-<p>The output file <code>tessellation_vertices.tsv</code> has unnnamed columns, the values in every row are the following:</p>
+<pre><code>ac_header  ID_chain  ID_rnum  ID_rname  ID_atom  ID_index  sas_area   volume
+ac         A         1        MET       N        0         53.3426    63.8989
+ac         A         1        MET       CA       1         4.70418    30.7944
+ac         A         1        MET       C        2         2.62416    15.6203
+ac         A         1        MET       O        3         11.1833    27.3368
+ac         A         1        MET       CB       4         27.5103    75.9687
+ac         A         2        LYS       N        5         2.52533    14.778
+ac         A         2        LYS       CA       6         2.06606    23.2376
+ac         A         2        LYS       C        7         0.0340018  12.7911
+ac         A         2        LYS       O        8         1.12595    15.7616</code></pre>
+<p>The output file <code>tessellation_vertices.tsv</code> has unnamed columns, the values in every row are the following:</p>
 <p>(“atom index 1”, “atom index 2”, “atom index 3”, “atom index 4”, “Voronoi vertex position x coordinate”, “Voronoi vertex position y coordinate”, “Voronoi vertex position z coordinate”, “minimum distance to the surface of any relevant atom ball”, “maximum distance to the surface of any relevant atom ball”)</p>
 <p>The value of “atom index 4” (and in some cases “atom index 3”) can be equal -1, indicating that the Voronoi vertex is not inside the solvent accessible surface. Below is an example of the first 10 lines of <code>tessellation_vertices.tsv</code>:</p>
 <pre><code>0  1  2  3     21.3073  56.4249  13.7346  -1.49455  -1.18217
