@@ -253,13 +253,15 @@ public:
 
 			const voronotalt::RadicalTessellation::ParametersForGraphics parameters_for_graphics((generate_graphics || characterize_topology), (generate_graphics && with_sas_graphics && summarize_cells), 0.2, 3);
 
+			const voronotalt::RadicalTessellation::ParametersForGeneratingSummaries parameters_for_generating_summaries(false, summarize_cells);
+
 			voronotalt::RadicalTessellation::construct_full_tessellation(
 					spheres_container,
 					std::vector<int>(),
 					grouping_for_filtering,
 					calculate_adjacencies,
 					parameters_for_graphics,
-					summarize_cells,
+					parameters_for_generating_summaries,
 					restrict_circle,
 					parameters_for_adjunct_max_circle_radius_restrictions,
 					precutting_parameters,

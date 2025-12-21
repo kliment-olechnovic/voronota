@@ -9,44 +9,66 @@ and can be made even faster by running it using multiple processors.
 
 Options:
     --probe                                          number     rolling probe radius, default is 1.4
-    --processors                                     number     maximum number of OpenMP threads to use, default is 2
+    --processors                                     number     maximum number of OpenMP threads to use, default is 2 if OpenMP is enabled, 1 if disabled
     --compute-only-inter-residue-contacts                       flag to only compute inter-residue contacts, turns off per-cell summaries
     --compute-only-inter-chain-contacts                         flag to only compute inter-chain contacts, turns off per-cell summaries
     --run-in-aw-diagram-regime                                  flag to run construct a simplified additively weighted Voronoi diagram, turns off per-cell summaries
     --input | -i                                     string     input file path to use instead of standard input, or '_stdin' to still use standard input
     --periodic-box-directions                        numbers    coordinates of three vectors (x1 y1 z1 x2 y2 z2 x3 y3 z3) to define and use a periodic box
     --periodic-box-corners                           numbers    coordinates of two corners (x1 y1 z1 x2 y2 z2) to define and use a periodic box
-    --pdb-or-mmcif-heteroatoms                                  flag to include heteroatoms when reading input in PDB or mmCIF format
-    --pdb-or-mmcif-hydrogens                                    flag to include hydrogen atoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-exclude-heteroatoms                          flag to exclude heteroatoms when reading input in PDB or mmCIF format
+    --pdb-or-mmcif-include-hydrogens                            flag to include hydrogen atoms when reading input in PDB or mmCIF format
     --pdb-or-mmcif-join-models                                  flag to join multiple models into an assembly when reading input in PDB or mmCIF format
-    --restrict-input-balls                           string     selection expression to restrict input balls
+    --pdb-or-mmcif-radii-config-file                 string     input file path for reading atom radii assignment rules
+    --grouping-directives                            string     string with grouping directives separated by ';'
+    --grouping-directives-file                       string     input file path for grouping directives
+    --restrict-input-atoms                           string     selection expression to restrict input balls
     --restrict-contacts                              string     selection expression to restrict contacts before construction
     --restrict-contacts-for-output                   string     selection expression to restrict contacts for output
-    --restrict-balls-and-cells-for-output            string     selection expression to restrict cells for output
+    --restrict-atom-descriptors-for-output           string     selection expression to restrict single-index data (balls, cells, sites) for output
     --print-contacts                                            flag to print table of contacts to stdout
-    --print-contacts-residue-level                              flag to print residue-level grouped contacts to stdout
-    --print-contacts-chain-level                                flag to print chain-level grouped contacts to stdout
+    --print-contacts-residue-level                              flag to print table of residue-level grouped contacts to stdout
+    --print-contacts-chain-level                                flag to print table of chain-level grouped contacts to stdout
     --print-cells                                               flag to print table of per-cell summaries to stdout
-    --print-cells-residue-level                                 flag to print residue-level grouped per-cell summaries to stdout
-    --print-cells-chain-level                                   flag to print chain-level grouped per-cell summaries to stdout
+    --print-cells-residue-level                                 flag to print table of residue-level grouped per-cell summaries to stdout
+    --print-cells-chain-level                                   flag to print table of chain-level grouped per-cell summaries to stdout
+    --print-sites                                               flag to print table of binding site summaries to stdout
+    --print-sites-residue-level                                 flag to print table of residue-level grouped binding site summaries to stdout
+    --print-sites-chain-level                                   flag to print table of chain-level grouped binding site summaries to stdout
     --print-everything                                          flag to print everything to stdout, terminate if printing everything is not possible
     --write-input-balls-to-file                                 output file path to write input balls to file
     --write-contacts-to-file                         string     output file path to write table of contacts
-    --write-contacts-residue-level-to-file           string     output file path to write residue-level grouped contacts
-    --write-contacts-chain-level-to-file             string     output file path to write chain-level grouped contacts
-    --write-cells-to-file                            string     output file path to write of per-cell summaries
-    --write-cells-residue-level-to-file              string     output file path to write residue-level grouped per-cell summaries
-    --write-cells-chain-level-to-file                string     output file path to write chain-level grouped per-cell summaries
+    --write-contacts-residue-level-to-file           string     output file path to write table of residue-level grouped contacts
+    --write-contacts-chain-level-to-file             string     output file path to write table of chain-level grouped contacts
+    --write-cells-to-file                            string     output file path to write table of per-cell summaries
+    --write-cells-residue-level-to-file              string     output file path to write table of residue-level grouped per-cell summaries
+    --write-cells-chain-level-to-file                string     output file path to write table of chain-level grouped per-cell summaries
+    --write-sites-to-file                            string     output file path to write table of binding site summaries
+    --write-sites-residue-level-to-file              string     output file path to write table of residue-level grouped binding site summaries
+    --write-sites-chain-level-to-file                string     output file path to write table of chain-level grouped binding site summaries
     --write-tessellation-edges-to-file               string     output file path to write generating IDs and lengths of SAS-constrained tessellation edges
     --write-tessellation-vertices-to-file            string     output file path to write generating IDs and positions of SAS-constrained tessellation vertices
-    --graphics-output-file                           string     output file path to write contacts drawing (.py script for PyMol or .bild script for Chimera)
-    --graphics-*                                     various    other graphics output configuration options, can be listed with '--help-full' flag
+    --write-raw-collisions-to-file                   string     output file path to write a table of both true (contact) and false (no contact) collisions
+    --plot-contacts-to-file                          string     output file path to write SVG plot of contacts
+    --plot-contacts-residue-level-to-file            string     output file path to write SVG plot of residue-level grouped contacts
+    --plot-contacts-chain-level-to-file              string     output file path to write SVG plot of chain-level grouped contacts
+    --plot-config-flags                              strings    space-separated list of plotting flags, e.g. ylabeled xlabeled gradient dark compact
+    --graphics-output-file-for-pymol                 string     output file path to write contacts drawing script for PyMol
+    --graphics-output-file-for-chimera               string     output file path to write contacts drawing script for Chimera or ChimeraX
+    --graphics-title                                 string     title to use for the graphics objects generated by the contacts drawing script
+    --graphics-restrict-representations              strings    space-separated list of representations to output, e.g.: balls faces wireframe sas sasmesh lattice
+    --graphics-coloring-config                       string     string with graphics coloring rules separated by ';'
+    --graphics-coloring-config-file                  string     input file path for reading graphics coloring rules
+    --sites-view-script-for-pymol                    string     output file path to write sites view script for PyMol
+    --sites-view-script-for-chimera                  string     output file path to write sites view script for ChimeraX
     --mesh-output-obj-file                           string     output file path to write contacts surfaces mesh .obj file
     --mesh-print-topology-summary                               flag to print mesh topology summary
     --measure-running-time                                      flag to measure and output running times
     --write-log-to-file                              string     output file path to write global log, does not turn off printing log to stderr
-    --help-full                                                 flag to print full help (for all options) to stderr and exit
-    --help | -h                                                 flag to print help (for basic options) to stderr and exit
+    --force-icode-column                                        flag to always add insertion code column to output tables even if there are no insertion codes
+    --extra-columns                                             flag to add extra columns with empty identifier parts to output tables
+    --quiet | -q                                                flag to suppress printing non-error log messages to stderr
+    --help | -h                                                 flag to print help info to stderr and exit
 
 Standard input stream:
     Several input formats are supported:
