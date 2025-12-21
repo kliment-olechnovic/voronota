@@ -11,7 +11,7 @@ The following example command outputs main basic descriptors into separate files
   --write-tessellation-vertices-to-file ./tessellation_vertices.tsv
 ```
 
-The main acceptable input file formats formats:
+The main acceptable input file formats are:
 
 * PDB file
 * mmCIF file
@@ -30,34 +30,34 @@ chainID residueNum iCode residueName atomName x y z radius
 The output file `interatomic_contacts.tsv` has named columns, below is an example of its first 10 lines:
 
 ```
-ca_header  ID1_chain  ID1_rnum  ID1_ic  ID1_rname  ID1_atom  ID2_chain  ID2_rnum  ID2_ic  ID2_rname  ID2_atom  ID1_index  ID2_index  area     arc_legth  distance
-ca         A          1         .       MET        N         A          1         .       MET        CA        0          1          16.5137  6.06483    1.4962
-ca         A          1         .       MET        N         A          1         .       MET        CB        0          4          8.78012  6.97738    2.47926
-ca         A          1         .       MET        N         A          1         .       MET        C         0          2          2.26495  1.78545    2.51605
-ca         A          1         .       MET        N         A          1         .       MET        O         0          3          5.95355  5.4563     2.86488
-ca         A          1         .       MET        CA        A          1         .       MET        CB        1          4          14.3565  1.04322    1.53664
-ca         A          1         .       MET        CA        A          1         .       MET        C         1          2          9.42943  0.82315    1.53635
-ca         A          1         .       MET        CA        A          2         .       LYS        N         1          5          5.50647  1.01891    2.43603
-ca         A          1         .       MET        CA        A          224       .       ALA        O         1          1783       2.13187  0          3.58016
-ca         A          1         .       MET        CA        A          226       .       GLU        OXT       1          1800       5.78086  3.06435    4.80279
+ia_header  ID1_chain  ID1_rnum  ID1_rname  ID1_atom  ID2_chain  ID2_rnum  ID2_rname  ID2_atom  ID1_index  ID2_index  area     arc_legth  distance
+ia         A          1         MET        N         A          1         MET        CA        0          1          16.5137  6.06483    1.4962
+ia         A          1         MET        N         A          1         MET        CB        0          4          8.78012  6.97738    2.47926
+ia         A          1         MET        N         A          1         MET        C         0          2          2.26495  1.78545    2.51605
+ia         A          1         MET        N         A          1         MET        O         0          3          5.95355  5.4563     2.86488
+ia         A          1         MET        CA        A          1         MET        CB        1          4          14.3565  1.04322    1.53664
+ia         A          1         MET        CA        A          1         MET        C         1          2          9.42943  0.82315    1.53635
+ia         A          1         MET        CA        A          2         LYS        N         1          5          5.50647  1.01891    2.43603
+ia         A          1         MET        CA        A          224       ALA        O         1          1783       2.13187  0          3.58016
+ia         A          1         MET        CA        A          226       GLU        OXT       1          1800       5.78086  3.06435    4.80279
 ```
 
 The output file `atomic_cells.tsv` has named columns, below is an example of its first 10 lines:
 
 ```
-sa_header  ID_chain  ID_rnum  ID_ic  ID_rname  ID_atom  ID_index  sas_area   volume
-sa         A         1        .      MET       N        0         53.3426    63.8989
-sa         A         1        .      MET       CA       1         4.70418    30.7944
-sa         A         1        .      MET       C        2         2.62416    15.6203
-sa         A         1        .      MET       O        3         11.1833    27.3368
-sa         A         1        .      MET       CB       4         27.5103    75.9687
-sa         A         2        .      LYS       N        5         2.52533    14.778
-sa         A         2        .      LYS       CA       6         2.06606    23.2376
-sa         A         2        .      LYS       C        7         0.0340018  12.7911
-sa         A         2        .      LYS       O        8         1.12595    15.7616
+ac_header  ID_chain  ID_rnum  ID_rname  ID_atom  ID_index  sas_area   volume
+ac         A         1        MET       N        0         53.3426    63.8989
+ac         A         1        MET       CA       1         4.70418    30.7944
+ac         A         1        MET       C        2         2.62416    15.6203
+ac         A         1        MET       O        3         11.1833    27.3368
+ac         A         1        MET       CB       4         27.5103    75.9687
+ac         A         2        LYS       N        5         2.52533    14.778
+ac         A         2        LYS       CA       6         2.06606    23.2376
+ac         A         2        LYS       C        7         0.0340018  12.7911
+ac         A         2        LYS       O        8         1.12595    15.7616
 ```
 
-The output file `tessellation_vertices.tsv` has unnnamed columns,
+The output file `tessellation_vertices.tsv` has unnamed columns,
 the values in every row are the following:
 
 ("atom index 1", "atom index 2", "atom index 3", "atom index 4", "Voronoi vertex position x coordinate", "Voronoi vertex position y coordinate", "Voronoi vertex position z coordinate", "minimum distance to the surface of any relevant atom ball", "maximum distance to the surface of any relevant atom ball")
