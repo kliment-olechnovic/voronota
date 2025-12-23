@@ -17,6 +17,19 @@ The core functionality of Voronota-LT is also available via the [Voronota-LT web
 
 Benchmarking data and results are available [here](./benchmark/README.md).
 
+# Quickest install guide
+
+Since Voronota-LT version 1.0.1, universal binary execuitables of Voronota-LT
+built with the [Cosmopolitan Libc toolkit](https://github.com/jart/cosmopolitan) are provided.
+
+To download and prepare the latest released cosmopolitan executable, run the following commands:
+
+```bash
+wget 'https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4592/cosmopolitan_voronota-lt_1.0.1_from_voronota_1.29.4592.exe'
+mv cosmopolitan_voronota-lt_1.0.1_from_voronota_1.29.4592.exe voronota-lt
+chmod +x voronota-lt
+```
+
 # Quick install guide
 
 Please refer to the [core Voronota quick install guide](../README.md#quick-install-guide).

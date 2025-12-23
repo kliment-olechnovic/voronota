@@ -13,13 +13,13 @@ cat ./src/voronota_lt.cpp | egrep '^Voronota-LT' > VERSION.txt
 
 {
 
-cat ./resources/texts/intro.markdown
+cat ./resources/texts/intro.markdown \
+| sed "s/LATEST_VORONOTA_RELEASE_VERSION/$(cat ../latest_release_version.txt | tr -d '\n')/g" \
+| sed "s/LATEST_VORONOTALT_PACKAGE_NAME/$(./package.bash print-name-and-exit | tr -d '\n')/g"
 
 echo
 
-g++ -std=c++14 -fopenmp -o ./voronota-lt-for-docs ./src/voronota_lt.cpp
-./voronota-lt-for-docs --help 2>&1 | sed 's/^/    /'
-rm ./voronota-lt-for-docs
+cat ./tests/output/help_message.txt | sed 's/^/    /'
 
 echo
 
