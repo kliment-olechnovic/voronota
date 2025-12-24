@@ -24,23 +24,13 @@ source ./testvenv/bin/activate
 
 export PYTHONPATH="${PYTHONPATH}:${SWIGDIR}"
 
-python3 -B "./input/run_voronotalt_python_simple.py" > "./output/run_voronotalt_python_simple.py.output.txt"
-
-python3 -B "./input/run_voronotalt_python_simple_biotite.py" > "./output/run_voronotalt_python_simple_biotite.py.output.txt"
-
-python3 -B "./input/run_voronotalt_python_simple_pandas.py" > "./output/run_voronotalt_python_simple_pandas.py.output.txt"
-
-python3 -B "./input/run_voronotalt_python_molecular.py" > "./output/run_voronotalt_python_molecular.py.output.txt"
-
-python3 -B "./input/run_voronotalt_python_molecular_biotite.py" > "./output/run_voronotalt_python_molecular_biotite.py.output.txt"
-
-python3 -B "./input/run_voronotalt_python_molecular_gemmi.py" > "./output/run_voronotalt_python_molecular_gemmi.py.output.txt"
-
-python3 -B "./input/run_voronotalt_python_molecular_biopython.py" > "./output/run_voronotalt_python_molecular_biopython.py.output.txt"
-
-python3 -B "./input/run_voronotalt_python_molecular_pandas.py" > "./output/run_voronotalt_python_molecular_pandas.py.output.txt"
-
-python3 -B "./input/run_voronotalt_python_molecular_pandas_using_custom_radii.py" > "./output/run_voronotalt_python_molecular_pandas_using_custom_radii.py.output.txt"
+find ./input/ -type f -name '*.py' \
+| while read -r SCRIPTFILE
+do
+	SCRIPTNAME="$(basename ${SCRIPTFILE})"
+	
+	python3 -B "${SCRIPTFILE}" > "./output/${SCRIPTNAME}.output.txt"
+done
 
 ################################################################################
 
