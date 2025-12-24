@@ -126,8 +126,8 @@
 <li><a href="#voronota-lt-python-bindings" id="toc-voronota-lt-python-bindings">Voronota-LT Python bindings</a>
 <ul>
 <li><a href="#installation" id="toc-installation">Installation</a></li>
-<li><a href="#usage-example-basic" id="toc-usage-example-basic">Usage example, basic</a></li>
-<li><a href="#usage-example-using-biotite-to-provide-input" id="toc-usage-example-using-biotite-to-provide-input">Usage example, using Biotite to provide input</a></li>
+<li><a href="#basic-usage-examples" id="toc-basic-usage-examples">Basic usage examples</a></li>
+<li><a href="#biomolecules-focused-usage-examples" id="toc-biomolecules-focused-usage-examples">Biomolecules-focused usage examples</a></li>
 </ul></li>
 <li><a href="#voronota-lt-rust-bindings" id="toc-voronota-lt-rust-bindings">Voronota-LT Rust bindings</a></li>
 </ul>
@@ -985,11 +985,12 @@ ac         A         2        LYS       O        8         1.12595    15.7616</c
 <span id="cb19-199"><a href="#cb19-199" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb19-200"><a href="#cb19-200" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code></pre></div>
 <h1 id="voronota-lt-python-bindings">Voronota-LT Python bindings</h1>
-<p>Voronota-LT Python interface PyPI package is hosted at <a href="https://pypi.org/project/voronotalt/">https://pypi.org/project/voronotalt/</a>.</p>
+<p>The Voronota-LT Python interface PyPI package is hosted at <a href="https://pypi.org/project/voronotalt/">https://pypi.org/project/voronotalt/</a>.</p>
 <h2 id="installation">Installation</h2>
 <p>Install with pip using this command:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install voronotalt</span></code></pre></div>
-<h2 id="usage-example-basic">Usage example, basic</h2>
+<h2 id="basic-usage-examples">Basic usage examples</h2>
+<h3 id="basic-usage-example.-generic">Basic usage example. generic</h3>
 <p>Voronota-LT can be used in Python code as in the following example:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> voronotalt</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1012,56 +1013,254 @@ ac         A         2        LYS       O        8         1.12595    15.7616</c
 <span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.707106781186548</span>, <span class="fl">0.707106781186547</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
 <span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>balls.append(voronotalt.Ball(<span class="op">-</span><span class="fl">0.38268343236509</span>, <span class="fl">0.923879532511287</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))</span>
 <span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>rt <span class="op">=</span> voronotalt.RadicalTessellation(balls, probe<span class="op">=</span><span class="fl">1.0</span>)</span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>contacts<span class="op">=</span><span class="bu">list</span>(rt.contacts)</span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;contacts:&quot;</span>)</span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> contacts:</span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;contact&quot;</span>, contact.index_a, contact.index_b, contact.area, contact.arc_length)<span class="op">;</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, ball <span class="kw">in</span> <span class="bu">enumerate</span>(balls):</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;ball </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>ball<span class="sc">.</span>x<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>ball<span class="sc">.</span>y<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>ball<span class="sc">.</span>z<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>ball<span class="sc">.</span>r<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>rt <span class="op">=</span> voronotalt.RadicalTessellation(balls, probe<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>contacts<span class="op">=</span><span class="bu">list</span>(rt.contacts)</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;contacts:&quot;</span>)</span>
 <span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>cells<span class="op">=</span><span class="bu">list</span>(rt.cells)</span>
-<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;cells:&quot;</span>)</span>
-<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, cell <span class="kw">in</span> <span class="bu">enumerate</span>(cells):</span>
-<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;cell&quot;</span>, i, cell.sas_area, cell.volume)<span class="op">;</span></span></code></pre></div>
-<h2 id="usage-example-using-biotite-to-provide-input">Usage example, using Biotite to provide input</h2>
-<p>Voronota-LT can be used in Python code with Biotite as in the following example:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> argparse</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> voronotalt.biotite_interface <span class="im">import</span> radical_tessellation_from_atom_array</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> biotite.structure.io <span class="im">import</span> load_structure</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Parse command-line arguments</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>parser <span class="op">=</span> argparse.ArgumentParser(description<span class="op">=</span><span class="st">&quot;Compute radical tessellation using Voronota-LT for an input PDB file.&quot;</span>)</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>parser.add_argument(<span class="st">&quot;input_file&quot;</span>, <span class="bu">help</span><span class="op">=</span><span class="st">&quot;Path to the input PDB file&quot;</span>)</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>args <span class="op">=</span> parser.parse_args()</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> contacts:</span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;contact </span><span class="sc">{</span>contact<span class="sc">.</span>index_a<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>index_b<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>area<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>arc_length<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>cells<span class="op">=</span><span class="bu">list</span>(rt.cells)</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;cells:&quot;</span>)</span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, cell <span class="kw">in</span> <span class="bu">enumerate</span>(cells):</span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;cell </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>sas_area<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>volume<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="basic-usage-example-with-converting-output-to-pandas-data-frames">Basic usage example with converting output to pandas data frames</h3>
+<p>If the <a href="https://pandas.pydata.org/">pandas</a> library for data analysis is available in the Python environment, then the tessellation computation results can also be converted to <a href="https://pandas.pydata.org/docs/reference/frame.html">pandas data frames</a>:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>rt <span class="op">=</span> voronotalt.RadicalTessellation(balls, probe<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>df_balls <span class="op">=</span> rt.balls.to_pandas()</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>df_contacts <span class="op">=</span> rt.contacts.to_pandas()</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>df_cells <span class="op">=</span> rt.cells.to_pandas()</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_balls)</span>
 <span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Load AtomArray from a PDB file</span></span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>structure <span class="op">=</span> load_structure(args.input_file)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_contacts)</span>
 <span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute tessellation</span></span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>rt <span class="op">=</span> radical_tessellation_from_atom_array(structure, probe<span class="op">=</span><span class="fl">1.4</span>)</span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Print input balls</span></span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, ball <span class="kw">in</span> <span class="bu">enumerate</span>(rt.balls):</span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;ball&quot;</span>, i, ball.x, ball.y, ball.z, ball.r)</span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Print contacts</span></span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;contacts:&quot;</span>)</span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> rt.contacts:</span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;contact&quot;</span>, contact.index_a, contact.index_b, contact.area, contact.arc_length)</span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Print cells</span></span>
-<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;cells:&quot;</span>)</span>
-<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, cell <span class="kw">in</span> <span class="bu">enumerate</span>(rt.cells):</span>
-<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;cell&quot;</span>, i, cell.sas_area, cell.volume)</span></code></pre></div>
-<p>To run this example, make sure you have intalled Biotite:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install biotite</span></code></pre></div>
-<p>Then run by providing either PDB or mmCIF file path:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> example_script.py 2zsk.pdb</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> example_script.py 2zsk.cif</span></code></pre></div>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_cells)</span></code></pre></div>
+<p>To run this example, make sure you have installed pandas:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pandas</span></code></pre></div>
+<h3 id="basic-usage-example-with-biotite-to-provide-input">Basic usage example with Biotite to provide input</h3>
+<p>If <a href="https://www.biotite-python.org/">Biotite</a> is available in the Python environment, the Voronota-LT can be used in Python code with Biotite as in the following example:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> voronotalt</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> biotite.structure.io</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>structure <span class="op">=</span> biotite.structure.io.load_structure(<span class="st">&quot;./input/assembly_1ctf.cif&quot;</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>rt <span class="op">=</span> voronotalt.RadicalTessellation.from_biotite_atoms(structure, include_heteroatoms<span class="op">=</span><span class="va">False</span>, probe<span class="op">=</span><span class="fl">1.4</span>)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;contacts:&quot;</span>)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> rt.contacts:</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> contact.index_a<span class="op">&lt;</span><span class="dv">5</span>:</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;contact </span><span class="sc">{</span>contact<span class="sc">.</span>index_a<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>index_b<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>area<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>arc_length<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>cells<span class="op">=</span><span class="bu">list</span>(rt.cells)</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;cells:&quot;</span>)</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, cell <span class="kw">in</span> <span class="bu">enumerate</span>(cells[:<span class="dv">20</span>]):</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;cell </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>sas_area<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>volume<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>To run this example, make sure you have installed Biotite:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install biotite</span></code></pre></div>
+<h2 id="biomolecules-focused-usage-examples">Biomolecules-focused usage examples</h2>
+<h3 id="biomolecules-focused-usage-example-generic">Biomolecules-focused usage example, generic</h3>
+<p>Since version 1.0.1, the Voronota-LT Python bindings contain special classes and functions for processing biological macromolecules. They folow the interface of the Voronota-LT command line software interface. The main class is <code>MolecularRadicalTessellation</code>, a more biomolecules-focused counterpart of the basic <code>RadicalTessellation</code> class. Below is an example of using <code>MolecularRadicalTessellation</code>:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> voronotalt</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>mrt <span class="op">=</span> voronotalt.MolecularRadicalTessellation.from_file(</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    input_file<span class="op">=</span><span class="st">&quot;./input/assembly_1ctf.pdb1&quot;</span>,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    read_as_assembly<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    restrict_contacts_for_output<span class="op">=</span><span class="st">&quot;[-a1 [-chain A] -a2 [-chain A2]]&quot;</span>,</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    restrict_cells_for_output<span class="op">=</span><span class="st">&quot;[-chain A]&quot;</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;inter_residue_contacts:&quot;</span>)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> mrt.inter_residue_contact_summaries:</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;ir_contact </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>area<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;residue_cells:&quot;</span>)</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> cell <span class="kw">in</span> mrt.residue_cell_summaries:</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;r_cell </span><span class="sc">{</span>cell<span class="sc">.</span>ID_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>ID_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>ID_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>sas_area<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>volume<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;inter_chain_contacts:&quot;</span>)</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> mrt.inter_chain_contact_summaries:</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;ic_contact </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>area<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;chain_cells:&quot;</span>)</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> cell <span class="kw">in</span> mrt.chain_cell_summaries:</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;c_cell </span><span class="sc">{</span>cell<span class="sc">.</span>ID_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>sas_area<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>volume<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>mrt <span class="op">=</span> voronotalt.MolecularRadicalTessellation.from_file(</span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>    input_file<span class="op">=</span><span class="st">&quot;./input/assembly_1ctf.cif&quot;</span>,</span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>    record_everything_possible<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>    record_inter_residue_contact_summaries<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>    record_inter_chain_contact_summaries<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>    record_chain_cell_summaries<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a>    restrict_contacts_for_output<span class="op">=</span><span class="st">&quot;[-a1 [-chain A] -a2! [-chain A]]&quot;</span></span>
+<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;inter_residue_contacts:&quot;</span>)</span>
+<span id="cb26-40"><a href="#cb26-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-41"><a href="#cb26-41" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> mrt.inter_residue_contact_summaries:</span>
+<span id="cb26-42"><a href="#cb26-42" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;ir_contact </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>area<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span>
+<span id="cb26-43"><a href="#cb26-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-44"><a href="#cb26-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;inter_chain_contacts:&quot;</span>)</span>
+<span id="cb26-45"><a href="#cb26-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-46"><a href="#cb26-46" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> mrt.inter_chain_contact_summaries:</span>
+<span id="cb26-47"><a href="#cb26-47" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;ic_contact </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>area<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span>
+<span id="cb26-48"><a href="#cb26-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-49"><a href="#cb26-49" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;chain_cells:&quot;</span>)</span>
+<span id="cb26-50"><a href="#cb26-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-51"><a href="#cb26-51" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> cell <span class="kw">in</span> mrt.chain_cell_summaries:</span>
+<span id="cb26-52"><a href="#cb26-52" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;c_cell </span><span class="sc">{</span>cell<span class="sc">.</span>ID_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>sas_area<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>volume<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="biomolecules-focused-usage-example-with-converting-output-to-pandas-data-frames">Biomolecules-focused usage example with converting output to pandas data frames</h3>
+<p>Similarly to <code>RadicalTessellation</code>, the <code>MolecularRadicalTessellation</code> allows converting the tessellation computation results to <a href="https://pandas.pydata.org/docs/reference/frame.html">pandas data frames</a> if the <a href="https://pandas.pydata.org/">pandas</a> library for data analysis is available in the Python environment. Below is an example that prints heads of different output data frames that came from the <code>MolecularRadicalTessellation</code> object:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> voronotalt</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>mrt <span class="op">=</span> voronotalt.MolecularRadicalTessellation.from_file(</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    input_file<span class="op">=</span><span class="st">&quot;./input/assembly_1ctf.pdb1&quot;</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    read_as_assembly<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    restrict_contacts_for_output<span class="op">=</span><span class="st">&quot;[-a1 [-chain A] -a2 [-chain A2]]&quot;</span>,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    restrict_cells_for_output<span class="op">=</span><span class="st">&quot;[-chain A]&quot;</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>df_atoms <span class="op">=</span> mrt.atom_balls.to_pandas()</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>df_inter_atom_contacts <span class="op">=</span> mrt.inter_atom_contact_summaries.to_pandas()</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>df_inter_residue_contacts <span class="op">=</span> mrt.inter_residue_contact_summaries.to_pandas()</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>df_inter_chain_contacts <span class="op">=</span> mrt.inter_chain_contact_summaries.to_pandas()</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>df_atom_cells <span class="op">=</span> mrt.atom_cell_summaries.to_pandas()</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>df_residue_cells <span class="op">=</span> mrt.residue_cell_summaries.to_pandas()</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>df_chain_cells <span class="op">=</span> mrt.chain_cell_summaries.to_pandas()</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_atoms)</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_inter_atom_contacts)</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_inter_residue_contacts)</span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_inter_chain_contacts)</span>
+<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_atom_cells)</span>
+<span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-33"><a href="#cb27-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_residue_cells)</span>
+<span id="cb27-35"><a href="#cb27-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-36"><a href="#cb27-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb27-37"><a href="#cb27-37" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_chain_cells)</span></code></pre></div>
+<p>To run this example, make sure you have installed pandas:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pandas</span></code></pre></div>
+<h3 id="biomolecules-focused-usage-example-with-biotite-to-provide-input">Biomolecules-focused usage example with Biotite to provide input</h3>
+<p>If <a href="https://www.biotite-python.org/">Biotite</a> is available in the Python environment, <code>MolecularRadicalTessellation</code> can use <a href="https://www.biotite-python.org/latest/apidoc/biotite.structure.html">biotite.structure</a> for input:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> voronotalt</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> biotite.structure.io</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>structure <span class="op">=</span> biotite.structure.io.load_structure(<span class="st">&quot;./input/assembly_1ctf.cif&quot;</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>mrt <span class="op">=</span> voronotalt.MolecularRadicalTessellation.from_biotite_atoms(structure, include_heteroatoms<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;inter_residue_contacts:&quot;</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> mrt.inter_residue_contact_summaries:</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;ir_contact </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>area<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;residue_cells:&quot;</span>)</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> cell <span class="kw">in</span> mrt.residue_cell_summaries:</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;r_cell </span><span class="sc">{</span>cell<span class="sc">.</span>ID_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>ID_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>ID_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>sas_area<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>volume<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>To run this example, make sure you have installed Biotite:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install biotite</span></code></pre></div>
+<h3 id="biomolecules-focused-usage-example-with-gemmi-to-provide-input">Biomolecules-focused usage example with Gemmi to provide input</h3>
+<p>If <a href="https://gemmi.readthedocs.io/">Gemmi</a> is available in the Python environment, <code>MolecularRadicalTessellation</code> can use <a href="https://project-gemmi.github.io/python-api/gemmi.Model.html">gemmi.Model</a> for input:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> voronotalt</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gemmi</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>structure<span class="op">=</span>gemmi.read_structure(<span class="st">&quot;./input/assembly_1ctf.cif&quot;</span>)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>model<span class="op">=</span>structure[<span class="dv">0</span>]</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>mrt <span class="op">=</span> voronotalt.MolecularRadicalTessellation.from_gemmi_model_atoms(model, include_heteroatoms<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;inter_residue_contacts:&quot;</span>)</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> mrt.inter_residue_contact_summaries:</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;ir_contact </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>area<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;residue_cells:&quot;</span>)</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> cell <span class="kw">in</span> mrt.residue_cell_summaries:</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;r_cell </span><span class="sc">{</span>cell<span class="sc">.</span>ID_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>ID_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>ID_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>sas_area<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>volume<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>To run this example, make sure you have installed Gemmi:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install gemmi</span></code></pre></div>
+<h3 id="biomolecules-focused-usage-example-with-biopython-to-provide-input">Biomolecules-focused usage example with Biopython to provide input</h3>
+<p>If <a href="https://biopython.org/">Biopython</a> is available in the Python environment, <code>MolecularRadicalTessellation</code> can use Biopython parsing results for input:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> voronotalt</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> Bio.PDB</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>parser <span class="op">=</span> Bio.PDB.MMCIFParser(QUIET<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>structure <span class="op">=</span> parser.get_structure(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;./input/assembly_1ctf.cif&quot;</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>atoms<span class="op">=</span>structure.get_atoms()</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>mrt <span class="op">=</span> voronotalt.MolecularRadicalTessellation.from_biopython_atoms(atoms, include_heteroatoms<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;inter_residue_contacts:&quot;</span>)</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> contact <span class="kw">in</span> mrt.inter_residue_contact_summaries:</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;ir_contact </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID1_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>ID2_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>contact<span class="sc">.</span>area<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;residue_cells:&quot;</span>)</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> cell <span class="kw">in</span> mrt.residue_cell_summaries:</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;r_cell </span><span class="sc">{</span>cell<span class="sc">.</span>ID_chain<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>ID_residue_seq_number<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>ID_residue_name<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>sas_area<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>cell<span class="sc">.</span>volume<span class="sc">:.4f}</span><span class="ss">&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>To run this example, make sure you have installed Biopython:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install biopython</span></code></pre></div>
+<h3 id="biomolecules-focused-usage-example-with-custom-radii">Biomolecules-focused usage example with custom radii</h3>
+<p><code>MolecularRadicalTessellation</code> can use a configuration file to specify what van der Waals radii to assign to different atoms based on their names and their residue names:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> voronotalt</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>voronotalt.configure_molecular_radii_assignment_rules(<span class="st">&quot;./input/custom_radii.txt&quot;</span>)<span class="op">;</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>mrt <span class="op">=</span> voronotalt.MolecularRadicalTessellation.from_file(</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    input_file<span class="op">=</span><span class="st">&quot;./input/assembly_1ctf.pdb1&quot;</span>,</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    read_as_assembly<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>    restrict_contacts_for_output<span class="op">=</span><span class="st">&quot;[-a1 [-chain A] -a2 [-chain A2]]&quot;</span>,</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>    restrict_cells_for_output<span class="op">=</span><span class="st">&quot;[-chain A]&quot;</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>df_atoms <span class="op">=</span> mrt.atom_balls.to_pandas()</span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>df_inter_atom_contacts <span class="op">=</span> mrt.inter_atom_contact_summaries.to_pandas()</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>df_inter_residue_contacts <span class="op">=</span> mrt.inter_residue_contact_summaries.to_pandas()</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>df_inter_chain_contacts <span class="op">=</span> mrt.inter_chain_contact_summaries.to_pandas()</span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>df_atom_cells <span class="op">=</span> mrt.atom_cell_summaries.to_pandas()</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>df_residue_cells <span class="op">=</span> mrt.residue_cell_summaries.to_pandas()</span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>df_chain_cells <span class="op">=</span> mrt.chain_cell_summaries.to_pandas()</span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_atoms, n<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_inter_chain_contacts)</span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;--------------------------------------------------------------------------------&quot;</span>)</span>
+<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a>voronotalt.print_head_of_pandas_data_frame(df_chain_cells)</span></code></pre></div>
+<p>A custom radii configuration file format is the same as the one used by the standalone Voronota and Voronota-LT software. An example of a full radii configuration file is <a href="https://github.com/kliment-olechnovic/voronota/blob/master/resources/radii">here</a>.</p>
 <h1 id="voronota-lt-rust-bindings">Voronota-LT Rust bindings</h1>
 <p>Thanks to Mikael Lund, there is also Rust interface for Voronota-LT at <a href="https://github.com/mlund/voronota-rs">https://github.com/mlund/voronota-rs</a>.</p>
 </body>

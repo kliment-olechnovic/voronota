@@ -43,7 +43,7 @@ cat ./resources/texts/cppapi_stateful.markdown
 
 echo
 
-cat ./resources/texts/pyapi.markdown
+cat ./swig/README.md
 
 } > $TMPLDIR/documentation.markdown
 
