@@ -22,12 +22,18 @@ Benchmarking data and results are available [here](./benchmark/index.html).
 Since Voronota-LT version 1.0.1, universal binary execuitables of Voronota-LT
 built with the [Cosmopolitan Libc toolkit](https://github.com/jart/cosmopolitan) are provided.
 
-To download and prepare the latest released cosmopolitan executable, run the following commands:
+To download and prepare the latest released cosmopolitan executable, run the following commands in a shell environment (e.g. a Bash shell):
 
 ```bash
 wget 'https://github.com/kliment-olechnovic/voronota/releases/download/vLATEST_VORONOTA_RELEASE_VERSION/cosmopolitan_LATEST_VORONOTALT_PACKAGE_NAME.exe'
 mv cosmopolitan_LATEST_VORONOTALT_PACKAGE_NAME.exe voronota-lt
 chmod +x voronota-lt
+```
+
+In case of a PowerShell environment in Windows 8, the setup can be done with a single command:
+
+```bash
+Invoke-WebRequest -Uri 'https://github.com/kliment-olechnovic/voronota/releases/download/vLATEST_VORONOTA_RELEASE_VERSION/cosmopolitan_LATEST_VORONOTALT_PACKAGE_NAME.exe' -OutFile voronota-lt.exe
 ```
 
 # Quick install guide
