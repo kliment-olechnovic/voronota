@@ -25,15 +25,15 @@ built with the [Cosmopolitan Libc toolkit](https://github.com/jart/cosmopolitan)
 To download and prepare the latest released cosmopolitan executable, run the following commands in a shell environment (e.g. a Bash shell):
 
 ```bash
-wget 'https://github.com/kliment-olechnovic/voronota/releases/download/vLATEST_VORONOTA_RELEASE_VERSION/cosmopolitan_LATEST_VORONOTALT_PACKAGE_NAME.exe'
-mv cosmopolitan_LATEST_VORONOTALT_PACKAGE_NAME.exe voronota-lt
+wget 'https://github.com/kliment-olechnovic/voronota/releases/download/vLATEST_VORONOTA_RELEASE_VERSION/cosmopolitan_voronota-lt_vLATEST_VORONOTALT_RELEASE_VERSION.exe'
+mv cosmopolitan_voronota-lt_vLATEST_VORONOTALT_RELEASE_VERSION.exe voronota-lt
 chmod +x voronota-lt
 ```
 
 In case of a PowerShell environment in Windows 8, the setup can be done with a single command:
 
 ```bash
-Invoke-WebRequest -Uri 'https://github.com/kliment-olechnovic/voronota/releases/download/vLATEST_VORONOTA_RELEASE_VERSION/cosmopolitan_LATEST_VORONOTALT_PACKAGE_NAME.exe' -OutFile voronota-lt.exe
+Invoke-WebRequest -Uri 'https://github.com/kliment-olechnovic/voronota/releases/download/vLATEST_VORONOTA_RELEASE_VERSION/cosmopolitan_voronota-lt_vLATEST_VORONOTALT_RELEASE_VERSION.exe' -OutFile voronota-lt.exe
 ```
 
 # Quick install guide

@@ -6,13 +6,21 @@ cd $(dirname "$0")
 
 VERSIONID=$(./version.bash)
 
+VORONOTALT_PACKAGE_NAME="$(./expansion_lt/package.bash print-name-and-exit)"
+
+COSMOPOLITAN_VORONOTALT_PACKAGE_NAME="$(./expansion_lt/cosmopolitan/package.bash print-name-and-exit)"
+
 ################################################################################
 
-if [ "$PACKAGE_NAME" == "make_new_release" ]
+if [ "$PACKAGE_NAME" == "make-new-release" ]
 then
 	VERSIONID=$(./version.bash next)
 	echo "$VERSIONID" > ./latest_release_version.txt
 	PACKAGE_NAME="voronota_${VERSIONID}"
+	
+	VORONOTALT_PACKAGE_NAME="$(./expansion_lt/package.bash make-new-release)"
+	
+	COSMOPOLITAN_VORONOTALT_PACKAGE_NAME="$(./expansion_lt/cosmopolitan/package.bash)"
 fi
 
 ################################################################################
@@ -93,7 +101,6 @@ cp \
   "./expansion_lt/CMakeLists.txt" \
   "./expansion_lt/LICENSE.txt" \
   "./expansion_lt/README.md" \
-  "./expansion_lt/VERSION.txt" \
   "./expansion_lt/index.html" \
   "${PACKAGE_NAME}/expansion_lt/"
 
@@ -185,9 +192,13 @@ fi
 
 ################################################################################
 
-VORONOTALT_PACKAGE_NAME="$(./expansion_lt/package.bash)"
-
 mkdir -p "./packages_for_release"
 
-mv "${PACKAGE_NAME}.tar.gz" "./expansion_lt/${VORONOTALT_PACKAGE_NAME}.tar.gz" "./packages_for_release/"
+mv "${PACKAGE_NAME}.tar.gz" "./packages_for_release/"
+
+################################################################################
+
+cp "./expansion_lt/packages_for_release/${VORONOTALT_PACKAGE_NAME}.tar.gz" "./packages_for_release/"
+
+cp "./expansion_lt/packages_for_release/${COSMOPOLITAN_VORONOTALT_PACKAGE_NAME}" "./packages_for_release/"
 

@@ -7,15 +7,11 @@ trap "rm -r $TMPLDIR" EXIT
 
 ################################################################################
 
-cat ./src/voronota_lt.cpp | egrep '^Voronota-LT' > VERSION.txt
-
-################################################################################
-
 {
 
 cat ./resources/texts/intro.markdown \
 | sed "s/LATEST_VORONOTA_RELEASE_VERSION/$(cat ../latest_release_version.txt | tr -d '\n')/g" \
-| sed "s/LATEST_VORONOTALT_PACKAGE_NAME/$(./package.bash print-name-and-exit | tr -d '\n')/g"
+| sed "s/LATEST_VORONOTALT_RELEASE_VERSION/$(cat ./latest_release_version.txt | tr -d '\n')/g"
 
 echo
 
@@ -58,7 +54,7 @@ div#TOC > ul > li > ul > li ul { display: none; }
 </style>
 EOF
 
-DOCUMENTTITLE="$(cat ./src/voronota_lt.cpp | egrep '^Voronota-LT')"
+DOCUMENTTITLE="$(cat ./latest_release_version.txt | tr -d '\n' | sed 's/^/Voronota-LT version /')"
 
 pandoc $TMPLDIR/documentation.markdown -f markdown -t html --metadata title="$DOCUMENTTITLE" -M document-css=false --wrap=none --toc-depth 2 --toc -H $TMPLDIR/include_in_header.html -s -o ./index.html
 
