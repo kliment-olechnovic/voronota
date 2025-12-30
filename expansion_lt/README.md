@@ -136,8 +136,7 @@ voronota-lt -h
 The overview text is the following:
 
 
-    
-    Voronota-LT version 1.0.1
+    Voronota-LT version 1.1
     
     'voronota-lt' executable constructs a radical Voronoi tessellation (also known as a Laguerre-Voronoi diagram or a power diagram)
     of atomic balls of van der Waals radii constrained inside a solvent-accessible surface defined by a rolling probe.
