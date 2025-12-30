@@ -54,7 +54,7 @@ div#TOC > ul > li > ul > li ul { display: none; }
 </style>
 EOF
 
-DOCUMENTTITLE="$(cat ./latest_release_version.txt | tr -d '\n' | sed 's/^/Voronota-LT version /')"
+DOCUMENTTITLE="$(./version.bash major | sed 's/^/Voronota-LT version /')"
 
 pandoc $TMPLDIR/documentation.markdown -f markdown -t html --metadata title="$DOCUMENTTITLE" -M document-css=false --wrap=none --toc-depth 2 --toc -H $TMPLDIR/include_in_header.html -s -o ./index.html
 

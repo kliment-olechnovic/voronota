@@ -28,7 +28,7 @@ echo "Started expansion_js tests on               $(date +'%D %T')"
 echo "Altered expansion_js tests output files:    $(git status -s ./expansion_js/tests/jobs_output/ 2>&1 | wc -l)"
 
 echo "Started expansion_lt tests on               $(date +'%D %T')"
-./expansion_lt/tests/run_all_tests.bash
+./expansion_lt/test.bash
 echo "Altered expansion_lt tests output files:    $(git status -s ./expansion_lt/tests/output/ ./expansion_lt/swig/tests/output/ 2>&1 | wc -l)"
 
 echo "Finished tests on                           $(date +'%D %T')"
