@@ -1,4 +1,4 @@
-ia_header	ID1_chain	ID1_rnum	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
+ia_header	ID1_chain	ID1_rnum	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_length	distance
 ia	A	1	.	N	A	1	.	CA	0	1	16.5137	6.06483	1.4962
 ia	A	1	.	N	A	1	.	CB	0	4	8.78012	6.97738	2.47926
 ia	A	1	.	N	A	1	.	C	0	2	2.26495	1.78545	2.51605

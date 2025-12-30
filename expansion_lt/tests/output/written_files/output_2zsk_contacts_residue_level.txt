@@ -1,4 +1,4 @@
-ir_header	ID1_chain	ID1_rnum	ID1_rname	ID2_chain	ID2_rnum	ID2_rname	area	arc_legth	distance	count
+ir_header	ID1_chain	ID1_rnum	ID1_rname	ID2_chain	ID2_rnum	ID2_rname	area	arc_length	distance	count
 ir	A	1	.	A	2	.	27.3555	5.59216	1.33573	10
 ir	A	1	.	A	224	.	9.38126	0	3.34954	3
 ir	A	1	.	A	226	.	6.14355	3.85731	4.80279	2

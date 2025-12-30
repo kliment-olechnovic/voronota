@@ -1,4 +1,4 @@
-ia_header	ID1_chain	ID1_rnum	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
+ia_header	ID1_chain	ID1_rnum	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_length	distance
 ia	A	53	GLU	N	A	53	GLU	CA	0	1	12.5167	1.58166	1.48837
 ia	A	53	GLU	N	A	53	GLU	CB	0	4	4.42067	2.81052	2.50605
 ia	A	53	GLU	N	A	53	GLU	C	0	2	1.45209	0	2.45376
@@ -6277,7 +6277,7 @@ ia	A-2	120	LYS	CB	A-2	120	LYS	OXT	968	973	1.43995	2.82799	3.31987
 ia	A-2	54	PHE	CD2	A-2	120	LYS	OXT	503	973	5.16303	0.938865	4.05757
 ia	A-2	54	PHE	CA	A-2	120	LYS	OXT	497	973	0.0105183	0	4.76114
 ia	A-2	53	GLU	O	A-2	120	LYS	OXT	490	973	3.38259	3.47163	4.7689
-ir_header	ID1_chain	ID1_rnum	ID1_rname	ID2_chain	ID2_rnum	ID2_rname	area	arc_legth	distance	count
+ir_header	ID1_chain	ID1_rnum	ID1_rname	ID2_chain	ID2_rnum	ID2_rname	area	arc_length	distance	count
 ir	A	53	GLU	A	54	PHE	41.7696	9.69602	1.34774	21
 ir	A	53	GLU	A	98	VAL	6.60744	0.0670848	3.47871	6
 ir	A	53	GLU	A	99	SER	5.80868	5.00507	5.18182	3
@@ -6984,7 +6984,7 @@ ir	A-2	56	VAL	A-2	119	VAL	10.5519	0	4.46268	6
 ir	A-2	119	VAL	A-2	120	LYS	29.5942	7.06644	1.33978	10
 ir	A-2	117	VAL	A-2	119	VAL	2.40129	0	5.08494	1
 ir	A-2	57	ILE	A-2	120	LYS	23.184	6.12861	3.57606	6
-ic_header	ID1_chain	ID2_chain	area	arc_legth	distance	count
+ic_header	ID1_chain	ID2_chain	area	arc_length	distance	count
 ic	A	A-2	513.032	142.699	2.8269	218
 ac_header	ID_chain	ID_rnum	ID_rname	ID_atom	ID_index	sas_area	volume
 ac	A	54	PHE	N	9	0	9.40207
@@ -7002,7 +7002,7 @@ rc_header	ID_chain	ID_rnum	ID_rname	sas_area	volume	count
 rc	A	54	PHE	58.0118	251.789	11
 cc_header	ID_chain	sas_area	volume	count
 cc	A	58.0118	251.789	11
-as_header	ID_chain	ID_rnum	ID_rname	ID_atom	ID_index	area	arc_legth	distance
+as_header	ID_chain	ID_rnum	ID_rname	ID_atom	ID_index	area	arc_length	distance
 as	A	54	PHE	N	9	28.0536	0	1.34774
 as	A	54	PHE	CA	10	49.5547	1.11777	1.51119
 as	A	54	PHE	C	11	37.6078	0	1.2289
@@ -7014,5 +7014,5 @@ as	A	54	PHE	CD2	16	59.7367	7.38248	1.3931
 as	A	54	PHE	CE1	17	49.5596	12.0152	1.37516
 as	A	54	PHE	CE2	18	48.6041	22.1525	1.39995
 as	A	54	PHE	CZ	19	50.0399	17.7961	1.37516
-rs_header	ID_chain	ID_rnum	ID_rname	area	arc_legth	distance	count
+rs_header	ID_chain	ID_rnum	ID_rname	area	arc_length	distance	count
 rs	A	54	PHE	187.971	35.0933	1.31559	91

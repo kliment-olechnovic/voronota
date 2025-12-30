@@ -1,4 +1,4 @@
-ia_header	ID1_chain	ID1_rnum	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
+ia_header	ID1_chain	ID1_rnum	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_length	distance
 ia	A	1	.	N	A	1	.	CA	0	1	16.5137	6.06483	1.4962
 ia	A	1	.	N	A	1	.	CB	0	4	8.78012	6.97738	2.47926
 ia	A	1	.	N	A	1	.	C	0	2	2.26495	1.78545	2.51605
@@ -23854,7 +23854,7 @@ ia	B	226	.	CB	B	226	.	OXT	3539	3544	5.32811	3.67056	2.85839
 ia	B	226	.	O	B	226	.	OXT	3538	3544	1.40084	3.6692	2.21839
 ia	B	226	.	CG	B	226	.	OXT	3540	3544	3.46783	1.93367	3.32776
 ia	B	226	.	OE2	B	226	.	OXT	3543	3544	0.261984	1.77425	4.65676
-ir_header	ID1_chain	ID1_rnum	ID1_rname	ID2_chain	ID2_rnum	ID2_rname	area	arc_legth	distance	count
+ir_header	ID1_chain	ID1_rnum	ID1_rname	ID2_chain	ID2_rnum	ID2_rname	area	arc_length	distance	count
 ir	A	1	.	A	2	.	27.3555	5.59216	1.33573	10
 ir	A	1	.	A	224	.	9.38126	0	3.34954	3
 ir	A	1	.	A	226	.	6.14355	3.85731	4.80279	2
@@ -26409,7 +26409,7 @@ ir	B	222	.	B	226	.	10.7162	4.97691	3.21202	6
 ir	B	223	.	B	226	.	40.6566	16.2682	3.05552	15
 ir	B	1	.	B	226	.	6.03262	4.33126	4.95545	1
 ir	B	2	.	B	226	.	2.64348	3.23262	5.5633	2
-ic_header	ID1_chain	ID2_chain	area	arc_legth	distance	count
+ic_header	ID1_chain	ID2_chain	area	arc_length	distance	count
 ic	A	B	1407.36	248.965	2.42567	692
 ac_header	ID_chain	ID_rnum	ID_rname	ID_atom	ID_index	sas_area	volume
 ac	A	1	.	N	0	53.3426	63.8989
@@ -30413,7 +30413,7 @@ rc	B	226	.	172.549	324.387	10
 cc_header	ID_chain	sas_area	volume	count
 cc	A	9441.91	42590.6	1801
 cc	B	9208.03	41365.9	1744
-as_header	ID_chain	ID_rnum	ID_rname	ID_atom	ID_index	area	arc_legth	distance
+as_header	ID_chain	ID_rnum	ID_rname	ID_atom	ID_index	area	arc_length	distance
 as	A	1	.	N	0	33.5123	20.284	1.4962
 as	A	1	.	CA	1	56.9533	14.1562	1.4962
 as	A	1	.	C	2	40.2407	6.84503	1.23806
@@ -33959,7 +33959,7 @@ as	B	226	.	CD	3541	53.8392	11.9488	1.24981
 as	B	226	.	OE1	3542	33.3146	16.3899	1.24981
 as	B	226	.	OE2	3543	28.4627	18.8774	1.25016
 as	B	226	.	OXT	3544	28.6289	18.4755	1.25275
-rs_header	ID_chain	ID_rnum	ID_rname	area	arc_legth	distance	count
+rs_header	ID_chain	ID_rnum	ID_rname	area	arc_length	distance	count
 rs	A	1	.	89.7961	41.8954	1.33573	34
 rs	A	2	.	125.336	27.0767	1.32497	55
 rs	A	3	.	176.96	29.6217	1.32497	86
@@ -34412,6 +34412,6 @@ rs	B	223	.	170.146	44.334	1.32642	69
 rs	B	224	.	124.527	1.62361	1.32518	55
 rs	B	225	.	111.898	33.7916	1.32518	44
 rs	B	226	.	94.4463	38.4693	1.32965	37
-cs_header	ID_chain	area	arc_legth	distance	count
+cs_header	ID_chain	area	arc_length	distance	count
 cs	A	1407.36	248.965	2.42567	692
 cs	B	1407.36	248.965	2.42567	692

@@ -99,11 +99,11 @@ public:
 				string_append_cstring(output, "ia_header\t");
 				print_label_header("1", false, false, no_icode, output);
 				print_label_header("2", false, false, no_icode, output);
-				string_append_cstring(output, "ID1_index\tID2_index\tarea\tarc_legth\tdistance\n");
+				string_append_cstring(output, "ID1_index\tID2_index\tarea\tarc_length\tdistance\n");
 			}
 			else
 			{
-				string_append_cstring(output, "ia_header\tID1_index\tID2_index\tarea\tarc_legth\tdistance\n");
+				string_append_cstring(output, "ia_header\tID1_index\tID2_index\tarea\tarc_length\tdistance\n");
 			}
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
@@ -267,11 +267,11 @@ public:
 			{
 				string_append_cstring(output, "as_header\t");
 				print_label_header("", false, false, no_icode, output);
-				string_append_cstring(output, "ID_index\tarea\tarc_legth\tdistance\n");
+				string_append_cstring(output, "ID_index\tarea\tarc_length\tdistance\n");
 			}
 			else
 			{
-				string_append_cstring(output, "as_header\tID_index\tarea\tarc_legth\tdistance\n");
+				string_append_cstring(output, "as_header\tID_index\tarea\tarc_length\tdistance\n");
 			}
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
@@ -471,7 +471,7 @@ private:
 			string_append_cstring(output, "_header\t");
 			print_label_header("1", (chain_level && minimum_columns), minimum_columns, no_icode, output);
 			print_label_header("2", (chain_level && minimum_columns), minimum_columns, no_icode, output);
-			string_append_cstring(output, "area\tarc_legth\tdistance\tcount\n");
+			string_append_cstring(output, "area\tarc_length\tdistance\tcount\n");
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
 			if(grouped_contacts.size()>1000)
@@ -607,7 +607,7 @@ private:
 			string_append_cstring(output, (chain_level ? "cs" : "rs"));
 			string_append_cstring(output, "_header\t");
 			print_label_header("", (chain_level && minimum_columns), minimum_columns, no_icode, output);
-			string_append_cstring(output, "area\tarc_legth\tdistance\tcount\n");
+			string_append_cstring(output, "area\tarc_length\tdistance\tcount\n");
 			bool printed_in_parallel=false;
 #ifdef VORONOTALT_OPENMP
 			if(grouped_sites.size()>1000)

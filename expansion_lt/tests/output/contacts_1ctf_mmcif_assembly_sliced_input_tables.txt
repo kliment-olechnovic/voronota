@@ -1,4 +1,4 @@
-ia_header	ID1_chain	ID1_rnum	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
+ia_header	ID1_chain	ID1_rnum	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_length	distance
 ia	A	54	PHE	N	A	54	PHE	CA	0	1	14.7785	4.71764	1.51119
 ia	A	54	PHE	N	A	54	PHE	CB	0	4	2.89552	1.02032	2.412
 ia	A	54	PHE	N	A	54	PHE	CD1	0	6	11.5703	6.07785	2.97212
@@ -45,7 +45,7 @@ rc_header	ID_chain	ID_rnum	ID_rname	sas_area	volume	count
 rc	A	54	PHE	324.724	482.809	11
 cc_header	ID_chain	sas_area	volume	count
 cc	A	324.724	482.809	11
-as_header	ID_chain	ID_rnum	ID_rname	ID_atom	ID_index	area	arc_legth	distance
+as_header	ID_chain	ID_rnum	ID_rname	ID_atom	ID_index	area	arc_length	distance
 as	A	54	PHE	N	0	38.4116	21.332	1.51119
 as	A	54	PHE	CA	1	51.3645	17.6477	1.51119
 as	A	54	PHE	C	2	44.4249	22.267	1.2289

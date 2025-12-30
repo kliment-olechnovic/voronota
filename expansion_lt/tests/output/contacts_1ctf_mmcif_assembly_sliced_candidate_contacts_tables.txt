@@ -1,4 +1,4 @@
-ia_header	ID1_chain	ID1_rnum	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_legth	distance
+ia_header	ID1_chain	ID1_rnum	ID1_rname	ID1_atom	ID2_chain	ID2_rnum	ID2_rname	ID2_atom	ID1_index	ID2_index	area	arc_length	distance
 ia	A	53	GLU	N	A	54	PHE	CE1	0	17	7.3809	3.82028	4.09728
 ia	A	53	GLU	N	A	54	PHE	CD1	0	15	0.0359529	0	4.09924
 ia	A	53	GLU	N	A	54	PHE	CZ	0	19	2.70772	2.95728	4.71093
@@ -117,7 +117,7 @@ ia	A	54	PHE	CB	A	120	LYS	O	13	480	1.9576	0	3.68948
 ia	A	54	PHE	CD2	A	120	LYS	O	16	480	1.3148	0	3.85337
 ia	A	54	PHE	CD2	A	120	LYS	OXT	16	486	5.16303	0.938865	4.05757
 ia	A	54	PHE	CA	A	120	LYS	OXT	10	486	0.0105183	0	4.76114
-ir_header	ID1_chain	ID1_rnum	ID1_rname	ID2_chain	ID2_rnum	ID2_rname	area	arc_legth	distance	count
+ir_header	ID1_chain	ID1_rnum	ID1_rname	ID2_chain	ID2_rnum	ID2_rname	area	arc_length	distance	count
 ir	A	53	GLU	A	54	PHE	41.7696	9.69602	1.34774	21
 ir	A	54	PHE	A	55	ASP	24.9977	0.406154	1.31559	13
 ir	A	54	PHE	A	98	VAL	22.6954	0	2.60767	10
@@ -130,7 +130,7 @@ ir	A	54	PHE	A	119	VAL	16.308	4.2531	4.15525	4
 ir	A	54	PHE	A	99	SER	4.77292	0.678343	3.69218	6
 ir	A	54	PHE	A	120	LYS	19.9717	6.17435	3.39058	8
 ir	A	54	PHE	A	97	GLY	6.50794	0	3.11447	6
-as_header	ID_chain	ID_rnum	ID_rname	ID_atom	ID_index	area	arc_legth	distance
+as_header	ID_chain	ID_rnum	ID_rname	ID_atom	ID_index	area	arc_length	distance
 as	A	53	GLU	N	0	10.1645	6.91175	4.09728
 as	A	53	GLU	CA	1	7.04656	0.0737395	2.39383
 as	A	53	GLU	C	2	13.4898	0	1.34774
@@ -177,7 +177,7 @@ as	A	120	LYS	CA	478	0.00833508	0.105397	5.25232
 as	A	120	LYS	C	479	3.97844	0.727242	4.24193
 as	A	120	LYS	O	480	8.35352	0.234499	3.39058
 as	A	120	LYS	OXT	486	7.63139	5.10721	4.05757
-rs_header	ID_chain	ID_rnum	ID_rname	area	arc_legth	distance	count
+rs_header	ID_chain	ID_rnum	ID_rname	area	arc_length	distance	count
 rs	A	53	GLU	41.7696	9.69602	1.34774	21
 rs	A	54	PHE	187.971	35.0933	1.31559	91
 rs	A	55	ASP	24.9977	0.406154	1.31559	13
