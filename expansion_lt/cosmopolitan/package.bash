@@ -12,13 +12,25 @@ then
 	exit 0
 fi
 
-./build.bash
+SOURCE_PACKAGE_NAME="$(../package.bash print-name-and-exit)"
 
-mkdir -p "../packages_for_release"
+if [ ! -s "../packages_for_release/${SOURCE_PACKAGE_NAME}.tar.gz" ]
+then
+	SOURCE_PACKAGE_NAME="$(../package.bash)"
+fi
 
-FILE_PATH="../packages_for_release/${FILE_NAME}"
+cd "../packages_for_release/"
+rm -rf "./${SOURCE_PACKAGE_NAME}"
+tar -xf "./${SOURCE_PACKAGE_NAME}.tar.gz"
+cd - &> /dev/null
 
-cp "./voronota-lt" "$FILE_PATH"
+./build.bash "../packages_for_release/${SOURCE_PACKAGE_NAME}/src"
+
+cd "../packages_for_release/"
+rm -rf "./${SOURCE_PACKAGE_NAME}"
+cd - &> /dev/null
+
+cp "./voronota-lt" "../packages_for_release/${FILE_NAME}"
 
 echo "$FILE_NAME"
 
