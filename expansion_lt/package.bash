@@ -4,7 +4,7 @@ cd $(dirname "$0")
 
 MODENAME="$1"
 
-VERSIONID=$(./version.bash)
+VERSIONID="$(cat ./latest_release_version.txt)"
 
 ################################################################################
 
