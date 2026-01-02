@@ -55,7 +55,7 @@ std::vector<std::string> generate_results(const std::string& input_data, const s
 		const std::vector<int>& grouping_for_filtering=(compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : null_grouping);
 		const bool summarize_cells=grouping_for_filtering.empty();
 
-		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, false, voronotalt::RadicalTessellation::ParametersForGraphics(), summarize_cells, result, result_graphics, time_recorder);
+		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, false, voronotalt::RadicalTessellation::ParametersForGraphics(), voronotalt::RadicalTessellation::ParametersForGeneratingSummaries(false, summarize_cells), result, result_graphics, time_recorder);
 	}
 
 	voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;
@@ -111,60 +111,63 @@ std::vector<std::string> generate_results(const std::string& input_data, const s
 		}
 	}
 
+	const bool minimum_columns=true;
+	const bool no_icode=!spheres_input_result.labels_have_icodes;
+
 	if(!spheres_input_result.spheres.empty())
 	{
-		std::ostringstream output;
-		voronotalt::PrintingCustomTypes::print_balls_to_stream(spheres_input_result.spheres, spheres_input_result.sphere_labels, probe, true, output);
+		std::string output;
+		voronotalt::PrintingCustomTypes::print_balls(spheres_input_result.spheres, spheres_input_result.sphere_labels, probe, true, output);
 		results.push_back(std::string("input-atom-balls"));
-		results.push_back(output.str());
+		results.push_back(output);
 	}
 
 	if(!result.contacts_summaries.empty())
 	{
-		std::ostringstream output;
-		voronotalt::PrintingCustomTypes::print_contacts_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, true, output);
+		std::string output;
+		voronotalt::PrintingCustomTypes::print_contacts(result.contacts_summaries, spheres_input_result.sphere_labels, true, no_icode, output);
 		results.push_back(std::string("atom-level-contacts"));
-		results.push_back(output.str());
+		results.push_back(output);
 	}
 
 	if(!result_grouped_by_residue.grouped_contacts_summaries.empty())
 	{
-		std::ostringstream output;
-		voronotalt::PrintingCustomTypes::print_contacts_residue_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, output);
+		std::string output;
+		voronotalt::PrintingCustomTypes::print_contacts_residue_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_contacts_representative_ids, result_grouped_by_residue.grouped_contacts_summaries, minimum_columns, no_icode, output);
 		results.push_back(std::string("residue-level-contacts"));
-		results.push_back(output.str());
+		results.push_back(output);
 	}
 
 	if(!result_grouped_by_chain.grouped_contacts_summaries.empty())
 	{
-		std::ostringstream output;
-		voronotalt::PrintingCustomTypes::print_contacts_chain_level_to_stream(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, output);
+		std::string output;
+		voronotalt::PrintingCustomTypes::print_contacts_chain_level(result.contacts_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_contacts_representative_ids, result_grouped_by_chain.grouped_contacts_summaries, minimum_columns, no_icode, output);
 		results.push_back(std::string("chain-level-contacts"));
-		results.push_back(output.str());
+		results.push_back(output);
 	}
 
 	if(!result.cells_summaries.empty())
 	{
-		std::ostringstream output;
-		voronotalt::PrintingCustomTypes::print_cells_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, true, output);
+		std::string output;
+		voronotalt::PrintingCustomTypes::print_cells(result.cells_summaries, spheres_input_result.sphere_labels, true, no_icode, output);
 		results.push_back(std::string("atom-level-cell-summaries"));
-		results.push_back(output.str());
+		results.push_back(output);
 	}
 
 	if(!result_grouped_by_residue.grouped_cells_summaries.empty())
 	{
-		std::ostringstream output;
-		voronotalt::PrintingCustomTypes::print_cells_residue_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, output);
+		std::string output;
+		voronotalt::PrintingCustomTypes::print_cells_residue_level(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_cells_representative_ids, result_grouped_by_residue.grouped_cells_summaries, minimum_columns, no_icode, output);
 		results.push_back(std::string("residue-level-cell-summaries"));
-		results.push_back(output.str());
+		results.push_back(output);
 	}
 
 	if(!result_grouped_by_chain.grouped_cells_summaries.empty())
 	{
-		std::ostringstream output;
-		voronotalt::PrintingCustomTypes::print_cells_chain_level_to_stream(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, output);
+		std::string output;
+		voronotalt::PrintingCustomTypes::print_cells_chain_level(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, minimum_columns, no_icode, output);
 		results.push_back(std::string("chain-level-cell-summaries"));
-		results.push_back(output.str());
+		results.push_back(output);
 	}
 
 	return results;
