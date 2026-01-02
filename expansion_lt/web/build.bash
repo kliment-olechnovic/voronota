@@ -34,3 +34,8 @@ then
 	exit 1
 fi
 
+VERSION="$(cat ../latest_release_version.txt | tr -d '\n')"
+
+cat "./index.html" \
+| sed "s|(version\s\S\+)|(version ${VERSION})|" \
+| sponge "./index.html"

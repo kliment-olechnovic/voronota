@@ -55,7 +55,7 @@ std::vector<std::string> generate_results(const std::string& input_data, const s
 		const std::vector<int>& grouping_for_filtering=(compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : null_grouping);
 		const bool summarize_cells=grouping_for_filtering.empty();
 
-		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, false, voronotalt::RadicalTessellation::ParametersForGraphics(), voronotalt::RadicalTessellation::ParametersForGeneratingSummaries(false, summarize_cells), result, result_graphics, time_recorder);
+		voronotalt::RadicalTessellation::construct_full_tessellation(spheres_container, grouping_for_filtering, false, voronotalt::RadicalTessellation::ParametersForGraphics(), voronotalt::RadicalTessellation::ParametersForGeneratingSummaries(true, summarize_cells), result, result_graphics, time_recorder);
 	}
 
 	voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;
@@ -167,6 +167,30 @@ std::vector<std::string> generate_results(const std::string& input_data, const s
 		std::string output;
 		voronotalt::PrintingCustomTypes::print_cells_chain_level(result.cells_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_cells_representative_ids, result_grouped_by_chain.grouped_cells_summaries, minimum_columns, no_icode, output);
 		results.push_back(std::string("chain-level-cell-summaries"));
+		results.push_back(output);
+	}
+
+	if(!result.sites_summaries.empty())
+	{
+		std::string output;
+		voronotalt::PrintingCustomTypes::print_sites(result.sites_summaries, spheres_input_result.sphere_labels, true, no_icode, output);
+		results.push_back(std::string("atom-level-site-summaries"));
+		results.push_back(output);
+	}
+
+	if(!result_grouped_by_residue.grouped_sites_summaries.empty())
+	{
+		std::string output;
+		voronotalt::PrintingCustomTypes::print_sites_residue_level(result.sites_summaries, spheres_input_result.sphere_labels, result_grouped_by_residue.grouped_sites_representative_ids, result_grouped_by_residue.grouped_sites_summaries, minimum_columns, no_icode, output);
+		results.push_back(std::string("residue-level-site-summaries"));
+		results.push_back(output);
+	}
+
+	if(!result_grouped_by_chain.grouped_sites_summaries.empty())
+	{
+		std::string output;
+		voronotalt::PrintingCustomTypes::print_sites_chain_level(result.sites_summaries, spheres_input_result.sphere_labels, result_grouped_by_chain.grouped_sites_representative_ids, result_grouped_by_chain.grouped_sites_summaries, minimum_columns, no_icode, output);
+		results.push_back(std::string("chain-level-site-summaries"));
 		results.push_back(output);
 	}
 
