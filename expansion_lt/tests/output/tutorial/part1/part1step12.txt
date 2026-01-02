@@ -1,0 +1,6 @@
+rs_header  ID_chain  ID_rnum  ID_rname  area     arc_length  distance  count
+rs         A         28       LEU       66.5301  13.6603     3.29141   31
+rs         A         20       MET       58.6823  8.96523     3.38138   22
+rs         A         45       HIS       56.6945  15.47       2.10898   33
+rs         A         31       PHE       52.6696  0           3.24318   34
+rs         A         46       THR       42.0902  0           2.26879   19

@@ -1,0 +1,324 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg height="586" style="font-family:monospace;" width="300" xmlns="http://www.w3.org/2000/svg">
+  <rect height="586" style="fill:#FFFFFF;" width="300" x="0" y="0"/>
+  <rect height="460" style="fill:#F9F9F9;" width="210" x="0" y="126"/>
+  <rect height="200" style="fill:#E9E9E9;" width="210" x="0" y="126"/>
+  <rect height="260" style="fill:#E9E9E9;" width="210" x="0" y="326"/>
+  <rect height="40" style="fill:#C0C0C0;" width="60" x="0" y="176"/>
+  <rect height="80" style="fill:#C0C0C0;" width="60" x="0" y="216"/>
+  <rect height="30" style="fill:#C0C0C0;" width="60" x="0" y="296"/>
+  <rect height="90" style="fill:#C0C0C0;" width="60" x="0" y="386"/>
+  <rect height="90" style="fill:#C0C0C0;" width="60" x="0" y="476"/>
+  <rect height="20" style="fill:#C0C0C0;" width="60" x="60" y="136"/>
+  <rect height="10" style="fill:#C0C0C0;" width="60" x="60" y="166"/>
+  <rect height="40" style="fill:#C0C0C0;" width="60" x="60" y="176"/>
+  <rect height="60" style="fill:#C0C0C0;" width="60" x="60" y="326"/>
+  <rect height="90" style="fill:#C0C0C0;" width="60" x="60" y="386"/>
+  <rect height="90" style="fill:#C0C0C0;" width="60" x="60" y="476"/>
+  <rect height="10" style="fill:#C0C0C0;" width="90" x="120" y="126"/>
+  <rect height="20" style="fill:#C0C0C0;" width="90" x="120" y="136"/>
+  <rect height="10" style="fill:#C0C0C0;" width="90" x="120" y="156"/>
+  <rect height="10" style="fill:#C0C0C0;" width="90" x="120" y="166"/>
+  <rect height="90" style="fill:#C0C0C0;" width="90" x="120" y="386"/>
+  <rect height="90" style="fill:#C0C0C0;" width="90" x="120" y="476"/>
+  <rect height="20" style="fill:#C0C0C0;" width="90" x="120" y="566"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="0" y="296"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="0" y="316"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="10" y="306"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="10" y="316"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="20" y="216"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="20" y="246"/>
+  <rect height="10" style="fill:rgb(112,164,192);" width="10" x="20" y="256"/>
+  <rect height="10" style="fill:rgb(113,164,192);" width="10" x="20" y="306"/>
+  <rect height="10" style="fill:rgb(112,164,193);" width="10" x="20" y="316"/>
+  <rect height="10" style="fill:rgb(112,163,193);" width="10" x="30" y="216"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="30" y="226"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="30" y="246"/>
+  <rect height="10" style="fill:rgb(254,254,0);" width="10" x="30" y="266"/>
+  <rect height="10" style="fill:rgb(112,163,192);" width="10" x="30" y="286"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="30" y="436"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="30" y="526"/>
+  <rect height="10" style="fill:rgb(112,163,193);" width="10" x="30" y="546"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="40" y="216"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="40" y="246"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="40" y="276"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="40" y="296"/>
+  <rect height="10" style="fill:rgb(112,164,192);" width="10" x="40" y="316"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="50" y="176"/>
+  <rect height="10" style="fill:rgb(112,163,192);" width="10" x="50" y="186"/>
+  <rect height="10" style="fill:rgb(255,0,255);" width="10" x="50" y="206"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="50" y="236"/>
+  <rect height="10" style="fill:rgb(113,164,192);" width="10" x="50" y="246"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="50" y="256"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="50" y="266"/>
+  <rect height="10" style="fill:rgb(255,0,255);" width="10" x="50" y="286"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="50" y="436"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="50" y="476"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="50" y="516"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="50" y="526"/>
+  <rect height="10" style="fill:rgb(254,254,0);" width="10" x="60" y="356"/>
+  <rect height="10" style="fill:rgb(254,254,0);" width="10" x="60" y="366"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="70" y="346"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="70" y="356"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="70" y="366"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="80" y="366"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="90" y="326"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="90" y="356"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="90" y="426"/>
+  <rect height="10" style="fill:rgb(255,0,255);" width="10" x="90" y="446"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="100" y="166"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="100" y="196"/>
+  <rect height="10" style="fill:rgb(254,254,0);" width="10" x="100" y="336"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="100" y="346"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="100" y="356"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="100" y="366"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="100" y="376"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="100" y="406"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="100" y="416"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="100" y="446"/>
+  <rect height="10" style="fill:rgb(255,0,255);" width="10" x="100" y="466"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="100" y="556"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="110" y="136"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="120" y="136"/>
+  <rect height="10" style="fill:rgb(254,254,0);" width="10" x="130" y="136"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="130" y="156"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="140" y="136"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="150" y="136"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="150" y="146"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="150" y="406"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="150" y="426"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="150" y="446"/>
+  <rect height="10" style="fill:rgb(254,254,0);" width="10" x="150" y="566"/>
+  <rect height="10" style="fill:rgb(254,254,0);" width="10" x="150" y="576"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="160" y="136"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="170" y="426"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="180" y="136"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="180" y="146"/>
+  <rect height="10" style="fill:rgb(254,0,254);" width="10" x="180" y="156"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="180" y="166"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="180" y="406"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="180" y="416"/>
+  <rect height="10" style="fill:rgb(254,254,0);" width="10" x="180" y="446"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="180" y="466"/>
+  <rect height="10" style="fill:rgb(254,254,0);" width="10" x="180" y="486"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="180" y="496"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="180" y="536"/>
+  <rect height="10" style="fill:rgb(254,0,254);" width="10" x="180" y="556"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="180" y="576"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="190" y="386"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="190" y="396"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="190" y="406"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="190" y="426"/>
+  <rect height="10" style="fill:rgb(255,0,255);" width="10" x="190" y="446"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="190" y="456"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="190" y="486"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="190" y="496"/>
+  <rect height="10" style="fill:rgb(254,254,0);" width="10" x="190" y="506"/>
+  <rect height="10" style="fill:rgb(255,0,255);" width="10" x="190" y="536"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="190" y="556"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="190" y="566"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="190" y="576"/>
+  <rect height="10" style="fill:rgb(113,164,193);" width="10" x="200" y="126"/>
+  <rect height="10" style="fill:rgb(255,255,0);" width="10" x="200" y="136"/>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 10 125)" x="10" y="125">
+    B 1107|LYS CA
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 20 125)" x="20" y="125">
+    B 1107|LYS CB
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 30 125)" x="30" y="125">
+    B 1107|LYS CD
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 40 125)" x="40" y="125">
+    B 1107|LYS CE
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 50 125)" x="50" y="125">
+    B 1107|LYS CG
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 60 125)" x="60" y="125">
+    B 1107|LYS NZ
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 70 125)" x="70" y="125">
+    B 1333|ARG CD
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 80 125)" x="80" y="125">
+    B 1333|ARG CZ
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 90 125)" x="90" y="125">
+    B 1333|ARG NE
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 100 125)" x="100" y="125">
+    B 1333|ARG NH1
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 110 125)" x="110" y="125">
+    B 1333|ARG NH2
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 120 125)" x="120" y="125">
+    B 1333|ARG O
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 130 125)" x="130" y="125">
+    B 1335|ARG CB
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 140 125)" x="140" y="125">
+    B 1335|ARG CD
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 150 125)" x="150" y="125">
+    B 1335|ARG CG
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 160 125)" x="160" y="125">
+    B 1335|ARG CZ
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 170 125)" x="170" y="125">
+    B 1335|ARG N
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 180 125)" x="180" y="125">
+    B 1335|ARG NE
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 190 125)" x="190" y="125">
+    B 1335|ARG NH1
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 200 125)" x="200" y="125">
+    B 1335|ARG NH2
+</text>
+  <text style="font-size:10px; fill:#000000;" transform="rotate(-90 210 125)" x="210" y="125">
+    B 1335|ARG O
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="134">
+    C 2|DA O3'
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="144">
+    C 4|DT C7
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="154">
+    C 4|DT O4
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="164">
+    C 5|DA N6
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="174">
+    C 6|DC N4
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="184">
+    C 7|DC C1'
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="194">
+    C 7|DC C2'
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="204">
+    C 7|DC N4
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="214">
+    C 7|DC O2
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="224">
+    C 8|DA C1'
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="234">
+    C 8|DA C2
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="244">
+    C 8|DA C4
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="254">
+    C 8|DA C4'
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="264">
+    C 8|DA C5'
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="274">
+    C 8|DA N3
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="284">
+    C 8|DA O3'
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="294">
+    C 8|DA O4'
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="304">
+    C 9|DT OP1
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="314">
+    C 9|DT OP2
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="324">
+    C 9|DT P
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="334">
+    D 5|DT C2'
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="344">
+    D 5|DT C4
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="354">
+    D 5|DT C5
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="364">
+    D 5|DT C6
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="374">
+    D 5|DT C7
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="384">
+    D 5|DT O4
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="394">
+    D 6|DG C2'
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="404">
+    D 6|DG C4
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="414">
+    D 6|DG C5
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="424">
+    D 6|DG C6
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="434">
+    D 6|DG C8
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="444">
+    D 6|DG N2
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="454">
+    D 6|DG N7
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="464">
+    D 6|DG N9
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="474">
+    D 6|DG O6
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="484">
+    D 7|DG C2
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="494">
+    D 7|DG C5
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="504">
+    D 7|DG C6
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="514">
+    D 7|DG C8
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="524">
+    D 7|DG N2
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="534">
+    D 7|DG N3
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="544">
+    D 7|DG N7
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="554">
+    D 7|DG O4'
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="564">
+    D 7|DG O6
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="574">
+    D 8|DT C7
+</text>
+  <text style="font-size:10px; fill:#000000;" x="211" y="584">
+    D 8|DT O4
+</text>
+</svg>

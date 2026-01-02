@@ -1,0 +1,3 @@
+contact faces 71A4C1 [-a1 [-protein] -a2 [-nucleic-dna-backbone]]
+contact faces FFFF00 [-a1 [-protein] -a2 [-nucleic-dna-sidechain]]
+contact faces FF00FF [-a1 [-protein -elem N,O] -a2 [-nucleic -elem N,O] -max-dist 3.5]

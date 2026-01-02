@@ -1,0 +1,14 @@
+ir_header  ID1_chain  ID1_rnum  ID1_rname  ID2_chain  ID2_rnum    ID2_rname  area      arc_length  distance  count
+ir         B          1107      LYS        C          7           DC         7.62209   0           2.82114   1
+ir         B          1333      ARG        D          6           DG         10.8492   0           2.71573   2
+ir         B          1335      ARG        D          7           DG         15.141    0           2.59247   2
+ir         B          1335      ARG        C          5           DA         8.84505   1.12351     3.43501   1
+ir         B          1335      ARG        D          6           DG         0.252236  0           3.26329   1
+rs_header  ID_chain   ID_rnum   ID_rname   area       arc_length  distance   count                           
+rs         B          1107      LYS        7.62209    0           2.82114    1                               
+rs         B          1333      ARG        10.8492    0           2.71573    2                               
+rs         B          1335      ARG        24.2383    1.12351     2.59247    4                               
+rs         C          5         DA         8.84505    1.12351     3.43501    1                               
+rs         C          7         DC         7.62209    0           2.82114    1                               
+rs         D          6         DG         11.1014    0           2.71573    3                               
+rs         D          7         DG         15.141     0           2.59247    2                               

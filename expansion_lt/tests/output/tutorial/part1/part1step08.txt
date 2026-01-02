@@ -1,0 +1,23 @@
+log_total_input_balls ...................... 1309
+log_total_collisions ....................... 29947
+log_total_relevant_collisions .............. 29947
+log_total_contacts_count ................... 8727
+log_total_contacts_area .................... 27697.2
+log_total_cells_count ...................... 32
+log_total_cells_sas_area ................... 138.509
+log_total_cells_sas_inside_volume  ......... 648.291
+ac_header  ID_chain  ID_rnum  ID_rname  ID_atom  ID_index  sas_area  volume
+ac         A         161      FOL       OE1      1256      46.2663   46.6389
+ac         A         161      FOL       OE2      1257      23.2247   30.0156
+ac         A         161      FOL       CG       1254      20.7099   41.7968
+ac         A         161      FOL       C12      1244      9.95079   33.0695
+ac         A         161      FOL       C13      1245      9.32997   33.867
+ac         A         161      FOL       CD       1255      7.61197   34.4318
+ac         A         161      FOL       O        1250      7.44125   17.0673
+ac         A         161      FOL       O2       1260      6.8354    21.0889
+ac         A         161      FOL       CA       1252      4.8153    29.2438
+ac         A         161      FOL       N10      1242      1.09339   14.3183
+ac         A         161      FOL       CB       1253      0.78861   25.4645
+ac         A         161      FOL       O4       1234      0.441025  12.7655
+ac         A         161      FOL       N1       1229      0         7.97948
+ac         A         161      FOL       C2       1230      0         22.4478

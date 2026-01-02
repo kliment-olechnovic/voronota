@@ -1,0 +1,8 @@
+ia_header  ID1_chain  ID1_rnum  ID1_rname  ID1_atom  ID2_chain  ID2_rnum  ID2_rname  ID2_atom  ID1_index  ID2_index  area      arc_length  distance
+ia         B          1107      LYS        NZ        C          7         DC         O2        10423      12553      7.62209   0           2.82114
+ia         B          1333      ARG        NH1       D          6         DG         N7        12169      13082      4.19797   0           3.26384
+ia         B          1333      ARG        NH2       D          6         DG         O6        12170      13085      6.6512    0           2.71573
+ia         B          1335      ARG        NH1       D          7         DG         O6        12189      13107      6.91913   0           2.59247
+ia         B          1335      ARG        NH1       C          5         DA         N6        12189      12516      8.84505   1.12351     3.43501
+ia         B          1335      ARG        NH2       D          7         DG         N7        12190      13104      8.22185   0           3.01849
+ia         B          1335      ARG        NH2       D          6         DG         N7        12190      13082      0.252236  0           3.26329

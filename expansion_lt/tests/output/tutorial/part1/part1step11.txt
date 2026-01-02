@@ -1,0 +1,6 @@
+ir_header  ID1_chain  ID1_rnum  ID1_rname  ID2_chain  ID2_rnum  ID2_rname  area     arc_length  distance  count
+ir         A          28        LEU        A          161       FOL        66.5301  13.6603     3.29141   31
+ir         A          45        HIS        A          164       NAP        56.6945  15.47       2.10898   33
+ir         A          31        PHE        A          161       FOL        52.6696  0           3.24318   34
+ir         A          50        ILE        A          161       FOL        36.8353  6.2297      3.56371   24
+ir         A          62        LEU        A          164       NAP        35.7759  0.712174    2.98018   24

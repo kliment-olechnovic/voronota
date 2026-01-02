@@ -1,0 +1,9 @@
+log_total_input_balls ...................... 13224
+log_total_collisions ....................... 297130
+log_total_relevant_collisions .............. 3021
+log_total_contacts_count ................... 893
+log_total_contacts_area .................... 2018.92
+log_total_chain_level_contacts_count ....... 2
+ic_header  ID1_chain  ID2_chain  area     arc_length  distance  count
+ic         B          C          1495.59  638.557     2.31267   657
+ic         B          D          523.323  164.701     2.32567   236

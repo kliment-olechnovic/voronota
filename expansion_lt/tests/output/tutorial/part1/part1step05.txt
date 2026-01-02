@@ -1,0 +1,14 @@
+ia_header  ID1_chain  ID1_rnum  ID1_rname  ID1_atom  ID2_chain  ID2_rnum  ID2_rname  ID2_atom  ID1_index  ID2_index  area      arc_length  distance
+ia         A          32        LYS        CD        A          161       FOL        O2        241        1260       1.51693   0           3.60708
+ia         A          32        LYS        CE        A          161       FOL        O2        242        1260       3.55563   0           3.56789
+ia         A          32        LYS        NZ        A          161       FOL        O2        243        1260       5.80022   4.12454     3.7691
+ia         A          55        PRO        CG        A          161       FOL        O2        416        1260       1.25185   1.54325     5.39567
+ia         A          55        PRO        CD        A          161       FOL        O2        417        1260       5.24461   2.34552     4.83737
+ia         A          161       FOL        CG        A          161       FOL        O2        1254       1260       0.208765  1.17701     4.27808
+ia         A          161       FOL        CT        A          161       FOL        O2        1258       1260       8.88857   0           1.21842
+ia         A          161       FOL        CA        A          161       FOL        O2        1252       1260       5.85404   3.90097     2.28788
+ia         A          161       FOL        CB        A          161       FOL        O2        1253       1260       0.806395  0.379394    3.22046
+ia         A          57        ARG        NH2       A          161       FOL        O2        432        1260       4.38526   0           3.13174
+ia         A          54        LEU        CD2       A          161       FOL        O2        410        1260       0.910472  0.150728    4.33704
+ac_header  ID_chain   ID_rnum   ID_rname   ID_atom   ID_index   sas_area  volume                                                           
+ac         A          161       FOL        O2        1260       6.8354    21.0889                                                          

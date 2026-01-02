@@ -1,0 +1,3 @@
+ic_header  ID1_chain  ID2_chain  area     arc_length  distance  count
+ic         B          C          201.211  91.9088     2.82114   95
+ic         B          D          110.2    25.705      2.59247   62

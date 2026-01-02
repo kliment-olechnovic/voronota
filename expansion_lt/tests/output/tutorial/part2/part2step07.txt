@@ -1,0 +1,6 @@
+log_total_input_balls ...................... 13224
+log_total_collisions ....................... 297130
+log_total_relevant_collisions .............. 364
+log_total_contacts_count ................... 98
+log_total_contacts_area .................... 207.446
+log_total_residue_level_contacts_count ..... 18

@@ -1,0 +1,10 @@
+log_total_input_balls ...................... 1309
+log_total_collisions ....................... 29947
+log_total_relevant_collisions .............. 29947
+log_total_contacts_count ................... 11
+log_total_contacts_area .................... 38.4227
+log_total_residue_level_contacts_count ..... 4
+log_total_cells_count ...................... 1309
+log_total_cells_sas_area ................... 7748.59
+log_total_cells_sas_inside_volume  ......... 31115.8
+log_total_residue_level_cells_count ........ 161
