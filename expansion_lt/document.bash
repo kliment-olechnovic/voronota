@@ -23,6 +23,10 @@ cat ./resources/texts/cli_example.markdown
 
 echo
 
+cat ./resources/texts/filtering_expressions.markdown
+
+echo
+
 echo "# Using Voronota-LT as a C++ library"
 
 echo
