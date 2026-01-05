@@ -37,8 +37,9 @@ public:
 		bool colored;
 		bool xlabeled;
 		bool ylabeled;
+		bool plain_integer_coords;
 
-		ConfigFlags() noexcept : valid(false), dark(false), compact(false), interactive(false), gradient(false), gradient_in_background(false), colored(false), xlabeled(false), ylabeled(false)
+		ConfigFlags() noexcept : valid(false), dark(false), compact(false), interactive(false), gradient(false), gradient_in_background(false), colored(false), xlabeled(false), ylabeled(false), plain_integer_coords(false)
 		{
 		}
 
@@ -84,6 +85,10 @@ public:
 				{
 					cf.ylabeled=true;
 				}
+				else if((*it)=="plain-integer-coords")
+				{
+					cf.plain_integer_coords=true;
+				}
 				else
 				{
 					return cf;
@@ -109,7 +114,56 @@ public:
 		return false;
 	}
 
-	bool write_to_file(const std::string& filename, const std::set<std::string>& config) noexcept
+	std::vector< std::pair<int, int> > get_plain_integer_coordinates(const bool compact) const noexcept
+	{
+		std::vector< std::pair<int, int> > result;
+
+		if(map_of_points_.empty())
+		{
+			return result;
+		}
+
+		std::map<CoordKey, int> map_of_coords_main;
+		std::map<CoordKey, int> map_of_coords_secondary;
+
+		std::map<CoordKey, int>& map_of_coords_horizontal=map_of_coords_main;
+		std::map<CoordKey, int>& map_of_coords_vertical=(compact ? map_of_coords_secondary : map_of_coords_main);
+
+		for(std::map<PointKey, PointValue>::const_iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
+		{
+			map_of_coords_horizontal[it->first.a]=0.0;
+			map_of_coords_vertical[it->first.b]=0.0;
+		}
+
+		int length_horizontal=0;
+		for(std::map<CoordKey, int>::iterator it=map_of_coords_horizontal.begin();it!=map_of_coords_horizontal.end();++it)
+		{
+			it->second=length_horizontal;
+			length_horizontal++;
+		}
+
+		int length_vertical=0;
+		for(std::map<CoordKey, int>::iterator it=map_of_coords_vertical.begin();it!=map_of_coords_vertical.end();++it)
+		{
+			it->second=length_vertical;
+			length_vertical++;
+		}
+
+		for(std::map<PointKey, PointValue>::const_iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
+		{
+			int x=map_of_coords_horizontal[it->first.a];
+			int y=map_of_coords_vertical[it->first.b];
+			result.push_back(std::pair<int, int>(x, y));
+			if(!compact)
+			{
+				result.push_back(std::pair<int, int>(y, x));
+			}
+		}
+
+		return result;
+	}
+
+	bool write_to_file(const std::string& filename, const std::set<std::string>& config) const noexcept
 	{
 		if(map_of_points_.empty())
 		{
@@ -126,6 +180,16 @@ public:
 		if(!output.good())
 		{
 			return false;
+		}
+
+		if(cf.plain_integer_coords)
+		{
+			const std::vector< std::pair<int, int> > pics=get_plain_integer_coordinates(cf.compact);
+			for(std::vector< std::pair<int, int> >::const_iterator it=pics.begin();it!=pics.end();++it)
+			{
+				output << it->first << " " << it->second << "\n";
+			}
+			return true;
 		}
 
 		const double scale=10.0;
@@ -145,7 +209,7 @@ public:
 		std::map<CoordKey, double>& map_of_coords_vertical=(cf.compact ? map_of_coords_secondary : map_of_coords_main);
 
 		double max_area=0.0;
-		for(std::map<PointKey, PointValue>::iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
+		for(std::map<PointKey, PointValue>::const_iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
 		{
 			map_of_coords_horizontal[it->first.a]=0.0;
 			map_of_coords_vertical[it->first.b]=0.0;
@@ -187,7 +251,7 @@ public:
 		if(mode_==LevelMode::inter_atom || mode_==LevelMode::inter_residue)
 		{
 			std::map<PointKey, PointValue> map_of_points_on_chain_level;
-			for(std::map<PointKey, PointValue>::iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
+			for(std::map<PointKey, PointValue>::const_iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
 			{
 				CoordKey a(LevelMode::inter_chain, it->first.a);
 				CoordKey b(LevelMode::inter_chain, it->first.b);
@@ -237,7 +301,7 @@ public:
 		if(mode_==LevelMode::inter_atom)
 		{
 			std::map<PointKey, PointValue> map_of_points_on_residue_level;
-			for(std::map<PointKey, PointValue>::iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
+			for(std::map<PointKey, PointValue>::const_iterator it=map_of_points_.begin();it!=map_of_points_.end();++it)
 			{
 				CoordKey a(LevelMode::inter_residue, it->first.a);
 				CoordKey b(LevelMode::inter_residue, it->first.b);
