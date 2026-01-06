@@ -68,11 +68,38 @@
 	<h1><a href="../">Voronota-LT</a> web application (version 1.1.479)</h1>
 
 	<div id="container-for-controls">
-		<label for="fileInput">Input PDB or mmCIF file:</label>
-		<input id="fileInput" type="file" autocomplete="off"/>
-		<br>
-		<button onclick="runVoronotaLT('all')">Calculate all contacts</button>
-		<button onclick="runVoronotaLT('only_inter_chain')">Calculate only inter-chain contacts</button>
+	<table>
+		<tbody>
+			<tr>
+				<td>
+					<strong>Upload input file:</strong>
+				</td>
+				<td>
+					<label for="fileInput">PDB or mmCIF file:</label>
+					<input id="fileInput" type="file" autocomplete="off"/>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<strong>or fetch input file by PDB ID:</strong>
+				</td>
+				<td>
+					<input id="pdbIdInput" type="text" autocomplete="off" placeholder="e.g. 2ZSK" style="width: 10em;"/>
+					<button onclick="fetchStructureById()">Fetch</button>
+					<label id="pdbIdDownloadInfo">No file fetched</label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<strong>Perform action:</strong>
+				</td>
+				<td>
+					<button onclick="runVoronotaLT('all')">Calculate all contacts</button>
+					<button onclick="runVoronotaLT('only_inter_chain')">Calculate only inter-chain contacts</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 	</div>
 
 	<div id="container-for-input-info"></div>
@@ -154,6 +181,88 @@
 		let Module;
 		(async () => { Module = await createVoronotaLTWebModule(); })();
 
+		let currentInput = null;
+		
+		const globFileInput = document.getElementById("fileInput");
+		const globPdbIdDownloadInfo = document.getElementById("pdbIdDownloadInfo");
+
+		globFileInput.addEventListener("change", () => {
+		    if(globFileInput.files.length > 0)
+			{
+		        globPdbIdDownloadInfo.textContent="No file fetched";
+		        currentInput = null;
+		    }
+		});
+
+		async function fetchStructureById()
+		{
+			const container_for_input_info = document.getElementById("container-for-input-info");
+			container_for_input_info.innerHTML = "";
+
+			const container_for_error_log = document.getElementById("container-for-error-log");
+			container_for_error_log.innerHTML = "";
+
+			const container_for_log = document.getElementById("container-for-log");
+			container_for_log.innerHTML = "";
+
+			const container_for_links = document.getElementById("container-for-links");
+			container_for_links.innerHTML = "";
+
+			const pdbIdInput = document.getElementById("pdbIdInput");
+			const fileInput = document.getElementById("fileInput");
+			const pdbIdDownloadInfo = document.getElementById("pdbIdDownloadInfo");
+			const rawId = (pdbIdInput ? pdbIdInput.value : "").trim();
+			const pdbId = rawId.toUpperCase();
+
+			if(pdbId.length === 0)
+			{
+				alert("Please provide a PDB ID.");
+				return;
+			}
+			
+			pdbIdDownloadInfo.textContent="No file fetched";
+			
+			try
+			{
+				const tryFetch = async (url) => {
+					const res = await fetch(url);
+					if(!res.ok)
+					{
+						throw new Error("HTTP " + res.status + " for " + url);
+					}
+					return await res.text();
+				};
+
+				let content = null;
+				let filename = null;
+
+				try
+				{
+					content = await tryFetch("https://files.rcsb.org/download/" + pdbId + ".cif");
+					filename = pdbId + ".cif";
+				}
+				catch(errCif)
+				{
+					content = await tryFetch("https://files.rcsb.org/download/" + pdbId + ".pdb");
+					filename = pdbId + ".pdb";
+				}
+
+				currentInput = { filename: filename, content: content, source: "rcsb_download" };
+				
+				pdbIdDownloadInfo.textContent="Fetched "+filename;
+
+				fileInput.value = "";
+			}
+			catch(err)
+			{
+				console.error("Failed to fetch structure:", err);
+				container_for_error_log.innerHTML = "<h2>Error log</h2>";
+				const textfield = document.createElement("pre");
+				textfield.textContent = "Failed to fetch structure for PDB ID '" + pdbId + "'.\n" + String(err) + "\n";
+				container_for_error_log.appendChild(textfield);
+			}
+		}
+
 		async function runVoronotaLT(mode)
 		{
 			const container_for_input_info = document.getElementById("container-for-input-info");
@@ -170,15 +279,26 @@
 
 			const fileInput = document.getElementById("fileInput");
 
-			if(fileInput.files.length === 0)
+			let stored_input_content = null;
+			let file = null;
+
+			if(fileInput.files.length !== 0)
 			{
-				alert("Please provide an input file.");
+				file = fileInput.files[0];
+			}
+			else if(currentInput !== null && typeof currentInput.content === "string")
+			{
+				stored_input_content = currentInput.content;
+				file = { name: currentInput.filename };
+			}
+			else
+			{
+				alert("Please provide an input file or fetch by PDB ID.");
 				return;
 			}
 
-			const file = fileInput.files[0];
 			const reader = new FileReader();
-
+			
 			{
 				container_for_input_info.innerHTML = "<h2>Task overview</h2>";
 				const tbody = document.createElement("tbody");
@@ -389,7 +509,14 @@
 
 			}, 0);
 
-			reader.readAsText(file);
+			if(stored_input_content !== null)
+			{
+				reader.readAsText(new Blob([stored_input_content], { type: "text/plain" }));
+			}
+			else
+			{
+				reader.readAsText(file);
+			}
 		}
 	</script>
 </body>
