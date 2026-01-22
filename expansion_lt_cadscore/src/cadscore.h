@@ -187,7 +187,7 @@ struct IDChainChain
 
 	inline IDChainChain with_renamed_chains(const std::map<std::string, std::string>& renaming_map) const noexcept
 	{
-		return IDChainChain(id_a.with_renamed_chains(renaming_map), id_a.with_renamed_chains(renaming_map));
+		return IDChainChain(id_a.with_renamed_chains(renaming_map), id_b.with_renamed_chains(renaming_map));
 	}
 
 	inline bool match_chain_name(const std::string& query_chain_name) const noexcept
@@ -225,7 +225,7 @@ struct IDResidueResidue
 
 	inline IDResidueResidue with_renamed_chains(const std::map<std::string, std::string>& renaming_map) const noexcept
 	{
-		return IDResidueResidue(id_a.with_renamed_chains(renaming_map), id_a.with_renamed_chains(renaming_map));
+		return IDResidueResidue(id_a.with_renamed_chains(renaming_map), id_b.with_renamed_chains(renaming_map));
 	}
 
 	inline bool match_chain_name(const std::string& query_chain_name) const noexcept
@@ -263,7 +263,7 @@ struct IDAtomAtom
 
 	inline IDAtomAtom with_renamed_chains(const std::map<std::string, std::string>& renaming_map) const noexcept
 	{
-		return IDAtomAtom(id_a.with_renamed_chains(renaming_map), id_a.with_renamed_chains(renaming_map));
+		return IDAtomAtom(id_a.with_renamed_chains(renaming_map), id_b.with_renamed_chains(renaming_map));
 	}
 
 	inline bool match_chain_name(const std::string& query_chain_name) const noexcept
