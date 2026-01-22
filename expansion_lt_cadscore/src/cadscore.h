@@ -833,14 +833,14 @@ private:
 
 		voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;
 
-		if(params.record_residue_residue_contact_summaries || params.record_residue_cell_summaries)
+		if(params.record_residue_residue_contact_summaries || params.record_residue_cell_summaries || params.record_residue_site_summaries)
 		{
 			voronotalt::RadicalTessellation::group_results(result, spheres_input_result.grouping_by_residue, result_grouped_by_residue, time_recorder);
 		}
 
 		voronotalt::RadicalTessellation::GroupedResult result_grouped_by_chain;
 
-		if(params.record_chain_chain_contact_summaries || params.record_chain_cell_summaries)
+		if(params.record_chain_chain_contact_summaries || params.record_chain_cell_summaries || params.record_chain_site_summaries)
 		{
 			voronotalt::RadicalTessellation::group_results(result, spheres_input_result.grouping_by_chain, result_grouped_by_chain, time_recorder);
 		}
@@ -947,7 +947,7 @@ private:
 				if(scds.area>0.0)
 				{
 					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[scds.id];
-					atom_sas_areas.emplace_hint(atom_sas_areas.end(), IDAtom(sl), AreaValue(scds.area));
+					atom_site_areas.emplace_hint(atom_site_areas.end(), IDAtom(sl), AreaValue(scds.area));
 				}
 			}
 		}
@@ -961,7 +961,7 @@ private:
 				if(tscds.area>0.0)
 				{
 					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[scds.id];
-					residue_sas_areas.emplace_hint(residue_sas_areas.end(), IDResidue(sl), AreaValue(tscds.area));
+					residue_site_areas.emplace_hint(residue_site_areas.end(), IDResidue(sl), AreaValue(tscds.area));
 				}
 			}
 		}
@@ -975,7 +975,7 @@ private:
 				if(tscds.area>0.0)
 				{
 					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[scds.id];
-					chain_sas_areas.emplace_hint(chain_sas_areas.end(), IDChain(sl), AreaValue(tscds.area));
+					chain_site_areas.emplace_hint(chain_site_areas.end(), IDChain(sl), AreaValue(tscds.area));
 				}
 			}
 		}

@@ -1,3 +1,5 @@
+#define VORONOTALT_DISABLE_OPENMP
+
 #include "cadscore.h"
 
 namespace
