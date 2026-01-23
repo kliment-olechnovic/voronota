@@ -35,6 +35,7 @@ Options:
     --score-chain-sites                                         flag to score sites on chain level
     --score-everything                                          flag to score everything (contacts, sites, SAS areas) on all levels of detail
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score
+    --print-paths-in-output                                     flag to print file paths instead of file base names in output
     --help | -h                                                 flag to print help info to stderr and exit
 
 Standard output stream:
@@ -69,6 +70,7 @@ public:
 	bool score_atom_sites;
 	bool score_residue_sites;
 	bool score_chain_sites;
+	bool print_paths_in_output;
 	bool read_successfuly;
 	std::vector<std::string> target_input_files;
 	std::vector<std::string> model_input_files;
@@ -96,6 +98,7 @@ public:
 		score_atom_sites(false),
 		score_residue_sites(false),
 		score_chain_sites(false),
+		print_paths_in_output(false),
 		read_successfuly(false)
 	{
 	}
@@ -219,6 +222,10 @@ public:
 				{
 					remap_chains=opt.is_flag_and_true();
 				}
+				else if(opt.name=="print-paths-in-output" && opt.is_flag())
+				{
+					print_paths_in_output=opt.is_flag_and_true();
+				}
 				else if(opt.name.empty())
 				{
 					error_log_for_options_parsing << "Error: misplaced unnamed command line arguments detected.\n";
@@ -286,7 +293,7 @@ public:
 		std::string path;
 		std::string name;
 
-		explicit FileInfo(const std::filesystem::path& p) : path(p.string()), name(p.filename().string())
+		explicit FileInfo(const std::filesystem::path& p) : path(p.lexically_normal().string()), name(p.filename().string())
 		{
 		}
 
@@ -433,109 +440,140 @@ bool run(const ApplicationParameters& app_params)
 		return false;
 	}
 
+	std::vector<std::string> output_score_names;
+	{
+		if(app_params.score_residue_residue_contacts){output_score_names.push_back("residue_residue");}
+		if(app_params.score_atom_atom_contacts){output_score_names.push_back("atom_atom");}
+		if(app_params.score_chain_chain_contacts){output_score_names.push_back("chain_chain");}
+		if(app_params.score_residue_sas_areas){output_score_names.push_back("residue_sas");}
+		if(app_params.score_atom_sas_areas){output_score_names.push_back("atom_sas");}
+		if(app_params.score_chain_sas_areas){output_score_names.push_back("chain_sas");}
+		if(app_params.score_residue_sites){output_score_names.push_back("residue_sites");}
+		if(app_params.score_atom_sites){output_score_names.push_back("atom_sites");}
+		if(app_params.score_chain_sites){output_score_names.push_back("chain_sites");}
+	}
+
+	std::vector< std::pair<std::size_t, std::size_t> > pairs_of_target_model_ids;
+	pairs_of_target_model_ids.reserve(target_sd_iterators.size()*model_sd_iterators.size());
+	for(std::size_t ti=0;ti<target_sd_iterators.size();ti++)
+	{
+		for(std::size_t mi=0;mi<model_sd_iterators.size();mi++)
+		{
+			pairs_of_target_model_ids.emplace_back(std::pair<std::size_t, std::size_t>(ti, mi));
+		}
+	}
+
+	std::vector< std::vector<cadscore::CADDescriptor> > output_cad_descriptors(pairs_of_target_model_ids.size(), std::vector<cadscore::CADDescriptor>(output_score_names.size()));
+	std::vector<std::string> output_error_messages(pairs_of_target_model_ids.size());
+	std::vector< std::pair<double, std::size_t> > output_sortable_indices(pairs_of_target_model_ids.size());
+
 	cadscore::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
 	scoring_result_construction_parameters.remap_chains=app_params.remap_chains;
 
+	for(std::size_t i=0;i<pairs_of_target_model_ids.size();i++)
 	{
-		std::cout << "target model";
-		if(app_params.score_atom_atom_contacts)
+		const std::pair<std::size_t, std::size_t>& pair_ids=pairs_of_target_model_ids[i];
+		std::vector<cadscore::CADDescriptor>& pair_cad_descriptors=output_cad_descriptors[i];
+		std::string& pair_error_messages=output_error_messages[i];
+		std::pair<double, std::size_t>& pair_sortable_index=output_sortable_indices[i];
+		pair_sortable_index.first=-1.0;
+		pair_sortable_index.second=i;
+		std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::const_iterator target_sd_it=target_sd_iterators[pair_ids.first];
+		const cadscore::ScorableData& target_sd=target_sd_it->second;
+		std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::const_iterator model_sd_it=model_sd_iterators[pair_ids.second];
+		const cadscore::ScorableData& model_sd=model_sd_it->second;
+		cadscore::ScoringResult sr;
+		std::ostringstream local_err_stream;
+		sr.construct(scoring_result_construction_parameters, target_sd, model_sd, local_err_stream);
+		pair_error_messages=local_err_stream.str();
+		if(sr.valid() && pair_error_messages.empty())
 		{
-			std::cout << " atom_atom_cadscore";
+			std::size_t j=0;
+			if(app_params.score_residue_residue_contacts){pair_cad_descriptors[j++]=sr.residue_residue_contact_cad_descriptor_global;}
+			if(app_params.score_atom_atom_contacts){pair_cad_descriptors[j++]=sr.atom_atom_contact_cad_descriptor_global;}
+			if(app_params.score_chain_chain_contacts){pair_cad_descriptors[j++]=sr.chain_chain_contact_cad_descriptor_global;}
+			if(app_params.score_residue_sas_areas){pair_cad_descriptors[j++]=sr.residue_sas_cad_descriptor_global;}
+			if(app_params.score_atom_sas_areas){pair_cad_descriptors[j++]=sr.atom_sas_cad_descriptor_global;}
+			if(app_params.score_chain_sas_areas){pair_cad_descriptors[j++]=sr.chain_sas_cad_descriptor_global;}
+			if(app_params.score_residue_sites){pair_cad_descriptors[j++]=sr.residue_site_cad_descriptor_global;}
+			if(app_params.score_atom_sites){pair_cad_descriptors[j++]=sr.atom_site_cad_descriptor_global;}
+			if(app_params.score_chain_sites){pair_cad_descriptors[j++]=sr.chain_site_cad_descriptor_global;}
+
+			if(app_params.score_residue_residue_contacts){pair_sortable_index.first=sr.residue_residue_contact_cad_descriptor_global.score();}
+			else if(app_params.score_atom_atom_contacts){pair_sortable_index.first=sr.atom_atom_contact_cad_descriptor_global.score();}
+			else if(app_params.score_chain_chain_contacts){pair_sortable_index.first=sr.chain_chain_contact_cad_descriptor_global.score();}
+			else if(app_params.score_residue_sas_areas){pair_sortable_index.first=sr.residue_sas_cad_descriptor_global.score();}
+			else if(app_params.score_atom_sas_areas){pair_sortable_index.first=sr.atom_sas_cad_descriptor_global.score();}
+			else if(app_params.score_chain_sas_areas){pair_sortable_index.first=sr.chain_sas_cad_descriptor_global.score();}
+			else if(app_params.score_residue_sites){pair_sortable_index.first=sr.residue_site_cad_descriptor_global.score();}
+			else if(app_params.score_atom_sites){pair_sortable_index.first=sr.atom_site_cad_descriptor_global.score();}
+			else if(app_params.score_chain_sites){pair_sortable_index.first=sr.chain_site_cad_descriptor_global.score();}
 		}
-		if(app_params.score_residue_residue_contacts)
+		else
 		{
-			std::cout << " residue_residue_cadscore";
+			if(pair_error_messages.empty())
+			{
+				pair_error_messages="unrecognized error";
+			}
 		}
-		if(app_params.score_chain_chain_contacts)
+		pair_sortable_index.first=(0.0-pair_sortable_index.first);
+	}
+
+	std::size_t count_of_failed_pairs=0;
+
+	for(std::size_t i=0;i<pairs_of_target_model_ids.size();i++)
+	{
+		const std::string& pair_error_messages=output_error_messages[i];
+		if(!pair_error_messages.empty())
 		{
-			std::cout << " chain_chain_cadscore";
+			count_of_failed_pairs++;
+			const std::pair<std::size_t, std::size_t>& pair_ids=pairs_of_target_model_ids[i];
+			std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::const_iterator target_sd_it=target_sd_iterators[pair_ids.first];
+			std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::const_iterator model_sd_it=model_sd_iterators[pair_ids.second];
+			const std::string& target_display_name=(app_params.print_paths_in_output ? target_sd_it->first.path : target_sd_it->first.name);
+			const std::string& model_display_name=(app_params.print_paths_in_output ? model_sd_it->first.path : model_sd_it->first.name);
+			std::cerr << "Error: failed to calculate score for target '" << target_display_name << "' and model '" << model_display_name << "' due to error: \n";
 		}
-		if(app_params.score_atom_sas_areas)
+	}
+
+	if(count_of_failed_pairs>=pairs_of_target_model_ids.size())
+	{
+		std::cerr << "Error: failed to score any target-model pairs.\n";
+		return false;
+	}
+
+	std::sort(output_sortable_indices.begin(), output_sortable_indices.end());
+
+	{
+		std::cout << "target" << "\t" << "model";
+		for(const std::string& sname : output_score_names)
 		{
-			std::cout << " atom_sas_cadscore";
-		}
-		if(app_params.score_residue_sas_areas)
-		{
-			std::cout << " residue_sas_cadscore";
-		}
-		if(app_params.score_chain_sas_areas)
-		{
-			std::cout << " chain_sas_cadscore";
-		}
-		if(app_params.score_atom_sites)
-		{
-			std::cout << " atom_sites_cadscore";
-		}
-		if(app_params.score_residue_sites)
-		{
-			std::cout << " residue_sites_cadscore";
-		}
-		if(app_params.score_chain_sites)
-		{
-			std::cout << " chain_sites_cadscore";
+			std::cout << "\t" << sname;
 		}
 		std::cout << "\n";
 	}
 
-	for(std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::iterator target_sd_it : target_sd_iterators)
+	for(const std::pair<double, std::size_t>& pair_sortable_index : output_sortable_indices)
 	{
-		const std::string& target_display_name=target_sd_it->first.name;
-		const cadscore::ScorableData& target_sd=target_sd_it->second;
-		for(std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::iterator model_sd_it : model_sd_iterators)
+		if(pair_sortable_index.first<=0.0)
 		{
-			const std::string& model_display_name=model_sd_it->first.name;
-			const cadscore::ScorableData& model_sd=model_sd_it->second;
-			cadscore::ScoringResult sr;
-			sr.construct(scoring_result_construction_parameters, target_sd, model_sd, std::cerr);
-			if(!sr.valid())
+			const std::size_t i=pair_sortable_index.second;
+			const std::pair<std::size_t, std::size_t>& pair_ids=pairs_of_target_model_ids[i];
+			const std::vector<cadscore::CADDescriptor>& pair_cad_descriptors=output_cad_descriptors[i];
+			std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::const_iterator target_sd_it=target_sd_iterators[pair_ids.first];
+			std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::const_iterator model_sd_it=model_sd_iterators[pair_ids.second];
+			const std::string& target_display_name=(app_params.print_paths_in_output ? target_sd_it->first.path : target_sd_it->first.name);
+			const std::string& model_display_name=(app_params.print_paths_in_output ? model_sd_it->first.path : model_sd_it->first.name);
+			std::cout << target_display_name << "\t" << model_display_name;
+			for(const cadscore::CADDescriptor& cadd : pair_cad_descriptors)
 			{
-				std::cerr << "Skipping reporting scores for target '" << target_display_name << "' and model '" << model_display_name << "'.\n";
+				std::cout << "\t" << cadd.score();
 			}
-			else
-			{
-				std::cout << target_display_name << " " << model_display_name;
-				if(app_params.score_atom_atom_contacts)
-				{
-					std::cout << " " << sr.atom_atom_contact_cad_descriptor_global.score();
-				}
-				if(app_params.score_residue_residue_contacts)
-				{
-					std::cout << " " << sr.residue_residue_contact_cad_descriptor_global.score();
-				}
-				if(app_params.score_chain_chain_contacts)
-				{
-					std::cout << " " << sr.chain_chain_contact_cad_descriptor_global.score();
-				}
-				if(app_params.score_atom_sas_areas)
-				{
-					std::cout << " " << sr.atom_sas_cad_descriptor_global.score();
-				}
-				if(app_params.score_residue_sas_areas)
-				{
-					std::cout << " " << sr.residue_sas_cad_descriptor_global.score();
-				}
-				if(app_params.score_chain_sas_areas)
-				{
-					std::cout << " " << sr.chain_sas_cad_descriptor_global.score();
-				}
-				if(app_params.score_atom_sites)
-				{
-					std::cout << " " << sr.atom_site_cad_descriptor_global.score();
-				}
-				if(app_params.score_residue_sites)
-				{
-					std::cout << " " << sr.residue_site_cad_descriptor_global.score();
-				}
-				if(app_params.score_chain_sites)
-				{
-					std::cout << " " << sr.chain_site_cad_descriptor_global.score();
-				}
-				std::cout << "\n";
-			}
+			std::cout << "\n";
 		}
 	}
 
-	return false;
+	return true;
 }
 
 }
