@@ -10,7 +10,7 @@
 namespace cadscore
 {
 
-inline const std::string& version()
+inline const std::string& version() noexcept
 {
 	static const std::string version_str="0.8";
 	return version_str;
@@ -478,7 +478,7 @@ public:
 		return result;
 	}
 
-	static std::map<std::string, std::string> generate_renaming_map_from_two_vectors_with_padding(const std::vector<std::string>& left, const std::vector<std::string>& right)
+	static std::map<std::string, std::string> generate_renaming_map_from_two_vectors_with_padding(const std::vector<std::string>& left, const std::vector<std::string>& right) noexcept
 	{
 		const std::set<std::string> set_of_right_values(right.begin(), right.end());
 		std::map<std::string, std::string> result;
@@ -503,20 +503,20 @@ struct MolecularFileInput
 	bool include_heteroatoms;
 	bool read_as_assembly;
 
-	MolecularFileInput() :
+	MolecularFileInput() noexcept :
 		include_heteroatoms(true),
 		read_as_assembly(false)
 	{
 	}
 
-	explicit MolecularFileInput(const std::string& input_file) :
+	explicit MolecularFileInput(const std::string& input_file) noexcept :
 		input_file_path(input_file),
 		include_heteroatoms(true),
 		read_as_assembly(false)
 	{
 	}
 
-	MolecularFileInput(const std::string& input_file, const bool include_heteroatoms, const bool read_as_assembly) :
+	MolecularFileInput(const std::string& input_file, const bool include_heteroatoms, const bool read_as_assembly) noexcept :
 		input_file_path(input_file),
 		include_heteroatoms(include_heteroatoms),
 		read_as_assembly(read_as_assembly)
