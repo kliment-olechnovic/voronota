@@ -365,7 +365,7 @@ bool run(const ApplicationParameters& app_params)
 	scorable_data_construction_parameters.probe=app_params.probe;
 	scorable_data_construction_parameters.record_atom_balls=false;
 	scorable_data_construction_parameters.record_atom_atom_contact_summaries=app_params.score_atom_atom_contacts;
-	scorable_data_construction_parameters.record_residue_residue_contact_summaries=app_params.score_residue_residue_contacts;
+	scorable_data_construction_parameters.record_residue_residue_contact_summaries=app_params.score_residue_residue_contacts || app_params.remap_chains;
 	scorable_data_construction_parameters.record_chain_chain_contact_summaries=app_params.score_chain_chain_contacts;
 	scorable_data_construction_parameters.record_atom_cell_summaries=app_params.score_atom_sas_areas;
 	scorable_data_construction_parameters.record_residue_cell_summaries=app_params.score_residue_sas_areas;
@@ -383,61 +383,99 @@ bool run(const ApplicationParameters& app_params)
 		return false;
 	}
 
-	const std::set<FileSystemUtilities::FileInfo> target_file_descriptors=FileSystemUtilities::collect_file_descriptors(app_params.target_input_files, app_params.recursive_directory_search);
-	if(target_file_descriptors.empty())
+	const std::set<FileSystemUtilities::FileInfo> set_of_target_file_descriptors=FileSystemUtilities::collect_file_descriptors(app_params.target_input_files, app_params.recursive_directory_search);
+	if(set_of_target_file_descriptors.empty())
 	{
 		std::cerr << "Error: no target input files found.\n";
 		return false;
 	}
 
-	const std::set<FileSystemUtilities::FileInfo> model_file_descriptors=FileSystemUtilities::collect_file_descriptors(app_params.model_input_files, app_params.recursive_directory_search);
-	if(model_file_descriptors.empty())
+	const std::set<FileSystemUtilities::FileInfo> set_of_model_file_descriptors=FileSystemUtilities::collect_file_descriptors(app_params.model_input_files, app_params.recursive_directory_search);
+	if(set_of_model_file_descriptors.empty())
 	{
 		std::cerr << "Error: no model input files found.\n";
 		return false;
 	}
 
-	std::set<FileSystemUtilities::FileInfo> all_unique_file_descriptors(model_file_descriptors.begin(), model_file_descriptors.end());
-	all_unique_file_descriptors.insert(target_file_descriptors.begin(), target_file_descriptors.end());
-
-	std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData> map_of_scorable_data;
-	for(const FileSystemUtilities::FileInfo& fi : all_unique_file_descriptors)
+	std::vector<FileSystemUtilities::FileInfo> list_of_unique_file_descriptors;
 	{
-		std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::iterator it=map_of_scorable_data.emplace_hint(map_of_scorable_data.end(), fi.path, cadscore::ScorableData());
-		cadscore::ScorableData& sd=it->second;
+		std::set<FileSystemUtilities::FileInfo> set_of_unique_file_descriptors=set_of_model_file_descriptors;
+		set_of_unique_file_descriptors.insert(set_of_target_file_descriptors.begin(), set_of_target_file_descriptors.end());
+		list_of_unique_file_descriptors.reserve(set_of_unique_file_descriptors.size());
+		list_of_unique_file_descriptors.insert(list_of_unique_file_descriptors.end(), set_of_unique_file_descriptors.begin(), set_of_unique_file_descriptors.end());
+	}
+
+	std::vector<std::string> list_of_unique_file_display_names(list_of_unique_file_descriptors.size());
+	{
+		if(app_params.print_paths_in_output)
+		{
+			for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
+			{
+				list_of_unique_file_display_names[i]=list_of_unique_file_descriptors[i].path;
+			}
+		}
+		else
+		{
+			std::map<std::string, int> map_of_basename_counts;
+			for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
+			{
+				map_of_basename_counts[list_of_unique_file_descriptors[i].name]++;
+			}
+			for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
+			{
+				list_of_unique_file_display_names[i]=(map_of_basename_counts[list_of_unique_file_descriptors[i].name]<2 ? list_of_unique_file_descriptors[i].name : list_of_unique_file_descriptors[i].path);
+			}
+		}
+	}
+
+	std::vector<std::size_t> target_sd_indices;
+	target_sd_indices.reserve(set_of_target_file_descriptors.size());
+	std::vector<std::size_t> model_sd_indices;
+	model_sd_indices.reserve(set_of_model_file_descriptors.size());
+
+	std::vector<cadscore::ScorableData> list_of_unique_scorable_data(list_of_unique_file_descriptors.size());
+	for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
+	{
+		const FileSystemUtilities::FileInfo& fi=list_of_unique_file_descriptors[i];
+		cadscore::ScorableData& sd=list_of_unique_scorable_data[i];
 		sd.construct(scorable_data_construction_parameters, cadscore::MolecularFileInput(fi.path, app_params.include_heteroatoms, app_params.read_inputs_as_assemblies), std::cerr);
-		if(!sd.valid())
+		if(sd.valid())
+		{
+			if(set_of_target_file_descriptors.count(fi)>0)
+			{
+				target_sd_indices.push_back(i);
+			}
+			if(set_of_model_file_descriptors.count(fi)>0)
+			{
+				model_sd_indices.push_back(i);
+			}
+		}
+		else
 		{
 			std::cerr << "Skipping invalid input file '" << fi.path << "'.\n";
 		}
 	}
 
-	std::vector< std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::iterator > target_sd_iterators;
-	std::vector< std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::iterator > model_sd_iterators;
-	target_sd_iterators.reserve(target_file_descriptors.size());
-	model_sd_iterators.reserve(model_file_descriptors.size());
-	for(std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::iterator it=map_of_scorable_data.begin();it!=map_of_scorable_data.end();++it)
-	{
-		if(target_file_descriptors.count(it->first)>0)
-		{
-			target_sd_iterators.push_back(it);
-		}
-		if(model_file_descriptors.count(it->first)>0)
-		{
-			model_sd_iterators.push_back(it);
-		}
-	}
-
-	if(target_sd_iterators.empty())
+	if(target_sd_indices.empty())
 	{
 		std::cerr << "Error: no target inputs processed successfully.\n";
 		return false;
 	}
 
-	if(model_sd_iterators.empty())
+	if(model_sd_indices.empty())
 	{
 		std::cerr << "Error: no model inputs processed successfully.\n";
 		return false;
+	}
+
+	std::vector< std::pair<std::size_t, std::size_t> > list_of_pairs_of_target_model_indices;
+	list_of_pairs_of_target_model_indices.reserve(target_sd_indices.size()*model_sd_indices.size());
+	for(const std::size_t ti : target_sd_indices)
+	{
+		for(const std::size_t mi : model_sd_indices)
+		{
+			list_of_pairs_of_target_model_indices.emplace_back(std::pair<std::size_t, std::size_t>(ti, mi));
+		}
 	}
 
 	std::vector<std::string> output_score_names;
@@ -453,119 +491,107 @@ bool run(const ApplicationParameters& app_params)
 		if(app_params.score_chain_sites){output_score_names.push_back("chain_sites");}
 	}
 
-	std::vector< std::pair<std::size_t, std::size_t> > pairs_of_target_model_ids;
-	pairs_of_target_model_ids.reserve(target_sd_iterators.size()*model_sd_iterators.size());
-	for(std::size_t ti=0;ti<target_sd_iterators.size();ti++)
+	std::vector< std::vector<cadscore::CADDescriptor> > list_of_output_cad_descriptors(list_of_pairs_of_target_model_indices.size(), std::vector<cadscore::CADDescriptor>(output_score_names.size()));
+	std::vector<std::string> list_of_output_error_messages(list_of_pairs_of_target_model_indices.size());
+
 	{
-		for(std::size_t mi=0;mi<model_sd_iterators.size();mi++)
+		cadscore::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
+		scoring_result_construction_parameters.remap_chains=app_params.remap_chains;
+
+		for(std::size_t i=0;i<list_of_pairs_of_target_model_indices.size();i++)
 		{
-			pairs_of_target_model_ids.emplace_back(std::pair<std::size_t, std::size_t>(ti, mi));
-		}
-	}
-
-	std::vector< std::vector<cadscore::CADDescriptor> > output_cad_descriptors(pairs_of_target_model_ids.size(), std::vector<cadscore::CADDescriptor>(output_score_names.size()));
-	std::vector<std::string> output_error_messages(pairs_of_target_model_ids.size());
-	std::vector< std::pair<double, std::size_t> > output_sortable_indices(pairs_of_target_model_ids.size());
-
-	cadscore::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
-	scoring_result_construction_parameters.remap_chains=app_params.remap_chains;
-
-	for(std::size_t i=0;i<pairs_of_target_model_ids.size();i++)
-	{
-		const std::pair<std::size_t, std::size_t>& pair_ids=pairs_of_target_model_ids[i];
-		std::vector<cadscore::CADDescriptor>& pair_cad_descriptors=output_cad_descriptors[i];
-		std::string& pair_error_messages=output_error_messages[i];
-		std::pair<double, std::size_t>& pair_sortable_index=output_sortable_indices[i];
-		pair_sortable_index.first=-1.0;
-		pair_sortable_index.second=i;
-		std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::const_iterator target_sd_it=target_sd_iterators[pair_ids.first];
-		const cadscore::ScorableData& target_sd=target_sd_it->second;
-		std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::const_iterator model_sd_it=model_sd_iterators[pair_ids.second];
-		const cadscore::ScorableData& model_sd=model_sd_it->second;
-		cadscore::ScoringResult sr;
-		std::ostringstream local_err_stream;
-		sr.construct(scoring_result_construction_parameters, target_sd, model_sd, local_err_stream);
-		pair_error_messages=local_err_stream.str();
-		if(sr.valid() && pair_error_messages.empty())
-		{
-			std::size_t j=0;
-			if(app_params.score_residue_residue_contacts){pair_cad_descriptors[j++]=sr.residue_residue_contact_cad_descriptor_global;}
-			if(app_params.score_atom_atom_contacts){pair_cad_descriptors[j++]=sr.atom_atom_contact_cad_descriptor_global;}
-			if(app_params.score_chain_chain_contacts){pair_cad_descriptors[j++]=sr.chain_chain_contact_cad_descriptor_global;}
-			if(app_params.score_residue_sas_areas){pair_cad_descriptors[j++]=sr.residue_sas_cad_descriptor_global;}
-			if(app_params.score_atom_sas_areas){pair_cad_descriptors[j++]=sr.atom_sas_cad_descriptor_global;}
-			if(app_params.score_chain_sas_areas){pair_cad_descriptors[j++]=sr.chain_sas_cad_descriptor_global;}
-			if(app_params.score_residue_sites){pair_cad_descriptors[j++]=sr.residue_site_cad_descriptor_global;}
-			if(app_params.score_atom_sites){pair_cad_descriptors[j++]=sr.atom_site_cad_descriptor_global;}
-			if(app_params.score_chain_sites){pair_cad_descriptors[j++]=sr.chain_site_cad_descriptor_global;}
-
-			if(app_params.score_residue_residue_contacts){pair_sortable_index.first=sr.residue_residue_contact_cad_descriptor_global.score();}
-			else if(app_params.score_atom_atom_contacts){pair_sortable_index.first=sr.atom_atom_contact_cad_descriptor_global.score();}
-			else if(app_params.score_chain_chain_contacts){pair_sortable_index.first=sr.chain_chain_contact_cad_descriptor_global.score();}
-			else if(app_params.score_residue_sas_areas){pair_sortable_index.first=sr.residue_sas_cad_descriptor_global.score();}
-			else if(app_params.score_atom_sas_areas){pair_sortable_index.first=sr.atom_sas_cad_descriptor_global.score();}
-			else if(app_params.score_chain_sas_areas){pair_sortable_index.first=sr.chain_sas_cad_descriptor_global.score();}
-			else if(app_params.score_residue_sites){pair_sortable_index.first=sr.residue_site_cad_descriptor_global.score();}
-			else if(app_params.score_atom_sites){pair_sortable_index.first=sr.atom_site_cad_descriptor_global.score();}
-			else if(app_params.score_chain_sites){pair_sortable_index.first=sr.chain_site_cad_descriptor_global.score();}
-		}
-		else
-		{
-			if(pair_error_messages.empty())
+			const cadscore::ScorableData& target_sd=list_of_unique_scorable_data[list_of_pairs_of_target_model_indices[i].first];
+			const cadscore::ScorableData& model_sd=list_of_unique_scorable_data[list_of_pairs_of_target_model_indices[i].second];
+			std::vector<cadscore::CADDescriptor>& output_cad_descriptors=list_of_output_cad_descriptors[i];
+			std::string& output_error_message=list_of_output_error_messages[i];
+			cadscore::ScoringResult sr;
+			std::ostringstream local_err_stream;
+			sr.construct(scoring_result_construction_parameters, target_sd, model_sd, local_err_stream);
+			output_error_message=local_err_stream.str();
+			if(sr.valid() && output_error_message.empty())
 			{
-				pair_error_messages="unrecognized error";
+				std::size_t j=0;
+				if(app_params.score_residue_residue_contacts){output_cad_descriptors[j++]=sr.residue_residue_contact_cad_descriptor_global;}
+				if(app_params.score_atom_atom_contacts){output_cad_descriptors[j++]=sr.atom_atom_contact_cad_descriptor_global;}
+				if(app_params.score_chain_chain_contacts){output_cad_descriptors[j++]=sr.chain_chain_contact_cad_descriptor_global;}
+				if(app_params.score_residue_sas_areas){output_cad_descriptors[j++]=sr.residue_sas_cad_descriptor_global;}
+				if(app_params.score_atom_sas_areas){output_cad_descriptors[j++]=sr.atom_sas_cad_descriptor_global;}
+				if(app_params.score_chain_sas_areas){output_cad_descriptors[j++]=sr.chain_sas_cad_descriptor_global;}
+				if(app_params.score_residue_sites){output_cad_descriptors[j++]=sr.residue_site_cad_descriptor_global;}
+				if(app_params.score_atom_sites){output_cad_descriptors[j++]=sr.atom_site_cad_descriptor_global;}
+				if(app_params.score_chain_sites){output_cad_descriptors[j++]=sr.chain_site_cad_descriptor_global;}
+			}
+			else
+			{
+				if(output_error_message.empty())
+				{
+					output_error_message="unrecognized error";
+				}
 			}
 		}
-		pair_sortable_index.first=(0.0-pair_sortable_index.first);
 	}
 
-	std::size_t count_of_failed_pairs=0;
-
-	for(std::size_t i=0;i<pairs_of_target_model_ids.size();i++)
+	std::vector<std::size_t> failed_pair_ids;
 	{
-		const std::string& pair_error_messages=output_error_messages[i];
-		if(!pair_error_messages.empty())
+		for(std::size_t i=0;i<list_of_output_error_messages.size();i++)
 		{
-			count_of_failed_pairs++;
-			const std::pair<std::size_t, std::size_t>& pair_ids=pairs_of_target_model_ids[i];
-			std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::const_iterator target_sd_it=target_sd_iterators[pair_ids.first];
-			std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::const_iterator model_sd_it=model_sd_iterators[pair_ids.second];
-			const std::string& target_display_name=(app_params.print_paths_in_output ? target_sd_it->first.path : target_sd_it->first.name);
-			const std::string& model_display_name=(app_params.print_paths_in_output ? model_sd_it->first.path : model_sd_it->first.name);
-			std::cerr << "Error: failed to calculate score for target '" << target_display_name << "' and model '" << model_display_name << "' due to error: \n";
+			if(!list_of_output_error_messages[i].empty())
+			{
+				failed_pair_ids.push_back(i);
+			}
 		}
 	}
 
-	if(count_of_failed_pairs>=pairs_of_target_model_ids.size())
+	{
+		for(const std::size_t i : failed_pair_ids)
+		{
+			const std::string& target_display_name=list_of_unique_file_display_names[list_of_pairs_of_target_model_indices[i].first];
+			const std::string& model_display_name=list_of_unique_file_display_names[list_of_pairs_of_target_model_indices[i].second];
+			std::cerr << "Error (non-terminating): failed to calculate score for target '" << target_display_name << "' and model '" << model_display_name << "' due to errors:\n";
+			std::cerr << list_of_output_error_messages[i] << "\n";
+		}
+	}
+
+	if(failed_pair_ids.size()==list_of_pairs_of_target_model_indices.size())
 	{
 		std::cerr << "Error: failed to score any target-model pairs.\n";
 		return false;
 	}
 
-	std::sort(output_sortable_indices.begin(), output_sortable_indices.end());
+	std::vector<std::size_t> ordered_pair_ids_for_output;
+	{
+		std::vector< std::pair<double, std::size_t> > sortable_ids;
+		sortable_ids.reserve(list_of_pairs_of_target_model_indices.size()-failed_pair_ids.size());
+		for(std::size_t i=0;i<list_of_pairs_of_target_model_indices.size();i++)
+		{
+			if(list_of_output_error_messages[i].empty())
+			{
+				sortable_ids.push_back(std::pair<double, std::size_t>(0.0-list_of_output_cad_descriptors[i].front().score(), i));
+			}
+		}
+		std::sort(sortable_ids.begin(), sortable_ids.end());
+		ordered_pair_ids_for_output.resize(sortable_ids.size());
+		for(std::size_t i=0;i<sortable_ids.size();i++)
+		{
+			ordered_pair_ids_for_output[i]=sortable_ids[i].second;
+		}
+	}
 
 	{
 		std::cout << "target" << "\t" << "model";
 		for(const std::string& sname : output_score_names)
 		{
-			std::cout << "\t" << sname;
+			std::cout << "\t" << sname << "_cadscore";
 		}
 		std::cout << "\n";
-	}
 
-	for(const std::pair<double, std::size_t>& pair_sortable_index : output_sortable_indices)
-	{
-		if(pair_sortable_index.first<=0.0)
+		for(const std::size_t i : ordered_pair_ids_for_output)
 		{
-			const std::size_t i=pair_sortable_index.second;
-			const std::pair<std::size_t, std::size_t>& pair_ids=pairs_of_target_model_ids[i];
-			const std::vector<cadscore::CADDescriptor>& pair_cad_descriptors=output_cad_descriptors[i];
-			std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::const_iterator target_sd_it=target_sd_iterators[pair_ids.first];
-			std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::const_iterator model_sd_it=model_sd_iterators[pair_ids.second];
-			const std::string& target_display_name=(app_params.print_paths_in_output ? target_sd_it->first.path : target_sd_it->first.name);
-			const std::string& model_display_name=(app_params.print_paths_in_output ? model_sd_it->first.path : model_sd_it->first.name);
+			const std::string& target_display_name=list_of_unique_file_display_names[list_of_pairs_of_target_model_indices[i].first];
+			const std::string& model_display_name=list_of_unique_file_display_names[list_of_pairs_of_target_model_indices[i].second];
+			const std::vector<cadscore::CADDescriptor>& output_cad_descriptors=list_of_output_cad_descriptors[i];
 			std::cout << target_display_name << "\t" << model_display_name;
-			for(const cadscore::CADDescriptor& cadd : pair_cad_descriptors)
+			for(const cadscore::CADDescriptor& cadd : output_cad_descriptors)
 			{
 				std::cout << "\t" << cadd.score();
 			}
