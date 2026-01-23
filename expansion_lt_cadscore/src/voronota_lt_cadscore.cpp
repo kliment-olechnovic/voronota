@@ -1,3 +1,5 @@
+#include <filesystem>
+
 #define VORONOTALT_DISABLE_OPENMP
 
 #include "cadscore.h"
@@ -12,8 +14,9 @@ void print_help(std::ostream& output) noexcept
 'voronota-lt-cadscore' calculates CAD-score (Contact Area Difference score).
 
 Options:
-    --targets | -t                                   string     input file paths for target (reference) structure files
-    --models | -m                                    string     input file paths for model structure files
+    --targets | -t                                   string     input file or directory paths for target (reference) structure files
+    --models | -m                                    string     input file or directory paths for model structure files
+    --recursive-directory-search                                flag to search directories recursively
     --include-heteroatoms                                       flag to include heteroatoms when reading input in PDB or mmCIF format
     --read-inputs-as-assemblies                                 flag to join multiple models into an assembly when reading a file in PDB or mmCIF format
     --radii-config-file                              string     input file path for reading atom radii assignment rules
@@ -53,6 +56,7 @@ class ApplicationParameters
 {
 public:
 	double probe;
+	bool recursive_directory_search;
 	bool include_heteroatoms;
 	bool read_inputs_as_assemblies;
 	bool remap_chains;
@@ -79,6 +83,7 @@ public:
 
 	ApplicationParameters() noexcept :
 		probe(1.4),
+		recursive_directory_search(false),
 		include_heteroatoms(false),
 		read_inputs_as_assemblies(false),
 		remap_chains(false),
@@ -130,6 +135,10 @@ public:
 				else if((opt.name=="model" || opt.name=="m") && !opt.args_strings.empty())
 				{
 					model_input_files=opt.args_strings;
+				}
+				else if(opt.name=="recursive-directory-search" && opt.is_flag())
+				{
+					recursive_directory_search=opt.is_flag_and_true();
 				}
 				else if(opt.name=="include-heteroatoms" && opt.is_flag())
 				{
@@ -269,7 +278,81 @@ public:
 	}
 };
 
-bool run(const ApplicationParameters& app_params) noexcept
+class FileSystemUtilities
+{
+public:
+	struct FileInfo
+	{
+		std::string path;
+		std::string name;
+
+		explicit FileInfo(const std::filesystem::path& p) : path(p.string()), name(p.filename().string())
+		{
+		}
+
+		bool operator==(const FileInfo& v) const noexcept
+		{
+			return (path==v.path);
+		}
+
+		bool operator!=(const FileInfo& v) const noexcept
+		{
+			return (path!=v.path);
+		}
+
+		bool operator<(const FileInfo& v) const noexcept
+		{
+			return path<v.path;
+		}
+	};
+
+	static std::set<FileInfo> collect_file_descriptors(const std::vector<std::string>& input_paths, bool recursive)
+	{
+		std::set<FileInfo> file_descriptors;
+		for(const std::string& input_path : input_paths)
+		{
+			try
+			{
+				std::filesystem::path p(input_path);
+				if(std::filesystem::is_regular_file(p))
+				{
+					file_descriptors.emplace(FileInfo(p));
+				}
+				else if(std::filesystem::is_directory(p))
+				{
+					const std::filesystem::directory_options options=std::filesystem::directory_options::skip_permission_denied;
+					if(recursive)
+					{
+						for(const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(p, options))
+						{
+							if(entry.is_regular_file())
+							{
+								file_descriptors.emplace(FileInfo(entry.path()));
+							}
+						}
+					}
+					else
+					{
+						for(const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(p, options))
+						{
+							if(entry.is_regular_file())
+							{
+								file_descriptors.emplace(FileInfo(entry.path()));
+							}
+						}
+					}
+				}
+			}
+			catch(const std::filesystem::filesystem_error& e)
+			{
+				std::cerr << "Skipping path '" << input_path << "' due to filesystem error: " << e.what() << "\n";
+			}
+		}
+		return file_descriptors;
+	}
+};
+
+bool run(const ApplicationParameters& app_params)
 {
 	cadscore::ScorableData::ConstructionParameters scorable_data_construction_parameters;
 	scorable_data_construction_parameters.probe=app_params.probe;
@@ -293,30 +376,48 @@ bool run(const ApplicationParameters& app_params) noexcept
 		return false;
 	}
 
-	std::map<std::string, cadscore::ScorableData> map_of_scorable_data;
-	std::vector< std::map<std::string, cadscore::ScorableData>::iterator > target_sd_iterators;
-	std::vector< std::map<std::string, cadscore::ScorableData>::iterator > model_sd_iterators;
-
-	for(int part : {0, 1})
+	const std::set<FileSystemUtilities::FileInfo> target_file_descriptors=FileSystemUtilities::collect_file_descriptors(app_params.target_input_files, app_params.recursive_directory_search);
+	if(target_file_descriptors.empty())
 	{
-		const std::vector<std::string>& input_files=(part==0 ? app_params.target_input_files : app_params.model_input_files);
-		std::vector< std::map<std::string, cadscore::ScorableData>::iterator >& sd_iterators=(part==0 ? target_sd_iterators : model_sd_iterators);
-		for(const std::string& filepath : input_files)
+		std::cerr << "Error: no target input files found.\n";
+		return false;
+	}
+
+	const std::set<FileSystemUtilities::FileInfo> model_file_descriptors=FileSystemUtilities::collect_file_descriptors(app_params.model_input_files, app_params.recursive_directory_search);
+	if(model_file_descriptors.empty())
+	{
+		std::cerr << "Error: no model input files found.\n";
+		return false;
+	}
+
+	std::set<FileSystemUtilities::FileInfo> all_unique_file_descriptors(model_file_descriptors.begin(), model_file_descriptors.end());
+	all_unique_file_descriptors.insert(target_file_descriptors.begin(), target_file_descriptors.end());
+
+	std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData> map_of_scorable_data;
+	for(const FileSystemUtilities::FileInfo& fi : all_unique_file_descriptors)
+	{
+		std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::iterator it=map_of_scorable_data.emplace_hint(map_of_scorable_data.end(), fi.path, cadscore::ScorableData());
+		cadscore::ScorableData& sd=it->second;
+		sd.construct(scorable_data_construction_parameters, cadscore::MolecularFileInput(fi.path, app_params.include_heteroatoms, app_params.read_inputs_as_assemblies), std::cerr);
+		if(!sd.valid())
 		{
-			std::pair< std::map<std::string, cadscore::ScorableData>::iterator, bool> insertion=map_of_scorable_data.emplace(filepath, cadscore::ScorableData());
-			cadscore::ScorableData& sd=insertion.first->second;
-			if(insertion.second)
-			{
-				sd.construct(scorable_data_construction_parameters, cadscore::MolecularFileInput(filepath, app_params.include_heteroatoms, app_params.read_inputs_as_assemblies), std::cerr);
-				if(!sd.valid())
-				{
-					std::cerr << "Skipping invalid input file '" << filepath << "'.\n";
-				}
-			}
-			if(sd.valid())
-			{
-				sd_iterators.push_back(insertion.first);
-			}
+			std::cerr << "Skipping invalid input file '" << fi.path << "'.\n";
+		}
+	}
+
+	std::vector< std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::iterator > target_sd_iterators;
+	std::vector< std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::iterator > model_sd_iterators;
+	target_sd_iterators.reserve(target_file_descriptors.size());
+	model_sd_iterators.reserve(model_file_descriptors.size());
+	for(std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::iterator it=map_of_scorable_data.begin();it!=map_of_scorable_data.end();++it)
+	{
+		if(target_file_descriptors.count(it->first)>0)
+		{
+			target_sd_iterators.push_back(it);
+		}
+		if(model_file_descriptors.count(it->first)>0)
+		{
+			model_sd_iterators.push_back(it);
 		}
 	}
 
@@ -376,23 +477,23 @@ bool run(const ApplicationParameters& app_params) noexcept
 		std::cout << "\n";
 	}
 
-	for(std::map<std::string, cadscore::ScorableData>::iterator target_sd_it : target_sd_iterators)
+	for(std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::iterator target_sd_it : target_sd_iterators)
 	{
-		const std::string& target_name=target_sd_it->first;
+		const std::string& target_display_name=target_sd_it->first.name;
 		const cadscore::ScorableData& target_sd=target_sd_it->second;
-		for(std::map<std::string, cadscore::ScorableData>::iterator model_sd_it : model_sd_iterators)
+		for(std::map<FileSystemUtilities::FileInfo, cadscore::ScorableData>::iterator model_sd_it : model_sd_iterators)
 		{
-			const std::string& model_name=model_sd_it->first;
+			const std::string& model_display_name=model_sd_it->first.name;
 			const cadscore::ScorableData& model_sd=model_sd_it->second;
 			cadscore::ScoringResult sr;
 			sr.construct(scoring_result_construction_parameters, target_sd, model_sd, std::cerr);
 			if(!sr.valid())
 			{
-				std::cerr << "Skipping reporting scores for target '" << target_name << "' and model '" << model_name << "'.\n";
+				std::cerr << "Skipping reporting scores for target '" << target_display_name << "' and model '" << model_display_name << "'.\n";
 			}
 			else
 			{
-				std::cout << target_name << " " << model_name;
+				std::cout << target_display_name << " " << model_display_name;
 				if(app_params.score_atom_atom_contacts)
 				{
 					std::cout << " " << sr.atom_atom_contact_cad_descriptor_global.score();
