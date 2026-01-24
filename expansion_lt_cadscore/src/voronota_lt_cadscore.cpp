@@ -579,6 +579,8 @@ bool run(const ApplicationParameters& app_params)
 	std::vector< std::vector<cadscore::CADDescriptor> > list_of_output_cad_descriptors(list_of_pairs_of_target_model_indices.size(), std::vector<cadscore::CADDescriptor>(output_score_names.size()));
 	std::vector<std::string> list_of_output_error_messages(list_of_pairs_of_target_model_indices.size());
 
+	std::vector<std::string> list_of_chain_remapping_summaries(app_params.remap_chains ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
+
 	{
 		cadscore::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
 		scoring_result_construction_parameters.remap_chains=app_params.remap_chains;
@@ -616,6 +618,29 @@ bool run(const ApplicationParameters& app_params)
 				{
 					output_error_message="unrecognized error";
 				}
+			}
+			if(!list_of_chain_remapping_summaries.empty())
+			{
+				std::string& summary=list_of_chain_remapping_summaries[i];
+				summary="(";
+				for(std::map<std::string, std::string>::const_iterator mit=sr.params.chain_renaming_map.begin();mit!=sr.params.chain_renaming_map.end();++mit)
+				{
+					if(mit!=sr.params.chain_renaming_map.begin())
+					{
+						summary+=",";
+					}
+					summary+=mit->first;
+				}
+				summary+=")[";
+				for(std::map<std::string, std::string>::const_iterator mit=sr.params.chain_renaming_map.begin();mit!=sr.params.chain_renaming_map.end();++mit)
+				{
+					if(mit!=sr.params.chain_renaming_map.begin())
+					{
+						summary+=",";
+					}
+					summary+=mit->second;
+				}
+				summary+="]";
 			}
 		}
 	}
@@ -672,6 +697,10 @@ bool run(const ApplicationParameters& app_params)
 		{
 			std::cout << "\t" << sname << "_cadscore";
 		}
+		if(!list_of_chain_remapping_summaries.empty())
+		{
+			std::cout << "\t" << "remapping_of_chains";
+		}
 		std::cout << "\n";
 
 		for(const std::size_t i : ordered_pair_ids_for_output)
@@ -683,6 +712,10 @@ bool run(const ApplicationParameters& app_params)
 			for(const cadscore::CADDescriptor& cadd : output_cad_descriptors)
 			{
 				std::cout << "\t" << cadd.score();
+			}
+			if(!list_of_chain_remapping_summaries.empty())
+			{
+				std::cout << "\t" << list_of_chain_remapping_summaries[i];
 			}
 			std::cout << "\n";
 		}
