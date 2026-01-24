@@ -1647,6 +1647,19 @@ private:
 				set_of_free_chains_right.erase(best_pair.second);
 			}
 			final_chain_renaming_map.swap(map_of_renamings_in_model);
+			{
+				const double final_score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, final_chain_renaming_map)).score();
+				std::map<std::string, std::string> default_chain_renaming_map=final_chain_renaming_map;
+				for(std::map<std::string, std::string>::iterator mit=default_chain_renaming_map.begin();mit!=default_chain_renaming_map.end();++mit)
+				{
+					mit->second=mit->first;
+				}
+				const double default_score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, default_chain_renaming_map)).score();
+				if(default_score>final_score)
+				{
+					final_chain_renaming_map.swap(default_chain_renaming_map);
+				}
+			}
 			return true;
 		}
 
