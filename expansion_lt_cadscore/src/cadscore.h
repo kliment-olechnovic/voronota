@@ -1046,9 +1046,10 @@ public:
 	{
 		bool remap_chains;
 		bool record_local_scores;
+		int max_chains_to_fully_permute;
 		std::map<std::string, std::string> chain_renaming_map;
 
-		ConstructionParameters() noexcept : remap_chains(false), record_local_scores(false)
+		ConstructionParameters() noexcept : remap_chains(false), record_local_scores(false), max_chains_to_fully_permute(5)
 		{
 		}
 	};
@@ -1199,7 +1200,7 @@ private:
 			if(init_params.remap_chains)
 			{
 				ConstructionParameters adjusted_init_params=init_params;
-				if(!remap_chains_optimally(target_data, model_data, 5, adjusted_init_params.chain_renaming_map, error_log))
+				if(!remap_chains_optimally(target_data, model_data, adjusted_init_params.max_chains_to_fully_permute, adjusted_init_params.chain_renaming_map, error_log))
 				{
 					error_log << "Automatic chain remapping failed.\n";
 					return false;
