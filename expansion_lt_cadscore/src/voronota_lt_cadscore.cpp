@@ -474,8 +474,17 @@ bool run(const ApplicationParameters& app_params)
 	{
 		for(const std::size_t mi : model_sd_indices)
 		{
-			list_of_pairs_of_target_model_indices.emplace_back(std::pair<std::size_t, std::size_t>(ti, mi));
+			if(ti!=mi)
+			{
+				list_of_pairs_of_target_model_indices.emplace_back(std::pair<std::size_t, std::size_t>(ti, mi));
+			}
 		}
+	}
+
+	if(list_of_pairs_of_target_model_indices.empty())
+	{
+		std::cerr << "Error: no target-model pairs collected with target and model coming not from the same input file.\n";
+		return false;
 	}
 
 	std::vector<std::string> output_score_names;
