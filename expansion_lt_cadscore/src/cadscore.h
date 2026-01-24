@@ -67,18 +67,19 @@ struct IDResidue
 	IDChain id_chain;
 	int residue_seq_number;
 	std::string residue_icode;
+	std::string residue_name;
 
 	IDResidue() noexcept : residue_seq_number(0)
 	{
 	}
 
-	explicit IDResidue(const voronotalt::SphereLabeling::SphereLabel& sl) noexcept : id_chain(sl), residue_seq_number(sl.expanded_residue_id.rnum), residue_icode(sl.expanded_residue_id.icode)
+	explicit IDResidue(const voronotalt::SphereLabeling::SphereLabel& sl) noexcept : id_chain(sl), residue_seq_number(sl.expanded_residue_id.rnum), residue_icode(sl.expanded_residue_id.icode), residue_name(consider_residue_names() ? sl.expanded_residue_id.rname : std::string())
 	{
 	}
 
 	bool operator==(const IDResidue& v) const noexcept
 	{
-		return (residue_seq_number==v.residue_seq_number && id_chain==v.id_chain && residue_icode==v.residue_icode);
+		return (residue_seq_number==v.residue_seq_number && id_chain==v.id_chain && residue_icode==v.residue_icode && residue_name==v.residue_name);
 	}
 
 	bool operator<(const IDResidue& v) const noexcept
@@ -95,7 +96,14 @@ struct IDResidue
 			}
 			else if(residue_seq_number==v.residue_seq_number)
 			{
-				return (residue_icode<v.residue_icode);
+				if(residue_icode<v.residue_icode)
+				{
+					return true;
+				}
+				else if(residue_icode==v.residue_icode)
+				{
+					return (residue_name<v.residue_name);
+				}
 			}
 		}
 		return false;
@@ -111,6 +119,12 @@ struct IDResidue
 	inline bool match_chain_name(const std::string& query_chain_name) const noexcept
 	{
 		return id_chain.match_chain_name(query_chain_name);
+	}
+
+	static bool& consider_residue_names() noexcept
+	{
+		static bool status=false;
+		return status;
 	}
 };
 
@@ -1649,11 +1663,7 @@ private:
 			final_chain_renaming_map.swap(map_of_renamings_in_model);
 			{
 				const double final_score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, final_chain_renaming_map)).score();
-				std::map<std::string, std::string> default_chain_renaming_map=final_chain_renaming_map;
-				for(std::map<std::string, std::string>::iterator mit=default_chain_renaming_map.begin();mit!=default_chain_renaming_map.end();++mit)
-				{
-					mit->second=mit->first;
-				}
+				std::map<std::string, std::string> default_chain_renaming_map=ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(chain_names_in_model, chain_names_in_target);
 				const double default_score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, default_chain_renaming_map)).score();
 				if(default_score>final_score)
 				{

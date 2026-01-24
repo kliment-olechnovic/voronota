@@ -37,6 +37,7 @@ Options:
     --score-residue-sites                                       flag to score sites on residue level
     --score-chain-sites                                         flag to score sites on chain level
     --score-everything                                          flag to score everything (contacts, sites, SAS areas) on all levels of detail
+    --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
     --help | -h                                                 flag to print help info to stderr and exit
@@ -88,6 +89,7 @@ public:
 	bool recursive_directory_search;
 	bool include_heteroatoms;
 	bool read_inputs_as_assemblies;
+	bool consider_residue_names;
 	bool remap_chains;
 	int max_chains_to_fully_permute;
 	bool score_atom_atom_contacts;
@@ -118,6 +120,7 @@ public:
 		recursive_directory_search(false),
 		include_heteroatoms(false),
 		read_inputs_as_assemblies(false),
+		consider_residue_names(false),
 		remap_chains(false),
 		max_chains_to_fully_permute(5),
 		score_atom_atom_contacts(false),
@@ -266,6 +269,10 @@ public:
 						score_residue_sites=true;
 						score_chain_sites=true;
 					}
+				}
+				else if(opt.name=="consider-residue-names" && opt.is_flag())
+				{
+					consider_residue_names=opt.is_flag_and_true();
 				}
 				else if(opt.name=="remap-chains" && opt.is_flag())
 				{
@@ -418,6 +425,8 @@ public:
 
 bool run(const ApplicationParameters& app_params)
 {
+	cadscore::IDResidue::consider_residue_names()=app_params.consider_residue_names;
+
 	cadscore::ScorableData::ConstructionParameters scorable_data_construction_parameters;
 	scorable_data_construction_parameters.probe=app_params.probe;
 	scorable_data_construction_parameters.record_atom_balls=false;
