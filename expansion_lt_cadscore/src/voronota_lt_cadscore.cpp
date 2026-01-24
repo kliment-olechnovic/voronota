@@ -1,6 +1,8 @@
 #include <filesystem>
 
-#define VORONOTALT_DISABLE_OPENMP
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 #include "cadscore.h"
 
@@ -20,6 +22,7 @@ Options:
     --include-heteroatoms                                       flag to include heteroatoms when reading input in PDB or mmCIF format
     --read-inputs-as-assemblies                                 flag to join multiple models into an assembly when reading a file in PDB or mmCIF format
     --radii-config-file                              string     input file path for reading atom radii assignment rules
+    --processors                                     number     maximum number of OpenMP threads to use, default is 2 if OpenMP is enabled, 1 if disabled
     --probe                                          number     rolling probe radius, default is 1.4
     --restrict-input-atoms                           string     selection expression to restrict input balls
     --subselect-contacts                             string     selection expression to restrict contact area descriptors to score
@@ -53,10 +56,35 @@ Usage examples:
 )";
 }
 
+class OpenMPUtilities
+{
+public:
+	static bool openmp_enabled() noexcept
+	{
+#ifdef _OPENMP
+		return true;
+#else
+		return false;
+#endif
+	}
+
+	static unsigned int openmp_setup(const unsigned int max_number_of_processors) noexcept
+	{
+#ifdef _OPENMP
+		omp_set_num_threads(max_number_of_processors);
+		omp_set_max_active_levels(1);
+		return max_number_of_processors;
+#else
+		return 1;
+#endif
+	}
+};
+
 class ApplicationParameters
 {
 public:
 	double probe;
+	unsigned int max_number_of_processors;
 	bool recursive_directory_search;
 	bool include_heteroatoms;
 	bool read_inputs_as_assemblies;
@@ -85,6 +113,7 @@ public:
 
 	ApplicationParameters() noexcept :
 		probe(1.4),
+		max_number_of_processors(OpenMPUtilities::openmp_enabled() ? 2 : 1),
 		recursive_directory_search(false),
 		include_heteroatoms(false),
 		read_inputs_as_assemblies(false),
@@ -129,6 +158,24 @@ public:
 					if(!(probe>=0.0 && probe<=30.0))
 					{
 						error_log_for_options_parsing << "Error: invalid command line argument for the rolling probe radius, must be a value from 0.0 to 30.0.\n";
+					}
+				}
+				else if(opt.name=="processors" && opt.args_ints.size()==1)
+				{
+					max_number_of_processors=static_cast<unsigned int>(opt.args_ints.front());
+					if(OpenMPUtilities::openmp_enabled())
+					{
+						if(!(max_number_of_processors>=1 && max_number_of_processors<=1024))
+						{
+							error_log_for_options_parsing << "Error: invalid command line argument for the maximum number of processors, must be an integer from 1 to 1024.\n";
+						}
+					}
+					else
+					{
+						if(max_number_of_processors!=1)
+						{
+							error_log_for_options_parsing << "Error: OpenMP is not enabled, therefore specifying the maximum number of processors other than 1 is not allowed.\n";
+						}
 					}
 				}
 				else if((opt.name=="targets" || opt.name=="t") && !opt.args_strings.empty())
@@ -434,12 +481,30 @@ bool run(const ApplicationParameters& app_params)
 	model_sd_indices.reserve(set_of_model_file_descriptors.size());
 
 	std::vector<cadscore::ScorableData> list_of_unique_scorable_data(list_of_unique_file_descriptors.size());
+	std::vector<std::string> list_of_error_messages_for_unique_scorable_data(list_of_unique_file_descriptors.size());
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
 	for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
 	{
 		const FileSystemUtilities::FileInfo& fi=list_of_unique_file_descriptors[i];
 		cadscore::ScorableData& sd=list_of_unique_scorable_data[i];
-		sd.construct(scorable_data_construction_parameters, cadscore::MolecularFileInput(fi.path, app_params.include_heteroatoms, app_params.read_inputs_as_assemblies), std::cerr);
-		if(sd.valid())
+		std::string& error_message=list_of_error_messages_for_unique_scorable_data[i];
+		std::ostringstream local_error_stream;
+		sd.construct(scorable_data_construction_parameters, cadscore::MolecularFileInput(fi.path, app_params.include_heteroatoms, app_params.read_inputs_as_assemblies), local_error_stream);
+		error_message=local_error_stream.str();
+		if(!sd.valid() && error_message.empty())
+		{
+			error_message="unrecognized error";
+		}
+	}
+
+	for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
+	{
+		const FileSystemUtilities::FileInfo& fi=list_of_unique_file_descriptors[i];
+		const std::string& error_message=list_of_error_messages_for_unique_scorable_data[i];
+		if(error_message.empty())
 		{
 			if(set_of_target_file_descriptors.count(fi)>0)
 			{
@@ -452,7 +517,8 @@ bool run(const ApplicationParameters& app_params)
 		}
 		else
 		{
-			std::cerr << "Skipping invalid input file '" << fi.path << "'.\n";
+			std::cerr << "Error (non-terminating): failed to process input file '" << fi.path<< "' due to errors:\n";
+			std::cerr << error_message << "\n";
 		}
 	}
 
@@ -507,6 +573,9 @@ bool run(const ApplicationParameters& app_params)
 		cadscore::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
 		scoring_result_construction_parameters.remap_chains=app_params.remap_chains;
 
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
 		for(std::size_t i=0;i<list_of_pairs_of_target_model_indices.size();i++)
 		{
 			const cadscore::ScorableData& target_sd=list_of_unique_scorable_data[list_of_pairs_of_target_model_indices[i].first];
@@ -631,6 +700,8 @@ int main(const int argc, const char** argv)
 		}
 		return 1;
 	}
+
+	OpenMPUtilities::openmp_setup(app_params.max_number_of_processors);
 
 	if(!app_params.radii_config_file.empty())
 	{
