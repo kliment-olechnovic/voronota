@@ -485,11 +485,13 @@ bool run(const ApplicationParameters& app_params)
 			std::map<std::string, int> map_of_basename_counts;
 			for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
 			{
-				map_of_basename_counts[list_of_unique_file_descriptors[i].name]++;
-			}
-			for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
-			{
-				list_of_unique_file_display_names[i]=(map_of_basename_counts[list_of_unique_file_descriptors[i].name]<2 ? list_of_unique_file_descriptors[i].name : list_of_unique_file_descriptors[i].path);
+				int& counter=map_of_basename_counts[list_of_unique_file_descriptors[i].name];
+				counter++;
+				list_of_unique_file_display_names[i]=list_of_unique_file_descriptors[i].name;
+				if(counter>1)
+				{
+					list_of_unique_file_display_names[i]+=std::string("_v")+std::to_string(counter);
+				}
 			}
 		}
 	}
