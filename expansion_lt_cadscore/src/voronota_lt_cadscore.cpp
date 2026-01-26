@@ -9,7 +9,7 @@
 namespace
 {
 
-void print_help(std::ostream& output) noexcept
+void print_help(std::ostream& output)
 {
 	output << "Voronota-LT-CAD-score version " << voronotalt::version() << "\n";
 	output << R"(
@@ -40,10 +40,12 @@ Options:
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
+    --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
+    --output-local-scores                            string     path to output directory for files with tables of local scores
     --help | -h                                                 flag to print help info to stderr and exit
 
 Standard output stream:
-    Global scores
+    Global scores info
 
 Standard error output stream:
     Log (a name-value pair line), error messages
@@ -60,7 +62,7 @@ Usage examples:
 class OpenMPUtilities
 {
 public:
-	static bool openmp_enabled() noexcept
+	static bool openmp_enabled()
 	{
 #ifdef _OPENMP
 		return true;
@@ -69,7 +71,7 @@ public:
 #endif
 	}
 
-	static unsigned int openmp_setup(const unsigned int max_number_of_processors) noexcept
+	static unsigned int openmp_setup(const unsigned int max_number_of_processors)
 	{
 #ifdef _OPENMP
 		omp_set_num_threads(max_number_of_processors);
@@ -112,9 +114,11 @@ public:
 	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_input_balls;
 	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_contact_descriptors;
 	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_atom_descriptors;
+	std::string output_global_scores;
+	std::string output_local_scores;
 	std::ostringstream error_log_for_options_parsing;
 
-	ApplicationParameters() noexcept :
+	ApplicationParameters() :
 		probe(1.4),
 		max_number_of_processors(OpenMPUtilities::openmp_enabled() ? 2 : 1),
 		recursive_directory_search(false),
@@ -133,11 +137,12 @@ public:
 		score_residue_sites(false),
 		score_chain_sites(false),
 		print_paths_in_output(false),
-		read_successfuly(false)
+		read_successfuly(false),
+		output_global_scores("_stdout")
 	{
 	}
 
-	bool read_from_command_line_args(const int argc, const char** argv) noexcept
+	bool read_from_command_line_args(const int argc, const char** argv)
 	{
 		read_successfuly=false;
 
@@ -290,6 +295,14 @@ public:
 				{
 					print_paths_in_output=opt.is_flag_and_true();
 				}
+				else if(opt.name=="output-global-scores" && opt.args_strings.size()==1)
+				{
+					output_global_scores=opt.args_strings.front();
+				}
+				else if(opt.name=="output-local-scores" && opt.args_strings.size()==1)
+				{
+					output_local_scores=opt.args_strings.front();
+				}
 				else if(opt.name.empty())
 				{
 					error_log_for_options_parsing << "Error: misplaced unnamed command line arguments detected.\n";
@@ -314,6 +327,16 @@ public:
 		if(model_input_files.empty())
 		{
 			error_log_for_options_parsing << "Error: no input model files provided.\n";
+		}
+
+		if(output_global_scores.empty() && output_local_scores.empty())
+		{
+			error_log_for_options_parsing << "Error: no outputs specified.\n";
+		}
+
+		if(!output_local_scores.empty() && model_input_files.size()!=1 && target_input_files.empty()!=1)
+		{
+			error_log_for_options_parsing << "Error: local scores output is only supported for one target and one model at a time.\n";
 		}
 
 		if(!restrict_input_atoms.empty())
@@ -361,17 +384,17 @@ public:
 		{
 		}
 
-		bool operator==(const FileInfo& v) const noexcept
+		bool operator==(const FileInfo& v) const
 		{
 			return (path==v.path);
 		}
 
-		bool operator!=(const FileInfo& v) const noexcept
+		bool operator!=(const FileInfo& v) const
 		{
 			return (path!=v.path);
 		}
 
-		bool operator<(const FileInfo& v) const noexcept
+		bool operator<(const FileInfo& v) const
 		{
 			return path<v.path;
 		}
@@ -421,6 +444,39 @@ public:
 		}
 		return file_descriptors;
 	}
+
+	static bool create_directory(const std::string& directory_path)
+	{
+		try
+		{
+			std::filesystem::create_directories(directory_path);
+		}
+		catch(const std::filesystem::filesystem_error& e)
+		{
+			std::cerr << "Failed to create directory '" << directory_path << "' due to filesystem error: " << e.what() << "\n";
+			return false;
+		}
+		return true;
+	}
+
+	static bool create_parent_directory(const std::string& full_file_path)
+	{
+		std::filesystem::path file_path=full_file_path;
+		std::filesystem::path dir_path=file_path.parent_path();
+		if(!dir_path.empty())
+		{
+			try
+			{
+				std::filesystem::create_directories(dir_path);
+			}
+			catch(const std::filesystem::filesystem_error& e)
+			{
+				std::cerr << "Failed to create parent directory '" << dir_path << "' due to filesystem error: " << e.what() << "\n";
+				return false;
+			}
+		}
+		return true;
+	}
 };
 
 bool run(const ApplicationParameters& app_params)
@@ -469,6 +525,12 @@ bool run(const ApplicationParameters& app_params)
 		set_of_unique_file_descriptors.insert(set_of_target_file_descriptors.begin(), set_of_target_file_descriptors.end());
 		list_of_unique_file_descriptors.reserve(set_of_unique_file_descriptors.size());
 		list_of_unique_file_descriptors.insert(list_of_unique_file_descriptors.end(), set_of_unique_file_descriptors.begin(), set_of_unique_file_descriptors.end());
+	}
+
+	if(!app_params.output_local_scores.empty() && list_of_unique_file_descriptors.size()!=2)
+	{
+		std::cerr << "Error: multiple input files found, but local scores output is only supported for one target and one model at a time.\n";
+		return false;
 	}
 
 	std::vector<std::string> list_of_unique_file_display_names(list_of_unique_file_descriptors.size());
@@ -704,33 +766,60 @@ bool run(const ApplicationParameters& app_params)
 		}
 	}
 
+	if(!app_params.output_global_scores.empty())
 	{
-		std::cout << "target" << "\t" << "model";
+		if(app_params.output_global_scores!="_stdout")
+		{
+			if(!FileSystemUtilities::create_parent_directory(app_params.output_global_scores))
+			{
+				std::cerr << "Error: failed to create parent directory for file file '" << app_params.output_global_scores << "' to output table of global scores.\n";
+				return false;
+			}
+		}
+
+		std::ostringstream output_stream;
+
+		output_stream << "target" << "\t" << "model";
 		for(const std::string& sname : output_score_names)
 		{
-			std::cout << "\t" << sname << "_cadscore";
+			output_stream << "\t" << sname << "_cadscore";
 		}
 		if(!list_of_chain_remapping_summaries.empty())
 		{
-			std::cout << "\t" << "remapping_of_chains";
+			output_stream << "\t" << "remapping_of_chains";
 		}
-		std::cout << "\n";
+		output_stream << "\n";
 
 		for(const std::size_t i : ordered_pair_ids_for_output)
 		{
 			const std::string& target_display_name=list_of_unique_file_display_names[list_of_pairs_of_target_model_indices[i].first];
 			const std::string& model_display_name=list_of_unique_file_display_names[list_of_pairs_of_target_model_indices[i].second];
 			const std::vector<cadscore::CADDescriptor>& output_cad_descriptors=list_of_output_cad_descriptors[i];
-			std::cout << target_display_name << "\t" << model_display_name;
+			output_stream << target_display_name << "\t" << model_display_name;
 			for(const cadscore::CADDescriptor& cadd : output_cad_descriptors)
 			{
-				std::cout << "\t" << cadd.score();
+				output_stream << "\t" << cadd.score();
 			}
 			if(!list_of_chain_remapping_summaries.empty())
 			{
-				std::cout << "\t" << list_of_chain_remapping_summaries[i];
+				output_stream << "\t" << list_of_chain_remapping_summaries[i];
 			}
-			std::cout << "\n";
+			output_stream << "\n";
+		}
+
+		if(app_params.output_global_scores!="_stdout")
+		{
+			std::ofstream output_file_stream(app_params.output_global_scores.c_str(), std::ios::out);
+			if(!output_file_stream.good())
+			{
+				std::cerr << "Error: failed to open file '" << app_params.output_global_scores << "' to output table of global scores.\n";
+				return false;
+			}
+			output_file_stream << output_stream.str();
+		}
+		else
+		{
+			std::cout << output_stream.str();
 		}
 	}
 
