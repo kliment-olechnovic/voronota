@@ -502,8 +502,10 @@ bool run(const ApplicationParameters& app_params)
 	std::vector<cadscore::ScorableData> list_of_unique_scorable_data(list_of_unique_file_descriptors.size());
 	std::vector<std::string> list_of_error_messages_for_unique_scorable_data(list_of_unique_file_descriptors.size());
 
+	const bool parallelize_on_root_level=(list_of_unique_file_descriptors.size()*2>app_params.max_number_of_processors);
+
 #ifdef _OPENMP
-#pragma omp parallel for
+#pragma omp parallel for if(parallelize_on_root_level)
 #endif
 	for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
 	{

@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 
+#include "../../expansion_lt/src/voronotalt/parallelization_configuration.h"
 #include "../../expansion_lt/src/voronotalt/voronotalt.h"
 #include "../../expansion_lt/src/voronotalt_cli/voronotalt_cli.h"
 
