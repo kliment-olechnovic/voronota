@@ -777,34 +777,38 @@ bool run(const ApplicationParameters& app_params)
 			}
 		}
 
-		std::ostringstream output_stream;
+		std::string output_string="target\tmodel";
 
-		output_stream << "target" << "\t" << "model";
 		for(const std::string& sname : output_score_names)
 		{
-			output_stream << "\t" << sname << "_cadscore";
+			output_string+="\t";
+			cadscore::PrintingUtilites::print(1, cadscore::CADDescriptor(), true, sname+std::string("_"), output_string);
 		}
 		if(!list_of_chain_remapping_summaries.empty())
 		{
-			output_stream << "\t" << "remapping_of_chains";
+			output_string+="\tremapping_of_chains";
 		}
-		output_stream << "\n";
+		output_string+="\n";
 
 		for(const std::size_t i : ordered_pair_ids_for_output)
 		{
 			const std::string& target_display_name=list_of_unique_file_display_names[list_of_pairs_of_target_model_indices[i].first];
 			const std::string& model_display_name=list_of_unique_file_display_names[list_of_pairs_of_target_model_indices[i].second];
 			const std::vector<cadscore::CADDescriptor>& output_cad_descriptors=list_of_output_cad_descriptors[i];
-			output_stream << target_display_name << "\t" << model_display_name;
+			output_string+=target_display_name;
+			output_string+="\t";
+			output_string+=model_display_name;
 			for(const cadscore::CADDescriptor& cadd : output_cad_descriptors)
 			{
-				output_stream << "\t" << cadd.score();
+				output_string+="\t";
+				cadscore::PrintingUtilites::print(1, cadd, false, std::string(), output_string);
 			}
 			if(!list_of_chain_remapping_summaries.empty())
 			{
-				output_stream << "\t" << list_of_chain_remapping_summaries[i];
+				output_string+="\t";
+				output_string+=list_of_chain_remapping_summaries[i];
 			}
-			output_stream << "\n";
+			output_string+="\n";
 		}
 
 		if(app_params.output_global_scores!="_stdout")
@@ -815,11 +819,11 @@ bool run(const ApplicationParameters& app_params)
 				std::cerr << "Error: failed to open file '" << app_params.output_global_scores << "' to output table of global scores.\n";
 				return false;
 			}
-			output_file_stream << output_stream.str();
+			output_file_stream.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
 		}
 		else
 		{
-			std::cout << output_stream.str();
+			std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
 		}
 	}
 

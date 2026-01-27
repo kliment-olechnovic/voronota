@@ -1681,6 +1681,125 @@ private:
 	bool valid_;
 };
 
+class PrintingUtilites
+{
+public:
+	static void print(const IDChain& id, const bool header, const std::string& header_prefix, std::string& output) noexcept
+	{
+		if(header)
+		{
+			output+=header_prefix;
+			output+="chain";
+		}
+		else
+		{
+			output+=id.chain_name;
+		}
+	}
+
+	static void print(const IDResidue& id, const bool header, const std::string& header_prefix, std::string& output) noexcept
+	{
+		print(id.id_chain, header, header_prefix, output);
+		output+="\t";
+		if(header)
+		{
+			output+=header_prefix;
+			output+="rnum\t";
+			output+=header_prefix;
+			output+="icode\t";
+			output+=header_prefix;
+			output+="rname";
+		}
+		else
+		{
+			output+=std::to_string(id.residue_seq_number);
+			output+="\t";
+			output+=id.residue_icode.empty() ? std::string(".") : id.residue_icode;
+			output+="\t";
+			output+=id.residue_name.empty() ? std::string(".") : id.residue_name;
+		}
+	}
+
+	static void print(const IDAtom& id, const bool header, const std::string& header_prefix, std::string& output) noexcept
+	{
+		print(id.id_residue, header, header_prefix, output);
+		if(header)
+		{
+			output+=header_prefix;
+			output+="aname";
+		}
+		else
+		{
+			output+=id.atom_name;
+		}
+	}
+
+	static void print(const IDChainChain& id, const bool header, const std::string& header_prefix, std::string& output) noexcept
+	{
+		print(id.id_a, header, (header ? header_prefix+"id1_" : header_prefix), output);
+		output+="\t";
+		print(id.id_b, header, (header ? header_prefix+"id2_" : header_prefix), output);
+	}
+
+	static void print(const IDResidueResidue& id, const bool header, const std::string& header_prefix, std::string& output) noexcept
+	{
+		print(id.id_a, header, (header ? header_prefix+"id1_" : header_prefix), output);
+		output+="\t";
+		print(id.id_b, header, (header ? header_prefix+"id2_" : header_prefix), output);
+	}
+
+	static void print(const IDAtomAtom& id, const bool header, const std::string& header_prefix, std::string& output) noexcept
+	{
+		print(id.id_a, header, (header ? header_prefix+"id1_" : header_prefix), output);
+		output+="\t";
+		print(id.id_b, header, (header ? header_prefix+"id2_" : header_prefix), output);
+	}
+
+	static void print(const int level_of_details, const CADDescriptor& cadd, const bool header, const std::string& header_prefix, std::string& output) noexcept
+	{
+		if(header)
+		{
+			output+=header_prefix;
+			output+="cadscore\t";
+			output+=header_prefix;
+			output+="F1_of_areas";
+			if(level_of_details>0)
+			{
+				output+="\t";
+				output+=header_prefix;
+				output+="target_area\t";
+				output+=header_prefix;
+				output+="model_area\t";
+				output+=header_prefix;
+				output+="TP_area\t";
+				output+=header_prefix;
+				output+="FP_area\t";
+				output+=header_prefix;
+				output+="FN_area";
+			}
+		}
+		else
+		{
+			output+=std::to_string(cadd.score());
+			output+="\t";
+			output+=std::to_string(cadd.score_F1());
+			if(level_of_details>0)
+			{
+				output+="\t";
+				output+=std::to_string(cadd.target_area_sum);
+				output+="\t";
+				output+=std::to_string(cadd.model_target_area_sum);
+				output+="\t";
+				output+=std::to_string(cadd.confusion_TP);
+				output+="\t";
+				output+=std::to_string(cadd.confusion_FP);
+				output+="\t";
+				output+=std::to_string(cadd.confusion_FN);
+			}
+		}
+	}
+};
+
 }
 
 #endif /* CADSCORE_H_ */
