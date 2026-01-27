@@ -484,6 +484,23 @@ public:
 		}
 		return true;
 	}
+
+	static bool write_file(const std::string& full_file_path, const std::string& output_string)
+	{
+		if(!create_parent_directory(full_file_path))
+		{
+			std::cerr << "Error: failed to create parent directory for file '" << full_file_path << "'.\n";
+			return false;
+		}
+		std::ofstream output_file_stream(full_file_path.c_str(), std::ios::out);
+		if(!output_file_stream.good())
+		{
+			std::cerr << "Error: failed to open file '" << full_file_path << "' to output table of global scores.\n";
+			return false;
+		}
+		output_file_stream.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+		return true;
+	}
 };
 
 bool run(const ApplicationParameters& app_params)
@@ -663,10 +680,13 @@ bool run(const ApplicationParameters& app_params)
 
 	std::vector<std::string> list_of_chain_remapping_summaries(app_params.remap_chains ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
 
+	bool success_writing_local_scores=true;
+
 	{
 		cadscore::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
 		scoring_result_construction_parameters.remap_chains=app_params.remap_chains;
 		scoring_result_construction_parameters.max_chains_to_fully_permute=app_params.max_chains_to_fully_permute;
+		scoring_result_construction_parameters.record_local_scores=!app_params.output_local_scores.empty();
 
 #ifdef _OPENMP
 #pragma omp parallel for
@@ -683,16 +703,70 @@ bool run(const ApplicationParameters& app_params)
 			output_error_message=local_err_stream.str();
 			if(sr.valid() && output_error_message.empty())
 			{
-				std::size_t j=0;
-				if(app_params.score_residue_residue_contacts){output_cad_descriptors[j++]=sr.residue_residue_contact_cad_descriptor_global;}
-				if(app_params.score_atom_atom_contacts){output_cad_descriptors[j++]=sr.atom_atom_contact_cad_descriptor_global;}
-				if(app_params.score_chain_chain_contacts){output_cad_descriptors[j++]=sr.chain_chain_contact_cad_descriptor_global;}
-				if(app_params.score_residue_sas_areas){output_cad_descriptors[j++]=sr.residue_sas_cad_descriptor_global;}
-				if(app_params.score_atom_sas_areas){output_cad_descriptors[j++]=sr.atom_sas_cad_descriptor_global;}
-				if(app_params.score_chain_sas_areas){output_cad_descriptors[j++]=sr.chain_sas_cad_descriptor_global;}
-				if(app_params.score_residue_sites){output_cad_descriptors[j++]=sr.residue_site_cad_descriptor_global;}
-				if(app_params.score_atom_sites){output_cad_descriptors[j++]=sr.atom_site_cad_descriptor_global;}
-				if(app_params.score_chain_sites){output_cad_descriptors[j++]=sr.chain_site_cad_descriptor_global;}
+				{
+					std::size_t j=0;
+					if(app_params.score_residue_residue_contacts){output_cad_descriptors[j++]=sr.residue_residue_contact_cad_descriptor_global;}
+					if(app_params.score_atom_atom_contacts){output_cad_descriptors[j++]=sr.atom_atom_contact_cad_descriptor_global;}
+					if(app_params.score_chain_chain_contacts){output_cad_descriptors[j++]=sr.chain_chain_contact_cad_descriptor_global;}
+					if(app_params.score_residue_sas_areas){output_cad_descriptors[j++]=sr.residue_sas_cad_descriptor_global;}
+					if(app_params.score_atom_sas_areas){output_cad_descriptors[j++]=sr.atom_sas_cad_descriptor_global;}
+					if(app_params.score_chain_sas_areas){output_cad_descriptors[j++]=sr.chain_sas_cad_descriptor_global;}
+					if(app_params.score_residue_sites){output_cad_descriptors[j++]=sr.residue_site_cad_descriptor_global;}
+					if(app_params.score_atom_sites){output_cad_descriptors[j++]=sr.atom_site_cad_descriptor_global;}
+					if(app_params.score_chain_sites){output_cad_descriptors[j++]=sr.chain_site_cad_descriptor_global;}
+				}
+
+				if(!app_params.output_local_scores.empty())
+				{
+					if(success_writing_local_scores && !sr.atom_atom_contact_cad_descriptors.empty())
+					{
+						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/atom_atom_contact_cad_descriptors.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.atom_atom_contact_cad_descriptors));
+					}
+					if(success_writing_local_scores && !sr.atom_atom_contact_cad_descriptors_per_atom.empty())
+					{
+						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/atom_atom_contact_cad_descriptors_per_atom.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.atom_atom_contact_cad_descriptors_per_atom));
+					}
+					if(success_writing_local_scores && !sr.residue_residue_contact_cad_descriptors.empty())
+					{
+						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/residue_residue_contact_cad_descriptors.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.residue_residue_contact_cad_descriptors));
+					}
+					if(success_writing_local_scores && !sr.residue_residue_contact_cad_descriptors_per_residue.empty())
+					{
+						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/residue_residue_contact_cad_descriptors_per_residue.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.residue_residue_contact_cad_descriptors_per_residue));
+					}
+					if(success_writing_local_scores && !sr.chain_chain_contact_cad_descriptors.empty())
+					{
+						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/chain_chain_contact_cad_descriptors.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.chain_chain_contact_cad_descriptors));
+					}
+					if(success_writing_local_scores && !sr.chain_chain_contact_cad_descriptors_per_chain.empty())
+					{
+						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/chain_chain_contact_cad_descriptors_per_chain.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.chain_chain_contact_cad_descriptors_per_chain));
+					}
+					if(success_writing_local_scores && !sr.atom_sas_cad_descriptors.empty())
+					{
+						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/atom_sas_cad_descriptors.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.atom_sas_cad_descriptors));
+					}
+					if(success_writing_local_scores && !sr.residue_sas_cad_descriptors.empty())
+					{
+						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/residue_sas_cad_descriptors.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.residue_sas_cad_descriptors));
+					}
+					if(success_writing_local_scores && !sr.chain_sas_cad_descriptors.empty())
+					{
+						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/chain_sas_cad_descriptors.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.chain_sas_cad_descriptors));
+					}
+					if(success_writing_local_scores && !sr.atom_site_cad_descriptors.empty())
+					{
+						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/atom_site_cad_descriptors.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.atom_site_cad_descriptors));
+					}
+					if(success_writing_local_scores && !sr.residue_site_cad_descriptors.empty())
+					{
+						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/residue_site_cad_descriptors.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.residue_site_cad_descriptors));
+					}
+					if(success_writing_local_scores && !sr.chain_site_cad_descriptors.empty())
+					{
+						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/chain_site_cad_descriptors.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.chain_site_cad_descriptors));
+					}
+				}
 			}
 			else
 			{
@@ -725,6 +799,12 @@ bool run(const ApplicationParameters& app_params)
 				summary+="]";
 			}
 		}
+	}
+
+	if(!success_writing_local_scores)
+	{
+		std::cerr << "Error: failed to write local score tables to files in directory '" << app_params.output_local_scores << "'.\n";
+		return false;
 	}
 
 	std::vector<std::size_t> failed_pair_ids;
@@ -775,15 +855,6 @@ bool run(const ApplicationParameters& app_params)
 
 	if(!app_params.output_global_scores.empty())
 	{
-		if(app_params.output_global_scores!="_stdout")
-		{
-			if(!FileSystemUtilities::create_parent_directory(app_params.output_global_scores))
-			{
-				std::cerr << "Error: failed to create parent directory for file file '" << app_params.output_global_scores << "' to output table of global scores.\n";
-				return false;
-			}
-		}
-
 		std::string output_string="target\tmodel";
 
 		for(const std::string& sname : output_score_names)
@@ -820,13 +891,11 @@ bool run(const ApplicationParameters& app_params)
 
 		if(app_params.output_global_scores!="_stdout")
 		{
-			std::ofstream output_file_stream(app_params.output_global_scores.c_str(), std::ios::out);
-			if(!output_file_stream.good())
+			if(!FileSystemUtilities::write_file(app_params.output_global_scores, output_string))
 			{
-				std::cerr << "Error: failed to open file '" << app_params.output_global_scores << "' to output table of global scores.\n";
+				std::cerr << "Error: failed to write table of global scores to file '" << app_params.output_global_scores << "'.\n";
 				return false;
 			}
-			output_file_stream.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
 		}
 		else
 		{

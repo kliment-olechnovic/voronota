@@ -178,6 +178,10 @@ struct IDChainChain
 	IDChain id_a;
 	IDChain id_b;
 
+	IDChainChain() noexcept
+	{
+	}
+
 	IDChainChain(const IDChain& a, const IDChain& b) noexcept : id_a(a<b ? a : b), id_b(a<b ? b : a)
 	{
 	}
@@ -216,6 +220,10 @@ struct IDResidueResidue
 	IDResidue id_a;
 	IDResidue id_b;
 
+	IDResidueResidue() noexcept
+	{
+	}
+
 	IDResidueResidue(const IDResidue& a, const IDResidue& b) noexcept : id_a(a<b ? a : b), id_b(a<b ? b : a)
 	{
 	}
@@ -253,6 +261,10 @@ struct IDAtomAtom
 {
 	IDAtom id_a;
 	IDAtom id_b;
+
+	IDAtomAtom() noexcept
+	{
+	}
 
 	IDAtomAtom(const IDAtom& a, const IDAtom& b) noexcept : id_a(a<b ? a : b), id_b(a<b ? b : a)
 	{
@@ -1723,6 +1735,7 @@ public:
 	static void print(const IDAtom& id, const bool header, const std::string& header_prefix, std::string& output) noexcept
 	{
 		print(id.id_residue, header, header_prefix, output);
+		output+="\t";
 		if(header)
 		{
 			output+=header_prefix;
@@ -1804,6 +1817,32 @@ public:
 				}
 			}
 		}
+	}
+
+	template<class MapContainer>
+	static void print(const int level_of_details, const MapContainer& container, std::string& output) noexcept
+	{
+		typedef typename MapContainer::key_type ID;
+		typedef typename MapContainer::mapped_type Value;
+		print(ID(), true, std::string(), output);
+		output+="\t";
+		print(level_of_details, Value(), true, std::string(), output);
+		output+="\n";
+		for(typename MapContainer::const_iterator it=container.begin();it!=container.end();++it)
+		{
+			print(it->first, false, std::string(), output);
+			output+="\t";
+			print(level_of_details, it->second, false, std::string(), output);
+			output+="\n";
+		}
+	}
+
+	template<class MapContainer>
+	static std::string print(const int level_of_details, const MapContainer& container) noexcept
+	{
+		std::string output;
+		print(level_of_details, container, output);
+		return output;
 	}
 };
 
