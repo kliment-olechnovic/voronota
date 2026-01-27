@@ -40,6 +40,7 @@ Options:
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
+    --output-level-of-detail                         number     integer level of detail for output, default is 0 (lowest level, to only print CAD-score) 
     --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
     --output-local-scores                            string     path to output directory for files with tables of local scores
     --help | -h                                                 flag to print help info to stderr and exit
@@ -94,6 +95,7 @@ public:
 	bool consider_residue_names;
 	bool remap_chains;
 	int max_chains_to_fully_permute;
+	int output_level_of_detail;
 	bool score_atom_atom_contacts;
 	bool score_residue_residue_contacts;
 	bool score_chain_chain_contacts;
@@ -127,6 +129,7 @@ public:
 		consider_residue_names(false),
 		remap_chains(false),
 		max_chains_to_fully_permute(5),
+		output_level_of_detail(0),
 		score_atom_atom_contacts(false),
 		score_residue_residue_contacts(false),
 		score_chain_chain_contacts(false),
@@ -290,6 +293,10 @@ public:
 					{
 						error_log_for_options_parsing << "Error: invalid max number of chains to fully permute, must be not greater than 7.\n";
 					}
+				}
+				else if(opt.name=="output-level-of-detail" && opt.args_ints.size()==1)
+				{
+					output_level_of_detail=static_cast<int>(opt.args_ints.front());
 				}
 				else if(opt.name=="print-paths-in-output" && opt.is_flag())
 				{
@@ -782,7 +789,7 @@ bool run(const ApplicationParameters& app_params)
 		for(const std::string& sname : output_score_names)
 		{
 			output_string+="\t";
-			cadscore::PrintingUtilites::print(1, cadscore::CADDescriptor(), true, sname+std::string("_"), output_string);
+			cadscore::PrintingUtilites::print(app_params.output_level_of_detail, cadscore::CADDescriptor(), true, sname+std::string("_"), output_string);
 		}
 		if(!list_of_chain_remapping_summaries.empty())
 		{
@@ -801,7 +808,7 @@ bool run(const ApplicationParameters& app_params)
 			for(const cadscore::CADDescriptor& cadd : output_cad_descriptors)
 			{
 				output_string+="\t";
-				cadscore::PrintingUtilites::print(1, cadd, false, std::string(), output_string);
+				cadscore::PrintingUtilites::print(app_params.output_level_of_detail, cadd, false, std::string(), output_string);
 			}
 			if(!list_of_chain_remapping_summaries.empty())
 			{

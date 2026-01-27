@@ -1760,41 +1760,48 @@ public:
 		if(header)
 		{
 			output+=header_prefix;
-			output+="cadscore\t";
-			output+=header_prefix;
-			output+="F1_of_areas";
-			if(level_of_details>0)
+			output+="cadscore";
+			if(level_of_details>=1)
 			{
 				output+="\t";
 				output+=header_prefix;
-				output+="target_area\t";
-				output+=header_prefix;
-				output+="model_area\t";
-				output+=header_prefix;
-				output+="TP_area\t";
-				output+=header_prefix;
-				output+="FP_area\t";
-				output+=header_prefix;
-				output+="FN_area";
+				output+="F1_of_areas";
+				if(level_of_details>=2)
+				{
+					output+="\t";
+					output+=header_prefix;
+					output+="target_area\t";
+					output+=header_prefix;
+					output+="model_area\t";
+					output+=header_prefix;
+					output+="TP_area\t";
+					output+=header_prefix;
+					output+="FP_area\t";
+					output+=header_prefix;
+					output+="FN_area";
+				}
 			}
 		}
 		else
 		{
 			output+=std::to_string(cadd.score());
-			output+="\t";
-			output+=std::to_string(cadd.score_F1());
-			if(level_of_details>0)
+			if(level_of_details>=1)
 			{
 				output+="\t";
-				output+=std::to_string(cadd.target_area_sum);
-				output+="\t";
-				output+=std::to_string(cadd.model_target_area_sum);
-				output+="\t";
-				output+=std::to_string(cadd.confusion_TP);
-				output+="\t";
-				output+=std::to_string(cadd.confusion_FP);
-				output+="\t";
-				output+=std::to_string(cadd.confusion_FN);
+				output+=std::to_string(cadd.score_F1());
+				if(level_of_details>=2)
+				{
+					output+="\t";
+					output+=std::to_string(cadd.target_area_sum);
+					output+="\t";
+					output+=std::to_string(cadd.model_target_area_sum);
+					output+="\t";
+					output+=std::to_string(cadd.confusion_TP);
+					output+="\t";
+					output+=std::to_string(cadd.confusion_FP);
+					output+="\t";
+					output+=std::to_string(cadd.confusion_FN);
+				}
 			}
 		}
 	}
