@@ -45,6 +45,7 @@ Options:
     --output-level-of-detail                         number     integer level of detail for output, default is 0 (lowest level, to only print CAD-score) 
     --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
     --output-local-scores                            string     path to output directory for files with tables of local scores
+    --output-local-scores-pdbs                       string     path to output directory for PDB files with scores as b-factors and relevances as occupancies
     --help | -h                                                 flag to print help info to stderr and exit
 
 Standard output stream:
@@ -120,6 +121,7 @@ public:
 	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_atom_descriptors;
 	std::string output_global_scores;
 	std::string output_local_scores;
+	std::string output_local_scores_pdbs;
 	std::ostringstream error_log_for_options_parsing;
 
 	ApplicationParameters() :
@@ -324,6 +326,10 @@ public:
 				{
 					output_local_scores=opt.args_strings.front();
 				}
+				else if(opt.name=="output-local-scores-pdbs" && opt.args_strings.size()==1)
+				{
+					output_local_scores_pdbs=opt.args_strings.front();
+				}
 				else if(opt.name.empty())
 				{
 					error_log_for_options_parsing << "Error: misplaced unnamed command line arguments detected.\n";
@@ -334,6 +340,8 @@ public:
 				}
 			}
 		}
+
+		const bool local_scores_requested=(!output_local_scores.empty() || !output_local_scores_pdbs.empty());
 
 		if(!(score_atom_atom_contacts || score_residue_residue_contacts || score_chain_chain_contacts || score_atom_sas_areas || score_residue_sas_areas || score_chain_sas_areas || score_atom_sites || score_residue_sites || score_chain_sites))
 		{
@@ -350,12 +358,12 @@ public:
 			error_log_for_options_parsing << "Error: no input model files provided.\n";
 		}
 
-		if(output_global_scores.empty() && output_local_scores.empty())
+		if(output_global_scores.empty() && !local_scores_requested)
 		{
 			error_log_for_options_parsing << "Error: no outputs specified.\n";
 		}
 
-		if(!output_local_scores.empty() && model_input_files.size()!=1 && target_input_files.empty()!=1)
+		if(local_scores_requested && model_input_files.size()!=1 && target_input_files.empty()!=1)
 		{
 			error_log_for_options_parsing << "Error: local scores output is only supported for one target and one model at a time.\n";
 		}
@@ -523,7 +531,7 @@ bool run(const ApplicationParameters& app_params)
 
 	cadscore::ScorableData::ConstructionParameters scorable_data_construction_parameters;
 	scorable_data_construction_parameters.probe=app_params.probe;
-	scorable_data_construction_parameters.record_atom_balls=false;
+	scorable_data_construction_parameters.record_atom_balls=!app_params.output_local_scores_pdbs.empty();
 	scorable_data_construction_parameters.record_atom_atom_contact_summaries=app_params.score_atom_atom_contacts;
 	scorable_data_construction_parameters.record_residue_residue_contact_summaries=app_params.score_residue_residue_contacts || app_params.remap_chains;
 	scorable_data_construction_parameters.record_chain_chain_contact_summaries=app_params.score_chain_chain_contacts;
@@ -700,7 +708,7 @@ bool run(const ApplicationParameters& app_params)
 		cadscore::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
 		scoring_result_construction_parameters.remap_chains=app_params.remap_chains;
 		scoring_result_construction_parameters.max_chains_to_fully_permute=app_params.max_chains_to_fully_permute;
-		scoring_result_construction_parameters.record_local_scores=!app_params.output_local_scores.empty();
+		scoring_result_construction_parameters.record_local_scores=(!app_params.output_local_scores.empty() || !app_params.output_local_scores_pdbs.empty());
 
 #ifdef _OPENMP
 #pragma omp parallel for
@@ -779,6 +787,53 @@ bool run(const ApplicationParameters& app_params)
 					if(success_writing_local_scores && !sr.chain_site_cad_descriptors.empty())
 					{
 						success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores+"/chain_site_cad_descriptors.tsv", cadscore::PrintingUtilites::print(app_params.output_level_of_detail, sr.chain_site_cad_descriptors));
+					}
+				}
+
+				if(!app_params.output_local_scores_pdbs.empty())
+				{
+					if(cadscore::PDBFileWritingUtilities::check_compatability_with_pdb_format(model_sd.atom_balls))
+					{
+						if(success_writing_local_scores && !sr.atom_atom_contact_cad_descriptors_per_atom.empty())
+						{
+							success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores_pdbs+"/atom_atom_contact_cad_descriptors_per_atom.pdb", cadscore::PDBFileWritingUtilities::print(model_sd.atom_balls, sr.atom_atom_contact_cad_descriptors_per_atom));
+						}
+						if(success_writing_local_scores && !sr.residue_residue_contact_cad_descriptors_per_residue.empty())
+						{
+							success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores_pdbs+"/residue_residue_contact_cad_descriptors_per_residue.pdb", cadscore::PDBFileWritingUtilities::print(model_sd.atom_balls, sr.residue_residue_contact_cad_descriptors_per_residue));
+						}
+						if(success_writing_local_scores && !sr.chain_chain_contact_cad_descriptors_per_chain.empty())
+						{
+							success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores_pdbs+"/chain_chain_contact_cad_descriptors_per_chain.pdb", cadscore::PDBFileWritingUtilities::print(model_sd.atom_balls, sr.chain_chain_contact_cad_descriptors_per_chain));
+						}
+						if(success_writing_local_scores && !sr.atom_sas_cad_descriptors.empty())
+						{
+							success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores_pdbs+"/atom_sas_cad_descriptors.pdb", cadscore::PDBFileWritingUtilities::print(model_sd.atom_balls, sr.atom_sas_cad_descriptors));
+						}
+						if(success_writing_local_scores && !sr.residue_sas_cad_descriptors.empty())
+						{
+							success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores_pdbs+"/residue_sas_cad_descriptors.pdb", cadscore::PDBFileWritingUtilities::print(model_sd.atom_balls, sr.residue_sas_cad_descriptors));
+						}
+						if(success_writing_local_scores && !sr.chain_sas_cad_descriptors.empty())
+						{
+							success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores_pdbs+"/chain_sas_cad_descriptors.pdb", cadscore::PDBFileWritingUtilities::print(model_sd.atom_balls, sr.chain_sas_cad_descriptors));
+						}
+						if(success_writing_local_scores && !sr.atom_site_cad_descriptors.empty())
+						{
+							success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores_pdbs+"/atom_site_cad_descriptors.pdb", cadscore::PDBFileWritingUtilities::print(model_sd.atom_balls, sr.atom_site_cad_descriptors));
+						}
+						if(success_writing_local_scores && !sr.residue_site_cad_descriptors.empty())
+						{
+							success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores_pdbs+"/residue_site_cad_descriptors.pdb", cadscore::PDBFileWritingUtilities::print(model_sd.atom_balls, sr.residue_site_cad_descriptors));
+						}
+						if(success_writing_local_scores && !sr.chain_site_cad_descriptors.empty())
+						{
+							success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_local_scores_pdbs+"/chain_site_cad_descriptors.pdb", cadscore::PDBFileWritingUtilities::print(model_sd.atom_balls, sr.chain_site_cad_descriptors));
+						}
+					}
+					else
+					{
+						std::cerr << "Error (non-terminating): skipped writing PDB files with scores because the recorded model atoms cannot not fit into a standard single-poodel PDB format file.\n";
 					}
 				}
 			}
