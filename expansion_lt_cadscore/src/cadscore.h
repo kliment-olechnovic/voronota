@@ -1846,108 +1846,220 @@ public:
 	}
 };
 
-class PDBFileWritingUtilities
+class MolecularFileWritingUtilities
 {
 public:
-	static bool check_compatability_with_pdb_format(const std::vector<AtomBall>& atom_balls) noexcept
+	class PDB
 	{
-		if(atom_balls.size()>99999)
+	public:
+		static bool check_compatability_with_pdb_format(const std::vector<AtomBall>& atom_balls) noexcept
 		{
-			return false;
-		}
-		for(std::size_t i=0;i<atom_balls.size();i++)
-		{
-			const AtomBall& ab=atom_balls[i];
-			if(ab.id_atom.id_residue.id_chain.chain_name.size()>1)
+			if(atom_balls.size()>99999)
 			{
 				return false;
 			}
-		}
-		return true;
-	}
-
-	template<class MapContainer>
-	static void print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds, std::string& output) noexcept
-	{
-		if(check_compatability_with_pdb_format(atom_balls))
-		{
 			for(std::size_t i=0;i<atom_balls.size();i++)
 			{
-				output+=print_atom_line(atom_balls[i], static_cast<int>(i+1), map_of_cadds);
-				output+="\n";
+				const AtomBall& ab=atom_balls[i];
+				if(ab.id_atom.id_residue.id_chain.chain_name.size()>1)
+				{
+					return false;
+				}
 			}
-		}
-	}
-
-	template<class MapContainer>
-	static std::string print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds) noexcept
-	{
-		std::string output;
-		print(atom_balls, map_of_cadds, output);
-		return output;
-	}
-
-private:
-	static bool insert_string_to_columned_line(const std::string& str, const std::size_t start, const std::size_t end, const bool shift_right, std::string& line) noexcept
-	{
-		if(str.empty())
-		{
 			return true;
 		}
-		if(start>=1 && start<=end && end<=line.size())
+
+		template<class MapContainer>
+		static void print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds, std::string& output) noexcept
 		{
-			const std::size_t interval_length=(end-start)+1;
-			if(str.size()<=interval_length)
+			if(check_compatability_with_pdb_format(atom_balls))
 			{
-				const std::string addition(interval_length-str.size(), ' ');
-				line.replace(start-1, interval_length, (shift_right ? addition+str : str+addition));
-				return true;
+				for(std::size_t i=0;i<atom_balls.size();i++)
+				{
+					output+=print_atom_line(atom_balls[i], static_cast<int>(i+1), map_of_cadds);
+					output+="\n";
+				}
 			}
 		}
-		return false;
-	}
 
+		template<class MapContainer>
+		static std::string print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds) noexcept
+		{
+			std::string output;
+			print(atom_balls, map_of_cadds, output);
+			return output;
+		}
+
+	private:
+		static bool insert_string_to_columned_line(const std::string& str, const std::size_t start, const std::size_t end, const bool shift_right, std::string& line) noexcept
+		{
+			if(str.empty())
+			{
+				return true;
+			}
+			if(start>=1 && start<=end && end<=line.size())
+			{
+				const std::size_t interval_length=(end-start)+1;
+				if(str.size()<=interval_length)
+				{
+					const std::string addition(interval_length-str.size(), ' ');
+					line.replace(start-1, interval_length, (shift_right ? addition+str : str+addition));
+					return true;
+				}
+			}
+			return false;
+		}
+
+		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const CADDescriptor& cadd) noexcept
+		{
+			std::string line(80, ' ');
+			insert_string_to_columned_line("ATOM", 1, 6, false, line);
+			insert_string_to_columned_line((serial>0 ? std::to_string(serial) : std::string()), 7, 11, true, line);
+			insert_string_to_columned_line(atom_ball.id_atom.atom_name, (atom_ball.id_atom.atom_name.size()>3 ? 13 : 14), 16, false, line);
+			insert_string_to_columned_line(atom_ball.residue_name, 18, 20, true, line);
+			insert_string_to_columned_line(atom_ball.id_atom.id_residue.id_chain.chain_name.substr(0, 1), 22, 22, false, line);
+			insert_string_to_columned_line(std::to_string(atom_ball.id_atom.id_residue.residue_seq_number), 23, 26, true, line);
+			insert_string_to_columned_line(atom_ball.id_atom.id_residue.residue_icode, 27, 27, false, line);
+			insert_string_to_columned_line(convert_double_to_string(atom_ball.x, 3), 31, 38, true, line);
+			insert_string_to_columned_line(convert_double_to_string(atom_ball.y, 3), 39, 46, true, line);
+			insert_string_to_columned_line(convert_double_to_string(atom_ball.z, 3), 47, 54, true, line);
+			insert_string_to_columned_line(convert_double_to_string((cadd.target_area_sum>0.0 ? 1.0 : 0.0), 2), 55, 60, true, line);
+			insert_string_to_columned_line(convert_double_to_string((cadd.target_area_sum>0.0 ? cadd.score() : 0.0), 2), 61, 66, true, line);
+			return line;
+		}
+
+		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
+		{
+			std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom);
+			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
+		}
+
+		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
+		{
+			std::map<IDResidue, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue);
+			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
+		}
+
+		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
+		{
+			std::map<IDChain, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.id_chain);
+			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
+		}
+	};
+
+	class MMCIF
+	{
+	public:
+		template<class MapContainer>
+		static void print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds, std::string& output) noexcept
+		{
+			if(!atom_balls.empty())
+			{
+				output="data_minimal";
+				output+=R"(
+loop_
+_atom_site.group_PDB
+_atom_site.id
+_atom_site.type_symbol
+_atom_site.label_atom_id
+_atom_site.label_alt_id
+_atom_site.label_comp_id
+_atom_site.label_asym_id
+_atom_site.label_entity_id
+_atom_site.label_seq_id
+_atom_site.pdbx_PDB_ins_code
+_atom_site.Cartn_x
+_atom_site.Cartn_y
+_atom_site.Cartn_z
+_atom_site.occupancy
+_atom_site.B_iso_or_equiv
+_atom_site.pdbx_formal_charge
+_atom_site.auth_seq_id
+_atom_site.auth_comp_id
+_atom_site.auth_asym_id
+_atom_site.auth_atom_id
+_atom_site.pdbx_PDB_model_num
+)";
+				for(std::size_t i=0;i<atom_balls.size();i++)
+				{
+					output+=print_atom_line(atom_balls[i], static_cast<int>(i+1), map_of_cadds);
+					output+="\n";
+				}
+
+				output+="#\n";
+			}
+		}
+
+		template<class MapContainer>
+		static std::string print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds) noexcept
+		{
+			std::string output;
+			print(atom_balls, map_of_cadds, output);
+			return output;
+		}
+
+	private:
+		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const CADDescriptor& cadd) noexcept
+		{
+			std::string line="ATOM ";
+			line+=std::to_string(serial);
+			line+=" ? ";
+			line+=atom_ball.id_atom.atom_name;
+			line+=" . ";
+			line+=atom_ball.residue_name;
+			line+=" ";
+			line+=atom_ball.id_atom.id_residue.id_chain.chain_name;
+			line+=" 1 ";
+			line+=std::to_string(atom_ball.id_atom.id_residue.residue_seq_number);
+			line+=" ";
+			line+=(atom_ball.id_atom.id_residue.residue_icode.empty() ? std::string("?") : atom_ball.id_atom.id_residue.residue_icode);
+			line+=" ";
+			line+=convert_double_to_string(atom_ball.x, 3);
+			line+=" ";
+			line+=convert_double_to_string(atom_ball.y, 3);
+			line+=" ";
+			line+=convert_double_to_string(atom_ball.z, 3);
+			line+=" ";
+			line+=convert_double_to_string((cadd.target_area_sum>0.0 ? 1.0 : 0.0), 2);
+			line+=" ";
+			line+=convert_double_to_string((cadd.target_area_sum>0.0 ? cadd.score() : 0.0), 2);
+			line+=" ? ";
+			line+=std::to_string(atom_ball.id_atom.id_residue.residue_seq_number);
+			line+=" ";
+			line+=atom_ball.residue_name;
+			line+=" ";
+			line+=atom_ball.id_atom.id_residue.id_chain.chain_name;
+			line+=" ";
+			line+=atom_ball.id_atom.atom_name;
+			line+=" 1";
+			return line;
+		}
+
+		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
+		{
+			std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom);
+			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
+		}
+
+		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
+		{
+			std::map<IDResidue, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue);
+			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
+		}
+
+		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
+		{
+			std::map<IDChain, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.id_chain);
+			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
+		}
+	};
+
+private:
 	static std::string convert_double_to_string(const double value, const int precision)
 	{
 		std::ostringstream output;
 		output << std::fixed << std::setprecision(precision) << value;
 		return output.str();
-	}
-
-	static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const CADDescriptor& cadd) noexcept
-	{
-		std::string line(80, ' ');
-		insert_string_to_columned_line("ATOM", 1, 6, false, line);
-		insert_string_to_columned_line((serial>0 ? std::to_string(serial) : std::string()), 7, 11, true, line);
-		insert_string_to_columned_line(atom_ball.id_atom.atom_name, (atom_ball.id_atom.atom_name.size()>3 ? 13 : 14), 16, false, line);
-		insert_string_to_columned_line(atom_ball.residue_name, 18, 20, true, line);
-		insert_string_to_columned_line(atom_ball.id_atom.id_residue.id_chain.chain_name.substr(0, 1), 22, 22, false, line);
-		insert_string_to_columned_line(std::to_string(atom_ball.id_atom.id_residue.residue_seq_number), 23, 26, true, line);
-		insert_string_to_columned_line(atom_ball.id_atom.id_residue.residue_icode, 27, 27, false, line);
-		insert_string_to_columned_line(convert_double_to_string(atom_ball.x, 3), 31, 38, true, line);
-		insert_string_to_columned_line(convert_double_to_string(atom_ball.y, 3), 39, 46, true, line);
-		insert_string_to_columned_line(convert_double_to_string(atom_ball.z, 3), 47, 54, true, line);
-		insert_string_to_columned_line(convert_double_to_string((cadd.target_area_sum>0.0 ? 1.0 : 0.0), 2), 55, 60, true, line);
-		insert_string_to_columned_line(convert_double_to_string((cadd.target_area_sum>0.0 ? cadd.score() : 0.0), 2), 61, 66, true, line);
-		return line;
-	}
-
-	static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
-	{
-		std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom);
-		return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
-	}
-
-	static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
-	{
-		std::map<IDResidue, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue);
-		return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
-	}
-
-	static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
-	{
-		std::map<IDChain, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.id_chain);
-		return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 	}
 };
 
