@@ -36,7 +36,9 @@ Options:
     --score-atom-sites                                          flag to score sites on atom level
     --score-residue-sites                                       flag to score sites on residue level
     --score-chain-sites                                         flag to score sites on chain level
-    --score-everything                                          flag to score everything (contacts, sites, SAS areas) on all levels of detail
+    --score-contacts-on-all-levels                              flag to score contacts on all levels of detail
+    --score-sas-on-all-levels                                   flag to score SAS areas on all levels of detail
+    --score-sites-on-all-levels                                 flag to score sites on all levels of detail
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
@@ -263,16 +265,28 @@ public:
 				{
 					score_chain_sites=opt.is_flag_and_true();
 				}
-				else if(opt.name=="score-everything" && opt.is_flag())
+				else if(opt.name=="score-contacts-on-all-levels" && opt.is_flag())
 				{
 					if(opt.is_flag_and_true())
 					{
 						score_atom_atom_contacts=true;
 						score_residue_residue_contacts=true;
 						score_chain_chain_contacts=true;
+					}
+				}
+				else if(opt.name=="score-sas-on-all-levels" && opt.is_flag())
+				{
+					if(opt.is_flag_and_true())
+					{
 						score_atom_sas_areas=true;
 						score_residue_sas_areas=true;
 						score_chain_sas_areas=true;
+					}
+				}
+				else if(opt.name=="score-sites-on-all-levels" && opt.is_flag())
+				{
+					if(opt.is_flag_and_true())
+					{
 						score_atom_sites=true;
 						score_residue_sites=true;
 						score_chain_sites=true;
