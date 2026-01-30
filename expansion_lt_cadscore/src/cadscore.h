@@ -1865,11 +1865,15 @@ private:
 				for(std::vector<std::string>::const_iterator it=chain_names_in_target.begin();it!=chain_names_in_target.end();++it)
 				{
 					mapped_value=(*it);
-					const double score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, renaming_map)).score();
-					if(score>best_score)
+					const bool consistent_with_reference_sequence_ids=target_data.chain_sequences_mapping_result.empty() || model_data.chain_sequences_mapping_result.empty() || (target_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(mapped_value)==model_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(chain_names_in_model[0]));
+					if(consistent_with_reference_sequence_ids)
 					{
-						best_score=score;
-						best_score_chain_name=(*it);
+						const double score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, renaming_map)).score();
+						if(score>best_score)
+						{
+							best_score=score;
+							best_score_chain_name=(*it);
+						}
 					}
 				}
 				if(!best_score_chain_name.empty())
@@ -1887,26 +1891,45 @@ private:
 		else if(max_chains_to_fully_permute>1 && max_chains_to_fully_permute<7 && chain_names_in_model.size()<=static_cast<std::size_t>(max_chains_to_fully_permute) && chain_names_in_target.size()<=static_cast<std::size_t>(max_chains_to_fully_permute))
 		{
 			double best_score=-1.0;
-			std::map<std::string, std::string> best_score_renaming_map=ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(chain_names_in_model, chain_names_in_target);
+			std::map<std::string, std::string> best_score_renaming_map;
 			{
 				const bool model_not_shorter=(chain_names_in_model.size()>=chain_names_in_target.size());
 				std::vector<std::string> permutated_chain_names=(model_not_shorter ? chain_names_in_model : chain_names_in_target);
+				const std::vector<std::string>& actual_target_chain_names=(model_not_shorter ? chain_names_in_target : permutated_chain_names);
+				const std::vector<std::string>& actual_model_chain_names=(model_not_shorter ? permutated_chain_names : chain_names_in_model);
 				do
 				{
-					std::map<std::string, std::string> renaming_map=(model_not_shorter ?
-							ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(permutated_chain_names, chain_names_in_target) :
-							ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(chain_names_in_model, permutated_chain_names));
-					const double score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, renaming_map)).score();
-					if(score>best_score)
+					bool consistent_with_reference_sequence_ids=true;
+					if(!target_data.chain_sequences_mapping_result.empty() && !model_data.chain_sequences_mapping_result.empty())
 					{
-						best_score=score;
-						best_score_renaming_map=renaming_map;
+						for(std::size_t i=0;i<actual_target_chain_names.size() && i<actual_model_chain_names.size() && consistent_with_reference_sequence_ids;i++)
+						{
+							consistent_with_reference_sequence_ids=consistent_with_reference_sequence_ids && target_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(actual_target_chain_names[i])==model_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(actual_model_chain_names[i]);
+						}
+					}
+					if(consistent_with_reference_sequence_ids)
+					{
+						std::map<std::string, std::string> renaming_map=ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(actual_model_chain_names, actual_target_chain_names);
+						const double score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, renaming_map)).score();
+						if(score>best_score)
+						{
+							best_score=score;
+							best_score_renaming_map=renaming_map;
+						}
 					}
 				}
 				while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
 			}
-			final_chain_renaming_map.swap(best_score_renaming_map);
-			return true;
+			if(best_score_renaming_map.empty())
+			{
+				error_log << "Failed to perform chain remapping exhaustively.\n";
+				return false;
+			}
+			else
+			{
+				final_chain_renaming_map.swap(best_score_renaming_map);
+				return true;
+			}
 		}
 		else
 		{
@@ -1962,9 +1985,12 @@ private:
 							std::map<std::string, std::string> new_map_of_renamings_in_target=map_of_renamings_in_target;
 							new_map_of_renamings_in_target[*it_right]=(*it_right);
 							std::map<IDResidueResidue, AreaValue> new_submap_of_target_contacts=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(ChainNamingUtilities::restrict_map_container_by_chain_name(target_data.residue_residue_contact_areas, *it_right), new_map_of_renamings_in_target);
+							const int right_reference_sequence_id=target_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(*it_right);
 							for(std::set<std::string>::const_iterator it_left=set_of_free_chains_left.begin();it_left!=set_of_free_chains_left.end();++it_left)
 							{
-								if(set_of_hopeless_pairs.count(std::make_pair(*it_left, *it_right))==0)
+								const int left_reference_sequence_id=model_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(*it_left);
+								const bool consistent_with_reference_sequence_ids=(right_reference_sequence_id==left_reference_sequence_id);
+								if(consistent_with_reference_sequence_ids && set_of_hopeless_pairs.count(std::make_pair(*it_left, *it_right))==0)
 								{
 									bool allowed_left=!prefer_adjacent_chains;
 									if(prefer_adjacent_chains)
