@@ -24,6 +24,8 @@ Options:
     --radii-config-file                              string     input file path for reading atom radii assignment rules
     --processors                                     number     maximum number of OpenMP threads to use, default is 2 if OpenMP is enabled, 1 if disabled
     --probe                                          number     rolling probe radius, default is 1.4
+    --reference-sequences-file                       string     input file path for reference sequences in FASTA format
+    --stoichiometry-list                             numbers    list of stoichiometry values to apply when mapping chains to reference sequences
     --restrict-input-atoms                           string     selection expression to restrict input balls
     --subselect-contacts                             string     selection expression to restrict contact area descriptors to score
     --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score
@@ -114,7 +116,9 @@ public:
 	bool read_successfuly;
 	std::vector<std::string> target_input_files;
 	std::vector<std::string> model_input_files;
+	std::vector<int> stoichiometry_list;
 	std::string radii_config_file;
+	std::string reference_sequences_file;
 	std::string restrict_input_atoms;
 	std::string restrict_contact_descriptors;
 	std::string restrict_atom_descriptors;
@@ -222,6 +226,14 @@ public:
 				else if(opt.name=="radii-config-file" && opt.args_strings.size()==1)
 				{
 					radii_config_file=opt.args_strings.front();
+				}
+				else if(opt.name=="reference-sequences-file" && opt.args_strings.size()==1)
+				{
+					reference_sequences_file=opt.args_strings.front();
+				}
+				else if(opt.name=="stoichiometry-list" && !opt.args_ints.empty())
+				{
+					stoichiometry_list=opt.args_ints;
 				}
 				else if(opt.name=="restrict-input-atoms" && opt.args_strings.size()==1)
 				{
@@ -558,6 +570,29 @@ bool run(const ApplicationParameters& app_params)
 	scorable_data_construction_parameters.filtering_expression_for_restricting_contact_descriptors=app_params.filtering_expression_for_restricting_contact_descriptors;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_atom_descriptors=app_params.filtering_expression_for_restricting_atom_descriptors;
 
+	if(!app_params.reference_sequences_file.empty())
+	{
+		scorable_data_construction_parameters.reference_sequences=sequtil::SequenceInputUtilities::read_sequences_from_file(app_params.reference_sequences_file);
+		if(scorable_data_construction_parameters.reference_sequences.empty())
+		{
+			std::cerr << "Error: failed to read sequences from file '" << app_params.reference_sequences_file << "'\n";
+			return false;
+		}
+	}
+
+	if(!scorable_data_construction_parameters.reference_sequences.empty() && !app_params.stoichiometry_list.empty())
+	{
+		if(app_params.stoichiometry_list.size()!=scorable_data_construction_parameters.reference_sequences.size())
+		{
+			std::cerr << "Error: stoichiometry list length (" << app_params.stoichiometry_list.size() << ") does not equal the number of reference sequences (" << scorable_data_construction_parameters.reference_sequences.size() << ").\n";
+			return false;
+		}
+		else
+		{
+			scorable_data_construction_parameters.reference_stoichiometry=app_params.stoichiometry_list;
+		}
+	}
+
 	if(!scorable_data_construction_parameters.valid())
 	{
 		std::cerr << "Error: invalid data preparation parameters.\n";
@@ -661,7 +696,7 @@ bool run(const ApplicationParameters& app_params)
 		}
 		else
 		{
-			std::cerr << "Error (non-terminating): failed to process input file '" << fi.path<< "' due to errors:\n";
+			std::cerr << "Error (non-terminating): failed to process input file '" << fi.path << "' due to errors:\n";
 			std::cerr << error_message << "\n";
 		}
 	}
