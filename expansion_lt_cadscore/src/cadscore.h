@@ -8,6 +8,8 @@
 #include "../../expansion_lt/src/voronotalt/voronotalt.h"
 #include "../../expansion_lt/src/voronotalt_cli/voronotalt_cli.h"
 
+#include "sequtil.h"
+
 namespace cadscore
 {
 
@@ -332,6 +334,298 @@ struct AtomBall
 	}
 };
 
+class ChainsSequencesMapping
+{
+public:
+	struct ChainSummary
+	{
+		std::string old_name;
+		std::string current_name;
+		int reference_sequence_id;
+		double reference_sequence_identity;
+		std::string printed_alignment;
+	};
+
+	struct Result
+	{
+		std::map<std::string, ChainSummary> chain_summaries;
+
+		bool empty() const noexcept
+		{
+			return chain_summaries.empty();
+		}
+
+		void clear() noexcept
+		{
+			chain_summaries.clear();
+		}
+
+		int get_reference_sequence_id_by_chain_name(const std::string& chain_name) const
+		{
+			if(!chain_summaries.empty())
+			{
+				std::map<std::string, ChainSummary>::const_iterator it=chain_summaries.find(chain_name);
+				if(it!=chain_summaries.end())
+				{
+					return it->second.reference_sequence_id;
+				}
+			}
+			return -1;
+		}
+	};
+
+	static bool remap_chain_names_and_residue_numbers_by_reference_sequences(const std::vector<std::string>& reference_sequences, const std::vector<int>& input_stoichiometry, const bool record_printed_alignment, std::vector<AtomBall>& atom_balls, Result& result) noexcept
+	{
+		result.clear();
+
+		std::vector<ChainDescriptor> cds=init_chain_descriptors(atom_balls);
+
+		if(!assign_reference_sequences_to_chain_descriptors(cds, reference_sequences, input_stoichiometry, record_printed_alignment))
+		{
+			return false;
+		}
+
+		if(!assign_new_chain_names_to_chain_descriptors(cds))
+		{
+			return false;
+		}
+
+		std::map<IDChain, std::size_t> map_of_original_chain_names;
+
+		for(std::size_t i=0;i<cds.size();i++)
+		{
+			const ChainDescriptor& cd=cds[i];
+			if(cd.closest_reference_sequence_id>=0)
+			{
+				map_of_original_chain_names[cd.original_chain_id]=i;
+			}
+		}
+
+		if(map_of_original_chain_names.empty())
+		{
+			return false;
+		}
+
+		std::vector<AtomBall> new_atom_balls;
+		new_atom_balls.reserve(atom_balls.size());
+
+		for(const AtomBall& ab : atom_balls)
+		{
+			std::map<IDChain, std::size_t>::const_iterator it=map_of_original_chain_names.find(ab.id_atom.id_residue.id_chain);
+			if(it!=map_of_original_chain_names.end())
+			{
+				const ChainDescriptor& cd=cds[it->second];
+				std::map<IDResidue, int>::const_iterator jt=cd.best_renumbering_by_reference_sequence.find(ab.id_atom.id_residue);
+				if(jt!=cd.best_renumbering_by_reference_sequence.end())
+				{
+					AtomBall new_ab=ab;
+					new_ab.id_atom.id_residue.id_chain.chain_name=cd.new_chain_name;
+					new_ab.id_atom.id_residue.residue_seq_number=jt->second;
+					new_atom_balls.push_back(new_ab);
+				}
+			}
+		}
+
+		if(new_atom_balls.empty())
+		{
+			return false;
+		}
+
+		atom_balls.swap(new_atom_balls);
+
+		for(ChainDescriptor& cd : cds)
+		{
+			if(cd.closest_reference_sequence_id>=0)
+			{
+				result.chain_summaries[cd.new_chain_name]=cd.summarize();
+			}
+		}
+
+		return !result.empty();
+	}
+
+private:
+	struct ChainDescriptor
+	{
+		IDChain original_chain_id;
+		std::vector<IDResidue> sequence_vector;
+		std::string sequence_str;
+		int closest_reference_sequence_id;
+		double best_reference_sequence_identity;
+		std::map<IDResidue, int> best_renumbering_by_reference_sequence;
+		std::string printed_alignment;
+		std::string new_chain_name;
+
+		ChainDescriptor() noexcept : closest_reference_sequence_id(-1), best_reference_sequence_identity(0.0)
+		{
+		}
+
+		ChainSummary summarize() const noexcept
+		{
+			ChainSummary cs;
+			cs.old_name=original_chain_id.chain_name;
+			cs.current_name=new_chain_name;
+			cs.reference_sequence_id=closest_reference_sequence_id;
+			cs.reference_sequence_identity=best_reference_sequence_identity;
+			cs.printed_alignment=printed_alignment;
+			return cs;
+		}
+	};
+
+	static std::vector<ChainDescriptor> init_chain_descriptors(const std::vector<AtomBall>& atom_balls) noexcept
+	{
+		std::vector<ChainDescriptor> cds;
+		if(!atom_balls.empty())
+		{
+			std::map< IDChain, std::map<IDResidue, std::string> > chain_residues;
+			for(const AtomBall& ab : atom_balls)
+			{
+				chain_residues[ab.id_atom.id_residue.id_chain][ab.id_atom.id_residue]=ab.residue_name;
+			}
+			cds.reserve(chain_residues.size());
+			for(std::map< IDChain, std::map<IDResidue, std::string> >::const_iterator it=chain_residues.begin();it!=chain_residues.end();++it)
+			{
+				cds.push_back(ChainDescriptor());
+				ChainDescriptor& cd=cds.back();
+				cd.original_chain_id=it->first;
+				const std::map<IDResidue, std::string>& map_of_residue_ids=it->second;
+				cd.sequence_vector.reserve(map_of_residue_ids.size());
+				for(std::map<IDResidue, std::string>::const_iterator jt=map_of_residue_ids.begin();jt!=map_of_residue_ids.end();++jt)
+				{
+					cd.sequence_vector.push_back(jt->first);
+					cd.sequence_str+=sequtil::SequenceInputUtilities::convert_residue_code_big_to_small(jt->second);
+				}
+			}
+		}
+		return cds;
+	}
+
+	static bool assign_reference_sequences_to_chain_descriptors(std::vector<ChainDescriptor>& cds, const std::vector<std::string>& reference_sequences, const std::vector<int>& input_stoichiometry, const bool record_printed_alignment) noexcept
+	{
+		if(cds.empty() || reference_sequences.empty())
+		{
+			return false;
+		}
+
+		std::vector<int> stoichiometry_used=input_stoichiometry;
+		stoichiometry_used.resize(reference_sequences.size(), static_cast<int>(cds.size()));
+
+		std::vector< std::pair<double, std::pair<int, int> > > all_identities;
+		all_identities.reserve(cds.size()*reference_sequences.size());
+		for(std::size_t i=0;i<cds.size();i++)
+		{
+			for(std::size_t j=0;j<reference_sequences.size();j++)
+			{
+				const double identity=sequtil::PairwiseSequenceMapping::calculate_sequence_identity(reference_sequences[j], cds[i].sequence_str);
+				all_identities.push_back(std::pair<double, std::pair<int, int> >(0.0-identity, std::pair<int, int>(i, j)));
+			}
+		}
+		std::sort(all_identities.begin(), all_identities.end());
+
+		for(const std::pair<double, std::pair<int, int> >& identity_info : all_identities)
+		{
+			const int ref_index=identity_info.second.second;
+			if(stoichiometry_used[ref_index]>0)
+			{
+				ChainDescriptor& cd=cds[identity_info.second.first];
+				if(cd.closest_reference_sequence_id<0)
+				{
+					sequtil::PairwiseSequenceMapping::Result mapping_result;
+					if(sequtil::PairwiseSequenceMapping::construct_mapping(reference_sequences[ref_index], cd.sequence_str, record_printed_alignment, mapping_result))
+					{
+						cd.closest_reference_sequence_id=ref_index;
+						cd.best_reference_sequence_identity=mapping_result.identity;
+						for(const std::pair<int, int>& p : mapping_result.mapping)
+						{
+							cd.best_renumbering_by_reference_sequence[cd.sequence_vector[p.second]]=p.first;
+						}
+						if(record_printed_alignment)
+						{
+							cd.printed_alignment.swap(mapping_result.printed_alignment);
+						}
+						stoichiometry_used[ref_index]--;
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	static bool assign_new_chain_names_to_chain_descriptors(std::vector<ChainDescriptor>& cds) noexcept
+	{
+		if(cds.empty())
+		{
+			return false;
+		}
+		std::map< int, std::set<IDChain> > map_of_reference_ids;
+		for(ChainDescriptor& cd : cds)
+		{
+			if(cd.closest_reference_sequence_id>=0)
+			{
+				map_of_reference_ids[cd.closest_reference_sequence_id].insert(cd.original_chain_id);
+			}
+		}
+		if(map_of_reference_ids.empty())
+		{
+			return false;
+		}
+		std::map<IDChain, std::string> assignment_of_new_chain_names;
+		{
+			char current_chain_name_pefix='A';
+			int current_chain_name_extension=0;
+			std::size_t unassagned_count=0;
+			do
+			{
+				unassagned_count=0;
+				for(std::map< int, std::set<IDChain> >::iterator it=map_of_reference_ids.begin();it!=map_of_reference_ids.end();++it)
+				{
+					std::set<IDChain>& original_chain_ids=it->second;
+					if(!original_chain_ids.empty())
+					{
+						std::set<IDChain>::iterator cid_it=original_chain_ids.begin();
+						std::string& new_chain_name=assignment_of_new_chain_names[*cid_it];
+						new_chain_name=std::string(1, current_chain_name_pefix);
+						if(current_chain_name_extension>0)
+						{
+							new_chain_name+=std::to_string(current_chain_name_extension);
+						}
+						if(current_chain_name_pefix=='Z')
+						{
+							current_chain_name_pefix='a';
+						}
+						else if(current_chain_name_pefix=='z')
+						{
+							current_chain_name_pefix='A';
+							current_chain_name_extension++;
+						}
+						else
+						{
+							current_chain_name_pefix++;
+						}
+						original_chain_ids.erase(cid_it);
+						unassagned_count+=original_chain_ids.size();
+					}
+				}
+			}
+			while(unassagned_count>0);
+		}
+		for(ChainDescriptor& cd : cds)
+		{
+			if(cd.closest_reference_sequence_id>=0)
+			{
+				std::map<IDChain, std::string>::const_iterator it=assignment_of_new_chain_names.find(cd.original_chain_id);
+				if(it!=assignment_of_new_chain_names.end())
+				{
+					cd.new_chain_name=it->second;
+				}
+			}
+		}
+		return true;
+	}
+};
+
+
 struct AreaValue
 {
 	double area;
@@ -570,6 +864,8 @@ public:
 		voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_input_balls;
 		voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_contact_descriptors;
 		voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_atom_descriptors;
+		std::vector<std::string> reference_sequences;
+		std::vector<int> reference_stoichiometry;
 
 		ConstructionParameters() noexcept :
 			probe(1.4),
@@ -592,8 +888,8 @@ public:
 		}
 	};
 
-	ConstructionParameters params;
 	std::vector<AtomBall> atom_balls;
+	ChainsSequencesMapping::Result chain_sequences_mapping_result;
 	std::map<IDAtomAtom, AreaValue> atom_atom_contact_areas;
 	std::map<IDResidueResidue, AreaValue> residue_residue_contact_areas;
 	std::map<IDChainChain, AreaValue> chain_chain_contact_areas;
@@ -618,7 +914,6 @@ public:
 	void clear() noexcept
 	{
 		valid_=false;
-		params=ConstructionParameters();
 		atom_balls.clear();
 		atom_atom_contact_areas.clear();
 		residue_residue_contact_areas.clear();
@@ -633,14 +928,14 @@ public:
 		involved_chain_adjacencies.clear();
 	}
 
-	bool construct(const ConstructionParameters& init_params, const MolecularFileInput& molecular_file_input, std::ostream& error_log) noexcept
+	bool construct(const ConstructionParameters& params, const MolecularFileInput& molecular_file_input, std::ostream& error_log) noexcept
 	{
-		return construct(init_params, std::vector<AtomBall>(), molecular_file_input, error_log);
+		return construct(params, std::vector<AtomBall>(), molecular_file_input, error_log);
 	}
 
-	bool construct(const ConstructionParameters& init_params, const std::vector<AtomBall>& input_atom_balls, std::ostream& error_log) noexcept
+	bool construct(const ConstructionParameters& params, const std::vector<AtomBall>& input_atom_balls, std::ostream& error_log) noexcept
 	{
-		return construct(init_params, input_atom_balls, MolecularFileInput(), error_log);
+		return construct(params, input_atom_balls, MolecularFileInput(), error_log);
 	}
 
 	ScorableData rename_chains(const std::map<std::string, std::string>& renaming_map) const noexcept
@@ -685,13 +980,56 @@ private:
 		ScorableData& self_;
 	};
 
-	bool construct(const ConstructionParameters& init_params, const std::vector<AtomBall>& input_atom_balls, const MolecularFileInput& molecular_file_input, std::ostream& error_log) noexcept
+	static bool collect_spheres_input_result_from_input_atom_balls(const std::vector<AtomBall>& input_atom_balls, const double probe, voronotalt::SpheresInput::Result& spheres_input_result) noexcept
+	{
+		spheres_input_result=voronotalt::SpheresInput::Result();
+		voronotalt::MolecularFileReading::Data mol_data;
+		mol_data.atom_records.resize(input_atom_balls.size());
+		for(std::size_t i=0;i<input_atom_balls.size();i++)
+		{
+			input_atom_balls[i].write_into_atom_record(mol_data.atom_records[i]);
+		}
+		if(!voronotalt::SpheresInput::read_labeled_spheres_from_molecular_data_descriptor(mol_data, probe, true, spheres_input_result) || spheres_input_result.spheres.size()!=input_atom_balls.size() || spheres_input_result.sphere_labels.size()!=input_atom_balls.size())
+		{
+			return false;
+		}
+		for(std::size_t i=0;i<input_atom_balls.size();i++)
+		{
+			const AtomBall& ab=input_atom_balls[i];
+			if(ab.r>0.0)
+			{
+				spheres_input_result.spheres[i].r=ab.r+probe;
+			}
+		}
+		return true;
+	}
+
+	static void collect_input_atom_balls_from_spheres_input_result(const voronotalt::SpheresInput::Result& spheres_input_result, const double probe, std::vector<AtomBall>& input_atom_balls) noexcept
+	{
+		input_atom_balls.clear();
+		input_atom_balls.resize(spheres_input_result.spheres.size());
+		for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
+		{
+			const voronotalt::SimpleSphere& s=spheres_input_result.spheres[i];
+			const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[i];
+
+			AtomBall& mab=input_atom_balls[i];
+			mab.id_atom=IDAtom(sl);
+			mab.residue_name=sl.expanded_residue_id.rname;
+			mab.x=s.p.x;
+			mab.y=s.p.y;
+			mab.z=s.p.z;
+			mab.r=s.r-probe;
+		}
+	}
+
+	bool construct(const ConstructionParameters& params, const std::vector<AtomBall>& input_atom_balls, const MolecularFileInput& molecular_file_input, std::ostream& error_log) noexcept
 	{
 		clear();
 
 		OnReturnGuard on_return_guard(*this);
 
-		if(!init_params.valid())
+		if(!params.valid())
 		{
 			error_log << "Invalid scorable data recording parameters.\n";
 			return false;
@@ -709,8 +1047,6 @@ private:
 			return false;
 		}
 
-		params=init_params;
-
 		const bool need_to_summarize_cells=(params.record_atom_cell_summaries || params.record_residue_cell_summaries || params.record_chain_cell_summaries);
 		const bool need_to_summarize_sites=(params.record_atom_site_summaries || params.record_residue_site_summaries || params.record_chain_site_summaries);
 
@@ -724,24 +1060,10 @@ private:
 
 		if(!input_atom_balls.empty())
 		{
-			voronotalt::MolecularFileReading::Data mol_data;
-			mol_data.atom_records.resize(input_atom_balls.size());
-			for(std::size_t i=0;i<input_atom_balls.size();i++)
-			{
-				input_atom_balls[i].write_into_atom_record(mol_data.atom_records[i]);
-			}
-			if(!voronotalt::SpheresInput::read_labeled_spheres_from_molecular_data_descriptor(mol_data, params.probe, true, spheres_input_result) || spheres_input_result.spheres.size()!=input_atom_balls.size() || spheres_input_result.sphere_labels.size()!=input_atom_balls.size())
+			if(!collect_spheres_input_result_from_input_atom_balls(input_atom_balls, params.probe, spheres_input_result))
 			{
 				error_log << "Failed to process input vector of atom balls.\n";
 				return false;
-			}
-			for(std::size_t i=0;i<input_atom_balls.size();i++)
-			{
-				const AtomBall& ab=input_atom_balls[i];
-				if(ab.r>0.0)
-				{
-					spheres_input_result.spheres[i].r=ab.r+params.probe;
-				}
 			}
 		}
 		else
@@ -775,6 +1097,25 @@ private:
 		{
 			error_log << "Input is not in a recognized molecular data format.\n";
 			return false;
+		}
+		
+		if(params.record_atom_balls || !params.reference_sequences.empty())
+		{
+			collect_input_atom_balls_from_spheres_input_result(spheres_input_result, params.probe, atom_balls);
+		}
+
+		if(!params.reference_sequences.empty())
+		{
+			if(!ChainsSequencesMapping::remap_chain_names_and_residue_numbers_by_reference_sequences(params.reference_sequences, params.reference_stoichiometry, false, atom_balls, chain_sequences_mapping_result))
+			{
+				error_log << "Failed to map chain sequences and renumber residues based on reference sequences.\n";
+				return false;
+			}
+			if(!collect_spheres_input_result_from_input_atom_balls(atom_balls, params.probe, spheres_input_result))
+			{
+				error_log << "Failed to process input vector of atom balls.\n";
+				return false;
+			}
 		}
 
 		if(!params.filtering_expression_for_restricting_input_balls.allow_all())
@@ -871,23 +1212,10 @@ private:
 		{
 			voronotalt::RadicalTessellation::group_results(result, spheres_input_result.grouping_by_chain, result_grouped_by_chain, time_recorder);
 		}
-
-		if(params.record_atom_balls)
+		
+		if(!params.record_atom_balls)
 		{
-			atom_balls.resize(spheres_input_result.spheres.size());
-			for(std::size_t i=0;i<spheres_input_result.spheres.size();i++)
-			{
-				const voronotalt::SimpleSphere& s=spheres_input_result.spheres[i];
-				const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[i];
-
-				AtomBall& mab=atom_balls[i];
-				mab.id_atom=IDAtom(sl);
-				mab.residue_name=sl.expanded_residue_id.rname;
-				mab.x=s.p.x;
-				mab.y=s.p.y;
-				mab.z=s.p.z;
-				mab.r=s.r-params.probe;
-			}
+			std::vector<AtomBall>().swap(atom_balls);
 		}
 
 		if(params.record_atom_atom_contact_summaries)
