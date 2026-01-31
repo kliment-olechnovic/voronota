@@ -52,16 +52,16 @@ Options:
     --help | -h                                                 flag to print help info to stderr and exit
 
 Standard output stream:
-    Global scores info
+    Global scores
 
 Standard error output stream:
-    Log (a name-value pair line), error messages
+    Error messages
 
 Usage examples:
 
     voronota-lt-cadscore -t ./target.pdb -m ./model1.pdb ./model2.pdb --score-residue-residue-contacts
 
-    voronota-lt-cadscore -t ./target.pdb -m ./model1.pdb --restrict-input-atoms '[-chain A,B]' --subselect-contacts '[-inter-chain]' --score-everything
+    voronota-lt-cadscore -t ./target.pdb -m ./model1.pdb --restrict-input-atoms '[-chain A,B]' --subselect-contacts '[-inter-chain]' --score-contacts-on-all-levels
 
 )";
 }
@@ -100,7 +100,7 @@ public:
 	bool read_inputs_as_assemblies;
 	bool consider_residue_names;
 	bool remap_chains;
-	int max_chains_to_fully_permute;
+	int max_permutations_to_check_exhaustively;
 	int output_level_of_detail;
 	bool score_atom_atom_contacts;
 	bool score_residue_residue_contacts;
@@ -139,7 +139,7 @@ public:
 		read_inputs_as_assemblies(false),
 		consider_residue_names(false),
 		remap_chains(false),
-		max_chains_to_fully_permute(5),
+		max_permutations_to_check_exhaustively(200),
 		output_level_of_detail(0),
 		score_atom_atom_contacts(false),
 		score_residue_residue_contacts(false),
@@ -320,10 +320,10 @@ public:
 				}
 				else if(opt.name=="max-chains-to-fully-permute" && opt.args_ints.size()==1)
 				{
-					max_chains_to_fully_permute=static_cast<int>(opt.args_ints.front());
-					if(max_chains_to_fully_permute>7)
+					max_permutations_to_check_exhaustively=static_cast<int>(opt.args_ints.front());
+					if(max_permutations_to_check_exhaustively>1000)
 					{
-						error_log_for_options_parsing << "Error: invalid max number of chains to fully permute, must be not greater than 7.\n";
+						error_log_for_options_parsing << "Error: invalid max number of chains permutations, must be not greater than 1000.\n";
 					}
 				}
 				else if(opt.name=="output-level-of-detail" && opt.args_ints.size()==1)
@@ -757,7 +757,7 @@ bool run(const ApplicationParameters& app_params)
 	{
 		cadscore::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
 		scoring_result_construction_parameters.remap_chains=app_params.remap_chains;
-		scoring_result_construction_parameters.max_chains_to_fully_permute=app_params.max_chains_to_fully_permute;
+		scoring_result_construction_parameters.max_permutations_to_check_exhaustively=app_params.max_permutations_to_check_exhaustively;
 		scoring_result_construction_parameters.record_local_scores=app_params.local_scores_requested;
 
 #ifdef _OPENMP
