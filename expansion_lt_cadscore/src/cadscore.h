@@ -2470,6 +2470,91 @@ private:
 	}
 };
 
+class ContactMapPlottingUtilities
+{
+public:
+	static std::string print(const std::map<IDAtomAtom, CADDescriptor>& map_of_cadds) noexcept
+	{
+		if(map_of_cadds.empty())
+		{
+			return std::string();
+		}
+		voronotalt::ContactPlotter plotter(voronotalt::ContactPlotter::LevelMode::inter_atom);
+		for(std::map<IDAtomAtom, CADDescriptor>::const_iterator it=map_of_cadds.begin();it!=map_of_cadds.end();++it)
+		{
+			const IDAtomAtom& id=it->first;
+			const CADDescriptor& cadd=it->second;
+			if(cadd.target_area_sum>0.0 || cadd.model_area_sum>0.0)
+			{
+				const double max_value=std::max(cadd.target_area_sum, cadd.model_area_sum);
+				plotter.add_contact(id.id_a.id_residue.id_chain.chain_name, id.id_a.id_residue.residue_seq_number, id.id_a.id_residue.residue_icode, id.id_a.atom_name, id.id_b.id_residue.id_chain.chain_name, id.id_b.id_residue.residue_seq_number, id.id_b.id_residue.residue_icode, id.id_b.atom_name, max_value, generate_color(max_value, cadd));
+			}
+		}
+		return plotter.write_to_string(generate_config_flags());
+	}
+
+	static std::string print(const std::map<IDResidueResidue, CADDescriptor>& map_of_cadds) noexcept
+	{
+		if(map_of_cadds.empty())
+		{
+			return std::string();
+		}
+		voronotalt::ContactPlotter plotter(voronotalt::ContactPlotter::LevelMode::inter_atom);
+		for(std::map<IDResidueResidue, CADDescriptor>::const_iterator it=map_of_cadds.begin();it!=map_of_cadds.end();++it)
+		{
+			const IDResidueResidue& id=it->first;
+			const CADDescriptor& cadd=it->second;
+			if(cadd.target_area_sum>0.0 || cadd.model_area_sum>0.0)
+			{
+				const double max_value=std::max(cadd.target_area_sum, cadd.model_area_sum);
+				plotter.add_contact(id.id_a.id_chain.chain_name, id.id_a.residue_seq_number, id.id_a.residue_icode, id.id_b.id_chain.chain_name, id.id_b.residue_seq_number, id.id_b.residue_icode, max_value, generate_color(max_value, cadd));
+			}
+		}
+		return plotter.write_to_string(generate_config_flags());
+	}
+
+	static std::string print(const std::map<IDChainChain, CADDescriptor>& map_of_cadds) noexcept
+	{
+		if(map_of_cadds.empty())
+		{
+			return std::string();
+		}
+		voronotalt::ContactPlotter plotter(voronotalt::ContactPlotter::LevelMode::inter_atom);
+		for(std::map<IDChainChain, CADDescriptor>::const_iterator it=map_of_cadds.begin();it!=map_of_cadds.end();++it)
+		{
+			const IDChainChain& id=it->first;
+			const CADDescriptor& cadd=it->second;
+			if(cadd.target_area_sum>0.0 || cadd.model_area_sum>0.0)
+			{
+				const double max_value=std::max(cadd.target_area_sum, cadd.model_area_sum);
+				plotter.add_contact(id.id_a.chain_name, id.id_b.chain_name, max_value, generate_color(max_value, cadd));
+			}
+		}
+		return plotter.write_to_string(generate_config_flags());
+	}
+
+private:
+	static voronotalt::ContactPlotter::ConfigFlags generate_config_flags() noexcept
+	{
+		voronotalt::ContactPlotter::ConfigFlags cf;
+		cf.colored=true;
+		cf.xlabeled=true;
+		cf.ylabeled=true;
+		cf.compact=false;
+		cf.dark=true;
+		cf.valid=true;
+		return cf;
+	}
+
+	static unsigned int generate_color(const double max_value, const CADDescriptor& cadd) noexcept
+	{
+		const unsigned int red_value=static_cast<unsigned int>(std::min(cadd.target_area_sum/max_value, 1.0)*255.0);
+		const unsigned int green_value=static_cast<unsigned int>(std::min(cadd.model_area_sum/max_value, 1.0)*255.0);
+		const unsigned int color=(red_value << 16)+(green_value << 8);
+		return color;
+	}
+};
+
 }
 
 #endif /* CADSCORE_H_ */

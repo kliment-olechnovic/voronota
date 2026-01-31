@@ -27,8 +27,8 @@ Options:
     --reference-sequences-file                       string     input file path for reference sequences in FASTA format
     --stoichiometry-list                             numbers    list of stoichiometry values to apply when mapping chains to reference sequences
     --restrict-input-atoms                           string     selection expression to restrict input balls
-    --subselect-contacts                             string     selection expression to restrict contact area descriptors to score
-    --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score
+    --subselect-contacts                             string     selection expression to restrict contact area descriptors to score, default is '[-min-sep 1]'
+    --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score, default is '[]'
     --score-atom-atom-contacts                                  flag to score contacts on atom level
     --score-residue-residue-contacts                            flag to score contacts on residue level
     --score-chain-chain-contacts                                flag to score contacts on chain level
@@ -49,6 +49,7 @@ Options:
     --output-local-scores                            string     path to output directory for files with tables of local scores
     --output-local-scores-pdb                        string     path to output directory for PDB files with scores as b-factors and relevances as occupancies
     --output-local-scores-mmcif                      string     path to output directory for MMCIF files with scores as b-factors and relevances as occupancies
+    --output-contact-map-plots                       string     path to output directory for contacts maps colored by proportions of target and model areas
     --help | -h                                                 flag to print help info to stderr and exit
 
 Standard output stream:
@@ -129,6 +130,7 @@ public:
 	std::string output_local_scores;
 	std::string output_local_scores_pdb;
 	std::string output_local_scores_mmcif;
+	std::string output_contact_map_plots;
 	std::ostringstream error_log_for_options_parsing;
 
 	ApplicationParameters() :
@@ -153,6 +155,7 @@ public:
 		print_paths_in_output(false),
 		local_scores_requested(false),
 		read_successfuly(false),
+		restrict_contact_descriptors("[-min-sep 1]"),
 		output_global_scores("_stdout")
 	{
 	}
@@ -350,6 +353,10 @@ public:
 				{
 					output_local_scores_mmcif=opt.args_strings.front();
 				}
+				else if(opt.name=="output-contact-map-plots" && opt.args_strings.size()==1)
+				{
+					output_contact_map_plots=opt.args_strings.front();
+				}
 				else if(opt.name.empty())
 				{
 					error_log_for_options_parsing << "Error: misplaced unnamed command line arguments detected.\n";
@@ -361,7 +368,7 @@ public:
 			}
 		}
 
-		local_scores_requested=(!output_local_scores.empty() || !output_local_scores_pdb.empty() || !output_local_scores_mmcif.empty());
+		local_scores_requested=(!output_local_scores.empty() || !output_local_scores_pdb.empty() || !output_local_scores_mmcif.empty() || !output_contact_map_plots.empty());
 
 		if(!(score_atom_atom_contacts || score_residue_residue_contacts || score_chain_chain_contacts || score_atom_sas_areas || score_residue_sas_areas || score_chain_sas_areas || score_atom_sites || score_residue_sites || score_chain_sites))
 		{
@@ -753,6 +760,7 @@ bool run(const ApplicationParameters& app_params)
 	bool success_writing_local_scores=true;
 	bool success_writing_local_scores_pdb=true;
 	bool success_writing_local_scores_mmcif=true;
+	bool success_writing_local_scores_plots=true;
 
 	{
 		cadscore::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
@@ -924,6 +932,22 @@ bool run(const ApplicationParameters& app_params)
 					if(success_writing_local_scores_mmcif && !sr.chain_site_cad_descriptors.empty())
 					{
 						success_writing_local_scores_mmcif=FileSystemUtilities::write_file(app_params.output_local_scores_mmcif+"/chain_site_cad_descriptors.cif", cadscore::MolecularFileWritingUtilities::MMCIF::print(model_sd.atom_balls, sr.chain_site_cad_descriptors));
+					}
+				}
+
+				if(!app_params.output_contact_map_plots.empty())
+				{
+					if(success_writing_local_scores_plots && !sr.atom_atom_contact_cad_descriptors.empty())
+					{
+						success_writing_local_scores_plots=FileSystemUtilities::write_file(app_params.output_contact_map_plots+"/atom_atom_contact_cad_descriptors.svg", cadscore::ContactMapPlottingUtilities::print(sr.atom_atom_contact_cad_descriptors));
+					}
+					if(success_writing_local_scores_plots && !sr.residue_residue_contact_cad_descriptors.empty())
+					{
+						success_writing_local_scores_plots=FileSystemUtilities::write_file(app_params.output_contact_map_plots+"/residue_residue_contact_cad_descriptors.svg", cadscore::ContactMapPlottingUtilities::print(sr.residue_residue_contact_cad_descriptors));
+					}
+					if(success_writing_local_scores_plots && !sr.chain_chain_contact_cad_descriptors.empty())
+					{
+						success_writing_local_scores_plots=FileSystemUtilities::write_file(app_params.output_contact_map_plots+"/chain_chain_contact_cad_descriptors.svg", cadscore::ContactMapPlottingUtilities::print(sr.chain_chain_contact_cad_descriptors));
 					}
 				}
 			}
