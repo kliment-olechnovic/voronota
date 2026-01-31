@@ -114,6 +114,36 @@ public:
 		return false;
 	}
 
+	void add_contact(const std::string& chain1, const int residue_number1, const std::string& icode1, const std::string& atom_name1, const std::string& chain2, const int residue_number2, const std::string& icode2, const std::string& atom_name2, const double area, const unsigned int color) noexcept
+	{
+		CoordKey a(mode_, chain1, residue_number1, icode1, atom_name1);
+		CoordKey b(mode_, chain2, residue_number2, icode2, atom_name2);
+		if(a!=b)
+		{
+			map_of_points_[PointKey(a, b)].add(area, color);
+		}
+	}
+
+	void add_contact(const std::string& chain1, const int residue_number1, const std::string& icode1, const std::string& chain2, const int residue_number2, const std::string& icode2, const double area, const unsigned int color) noexcept
+	{
+		CoordKey a(mode_, chain1, residue_number1, icode1);
+		CoordKey b(mode_, chain2, residue_number2, icode2);
+		if(a!=b)
+		{
+			map_of_points_[PointKey(a, b)].add(area, color);
+		}
+	}
+
+	void add_contact(const std::string& chain1, const std::string& chain2, const double area, const unsigned int color) noexcept
+	{
+		CoordKey a(chain1);
+		CoordKey b(chain2);
+		if(a!=b)
+		{
+			map_of_points_[PointKey(a, b)].add(area, color);
+		}
+	}
+
 	std::vector< std::pair<int, int> > get_plain_integer_coordinates(const bool compact) const noexcept
 	{
 		std::vector< std::pair<int, int> > result;
@@ -163,21 +193,14 @@ public:
 		return result;
 	}
 
-	bool write_to_file(const std::string& filename, const std::set<std::string>& config) const noexcept
+	bool write_to_stream(const ConfigFlags& cf, std::ostream& output) const noexcept
 	{
 		if(map_of_points_.empty())
 		{
 			return false;
 		}
 
-		const ConfigFlags cf=ConfigFlags::read(config);
 		if(!cf.valid)
-		{
-			return false;
-		}
-
-		std::ofstream output(filename, std::ios::out);
-		if(!output.good())
 		{
 			return false;
 		}
@@ -410,6 +433,41 @@ public:
 		return true;
 	}
 
+	std::string write_to_string(const ConfigFlags& cf) const noexcept
+	{
+		if(!map_of_points_.empty() && cf.valid)
+		{
+			std::ostringstream output;
+			if(write_to_stream(cf, output))
+			{
+				return output.str();
+			}
+		}
+		return std::string();
+	}
+
+	bool write_to_file(const std::string& filename, const std::set<std::string>& config) const noexcept
+	{
+		if(map_of_points_.empty())
+		{
+			return false;
+		}
+
+		const ConfigFlags cf=ConfigFlags::read(config);
+		if(!cf.valid)
+		{
+			return false;
+		}
+
+		std::ofstream output(filename, std::ios::out);
+		if(!output.good())
+		{
+			return false;
+		}
+
+		return write_to_stream(cf, output);
+	}
+
 private:
 	class XMLWriter
 	{
@@ -594,6 +652,37 @@ private:
 					atom_name=ck.atom_name;
 				}
 			}
+		}
+
+		CoordKey(const LevelMode::ID mode, const std::string& chain1, const int residue_number1, const std::string& icode1, const std::string& atom_name1) noexcept : residue_number(0)
+		{
+			chain=chain1;
+			if(mode==LevelMode::inter_residue || mode==LevelMode::inter_atom)
+			{
+				residue_number=residue_number1;
+				icode=icode1;
+				SphereLabeling::form_residue_id_string(residue_number1, icode1, std::string(), residue_id);
+				if(mode==LevelMode::inter_atom)
+				{
+					atom_name=atom_name1;
+				}
+			}
+		}
+
+		CoordKey(const LevelMode::ID mode, const std::string& chain1, const int residue_number1, const std::string& icode1) noexcept : residue_number(0)
+		{
+			chain=chain1;
+			if(mode==LevelMode::inter_residue || mode==LevelMode::inter_atom)
+			{
+				residue_number=residue_number1;
+				icode=icode1;
+				SphereLabeling::form_residue_id_string(residue_number1, icode1, std::string(), residue_id);
+			}
+		}
+
+		explicit CoordKey(const std::string& chain1) noexcept : residue_number(0)
+		{
+			chain=chain1;
 		}
 
 		bool operator==(const CoordKey& v) const noexcept
