@@ -1404,11 +1404,13 @@ public:
 	struct ConstructionParameters
 	{
 		bool remap_chains;
-		bool record_local_scores;
+		bool record_local_scores_on_atom_level;
+		bool record_local_scores_on_residue_level;
+		bool record_local_scores_on_chain_level;
 		int max_permutations_to_check_exhaustively;
 		std::map<std::string, std::string> chain_renaming_map;
 
-		ConstructionParameters() noexcept : remap_chains(false), record_local_scores(false), max_permutations_to_check_exhaustively(200)
+		ConstructionParameters() noexcept : remap_chains(false), record_local_scores_on_atom_level(false), record_local_scores_on_residue_level(false), record_local_scores_on_chain_level(false), max_permutations_to_check_exhaustively(200)
 		{
 		}
 	};
@@ -1416,11 +1418,17 @@ public:
 	ConstructionParameters params;
 
 	std::map<IDAtomAtom, CADDescriptor> cadscores_atom_atom;
+	std::map<IDResidueResidue, CADDescriptor> cadscores_atom_atom_summarized_per_residue_residue;
+	std::map<IDChainChain, CADDescriptor> cadscores_atom_atom_summarized_per_chain_chain;
 	std::map<IDAtom, CADDescriptor> cadscores_atom_atom_summarized_per_atom;
+	std::map<IDResidue, CADDescriptor> cadscores_atom_atom_summarized_per_residue;
+	std::map<IDChain, CADDescriptor> cadscores_atom_atom_summarized_per_chain;
 	CADDescriptor cadscores_atom_atom_summarized_globally;
 
 	std::map<IDResidueResidue, CADDescriptor> cadscores_residue_residue;
+	std::map<IDChainChain, CADDescriptor> cadscores_residue_residue_summarized_per_chain_chain;
 	std::map<IDResidue, CADDescriptor> cadscores_residue_residue_summarized_per_residue;
+	std::map<IDChain, CADDescriptor> cadscores_residue_residue_summarized_per_chain;
 	CADDescriptor cadscores_residue_residue_summarized_globally;
 
 	std::map<IDChainChain, CADDescriptor> cadscores_chain_chain;
@@ -1428,18 +1436,24 @@ public:
 	CADDescriptor cadscores_chain_chain_summarized_globally;
 
 	std::map<IDAtom, CADDescriptor> cadscores_atom_sas;
+	std::map<IDResidue, CADDescriptor> cadscores_atom_sas_summarized_per_residue;
+	std::map<IDChain, CADDescriptor> cadscores_atom_sas_summarized_per_chain;
 	CADDescriptor cadscores_atom_sas_summarized_globally;
 
 	std::map<IDResidue, CADDescriptor> cadscores_residue_sas;
+	std::map<IDChain, CADDescriptor> cadscores_residue_sas_summarized_per_chain;
 	CADDescriptor cadscores_residue_sas_summarized_globally;
 
 	std::map<IDChain, CADDescriptor> cadscores_chain_sas;
 	CADDescriptor cadscores_chain_sas_summarized_globally;
 
 	std::map<IDAtom, CADDescriptor> cadscores_atom_site;
+	std::map<IDResidue, CADDescriptor> cadscores_atom_site_summarized_per_residue;
+	std::map<IDChain, CADDescriptor> cadscores_atom_site_summarized_per_chain;
 	CADDescriptor cadscores_atom_site_summarized_globally;
 
 	std::map<IDResidue, CADDescriptor> cadscores_residue_site;
+	std::map<IDChain, CADDescriptor> cadscores_residue_site_summarized_per_chain;
 	CADDescriptor cadscores_residue_site_summarized_globally;
 
 	std::map<IDChain, CADDescriptor> cadscores_chain_site;
@@ -1577,14 +1591,33 @@ private:
 
 		if(!target_data.atom_atom_contact_areas.empty())
 		{
-			if(params.record_local_scores)
+			if(params.record_local_scores_on_atom_level || params.record_local_scores_on_residue_level || params.record_local_scores_on_chain_level)
 			{
 				merge_target_and_model_area_values(target_data.atom_atom_contact_areas, model_data.atom_atom_contact_areas, cadscores_atom_atom);
 				cadscores_atom_atom_summarized_globally=construct_global_cad_descriptor(cadscores_atom_atom);
 				for(std::map<IDAtomAtom, CADDescriptor>::const_iterator it=cadscores_atom_atom.begin();it!=cadscores_atom_atom.end();++it)
 				{
-					cadscores_atom_atom_summarized_per_atom[it->first.id_a].add(it->second);
-					cadscores_atom_atom_summarized_per_atom[it->first.id_b].add(it->second);
+					if(params.record_local_scores_on_atom_level)
+					{
+						cadscores_atom_atom_summarized_per_atom[it->first.id_a].add(it->second);
+						cadscores_atom_atom_summarized_per_atom[it->first.id_b].add(it->second);
+					}
+					if(params.record_local_scores_on_residue_level)
+					{
+						cadscores_atom_atom_summarized_per_residue[it->first.id_a.id_residue].add(it->second);
+						cadscores_atom_atom_summarized_per_residue[it->first.id_b.id_residue].add(it->second);
+						cadscores_atom_atom_summarized_per_residue_residue[IDResidueResidue(it->first.id_a.id_residue, it->first.id_b.id_residue)].add(it->second);
+					}
+					if(params.record_local_scores_on_chain_level)
+					{
+						cadscores_atom_atom_summarized_per_chain[it->first.id_a.id_residue.id_chain].add(it->second);
+						cadscores_atom_atom_summarized_per_chain[it->first.id_b.id_residue.id_chain].add(it->second);
+						cadscores_atom_atom_summarized_per_chain_chain[IDChainChain(it->first.id_a.id_residue.id_chain, it->first.id_b.id_residue.id_chain)].add(it->second);
+					}
+				}
+				if(!params.record_local_scores_on_atom_level)
+				{
+					cadscores_atom_atom.clear();
 				}
 			}
 			else
@@ -1595,14 +1628,27 @@ private:
 
 		if(!target_data.residue_residue_contact_areas.empty())
 		{
-			if(params.record_local_scores)
+			if(params.record_local_scores_on_residue_level || params.record_local_scores_on_chain_level)
 			{
 				merge_target_and_model_area_values(target_data.residue_residue_contact_areas, model_data.residue_residue_contact_areas, cadscores_residue_residue);
 				cadscores_residue_residue_summarized_globally=construct_global_cad_descriptor(cadscores_residue_residue);
 				for(std::map<IDResidueResidue, CADDescriptor>::const_iterator it=cadscores_residue_residue.begin();it!=cadscores_residue_residue.end();++it)
 				{
-					cadscores_residue_residue_summarized_per_residue[it->first.id_a].add(it->second);
-					cadscores_residue_residue_summarized_per_residue[it->first.id_b].add(it->second);
+					if(params.record_local_scores_on_residue_level)
+					{
+						cadscores_residue_residue_summarized_per_residue[it->first.id_a].add(it->second);
+						cadscores_residue_residue_summarized_per_residue[it->first.id_b].add(it->second);
+					}
+					if(params.record_local_scores_on_chain_level)
+					{
+						cadscores_residue_residue_summarized_per_chain[it->first.id_a.id_chain].add(it->second);
+						cadscores_residue_residue_summarized_per_chain[it->first.id_b.id_chain].add(it->second);
+						cadscores_residue_residue_summarized_per_chain_chain[IDChainChain(it->first.id_a.id_chain, it->first.id_b.id_chain)].add(it->second);
+					}
+				}
+				if(!params.record_local_scores_on_residue_level)
+				{
+					cadscores_residue_residue.clear();
 				}
 			}
 			else
@@ -1613,7 +1659,7 @@ private:
 
 		if(!target_data.chain_chain_contact_areas.empty())
 		{
-			if(params.record_local_scores)
+			if(params.record_local_scores_on_chain_level)
 			{
 				merge_target_and_model_area_values(target_data.chain_chain_contact_areas, model_data.chain_chain_contact_areas, cadscores_chain_chain);
 				cadscores_chain_chain_summarized_globally=construct_global_cad_descriptor(cadscores_chain_chain);
@@ -1631,10 +1677,28 @@ private:
 
 		if(!target_data.atom_sas_areas.empty())
 		{
-			if(params.record_local_scores)
+			if(params.record_local_scores_on_atom_level || params.record_local_scores_on_residue_level || params.record_local_scores_on_chain_level)
 			{
 				merge_target_and_model_area_values(target_data.atom_sas_areas, model_data.atom_sas_areas, cadscores_atom_sas);
 				cadscores_atom_sas_summarized_globally=construct_global_cad_descriptor(cadscores_atom_sas);
+				if(params.record_local_scores_on_residue_level || params.record_local_scores_on_chain_level)
+				{
+					for(std::map<IDAtom, CADDescriptor>::const_iterator it=cadscores_atom_sas.begin();it!=cadscores_atom_sas.end();++it)
+					{
+						if(params.record_local_scores_on_residue_level)
+						{
+							cadscores_atom_sas_summarized_per_residue[it->first.id_residue].add(it->second);
+						}
+						if(params.record_local_scores_on_chain_level)
+						{
+							cadscores_atom_sas_summarized_per_chain[it->first.id_residue.id_chain].add(it->second);
+						}
+					}
+				}
+				if(!params.record_local_scores_on_atom_level)
+				{
+					cadscores_atom_sas.clear();
+				}
 			}
 			else
 			{
@@ -1644,10 +1708,21 @@ private:
 
 		if(!target_data.residue_sas_areas.empty())
 		{
-			if(params.record_local_scores)
+			if(params.record_local_scores_on_residue_level || params.record_local_scores_on_chain_level)
 			{
 				merge_target_and_model_area_values(target_data.residue_sas_areas, model_data.residue_sas_areas, cadscores_residue_sas);
 				cadscores_residue_sas_summarized_globally=construct_global_cad_descriptor(cadscores_residue_sas);
+				if(params.record_local_scores_on_chain_level)
+				{
+					for(std::map<IDResidue, CADDescriptor>::const_iterator it=cadscores_residue_sas.begin();it!=cadscores_residue_sas.end();++it)
+					{
+						cadscores_residue_sas_summarized_per_chain[it->first.id_chain].add(it->second);
+					}
+				}
+				if(!params.record_local_scores_on_residue_level)
+				{
+					cadscores_residue_sas.clear();
+				}
 			}
 			else
 			{
@@ -1657,7 +1732,7 @@ private:
 
 		if(!target_data.chain_sas_areas.empty())
 		{
-			if(params.record_local_scores)
+			if(params.record_local_scores_on_chain_level)
 			{
 				merge_target_and_model_area_values(target_data.chain_sas_areas, model_data.chain_sas_areas, cadscores_chain_sas);
 				cadscores_chain_sas_summarized_globally=construct_global_cad_descriptor(cadscores_chain_sas);
@@ -1670,10 +1745,28 @@ private:
 
 		if(!target_data.atom_site_areas.empty())
 		{
-			if(params.record_local_scores)
+			if(params.record_local_scores_on_atom_level || params.record_local_scores_on_residue_level || params.record_local_scores_on_chain_level)
 			{
 				merge_target_and_model_area_values(target_data.atom_site_areas, model_data.atom_site_areas, cadscores_atom_site);
 				cadscores_atom_site_summarized_globally=construct_global_cad_descriptor(cadscores_atom_site);
+				if(params.record_local_scores_on_residue_level || params.record_local_scores_on_chain_level)
+				{
+					for(std::map<IDAtom, CADDescriptor>::const_iterator it=cadscores_atom_site.begin();it!=cadscores_atom_site.end();++it)
+					{
+						if(params.record_local_scores_on_residue_level)
+						{
+							cadscores_atom_site_summarized_per_residue[it->first.id_residue].add(it->second);
+						}
+						if(params.record_local_scores_on_chain_level)
+						{
+							cadscores_atom_site_summarized_per_chain[it->first.id_residue.id_chain].add(it->second);
+						}
+					}
+				}
+				if(!params.record_local_scores_on_atom_level)
+				{
+					cadscores_atom_site.clear();
+				}
 			}
 			else
 			{
@@ -1683,10 +1776,21 @@ private:
 
 		if(!target_data.residue_site_areas.empty())
 		{
-			if(params.record_local_scores)
+			if(params.record_local_scores_on_residue_level || params.record_local_scores_on_chain_level)
 			{
 				merge_target_and_model_area_values(target_data.residue_site_areas, model_data.residue_site_areas, cadscores_residue_site);
 				cadscores_residue_site_summarized_globally=construct_global_cad_descriptor(cadscores_residue_site);
+				if(params.record_local_scores_on_chain_level)
+				{
+					for(std::map<IDResidue, CADDescriptor>::const_iterator it=cadscores_residue_site.begin();it!=cadscores_residue_site.end();++it)
+					{
+						cadscores_residue_site_summarized_per_chain[it->first.id_chain].add(it->second);
+					}
+				}
+				if(!params.record_local_scores_on_residue_level)
+				{
+					cadscores_residue_site.clear();
+				}
 			}
 			else
 			{
@@ -1696,7 +1800,7 @@ private:
 
 		if(!target_data.chain_site_areas.empty())
 		{
-			if(params.record_local_scores)
+			if(params.record_local_scores_on_chain_level)
 			{
 				merge_target_and_model_area_values(target_data.chain_site_areas, model_data.chain_site_areas, cadscores_chain_site);
 				cadscores_chain_site_summarized_globally=construct_global_cad_descriptor(cadscores_chain_site);

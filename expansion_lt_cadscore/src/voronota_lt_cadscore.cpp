@@ -766,7 +766,9 @@ bool run(const ApplicationParameters& app_params)
 		cadscore::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
 		scoring_result_construction_parameters.remap_chains=app_params.remap_chains;
 		scoring_result_construction_parameters.max_permutations_to_check_exhaustively=app_params.max_permutations_to_check_exhaustively;
-		scoring_result_construction_parameters.record_local_scores=app_params.local_scores_requested;
+		scoring_result_construction_parameters.record_local_scores_on_atom_level=app_params.local_scores_requested;
+		scoring_result_construction_parameters.record_local_scores_on_residue_level=app_params.local_scores_requested;
+		scoring_result_construction_parameters.record_local_scores_on_chain_level=app_params.local_scores_requested;
 
 #ifdef _OPENMP
 #pragma omp parallel for
