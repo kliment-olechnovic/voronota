@@ -361,6 +361,7 @@ public:
 		void clear() noexcept
 		{
 			chain_summaries.clear();
+			frequencies_of_reference_sequence_ids.clear();
 		}
 
 		int get_reference_sequence_id_by_chain_name(const std::string& chain_name) const
@@ -856,6 +857,7 @@ public:
 	{
 		double probe;
 		bool record_atom_balls;
+		bool record_sequence_alignments;
 		bool record_atom_atom_contact_summaries;
 		bool record_residue_residue_contact_summaries;
 		bool record_chain_chain_contact_summaries;
@@ -874,6 +876,7 @@ public:
 		ConstructionParameters() noexcept :
 			probe(1.4),
 			record_atom_balls(false),
+			record_sequence_alignments(false),
 			record_atom_atom_contact_summaries(false),
 			record_residue_residue_contact_summaries(false),
 			record_chain_chain_contact_summaries(false),
@@ -1110,7 +1113,7 @@ private:
 
 		if(!params.reference_sequences.empty())
 		{
-			if(!ChainsSequencesMapping::remap_chain_names_and_residue_numbers_by_reference_sequences(params.reference_sequences, params.reference_stoichiometry, false, atom_balls, chain_sequences_mapping_result))
+			if(!ChainsSequencesMapping::remap_chain_names_and_residue_numbers_by_reference_sequences(params.reference_sequences, params.reference_stoichiometry, params.record_sequence_alignments, atom_balls, chain_sequences_mapping_result))
 			{
 				error_log << "Failed to map chain sequences and renumber residues based on reference sequences.\n";
 				return false;
@@ -1475,11 +1478,17 @@ public:
 		params=ConstructionParameters();
 
 		cadscores_atom_atom.clear();
+		cadscores_atom_atom_summarized_per_residue_residue.clear();
+		cadscores_atom_atom_summarized_per_chain_chain.clear();
 		cadscores_atom_atom_summarized_per_atom.clear();
+		cadscores_atom_atom_summarized_per_residue.clear();
+		cadscores_atom_atom_summarized_per_chain.clear();
 		cadscores_atom_atom_summarized_globally=CADDescriptor();
 
 		cadscores_residue_residue.clear();
+		cadscores_residue_residue_summarized_per_chain_chain.clear();
 		cadscores_residue_residue_summarized_per_residue.clear();
+		cadscores_residue_residue_summarized_per_chain.clear();
 		cadscores_residue_residue_summarized_globally=CADDescriptor();
 
 		cadscores_chain_chain.clear();
@@ -1487,18 +1496,24 @@ public:
 		cadscores_chain_chain_summarized_globally=CADDescriptor();
 
 		cadscores_atom_sas.clear();
+		cadscores_atom_sas_summarized_per_residue.clear();
+		cadscores_atom_sas_summarized_per_chain.clear();
 		cadscores_atom_sas_summarized_globally=CADDescriptor();
 
 		cadscores_residue_sas.clear();
+		cadscores_residue_sas_summarized_per_chain.clear();
 		cadscores_residue_sas_summarized_globally=CADDescriptor();
 
 		cadscores_chain_sas.clear();
 		cadscores_chain_sas_summarized_globally=CADDescriptor();
 
 		cadscores_atom_site.clear();
+		cadscores_atom_site_summarized_per_residue.clear();
+		cadscores_atom_site_summarized_per_chain.clear();
 		cadscores_atom_site_summarized_globally=CADDescriptor();
 
 		cadscores_residue_site.clear();
+		cadscores_residue_site_summarized_per_chain.clear();
 		cadscores_residue_site_summarized_globally=CADDescriptor();
 
 		cadscores_chain_site.clear();
