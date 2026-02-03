@@ -1,7 +1,7 @@
-#ifndef CADSCORELT_OUTPUT_UTILITIES_H_
-#define CADSCORELT_OUTPUT_UTILITIES_H_
+#ifndef CADSCORELT_CLI_OUTPUT_UTILITIES_H_
+#define CADSCORELT_CLI_OUTPUT_UTILITIES_H_
 
-#include "core.h"
+#include "../cadscorelt/core.h"
 
 namespace cadscorelt
 {
@@ -463,4 +463,4 @@ private:
 
 }
 
-#endif /* CADSCORELT_OUTPUT_UTILITIES_H_ */
+#endif /* CADSCORELT_CLI_OUTPUT_UTILITIES_H_ */

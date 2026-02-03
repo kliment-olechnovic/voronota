@@ -1,5 +1,5 @@
-#ifndef ENVUTIL_H_
-#define ENVUTIL_H_
+#ifndef CADSCORELT_CLI_FILESYSTEM_UTILITIES_H_
+#define CADSCORELT_CLI_FILESYSTEM_UTILITIES_H_
 
 #include <iostream>
 #include <fstream>
@@ -8,36 +8,8 @@
 #include <set>
 #include <filesystem>
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
-namespace envutil
+namespace cadscorelt
 {
-
-class OpenMPUtilities
-{
-public:
-	static bool openmp_enabled()
-	{
-#ifdef _OPENMP
-		return true;
-#else
-		return false;
-#endif
-	}
-
-	static unsigned int openmp_setup(const unsigned int max_number_of_processors)
-	{
-#ifdef _OPENMP
-		omp_set_num_threads(max_number_of_processors);
-		omp_set_max_active_levels(1);
-		return max_number_of_processors;
-#else
-		return 1;
-#endif
-	}
-};
 
 class FileSystemUtilities
 {
@@ -170,4 +142,5 @@ public:
 
 }
 
-#endif /* ENVUTIL_H_ */
+
+#endif /* CADSCORELT_CLI_FILESYSTEM_UTILITIES_H_ */

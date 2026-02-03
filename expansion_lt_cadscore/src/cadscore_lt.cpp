@@ -1,5 +1,6 @@
+#include "cadscorelt/parallelization_configuration.h"
 #include "cadscorelt/cadscorelt.h"
-#include "envutil.h"
+#include "cadscorelt_cli/cadscorelt_cli.h"
 
 namespace app_cadscore
 {
@@ -96,7 +97,7 @@ public:
 
 	ApplicationParameters() :
 		probe(1.4),
-		max_number_of_processors(envutil::OpenMPUtilities::openmp_enabled() ? 2 : 1),
+		max_number_of_processors(cadscorelt::openmp_enabled() ? 2 : 1),
 		max_permutations_to_check_exhaustively(200),
 		table_depth(0),
 		recursive_directory_search(false),
@@ -165,7 +166,7 @@ public:
 				else if(opt.name=="processors" && opt.args_ints.size()==1)
 				{
 					max_number_of_processors=static_cast<unsigned int>(opt.args_ints.front());
-					if(envutil::OpenMPUtilities::openmp_enabled())
+					if(cadscorelt::openmp_enabled())
 					{
 						if(!(max_number_of_processors>=1 && max_number_of_processors<=1024))
 						{
@@ -444,7 +445,7 @@ public:
 
 bool run(const ApplicationParameters& app_params)
 {
-	envutil::OpenMPUtilities::openmp_setup(app_params.max_number_of_processors);
+	cadscorelt::openmp_setup(app_params.max_number_of_processors);
 
 	if(!app_params.radii_config_file.empty())
 	{
@@ -516,23 +517,23 @@ bool run(const ApplicationParameters& app_params)
 		return false;
 	}
 
-	const std::set<envutil::FileSystemUtilities::FileInfo> set_of_target_file_descriptors=envutil::FileSystemUtilities::collect_file_descriptors(app_params.target_input_files, app_params.recursive_directory_search);
+	const std::set<cadscorelt::FileSystemUtilities::FileInfo> set_of_target_file_descriptors=cadscorelt::FileSystemUtilities::collect_file_descriptors(app_params.target_input_files, app_params.recursive_directory_search);
 	if(set_of_target_file_descriptors.empty())
 	{
 		std::cerr << "Error: no target input files found.\n";
 		return false;
 	}
 
-	const std::set<envutil::FileSystemUtilities::FileInfo> set_of_model_file_descriptors=envutil::FileSystemUtilities::collect_file_descriptors(app_params.model_input_files, app_params.recursive_directory_search);
+	const std::set<cadscorelt::FileSystemUtilities::FileInfo> set_of_model_file_descriptors=cadscorelt::FileSystemUtilities::collect_file_descriptors(app_params.model_input_files, app_params.recursive_directory_search);
 	if(set_of_model_file_descriptors.empty())
 	{
 		std::cerr << "Error: no model input files found.\n";
 		return false;
 	}
 
-	std::vector<envutil::FileSystemUtilities::FileInfo> list_of_unique_file_descriptors;
+	std::vector<cadscorelt::FileSystemUtilities::FileInfo> list_of_unique_file_descriptors;
 	{
-		std::set<envutil::FileSystemUtilities::FileInfo> set_of_unique_file_descriptors=set_of_model_file_descriptors;
+		std::set<cadscorelt::FileSystemUtilities::FileInfo> set_of_unique_file_descriptors=set_of_model_file_descriptors;
 		set_of_unique_file_descriptors.insert(set_of_target_file_descriptors.begin(), set_of_target_file_descriptors.end());
 		list_of_unique_file_descriptors.reserve(set_of_unique_file_descriptors.size());
 		list_of_unique_file_descriptors.insert(list_of_unique_file_descriptors.end(), set_of_unique_file_descriptors.begin(), set_of_unique_file_descriptors.end());
@@ -577,14 +578,13 @@ bool run(const ApplicationParameters& app_params)
 	std::vector<cadscorelt::ScorableData> list_of_unique_scorable_data(list_of_unique_file_descriptors.size());
 	std::vector<std::string> list_of_error_messages_for_unique_scorable_data(list_of_unique_file_descriptors.size());
 
+#ifdef CADSCORELT_OPENMP
 	const bool parallelize_on_root_level=(list_of_unique_file_descriptors.size()*2>app_params.max_number_of_processors);
-
-#ifdef _OPENMP
 #pragma omp parallel for if(parallelize_on_root_level)
 #endif
 	for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
 	{
-		const envutil::FileSystemUtilities::FileInfo& fi=list_of_unique_file_descriptors[i];
+		const cadscorelt::FileSystemUtilities::FileInfo& fi=list_of_unique_file_descriptors[i];
 		cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
 		std::string& error_message=list_of_error_messages_for_unique_scorable_data[i];
 		std::ostringstream local_error_stream;
@@ -598,7 +598,7 @@ bool run(const ApplicationParameters& app_params)
 
 	for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
 	{
-		const envutil::FileSystemUtilities::FileInfo& fi=list_of_unique_file_descriptors[i];
+		const cadscorelt::FileSystemUtilities::FileInfo& fi=list_of_unique_file_descriptors[i];
 		const std::string& error_message=list_of_error_messages_for_unique_scorable_data[i];
 		if(error_message.empty())
 		{
@@ -678,7 +678,7 @@ bool run(const ApplicationParameters& app_params)
 		scoring_result_construction_parameters.record_local_scores_on_chain_level=app_params.local_output_level_chain;
 		scoring_result_construction_parameters.record_compatible_model_atom_balls=app_params.local_scores_requested && (app_params.local_output_format_pdb || app_params.local_output_format_mmcif);
 
-#ifdef _OPENMP
+#ifdef CADSCORELT_OPENMP
 #pragma omp parallel for
 #endif
 		for(std::size_t i=0;i<list_of_pairs_of_target_model_indices.size();i++)
@@ -712,99 +712,99 @@ bool run(const ApplicationParameters& app_params)
 					{
 						if(success_writing_local_scores && !sr.cadscores_atom_atom.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_residue_residue.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_residue_residue));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_residue_residue));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_chain_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_chain_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_chain_chain));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_atom.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_atom.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_atom));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_atom.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_atom));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_residue.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_residue));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_residue));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_chain));
 						}
 						if(success_writing_local_scores && !sr.cadscores_residue_residue.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_residue));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_residue));
 						}
 						if(success_writing_local_scores && !sr.cadscores_residue_residue_summarized_per_chain_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_residue_summarized_per_chain_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_residue_summarized_per_chain_chain));
 						}
 						if(success_writing_local_scores && !sr.cadscores_residue_residue_summarized_per_residue.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_residue_summarized_per_residue));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_residue_summarized_per_residue));
 						}
 						if(success_writing_local_scores && !sr.cadscores_residue_residue_summarized_per_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_residue_summarized_per_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_residue_summarized_per_chain));
 						}
 						if(success_writing_local_scores && !sr.cadscores_chain_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_chain_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_chain_chain));
 						}
 						if(success_writing_local_scores && !sr.cadscores_chain_chain_contact_summarized_per_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain_contact_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_chain_chain_contact_summarized_per_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain_contact_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_chain_chain_contact_summarized_per_chain));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_sas.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_sas));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_sas));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_sas_summarized_per_residue.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_sas_summarized_per_residue));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_sas_summarized_per_residue));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_sas_summarized_per_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_sas_summarized_per_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_sas_summarized_per_chain));
 						}
 						if(success_writing_local_scores && !sr.cadscores_residue_sas.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_sas));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_sas));
 						}
 						if(success_writing_local_scores && !sr.cadscores_residue_sas_summarized_per_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_sas_summarized_per_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_sas_summarized_per_chain));
 						}
 						if(success_writing_local_scores && !sr.cadscores_chain_sas.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_sas.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_chain_sas));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_sas.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_chain_sas));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_site.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_site));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_site));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_site_summarized_per_residue.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_site_summarized_per_residue));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_site_summarized_per_residue));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_site_summarized_per_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_site_summarized_per_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_site_summarized_per_chain));
 						}
 						if(success_writing_local_scores && !sr.cadscores_residue_site.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_site));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_site));
 						}
 						if(success_writing_local_scores && !sr.cadscores_residue_site_summarized_per_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_site_summarized_per_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_site_summarized_per_chain));
 						}
 						if(success_writing_local_scores && !sr.cadscores_chain_site.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_site.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_chain_site));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_site.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_chain_site));
 						}
 					}
 
@@ -818,75 +818,75 @@ bool run(const ApplicationParameters& app_params)
 							{
 								if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_atom.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_atom"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_atom));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_atom"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_atom));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_residue.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_residue));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_residue));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_chain));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_residue_residue_summarized_per_residue.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_residue_summarized_per_residue));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_residue_summarized_per_residue));
 								}
 								if(success_writing_local_scores && !sr.cadscores_residue_residue_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_residue_summarized_per_chain));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_residue_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_chain_chain_contact_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain_contact_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_chain_chain_contact_summarized_per_chain));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain_contact_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_chain_chain_contact_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_sas.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_sas));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_sas));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_sas_summarized_per_residue.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_sas_summarized_per_residue));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_sas_summarized_per_residue));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_sas_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_sas_summarized_per_chain));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_sas_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_residue_sas.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_sas));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_sas));
 								}
 								if(success_writing_local_scores && !sr.cadscores_residue_sas_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_sas_summarized_per_chain));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_sas_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_chain_sas.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_sas"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_chain_sas));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_sas"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_chain_sas));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_site.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_site));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_site));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_site_summarized_per_residue.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_site_summarized_per_residue));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_site_summarized_per_residue));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_site_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_site_summarized_per_chain));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_site_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_residue_site.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_site));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_site));
 								}
 								if(success_writing_local_scores && !sr.cadscores_residue_site_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_site_summarized_per_chain));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_site_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_chain_site.empty())
 								{
-									success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_site"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_chain_site));
+									success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_site"+filename_end, cadscorelt::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_chain_site));
 								}
 							}
 							else
@@ -904,75 +904,75 @@ bool run(const ApplicationParameters& app_params)
 							const std::string filename_end=(t==0 ? "_on_model.cif" : "_on_target.cif");
 							if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_atom.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_atom"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_atom));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_atom"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_atom));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_residue.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_residue));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_residue));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_chain));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_residue_residue_summarized_per_residue.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_residue_summarized_per_residue));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_residue_summarized_per_residue));
 							}
 							if(success_writing_local_scores && !sr.cadscores_residue_residue_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_residue_summarized_per_chain));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_residue_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_chain_chain_contact_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain_contact_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_chain_chain_contact_summarized_per_chain));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain_contact_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_chain_chain_contact_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_sas.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_sas));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_sas));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_sas_summarized_per_residue.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_sas_summarized_per_residue));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_sas_summarized_per_residue));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_sas_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_sas_summarized_per_chain));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_sas_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_residue_sas.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_sas));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_sas));
 							}
 							if(success_writing_local_scores && !sr.cadscores_residue_sas_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_sas_summarized_per_chain));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_sas_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_chain_sas.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_sas"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_chain_sas));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_sas"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_chain_sas));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_site.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_site));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_site));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_site_summarized_per_residue.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_site_summarized_per_residue));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_residue"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_site_summarized_per_residue));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_site_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_site_summarized_per_chain));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_site_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_residue_site.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_site));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_site));
 							}
 							if(success_writing_local_scores && !sr.cadscores_residue_site_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_site_summarized_per_chain));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site_summarized_per_chain"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_site_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_chain_site.empty())
 							{
-								success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_site"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_chain_site));
+								success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_site"+filename_end, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_chain_site));
 							}
 						}
 					}
@@ -981,27 +981,27 @@ bool run(const ApplicationParameters& app_params)
 					{
 						if(success_writing_local_scores && !sr.cadscores_atom_atom.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_atom_atom));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_atom_atom));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_residue_residue.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue_residue.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_atom_atom_summarized_per_residue_residue));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue_residue.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_atom_atom_summarized_per_residue_residue));
 						}
 						if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_chain_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain_chain.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_atom_atom_summarized_per_chain_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain_chain.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_atom_atom_summarized_per_chain_chain));
 						}
 						if(success_writing_local_scores && !sr.cadscores_residue_residue.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_residue_residue));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_residue_residue));
 						}
 						if(success_writing_local_scores && !sr.cadscores_residue_residue_summarized_per_chain_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain_chain.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_residue_residue_summarized_per_chain_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain_chain.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_residue_residue_summarized_per_chain_chain));
 						}
 						if(success_writing_local_scores && !sr.cadscores_chain_chain.empty())
 						{
-							success_writing_local_scores=envutil::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_chain_chain));
+							success_writing_local_scores=cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_chain_chain));
 						}
 					}
 				}
@@ -1152,7 +1152,7 @@ bool run(const ApplicationParameters& app_params)
 		}
 		else
 		{
-			if(!envutil::FileSystemUtilities::write_file(app_params.output_global_scores, output_string))
+			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_global_scores, output_string))
 			{
 				std::cerr << "Error: failed to write table of global scores to file '" << app_params.output_global_scores << "'.\n";
 				return false;
@@ -1161,7 +1161,7 @@ bool run(const ApplicationParameters& app_params)
 
 		if(!app_params.output_dir.empty())
 		{
-			if(!envutil::FileSystemUtilities::write_file(app_params.output_dir+"/global_scores.tsv", output_string))
+			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/global_scores.tsv", output_string))
 			{
 				std::cerr << "Error: failed to write table of global scores to file '" << app_params.output_global_scores << "'.\n";
 				return false;

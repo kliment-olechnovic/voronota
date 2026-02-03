@@ -6,7 +6,10 @@
 #include <set>
 #include <limits>
 
+#ifdef CADSCORELT_OPENMP
 #include "voronotalt/parallelization_configuration.h"
+#endif
+
 #include "voronotalt/voronotalt.h"
 #include "voronotalt_cli/voronotalt_cli.h"
 
