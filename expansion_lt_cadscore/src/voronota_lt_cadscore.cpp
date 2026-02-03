@@ -31,8 +31,8 @@ Options:
     --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score, default is '[]'
     --scoring-types                                  strings    scoring types ('contacts', 'SAS', 'sites'), default is 'contacts'
     --scoring-levels                                 strings    scoring levels ('atom', 'residue', 'chain'), default is 'residue'
-    --local-output-levels                            strings    local output levels ('atom', 'residue', 'chain'), default is 'residue'
-    --local-output-formats                           strings    local output formats ('table', 'pdb', 'mmcif', 'contactmap'), default is 'table'
+    --local-output-levels                            strings    list of local output levels (can include 'atom', 'residue', 'chain'), default is 'residue'
+    --local-output-formats                           strings    list of local output formats (can include 'table', 'pdb', 'mmcif', 'contactmap')
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score
     --table-depth                                    number     integer level of detail for table outputs, default is 0 (lowest level, to only print CAD-score) 
@@ -166,7 +166,6 @@ public:
 		set_of_scoring_types.insert("contacts");
 		set_of_scoring_levels.insert("residue");
 		set_of_local_output_levels.insert("residue");
-		set_of_local_output_formats.insert("table");
 
 		{
 			const std::vector<voronotalt::CLOParser::Option> cloptions=voronotalt::CLOParser::read_options(argc, argv);
@@ -328,11 +327,6 @@ public:
 			error_log_for_options_parsing << "Error: no local output levels provided.\n";
 		}
 
-		if(set_of_local_output_formats.empty())
-		{
-			error_log_for_options_parsing << "Error: no local output formats provided.\n";
-		}
-
 		for(const std::string& token : set_of_scoring_types)
 		{
 			if(token=="contacts")
@@ -417,7 +411,7 @@ public:
 			}
 		}
 
-		local_scores_requested=(!output_dir.empty() && (local_output_format_table || local_output_format_pdb || local_output_format_mmcif || local_output_format_contactmap));
+		local_scores_requested=(local_output_format_table || local_output_format_pdb || local_output_format_mmcif || local_output_format_contactmap);
 
 		if(target_input_files.empty())
 		{
@@ -427,6 +421,11 @@ public:
 		if(model_input_files.empty())
 		{
 			error_log_for_options_parsing << "Error: no input model files provided.\n";
+		}
+
+		if(output_dir.empty() && local_scores_requested)
+		{
+			error_log_for_options_parsing << "Error: no output directory provided to write local scores.\n";
 		}
 
 		if(output_global_scores.empty() && !local_scores_requested)
