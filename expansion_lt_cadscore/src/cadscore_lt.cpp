@@ -33,6 +33,7 @@ Options:
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score
     --table-depth                                    number     integer level of detail for table outputs, default is 0 (lowest level, to only print CAD-score) 
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
+    --log-sequence-alignments                                   flag to write chosen alignments with reference sequences into a file in the output directory
     --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
     --output-dir                                     string     path to output directory for all result files
     --help | -h                                                 flag to print help info to stderr and exit
@@ -78,6 +79,7 @@ public:
 	bool local_output_format_mmcif;
 	bool local_output_format_contactmap;
 	bool print_paths_in_output;
+	bool log_sequence_alignments;
 	bool local_scores_requested;
 	bool read_successfuly;
 	std::vector<std::string> target_input_files;
@@ -119,6 +121,7 @@ public:
 		local_output_format_mmcif(false),
 		local_output_format_contactmap(false),
 		print_paths_in_output(false),
+		log_sequence_alignments(false),
 		local_scores_requested(false),
 		read_successfuly(false),
 		restrict_contact_descriptors("[-min-sep 1]"),
@@ -265,6 +268,10 @@ public:
 				{
 					print_paths_in_output=opt.is_flag_and_true();
 				}
+				else if(opt.name=="log-sequence-alignments" && opt.is_flag())
+				{
+					log_sequence_alignments=opt.is_flag_and_true();
+				}
 				else if(opt.name=="output-global-scores" && opt.args_strings.size()==1)
 				{
 					output_global_scores=opt.args_strings.front();
@@ -395,19 +402,29 @@ public:
 			error_log_for_options_parsing << "Error: no input model files provided.\n";
 		}
 
-		if(output_dir.empty() && local_scores_requested)
-		{
-			error_log_for_options_parsing << "Error: no output directory provided to write local scores.\n";
-		}
-
 		if(output_global_scores.empty() && !local_scores_requested)
 		{
 			error_log_for_options_parsing << "Error: no outputs requested.\n";
 		}
 
+		if(local_scores_requested && output_dir.empty())
+		{
+			error_log_for_options_parsing << "Error: no output directory provided to write local scores.\n";
+		}
+
 		if(local_scores_requested && model_input_files.size()!=1 && target_input_files.empty()!=1)
 		{
 			error_log_for_options_parsing << "Error: local scores output is only supported for one target and one model at a time.\n";
+		}
+
+		if(log_sequence_alignments && reference_sequences_file.empty())
+		{
+			error_log_for_options_parsing << "Error: log of sequence alignments requested, but no reference sequences provided.\n";
+		}
+
+		if(log_sequence_alignments && output_dir.empty())
+		{
+			error_log_for_options_parsing << "Error: no output directory provided to write log of sequence alignments.\n";
 		}
 
 		if(!restrict_input_atoms.empty())
@@ -475,6 +492,7 @@ bool run(const ApplicationParameters& app_params)
 	cadscorelt::ScorableData::ConstructionParameters scorable_data_construction_parameters;
 	scorable_data_construction_parameters.probe=app_params.probe;
 	scorable_data_construction_parameters.record_atom_balls=(app_params.local_scores_requested && (app_params.local_output_format_pdb || app_params.local_output_format_mmcif));
+	scorable_data_construction_parameters.record_sequence_alignments=app_params.log_sequence_alignments;
 	scorable_data_construction_parameters.record_atom_atom_contact_summaries=(app_params.scoring_type_contacts && app_params.scoring_level_atom);
 	scorable_data_construction_parameters.record_residue_residue_contact_summaries=(app_params.scoring_type_contacts && app_params.scoring_level_residue);
 	scorable_data_construction_parameters.record_chain_chain_contact_summaries=(app_params.scoring_type_contacts && app_params.scoring_level_chain);
@@ -628,6 +646,45 @@ bool run(const ApplicationParameters& app_params)
 	{
 		std::cerr << "Error: no model inputs processed successfully.\n";
 		return false;
+	}
+
+	if(app_params.log_sequence_alignments && !scorable_data_construction_parameters.reference_sequences.empty() && !app_params.output_dir.empty())
+	{
+		std::string output_string;
+		for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
+		{
+			cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
+			if(sd.valid())
+			{
+				output_string+="file: ";
+				output_string+=list_of_unique_file_descriptors[i].path;
+				output_string+="\n\n";
+				for(std::map<std::string, cadscorelt::ChainsSequencesMapping::ChainSummary>::const_iterator it=sd.chain_sequences_mapping_result.chain_summaries.begin();it!=sd.chain_sequences_mapping_result.chain_summaries.end();++it)
+				{
+					const cadscorelt::ChainsSequencesMapping::ChainSummary& cs=it->second;
+					output_string+="original_chain_name: ";
+					output_string+=cs.old_name;
+					output_string+="\n";
+					output_string+="assigned_chain_name: ";
+					output_string+=cs.current_name;
+					output_string+="\n";
+					output_string+="reference_index: ";
+					output_string+=std::to_string(cs.reference_sequence_id);
+					output_string+="\n";
+					output_string+="reference_identity: ";
+					output_string+=std::to_string(cs.reference_sequence_identity);
+					output_string+="\n";
+					output_string+="sequence_alinment:\n";
+					output_string+=cs.printed_alignment;
+					output_string+="\n";
+				}
+			}
+		}
+		if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/sequence_alignments.txt", output_string))
+		{
+			std::cerr << "Error: failed to write log of sequence alignments.\n";
+			return false;
+		}
 	}
 
 	std::vector< std::pair<std::size_t, std::size_t> > list_of_pairs_of_target_model_indices;
