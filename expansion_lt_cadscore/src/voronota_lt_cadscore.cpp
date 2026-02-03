@@ -1,7 +1,7 @@
 #include "envutil.h"
 #include "cadscore.h"
 
-namespace
+namespace app_cadscore
 {
 
 void print_help(std::ostream& output)
@@ -444,6 +444,31 @@ public:
 
 bool run(const ApplicationParameters& app_params)
 {
+	envutil::OpenMPUtilities::openmp_setup(app_params.max_number_of_processors);
+
+	if(!app_params.radii_config_file.empty())
+	{
+		std::string input_data;
+
+		if(!voronotalt::read_whole_file_or_pipe_or_stdin_to_string(app_params.radii_config_file, input_data))
+		{
+			std::cerr << "Error: failed to open atom radii configuration file '" << app_params.radii_config_file << "' without errors\n";
+			return false;
+		}
+
+		if(input_data.empty())
+		{
+			std::cerr << "Error: no data read from atom radii configuration file '" << app_params.radii_config_file << "'\n";
+			return false;
+		}
+
+		if(!voronotalt::MolecularRadiiAssignment::set_radius_value_rules(input_data))
+		{
+			std::cerr << "Error: invalid atom radii configuration file.\n";
+			return false;
+		}
+	}
+
 	cadscore::IDResidue::consider_residue_names()=app_params.consider_residue_names;
 
 	cadscore::ScorableData::ConstructionParameters scorable_data_construction_parameters;
@@ -1147,12 +1172,8 @@ bool run(const ApplicationParameters& app_params)
 	return true;
 }
 
-}
-
-int main(const int argc, const char** argv)
+bool run(const int argc, const char** argv)
 {
-	std::ios_base::sync_with_stdio(false);
-
 	ApplicationParameters app_params;
 
 	if(!app_params.read_from_command_line_args(argc, argv))
@@ -1165,39 +1186,18 @@ int main(const int argc, const char** argv)
 		{
 			std::cerr << "Error: invalid command line arguments.\n";
 		}
-		return 1;
+		return false;
 	}
 
-	envutil::OpenMPUtilities::openmp_setup(app_params.max_number_of_processors);
+	return run(app_params);
+}
 
-	if(!app_params.radii_config_file.empty())
-	{
-		std::string input_data;
+}
 
-		if(!voronotalt::read_whole_file_or_pipe_or_stdin_to_string(app_params.radii_config_file, input_data))
-		{
-			std::cerr << "Error: failed to open atom radii configuration file '" << app_params.radii_config_file << "' without errors\n";
-			return 1;
-		}
+int main(const int argc, const char** argv)
+{
+	std::ios_base::sync_with_stdio(false);
 
-		if(input_data.empty())
-		{
-			std::cerr << "Error: no data read from atom radii configuration file '" << app_params.radii_config_file << "'\n";
-			return 1;
-		}
-
-		if(!voronotalt::MolecularRadiiAssignment::set_radius_value_rules(input_data))
-		{
-			std::cerr << "Error: invalid atom radii configuration file.\n";
-			return 1;
-		}
-	}
-
-	if(run(app_params))
-	{
-		return 0;
-	}
-
-	return 1;
+	return (app_cadscore::run(argc, argv) ? 0 : 1);
 }
 
