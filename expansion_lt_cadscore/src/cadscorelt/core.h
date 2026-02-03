@@ -10,7 +10,7 @@
 #include "voronotalt/voronotalt.h"
 #include "voronotalt_cli/voronotalt_cli.h"
 
-#include "sequtil.h"
+#include "sequences_processing.h"
 
 namespace cadscorelt
 {
@@ -517,7 +517,7 @@ private:
 				for(std::map<IDResidue, std::string>::const_iterator jt=map_of_residue_ids.begin();jt!=map_of_residue_ids.end();++jt)
 				{
 					cd.sequence_vector.push_back(jt->first);
-					cd.sequence_str+=sequtil::SequenceInputUtilities::convert_residue_code_big_to_small(jt->second);
+					cd.sequence_str+=cadscorelt::SequenceInputUtilities::convert_residue_code_big_to_small(jt->second);
 				}
 			}
 		}
@@ -540,7 +540,7 @@ private:
 		{
 			for(std::size_t j=0;j<reference_sequences.size();j++)
 			{
-				const double identity=sequtil::PairwiseSequenceMapping::calculate_sequence_identity(reference_sequences[j], cds[i].sequence_str);
+				const double identity=cadscorelt::PairwiseSequenceMapping::calculate_sequence_identity(reference_sequences[j], cds[i].sequence_str);
 				all_identities.push_back(std::pair<double, std::pair<int, int> >(0.0-identity, std::pair<int, int>(i, j)));
 			}
 		}
@@ -554,8 +554,8 @@ private:
 				ChainDescriptor& cd=cds[identity_info.second.first];
 				if(cd.closest_reference_sequence_id<0)
 				{
-					sequtil::PairwiseSequenceMapping::Result mapping_result;
-					if(sequtil::PairwiseSequenceMapping::construct_mapping(reference_sequences[ref_index], cd.sequence_str, record_printed_alignment, mapping_result))
+					cadscorelt::PairwiseSequenceMapping::Result mapping_result;
+					if(cadscorelt::PairwiseSequenceMapping::construct_mapping(reference_sequences[ref_index], cd.sequence_str, record_printed_alignment, mapping_result))
 					{
 						cd.closest_reference_sequence_id=ref_index;
 						cd.best_reference_sequence_identity=mapping_result.identity;

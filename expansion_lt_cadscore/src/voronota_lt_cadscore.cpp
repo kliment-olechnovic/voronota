@@ -489,7 +489,7 @@ bool run(const ApplicationParameters& app_params)
 
 	if(!app_params.reference_sequences_file.empty())
 	{
-		scorable_data_construction_parameters.reference_sequences=sequtil::SequenceInputUtilities::read_sequences_from_file(app_params.reference_sequences_file);
+		scorable_data_construction_parameters.reference_sequences=cadscorelt::SequenceInputUtilities::read_sequences_from_file(app_params.reference_sequences_file);
 		if(scorable_data_construction_parameters.reference_sequences.empty())
 		{
 			std::cerr << "Error: failed to read sequences from file '" << app_params.reference_sequences_file << "'\n";

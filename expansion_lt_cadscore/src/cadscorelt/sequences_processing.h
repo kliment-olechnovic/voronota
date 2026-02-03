@@ -1,5 +1,5 @@
-#ifndef CADSCORELT_SEQUTIL_H_
-#define CADSCORELT_SEQUTIL_H_
+#ifndef CADSCORELT_SEQUENCES_PROCESSING_H_
+#define CADSCORELT_SEQUENCES_PROCESSING_H_
 
 #include <iostream>
 #include <string>
@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <map>
 
-namespace sequtil
+namespace cadscorelt
 {
 
 class SequenceInputUtilities
@@ -392,4 +392,4 @@ private:
 
 }
 
-#endif /* CADSCORELT_SEQUTIL_H_ */
+#endif /* CADSCORELT_SEQUENCES_PROCESSING_H_ */
