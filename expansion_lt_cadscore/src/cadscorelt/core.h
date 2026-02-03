@@ -1,26 +1,19 @@
-#ifndef CADSCORE_H_
-#define CADSCORE_H_
+#ifndef CADSCORELT_CORE_H_
+#define CADSCORELT_CORE_H_
 
 #include <string>
 #include <map>
 #include <set>
 #include <limits>
 
-#include "../../expansion_lt/src/voronotalt/parallelization_configuration.h"
-#include "../../expansion_lt/src/voronotalt/voronotalt.h"
-#include "../../expansion_lt/src/voronotalt_cli/voronotalt_cli.h"
+#include "voronotalt/parallelization_configuration.h"
+#include "voronotalt/voronotalt.h"
+#include "voronotalt_cli/voronotalt_cli.h"
 
 #include "sequtil.h"
 
-namespace cadscore
+namespace cadscorelt
 {
-
-inline const std::string& version() noexcept
-{
-	static const std::string version_str="0.8";
-	return version_str;
-}
-
 
 struct IDChain
 {
@@ -2710,4 +2703,4 @@ private:
 
 }
 
-#endif /* CADSCORE_H_ */
+#endif /* CADSCORELT_CORE_H_ */

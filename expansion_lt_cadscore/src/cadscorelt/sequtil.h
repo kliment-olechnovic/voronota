@@ -1,5 +1,5 @@
-#ifndef SEQUTIL_H_
-#define SEQUTIL_H_
+#ifndef CADSCORELT_SEQUTIL_H_
+#define CADSCORELT_SEQUTIL_H_
 
 #include <iostream>
 #include <string>
@@ -392,4 +392,4 @@ private:
 
 }
 
-#endif /* SEQUTIL_H_ */
+#endif /* CADSCORELT_SEQUTIL_H_ */
