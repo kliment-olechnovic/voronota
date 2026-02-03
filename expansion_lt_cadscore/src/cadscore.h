@@ -542,7 +542,7 @@ private:
 						cd.best_reference_sequence_identity=mapping_result.identity;
 						for(const std::pair<int, int>& p : mapping_result.mapping)
 						{
-							cd.best_renumbering_by_reference_sequence[cd.sequence_vector[p.first]]=p.second;
+							cd.best_renumbering_by_reference_sequence[cd.sequence_vector[p.first]]=p.second+1;
 						}
 						if(record_printed_alignment)
 						{
