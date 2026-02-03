@@ -810,6 +810,7 @@ bool run(const ApplicationParameters& app_params)
 		scoring_result_construction_parameters.record_local_scores_on_atom_level=app_params.local_output_level_atom;
 		scoring_result_construction_parameters.record_local_scores_on_residue_level=app_params.local_output_level_residue;
 		scoring_result_construction_parameters.record_local_scores_on_chain_level=app_params.local_output_level_chain;
+		scoring_result_construction_parameters.record_compatible_model_atom_balls=app_params.local_scores_requested && (app_params.local_output_format_pdb || app_params.local_output_format_mmcif);
 
 #ifdef _OPENMP
 #pragma omp parallel for
@@ -945,81 +946,81 @@ bool run(const ApplicationParameters& app_params)
 					{
 						for(int t=0;t<2 && success_writing_local_scores;t++)
 						{
-							const cadscore::ScorableData& tsd=(t==0 ? model_sd : target_sd);
+							const std::vector<cadscore::AtomBall> relevant_atom_balls=(t==0 ? sr.compatible_model_atom_balls : target_sd.atom_balls);
 							const std::string filename_end=(t==0 ? "_on_model.pdb" : "_on_target.pdb");
-							if(cadscore::MolecularFileWritingUtilities::PDB::check_compatability_with_pdb_format(tsd.atom_balls))
+							if(cadscore::MolecularFileWritingUtilities::PDB::check_compatability_with_pdb_format(relevant_atom_balls))
 							{
 								if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_atom.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_atom"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_atom_atom_summarized_per_atom));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_atom"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_atom));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_residue.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_atom_atom_summarized_per_residue));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_residue));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_atom_atom_summarized_per_chain));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_residue_residue_summarized_per_residue.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_residue_residue_summarized_per_residue));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_residue_summarized_per_residue));
 								}
 								if(success_writing_local_scores && !sr.cadscores_residue_residue_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_residue_residue_summarized_per_chain));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_residue_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_chain_chain_contact_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain_contact_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_chain_chain_contact_summarized_per_chain));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain_contact_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_chain_chain_contact_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_sas.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_atom_sas));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_sas));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_sas_summarized_per_residue.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_atom_sas_summarized_per_residue));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_sas_summarized_per_residue));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_sas_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_atom_sas_summarized_per_chain));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_sas_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_residue_sas.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_residue_sas));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_sas));
 								}
 								if(success_writing_local_scores && !sr.cadscores_residue_sas_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_residue_sas_summarized_per_chain));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_sas_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_chain_sas.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_sas"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_chain_sas));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_sas"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_chain_sas));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_site.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_atom_site));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_site));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_site_summarized_per_residue.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_atom_site_summarized_per_residue));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_site_summarized_per_residue));
 								}
 								if(success_writing_local_scores && !sr.cadscores_atom_site_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_atom_site_summarized_per_chain));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_atom_site_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_residue_site.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_residue_site));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_site));
 								}
 								if(success_writing_local_scores && !sr.cadscores_residue_site_summarized_per_chain.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_residue_site_summarized_per_chain));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_residue_site_summarized_per_chain));
 								}
 								if(success_writing_local_scores && !sr.cadscores_chain_site.empty())
 								{
-									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_site"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(tsd.atom_balls, sr.cadscores_chain_site));
+									success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_site"+filename_end, cadscore::MolecularFileWritingUtilities::PDB::print(relevant_atom_balls, sr.cadscores_chain_site));
 								}
 							}
 							else
@@ -1033,79 +1034,79 @@ bool run(const ApplicationParameters& app_params)
 					{
 						for(int t=0;t<2 && success_writing_local_scores;t++)
 						{
-							const cadscore::ScorableData& tsd=(t==0 ? model_sd : target_sd);
+							const std::vector<cadscore::AtomBall> relevant_atom_balls=(t==0 ? sr.compatible_model_atom_balls : target_sd.atom_balls);
 							const std::string filename_end=(t==0 ? "_on_model.cif" : "_on_target.cif");
 							if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_atom.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_atom"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_atom_atom_summarized_per_atom));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_atom"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_atom));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_residue.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_atom_atom_summarized_per_residue));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_residue));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_atom_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_atom_atom_summarized_per_chain));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_atom_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_residue_residue_summarized_per_residue.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_residue_residue_summarized_per_residue));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_residue_summarized_per_residue));
 							}
 							if(success_writing_local_scores && !sr.cadscores_residue_residue_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_residue_residue_summarized_per_chain));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_residue_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_chain_chain_contact_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain_contact_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_chain_chain_contact_summarized_per_chain));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain_contact_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_chain_chain_contact_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_sas.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_atom_sas));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_sas));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_sas_summarized_per_residue.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_atom_sas_summarized_per_residue));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_sas_summarized_per_residue));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_sas_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_atom_sas_summarized_per_chain));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_sas_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_sas_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_residue_sas.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_residue_sas));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_sas));
 							}
 							if(success_writing_local_scores && !sr.cadscores_residue_sas_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_residue_sas_summarized_per_chain));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_sas_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_sas_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_chain_sas.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_sas"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_chain_sas));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_sas"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_chain_sas));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_site.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_atom_site));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_site));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_site_summarized_per_residue.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_atom_site_summarized_per_residue));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_residue"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_site_summarized_per_residue));
 							}
 							if(success_writing_local_scores && !sr.cadscores_atom_site_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_atom_site_summarized_per_chain));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_site_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_atom_site_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_residue_site.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_residue_site));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_site));
 							}
 							if(success_writing_local_scores && !sr.cadscores_residue_site_summarized_per_chain.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_residue_site_summarized_per_chain));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_site_summarized_per_chain"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_residue_site_summarized_per_chain));
 							}
 							if(success_writing_local_scores && !sr.cadscores_chain_site.empty())
 							{
-								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_site"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(tsd.atom_balls, sr.cadscores_chain_site));
+								success_writing_local_scores=FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_site"+filename_end, cadscore::MolecularFileWritingUtilities::MMCIF::print(relevant_atom_balls, sr.cadscores_chain_site));
 							}
 						}
 					}

@@ -1410,10 +1410,11 @@ public:
 		bool record_local_scores_on_atom_level;
 		bool record_local_scores_on_residue_level;
 		bool record_local_scores_on_chain_level;
+		bool record_compatible_model_atom_balls;
 		int max_permutations_to_check_exhaustively;
 		std::map<std::string, std::string> chain_renaming_map;
 
-		ConstructionParameters() noexcept : remap_chains(false), record_local_scores_on_atom_level(false), record_local_scores_on_residue_level(false), record_local_scores_on_chain_level(false), max_permutations_to_check_exhaustively(200)
+		ConstructionParameters() noexcept : remap_chains(false), record_local_scores_on_atom_level(false), record_local_scores_on_residue_level(false), record_local_scores_on_chain_level(false), record_compatible_model_atom_balls(false), max_permutations_to_check_exhaustively(200)
 		{
 		}
 	};
@@ -1461,6 +1462,8 @@ public:
 
 	std::map<IDChain, CADDescriptor> cadscores_chain_site;
 	CADDescriptor cadscores_chain_site_summarized_globally;
+
+	std::vector<AtomBall> compatible_model_atom_balls;
 
 	ScoringResult() noexcept : valid_(false)
 	{
@@ -1824,6 +1827,11 @@ private:
 			{
 				cadscores_chain_site_summarized_globally=construct_global_cad_descriptor(target_data.chain_site_areas, model_data.chain_site_areas);
 			}
+		}
+
+		if(params.record_compatible_model_atom_balls)
+		{
+			compatible_model_atom_balls=model_data.atom_balls;
 		}
 
 		valid_=true;
