@@ -799,7 +799,7 @@ bool run(const ApplicationParameters& app_params)
 	std::vector< std::vector<cadscore::CADDescriptor> > list_of_output_cad_descriptors(list_of_pairs_of_target_model_indices.size(), std::vector<cadscore::CADDescriptor>(output_score_names.size()));
 	std::vector<std::string> list_of_output_error_messages(list_of_pairs_of_target_model_indices.size());
 
-	std::vector<std::string> list_of_chain_remapping_summaries(app_params.remap_chains ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
+	std::vector<std::string> list_of_chain_remapping_summaries((app_params.remap_chains || !scorable_data_construction_parameters.reference_sequences.empty()) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
 
 	bool success_writing_local_scores=true;
 
@@ -1150,25 +1150,44 @@ bool run(const ApplicationParameters& app_params)
 			if(!list_of_chain_remapping_summaries.empty())
 			{
 				std::string& summary=list_of_chain_remapping_summaries[i];
-				summary="(";
-				for(std::map<std::string, std::string>::const_iterator mit=sr.params.chain_renaming_map.begin();mit!=sr.params.chain_renaming_map.end();++mit)
+				if(!model_sd.chain_sequences_mapping_result.chain_renaming_label.empty())
 				{
-					if(mit!=sr.params.chain_renaming_map.begin())
-					{
-						summary+=",";
-					}
-					summary+=mit->first;
+					summary+="m:";
+					summary+=model_sd.chain_sequences_mapping_result.chain_renaming_label;
+					summary+=";";
 				}
-				summary+=")[";
-				for(std::map<std::string, std::string>::const_iterator mit=sr.params.chain_renaming_map.begin();mit!=sr.params.chain_renaming_map.end();++mit)
+				if(!target_sd.chain_sequences_mapping_result.chain_renaming_label.empty())
 				{
-					if(mit!=sr.params.chain_renaming_map.begin())
-					{
-						summary+=",";
-					}
-					summary+=mit->second;
+					summary+="t:";
+					summary+=target_sd.chain_sequences_mapping_result.chain_renaming_label;
+					summary+=";";
 				}
-				summary+="]";
+				if(!sr.params.chain_renaming_map.empty())
+				{
+					summary+="mt:(";
+					for(std::map<std::string, std::string>::const_iterator mit=sr.params.chain_renaming_map.begin();mit!=sr.params.chain_renaming_map.end();++mit)
+					{
+						if(mit!=sr.params.chain_renaming_map.begin())
+						{
+							summary+=",";
+						}
+						summary+=mit->first;
+					}
+					summary+=")[";
+					for(std::map<std::string, std::string>::const_iterator mit=sr.params.chain_renaming_map.begin();mit!=sr.params.chain_renaming_map.end();++mit)
+					{
+						if(mit!=sr.params.chain_renaming_map.begin())
+						{
+							summary+=",";
+						}
+						summary+=mit->second;
+					}
+					summary+="];";
+				}
+				if(summary.empty())
+				{
+					summary=".";
+				}
 			}
 		}
 	}
@@ -1236,7 +1255,7 @@ bool run(const ApplicationParameters& app_params)
 		}
 		if(!list_of_chain_remapping_summaries.empty())
 		{
-			output_string+="\tremapping_of_chains";
+			output_string+="\trenaming_of_chains";
 		}
 		output_string+="\n";
 

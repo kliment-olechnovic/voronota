@@ -352,6 +352,7 @@ public:
 	{
 		std::map<std::string, ChainSummary> chain_summaries;
 		std::map<int, int> frequencies_of_reference_sequence_ids;
+		std::string chain_renaming_label;
 
 		bool empty() const noexcept
 		{
@@ -362,6 +363,7 @@ public:
 		{
 			chain_summaries.clear();
 			frequencies_of_reference_sequence_ids.clear();
+			chain_renaming_label.clear();
 		}
 
 		int get_reference_sequence_id_by_chain_name(const std::string& chain_name) const
@@ -444,6 +446,30 @@ public:
 				result.chain_summaries[cd.new_chain_name]=cd.summarize();
 				result.frequencies_of_reference_sequence_ids[cd.closest_reference_sequence_id]++;
 			}
+		}
+
+		if(!result.empty())
+		{
+			std::vector< std::pair<std::string, std::string> > name_pairs;
+			name_pairs.reserve(result.chain_summaries.size());
+			for(std::map<std::string, ChainSummary>::const_iterator it=result.chain_summaries.begin();it!=result.chain_summaries.end();++it)
+			{
+				name_pairs.push_back(std::pair<std::string, std::string>(it->second.old_name, it->second.current_name));
+			}
+			std::sort(name_pairs.begin(), name_pairs.end());
+			result.chain_renaming_label="(";
+			for(std::size_t i=0;i<name_pairs.size();i++)
+			{
+				result.chain_renaming_label+=(i>0 ? "," : "");
+				result.chain_renaming_label+=name_pairs[i].first;
+			}
+			result.chain_renaming_label+=")[";
+			for(std::size_t i=0;i<name_pairs.size();i++)
+			{
+				result.chain_renaming_label+=(i>0 ? "," : "");
+				result.chain_renaming_label+=name_pairs[i].second;
+			}
+			result.chain_renaming_label+="]";
 		}
 
 		return !result.empty();
