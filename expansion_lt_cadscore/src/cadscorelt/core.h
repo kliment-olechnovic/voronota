@@ -142,6 +142,10 @@ struct IDAtom
 	{
 	}
 
+	explicit IDAtom(const voronotalt::SphereLabeling::SphereLabel& sl, const std::string& custom_atom_name) noexcept : id_residue(sl), atom_name(custom_atom_name)
+	{
+	}
+
 	bool operator==(const IDAtom& v) const noexcept
 	{
 		return (atom_name==v.atom_name && id_residue==v.id_residue);
@@ -772,6 +776,58 @@ private:
 	}
 };
 
+class SimplificationOfAtomNames
+{
+public:
+	static std::string simplify_atom_name(const std::string& residue_name, const std::string& atom_name) noexcept
+	{
+		if(residue_name=="ARG")
+		{
+			if(atom_name=="NH1" || atom_name=="NH2")
+			{
+				return std::string("NH1");
+			}
+		}
+		else if(residue_name=="ASP")
+		{
+			if(atom_name=="OD1" || atom_name=="OD2")
+			{
+				return std::string("OD1");
+			}
+		}
+		else if(residue_name=="GLU")
+		{
+			if(atom_name=="OE1" || atom_name=="OE2")
+			{
+				return std::string("OE1");
+			}
+		}
+		else if(residue_name=="PHE")
+		{
+			if(atom_name=="CD1" || atom_name=="CD2")
+			{
+				return std::string("CD1");
+			}
+			else if(atom_name=="CE1" || atom_name=="CE2")
+			{
+				return std::string("CE1");
+			}
+		}
+		else if(residue_name=="TYR")
+		{
+			if(atom_name=="CD1" || atom_name=="CD2")
+			{
+				return std::string("CD1");
+			}
+			else if(atom_name=="CE1" || atom_name=="CE2")
+			{
+				return std::string("CE1");
+			}
+		}
+		return atom_name;
+	}
+};
+
 struct MolecularFileInput
 {
 	std::string input_file_path;
@@ -816,6 +872,7 @@ public:
 		bool record_atom_site_summaries;
 		bool record_residue_site_summaries;
 		bool record_chain_site_summaries;
+		bool conflate_equivalent_atom_types;
 		voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_input_balls;
 		voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_contact_descriptors;
 		voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_atom_descriptors;
@@ -834,7 +891,8 @@ public:
 			record_chain_cell_summaries(false),
 			record_atom_site_summaries(false),
 			record_residue_site_summaries(false),
-			record_chain_site_summaries(false)
+			record_chain_site_summaries(false),
+			conflate_equivalent_atom_types(false)
 		{
 		}
 
@@ -1181,7 +1239,19 @@ private:
 				const voronotalt::RadicalTessellation::ContactDescriptorSummary& cds=result.contacts_summaries[i];
 				const voronotalt::SphereLabeling::SphereLabel& sl1=spheres_input_result.sphere_labels[cds.id_a];
 				const voronotalt::SphereLabeling::SphereLabel& sl2=spheres_input_result.sphere_labels[cds.id_b];
-				atom_atom_contact_areas.emplace_hint(atom_atom_contact_areas.end(), IDAtomAtom(IDAtom(sl1), IDAtom(sl2)), AreaValue(cds.area));
+				if(params.conflate_equivalent_atom_types)
+				{
+					const std::size_t mapsize=atom_atom_contact_areas.size();
+					std::map<IDAtomAtom, AreaValue>::iterator insertion_it=atom_atom_contact_areas.emplace_hint(atom_atom_contact_areas.end(), IDAtomAtom(IDAtom(sl1, SimplificationOfAtomNames::simplify_atom_name(sl1.expanded_residue_id.rname, sl1.atom_name)), IDAtom(sl2, SimplificationOfAtomNames::simplify_atom_name(sl2.expanded_residue_id.rname, sl2.atom_name))), AreaValue(cds.area));
+					if(atom_atom_contact_areas.size()==mapsize)
+					{
+						insertion_it->second.add(AreaValue(cds.area));
+					}
+				}
+				else
+				{
+					atom_atom_contact_areas.emplace_hint(atom_atom_contact_areas.end(), IDAtomAtom(IDAtom(sl1), IDAtom(sl2)), AreaValue(cds.area));
+				}
 			}
 		}
 
@@ -1217,7 +1287,19 @@ private:
 				if(ccds.sas_area>0.0)
 				{
 					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[ccds.id];
-					atom_sas_areas.emplace_hint(atom_sas_areas.end(), IDAtom(sl), AreaValue(ccds.sas_area));
+					if(params.conflate_equivalent_atom_types)
+					{
+						const std::size_t mapsize=atom_sas_areas.size();
+						std::map<IDAtom, AreaValue>::iterator insertion_it=atom_sas_areas.emplace_hint(atom_sas_areas.end(), IDAtom(sl, SimplificationOfAtomNames::simplify_atom_name(sl.expanded_residue_id.rname, sl.atom_name)), AreaValue(ccds.sas_area));
+						if(atom_sas_areas.size()==mapsize)
+						{
+							insertion_it->second.add(AreaValue(ccds.sas_area));
+						}
+					}
+					else
+					{
+						atom_sas_areas.emplace_hint(atom_sas_areas.end(), IDAtom(sl), AreaValue(ccds.sas_area));
+					}
 				}
 			}
 		}
@@ -1258,7 +1340,19 @@ private:
 				if(scds.area>0.0)
 				{
 					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[scds.id];
-					atom_site_areas.emplace_hint(atom_site_areas.end(), IDAtom(sl), AreaValue(scds.area));
+					if(params.conflate_equivalent_atom_types)
+					{
+						const std::size_t mapsize=atom_site_areas.size();
+						std::map<IDAtom, AreaValue>::iterator insertion_it=atom_site_areas.emplace_hint(atom_site_areas.end(), IDAtom(sl, SimplificationOfAtomNames::simplify_atom_name(sl.expanded_residue_id.rname, sl.atom_name)), AreaValue(scds.area));
+						if(atom_site_areas.size()==mapsize)
+						{
+							insertion_it->second.add(AreaValue(scds.area));
+						}
+					}
+					else
+					{
+						atom_site_areas.emplace_hint(atom_site_areas.end(), IDAtom(sl), AreaValue(scds.area));
+					}
 				}
 			}
 		}

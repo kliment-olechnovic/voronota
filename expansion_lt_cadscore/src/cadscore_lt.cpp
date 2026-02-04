@@ -30,6 +30,7 @@ Options:
     --local-output-levels                            strings    list of local output levels (can include 'atom', 'residue', 'chain'), default is 'residue'
     --local-output-formats                           strings    list of local output formats (can include 'table', 'pdb', 'mmcif', 'contactmap')
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
+    --conflate-atom-types                                       flag to conflate known equivalent atom types
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score
     --table-depth                                    number     integer level of detail for table outputs, default is 0 (lowest level, to only print CAD-score) 
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
@@ -64,6 +65,7 @@ public:
 	bool include_heteroatoms;
 	bool read_inputs_as_assemblies;
 	bool consider_residue_names;
+	bool conflate_equivalent_atom_types;
 	bool remap_chains;
 	bool scoring_type_contacts;
 	bool scoring_type_sas;
@@ -106,6 +108,7 @@ public:
 		include_heteroatoms(false),
 		read_inputs_as_assemblies(false),
 		consider_residue_names(false),
+		conflate_equivalent_atom_types(false),
 		remap_chains(false),
 		scoring_type_contacts(false),
 		scoring_type_sas(false),
@@ -247,6 +250,10 @@ public:
 				else if(opt.name=="consider-residue-names" && opt.is_flag())
 				{
 					consider_residue_names=opt.is_flag_and_true();
+				}
+				else if(opt.name=="conflate-atom-types" && opt.is_flag())
+				{
+					conflate_equivalent_atom_types=opt.is_flag_and_true();
 				}
 				else if(opt.name=="remap-chains" && opt.is_flag())
 				{
@@ -502,6 +509,7 @@ bool run(const ApplicationParameters& app_params)
 	scorable_data_construction_parameters.record_atom_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_atom);
 	scorable_data_construction_parameters.record_residue_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_residue);
 	scorable_data_construction_parameters.record_chain_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_chain);
+	scorable_data_construction_parameters.conflate_equivalent_atom_types=app_params.conflate_equivalent_atom_types;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_input_balls=app_params.filtering_expression_for_restricting_input_balls;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_contact_descriptors=app_params.filtering_expression_for_restricting_contact_descriptors;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_atom_descriptors=app_params.filtering_expression_for_restricting_atom_descriptors;
