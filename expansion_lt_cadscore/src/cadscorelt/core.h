@@ -785,43 +785,57 @@ public:
 		{
 			if(atom_name=="NH1" || atom_name=="NH2")
 			{
-				return std::string("NH1");
+				return std::string("NHX");
 			}
 		}
 		else if(residue_name=="ASP")
 		{
 			if(atom_name=="OD1" || atom_name=="OD2")
 			{
-				return std::string("OD1");
+				return std::string("ODX");
 			}
 		}
 		else if(residue_name=="GLU")
 		{
 			if(atom_name=="OE1" || atom_name=="OE2")
 			{
-				return std::string("OE1");
+				return std::string("OEX");
 			}
 		}
 		else if(residue_name=="PHE")
 		{
 			if(atom_name=="CD1" || atom_name=="CD2")
 			{
-				return std::string("CD1");
+				return std::string("CDX");
 			}
 			else if(atom_name=="CE1" || atom_name=="CE2")
 			{
-				return std::string("CE1");
+				return std::string("CEX");
 			}
 		}
 		else if(residue_name=="TYR")
 		{
 			if(atom_name=="CD1" || atom_name=="CD2")
 			{
-				return std::string("CD1");
+				return std::string("CDX");
 			}
 			else if(atom_name=="CE1" || atom_name=="CE2")
 			{
-				return std::string("CE1");
+				return std::string("CEX");
+			}
+		}
+		else if(residue_name=="A" || residue_name=="C" || residue_name=="G" || residue_name=="U" || residue_name=="T")
+		{
+			if(atom_name=="OP1" || atom_name=="OP2" || atom_name=="O1P" || atom_name=="O2P")
+			{
+				return std::string("OPX");
+			}
+		}
+		else if(residue_name=="DA" || residue_name=="DC" || residue_name=="DG" || residue_name=="DT")
+		{
+			if(atom_name=="OP1" || atom_name=="OP2" || atom_name=="O1P" || atom_name=="O2P")
+			{
+				return std::string("OPX");
 			}
 		}
 		return atom_name;
