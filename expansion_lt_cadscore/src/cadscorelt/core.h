@@ -325,6 +325,7 @@ struct AtomBall
 {
 	IDAtom id_atom;
 	std::string residue_name;
+	std::string conflated_atom_name;
 	double x;
 	double y;
 	double z;
@@ -1251,6 +1252,13 @@ private:
 			for(voronotalt::SphereLabeling::SphereLabel& sl : spheres_input_result.sphere_labels)
 			{
 				sl.atom_name=SimplificationOfAtomNames::simplify_atom_name(sl.expanded_residue_id.rname, sl.atom_name);
+			}
+			if(atom_balls.size()==spheres_input_result.sphere_labels.size())
+			{
+				for(std::size_t i=0;i<atom_balls.size();i++)
+				{
+					atom_balls[i].conflated_atom_name=spheres_input_result.sphere_labels[i].atom_name;
+				}
 			}
 		}
 

@@ -244,6 +244,12 @@ public:
 		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
 		{
 			std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom);
+			if(it==map_of_cadds.end() && !atom_ball.conflated_atom_name.empty())
+			{
+				IDAtom conflated_id_atom=atom_ball.id_atom;
+				conflated_id_atom.atom_name=atom_ball.conflated_atom_name;
+				it=map_of_cadds.find(conflated_id_atom);
+			}
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 		}
 
@@ -351,6 +357,12 @@ _atom_site.pdbx_PDB_model_num
 		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
 		{
 			std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom);
+			if(it==map_of_cadds.end() && !atom_ball.conflated_atom_name.empty())
+			{
+				IDAtom conflated_id_atom=atom_ball.id_atom;
+				conflated_id_atom.atom_name=atom_ball.conflated_atom_name;
+				it=map_of_cadds.find(conflated_id_atom);
+			}
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 		}
 
