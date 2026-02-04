@@ -1232,6 +1232,14 @@ private:
 			std::vector<AtomBall>().swap(atom_balls);
 		}
 
+		if(params.conflate_equivalent_atom_types)
+		{
+			for(voronotalt::SphereLabeling::SphereLabel& sl : spheres_input_result.sphere_labels)
+			{
+				sl.atom_name=SimplificationOfAtomNames::simplify_atom_name(sl.expanded_residue_id.rname, sl.atom_name);
+			}
+		}
+
 		if(params.record_atom_atom_contact_summaries)
 		{
 			for(std::size_t i=0;i<result.contacts_summaries.size();i++)
@@ -1239,18 +1247,13 @@ private:
 				const voronotalt::RadicalTessellation::ContactDescriptorSummary& cds=result.contacts_summaries[i];
 				const voronotalt::SphereLabeling::SphereLabel& sl1=spheres_input_result.sphere_labels[cds.id_a];
 				const voronotalt::SphereLabeling::SphereLabel& sl2=spheres_input_result.sphere_labels[cds.id_b];
-				if(params.conflate_equivalent_atom_types)
 				{
 					const std::size_t mapsize=atom_atom_contact_areas.size();
-					std::map<IDAtomAtom, AreaValue>::iterator insertion_it=atom_atom_contact_areas.emplace_hint(atom_atom_contact_areas.end(), IDAtomAtom(IDAtom(sl1, SimplificationOfAtomNames::simplify_atom_name(sl1.expanded_residue_id.rname, sl1.atom_name)), IDAtom(sl2, SimplificationOfAtomNames::simplify_atom_name(sl2.expanded_residue_id.rname, sl2.atom_name))), AreaValue(cds.area));
+					std::map<IDAtomAtom, AreaValue>::iterator insertion_it=atom_atom_contact_areas.emplace_hint(atom_atom_contact_areas.end(), IDAtomAtom(IDAtom(sl1), IDAtom(sl2)), AreaValue(cds.area));
 					if(atom_atom_contact_areas.size()==mapsize)
 					{
 						insertion_it->second.add(AreaValue(cds.area));
 					}
-				}
-				else
-				{
-					atom_atom_contact_areas.emplace_hint(atom_atom_contact_areas.end(), IDAtomAtom(IDAtom(sl1), IDAtom(sl2)), AreaValue(cds.area));
 				}
 			}
 		}
@@ -1287,18 +1290,13 @@ private:
 				if(ccds.sas_area>0.0)
 				{
 					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[ccds.id];
-					if(params.conflate_equivalent_atom_types)
 					{
 						const std::size_t mapsize=atom_sas_areas.size();
-						std::map<IDAtom, AreaValue>::iterator insertion_it=atom_sas_areas.emplace_hint(atom_sas_areas.end(), IDAtom(sl, SimplificationOfAtomNames::simplify_atom_name(sl.expanded_residue_id.rname, sl.atom_name)), AreaValue(ccds.sas_area));
+						std::map<IDAtom, AreaValue>::iterator insertion_it=atom_sas_areas.emplace_hint(atom_sas_areas.end(), IDAtom(sl), AreaValue(ccds.sas_area));
 						if(atom_sas_areas.size()==mapsize)
 						{
 							insertion_it->second.add(AreaValue(ccds.sas_area));
 						}
-					}
-					else
-					{
-						atom_sas_areas.emplace_hint(atom_sas_areas.end(), IDAtom(sl), AreaValue(ccds.sas_area));
 					}
 				}
 			}
@@ -1340,18 +1338,13 @@ private:
 				if(scds.area>0.0)
 				{
 					const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[scds.id];
-					if(params.conflate_equivalent_atom_types)
 					{
 						const std::size_t mapsize=atom_site_areas.size();
-						std::map<IDAtom, AreaValue>::iterator insertion_it=atom_site_areas.emplace_hint(atom_site_areas.end(), IDAtom(sl, SimplificationOfAtomNames::simplify_atom_name(sl.expanded_residue_id.rname, sl.atom_name)), AreaValue(scds.area));
+						std::map<IDAtom, AreaValue>::iterator insertion_it=atom_site_areas.emplace_hint(atom_site_areas.end(), IDAtom(sl), AreaValue(scds.area));
 						if(atom_site_areas.size()==mapsize)
 						{
 							insertion_it->second.add(AreaValue(scds.area));
 						}
-					}
-					else
-					{
-						atom_site_areas.emplace_hint(atom_site_areas.end(), IDAtom(sl), AreaValue(scds.area));
 					}
 				}
 			}
