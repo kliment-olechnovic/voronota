@@ -35,6 +35,7 @@ Options:
     --table-depth                                    number     integer level of detail for table outputs, default is 0 (lowest level, to only print CAD-score) 
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
     --log-sequence-alignments                                   flag to write chosen alignments with reference sequences into a file in the output directory
+    --compact-output                                            flag to reduce size of output global scores table without removing rows
     --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
     --output-dir                                     string     path to output directory for all result files
     --help | -h                                                 flag to print help info to stderr and exit
@@ -84,6 +85,7 @@ public:
 	bool local_output_format_graphicschimera;
 	bool print_paths_in_output;
 	bool log_sequence_alignments;
+	bool compact_output;
 	bool local_scores_requested;
 	bool read_successfuly;
 	std::vector<std::string> target_input_files;
@@ -129,6 +131,7 @@ public:
 		local_output_format_graphicschimera(false),
 		print_paths_in_output(false),
 		log_sequence_alignments(false),
+		compact_output(false),
 		local_scores_requested(false),
 		read_successfuly(false),
 		restrict_contact_descriptors("[-min-sep 1]"),
@@ -282,6 +285,10 @@ public:
 				else if(opt.name=="log-sequence-alignments" && opt.is_flag())
 				{
 					log_sequence_alignments=opt.is_flag_and_true();
+				}
+				else if(opt.name=="compact-output" && opt.is_flag())
+				{
+					compact_output=opt.is_flag_and_true();
 				}
 				else if(opt.name=="output-global-scores" && opt.args_strings.size()==1)
 				{
@@ -463,6 +470,11 @@ public:
 		if(log_sequence_alignments && output_dir.empty())
 		{
 			error_log_for_options_parsing << "Error: no output directory provided to write log of sequence alignments.\n";
+		}
+
+		if(compact_output && output_dir.empty())
+		{
+			error_log_for_options_parsing << "Error: no output directory provided to files enabling compact output of global scores.\n";
 		}
 
 		if(!restrict_input_atoms.empty())
@@ -762,7 +774,7 @@ bool run(const ApplicationParameters& app_params)
 	std::vector< std::vector<cadscorelt::CADDescriptor> > list_of_output_cad_descriptors(list_of_pairs_of_target_model_indices.size(), std::vector<cadscorelt::CADDescriptor>(output_score_names.size()));
 	std::vector<std::string> list_of_output_error_messages(list_of_pairs_of_target_model_indices.size());
 
-	std::vector<std::string> list_of_chain_remapping_summaries((app_params.remap_chains || !scorable_data_construction_parameters.reference_sequences.empty()) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
+	std::vector<std::string> list_of_chain_remapping_summaries((!app_params.compact_output && (app_params.remap_chains || !scorable_data_construction_parameters.reference_sequences.empty())) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
 
 	bool success_writing_local_scores=true;
 
@@ -1238,12 +1250,12 @@ bool run(const ApplicationParameters& app_params)
 
 		for(const std::size_t i : ordered_pair_ids_for_output)
 		{
-			const std::string& target_display_name=list_of_unique_file_display_names[list_of_pairs_of_target_model_indices[i].first];
-			const std::string& model_display_name=list_of_unique_file_display_names[list_of_pairs_of_target_model_indices[i].second];
+			const std::size_t target_index=list_of_pairs_of_target_model_indices[i].first;
+			const std::size_t model_index=list_of_pairs_of_target_model_indices[i].second;
 			const std::vector<cadscorelt::CADDescriptor>& output_cad_descriptors=list_of_output_cad_descriptors[i];
-			output_string+=target_display_name;
+			output_string+=(app_params.compact_output ? std::to_string(target_index) : list_of_unique_file_display_names[target_index]);
 			output_string+="\t";
-			output_string+=model_display_name;
+			output_string+=(app_params.compact_output ? std::to_string(model_index) : list_of_unique_file_display_names[model_index]);
 			for(const cadscorelt::CADDescriptor& cadd : output_cad_descriptors)
 			{
 				output_string+="\t";
