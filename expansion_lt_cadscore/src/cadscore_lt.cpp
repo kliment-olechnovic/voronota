@@ -80,6 +80,8 @@ public:
 	bool local_output_format_pdb;
 	bool local_output_format_mmcif;
 	bool local_output_format_contactmap;
+	bool local_output_format_graphicspymol;
+	bool local_output_format_graphicschimera;
 	bool print_paths_in_output;
 	bool log_sequence_alignments;
 	bool local_scores_requested;
@@ -123,6 +125,8 @@ public:
 		local_output_format_pdb(false),
 		local_output_format_mmcif(false),
 		local_output_format_contactmap(false),
+		local_output_format_graphicspymol(false),
+		local_output_format_graphicschimera(false),
 		print_paths_in_output(false),
 		log_sequence_alignments(false),
 		local_scores_requested(false),
@@ -391,13 +395,21 @@ public:
 			{
 				local_output_format_contactmap=true;
 			}
+			else if(token=="graphics-pymol")
+			{
+				local_output_format_graphicspymol=true;
+			}
+			else if(token=="graphics-chimera")
+			{
+				local_output_format_graphicschimera=true;
+			}
 			else
 			{
 				error_log_for_options_parsing << "Error: invalid local output format '" << token << "'.\n";
 			}
 		}
 
-		local_scores_requested=(local_output_format_table || local_output_format_pdb || local_output_format_mmcif || local_output_format_contactmap);
+		local_scores_requested=(local_output_format_table || local_output_format_pdb || local_output_format_mmcif || local_output_format_contactmap || local_output_format_graphicspymol || local_output_format_graphicschimera);
 
 		if(target_input_files.empty())
 		{
@@ -498,8 +510,9 @@ bool run(const ApplicationParameters& app_params)
 
 	cadscorelt::ScorableData::ConstructionParameters scorable_data_construction_parameters;
 	scorable_data_construction_parameters.probe=app_params.probe;
-	scorable_data_construction_parameters.record_atom_balls=(app_params.local_scores_requested && (app_params.local_output_format_pdb || app_params.local_output_format_mmcif));
+	scorable_data_construction_parameters.record_atom_balls=app_params.local_scores_requested;
 	scorable_data_construction_parameters.record_sequence_alignments=app_params.log_sequence_alignments;
+	scorable_data_construction_parameters.record_graphics=(app_params.local_scores_requested && (app_params.local_output_format_graphicspymol|| app_params.local_output_format_graphicschimera));
 	scorable_data_construction_parameters.record_atom_atom_contact_summaries=(app_params.scoring_type_contacts && app_params.scoring_level_atom);
 	scorable_data_construction_parameters.record_residue_residue_contact_summaries=(app_params.scoring_type_contacts && app_params.scoring_level_residue) || app_params.remap_chains;
 	scorable_data_construction_parameters.record_chain_chain_contact_summaries=(app_params.scoring_type_contacts && app_params.scoring_level_chain);
@@ -991,6 +1004,41 @@ bool run(const ApplicationParameters& app_params)
 							if(app_params.scoring_level_chain)
 							{
 								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_chain_chain.empty() || cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain.svg", cadscorelt::ContactMapPlottingUtilities::print(sr.cadscores_chain_chain)));
+							}
+						}
+					}
+
+					if(app_params.local_output_format_graphicspymol || app_params.local_output_format_graphicschimera)
+					{
+						for(int f=0;f<2 && success_writing_local_scores;f++)
+						{
+							if(f==0 ? app_params.local_output_format_graphicspymol : app_params.local_output_format_graphicschimera)
+							{
+								for(int t=0;t<2 && success_writing_local_scores;t++)
+								{
+									const cadscorelt::ScorableData relevant_sd=(t==0 ? model_sd : target_sd);
+									const std::string title_end=(t==0 ? "_on_model" : "_on_target");
+									const std::string filename_end=title_end+(f==0 ? ".py" : ".bild");
+									const cadscorelt::GraphicsPrintingUtilities::OutputFormat::ID output_format=(f==0 ? cadscorelt::GraphicsPrintingUtilities::OutputFormat::pymol : cadscorelt::GraphicsPrintingUtilities::OutputFormat::chimera);
+									if(app_params.scoring_type_contacts)
+									{
+										if(app_params.scoring_level_atom)
+										{
+											success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom.empty() || cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom"+filename_end, cadscorelt::GraphicsPrintingUtilities::print_contacts_graphics(relevant_sd, sr.cadscores_atom_atom, output_format, std::string("cadscores_atom_atom")+title_end)));
+											success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom_summarized_per_residue_residue.empty() || cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_residue_residue"+filename_end, cadscorelt::GraphicsPrintingUtilities::print_contacts_graphics(relevant_sd, sr.cadscores_atom_atom_summarized_per_residue_residue, output_format, std::string("cadscores_atom_atom_summarized_per_residue_residue")+title_end)));
+											success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom_summarized_per_chain_chain.empty() || cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_atom_atom_summarized_per_chain_chain"+filename_end, cadscorelt::GraphicsPrintingUtilities::print_contacts_graphics(relevant_sd, sr.cadscores_atom_atom_summarized_per_chain_chain, output_format, std::string("cadscores_atom_atom_summarized_per_chain_chain")+title_end)));
+										}
+										if(app_params.scoring_level_residue)
+										{
+											success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_residue.empty() || cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue"+filename_end, cadscorelt::GraphicsPrintingUtilities::print_contacts_graphics(relevant_sd, sr.cadscores_residue_residue, output_format, std::string("cadscores_residue_residue")+title_end)));
+											success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_residue_summarized_per_chain_chain.empty() || cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_residue_residue_summarized_per_chain_chain"+filename_end, cadscorelt::GraphicsPrintingUtilities::print_contacts_graphics(relevant_sd, sr.cadscores_residue_residue, output_format, std::string("cadscores_residue_residue_summarized_per_chain_chain")+title_end)));
+										}
+										if(app_params.scoring_level_chain)
+										{
+											success_writing_local_scores=success_writing_local_scores && (sr.cadscores_chain_chain.empty() || cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/cadscores_chain_chain"+filename_end, cadscorelt::GraphicsPrintingUtilities::print_contacts_graphics(relevant_sd, sr.cadscores_chain_chain, output_format, std::string("cadscores_chain_chain")+title_end)));
+										}
+									}
+								}
 							}
 						}
 					}

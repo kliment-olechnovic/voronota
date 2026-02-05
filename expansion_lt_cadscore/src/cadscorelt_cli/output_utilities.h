@@ -473,6 +473,199 @@ private:
 	}
 };
 
+class GraphicsPrintingUtilities
+{
+public:
+	struct OutputFormat
+	{
+		enum ID
+		{
+			pymol,
+			chimera
+		};
+	};
+
+	template<class Container>
+	static std::string print_contacts_graphics(const ScorableData& sd, const Container& map_of_cadds, const OutputFormat::ID output_format, const std::string& title) noexcept
+	{
+		if(sd.rt_result_graphics.contacts_graphics.empty() || sd.atom_balls.empty())
+		{
+			return std::string();
+		}
+		voronotalt::GraphicsWriter graphics_writer(true);
+		const unsigned int base_color=0xFFFF00;
+		const std::string category_name="contacts";
+		const std::string group_name="faces";
+		graphics_writer.add_color(category_name, "", base_color);
+		for(std::size_t i=0;i<sd.rt_result_graphics.contacts_graphics.size() && i<sd.rt_result.contacts_summaries.size();i++)
+		{
+			typename Container::const_iterator it=find_in_map_of_cadds(sd, sd.rt_result.contacts_summaries[i], map_of_cadds);
+			if(it!=map_of_cadds.end())
+			{
+				graphics_writer.add_color(category_name, group_name, color_from_cadd(it->second, base_color));
+				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=sd.rt_result_graphics.contacts_graphics[i];
+				graphics_writer.add_triangle_fan(category_name, group_name, pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
+			}
+		}
+		if(output_format==OutputFormat::chimera)
+		{
+			return graphics_writer.write_to_string_for_chimera(title);
+		}
+		else
+		{
+			return graphics_writer.write_to_string_for_pymol(title);
+		}
+	}
+
+	template<class Container>
+	static std::string print_sas_graphics(const ScorableData& sd, const Container& map_of_cadds, const OutputFormat::ID output_format, const std::string& title) noexcept
+	{
+		if(sd.rt_result_graphics.sas_graphics.empty() || sd.atom_balls.empty())
+		{
+			return std::string();
+		}
+		voronotalt::GraphicsWriter graphics_writer(true);
+		const unsigned int base_color=0xFFFF00;
+		const std::string category_name="sas";
+		const std::string group_name="patches";
+		graphics_writer.add_color(category_name, "", base_color);
+		for(std::size_t i=0;i<sd.rt_result_graphics.sas_graphics.size();i++)
+		{
+			const voronotalt::SubdividedIcosahedronCut::GraphicsBundle& gb=sd.rt_result_graphics.sas_graphics[i];
+			const std::size_t sphere_id=sd.rt_result.cells_summaries[i].id;
+			if(sphere_id<sd.atom_balls.size())
+			{
+				const AtomBall& ball=sd.atom_balls[sphere_id];
+				typename Container::const_iterator it=find_in_map_of_cadds(ball, map_of_cadds);
+				if(it!=map_of_cadds.end())
+				{
+					graphics_writer.add_color(category_name, group_name, color_from_cadd(it->second, base_color));
+					for(std::size_t j=0;j<gb.triples.size();j++)
+					{
+						const voronotalt::SubdividedIcosahedron::Triple& t=gb.triples[j];
+						graphics_writer.add_triangle_on_sphere(category_name, group_name, voronotalt::SimplePoint(ball.x, ball.y, ball.z), gb.vertices[t.ids[0]], gb.vertices[t.ids[1]], gb.vertices[t.ids[2]]);
+					}
+				}
+			}
+		}
+		if(output_format==OutputFormat::chimera)
+		{
+			return graphics_writer.write_to_string_for_chimera(title);
+		}
+		else
+		{
+			return graphics_writer.write_to_string_for_pymol(title);
+		}
+	}
+
+private:
+	static std::map<IDAtomAtom, CADDescriptor>::const_iterator find_in_map_of_cadds(const ScorableData& sd, const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary, const std::map<IDAtomAtom, CADDescriptor>& map_of_cadds) noexcept
+	{
+		std::map<IDAtomAtom, CADDescriptor>::const_iterator it=map_of_cadds.end();
+		if(pair_summary.id_a<sd.atom_balls.size() && pair_summary.id_b<sd.atom_balls.size())
+		{
+			const AtomBall& ball_a=sd.atom_balls[pair_summary.id_a];
+			const AtomBall& ball_b=sd.atom_balls[pair_summary.id_b];
+			it=map_of_cadds.find(IDAtomAtom(ball_a.id_atom, ball_b.id_atom));
+			if(it==map_of_cadds.end() && (!ball_a.conflated_atom_name.empty() || !ball_b.conflated_atom_name.empty()))
+			{
+				IDAtom conflated_id_a=ball_a.id_atom;
+				IDAtom conflated_id_b=ball_b.id_atom;
+				if(!ball_a.conflated_atom_name.empty())
+				{
+					conflated_id_a.atom_name=ball_a.conflated_atom_name;
+				}
+				if(!ball_b.conflated_atom_name.empty())
+				{
+					conflated_id_b.atom_name=ball_b.conflated_atom_name;
+				}
+				it=map_of_cadds.find(IDAtomAtom(conflated_id_a, conflated_id_b));
+			}
+		}
+		return it;
+	}
+
+	static std::map<IDResidueResidue, CADDescriptor>::const_iterator find_in_map_of_cadds(const ScorableData& sd, const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary, const std::map<IDResidueResidue, CADDescriptor>& map_of_cadds)
+	{
+		std::map<IDResidueResidue, CADDescriptor>::const_iterator it=map_of_cadds.end();
+		if(pair_summary.id_a<sd.atom_balls.size() && pair_summary.id_b<sd.atom_balls.size())
+		{
+			const AtomBall& ball_a=sd.atom_balls[pair_summary.id_a];
+			const AtomBall& ball_b=sd.atom_balls[pair_summary.id_b];
+			it=map_of_cadds.find(IDResidueResidue(ball_a.id_atom.id_residue, ball_b.id_atom.id_residue));
+		}
+		return it;
+	}
+
+	static std::map<IDChainChain, CADDescriptor>::const_iterator find_in_map_of_cadds(const ScorableData& sd, const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary, const std::map<IDChainChain, CADDescriptor>& map_of_cadds) noexcept
+	{
+		std::map<IDChainChain, CADDescriptor>::const_iterator it=map_of_cadds.end();
+		if(pair_summary.id_a<sd.atom_balls.size() && pair_summary.id_b<sd.atom_balls.size())
+		{
+			const AtomBall& ball_a=sd.atom_balls[pair_summary.id_a];
+			const AtomBall& ball_b=sd.atom_balls[pair_summary.id_b];
+			it=map_of_cadds.find(IDChainChain(ball_a.id_atom.id_residue.id_chain, ball_b.id_atom.id_residue.id_chain));
+		}
+		return it;
+	}
+
+	static std::map<IDAtom, CADDescriptor>::const_iterator find_in_map_of_cadds(const AtomBall& ball, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
+	{
+		std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(ball.id_atom);
+		if(it==map_of_cadds.end() && !ball.conflated_atom_name.empty())
+		{
+			IDAtom conflated_id=ball.id_atom;
+			conflated_id.atom_name=ball.conflated_atom_name;
+			it=map_of_cadds.find(conflated_id);
+		}
+		return it;
+	}
+
+	static std::map<IDResidue, CADDescriptor>::const_iterator find_in_map_of_cadds(const AtomBall& ball, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
+	{
+		return map_of_cadds.find(ball.id_atom.id_residue);
+	}
+
+	static std::map<IDChain, CADDescriptor>::const_iterator find_in_map_of_cadds(const AtomBall& ball, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
+	{
+		return map_of_cadds.find(ball.id_atom.id_residue.id_chain);
+	}
+
+	static unsigned int color_from_cadd(const CADDescriptor& cadd, const unsigned int base_color) noexcept
+	{
+		const double value=cadd.score();
+		if(cadd.target_area_sum<=0.0 || value<0.0)
+		{
+			return base_color;
+		}
+		double r=0.0;
+		double g=0.0;
+		double b=0.0;
+		if(value<=0.0)
+		{
+			r=1.0;
+		}
+		else if(value>=1.0)
+		{
+			b=1.0;
+		}
+		else if(value<=0.5)
+		{
+			r=1.0;
+			b=(value/0.5);
+			g=b;
+		}
+		else
+		{
+			b=1.0;
+			r=(1.0-((value-0.5)/0.5));
+			g=r;
+		}
+		const double scale=static_cast<double>(0xFF);
+		return ((static_cast<unsigned int>(r*scale) << 16)+(static_cast<unsigned int>(g*scale) << 8)+static_cast<unsigned int>(b*scale));
+	}
+};
+
 }
 
 #endif /* CADSCORELT_CLI_OUTPUT_UTILITIES_H_ */

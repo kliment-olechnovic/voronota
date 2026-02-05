@@ -199,6 +199,16 @@ public:
 		}
 	}
 
+	std::string write_to_string_for_pymol(const std::string& title) const noexcept
+	{
+		return write_to_string(title, OutputFormat::pymol_cgo);
+	}
+
+	std::string write_to_string_for_chimera(const std::string& title) const noexcept
+	{
+		return write_to_string(title, OutputFormat::chimera_bild);
+	}
+
 	bool write_to_file_for_pymol(const std::string& title, const std::string& filename) const noexcept
 	{
 		return write_to_file(title, filename, OutputFormat::pymol_cgo);
@@ -774,6 +784,37 @@ private:
 		return OutputFormat::undefined;
 	}
 
+	bool write_to_stream(const std::string& title, std::ostream& output, const OutputFormat::ID output_format) const noexcept
+	{
+		if(!enabled_)
+		{
+			return false;
+		}
+
+		if(output_format!=OutputFormat::chimera_bild && output_format!=OutputFormat::pymol_cgo)
+		{
+			return false;
+		}
+
+		if(!output.good())
+		{
+			return false;
+		}
+
+		if(output_format==OutputFormat::chimera_bild)
+		{
+			PrinterForChimeraBILD printer;
+			return printer.print(parts_, output);
+		}
+		else if(output_format==OutputFormat::pymol_cgo)
+		{
+			PrinterForPymolCGO printer;
+			return printer.print(title, parts_, output);
+		}
+
+		return false;
+	}
+
 	bool write_to_file(const std::string& title, const std::string& filename, const OutputFormat::ID output_format) const noexcept
 	{
 		if(!enabled_)
@@ -797,18 +838,31 @@ private:
 			return false;
 		}
 
-		if(output_format==OutputFormat::chimera_bild)
+		return write_to_stream(title, output, output_format);
+	}
+
+	std::string write_to_string(const std::string& title, const OutputFormat::ID output_format) const noexcept
+	{
+		std::string output_string;
+
+		if(!enabled_)
 		{
-			PrinterForChimeraBILD printer;
-			return printer.print(parts_, output);
-		}
-		else if(output_format==OutputFormat::pymol_cgo)
-		{
-			PrinterForPymolCGO printer;
-			return printer.print(title, parts_, output);
+			return output_string;
 		}
 
-		return false;
+		if(output_format!=OutputFormat::chimera_bild && output_format!=OutputFormat::pymol_cgo)
+		{
+			return output_string;
+		}
+
+		std::ostringstream output;
+
+		if(write_to_stream(title, output, output_format))
+		{
+			output_string=output.str();
+		}
+
+		return output_string;
 	}
 
 	bool enabled_;

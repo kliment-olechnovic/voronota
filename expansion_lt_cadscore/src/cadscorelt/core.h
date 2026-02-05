@@ -878,6 +878,7 @@ public:
 		double probe;
 		bool record_atom_balls;
 		bool record_sequence_alignments;
+		bool record_graphics;
 		bool record_atom_atom_contact_summaries;
 		bool record_residue_residue_contact_summaries;
 		bool record_chain_chain_contact_summaries;
@@ -898,6 +899,7 @@ public:
 			probe(1.4),
 			record_atom_balls(false),
 			record_sequence_alignments(false),
+			record_graphics(false),
 			record_atom_atom_contact_summaries(false),
 			record_residue_residue_contact_summaries(false),
 			record_chain_chain_contact_summaries(false),
@@ -918,6 +920,8 @@ public:
 	};
 
 	std::vector<AtomBall> atom_balls;
+	voronotalt::RadicalTessellation::Result rt_result;
+	voronotalt::RadicalTessellation::ResultGraphics rt_result_graphics;
 	ChainsSequencesMapping::Result chain_sequences_mapping_result;
 	std::map<IDAtomAtom, AreaValue> atom_atom_contact_areas;
 	std::map<IDResidueResidue, AreaValue> residue_residue_contact_areas;
@@ -1128,7 +1132,7 @@ private:
 			return false;
 		}
 		
-		if(params.record_atom_balls || !params.reference_sequences.empty())
+		if(params.record_atom_balls || params.record_graphics || !params.reference_sequences.empty())
 		{
 			collect_input_atom_balls_from_spheres_input_result(spheres_input_result, params.probe, atom_balls);
 		}
@@ -1168,11 +1172,10 @@ private:
 		}
 
 		voronotalt::RadicalTessellation::Result result;
+		voronotalt::RadicalTessellation::ResultGraphics result_graphics;
 
 		{
 			const voronotalt::PeriodicBox periodic_box;
-
-			voronotalt::RadicalTessellation::ResultGraphics result_graphics;
 
 			const std::vector<int> null_grouping;
 			const std::vector<int>& grouping_for_filtering=(compute_only_inter_chain_contacts ? spheres_input_result.grouping_by_chain : (compute_only_inter_residue_contacts ? spheres_input_result.grouping_by_residue : null_grouping));
@@ -1194,8 +1197,8 @@ private:
 			}
 
 			const bool with_tessellation_net=false;
-			const bool with_graphics=false;
-			const bool with_sas_graphics_if_possible=false;
+			const bool with_graphics=params.record_graphics;
+			const bool with_sas_graphics_if_possible=(params.record_graphics && need_to_summarize_cells);
 
 			voronotalt::RadicalTessellation::construct_full_tessellation(
 					spheres_container,
@@ -1242,9 +1245,15 @@ private:
 			voronotalt::RadicalTessellation::group_results(result, spheres_input_result.grouping_by_chain, result_grouped_by_chain, time_recorder);
 		}
 		
-		if(!params.record_atom_balls)
+		if(!params.record_atom_balls && !params.record_graphics)
 		{
 			std::vector<AtomBall>().swap(atom_balls);
+		}
+
+		if(params.record_graphics)
+		{
+			rt_result=result;
+			rt_result_graphics=result_graphics;
 		}
 
 		if(params.conflate_equivalent_atom_types)
