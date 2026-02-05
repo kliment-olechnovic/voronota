@@ -411,14 +411,33 @@ public:
 
 		local_scores_requested=(local_output_format_table || local_output_format_pdb || local_output_format_mmcif || local_output_format_contactmap || local_output_format_graphicspymol || local_output_format_graphicschimera);
 
-		if(target_input_files.empty())
-		{
-			error_log_for_options_parsing << "Error: no input target files provided.\n";
-		}
-
 		if(model_input_files.empty())
 		{
-			error_log_for_options_parsing << "Error: no input model files provided.\n";
+			if(voronotalt::is_stdin_from_terminal())
+			{
+				error_log_for_options_parsing << "Error: no input model provided as comand-line arguments or to stdin.\n";
+			}
+			else
+			{
+				while(std::cin.good())
+				{
+					std::string token;
+					std::cin >> token;
+					if(!token.empty())
+					{
+						model_input_files.push_back(token);
+					}
+				}
+				if(model_input_files.empty())
+				{
+					error_log_for_options_parsing << "Error: no input model files in stdin.\n";
+				}
+			}
+		}
+
+		if(target_input_files.empty())
+		{
+			target_input_files=model_input_files;
 		}
 
 		if(output_global_scores.empty() && !local_scores_requested)
@@ -1184,7 +1203,7 @@ bool run(const ApplicationParameters& app_params)
 		}
 	}
 
-	if(!app_params.output_global_scores.empty() || !app_params.output_dir.empty())
+	if((!app_params.output_global_scores.empty() && app_params.output_global_scores!="_none") || !app_params.output_dir.empty())
 	{
 		std::string output_string="target\tmodel";
 
@@ -1220,25 +1239,28 @@ bool run(const ApplicationParameters& app_params)
 			output_string+="\n";
 		}
 
-		if(app_params.output_global_scores=="_stdout")
-		{
-			std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
-		}
-		else
-		{
-			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_global_scores, output_string))
-			{
-				std::cerr << "Error: failed to write table of global scores to file '" << app_params.output_global_scores << "'.\n";
-				return false;
-			}
-		}
-
 		if(!app_params.output_dir.empty())
 		{
 			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/global_scores.tsv", output_string))
 			{
 				std::cerr << "Error: failed to write table of global scores to file '" << app_params.output_global_scores << "'.\n";
 				return false;
+			}
+		}
+
+		if(app_params.output_global_scores!="_none")
+		{
+			if(app_params.output_global_scores=="_stdout")
+			{
+				std::cout.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+			}
+			else
+			{
+				if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_global_scores, output_string))
+				{
+					std::cerr << "Error: failed to write table of global scores to file '" << app_params.output_global_scores << "'.\n";
+					return false;
+				}
 			}
 		}
 	}
