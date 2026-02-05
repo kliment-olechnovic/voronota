@@ -1203,6 +1203,24 @@ bool run(const ApplicationParameters& app_params)
 		}
 	}
 
+	if(!app_params.output_dir.empty())
+	{
+		std::string output_string;
+		for(std::size_t i=0;i<list_of_unique_file_display_names.size();i++)
+		{
+			output_string+=std::to_string(i);
+			output_string+="\t";
+			output_string+=list_of_unique_file_display_names[i];
+			output_string+="\n";
+		}
+		const std::string outfile=app_params.output_dir+"/numbered_input_files.tsv";
+		if(!cadscorelt::FileSystemUtilities::write_file(outfile, output_string))
+		{
+			std::cerr << "Error: failed to write numbered list of input files to file '" << outfile << "'.\n";
+			return false;
+		}
+	}
+
 	if((!app_params.output_global_scores.empty() && app_params.output_global_scores!="_none") || !app_params.output_dir.empty())
 	{
 		std::string output_string="target\tmodel";
@@ -1241,9 +1259,10 @@ bool run(const ApplicationParameters& app_params)
 
 		if(!app_params.output_dir.empty())
 		{
-			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/global_scores.tsv", output_string))
+			const std::string outfile=app_params.output_dir+"/global_scores.tsv";
+			if(!cadscorelt::FileSystemUtilities::write_file(outfile, output_string))
 			{
-				std::cerr << "Error: failed to write table of global scores to file '" << app_params.output_global_scores << "'.\n";
+				std::cerr << "Error: failed to write table of global scores to file '" << outfile << "'.\n";
 				return false;
 			}
 		}
