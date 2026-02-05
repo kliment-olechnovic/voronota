@@ -1169,6 +1169,10 @@ private:
 				error_log << "Failed to restrict input.\n";
 				return false;
 			}
+			if(!atom_balls.empty())
+			{
+				collect_input_atom_balls_from_spheres_input_result(spheres_input_result, params.probe, atom_balls);
+			}
 		}
 
 		voronotalt::RadicalTessellation::Result result;

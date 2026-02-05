@@ -518,6 +518,54 @@ public:
 	}
 
 	template<class Container>
+	static std::string print_site_graphics(const ScorableData& sd, const Container& map_of_cadds, const OutputFormat::ID output_format, const std::string& title) noexcept
+	{
+		if(sd.rt_result_graphics.contacts_graphics.empty() || sd.atom_balls.empty())
+		{
+			return std::string();
+		}
+		voronotalt::GraphicsWriter graphics_writer(true);
+		const unsigned int base_color=0xFFFF00;
+		const std::string category_name="contacts";
+		const std::string group_name="faces";
+		graphics_writer.add_color(category_name, "", base_color);
+		for(std::size_t i=0;i<sd.rt_result_graphics.contacts_graphics.size() && i<sd.rt_result.contacts_summaries.size();i++)
+		{
+			const std::size_t ball_ids[2]={sd.rt_result.contacts_summaries[i].id_a, sd.rt_result.contacts_summaries[i].id_b};
+			bool found_statuses[2]={false, false};
+			double score_values[2]={-1.0, -1.0};
+			for(int t=0;t<2;t++)
+			{
+				if(ball_ids[t]<sd.atom_balls.size())
+				{
+					const AtomBall& ball=sd.atom_balls[ball_ids[t]];
+					typename Container::const_iterator it=find_in_map_of_cadds(ball, map_of_cadds);
+					if(it!=map_of_cadds.end())
+					{
+						found_statuses[t]=true;
+						score_values[t]=it->second.score();
+					}
+				}
+			}
+			if(found_statuses[0] || found_statuses[1])
+			{
+				const double combined_score_value=((score_values[0]>=0.0 && score_values[1]>=0.0) ? (score_values[0]+score_values[1])/2.0 : std::max(score_values[0], score_values[1]));
+				graphics_writer.add_color(category_name, group_name, (combined_score_value>=0.0 ? color_from_value(combined_score_value) : base_color));
+				const voronotalt::RadicalTessellationContactConstruction::ContactDescriptorGraphics& pair_graphics=sd.rt_result_graphics.contacts_graphics[i];
+				graphics_writer.add_triangle_fan(category_name, group_name, pair_graphics.outer_points, pair_graphics.barycenter, pair_graphics.plane_normal);
+			}
+		}
+		if(output_format==OutputFormat::chimera)
+		{
+			return graphics_writer.write_to_string_for_chimera(title);
+		}
+		else
+		{
+			return graphics_writer.write_to_string_for_pymol(title);
+		}
+	}
+
+	template<class Container>
 	static std::string print_sas_graphics(const ScorableData& sd, const Container& map_of_cadds, const OutputFormat::ID output_format, const std::string& title) noexcept
 	{
 		if(sd.rt_result_graphics.sas_graphics.empty() || sd.atom_balls.empty())
@@ -532,10 +580,10 @@ public:
 		for(std::size_t i=0;i<sd.rt_result_graphics.sas_graphics.size();i++)
 		{
 			const voronotalt::SubdividedIcosahedronCut::GraphicsBundle& gb=sd.rt_result_graphics.sas_graphics[i];
-			const std::size_t sphere_id=sd.rt_result.cells_summaries[i].id;
-			if(sphere_id<sd.atom_balls.size())
+			const std::size_t ball_id=sd.rt_result.cells_summaries[i].id;
+			if(ball_id<sd.atom_balls.size())
 			{
-				const AtomBall& ball=sd.atom_balls[sphere_id];
+				const AtomBall& ball=sd.atom_balls[ball_id];
 				typename Container::const_iterator it=find_in_map_of_cadds(ball, map_of_cadds);
 				if(it!=map_of_cadds.end())
 				{
@@ -631,13 +679,8 @@ private:
 		return map_of_cadds.find(ball.id_atom.id_residue.id_chain);
 	}
 
-	static unsigned int color_from_cadd(const CADDescriptor& cadd, const unsigned int base_color) noexcept
+	static unsigned int color_from_value(const double value) noexcept
 	{
-		const double value=cadd.score();
-		if(cadd.target_area_sum<=0.0 || value<0.0)
-		{
-			return base_color;
-		}
 		double r=0.0;
 		double g=0.0;
 		double b=0.0;
@@ -663,6 +706,16 @@ private:
 		}
 		const double scale=static_cast<double>(0xFF);
 		return ((static_cast<unsigned int>(r*scale) << 16)+(static_cast<unsigned int>(g*scale) << 8)+static_cast<unsigned int>(b*scale));
+	}
+
+	static unsigned int color_from_cadd(const CADDescriptor& cadd, const unsigned int base_color) noexcept
+	{
+		const double value=cadd.score();
+		if(cadd.target_area_sum<=0.0 || value<0.0)
+		{
+			return base_color;
+		}
+		return color_from_value(value);
 	}
 };
 
