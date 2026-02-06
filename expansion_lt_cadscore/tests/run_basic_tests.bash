@@ -1,0 +1,65 @@
+#!/bin/bash
+
+cd $(dirname "$0")
+
+####################################################################
+
+cadscore-lt --help &> "./output/help_message.txt"
+
+####################################################################
+
+find ./input/protein_homodimer1 -type f -name '*.pdb' | sort \
+| cadscore-lt \
+  --output-global-scores ./output/protein_homodimer1/global_scores_v01.txt
+
+cadscore-lt \
+  -m './input/protein_homodimer1' \
+  --output-global-scores ./output/protein_homodimer1/global_scores_v02.txt
+
+cadscore-lt \
+  -m './input/protein_homodimer1' \
+> ./output/protein_homodimer1/global_scores_v03.txt
+
+diff ./output/protein_homodimer1/global_scores_v01.txt ./output/protein_homodimer1/global_scores_v02.txt \
+> ./output/protein_homodimer1/global_scores_diff_v01_v02.txt
+
+diff ./output/protein_homodimer1/global_scores_v01.txt ./output/protein_homodimer1/global_scores_v03.txt \
+> ./output/protein_homodimer1/global_scores_diff_v01_v03.txt
+
+####################################################################
+
+cadscore-lt \
+  -t './input/protein_homodimer1/target.pdb' \
+  -m './input/protein_homodimer1' \
+  --subselect-contacts '[-inter-chain]' \
+  --table-depth 2 \
+| column -t \
+> ./output/protein_homodimer1/global_scores_v04.txt
+
+cadscore-lt \
+  -m './input/protein_homodimer1' \
+  --scoring-levels atom residue chain \
+  --subselect-contacts '[-inter-chain]' \
+  --table-depth 1 \
+| column -t \
+> ./output/protein_homodimer1/global_scores_v05.txt
+
+cadscore-lt \
+  -m './input/protein_homodimer1' \
+  --scoring-levels atom residue chain \
+  --subselect-contacts '[-inter-chain]' \
+  --table-depth 1 \
+  --remap-chains \
+| column -t \
+> ./output/protein_homodimer1/global_scores_v06.txt
+
+cadscore-lt \
+  -m './input/protein_homodimer1' \
+  --scoring-levels atom residue chain \
+  --subselect-contacts '[-inter-chain]' \
+  --table-depth 1 \
+  --remap-chains \
+  --conflate-atom-types \
+| column -t \
+> ./output/protein_homodimer1/global_scores_v07.txt
+

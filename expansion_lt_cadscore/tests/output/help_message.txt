@@ -1,0 +1,46 @@
+Voronota-LT-CAD-score version 0.8
+
+'voronota-lt-cadscore' calculates CAD-score (Contact Area Difference score).
+
+Options:
+    --targets | -t                                   string     input file or directory paths for target (reference) structure files
+    --models | -m                                    string     input file or directory paths for model structure files
+    --recursive-directory-search                                flag to search directories recursively
+    --include-heteroatoms                                       flag to include heteroatoms when reading input in PDB or mmCIF format
+    --read-inputs-as-assemblies                                 flag to join multiple models into an assembly when reading a file in PDB or mmCIF format
+    --radii-config-file                              string     input file path for reading atom radii assignment rules
+    --processors                                     number     maximum number of OpenMP threads to use, default is 2 if OpenMP is enabled, 1 if disabled
+    --probe                                          number     rolling probe radius, default is 1.4
+    --reference-sequences-file                       string     input file path for reference sequences in FASTA format
+    --stoichiometry-list                             numbers    list of stoichiometry values to apply when mapping chains to reference sequences
+    --restrict-input-atoms                           string     selection expression to restrict input balls
+    --subselect-contacts                             string     selection expression to restrict contact area descriptors to score, default is '[-min-sep 1]'
+    --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score, default is '[]'
+    --scoring-types                                  strings    scoring types ('contacts', 'SAS', 'sites'), default is 'contacts'
+    --scoring-levels                                 strings    scoring levels ('atom', 'residue', 'chain'), default is 'residue'
+    --local-output-levels                            strings    list of local output levels (can include 'atom', 'residue', 'chain'), default is 'residue'
+    --local-output-formats                           strings    list of local output formats (can include 'table', 'pdb', 'mmcif', 'contactmap')
+    --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
+    --conflate-atom-types                                       flag to conflate known equivalent atom types
+    --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score
+    --table-depth                                    number     integer level of detail for table outputs, default is 0 (lowest level, to only print CAD-score) 
+    --print-paths-in-output                                     flag to print file paths instead of file base names in output
+    --log-sequence-alignments                                   flag to write chosen alignments with reference sequences into a file in the output directory
+    --compact-output                                            flag to reduce size of output global scores table without removing rows
+    --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
+    --output-dir                                     string     path to output directory for all result files
+    --help | -h                                                 flag to print help info to stderr and exit
+
+Standard output stream:
+    Global scores
+
+Standard error output stream:
+    Error messages
+
+Usage examples:
+
+    voronota-lt-cadscore -t ./target.pdb -m ./model1.pdb ./model2.pdb --scoring-types contacts --scoring-levels residue chain
+
+    voronota-lt-cadscore -t ./target.pdb -m ./model1.pdb --restrict-input-atoms '[-chain A,B]' --subselect-contacts '[-inter-chain]' --scoring-types contacts
+
+
