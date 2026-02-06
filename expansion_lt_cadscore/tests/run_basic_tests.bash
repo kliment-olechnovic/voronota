@@ -28,6 +28,10 @@ diff ./output/protein_homodimer1/global_scores_v01.txt ./output/protein_homodime
 
 ####################################################################
 
+
+
+####################################################################
+
 cadscore-lt \
   -t './input/protein_homodimer1/target.pdb' \
   -m './input/protein_homodimer1' \
@@ -60,6 +64,48 @@ cadscore-lt \
   --table-depth 1 \
   --remap-chains \
   --conflate-atom-types \
+  --output-dir ./output/protein_homodimer1/output_dir_v07 \
 | column -t \
 > ./output/protein_homodimer1/global_scores_v07.txt
+
+cadscore-lt \
+  -m './input/protein_homodimer1' \
+  --scoring-levels atom residue chain \
+  --subselect-contacts '[-inter-chain]' \
+  --table-depth 1 \
+  --remap-chains \
+  --conflate-atom-types \
+  --output-dir ./output/protein_homodimer1/output_dir_v08 \
+  --compact-output \
+| column -t \
+> ./output/protein_homodimer1/global_scores_v08.txt
+
+####################################################################
+
+cadscore-lt \
+  -t './input/protein_homodimer1/target.pdb' \
+  -m './input/protein_homodimer1/model1.pdb' \
+  --subselect-contacts '[-inter-chain]' \
+  --table-depth 2 \
+  --output-global-scores _none \
+  --local-output-formats table pdb mmcif contactmap graphics-pymol graphics-chimera \
+  --output-dir ./output/protein_homodimer1/output_dir_v09
+
+####################################################################
+
+cadscore-lt \
+  -t './input/protein_homodimer1/target.pdb' \
+  -m './input/protein_homodimer1/model1.pdb' \
+  --subselect-contacts '[-inter-chain]' \
+  --table-depth 2 \
+  --output-global-scores _none \
+  --scoring-levels atom \
+  --local-output-formats table pdb mmcif contactmap graphics-pymol graphics-chimera \
+  --local-output-levels atom \
+  --output-dir ./output/protein_homodimer1/output_dir_v10
+
+####################################################################
+
+
+
 
