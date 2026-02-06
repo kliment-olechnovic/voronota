@@ -777,69 +777,86 @@ private:
 	}
 };
 
-class SimplificationOfAtomNames
+class ConflationOfAtomNames
 {
 public:
-	static std::string simplify_atom_name(const std::string& residue_name, const std::string& atom_name) noexcept
+	static std::string conflate_atom_name(const std::string& residue_name, const std::string& atom_name) noexcept
 	{
-		if(residue_name=="ARG")
 		{
-			if(atom_name=="NH1" || atom_name=="NH2")
+			const MapContainer& cmap=standard_conflation_map();
+			MapContainer::const_iterator it=cmap.find(MapKey(residue_name, atom_name));
+			if(it!=cmap.end())
 			{
-				return std::string("NHX");
-			}
-		}
-		else if(residue_name=="ASP")
-		{
-			if(atom_name=="OD1" || atom_name=="OD2")
-			{
-				return std::string("ODX");
-			}
-		}
-		else if(residue_name=="GLU")
-		{
-			if(atom_name=="OE1" || atom_name=="OE2")
-			{
-				return std::string("OEX");
-			}
-		}
-		else if(residue_name=="PHE")
-		{
-			if(atom_name=="CD1" || atom_name=="CD2")
-			{
-				return std::string("CDX");
-			}
-			else if(atom_name=="CE1" || atom_name=="CE2")
-			{
-				return std::string("CEX");
-			}
-		}
-		else if(residue_name=="TYR")
-		{
-			if(atom_name=="CD1" || atom_name=="CD2")
-			{
-				return std::string("CDX");
-			}
-			else if(atom_name=="CE1" || atom_name=="CE2")
-			{
-				return std::string("CEX");
-			}
-		}
-		else if(residue_name=="A" || residue_name=="C" || residue_name=="G" || residue_name=="U" || residue_name=="T")
-		{
-			if(atom_name=="OP1" || atom_name=="OP2" || atom_name=="O1P" || atom_name=="O2P")
-			{
-				return std::string("OPX");
-			}
-		}
-		else if(residue_name=="DA" || residue_name=="DC" || residue_name=="DG" || residue_name=="DT")
-		{
-			if(atom_name=="OP1" || atom_name=="OP2" || atom_name=="O1P" || atom_name=="O2P")
-			{
-				return std::string("OPX");
+				return it->second;
 			}
 		}
 		return atom_name;
+	}
+
+private:
+	typedef std::pair<std::string, std::string> MapKey;
+	typedef std::map< MapKey, std::string > MapContainer;
+
+	static const MapContainer& standard_conflation_map() noexcept
+	{
+		static MapContainer scmap=generate_standard_conflation_map();
+		return scmap;
+	}
+
+	static MapContainer generate_standard_conflation_map() noexcept
+	{
+		MapContainer scmap;
+		scmap[MapKey("ARG", "NH1")]="NHX";
+		scmap[MapKey("ARG", "NH2")]="NHX";
+		scmap[MapKey("ASP", "OD1")]="ODX";
+		scmap[MapKey("ASP", "OD2")]="ODX";
+		scmap[MapKey("GLU", "OE1")]="OEX";
+		scmap[MapKey("GLU", "OE2")]="OEX";
+		scmap[MapKey("PHE", "CD1")]="CDX";
+		scmap[MapKey("PHE", "CD2")]="CDX";
+		scmap[MapKey("PHE", "CE1")]="CEX";
+		scmap[MapKey("PHE", "CE2")]="CEX";
+		scmap[MapKey("TYR", "CD1")]="CDX";
+		scmap[MapKey("TYR", "CD2")]="CDX";
+		scmap[MapKey("TYR", "CE1")]="CEX";
+		scmap[MapKey("TYR", "CE2")]="CEX";
+		scmap[MapKey("A", "OP1")]="OPX";
+		scmap[MapKey("A", "OP2")]="OPX";
+		scmap[MapKey("A", "O1P")]="OPX";
+		scmap[MapKey("A", "O2P")]="OPX";
+		scmap[MapKey("C", "OP1")]="OPX";
+		scmap[MapKey("C", "OP2")]="OPX";
+		scmap[MapKey("C", "O1P")]="OPX";
+		scmap[MapKey("C", "O2P")]="OPX";
+		scmap[MapKey("G", "OP1")]="OPX";
+		scmap[MapKey("G", "OP2")]="OPX";
+		scmap[MapKey("G", "O1P")]="OPX";
+		scmap[MapKey("G", "O2P")]="OPX";
+		scmap[MapKey("U", "OP1")]="OPX";
+		scmap[MapKey("U", "OP2")]="OPX";
+		scmap[MapKey("U", "O1P")]="OPX";
+		scmap[MapKey("U", "O2P")]="OPX";
+		scmap[MapKey("T", "OP1")]="OPX";
+		scmap[MapKey("T", "OP2")]="OPX";
+		scmap[MapKey("T", "O1P")]="OPX";
+		scmap[MapKey("T", "O2P")]="OPX";
+		scmap[MapKey("DA", "OP1")]="OPX";
+		scmap[MapKey("DA", "OP2")]="OPX";
+		scmap[MapKey("DA", "O1P")]="OPX";
+		scmap[MapKey("DA", "O2P")]="OPX";
+		scmap[MapKey("DC", "OP1")]="OPX";
+		scmap[MapKey("DC", "OP2")]="OPX";
+		scmap[MapKey("DC", "O1P")]="OPX";
+		scmap[MapKey("DC", "O2P")]="OPX";
+		scmap[MapKey("DG", "OP1")]="OPX";
+		scmap[MapKey("DG", "OP2")]="OPX";
+		scmap[MapKey("DG", "O1P")]="OPX";
+		scmap[MapKey("DG", "O2P")]="OPX";
+		scmap[MapKey("DT", "OP1")]="OPX";
+		scmap[MapKey("DT", "OP2")]="OPX";
+		scmap[MapKey("DT", "O1P")]="OPX";
+		scmap[MapKey("DT", "O2P")]="OPX";
+		return scmap;
 	}
 };
 
@@ -1264,7 +1281,7 @@ private:
 		{
 			for(voronotalt::SphereLabeling::SphereLabel& sl : spheres_input_result.sphere_labels)
 			{
-				sl.atom_name=SimplificationOfAtomNames::simplify_atom_name(sl.expanded_residue_id.rname, sl.atom_name);
+				sl.atom_name=ConflationOfAtomNames::conflate_atom_name(sl.expanded_residue_id.rname, sl.atom_name);
 			}
 			if(atom_balls.size()==spheres_input_result.sphere_labels.size())
 			{
