@@ -782,25 +782,55 @@ class ConflationOfAtomNames
 public:
 	static std::string conflate_atom_name(const std::string& residue_name, const std::string& atom_name) noexcept
 	{
+		const MapContainer& cmap=current_conflation_map();
+		MapContainer::const_iterator it=cmap.find(MapKey(residue_name, atom_name));
+		if(it!=cmap.end())
 		{
-			const MapContainer& cmap=standard_conflation_map();
-			MapContainer::const_iterator it=cmap.find(MapKey(residue_name, atom_name));
-			if(it!=cmap.end())
-			{
-				return it->second;
-			}
+			return it->second;
 		}
 		return atom_name;
+	}
+
+	static bool add_conflation_rules(const std::string& input_string) noexcept
+	{
+		if(input_string.empty())
+		{
+			return false;
+		}
+		std::istringstream input(input_string);
+		MapContainer cmap;
+		while(input.good())
+		{
+			std::string line;
+			std::getline(input, line);
+			if(!line.empty())
+			{
+				std::istringstream line_input(line);
+				std::string tokens[3];
+				line_input >> tokens[0] >> tokens[1] >> tokens[2];
+				if(line_input.fail() || tokens[0].empty() || tokens[1].empty() || tokens[2].empty())
+				{
+					return false;
+				}
+				cmap[MapKey(tokens[0], tokens[1])]=tokens[2];
+			}
+		}
+		if(cmap.empty())
+		{
+			return false;
+		}
+		current_conflation_map().insert(cmap.begin(), cmap.end());
+		return true;
 	}
 
 private:
 	typedef std::pair<std::string, std::string> MapKey;
 	typedef std::map< MapKey, std::string > MapContainer;
 
-	static const MapContainer& standard_conflation_map() noexcept
+	static MapContainer& current_conflation_map() noexcept
 	{
-		static MapContainer scmap=generate_standard_conflation_map();
-		return scmap;
+		static MapContainer cmap=generate_standard_conflation_map();
+		return cmap;
 	}
 
 	static MapContainer generate_standard_conflation_map() noexcept

@@ -31,6 +31,7 @@ Options:
     --local-output-formats                           strings    list of local output formats (can include 'table', 'pdb', 'mmcif', 'contactmap')
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --conflate-atom-types                                       flag to conflate known equivalent atom types
+    --conflation-config-file                         string     input file path for reading atom name conflation rules
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score
     --table-depth                                    number     integer level of detail for table outputs, default is 0 (lowest level, to only print CAD-score) 
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
@@ -92,6 +93,7 @@ public:
 	std::vector<std::string> model_input_files;
 	std::vector<int> stoichiometry_list;
 	std::string radii_config_file;
+	std::string conflation_config_file;
 	std::string reference_sequences_file;
 	std::string restrict_input_atoms;
 	std::string restrict_contact_descriptors;
@@ -217,6 +219,10 @@ public:
 				else if(opt.name=="radii-config-file" && opt.args_strings.size()==1)
 				{
 					radii_config_file=opt.args_strings.front();
+				}
+				else if(opt.name=="conflation-config-file" && opt.args_strings.size()==1)
+				{
+					conflation_config_file=opt.args_strings.front();
 				}
 				else if(opt.name=="reference-sequences-file" && opt.args_strings.size()==1)
 				{
@@ -533,6 +539,29 @@ bool run(const ApplicationParameters& app_params)
 		if(!voronotalt::MolecularRadiiAssignment::set_radius_value_rules(input_data))
 		{
 			std::cerr << "Error: invalid atom radii configuration file.\n";
+			return false;
+		}
+	}
+
+	if(!app_params.conflation_config_file.empty())
+	{
+		std::string input_data;
+
+		if(!voronotalt::read_whole_file_or_pipe_or_stdin_to_string(app_params.conflation_config_file, input_data))
+		{
+			std::cerr << "Error: failed to open atom names conflation configuration file '" << app_params.conflation_config_file << "' without errors\n";
+			return false;
+		}
+
+		if(input_data.empty())
+		{
+			std::cerr << "Error: no data read from atom names conflation configuration file '" << app_params.conflation_config_file << "'\n";
+			return false;
+		}
+
+		if(!cadscorelt::ConflationOfAtomNames::add_conflation_rules(input_data))
+		{
+			std::cerr << "Error: invalid atom names conflation configuration file.\n";
 			return false;
 		}
 	}
