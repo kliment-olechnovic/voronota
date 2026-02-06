@@ -2,14 +2,18 @@
 
 cd $(dirname "$0")
 
+MODE="$1"
+
 rm -rf "./output"
 mkdir -p "./output"
 
 cd ../
 
-#rm -f "./cadscore-lt"
-
-#g++ -std=c++17 -Ofast -march=native -fopenmp -I "../expansion_lt/src" -o ./cadscore-lt ./src/cadscore_lt.cpp
+if [ ! -f "./cadscore-lt" ] || [ "$MODE" != "skip-building" ]
+then
+	rm -f "./cadscore-lt"
+	g++ -std=c++17 -Ofast -march=native -fopenmp -I "../expansion_lt/src" -o ./cadscore-lt ./src/cadscore_lt.cpp
+fi
 
 export PATH="$(pwd):${PATH}"
 

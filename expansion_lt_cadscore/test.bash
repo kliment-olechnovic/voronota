@@ -2,5 +2,7 @@
 
 cd $(dirname "$0")
 
-./tests/run_all_tests.bash
+MODE="$1"
+
+./tests/run_all_tests.bash "$MODE"
 
