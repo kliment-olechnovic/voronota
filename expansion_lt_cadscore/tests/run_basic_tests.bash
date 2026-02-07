@@ -28,10 +28,6 @@ diff ./output/protein_homodimer1/global_scores_v01.txt ./output/protein_homodime
 
 ####################################################################
 
-
-
-####################################################################
-
 cadscore-lt \
   -t './input/protein_homodimer1/target.pdb' \
   -m './input/protein_homodimer1' \
@@ -106,6 +102,31 @@ cadscore-lt \
 
 ####################################################################
 
+find ./input/rna_monomer1 -type f -name '*.pdb' | sort \
+| cadscore-lt \
+  --output-global-scores ./output/rna_monomer1/global_scores_v01.txt
 
+####################################################################
 
+cadscore-lt \
+  -t './input/rna_monomer1/target.pdb' \
+  -m './input/rna_monomer1/model2.pdb' \
+  --table-depth 2 \
+  --local-output-formats table pdb mmcif contactmap \
+  --output-dir ./output/rna_monomer1/output_dir_v02 \
+> ./output/rna_monomer1/global_scores_v02.txt
+
+####################################################################
+
+cadscore-lt \
+  -t './input/rna_monomer1/target.pdb' \
+  -m './input/rna_monomer1/model2.pdb' \
+  --table-depth 2 \
+  --output-global-scores ./output/rna_monomer1/global_scores_v03.txt \
+  --scoring-levels atom \
+  --local-output-levels atom \
+  --local-output-formats table pdb mmcif contactmap \
+  --output-dir ./output/rna_monomer1/output_dir_v03
+
+####################################################################
 
