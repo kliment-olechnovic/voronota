@@ -326,6 +326,7 @@ struct AtomBall
 	IDAtom id_atom;
 	std::string residue_name;
 	std::string conflated_atom_name;
+	std::string element;
 	double x;
 	double y;
 	double z;
@@ -349,6 +350,7 @@ struct AtomBall
 		ar.iCode=id_atom.id_residue.residue_icode;
 		ar.resName=residue_name;
 		ar.name=id_atom.atom_name;
+		ar.element=element;
 		ar.x=x;
 		ar.y=y;
 		ar.z=z;
@@ -1091,6 +1093,7 @@ private:
 			AtomBall& mab=input_atom_balls[i];
 			mab.id_atom=IDAtom(sl);
 			mab.residue_name=sl.expanded_residue_id.rname;
+			mab.element=sl.element;
 			mab.x=s.p.x;
 			mab.y=s.p.y;
 			mab.z=s.p.z;

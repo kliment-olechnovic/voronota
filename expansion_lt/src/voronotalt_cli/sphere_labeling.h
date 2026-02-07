@@ -28,6 +28,7 @@ public:
 		std::string chain_id;
 		std::string residue_id;
 		std::string atom_name;
+		std::string element;
 		ExpandedResidueID expanded_residue_id;
 	};
 

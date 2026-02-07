@@ -352,6 +352,7 @@ public:
 				sphere_label.chain_id=(ar.chainID.empty() ? default_chain_id : ar.chainID);
 				SphereLabeling::form_residue_id_string(ar.resSeq, ar.iCode, ar.resName, sphere_label.residue_id);
 				sphere_label.atom_name=(ar.name.empty() ? default_atom_name : ar.name);
+				sphere_label.element=ar.element;
 			}
 		}
 		if(group_and_expand_ids)

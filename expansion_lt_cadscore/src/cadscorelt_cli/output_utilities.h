@@ -238,6 +238,7 @@ public:
 			insert_string_to_columned_line(convert_double_to_string(atom_ball.z, 3), 47, 54, true, line);
 			insert_string_to_columned_line(convert_double_to_string((cadd.target_area_sum>0.0 ? 1.0 : 0.0), 2), 55, 60, true, line);
 			insert_string_to_columned_line(convert_double_to_string((cadd.target_area_sum>0.0 ? cadd.score() : 0.0), 2), 61, 66, true, line);
+			insert_string_to_columned_line(atom_ball.element, 77, 78, true, line);
 			return line;
 		}
 
@@ -322,7 +323,9 @@ _atom_site.pdbx_PDB_model_num
 		{
 			std::string line="ATOM ";
 			line+=std::to_string(serial);
-			line+=" ? ";
+			line+=" ";
+			line+=(atom_ball.element.empty() ? std::string("?") : atom_ball.element);
+			line+=" ";
 			line+=atom_ball.id_atom.atom_name;
 			line+=" . ";
 			line+=atom_ball.residue_name;
