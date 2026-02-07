@@ -578,19 +578,14 @@ public:
 				name_pairs.push_back(std::pair<std::string, std::string>(it->second.old_name, it->second.current_name));
 			}
 			std::sort(name_pairs.begin(), name_pairs.end());
-			result.chain_renaming_label="(";
+			result.chain_renaming_label="";
 			for(std::size_t i=0;i<name_pairs.size();i++)
 			{
 				result.chain_renaming_label+=(i>0 ? "," : "");
 				result.chain_renaming_label+=name_pairs[i].first;
-			}
-			result.chain_renaming_label+=")[";
-			for(std::size_t i=0;i<name_pairs.size();i++)
-			{
-				result.chain_renaming_label+=(i>0 ? "," : "");
+				result.chain_renaming_label+="=";
 				result.chain_renaming_label+=name_pairs[i].second;
 			}
-			result.chain_renaming_label+="]";
 		}
 
 		return !result.empty();

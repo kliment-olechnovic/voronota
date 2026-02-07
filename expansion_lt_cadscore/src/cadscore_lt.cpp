@@ -729,42 +729,81 @@ bool run(const ApplicationParameters& app_params)
 		return false;
 	}
 
-	if(app_params.log_sequence_alignments && !scorable_data_construction_parameters.reference_sequences.empty() && !app_params.output_dir.empty())
+	if(!app_params.output_dir.empty())
 	{
 		std::string output_string;
-		for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
+		for(std::size_t i=0;i<list_of_unique_file_display_names.size();i++)
 		{
-			cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
-			if(sd.valid())
+			output_string+=std::to_string(i);
+			output_string+="\t";
+			output_string+=list_of_unique_file_display_names[i];
+			output_string+="\n";
+		}
+		const std::string outfile=app_params.output_dir+"/numbered_input_files.tsv";
+		if(!cadscorelt::FileSystemUtilities::write_file(outfile, output_string))
+		{
+			std::cerr << "Error: failed to write numbered list of input files to file '" << outfile << "'.\n";
+			return false;
+		}
+	}
+
+	if(!scorable_data_construction_parameters.reference_sequences.empty() && !app_params.output_dir.empty())
+	{
+		{
+			std::string output_string="index\tfile\trenaming_of_chains";
+			for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
 			{
-				output_string+="file: ";
-				output_string+=list_of_unique_file_descriptors[i].path;
-				output_string+="\n\n";
-				for(std::map<std::string, cadscorelt::ChainsSequencesMapping::ChainSummary>::const_iterator it=sd.chain_sequences_mapping_result.chain_summaries.begin();it!=sd.chain_sequences_mapping_result.chain_summaries.end();++it)
-				{
-					const cadscorelt::ChainsSequencesMapping::ChainSummary& cs=it->second;
-					output_string+="original_chain_name: ";
-					output_string+=cs.old_name;
-					output_string+="\n";
-					output_string+="assigned_chain_name: ";
-					output_string+=cs.current_name;
-					output_string+="\n";
-					output_string+="reference_index: ";
-					output_string+=std::to_string(cs.reference_sequence_id);
-					output_string+="\n";
-					output_string+="reference_identity: ";
-					output_string+=std::to_string(cs.reference_sequence_identity);
-					output_string+="\n";
-					output_string+="sequence_alinment:\n";
-					output_string+=cs.printed_alignment;
-					output_string+="\n";
-				}
+				cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
+				output_string+=std::to_string(i);
+				output_string+="\t";
+				output_string+=list_of_unique_file_display_names[i];
+				output_string+="\t";
+				output_string+=(sd.chain_sequences_mapping_result.chain_renaming_label.empty() ? std::string(".") : sd.chain_sequences_mapping_result.chain_renaming_label);
+				output_string+="\n";
+			}
+			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/sequence_alignments.txt", output_string))
+			{
+				std::cerr << "Error: failed to write table of chain renamings based on reference sequences.\n";
+				return false;
 			}
 		}
-		if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/sequence_alignments.txt", output_string))
+		if(app_params.log_sequence_alignments)
 		{
-			std::cerr << "Error: failed to write log of sequence alignments.\n";
-			return false;
+			std::string output_string;
+			for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
+			{
+				cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
+				if(sd.valid())
+				{
+					output_string+="file: ";
+					output_string+=list_of_unique_file_descriptors[i].path;
+					output_string+="\n\n";
+					for(std::map<std::string, cadscorelt::ChainsSequencesMapping::ChainSummary>::const_iterator it=sd.chain_sequences_mapping_result.chain_summaries.begin();it!=sd.chain_sequences_mapping_result.chain_summaries.end();++it)
+					{
+						const cadscorelt::ChainsSequencesMapping::ChainSummary& cs=it->second;
+						output_string+="original_chain_name: ";
+						output_string+=cs.old_name;
+						output_string+="\n";
+						output_string+="assigned_chain_name: ";
+						output_string+=cs.current_name;
+						output_string+="\n";
+						output_string+="reference_index: ";
+						output_string+=std::to_string(cs.reference_sequence_id);
+						output_string+="\n";
+						output_string+="reference_identity: ";
+						output_string+=std::to_string(cs.reference_sequence_identity);
+						output_string+="\n";
+						output_string+="sequence_alinment:\n";
+						output_string+=cs.printed_alignment;
+						output_string+="\n";
+					}
+				}
+			}
+			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/sequence_alignments.txt", output_string))
+			{
+				std::cerr << "Error: failed to write log of sequence alignments.\n";
+				return false;
+			}
 		}
 	}
 
@@ -1150,39 +1189,15 @@ bool run(const ApplicationParameters& app_params)
 			if(!list_of_chain_remapping_summaries.empty())
 			{
 				std::string& summary=list_of_chain_remapping_summaries[i];
-				if(!model_sd.chain_sequences_mapping_result.chain_renaming_label.empty())
-				{
-					summary+="m:";
-					summary+=model_sd.chain_sequences_mapping_result.chain_renaming_label;
-					summary+=";";
-				}
-				if(!target_sd.chain_sequences_mapping_result.chain_renaming_label.empty())
-				{
-					summary+="t:";
-					summary+=target_sd.chain_sequences_mapping_result.chain_renaming_label;
-					summary+=";";
-				}
 				if(!sr.params.chain_renaming_map.empty())
 				{
-					summary+="mt:(";
 					for(std::map<std::string, std::string>::const_iterator mit=sr.params.chain_renaming_map.begin();mit!=sr.params.chain_renaming_map.end();++mit)
 					{
-						if(mit!=sr.params.chain_renaming_map.begin())
-						{
-							summary+=",";
-						}
+						summary+=(mit!=sr.params.chain_renaming_map.begin() ? "," : "");
 						summary+=mit->first;
-					}
-					summary+=")[";
-					for(std::map<std::string, std::string>::const_iterator mit=sr.params.chain_renaming_map.begin();mit!=sr.params.chain_renaming_map.end();++mit)
-					{
-						if(mit!=sr.params.chain_renaming_map.begin())
-						{
-							summary+=",";
-						}
+						summary+="=";
 						summary+=mit->second;
 					}
-					summary+="];";
 				}
 				if(summary.empty())
 				{
@@ -1244,24 +1259,6 @@ bool run(const ApplicationParameters& app_params)
 		}
 	}
 
-	if(!app_params.output_dir.empty())
-	{
-		std::string output_string;
-		for(std::size_t i=0;i<list_of_unique_file_display_names.size();i++)
-		{
-			output_string+=std::to_string(i);
-			output_string+="\t";
-			output_string+=list_of_unique_file_display_names[i];
-			output_string+="\n";
-		}
-		const std::string outfile=app_params.output_dir+"/numbered_input_files.tsv";
-		if(!cadscorelt::FileSystemUtilities::write_file(outfile, output_string))
-		{
-			std::cerr << "Error: failed to write numbered list of input files to file '" << outfile << "'.\n";
-			return false;
-		}
-	}
-
 	if((!app_params.output_global_scores.empty() && app_params.output_global_scores!="_none") || !app_params.output_dir.empty())
 	{
 		std::string output_string="target\tmodel";
@@ -1273,7 +1270,7 @@ bool run(const ApplicationParameters& app_params)
 		}
 		if(!list_of_chain_remapping_summaries.empty())
 		{
-			output_string+="\trenaming_of_chains";
+			output_string+="\trenaming_of_model_chains";
 		}
 		output_string+="\n";
 

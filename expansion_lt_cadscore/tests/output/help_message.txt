@@ -22,6 +22,7 @@ Options:
     --local-output-formats                           strings    list of local output formats (can include 'table', 'pdb', 'mmcif', 'contactmap')
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --conflate-atom-types                                       flag to conflate known equivalent atom types
+    --conflation-config-file                         string     input file path for reading atom name conflation rules
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score
     --table-depth                                    number     integer level of detail for table outputs, default is 0 (lowest level, to only print CAD-score) 
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
