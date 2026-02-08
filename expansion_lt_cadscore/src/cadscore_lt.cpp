@@ -25,17 +25,18 @@ Options:
     --restrict-input-atoms                           string     selection expression to restrict input balls
     --subselect-contacts                             string     selection expression to restrict contact area descriptors to score, default is '[-min-sep 1]'
     --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score, default is '[]'
-    --scoring-types                                  strings    scoring types ('contacts', 'SAS', 'sites'), default is 'contacts'
-    --scoring-levels                                 strings    scoring levels ('atom', 'residue', 'chain'), default is 'residue'
-    --local-output-levels                            strings    list of local output levels (can include 'atom', 'residue', 'chain'), default is 'residue'
-    --local-output-formats                           strings    list of local output formats (can include 'table', 'pdb', 'mmcif', 'contactmap')
-    --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --conflate-atom-types                                       flag to conflate known equivalent atom types
     --conflation-config-file                         string     input file path for reading atom name conflation rules
-    --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score
-    --table-depth                                    number     integer level of detail for table outputs, default is 0 (lowest level, to only print CAD-score) 
+    --scoring-types                                  strings    scoring types ('contacts', 'SAS', 'sites'), default is 'contacts'
+    --scoring-levels                                 strings    scoring levels ('atom', 'residue', 'chain'), default is 'residue'
+    --local-output-formats                           strings    list of local output formats (can include 'table', 'pdb', 'mmcif', 'contactmap')
+    --local-output-levels                            strings    list of local output levels (can include 'atom', 'residue', 'chain'), default is 'residue'
+    --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
+    --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score 
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
     --log-sequence-alignments                                   flag to write chosen alignments with reference sequences into a file in the output directory
+    --output-with-f1                                            flag to output area-based F1 scores along with CAD-scores
+    --output-all-details                                        flag to output all details in tables of global and local scores
     --compact-output                                            flag to reduce size of output global scores table without removing rows
     --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
     --output-dir                                     string     path to output directory for all result files
@@ -280,10 +281,6 @@ public:
 						error_log_for_options_parsing << "Error: invalid max number of chains permutations, must be not greater than 1000.\n";
 					}
 				}
-				else if(opt.name=="table-depth" && opt.args_ints.size()==1)
-				{
-					table_depth=static_cast<int>(opt.args_ints.front());
-				}
 				else if(opt.name=="print-paths-in-output" && opt.is_flag())
 				{
 					print_paths_in_output=opt.is_flag_and_true();
@@ -295,6 +292,14 @@ public:
 				else if(opt.name=="compact-output" && opt.is_flag())
 				{
 					compact_output=opt.is_flag_and_true();
+				}
+				else if(opt.name=="output-with-f1" && opt.is_flag())
+				{
+					table_depth=std::max(table_depth, 1);
+				}
+				else if(opt.name=="output-all-details" && opt.is_flag())
+				{
+					table_depth=std::max(table_depth, 2);
 				}
 				else if(opt.name=="output-global-scores" && opt.args_strings.size()==1)
 				{
