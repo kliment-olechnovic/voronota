@@ -60,6 +60,7 @@ cadscore-lt \
   --output-with-f1 \
   --remap-chains \
   --conflate-atom-types \
+  --local-output-formats table \
   --output-dir ./output/protein_homodimer1/output_dir_v07 \
 | column -t \
 > ./output/protein_homodimer1/global_scores_v07.txt
