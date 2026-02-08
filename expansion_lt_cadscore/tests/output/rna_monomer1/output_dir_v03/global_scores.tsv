@@ -1,2 +1,2 @@
-target	model	atom_atom_cadscore	atom_atom_F1_of_areas	atom_atom_target_area	atom_atom_model_area	atom_atom_TP_area	atom_atom_FP_area	atom_atom_FN_area
-target.pdb	model2.pdb	0.309596	0.401708	9173.342319	5267.436474	3610.883511	5193.428802	5562.458808
+target	model	target_id	model_id	atom_atom_cadscore	atom_atom_F1_of_areas	atom_atom_target_area	atom_atom_model_area	atom_atom_TP_area	atom_atom_FP_area	atom_atom_FN_area
+target.pdb	model2.pdb	1	0	0.309596	0.401708	9173.342319	5267.436474	3610.883511	5193.428802	5562.458808

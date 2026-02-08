@@ -1,7 +1,7 @@
-target	model	residue_residue_cadscore
-target.pdb	model1.pdb	0.974032
-model1.pdb	target.pdb	0.973063
-target.pdb	model2.pdb	0.788314
-model1.pdb	model2.pdb	0.785897
-model2.pdb	model1.pdb	0.759690
-model2.pdb	target.pdb	0.759217
+target	model	target_id	model_id	residue_residue_cadscore
+target.pdb	model1.pdb	2	0	0.974032
+model1.pdb	target.pdb	0	2	0.973063
+target.pdb	model2.pdb	2	1	0.788314
+model1.pdb	model2.pdb	0	1	0.785897
+model2.pdb	model1.pdb	1	0	0.759690
+model2.pdb	target.pdb	1	2	0.759217

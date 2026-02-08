@@ -1266,7 +1266,7 @@ bool run(const ApplicationParameters& app_params)
 
 	if((!app_params.output_global_scores.empty() && app_params.output_global_scores!="_none") || !app_params.output_dir.empty())
 	{
-		std::string output_string="target\tmodel";
+		std::string output_string=(app_params.compact_output ? "target_id\tmodel_id" : "target\tmodel\ttarget_id\tmodel_id");
 
 		for(const std::string& sname : output_score_names)
 		{
@@ -1284,9 +1284,16 @@ bool run(const ApplicationParameters& app_params)
 			const std::size_t target_index=list_of_pairs_of_target_model_indices[i].first;
 			const std::size_t model_index=list_of_pairs_of_target_model_indices[i].second;
 			const std::vector<cadscorelt::CADDescriptor>& output_cad_descriptors=list_of_output_cad_descriptors[i];
-			output_string+=(app_params.compact_output ? std::to_string(target_index) : list_of_unique_file_display_names[target_index]);
+			if(!app_params.compact_output)
+			{
+				output_string+=list_of_unique_file_display_names[target_index];
+				output_string+="\t";
+				output_string+=list_of_unique_file_display_names[model_index];
+				output_string+="\t";
+			}
+			output_string+=std::to_string(target_index);
 			output_string+="\t";
-			output_string+=(app_params.compact_output ? std::to_string(model_index) : list_of_unique_file_display_names[model_index]);
+			output_string+=std::to_string(model_index);
 			for(const cadscorelt::CADDescriptor& cadd : output_cad_descriptors)
 			{
 				output_string+="\t";
