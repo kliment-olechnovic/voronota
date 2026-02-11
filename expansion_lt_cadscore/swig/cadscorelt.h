@@ -203,66 +203,6 @@ struct MolecularFileInput
 	}
 };
 
-struct PairScoringResult
-{
-	std::vector<AtomAtomScore> cadscores_atom_atom;
-	std::vector<ResidueResidueScore> cadscores_atom_atom_summarized_per_residue_residue;
-	std::vector<ChainChainScore> cadscores_atom_atom_summarized_per_chain_chain;
-	std::vector<AtomScore> cadscores_atom_atom_summarized_per_atom;
-	std::vector<ResidueScore> cadscores_atom_atom_summarized_per_residue;
-	std::vector<ChainScore> cadscores_atom_atom_summarized_per_chain;
-	GlobalScore cadscores_atom_atom_summarized_globally;
-
-	std::vector<ResidueResidueScore> cadscores_residue_residue;
-	std::vector<ChainChainScore> cadscores_residue_residue_summarized_per_chain_chain;
-	std::vector<ResidueScore> cadscores_residue_residue_summarized_per_residue;
-	std::vector<ChainScore> cadscores_residue_residue_summarized_per_chain;
-	GlobalScore cadscores_residue_residue_summarized_globally;
-
-	std::vector<ChainChainScore> cadscores_chain_chain;
-	std::vector<ChainScore> cadscores_chain_chain_contact_summarized_per_chain;
-	GlobalScore cadscores_chain_chain_summarized_globally;
-
-	std::vector<AtomScore> cadscores_atom_sas;
-	std::vector<ResidueScore> cadscores_atom_sas_summarized_per_residue;
-	std::vector<ChainScore> cadscores_atom_sas_summarized_per_chain;
-	GlobalScore cadscores_atom_sas_summarized_globally;
-
-	std::vector<ResidueScore> cadscores_residue_sas;
-	std::vector<ChainScore> cadscores_residue_sas_summarized_per_chain;
-	GlobalScore cadscores_residue_sas_summarized_globally;
-
-	std::vector<ChainScore> cadscores_chain_sas;
-	GlobalScore cadscores_chain_sas_summarized_globally;
-
-	std::vector<AtomScore> cadscores_atom_site;
-	std::vector<ResidueScore> cadscores_atom_site_summarized_per_residue;
-	std::vector<ChainScore> cadscores_atom_site_summarized_per_chain;
-	GlobalScore cadscores_atom_site_summarized_globally;
-
-	std::vector<ResidueScore> cadscores_residue_site;
-	std::vector<ChainScore> cadscores_residue_site_summarized_per_chain;
-	GlobalScore cadscores_residue_site_summarized_globally;
-
-	std::vector<ChainScore> cadscores_chain_site;
-	GlobalScore cadscores_chain_site_summarized_globally;
-
-	std::string renaming_of_model_chains;
-};
-
-struct GlobalScoringResult
-{
-	std::vector<GlobalScore> cadscores_atom_atom_summarized_globally;
-	std::vector<GlobalScore> cadscores_residue_residue_summarized_globally;
-	std::vector<GlobalScore> cadscores_chain_chain_summarized_globally;
-	std::vector<GlobalScore> cadscores_atom_sas_summarized_globally;
-	std::vector<GlobalScore> cadscores_residue_sas_summarized_globally;
-	std::vector<GlobalScore> cadscores_chain_sas_summarized_globally;
-	std::vector<GlobalScore> cadscores_atom_site_summarized_globally;
-	std::vector<GlobalScore> cadscores_residue_site_summarized_globally;
-	std::vector<GlobalScore> cadscores_chain_site_summarized_globally;
-};
-
 struct CADScoreParameters
 {
 	double probe;
@@ -277,9 +217,7 @@ struct CADScoreParameters
 	bool score_atom_sites;
 	bool score_residue_sites;
 	bool score_chain_sites;
-	bool record_local_scores_on_atom_level;
-	bool record_local_scores_on_residue_level;
-	bool record_local_scores_on_chain_level;
+	bool record_local_scores;
 	std::string restrict_input_atoms;
 	std::string subselect_contacts;
 	std::string subselect_atoms;
@@ -297,9 +235,7 @@ struct CADScoreParameters
 		score_atom_sites(false),
 		score_residue_sites(false),
 		score_chain_sites(false),
-		record_local_scores_on_atom_level(false),
-		record_local_scores_on_residue_level(false),
-		record_local_scores_on_chain_level(false),
+		record_local_scores(false),
 		subselect_contacts("[-min-sep 1]")
 	{
 	}
@@ -358,9 +294,9 @@ public:
 
 		scoring_result_construction_parameters_.remap_chains=init_params.remap_chains;
 		scoring_result_construction_parameters_.max_permutations_to_check_exhaustively=200;
-		scoring_result_construction_parameters_.record_local_scores_on_atom_level=init_params.record_local_scores_on_atom_level;
-		scoring_result_construction_parameters_.record_local_scores_on_residue_level=init_params.record_local_scores_on_residue_level;
-		scoring_result_construction_parameters_.record_local_scores_on_chain_level=init_params.record_local_scores_on_chain_level;
+		scoring_result_construction_parameters_.record_local_scores_on_atom_level=init_params.record_local_scores;
+		scoring_result_construction_parameters_.record_local_scores_on_residue_level=init_params.record_local_scores;
+		scoring_result_construction_parameters_.record_local_scores_on_chain_level=init_params.record_local_scores;
 		scoring_result_construction_parameters_.record_compatible_model_atom_balls=false;
 	}
 
@@ -409,93 +345,487 @@ public:
 		add_structure_from_file(MolecularFileInput(), input_atom_balls, true, true, name);
 	}
 
-	const PairScoringResult& get_pair_scores(const std::string& target_name, const std::string& model_name)
+	const std::vector<GlobalScore>& get_all_cadscores_atom_atom_summarized_globally()
 	{
-		std::map< std::pair<std::string, std::string>, PairScoringResult >::const_iterator it=full_scoring_results_.find(std::pair<std::string, std::string>(target_name, model_name));
-		if(it==full_scoring_results_.end())
+		const GlobalScoringResult& gsr=get_all_global_scores();
+		if(gsr.cadscores_atom_atom_summarized_globally.empty())
 		{
-			std::set<std::string>::const_iterator a1=target_names_.find(target_name);
-			if(a1==target_names_.end())
-			{
-				throw std::runtime_error(std::string("No target named '")+target_name+"'.");
-			}
-			else
-			{
-				std::set<std::string>::const_iterator a2=model_names_.find(model_name);
-				if(a2==model_names_.end())
-				{
-					throw std::runtime_error(std::string("No model named '")+model_name+"'.");
-				}
-				else
-				{
-					it=calculate_pair_scores(target_name, model_name);
-				}
-			}
-			if(it==full_scoring_results_.end())
-			{
-				throw std::runtime_error(std::string("No scores computed for target '")+target_name+"' and model '"+model_name+"'.");
-			}
+			throw std::runtime_error("Atom-atom contact global scores were not requested to compute.");
 		}
-		return it->second;
+		return gsr.cadscores_atom_atom_summarized_globally;
 	}
 
-	const GlobalScoringResult& get_all_global_scores()
+	const std::vector<GlobalScore>& get_all_cadscores_residue_residue_summarized_globally()
 	{
-		if(full_scoring_results_.size()!=(target_names_.size()*model_names_.size()))
+		const GlobalScoringResult& gsr=get_all_global_scores();
+		if(gsr.cadscores_residue_residue_summarized_globally.empty())
 		{
-			for(std::set<std::string>::const_iterator it1=target_names_.begin();it1!=target_names_.end();++it1)
-			{
-				for(std::set<std::string>::const_iterator it2=model_names_.begin();it2!=model_names_.end();++it1)
-				{
-					calculate_pair_scores(*it1, *it2);
-				}
-			}
-			global_scoring_result_=GlobalScoringResult();
-			for(std::map< std::pair<std::string, std::string>, PairScoringResult >::const_iterator it=full_scoring_results_.begin();it!=full_scoring_results_.end();++it)
-			{
-				const PairScoringResult& psr=it->second;
-				if(params.score_atom_atom_contacts)
-				{
-					global_scoring_result_.cadscores_atom_atom_summarized_globally.push_back(psr.cadscores_atom_atom_summarized_globally);
-				}
-				if(params.score_residue_residue_contacts)
-				{
-					global_scoring_result_.cadscores_residue_residue_summarized_globally.push_back(psr.cadscores_residue_residue_summarized_globally);
-				}
-				if(params.score_chain_chain_contacts)
-				{
-					global_scoring_result_.cadscores_chain_chain_summarized_globally.push_back(psr.cadscores_chain_chain_summarized_globally);
-				}
-				if(params.score_atom_sas)
-				{
-					global_scoring_result_.cadscores_atom_sas_summarized_globally.push_back(psr.cadscores_atom_sas_summarized_globally);
-				}
-				if(params.score_residue_sas)
-				{
-					global_scoring_result_.cadscores_residue_sas_summarized_globally.push_back(psr.cadscores_residue_sas_summarized_globally);
-				}
-				if(params.score_chain_sas)
-				{
-					global_scoring_result_.cadscores_chain_sas_summarized_globally.push_back(psr.cadscores_chain_sas_summarized_globally);
-				}
-				if(params.score_atom_sites)
-				{
-					global_scoring_result_.cadscores_atom_site_summarized_globally.push_back(psr.cadscores_atom_site_summarized_globally);
-				}
-				if(params.score_residue_sites)
-				{
-					global_scoring_result_.cadscores_residue_site_summarized_globally.push_back(psr.cadscores_residue_site_summarized_globally);
-				}
-				if(params.score_chain_sites)
-				{
-					global_scoring_result_.cadscores_chain_site_summarized_globally.push_back(psr.cadscores_chain_site_summarized_globally);
-				}
-			}
+			throw std::runtime_error("Residue-residue contact global scores were not requested to compute.");
 		}
-		return global_scoring_result_;
+		return gsr.cadscores_residue_residue_summarized_globally;
+	}
+
+	const std::vector<GlobalScore>& get_all_cadscores_chain_chain_summarized_globally()
+	{
+		const GlobalScoringResult& gsr=get_all_global_scores();
+		if(gsr.cadscores_chain_chain_summarized_globally.empty())
+		{
+			throw std::runtime_error("Chain-chain contact global scores were not requested to compute.");
+		}
+		return gsr.cadscores_chain_chain_summarized_globally;
+	}
+
+	const std::vector<GlobalScore>& get_all_cadscores_atom_sas_summarized_globally()
+	{
+		const GlobalScoringResult& gsr=get_all_global_scores();
+		if(gsr.cadscores_atom_sas_summarized_globally.empty())
+		{
+			throw std::runtime_error("Atom SAS global scores were not requested to compute.");
+		}
+		return gsr.cadscores_atom_sas_summarized_globally;
+	}
+
+	const std::vector<GlobalScore>& get_all_cadscores_residue_sas_summarized_globally()
+	{
+		const GlobalScoringResult& gsr=get_all_global_scores();
+		if(gsr.cadscores_residue_sas_summarized_globally.empty())
+		{
+			throw std::runtime_error("Residue SAS global scores were not requested to compute.");
+		}
+		return gsr.cadscores_residue_sas_summarized_globally;
+	}
+
+	const std::vector<GlobalScore>& get_all_cadscores_chain_sas_summarized_globally()
+	{
+		const GlobalScoringResult& gsr=get_all_global_scores();
+		if(gsr.cadscores_chain_sas_summarized_globally.empty())
+		{
+			throw std::runtime_error("Chain SAS global scores were not requested to compute.");
+		}
+		return gsr.cadscores_chain_sas_summarized_globally;
+	}
+
+	const std::vector<GlobalScore>& get_all_cadscores_atom_site_summarized_globally()
+	{
+		const GlobalScoringResult& gsr=get_all_global_scores();
+		if(gsr.cadscores_atom_site_summarized_globally.empty())
+		{
+			throw std::runtime_error("Atom site contact global scores were not requested to compute.");
+		}
+		return gsr.cadscores_atom_site_summarized_globally;
+	}
+
+	const std::vector<GlobalScore>& get_all_cadscores_residue_site_summarized_globally()
+	{
+		const GlobalScoringResult& gsr=get_all_global_scores();
+		if(gsr.cadscores_residue_site_summarized_globally.empty())
+		{
+			throw std::runtime_error("Residue site contact global scores were not requested to compute.");
+		}
+		return gsr.cadscores_residue_site_summarized_globally;
+	}
+
+	const std::vector<GlobalScore>& get_all_cadscores_chain_site_summarized_globally()
+	{
+		const GlobalScoringResult& gsr=get_all_global_scores();
+		if(gsr.cadscores_chain_site_summarized_globally.empty())
+		{
+			throw std::runtime_error("Chain site contact global scores were not requested to compute.");
+		}
+		return gsr.cadscores_chain_site_summarized_globally;
+	}
+
+	const std::vector<AtomAtomScore>& get_local_cadscores_atom_atom(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_atom.empty())
+		{
+			throw std::runtime_error("Atom-atom contact local scores were not requested to compute.");
+		}
+		return psr.cadscores_atom_atom;
+	}
+
+	const std::vector<ResidueResidueScore>& get_local_cadscores_atom_atom_summarized_per_residue_residue(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_atom_summarized_per_residue_residue.empty())
+		{
+			throw std::runtime_error("Atom-atom summarized per residue-residue scores were not requested to compute.");
+		}
+		return psr.cadscores_atom_atom_summarized_per_residue_residue;
+	}
+
+	const std::vector<ChainChainScore>& get_local_cadscores_atom_atom_summarized_per_chain_chain(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_atom_summarized_per_chain_chain.empty())
+		{
+			throw std::runtime_error("Atom-atom summarized per chain-chain scores were not requested to compute.");
+		}
+		return psr.cadscores_atom_atom_summarized_per_chain_chain;
+	}
+
+	const std::vector<AtomScore>& get_local_cadscores_atom_atom_summarized_per_atom(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_atom_summarized_per_atom.empty())
+		{
+			throw std::runtime_error("Atom-atom summarized per atom scores were not requested to compute.");
+		}
+		return psr.cadscores_atom_atom_summarized_per_atom;
+	}
+
+	const std::vector<ResidueScore>& get_local_cadscores_atom_atom_summarized_per_residue(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_atom_summarized_per_residue.empty())
+		{
+			throw std::runtime_error("Atom-atom summarized per residue scores were not requested to compute.");
+		}
+		return psr.cadscores_atom_atom_summarized_per_residue;
+	}
+
+	const std::vector<ChainScore>& get_local_cadscores_atom_atom_summarized_per_chain(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_atom_summarized_per_chain.empty())
+		{
+			throw std::runtime_error("Atom-atom summarized per chain scores were not requested to compute.");
+		}
+		return psr.cadscores_atom_atom_summarized_per_chain;
+	}
+
+	const std::vector<ResidueResidueScore>& get_local_cadscores_residue_residue(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_residue_residue.empty())
+		{
+			throw std::runtime_error("Residue-residue contact local scores were not requested to compute.");
+		}
+		return psr.cadscores_residue_residue;
+	}
+
+	const std::vector<ChainChainScore>& get_local_cadscores_residue_residue_summarized_per_chain_chain(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_residue_residue_summarized_per_chain_chain.empty())
+		{
+			throw std::runtime_error("Residue-residue summarized per chain-chain scores were not requested to compute.");
+		}
+		return psr.cadscores_residue_residue_summarized_per_chain_chain;
+	}
+
+	const std::vector<ResidueScore>& get_local_cadscores_residue_residue_summarized_per_residue(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_residue_residue_summarized_per_residue.empty())
+		{
+			throw std::runtime_error("Residue-residue summarized per residue scores were not requested to compute.");
+		}
+		return psr.cadscores_residue_residue_summarized_per_residue;
+	}
+
+	const std::vector<ChainScore>& get_local_cadscores_residue_residue_summarized_per_chain(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_residue_residue_summarized_per_chain.empty())
+		{
+			throw std::runtime_error("Residue-residue summarized per chain scores were not requested to compute.");
+		}
+		return psr.cadscores_residue_residue_summarized_per_chain;
+	}
+
+	const std::vector<ChainChainScore>& get_local_cadscores_chain_chain(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_chain_chain.empty())
+		{
+			throw std::runtime_error("Chain-chain contact local scores were not requested to compute.");
+		}
+		return psr.cadscores_chain_chain;
+	}
+
+	const std::vector<ChainScore>& get_local_cadscores_chain_chain_contact_summarized_per_chain(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_chain_chain_contact_summarized_per_chain.empty())
+		{
+			throw std::runtime_error("Chain-chain summarized per chain scores were not requested to compute.");
+		}
+		return psr.cadscores_chain_chain_contact_summarized_per_chain;
+	}
+
+	const std::vector<AtomScore>& get_local_cadscores_atom_sas(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_sas.empty())
+		{
+			throw std::runtime_error("Atom SAS local scores were not requested to compute.");
+		}
+		return psr.cadscores_atom_sas;
+	}
+
+	const std::vector<ResidueScore>& get_local_cadscores_atom_sas_summarized_per_residue(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_sas_summarized_per_residue.empty())
+		{
+			throw std::runtime_error("Atom SAS summarized per residue scores were not requested to compute.");
+		}
+		return psr.cadscores_atom_sas_summarized_per_residue;
+	}
+
+	const std::vector<ChainScore>& get_local_cadscores_atom_sas_summarized_per_chain(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_sas_summarized_per_chain.empty())
+		{
+			throw std::runtime_error("Atom SAS summarized per chain scores were not requested to compute.");
+		}
+		return psr.cadscores_atom_sas_summarized_per_chain;
+	}
+
+	const std::vector<ResidueScore>& get_local_cadscores_residue_sas(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_residue_sas.empty())
+		{
+			throw std::runtime_error("Residue SAS local scores were not requested to compute.");
+		}
+		return psr.cadscores_residue_sas;
+	}
+
+	const std::vector<ChainScore>& get_local_cadscores_residue_sas_summarized_per_chain(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_residue_sas_summarized_per_chain.empty())
+		{
+			throw std::runtime_error("Residue SAS summarized per chain scores were not requested to compute.");
+		}
+		return psr.cadscores_residue_sas_summarized_per_chain;
+	}
+
+	const std::vector<ChainScore>& get_local_cadscores_chain_sas(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_chain_sas.empty())
+		{
+			throw std::runtime_error("Chain SAS local scores were not requested to compute.");
+		}
+		return psr.cadscores_chain_sas;
+	}
+
+	const std::vector<AtomScore>& get_local_cadscores_atom_site(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_site.empty())
+		{
+			throw std::runtime_error("Atom site local scores were not requested to compute.");
+		}
+		return psr.cadscores_atom_site;
+	}
+
+	const std::vector<ResidueScore>& get_local_cadscores_atom_site_summarized_per_residue(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_site_summarized_per_residue.empty())
+		{
+			throw std::runtime_error("Atom site summarized per residue scores were not requested to compute.");
+		}
+		return psr.cadscores_atom_site_summarized_per_residue;
+	}
+
+	const std::vector<ChainScore>& get_local_cadscores_atom_site_summarized_per_chain(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_site_summarized_per_chain.empty())
+		{
+			throw std::runtime_error("Atom site summarized per chain scores were not requested to compute.");
+		}
+		return psr.cadscores_atom_site_summarized_per_chain;
+	}
+
+	const std::vector<ResidueScore>& get_local_cadscores_residue_site(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_residue_site.empty())
+		{
+			throw std::runtime_error("Residue site local scores were not requested to compute.");
+		}
+		return psr.cadscores_residue_site;
+	}
+
+	const std::vector<ChainScore>& get_local_cadscores_residue_site_summarized_per_chain(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_residue_site_summarized_per_chain.empty())
+		{
+			throw std::runtime_error("Residue site summarized per chain scores were not requested to compute.");
+		}
+		return psr.cadscores_residue_site_summarized_per_chain;
+	}
+
+	const std::vector<ChainScore>& get_local_cadscores_chain_site(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_chain_site.empty())
+		{
+			throw std::runtime_error("Chain site local scores were not requested to compute.");
+		}
+		return psr.cadscores_chain_site;
+	}
+
+	const GlobalScore& get_cadscores_atom_atom_summarized_globally(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_atom_summarized_globally.target_area<=0.0)
+		{
+			throw std::runtime_error("Atom-atom contact global score was not requested to compute.");
+		}
+		return psr.cadscores_atom_atom_summarized_globally;
+	}
+
+	const GlobalScore& get_cadscores_residue_residue_summarized_globally(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_residue_residue_summarized_globally.target_area<=0.0)
+		{
+			throw std::runtime_error("Residue-residue contact global score was not requested to compute.");
+		}
+		return psr.cadscores_residue_residue_summarized_globally;
+	}
+
+	const GlobalScore& get_cadscores_chain_chain_summarized_globally(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_chain_chain_summarized_globally.target_area<=0.0)
+		{
+			throw std::runtime_error("Chain-chain contact global score was not requested to compute.");
+		}
+		return psr.cadscores_chain_chain_summarized_globally;
+	}
+
+	const GlobalScore& get_cadscores_atom_sas_summarized_globally(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_sas_summarized_globally.target_area<=0.0)
+		{
+			throw std::runtime_error("Atom SAS global score was not requested to compute.");
+		}
+		return psr.cadscores_atom_sas_summarized_globally;
+	}
+
+	const GlobalScore& get_cadscores_residue_sas_summarized_globally(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_residue_sas_summarized_globally.target_area<=0.0)
+		{
+			throw std::runtime_error("Residue SAS global score was not requested to compute.");
+		}
+		return psr.cadscores_residue_sas_summarized_globally;
+	}
+
+	const GlobalScore& get_cadscores_chain_sas_summarized_globally(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_chain_sas_summarized_globally.target_area<=0.0)
+		{
+			throw std::runtime_error("Chain SAS global score was not requested to compute.");
+		}
+		return psr.cadscores_chain_sas_summarized_globally;
+	}
+
+	const GlobalScore& get_cadscores_atom_site_summarized_globally(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_atom_site_summarized_globally.target_area<=0.0)
+		{
+			throw std::runtime_error("Atom site global score was not requested to compute.");
+		}
+		return psr.cadscores_atom_site_summarized_globally;
+	}
+
+	const GlobalScore& get_cadscores_residue_site_summarized_globally(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_residue_site_summarized_globally.target_area<=0.0)
+		{
+			throw std::runtime_error("Residue site global score was not requested to compute.");
+		}
+		return psr.cadscores_residue_site_summarized_globally;
+	}
+
+	const GlobalScore& get_cadscores_chain_site_summarized_globally(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.cadscores_chain_site_summarized_globally.target_area<=0.0)
+		{
+			throw std::runtime_error("Chain site global score was not requested to compute.");
+		}
+		return psr.cadscores_chain_site_summarized_globally;
 	}
 
 private:
+	struct GlobalScoringResult
+	{
+		std::vector<GlobalScore> cadscores_atom_atom_summarized_globally;
+		std::vector<GlobalScore> cadscores_residue_residue_summarized_globally;
+		std::vector<GlobalScore> cadscores_chain_chain_summarized_globally;
+		std::vector<GlobalScore> cadscores_atom_sas_summarized_globally;
+		std::vector<GlobalScore> cadscores_residue_sas_summarized_globally;
+		std::vector<GlobalScore> cadscores_chain_sas_summarized_globally;
+		std::vector<GlobalScore> cadscores_atom_site_summarized_globally;
+		std::vector<GlobalScore> cadscores_residue_site_summarized_globally;
+		std::vector<GlobalScore> cadscores_chain_site_summarized_globally;
+	};
+
+	struct PairScoringResult
+	{
+		std::vector<AtomAtomScore> cadscores_atom_atom;
+		std::vector<ResidueResidueScore> cadscores_atom_atom_summarized_per_residue_residue;
+		std::vector<ChainChainScore> cadscores_atom_atom_summarized_per_chain_chain;
+		std::vector<AtomScore> cadscores_atom_atom_summarized_per_atom;
+		std::vector<ResidueScore> cadscores_atom_atom_summarized_per_residue;
+		std::vector<ChainScore> cadscores_atom_atom_summarized_per_chain;
+		GlobalScore cadscores_atom_atom_summarized_globally;
+
+		std::vector<ResidueResidueScore> cadscores_residue_residue;
+		std::vector<ChainChainScore> cadscores_residue_residue_summarized_per_chain_chain;
+		std::vector<ResidueScore> cadscores_residue_residue_summarized_per_residue;
+		std::vector<ChainScore> cadscores_residue_residue_summarized_per_chain;
+		GlobalScore cadscores_residue_residue_summarized_globally;
+
+		std::vector<ChainChainScore> cadscores_chain_chain;
+		std::vector<ChainScore> cadscores_chain_chain_contact_summarized_per_chain;
+		GlobalScore cadscores_chain_chain_summarized_globally;
+
+		std::vector<AtomScore> cadscores_atom_sas;
+		std::vector<ResidueScore> cadscores_atom_sas_summarized_per_residue;
+		std::vector<ChainScore> cadscores_atom_sas_summarized_per_chain;
+		GlobalScore cadscores_atom_sas_summarized_globally;
+
+		std::vector<ResidueScore> cadscores_residue_sas;
+		std::vector<ChainScore> cadscores_residue_sas_summarized_per_chain;
+		GlobalScore cadscores_residue_sas_summarized_globally;
+
+		std::vector<ChainScore> cadscores_chain_sas;
+		GlobalScore cadscores_chain_sas_summarized_globally;
+
+		std::vector<AtomScore> cadscores_atom_site;
+		std::vector<ResidueScore> cadscores_atom_site_summarized_per_residue;
+		std::vector<ChainScore> cadscores_atom_site_summarized_per_chain;
+		GlobalScore cadscores_atom_site_summarized_globally;
+
+		std::vector<ResidueScore> cadscores_residue_site;
+		std::vector<ChainScore> cadscores_residue_site_summarized_per_chain;
+		GlobalScore cadscores_residue_site_summarized_globally;
+
+		std::vector<ChainScore> cadscores_chain_site;
+		GlobalScore cadscores_chain_site_summarized_globally;
+
+		std::string renaming_of_model_chains;
+	};
+
 	template<class ScoreRecord>
 	static void record_id_atom(const cadscorelt::IDAtom& id, ScoreRecord& s)
 	{
@@ -848,6 +1178,100 @@ private:
 		record_global_cad_descriptor(target_name, model_name, psr.renaming_of_model_chains, sr.cadscores_chain_site_summarized_globally, psr.cadscores_chain_site_summarized_globally);
 
 		return pair_it;
+	}
+
+	const PairScoringResult& get_pair_scores(const std::string& target_name, const std::string& model_name)
+	{
+		std::map< std::pair<std::string, std::string>, PairScoringResult >::const_iterator it=full_scoring_results_.find(std::pair<std::string, std::string>(target_name, model_name));
+		if(it==full_scoring_results_.end())
+		{
+			std::set<std::string>::const_iterator a1=target_names_.find(target_name);
+			if(a1==target_names_.end())
+			{
+				throw std::runtime_error(std::string("No target named '")+target_name+"'.");
+			}
+			else
+			{
+				std::set<std::string>::const_iterator a2=model_names_.find(model_name);
+				if(a2==model_names_.end())
+				{
+					throw std::runtime_error(std::string("No model named '")+model_name+"'.");
+				}
+				else
+				{
+					it=calculate_pair_scores(target_name, model_name);
+				}
+			}
+			if(it==full_scoring_results_.end())
+			{
+				throw std::runtime_error(std::string("No scores computed for target '")+target_name+"' and model '"+model_name+"'.");
+			}
+		}
+		return it->second;
+	}
+
+	const GlobalScoringResult& get_all_global_scores()
+	{
+		if(target_names_.empty())
+		{
+			throw std::runtime_error(std::string("No targets available."));
+		}
+		if(model_names_.empty())
+		{
+			throw std::runtime_error(std::string("No models available."));
+		}
+		if(full_scoring_results_.size()!=(target_names_.size()*model_names_.size()))
+		{
+			for(std::set<std::string>::const_iterator it1=target_names_.begin();it1!=target_names_.end();++it1)
+			{
+				for(std::set<std::string>::const_iterator it2=model_names_.begin();it2!=model_names_.end();++it1)
+				{
+					calculate_pair_scores(*it1, *it2);
+				}
+			}
+			global_scoring_result_=GlobalScoringResult();
+			for(std::map< std::pair<std::string, std::string>, PairScoringResult >::const_iterator it=full_scoring_results_.begin();it!=full_scoring_results_.end();++it)
+			{
+				const PairScoringResult& psr=it->second;
+				if(params.score_atom_atom_contacts)
+				{
+					global_scoring_result_.cadscores_atom_atom_summarized_globally.push_back(psr.cadscores_atom_atom_summarized_globally);
+				}
+				if(params.score_residue_residue_contacts)
+				{
+					global_scoring_result_.cadscores_residue_residue_summarized_globally.push_back(psr.cadscores_residue_residue_summarized_globally);
+				}
+				if(params.score_chain_chain_contacts)
+				{
+					global_scoring_result_.cadscores_chain_chain_summarized_globally.push_back(psr.cadscores_chain_chain_summarized_globally);
+				}
+				if(params.score_atom_sas)
+				{
+					global_scoring_result_.cadscores_atom_sas_summarized_globally.push_back(psr.cadscores_atom_sas_summarized_globally);
+				}
+				if(params.score_residue_sas)
+				{
+					global_scoring_result_.cadscores_residue_sas_summarized_globally.push_back(psr.cadscores_residue_sas_summarized_globally);
+				}
+				if(params.score_chain_sas)
+				{
+					global_scoring_result_.cadscores_chain_sas_summarized_globally.push_back(psr.cadscores_chain_sas_summarized_globally);
+				}
+				if(params.score_atom_sites)
+				{
+					global_scoring_result_.cadscores_atom_site_summarized_globally.push_back(psr.cadscores_atom_site_summarized_globally);
+				}
+				if(params.score_residue_sites)
+				{
+					global_scoring_result_.cadscores_residue_site_summarized_globally.push_back(psr.cadscores_residue_site_summarized_globally);
+				}
+				if(params.score_chain_sites)
+				{
+					global_scoring_result_.cadscores_chain_site_summarized_globally.push_back(psr.cadscores_chain_site_summarized_globally);
+				}
+			}
+		}
+		return global_scoring_result_;
 	}
 
 	cadscorelt::ScorableData::ConstructionParameters scorable_data_construction_parameters_;
