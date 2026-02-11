@@ -2,6 +2,7 @@
 #define CADSCORELT_H_
 
 #include <vector>
+#include <string>
 #include <stdexcept>
 
 #ifndef SWIG
@@ -40,7 +41,8 @@ struct MolecularAtomBall
 		ID_residue_seq_number(ID_residue_seq_number),
 		ID_residue_icode(ID_residue_icode),
 		ID_atom_name(ID_atom_name),
-		residue_name(element),
+		residue_name(residue_name),
+		element(element),
 		x(x),
 		y(y),
 		z(z),
@@ -422,7 +424,7 @@ public:
 				std::set<std::string>::const_iterator a2=model_names_.find(model_name);
 				if(a2==model_names_.end())
 				{
-					throw std::runtime_error(std::string("No mode named '")+model_name+"'.");
+					throw std::runtime_error(std::string("No model named '")+model_name+"'.");
 				}
 				else
 				{
@@ -443,7 +445,7 @@ public:
 		{
 			for(std::set<std::string>::const_iterator it1=target_names_.begin();it1!=target_names_.end();++it1)
 			{
-				for(std::set<std::string>::const_iterator it2=target_names_.begin();it2!=target_names_.end();++it1)
+				for(std::set<std::string>::const_iterator it2=model_names_.begin();it2!=model_names_.end();++it1)
 				{
 					calculate_pair_scores(*it1, *it2);
 				}
