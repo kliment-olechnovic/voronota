@@ -1037,7 +1037,7 @@ private:
 			{
 				const MolecularAtomBall& iab=input_atom_balls[i];
 				cadscorelt::AtomBall& ab=atom_balls[i];
-				ab.id_atom.id_residue.id_chain.chain_name;
+				ab.id_atom.id_residue.id_chain.chain_name=iab.ID_chain;
 				ab.id_atom.id_residue.residue_seq_number=iab.ID_residue_seq_number;
 				ab.id_atom.id_residue.residue_icode=iab.ID_residue_icode;
 				ab.id_atom.atom_name=iab.ID_atom_name;
