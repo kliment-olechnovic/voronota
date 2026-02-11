@@ -27601,11 +27601,17 @@ fail:
 SWIGINTERN PyObject *_wrap_new_MolecularFileInput__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
   PyObject *resultobj = 0;
   std::string *arg1 = 0 ;
+  bool arg2 ;
+  bool arg3 ;
   int res1 = SWIG_OLDOBJ ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  bool val3 ;
+  int ecode3 = 0 ;
   MolecularFileInput *result = 0 ;
   
   (void)self;
-  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
   {
     std::string *ptr = (std::string *)0;
     res1 = SWIG_AsPtr_std_string(swig_obj[0], &ptr);
@@ -27617,10 +27623,20 @@ SWIGINTERN PyObject *_wrap_new_MolecularFileInput__SWIG_1(PyObject *self, Py_ssi
     }
     arg1 = ptr;
   }
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_MolecularFileInput" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  ecode3 = SWIG_AsVal_bool(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_MolecularFileInput" "', argument " "3"" of type '" "bool""'");
+  } 
+  arg3 = static_cast< bool >(val3);
   {
     try
     {
-      result = (MolecularFileInput *)new MolecularFileInput((std::string const &)*arg1);
+      result = (MolecularFileInput *)new MolecularFileInput((std::string const &)*arg1,arg2,arg3);
     }
     catch (const std::exception& e)
     {
@@ -27639,21 +27655,33 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_MolecularFileInput(PyObject *self, PyObject *args) {
   Py_ssize_t argc;
-  PyObject *argv[2] = {
+  PyObject *argv[4] = {
     0
   };
   
-  if (!(argc = SWIG_Python_UnpackTuple(args, "new_MolecularFileInput", 0, 1, argv))) SWIG_fail;
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_MolecularFileInput", 0, 3, argv))) SWIG_fail;
   --argc;
   if (argc == 0) {
     return _wrap_new_MolecularFileInput__SWIG_0(self, argc, argv);
   }
-  if (argc == 1) {
+  if (argc == 3) {
     int _v = 0;
     int res = SWIG_AsPtr_std_string(argv[0], (std::string**)(0));
     _v = SWIG_CheckState(res);
     if (_v) {
-      return _wrap_new_MolecularFileInput__SWIG_1(self, argc, argv);
+      {
+        int res = SWIG_AsVal_bool(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_bool(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_new_MolecularFileInput__SWIG_1(self, argc, argv);
+        }
+      }
     }
   }
   
@@ -27661,7 +27689,7 @@ fail:
   SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_MolecularFileInput'.\n"
     "  Possible C/C++ prototypes are:\n"
     "    MolecularFileInput::MolecularFileInput()\n"
-    "    MolecularFileInput::MolecularFileInput(std::string const &)\n");
+    "    MolecularFileInput::MolecularFileInput(std::string const &,bool const,bool const)\n");
   return 0;
 }
 
@@ -28754,7 +28782,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_add_target_structure_from_file__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+SWIGINTERN PyObject *_wrap_CADScore_add_target_structure_from_file_descriptor(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CADScore *arg1 = (CADScore *) 0 ;
   MolecularFileInput *arg2 = 0 ;
@@ -28764,37 +28792,38 @@ SWIGINTERN PyObject *_wrap_CADScore_add_target_structure_from_file__SWIG_0(PyObj
   void *argp2 = 0 ;
   int res2 = 0 ;
   int res3 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[3] ;
   
   (void)self;
-  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  if (!SWIG_Python_UnpackTuple(args, "CADScore_add_target_structure_from_file_descriptor", 3, 3, swig_obj)) SWIG_fail;
   res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_target_structure_from_file" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_target_structure_from_file_descriptor" "', argument " "1"" of type '" "CADScore *""'"); 
   }
   arg1 = reinterpret_cast< CADScore * >(argp1);
   res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularFileInput,  0  | 0);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_target_structure_from_file" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_target_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
   }
   if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_target_structure_from_file" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_target_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
   }
   arg2 = reinterpret_cast< MolecularFileInput * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_target_structure_from_file" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_target_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_target_structure_from_file" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_target_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
   {
     try
     {
-      (arg1)->add_target_structure_from_file((MolecularFileInput const &)*arg2,(std::string const &)*arg3);
+      (arg1)->add_target_structure_from_file_descriptor((MolecularFileInput const &)*arg2,(std::string const &)*arg3);
     }
     catch (const std::exception& e)
     {
@@ -28808,119 +28837,6 @@ SWIGINTERN PyObject *_wrap_CADScore_add_target_structure_from_file__SWIG_0(PyObj
 fail:
   if (SWIG_IsNewObj(res3)) delete arg3;
   return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CADScore_add_target_structure_from_file__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
-  PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
-  std::string *arg2 = 0 ;
-  std::string *arg3 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 = SWIG_OLDOBJ ;
-  int res3 = SWIG_OLDOBJ ;
-  
-  (void)self;
-  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_target_structure_from_file" "', argument " "1"" of type '" "CADScore *""'"); 
-  }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
-  {
-    std::string *ptr = (std::string *)0;
-    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_target_structure_from_file" "', argument " "2"" of type '" "std::string const &""'"); 
-    }
-    if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_target_structure_from_file" "', argument " "2"" of type '" "std::string const &""'"); 
-    }
-    arg2 = ptr;
-  }
-  {
-    std::string *ptr = (std::string *)0;
-    res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_target_structure_from_file" "', argument " "3"" of type '" "std::string const &""'"); 
-    }
-    if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_target_structure_from_file" "', argument " "3"" of type '" "std::string const &""'"); 
-    }
-    arg3 = ptr;
-  }
-  {
-    try
-    {
-      (arg1)->add_target_structure_from_file((std::string const &)*arg2,(std::string const &)*arg3);
-    }
-    catch (const std::exception& e)
-    {
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      return NULL;
-    }
-  }
-  resultobj = SWIG_Py_Void();
-  if (SWIG_IsNewObj(res2)) delete arg2;
-  if (SWIG_IsNewObj(res3)) delete arg3;
-  return resultobj;
-fail:
-  if (SWIG_IsNewObj(res2)) delete arg2;
-  if (SWIG_IsNewObj(res3)) delete arg3;
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CADScore_add_target_structure_from_file(PyObject *self, PyObject *args) {
-  Py_ssize_t argc;
-  PyObject *argv[4] = {
-    0
-  };
-  
-  if (!(argc = SWIG_Python_UnpackTuple(args, "CADScore_add_target_structure_from_file", 0, 3, argv))) SWIG_fail;
-  --argc;
-  if (argc == 3) {
-    int _v = 0;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_CADScore, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularFileInput, SWIG_POINTER_NO_NULL | 0);
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
-        _v = SWIG_CheckState(res);
-        if (_v) {
-          return _wrap_CADScore_add_target_structure_from_file__SWIG_0(self, argc, argv);
-        }
-      }
-    }
-  }
-  if (argc == 3) {
-    int _v = 0;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_CADScore, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      int res = SWIG_AsPtr_std_string(argv[1], (std::string**)(0));
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
-        _v = SWIG_CheckState(res);
-        if (_v) {
-          return _wrap_CADScore_add_target_structure_from_file__SWIG_1(self, argc, argv);
-        }
-      }
-    }
-  }
-  
-fail:
-  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'CADScore_add_target_structure_from_file'.\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    CADScore::add_target_structure_from_file(MolecularFileInput const &,std::string const &)\n"
-    "    CADScore::add_target_structure_from_file(std::string const &,std::string const &)\n");
-  return 0;
 }
 
 
@@ -28986,7 +28902,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_add_model_structure_from_file__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+SWIGINTERN PyObject *_wrap_CADScore_add_model_structure_from_file_descriptor(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CADScore *arg1 = (CADScore *) 0 ;
   MolecularFileInput *arg2 = 0 ;
@@ -28996,37 +28912,38 @@ SWIGINTERN PyObject *_wrap_CADScore_add_model_structure_from_file__SWIG_0(PyObje
   void *argp2 = 0 ;
   int res2 = 0 ;
   int res3 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[3] ;
   
   (void)self;
-  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  if (!SWIG_Python_UnpackTuple(args, "CADScore_add_model_structure_from_file_descriptor", 3, 3, swig_obj)) SWIG_fail;
   res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_model_structure_from_file" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_model_structure_from_file_descriptor" "', argument " "1"" of type '" "CADScore *""'"); 
   }
   arg1 = reinterpret_cast< CADScore * >(argp1);
   res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularFileInput,  0  | 0);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_model_structure_from_file" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_model_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
   }
   if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_model_structure_from_file" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_model_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
   }
   arg2 = reinterpret_cast< MolecularFileInput * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_model_structure_from_file" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_model_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_model_structure_from_file" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_model_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
   {
     try
     {
-      (arg1)->add_model_structure_from_file((MolecularFileInput const &)*arg2,(std::string const &)*arg3);
+      (arg1)->add_model_structure_from_file_descriptor((MolecularFileInput const &)*arg2,(std::string const &)*arg3);
     }
     catch (const std::exception& e)
     {
@@ -29040,119 +28957,6 @@ SWIGINTERN PyObject *_wrap_CADScore_add_model_structure_from_file__SWIG_0(PyObje
 fail:
   if (SWIG_IsNewObj(res3)) delete arg3;
   return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CADScore_add_model_structure_from_file__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
-  PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
-  std::string *arg2 = 0 ;
-  std::string *arg3 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 = SWIG_OLDOBJ ;
-  int res3 = SWIG_OLDOBJ ;
-  
-  (void)self;
-  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_model_structure_from_file" "', argument " "1"" of type '" "CADScore *""'"); 
-  }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
-  {
-    std::string *ptr = (std::string *)0;
-    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_model_structure_from_file" "', argument " "2"" of type '" "std::string const &""'"); 
-    }
-    if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_model_structure_from_file" "', argument " "2"" of type '" "std::string const &""'"); 
-    }
-    arg2 = ptr;
-  }
-  {
-    std::string *ptr = (std::string *)0;
-    res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_model_structure_from_file" "', argument " "3"" of type '" "std::string const &""'"); 
-    }
-    if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_model_structure_from_file" "', argument " "3"" of type '" "std::string const &""'"); 
-    }
-    arg3 = ptr;
-  }
-  {
-    try
-    {
-      (arg1)->add_model_structure_from_file((std::string const &)*arg2,(std::string const &)*arg3);
-    }
-    catch (const std::exception& e)
-    {
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      return NULL;
-    }
-  }
-  resultobj = SWIG_Py_Void();
-  if (SWIG_IsNewObj(res2)) delete arg2;
-  if (SWIG_IsNewObj(res3)) delete arg3;
-  return resultobj;
-fail:
-  if (SWIG_IsNewObj(res2)) delete arg2;
-  if (SWIG_IsNewObj(res3)) delete arg3;
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CADScore_add_model_structure_from_file(PyObject *self, PyObject *args) {
-  Py_ssize_t argc;
-  PyObject *argv[4] = {
-    0
-  };
-  
-  if (!(argc = SWIG_Python_UnpackTuple(args, "CADScore_add_model_structure_from_file", 0, 3, argv))) SWIG_fail;
-  --argc;
-  if (argc == 3) {
-    int _v = 0;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_CADScore, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularFileInput, SWIG_POINTER_NO_NULL | 0);
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
-        _v = SWIG_CheckState(res);
-        if (_v) {
-          return _wrap_CADScore_add_model_structure_from_file__SWIG_0(self, argc, argv);
-        }
-      }
-    }
-  }
-  if (argc == 3) {
-    int _v = 0;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_CADScore, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      int res = SWIG_AsPtr_std_string(argv[1], (std::string**)(0));
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
-        _v = SWIG_CheckState(res);
-        if (_v) {
-          return _wrap_CADScore_add_model_structure_from_file__SWIG_1(self, argc, argv);
-        }
-      }
-    }
-  }
-  
-fail:
-  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'CADScore_add_model_structure_from_file'.\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    CADScore::add_model_structure_from_file(MolecularFileInput const &,std::string const &)\n"
-    "    CADScore::add_model_structure_from_file(std::string const &,std::string const &)\n");
-  return 0;
 }
 
 
@@ -29218,7 +29022,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_add_structure_from_file__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+SWIGINTERN PyObject *_wrap_CADScore_add_structure_from_file_descriptor(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CADScore *arg1 = (CADScore *) 0 ;
   MolecularFileInput *arg2 = 0 ;
@@ -29228,37 +29032,38 @@ SWIGINTERN PyObject *_wrap_CADScore_add_structure_from_file__SWIG_0(PyObject *se
   void *argp2 = 0 ;
   int res2 = 0 ;
   int res3 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[3] ;
   
   (void)self;
-  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  if (!SWIG_Python_UnpackTuple(args, "CADScore_add_structure_from_file_descriptor", 3, 3, swig_obj)) SWIG_fail;
   res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_structure_from_file" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_structure_from_file_descriptor" "', argument " "1"" of type '" "CADScore *""'"); 
   }
   arg1 = reinterpret_cast< CADScore * >(argp1);
   res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularFileInput,  0  | 0);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_structure_from_file" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
   }
   if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_structure_from_file" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
   }
   arg2 = reinterpret_cast< MolecularFileInput * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_structure_from_file" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_structure_from_file" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
   {
     try
     {
-      (arg1)->add_structure_from_file((MolecularFileInput const &)*arg2,(std::string const &)*arg3);
+      (arg1)->add_structure_from_file_descriptor((MolecularFileInput const &)*arg2,(std::string const &)*arg3);
     }
     catch (const std::exception& e)
     {
@@ -29272,119 +29077,6 @@ SWIGINTERN PyObject *_wrap_CADScore_add_structure_from_file__SWIG_0(PyObject *se
 fail:
   if (SWIG_IsNewObj(res3)) delete arg3;
   return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CADScore_add_structure_from_file__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
-  PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
-  std::string *arg2 = 0 ;
-  std::string *arg3 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 = SWIG_OLDOBJ ;
-  int res3 = SWIG_OLDOBJ ;
-  
-  (void)self;
-  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_structure_from_file" "', argument " "1"" of type '" "CADScore *""'"); 
-  }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
-  {
-    std::string *ptr = (std::string *)0;
-    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_structure_from_file" "', argument " "2"" of type '" "std::string const &""'"); 
-    }
-    if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_structure_from_file" "', argument " "2"" of type '" "std::string const &""'"); 
-    }
-    arg2 = ptr;
-  }
-  {
-    std::string *ptr = (std::string *)0;
-    res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_structure_from_file" "', argument " "3"" of type '" "std::string const &""'"); 
-    }
-    if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_structure_from_file" "', argument " "3"" of type '" "std::string const &""'"); 
-    }
-    arg3 = ptr;
-  }
-  {
-    try
-    {
-      (arg1)->add_structure_from_file((std::string const &)*arg2,(std::string const &)*arg3);
-    }
-    catch (const std::exception& e)
-    {
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      return NULL;
-    }
-  }
-  resultobj = SWIG_Py_Void();
-  if (SWIG_IsNewObj(res2)) delete arg2;
-  if (SWIG_IsNewObj(res3)) delete arg3;
-  return resultobj;
-fail:
-  if (SWIG_IsNewObj(res2)) delete arg2;
-  if (SWIG_IsNewObj(res3)) delete arg3;
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CADScore_add_structure_from_file(PyObject *self, PyObject *args) {
-  Py_ssize_t argc;
-  PyObject *argv[4] = {
-    0
-  };
-  
-  if (!(argc = SWIG_Python_UnpackTuple(args, "CADScore_add_structure_from_file", 0, 3, argv))) SWIG_fail;
-  --argc;
-  if (argc == 3) {
-    int _v = 0;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_CADScore, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_MolecularFileInput, SWIG_POINTER_NO_NULL | 0);
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
-        _v = SWIG_CheckState(res);
-        if (_v) {
-          return _wrap_CADScore_add_structure_from_file__SWIG_0(self, argc, argv);
-        }
-      }
-    }
-  }
-  if (argc == 3) {
-    int _v = 0;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_CADScore, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      int res = SWIG_AsPtr_std_string(argv[1], (std::string**)(0));
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
-        _v = SWIG_CheckState(res);
-        if (_v) {
-          return _wrap_CADScore_add_structure_from_file__SWIG_1(self, argc, argv);
-        }
-      }
-    }
-  }
-  
-fail:
-  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'CADScore_add_structure_from_file'.\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    CADScore::add_structure_from_file(MolecularFileInput const &,std::string const &)\n"
-    "    CADScore::add_structure_from_file(std::string const &,std::string const &)\n");
-  return 0;
 }
 
 
@@ -32540,11 +32232,11 @@ static PyMethodDef SwigMethods[] = {
 	 { "CADScore_params_set", _wrap_CADScore_params_set, METH_VARARGS, NULL},
 	 { "CADScore_params_get", _wrap_CADScore_params_get, METH_O, NULL},
 	 { "new_CADScore", _wrap_new_CADScore, METH_O, NULL},
-	 { "CADScore_add_target_structure_from_file", _wrap_CADScore_add_target_structure_from_file, METH_VARARGS, NULL},
+	 { "CADScore_add_target_structure_from_file_descriptor", _wrap_CADScore_add_target_structure_from_file_descriptor, METH_VARARGS, NULL},
 	 { "CADScore_add_target_structure_from_atoms", _wrap_CADScore_add_target_structure_from_atoms, METH_VARARGS, NULL},
-	 { "CADScore_add_model_structure_from_file", _wrap_CADScore_add_model_structure_from_file, METH_VARARGS, NULL},
+	 { "CADScore_add_model_structure_from_file_descriptor", _wrap_CADScore_add_model_structure_from_file_descriptor, METH_VARARGS, NULL},
 	 { "CADScore_add_model_structure_from_atoms", _wrap_CADScore_add_model_structure_from_atoms, METH_VARARGS, NULL},
-	 { "CADScore_add_structure_from_file", _wrap_CADScore_add_structure_from_file, METH_VARARGS, NULL},
+	 { "CADScore_add_structure_from_file_descriptor", _wrap_CADScore_add_structure_from_file_descriptor, METH_VARARGS, NULL},
 	 { "CADScore_add_structure_from_atoms", _wrap_CADScore_add_structure_from_atoms, METH_VARARGS, NULL},
 	 { "CADScore_get_all_cadscores_atom_atom_summarized_globally", _wrap_CADScore_get_all_cadscores_atom_atom_summarized_globally, METH_O, NULL},
 	 { "CADScore_get_all_cadscores_residue_residue_summarized_globally", _wrap_CADScore_get_all_cadscores_residue_residue_summarized_globally, METH_O, NULL},

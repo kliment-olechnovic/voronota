@@ -1171,20 +1171,20 @@ class CADScore(object):
     def __init__(self, init_params):
         _cadscorelt_python.CADScore_swiginit(self, _cadscorelt_python.new_CADScore(init_params))
 
-    def add_target_structure_from_file(self, *args):
-        return _cadscorelt_python.CADScore_add_target_structure_from_file(self, *args)
+    def add_target_structure_from_file_descriptor(self, input_file_info, name):
+        return _cadscorelt_python.CADScore_add_target_structure_from_file_descriptor(self, input_file_info, name)
 
     def add_target_structure_from_atoms(self, input_atom_balls, name):
         return _cadscorelt_python.CADScore_add_target_structure_from_atoms(self, input_atom_balls, name)
 
-    def add_model_structure_from_file(self, *args):
-        return _cadscorelt_python.CADScore_add_model_structure_from_file(self, *args)
+    def add_model_structure_from_file_descriptor(self, input_file_info, name):
+        return _cadscorelt_python.CADScore_add_model_structure_from_file_descriptor(self, input_file_info, name)
 
     def add_model_structure_from_atoms(self, input_atom_balls, name):
         return _cadscorelt_python.CADScore_add_model_structure_from_atoms(self, input_atom_balls, name)
 
-    def add_structure_from_file(self, *args):
-        return _cadscorelt_python.CADScore_add_structure_from_file(self, *args)
+    def add_structure_from_file_descriptor(self, input_file_info, name):
+        return _cadscorelt_python.CADScore_add_structure_from_file_descriptor(self, input_file_info, name)
 
     def add_structure_from_atoms(self, input_atom_balls, name):
         return _cadscorelt_python.CADScore_add_structure_from_atoms(self, input_atom_balls, name)

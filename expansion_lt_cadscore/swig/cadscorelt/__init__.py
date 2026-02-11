@@ -1,2 +1,72 @@
 from .cadscorelt_python import *
 
+def _create(
+        cls,
+        probe=1.4,
+        conflate_atom_names=True,
+        remap_chains=False,
+        score_atom_atom_contacts=False,
+        score_residue_residue_contacts=True,
+        score_chain_chain_contacts=False,
+        score_atom_sas=False,
+        score_residue_sas=False,
+        score_chain_sas=False,
+        score_atom_sites=False,
+        score_residue_sites=False,
+        score_chain_sites=False,
+        record_local_scores=False,
+        restrict_input_atoms="",
+        subselect_contacts="[-min-sep 1]",
+        subselect_atoms=""):
+    params=CADScoreParameters()
+    params.probe=probe
+    params.conflate_atom_names=conflate_atom_names
+    params.remap_chains=remap_chains
+    params.score_atom_atom_contacts=score_atom_atom_contacts
+    params.score_residue_residue_contacts=score_residue_residue_contacts
+    params.score_chain_chain_contacts=score_chain_chain_contacts
+    params.score_atom_sas=score_atom_sas
+    params.score_residue_sas=score_residue_sas
+    params.score_chain_sas=score_chain_sas
+    params.score_atom_sites=score_atom_sites
+    params.score_residue_sites=score_residue_sites
+    params.score_chain_sites=score_chain_sites
+    params.record_local_scores=record_local_scores
+    params.restrict_input_atoms=restrict_input_atoms
+    params.subselect_contacts=subselect_contacts
+    params.subselect_atoms=subselect_atoms
+    return cls(params)
+
+def _add_target_structure_from_file(
+        self,
+        input_file,
+        structure_name,
+        include_heteroatoms=True,
+        read_as_assembly=False):
+    mfi = MolecularFileInput(input_file, include_heteroatoms, read_as_assembly)
+    return self.add_target_structure_from_file_descriptor(mfi, structure_name)
+
+def _add_model_structure_from_file(
+        self,
+        input_file,
+        structure_name,
+        include_heteroatoms=True,
+        read_as_assembly=False):
+    mfi = MolecularFileInput(input_file, include_heteroatoms, read_as_assembly)
+    return self.add_model_structure_from_file_descriptor(mfi, structure_name)
+    
+def _add_structure_from_file(
+        self,
+        input_file,
+        structure_name,
+        include_heteroatoms=True,
+        read_as_assembly=False):
+    mfi = MolecularFileInput(input_file, include_heteroatoms, read_as_assembly)
+    return self.add_structure_from_file_descriptor(mfi, structure_name)
+
+CADScore.init = classmethod(_initialize)
+CADScore.add_target_structure_from_file = _add_target_structure_from_file
+CADScore.add_model_structure_from_file = _add_model_structure_from_file
+CADScore.add_structure_from_file = _add_structure_from_file
+
+

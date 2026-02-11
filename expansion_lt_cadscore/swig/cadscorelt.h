@@ -195,10 +195,10 @@ struct MolecularFileInput
 	{
 	}
 
-	explicit MolecularFileInput(const std::string& input_file) :
+	MolecularFileInput(const std::string& input_file, const bool include_heteroatoms, const bool read_as_assembly) :
 		input_file_path(input_file),
-		include_heteroatoms(true),
-		read_as_assembly(false)
+		include_heteroatoms(include_heteroatoms),
+		read_as_assembly(read_as_assembly)
 	{
 	}
 };
@@ -300,14 +300,9 @@ public:
 		scoring_result_construction_parameters_.record_compatible_model_atom_balls=false;
 	}
 
-	void add_target_structure_from_file(const MolecularFileInput& input_file_info, const std::string& name)
+	void add_target_structure_from_file_descriptor(const MolecularFileInput& input_file_info, const std::string& name)
 	{
 		add_structure_from_file(input_file_info, std::vector<MolecularAtomBall>(), true, false, name);
-	}
-
-	void add_target_structure_from_file(const std::string& input_file, const std::string& name)
-	{
-		add_target_structure_from_file(MolecularFileInput(input_file), name);
 	}
 
 	void add_target_structure_from_atoms(const std::vector<MolecularAtomBall>& input_atom_balls, const std::string& name)
@@ -315,14 +310,9 @@ public:
 		add_structure_from_file(MolecularFileInput(), input_atom_balls, true, false, name);
 	}
 
-	void add_model_structure_from_file(const MolecularFileInput& input_file_info, const std::string& name)
+	void add_model_structure_from_file_descriptor(const MolecularFileInput& input_file_info, const std::string& name)
 	{
 		add_structure_from_file(input_file_info, std::vector<MolecularAtomBall>(), false, true, name);
-	}
-
-	void add_model_structure_from_file(const std::string& input_file, const std::string& name)
-	{
-		add_model_structure_from_file(MolecularFileInput(input_file), name);
 	}
 
 	void add_model_structure_from_atoms(const std::vector<MolecularAtomBall>& input_atom_balls, const std::string& name)
@@ -330,14 +320,9 @@ public:
 		add_structure_from_file(MolecularFileInput(), input_atom_balls, false, true, name);
 	}
 
-	void add_structure_from_file(const MolecularFileInput& input_file_info, const std::string& name)
+	void add_structure_from_file_descriptor(const MolecularFileInput& input_file_info, const std::string& name)
 	{
 		add_structure_from_file(input_file_info, std::vector<MolecularAtomBall>(), true, true, name);
-	}
-
-	void add_structure_from_file(const std::string& input_file, const std::string& name)
-	{
-		add_structure_from_file(MolecularFileInput(input_file), name);
 	}
 
 	void add_structure_from_atoms(const std::vector<MolecularAtomBall>& input_atom_balls, const std::string& name)
@@ -1019,6 +1004,10 @@ private:
 		if(!as_target && !as_model)
 		{
 			throw std::runtime_error(std::string("Input type (target or model) not specified for input name '")+name+"'.");
+		}
+		if(name.empty())
+		{
+			throw std::runtime_error(std::string("Empty name provided."));
 		}
 		if(scorable_objects_.count(name)>0)
 		{
