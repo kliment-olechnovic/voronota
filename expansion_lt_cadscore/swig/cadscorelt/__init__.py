@@ -1,6 +1,6 @@
 from .cadscorelt_python import *
 
-def _create(
+def _initialize(
         cls,
         probe=1.4,
         conflate_atom_names=True,
@@ -79,7 +79,7 @@ else:
     from . import pandas_interface
     __all__.append("pandas_interface")
 
-    def print_head_of_pandas_data_frame(df, n=5):
+    def print_head_of_pandas_data_frame(df, n=10):
         with pandas.option_context("display.max_columns", None, "display.width", None):
             print(df.head(n).to_string(index=False))
 

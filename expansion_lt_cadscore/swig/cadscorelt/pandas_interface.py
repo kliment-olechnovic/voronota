@@ -41,7 +41,7 @@ def _global_scores_vector_to_df(vec):
             "TP_area",
             "FP_area",
             "FN_area",
-            "renaming_of_model_chains",
+            "renamed_chains",
         ])
     return _pd.DataFrame({
         "target_name":              [c.target_name or "."                for c in vec],
@@ -53,7 +53,7 @@ def _global_scores_vector_to_df(vec):
         "TP_area":                  [c.TP_area                           for c in vec],
         "FP_area":                  [c.FP_area                           for c in vec],
         "FN_area":                  [c.FN_area                           for c in vec],
-        "renaming_of_model_chains": [c.renaming_of_model_chains or "."   for c in vec],
+        "renamed_chains":           [c.renaming_of_model_chains or "."   for c in vec],
     })
 
 def _atom_scores_vector_to_df(vec):
