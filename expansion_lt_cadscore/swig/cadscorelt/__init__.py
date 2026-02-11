@@ -83,4 +83,27 @@ else:
         with pandas.option_context("display.max_columns", None, "display.width", None):
             print(df.head(n).to_string(index=False))
 
+try:
+    import biotite
+except ImportError:
+    pass
+else:
+    from . import biotite_interface
+    __all__.append("biotite_interface")
+
+try:
+    import gemmi
+except ImportError:
+    pass
+else:
+    from . import gemmi_interface
+    __all__.append("gemmi_interface")
+
+try:
+    import Bio.PDB
+except ImportError:
+    pass
+else:
+    from . import biopython_interface
+    __all__.append("biopython_interface")
 
