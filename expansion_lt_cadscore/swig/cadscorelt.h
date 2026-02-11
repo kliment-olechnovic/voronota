@@ -1213,7 +1213,7 @@ private:
 		{
 			for(std::set<std::string>::const_iterator it1=target_names_.begin();it1!=target_names_.end();++it1)
 			{
-				for(std::set<std::string>::const_iterator it2=model_names_.begin();it2!=model_names_.end();++it1)
+				for(std::set<std::string>::const_iterator it2=model_names_.begin();it2!=model_names_.end();++it2)
 				{
 					calculate_pair_scores(*it1, *it2);
 				}
