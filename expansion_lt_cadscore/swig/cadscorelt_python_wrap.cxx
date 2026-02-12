@@ -28440,6 +28440,60 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CADScoreParameters_include_self_to_self_scores_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_include_self_to_self_scores_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_include_self_to_self_scores_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_include_self_to_self_scores_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->include_self_to_self_scores = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CADScoreParameters_include_self_to_self_scores_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_include_self_to_self_scores_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  result = (bool) ((arg1)->include_self_to_self_scores);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CADScoreParameters_restrict_input_atoms_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
@@ -32219,6 +32273,8 @@ static PyMethodDef SwigMethods[] = {
 	 { "CADScoreParameters_score_chain_sites_get", _wrap_CADScoreParameters_score_chain_sites_get, METH_O, NULL},
 	 { "CADScoreParameters_record_local_scores_set", _wrap_CADScoreParameters_record_local_scores_set, METH_VARARGS, NULL},
 	 { "CADScoreParameters_record_local_scores_get", _wrap_CADScoreParameters_record_local_scores_get, METH_O, NULL},
+	 { "CADScoreParameters_include_self_to_self_scores_set", _wrap_CADScoreParameters_include_self_to_self_scores_set, METH_VARARGS, NULL},
+	 { "CADScoreParameters_include_self_to_self_scores_get", _wrap_CADScoreParameters_include_self_to_self_scores_get, METH_O, NULL},
 	 { "CADScoreParameters_restrict_input_atoms_set", _wrap_CADScoreParameters_restrict_input_atoms_set, METH_VARARGS, NULL},
 	 { "CADScoreParameters_restrict_input_atoms_get", _wrap_CADScoreParameters_restrict_input_atoms_get, METH_O, NULL},
 	 { "CADScoreParameters_subselect_contacts_set", _wrap_CADScoreParameters_subselect_contacts_set, METH_VARARGS, NULL},

@@ -1153,6 +1153,7 @@ class CADScoreParameters(object):
     score_residue_sites = property(_cadscorelt_python.CADScoreParameters_score_residue_sites_get, _cadscorelt_python.CADScoreParameters_score_residue_sites_set)
     score_chain_sites = property(_cadscorelt_python.CADScoreParameters_score_chain_sites_get, _cadscorelt_python.CADScoreParameters_score_chain_sites_set)
     record_local_scores = property(_cadscorelt_python.CADScoreParameters_record_local_scores_get, _cadscorelt_python.CADScoreParameters_record_local_scores_set)
+    include_self_to_self_scores = property(_cadscorelt_python.CADScoreParameters_include_self_to_self_scores_get, _cadscorelt_python.CADScoreParameters_include_self_to_self_scores_set)
     restrict_input_atoms = property(_cadscorelt_python.CADScoreParameters_restrict_input_atoms_get, _cadscorelt_python.CADScoreParameters_restrict_input_atoms_set)
     subselect_contacts = property(_cadscorelt_python.CADScoreParameters_subselect_contacts_get, _cadscorelt_python.CADScoreParameters_subselect_contacts_set)
     subselect_atoms = property(_cadscorelt_python.CADScoreParameters_subselect_atoms_get, _cadscorelt_python.CADScoreParameters_subselect_atoms_set)

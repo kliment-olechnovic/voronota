@@ -219,6 +219,7 @@ struct CADScoreParameters
 	bool score_residue_sites;
 	bool score_chain_sites;
 	bool record_local_scores;
+	bool include_self_to_self_scores;
 	std::string restrict_input_atoms;
 	std::string subselect_contacts;
 	std::string subselect_atoms;
@@ -237,6 +238,7 @@ struct CADScoreParameters
 		score_residue_sites(false),
 		score_chain_sites(false),
 		record_local_scores(false),
+		include_self_to_self_scores(false),
 		subselect_contacts("[-min-sep 1]")
 	{
 	}
@@ -1240,51 +1242,63 @@ private:
 	const GlobalScoringResult& calculate_all_global_scores()
 	{
 		global_scoring_result_.clear();
+		std::size_t num_of_pair_scores=0;
 		for(std::set<std::string>::const_iterator it1=target_names_.begin();it1!=target_names_.end();++it1)
 		{
 			for(std::set<std::string>::const_iterator it2=model_names_.begin();it2!=model_names_.end();++it2)
 			{
-				calculate_pair_scores(*it1, *it2);
+				if(params.include_self_to_self_scores || (*it1)!=(*it2))
+				{
+					calculate_pair_scores(*it1, *it2);
+					num_of_pair_scores++;
+				}
 			}
+		}
+		if(num_of_pair_scores==0)
+		{
+			throw std::runtime_error(std::string("No valid pairs of structures to calculate scores."));
 		}
 		for(std::map< std::pair<std::string, std::string>, PairScoringResult >::const_iterator it=full_scoring_results_.begin();it!=full_scoring_results_.end();++it)
 		{
-			const PairScoringResult& psr=it->second;
-			if(params.score_atom_atom_contacts)
+			if(params.include_self_to_self_scores || (it->first.first)!=(it->first.second))
 			{
-				global_scoring_result_.cadscores_atom_atom_summarized_globally.push_back(psr.cadscores_atom_atom_summarized_globally);
-			}
-			if(params.score_residue_residue_contacts)
-			{
-				global_scoring_result_.cadscores_residue_residue_summarized_globally.push_back(psr.cadscores_residue_residue_summarized_globally);
-			}
-			if(params.score_chain_chain_contacts)
-			{
-				global_scoring_result_.cadscores_chain_chain_summarized_globally.push_back(psr.cadscores_chain_chain_summarized_globally);
-			}
-			if(params.score_atom_sas)
-			{
-				global_scoring_result_.cadscores_atom_sas_summarized_globally.push_back(psr.cadscores_atom_sas_summarized_globally);
-			}
-			if(params.score_residue_sas)
-			{
-				global_scoring_result_.cadscores_residue_sas_summarized_globally.push_back(psr.cadscores_residue_sas_summarized_globally);
-			}
-			if(params.score_chain_sas)
-			{
-				global_scoring_result_.cadscores_chain_sas_summarized_globally.push_back(psr.cadscores_chain_sas_summarized_globally);
-			}
-			if(params.score_atom_sites)
-			{
-				global_scoring_result_.cadscores_atom_site_summarized_globally.push_back(psr.cadscores_atom_site_summarized_globally);
-			}
-			if(params.score_residue_sites)
-			{
-				global_scoring_result_.cadscores_residue_site_summarized_globally.push_back(psr.cadscores_residue_site_summarized_globally);
-			}
-			if(params.score_chain_sites)
-			{
-				global_scoring_result_.cadscores_chain_site_summarized_globally.push_back(psr.cadscores_chain_site_summarized_globally);
+				const PairScoringResult& psr=it->second;
+				if(params.score_atom_atom_contacts)
+				{
+					global_scoring_result_.cadscores_atom_atom_summarized_globally.push_back(psr.cadscores_atom_atom_summarized_globally);
+				}
+				if(params.score_residue_residue_contacts)
+				{
+					global_scoring_result_.cadscores_residue_residue_summarized_globally.push_back(psr.cadscores_residue_residue_summarized_globally);
+				}
+				if(params.score_chain_chain_contacts)
+				{
+					global_scoring_result_.cadscores_chain_chain_summarized_globally.push_back(psr.cadscores_chain_chain_summarized_globally);
+				}
+				if(params.score_atom_sas)
+				{
+					global_scoring_result_.cadscores_atom_sas_summarized_globally.push_back(psr.cadscores_atom_sas_summarized_globally);
+				}
+				if(params.score_residue_sas)
+				{
+					global_scoring_result_.cadscores_residue_sas_summarized_globally.push_back(psr.cadscores_residue_sas_summarized_globally);
+				}
+				if(params.score_chain_sas)
+				{
+					global_scoring_result_.cadscores_chain_sas_summarized_globally.push_back(psr.cadscores_chain_sas_summarized_globally);
+				}
+				if(params.score_atom_sites)
+				{
+					global_scoring_result_.cadscores_atom_site_summarized_globally.push_back(psr.cadscores_atom_site_summarized_globally);
+				}
+				if(params.score_residue_sites)
+				{
+					global_scoring_result_.cadscores_residue_site_summarized_globally.push_back(psr.cadscores_residue_site_summarized_globally);
+				}
+				if(params.score_chain_sites)
+				{
+					global_scoring_result_.cadscores_chain_site_summarized_globally.push_back(psr.cadscores_chain_site_summarized_globally);
+				}
 			}
 		}
 		global_scoring_result_.sort_by_cadscore();

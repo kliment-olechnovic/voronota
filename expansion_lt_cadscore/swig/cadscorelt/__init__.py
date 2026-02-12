@@ -15,6 +15,7 @@ def _initialize(
         score_residue_sites=False,
         score_chain_sites=False,
         record_local_scores=False,
+        include_self_to_self_scores=False,
         restrict_input_atoms="",
         subselect_contacts="[-min-sep 1]",
         subselect_atoms=""):
@@ -32,6 +33,7 @@ def _initialize(
     params.score_residue_sites=score_residue_sites
     params.score_chain_sites=score_chain_sites
     params.record_local_scores=record_local_scores
+    params.include_self_to_self_scores=include_self_to_self_scores
     params.restrict_input_atoms=restrict_input_atoms
     params.subselect_contacts=subselect_contacts
     params.subselect_atoms=subselect_atoms
