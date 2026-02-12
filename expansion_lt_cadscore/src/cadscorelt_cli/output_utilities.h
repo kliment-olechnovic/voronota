@@ -182,6 +182,25 @@ public:
 			return true;
 		}
 
+		static void print(const std::vector<AtomBall>& atom_balls, std::string& output) noexcept
+		{
+			if(check_compatability_with_pdb_format(atom_balls))
+			{
+				for(std::size_t i=0;i<atom_balls.size();i++)
+				{
+					output+=print_atom_line(atom_balls[i], static_cast<int>(i+1), 1.0, 0.0);
+					output+="\n";
+				}
+			}
+		}
+
+		static std::string print(const std::vector<AtomBall>& atom_balls) noexcept
+		{
+			std::string output;
+			print(atom_balls, output);
+			return output;
+		}
+
 		template<class MapContainer>
 		static void print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds, std::string& output) noexcept
 		{
@@ -223,7 +242,7 @@ public:
 			return false;
 		}
 
-		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const CADDescriptor& cadd) noexcept
+		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const double oc, const double tf) noexcept
 		{
 			std::string line(80, ' ');
 			insert_string_to_columned_line("ATOM", 1, 6, false, line);
@@ -236,10 +255,15 @@ public:
 			insert_string_to_columned_line(convert_double_to_string(atom_ball.x, 3), 31, 38, true, line);
 			insert_string_to_columned_line(convert_double_to_string(atom_ball.y, 3), 39, 46, true, line);
 			insert_string_to_columned_line(convert_double_to_string(atom_ball.z, 3), 47, 54, true, line);
-			insert_string_to_columned_line(convert_double_to_string((cadd.target_area_sum>0.0 ? 1.0 : 0.0), 2), 55, 60, true, line);
-			insert_string_to_columned_line(convert_double_to_string((cadd.target_area_sum>0.0 ? cadd.score() : 0.0), 2), 61, 66, true, line);
+			insert_string_to_columned_line(convert_double_to_string(oc, 2), 55, 60, true, line);
+			insert_string_to_columned_line(convert_double_to_string(tf, 2), 61, 66, true, line);
 			insert_string_to_columned_line(atom_ball.element, 77, 78, true, line);
 			return line;
+		}
+
+		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const CADDescriptor& cadd) noexcept
+		{
+			return print_atom_line(atom_ball, serial, (cadd.target_area_sum>0.0 ? 1.0 : 0.0), (cadd.target_area_sum>0.0 ? cadd.score() : 0.0));
 		}
 
 		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
@@ -270,13 +294,9 @@ public:
 	class MMCIF
 	{
 	public:
-		template<class MapContainer>
-		static void print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds, std::string& output) noexcept
+		static const std::string& minimal_header() noexcept
 		{
-			if(!atom_balls.empty())
-			{
-				output="data_minimal";
-				output+=R"(
+			static std::string header=R"(data_minimal
 loop_
 _atom_site.group_PDB
 _atom_site.id
@@ -300,12 +320,41 @@ _atom_site.auth_asym_id
 _atom_site.auth_atom_id
 _atom_site.pdbx_PDB_model_num
 )";
+			return header;
+		}
+
+		static void print(const std::vector<AtomBall>& atom_balls, std::string& output) noexcept
+		{
+			if(!atom_balls.empty())
+			{
+				output=minimal_header();
+				for(std::size_t i=0;i<atom_balls.size();i++)
+				{
+					output+=print_atom_line(atom_balls[i], static_cast<int>(i+1), 1.0, 0.0);
+					output+="\n";
+				}
+				output+="#\n";
+			}
+		}
+
+		static std::string print(const std::vector<AtomBall>& atom_balls) noexcept
+		{
+			std::string output;
+			print(atom_balls, output);
+			return output;
+		}
+
+		template<class MapContainer>
+		static void print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds, std::string& output) noexcept
+		{
+			if(!atom_balls.empty())
+			{
+				output=minimal_header();
 				for(std::size_t i=0;i<atom_balls.size();i++)
 				{
 					output+=print_atom_line(atom_balls[i], static_cast<int>(i+1), map_of_cadds);
 					output+="\n";
 				}
-
 				output+="#\n";
 			}
 		}
@@ -319,7 +368,7 @@ _atom_site.pdbx_PDB_model_num
 		}
 
 	private:
-		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const CADDescriptor& cadd) noexcept
+		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const double oc, const double tf) noexcept
 		{
 			std::string line="ATOM ";
 			line+=std::to_string(serial);
@@ -342,9 +391,9 @@ _atom_site.pdbx_PDB_model_num
 			line+=" ";
 			line+=convert_double_to_string(atom_ball.z, 3);
 			line+=" ";
-			line+=convert_double_to_string((cadd.target_area_sum>0.0 ? 1.0 : 0.0), 2);
+			line+=convert_double_to_string(oc, 2);
 			line+=" ";
-			line+=convert_double_to_string((cadd.target_area_sum>0.0 ? cadd.score() : 0.0), 2);
+			line+=convert_double_to_string(tf, 2);
 			line+=" ? ";
 			line+=std::to_string(atom_ball.id_atom.id_residue.residue_seq_number);
 			line+=" ";
@@ -355,6 +404,11 @@ _atom_site.pdbx_PDB_model_num
 			line+=atom_ball.id_atom.atom_name;
 			line+=" 1";
 			return line;
+		}
+
+		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const CADDescriptor& cadd) noexcept
+		{
+			return print_atom_line(atom_ball, serial, (cadd.target_area_sum>0.0 ? 1.0 : 0.0), (cadd.target_area_sum>0.0 ? cadd.score() : 0.0));
 		}
 
 		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
