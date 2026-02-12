@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
 #include <stdexcept>
 
 #ifndef SWIG
@@ -762,6 +763,32 @@ private:
 		std::vector<GlobalScore> cadscores_atom_site_summarized_globally;
 		std::vector<GlobalScore> cadscores_residue_site_summarized_globally;
 		std::vector<GlobalScore> cadscores_chain_site_summarized_globally;
+
+		void clear()
+		{
+			cadscores_atom_atom_summarized_globally.clear();
+			cadscores_residue_residue_summarized_globally.clear();
+			cadscores_chain_chain_summarized_globally.clear();
+			cadscores_atom_sas_summarized_globally.clear();
+			cadscores_residue_sas_summarized_globally.clear();
+			cadscores_chain_sas_summarized_globally.clear();
+			cadscores_atom_site_summarized_globally.clear();
+			cadscores_residue_site_summarized_globally.clear();
+			cadscores_chain_site_summarized_globally.clear();
+		}
+
+		void sort_by_cadscore()
+		{
+			sort_vector_of_global_scores_by_cadscore(cadscores_atom_atom_summarized_globally);
+			sort_vector_of_global_scores_by_cadscore(cadscores_residue_residue_summarized_globally);
+			sort_vector_of_global_scores_by_cadscore(cadscores_chain_chain_summarized_globally);
+			sort_vector_of_global_scores_by_cadscore(cadscores_atom_sas_summarized_globally);
+			sort_vector_of_global_scores_by_cadscore(cadscores_residue_sas_summarized_globally);
+			sort_vector_of_global_scores_by_cadscore(cadscores_chain_sas_summarized_globally);
+			sort_vector_of_global_scores_by_cadscore(cadscores_atom_site_summarized_globally);
+			sort_vector_of_global_scores_by_cadscore(cadscores_residue_site_summarized_globally);
+			sort_vector_of_global_scores_by_cadscore(cadscores_chain_site_summarized_globally);
+		}
 	};
 
 	struct PairScoringResult
@@ -999,6 +1026,15 @@ private:
 		}
 	}
 
+	static void sort_vector_of_global_scores_by_cadscore(std::vector<GlobalScore>& v)
+	{
+		std::sort(v.begin(), v.end(),
+		[](const GlobalScore& a, const GlobalScore& b)
+		{
+			return a.cadscore > b.cadscore;
+		});
+	}
+
 	void add_structure_from_file(const MolecularFileInput& input_file_info, const std::vector<MolecularAtomBall>& input_atom_balls, const bool as_target, const bool as_model, const std::string& name)
 	{
 		if(!as_target && !as_model)
@@ -1199,6 +1235,60 @@ private:
 		return it->second;
 	}
 
+	const GlobalScoringResult& calculate_all_global_scores()
+	{
+		for(std::set<std::string>::const_iterator it1=target_names_.begin();it1!=target_names_.end();++it1)
+		{
+			for(std::set<std::string>::const_iterator it2=model_names_.begin();it2!=model_names_.end();++it2)
+			{
+				calculate_pair_scores(*it1, *it2);
+			}
+		}
+		global_scoring_result_.clear();
+		for(std::map< std::pair<std::string, std::string>, PairScoringResult >::const_iterator it=full_scoring_results_.begin();it!=full_scoring_results_.end();++it)
+		{
+			const PairScoringResult& psr=it->second;
+			if(params.score_atom_atom_contacts)
+			{
+				global_scoring_result_.cadscores_atom_atom_summarized_globally.push_back(psr.cadscores_atom_atom_summarized_globally);
+			}
+			if(params.score_residue_residue_contacts)
+			{
+				global_scoring_result_.cadscores_residue_residue_summarized_globally.push_back(psr.cadscores_residue_residue_summarized_globally);
+			}
+			if(params.score_chain_chain_contacts)
+			{
+				global_scoring_result_.cadscores_chain_chain_summarized_globally.push_back(psr.cadscores_chain_chain_summarized_globally);
+			}
+			if(params.score_atom_sas)
+			{
+				global_scoring_result_.cadscores_atom_sas_summarized_globally.push_back(psr.cadscores_atom_sas_summarized_globally);
+			}
+			if(params.score_residue_sas)
+			{
+				global_scoring_result_.cadscores_residue_sas_summarized_globally.push_back(psr.cadscores_residue_sas_summarized_globally);
+			}
+			if(params.score_chain_sas)
+			{
+				global_scoring_result_.cadscores_chain_sas_summarized_globally.push_back(psr.cadscores_chain_sas_summarized_globally);
+			}
+			if(params.score_atom_sites)
+			{
+				global_scoring_result_.cadscores_atom_site_summarized_globally.push_back(psr.cadscores_atom_site_summarized_globally);
+			}
+			if(params.score_residue_sites)
+			{
+				global_scoring_result_.cadscores_residue_site_summarized_globally.push_back(psr.cadscores_residue_site_summarized_globally);
+			}
+			if(params.score_chain_sites)
+			{
+				global_scoring_result_.cadscores_chain_site_summarized_globally.push_back(psr.cadscores_chain_site_summarized_globally);
+			}
+		}
+		global_scoring_result_.sort_by_cadscore();
+		return global_scoring_result_;
+	}
+
 	const GlobalScoringResult& get_all_global_scores()
 	{
 		if(target_names_.empty())
@@ -1211,54 +1301,7 @@ private:
 		}
 		if(full_scoring_results_.size()!=(target_names_.size()*model_names_.size()))
 		{
-			for(std::set<std::string>::const_iterator it1=target_names_.begin();it1!=target_names_.end();++it1)
-			{
-				for(std::set<std::string>::const_iterator it2=model_names_.begin();it2!=model_names_.end();++it2)
-				{
-					calculate_pair_scores(*it1, *it2);
-				}
-			}
-			global_scoring_result_=GlobalScoringResult();
-			for(std::map< std::pair<std::string, std::string>, PairScoringResult >::const_iterator it=full_scoring_results_.begin();it!=full_scoring_results_.end();++it)
-			{
-				const PairScoringResult& psr=it->second;
-				if(params.score_atom_atom_contacts)
-				{
-					global_scoring_result_.cadscores_atom_atom_summarized_globally.push_back(psr.cadscores_atom_atom_summarized_globally);
-				}
-				if(params.score_residue_residue_contacts)
-				{
-					global_scoring_result_.cadscores_residue_residue_summarized_globally.push_back(psr.cadscores_residue_residue_summarized_globally);
-				}
-				if(params.score_chain_chain_contacts)
-				{
-					global_scoring_result_.cadscores_chain_chain_summarized_globally.push_back(psr.cadscores_chain_chain_summarized_globally);
-				}
-				if(params.score_atom_sas)
-				{
-					global_scoring_result_.cadscores_atom_sas_summarized_globally.push_back(psr.cadscores_atom_sas_summarized_globally);
-				}
-				if(params.score_residue_sas)
-				{
-					global_scoring_result_.cadscores_residue_sas_summarized_globally.push_back(psr.cadscores_residue_sas_summarized_globally);
-				}
-				if(params.score_chain_sas)
-				{
-					global_scoring_result_.cadscores_chain_sas_summarized_globally.push_back(psr.cadscores_chain_sas_summarized_globally);
-				}
-				if(params.score_atom_sites)
-				{
-					global_scoring_result_.cadscores_atom_site_summarized_globally.push_back(psr.cadscores_atom_site_summarized_globally);
-				}
-				if(params.score_residue_sites)
-				{
-					global_scoring_result_.cadscores_residue_site_summarized_globally.push_back(psr.cadscores_residue_site_summarized_globally);
-				}
-				if(params.score_chain_sites)
-				{
-					global_scoring_result_.cadscores_chain_site_summarized_globally.push_back(psr.cadscores_chain_site_summarized_globally);
-				}
-			}
+			calculate_all_global_scores();
 		}
 		return global_scoring_result_;
 	}
