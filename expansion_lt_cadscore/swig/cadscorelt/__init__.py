@@ -1,4 +1,5 @@
 from .cadscorelt_python import *
+from pathlib import Path
 
 def _initialize(
         cls,
@@ -42,27 +43,33 @@ def _initialize(
 def _add_target_structure_from_file(
         self,
         input_file,
-        structure_name,
+        structure_name=None,
         include_heteroatoms=True,
         read_as_assembly=False):
+    if structure_name is None:
+        structure_name = Path(input_file).stem
     mfi = MolecularFileInput(input_file, include_heteroatoms, read_as_assembly)
     return self.add_target_structure_from_file_descriptor(mfi, structure_name)
 
 def _add_model_structure_from_file(
         self,
         input_file,
-        structure_name,
+        structure_name=None,
         include_heteroatoms=True,
         read_as_assembly=False):
+    if structure_name is None:
+        structure_name = Path(input_file).stem
     mfi = MolecularFileInput(input_file, include_heteroatoms, read_as_assembly)
     return self.add_model_structure_from_file_descriptor(mfi, structure_name)
     
 def _add_structure_from_file(
         self,
         input_file,
-        structure_name,
+        structure_name=None,
         include_heteroatoms=True,
         read_as_assembly=False):
+    if structure_name is None:
+        structure_name = Path(input_file).stem
     mfi = MolecularFileInput(input_file, include_heteroatoms, read_as_assembly)
     return self.add_structure_from_file_descriptor(mfi, structure_name)
 
