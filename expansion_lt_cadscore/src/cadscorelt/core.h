@@ -788,6 +788,22 @@ public:
 		return atom_name;
 	}
 
+	static void reset_conflation_rules() noexcept
+	{
+		current_conflation_map()=generate_standard_conflation_map();
+	}
+
+	static bool add_conflation_rule(const std::string& residue_name, const std::string& atom_name, const std::string& conflated_atom_name) noexcept
+	{
+		if(residue_name.empty() || atom_name.empty() || conflated_atom_name.empty())
+		{
+			return false;
+		}
+		MapContainer& ccmap=current_conflation_map();
+		ccmap[MapKey(residue_name, atom_name)]=conflated_atom_name;
+		return true;
+	}
+
 	static bool add_conflation_rules(const std::string& input_string) noexcept
 	{
 		if(input_string.empty())

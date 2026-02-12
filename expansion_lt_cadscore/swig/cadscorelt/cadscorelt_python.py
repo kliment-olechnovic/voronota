@@ -1167,10 +1167,12 @@ _cadscorelt_python.CADScoreParameters_swigregister(CADScoreParameters)
 class CADScore(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
     __repr__ = _swig_repr
-    params = property(_cadscorelt_python.CADScore_params_get, _cadscorelt_python.CADScore_params_set)
 
     def __init__(self, init_params):
         _cadscorelt_python.CADScore_swiginit(self, _cadscorelt_python.new_CADScore(init_params))
+
+    def get_parameters(self):
+        return _cadscorelt_python.CADScore_get_parameters(self)
 
     def add_target_structure_from_file_descriptor(self, input_file_info, name):
         return _cadscorelt_python.CADScore_add_target_structure_from_file_descriptor(self, input_file_info, name)
@@ -1325,6 +1327,15 @@ def enable_considering_residue_names():
 
 def disable_considering_residue_names():
     return _cadscorelt_python.disable_considering_residue_names()
+
+def reset_atom_names_conflation_rules():
+    return _cadscorelt_python.reset_atom_names_conflation_rules()
+
+def add_atom_names_conflation_rule(residue_name, atom_name, conflated_atom_name):
+    return _cadscorelt_python.add_atom_names_conflation_rule(residue_name, atom_name, conflated_atom_name)
+
+def add_atom_names_conflation_rules_from_file(configuration_file_path):
+    return _cadscorelt_python.add_atom_names_conflation_rules_from_file(configuration_file_path)
 
 def reset_molecular_radii_assignment_rules():
     return _cadscorelt_python.reset_molecular_radii_assignment_rules()

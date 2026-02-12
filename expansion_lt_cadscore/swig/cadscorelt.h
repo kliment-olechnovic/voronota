@@ -247,11 +247,9 @@ struct CADScoreParameters
 class CADScore
 {
 public:
-	CADScoreParameters params;
-
 	CADScore(const CADScoreParameters& init_params) : need_to_reset_global_scores_(false)
 	{
-		params=init_params;
+		params_=init_params;
 
 		if(!init_params.restrict_input_atoms.empty())
 		{
@@ -301,6 +299,11 @@ public:
 		scoring_result_construction_parameters_.record_local_scores_on_residue_level=init_params.record_local_scores;
 		scoring_result_construction_parameters_.record_local_scores_on_chain_level=init_params.record_local_scores;
 		scoring_result_construction_parameters_.record_compatible_model_atom_balls=false;
+	}
+
+	CADScoreParameters get_parameters() const
+	{
+		return params_;
 	}
 
 	void add_target_structure_from_file_descriptor(const MolecularFileInput& input_file_info, const std::string& name)
@@ -1247,7 +1250,7 @@ private:
 		{
 			for(std::set<std::string>::const_iterator it2=model_names_.begin();it2!=model_names_.end();++it2)
 			{
-				if(params.include_self_to_self_scores || (*it1)!=(*it2))
+				if(params_.include_self_to_self_scores || (*it1)!=(*it2))
 				{
 					calculate_pair_scores(*it1, *it2);
 					num_of_pair_scores++;
@@ -1260,42 +1263,42 @@ private:
 		}
 		for(std::map< std::pair<std::string, std::string>, PairScoringResult >::const_iterator it=full_scoring_results_.begin();it!=full_scoring_results_.end();++it)
 		{
-			if(params.include_self_to_self_scores || (it->first.first)!=(it->first.second))
+			if(params_.include_self_to_self_scores || (it->first.first)!=(it->first.second))
 			{
 				const PairScoringResult& psr=it->second;
-				if(params.score_atom_atom_contacts)
+				if(params_.score_atom_atom_contacts)
 				{
 					global_scoring_result_.cadscores_atom_atom_summarized_globally.push_back(psr.cadscores_atom_atom_summarized_globally);
 				}
-				if(params.score_residue_residue_contacts)
+				if(params_.score_residue_residue_contacts)
 				{
 					global_scoring_result_.cadscores_residue_residue_summarized_globally.push_back(psr.cadscores_residue_residue_summarized_globally);
 				}
-				if(params.score_chain_chain_contacts)
+				if(params_.score_chain_chain_contacts)
 				{
 					global_scoring_result_.cadscores_chain_chain_summarized_globally.push_back(psr.cadscores_chain_chain_summarized_globally);
 				}
-				if(params.score_atom_sas)
+				if(params_.score_atom_sas)
 				{
 					global_scoring_result_.cadscores_atom_sas_summarized_globally.push_back(psr.cadscores_atom_sas_summarized_globally);
 				}
-				if(params.score_residue_sas)
+				if(params_.score_residue_sas)
 				{
 					global_scoring_result_.cadscores_residue_sas_summarized_globally.push_back(psr.cadscores_residue_sas_summarized_globally);
 				}
-				if(params.score_chain_sas)
+				if(params_.score_chain_sas)
 				{
 					global_scoring_result_.cadscores_chain_sas_summarized_globally.push_back(psr.cadscores_chain_sas_summarized_globally);
 				}
-				if(params.score_atom_sites)
+				if(params_.score_atom_sites)
 				{
 					global_scoring_result_.cadscores_atom_site_summarized_globally.push_back(psr.cadscores_atom_site_summarized_globally);
 				}
-				if(params.score_residue_sites)
+				if(params_.score_residue_sites)
 				{
 					global_scoring_result_.cadscores_residue_site_summarized_globally.push_back(psr.cadscores_residue_site_summarized_globally);
 				}
-				if(params.score_chain_sites)
+				if(params_.score_chain_sites)
 				{
 					global_scoring_result_.cadscores_chain_site_summarized_globally.push_back(psr.cadscores_chain_site_summarized_globally);
 				}
@@ -1324,6 +1327,7 @@ private:
 	}
 
 	bool need_to_reset_global_scores_;
+	CADScoreParameters params_;
 	cadscorelt::ScorableData::ConstructionParameters scorable_data_construction_parameters_;
 	cadscorelt::ScoringResult::ConstructionParameters scoring_result_construction_parameters_;
 	std::set<std::string> target_names_;
@@ -1341,6 +1345,39 @@ void enable_considering_residue_names()
 void disable_considering_residue_names()
 {
 	cadscorelt::IDResidue::consider_residue_names()=false;
+}
+
+void reset_atom_names_conflation_rules()
+{
+	cadscorelt::ConflationOfAtomNames::reset_conflation_rules();
+}
+
+void add_atom_names_conflation_rule(const std::string& residue_name, const std::string& atom_name, const std::string& conflated_atom_name)
+{
+	if(cadscorelt::ConflationOfAtomNames::add_conflation_rule(residue_name, atom_name, conflated_atom_name))
+	{
+		throw std::runtime_error(std::string("Failed to add atom names conflation rule for residue '")+residue_name+"' atom '"+atom_name+"' -> '"+conflated_atom_name+"'.");
+	}
+}
+
+void add_atom_names_conflation_rules_from_file(const std::string& configuration_file_path)
+{
+	std::string input_data;
+
+	if(!voronotalt::read_whole_file_or_pipe_or_stdin_to_string(configuration_file_path, input_data))
+	{
+		throw std::runtime_error(std::string("Failed to open file '")+configuration_file_path+"'");
+	}
+
+	if(input_data.empty())
+	{
+		throw std::runtime_error(std::string("No data in file '")+configuration_file_path+"'");
+	}
+
+	if(cadscorelt::ConflationOfAtomNames::add_conflation_rules(input_data))
+	{
+		throw std::runtime_error(std::string("Invalid atom names conflation configuration file '")+configuration_file_path+"'");
+	}
 }
 
 void reset_molecular_radii_assignment_rules()

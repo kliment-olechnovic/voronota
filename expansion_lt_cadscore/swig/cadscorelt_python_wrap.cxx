@@ -28745,60 +28745,6 @@ SWIGINTERN PyObject *CADScoreParameters_swiginit(PyObject *SWIGUNUSEDPARM(self),
   return SWIG_Python_InitShadowInstance(args);
 }
 
-SWIGINTERN PyObject *_wrap_CADScore_params_set(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
-  CADScoreParameters *arg2 = (CADScoreParameters *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject *swig_obj[2] ;
-  
-  (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_params_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_params_set" "', argument " "1"" of type '" "CADScore *""'"); 
-  }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
-  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_params_set" "', argument " "2"" of type '" "CADScoreParameters *""'"); 
-  }
-  arg2 = reinterpret_cast< CADScoreParameters * >(argp2);
-  if (arg1) (arg1)->params = *arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CADScore_params_get(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject *swig_obj[1] ;
-  CADScoreParameters *result = 0 ;
-  
-  (void)self;
-  if (!args) SWIG_fail;
-  swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_params_get" "', argument " "1"" of type '" "CADScore *""'"); 
-  }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
-  result = (CADScoreParameters *)& ((arg1)->params);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_CADScoreParameters, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_new_CADScore(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CADScoreParameters *arg1 = 0 ;
@@ -28830,6 +28776,40 @@ SWIGINTERN PyObject *_wrap_new_CADScore(PyObject *self, PyObject *args) {
     }
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_CADScore, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CADScore_get_parameters(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CADScore *arg1 = (CADScore *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  CADScoreParameters result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_parameters" "', argument " "1"" of type '" "CADScore const *""'"); 
+  }
+  arg1 = reinterpret_cast< CADScore * >(argp1);
+  {
+    try
+    {
+      result = ((CADScore const *)arg1)->get_parameters();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj((new CADScoreParameters(result)), SWIGTYPE_p_CADScoreParameters, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -31671,6 +31651,138 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_reset_atom_names_conflation_rules(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "reset_atom_names_conflation_rules", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      reset_atom_names_conflation_rules();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_add_atom_names_conflation_rule(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::string *arg1 = 0 ;
+  std::string *arg2 = 0 ;
+  std::string *arg3 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  int res2 = SWIG_OLDOBJ ;
+  int res3 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "add_atom_names_conflation_rule", 3, 3, swig_obj)) SWIG_fail;
+  {
+    std::string *ptr = (std::string *)0;
+    res1 = SWIG_AsPtr_std_string(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "add_atom_names_conflation_rule" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "add_atom_names_conflation_rule" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "add_atom_names_conflation_rule" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "add_atom_names_conflation_rule" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  {
+    std::string *ptr = (std::string *)0;
+    res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "add_atom_names_conflation_rule" "', argument " "3"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "add_atom_names_conflation_rule" "', argument " "3"" of type '" "std::string const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  {
+    try
+    {
+      add_atom_names_conflation_rule((std::string const &)*arg1,(std::string const &)*arg2,(std::string const &)*arg3);
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_add_atom_names_conflation_rules_from_file(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::string *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  {
+    std::string *ptr = (std::string *)0;
+    res1 = SWIG_AsPtr_std_string(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "add_atom_names_conflation_rules_from_file" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "add_atom_names_conflation_rules_from_file" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  {
+    try
+    {
+      add_atom_names_conflation_rules_from_file((std::string const &)*arg1);
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_reset_molecular_radii_assignment_rules(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   
@@ -32285,9 +32397,8 @@ static PyMethodDef SwigMethods[] = {
 	 { "delete_CADScoreParameters", _wrap_delete_CADScoreParameters, METH_O, NULL},
 	 { "CADScoreParameters_swigregister", CADScoreParameters_swigregister, METH_O, NULL},
 	 { "CADScoreParameters_swiginit", CADScoreParameters_swiginit, METH_VARARGS, NULL},
-	 { "CADScore_params_set", _wrap_CADScore_params_set, METH_VARARGS, NULL},
-	 { "CADScore_params_get", _wrap_CADScore_params_get, METH_O, NULL},
 	 { "new_CADScore", _wrap_new_CADScore, METH_O, NULL},
+	 { "CADScore_get_parameters", _wrap_CADScore_get_parameters, METH_O, NULL},
 	 { "CADScore_add_target_structure_from_file_descriptor", _wrap_CADScore_add_target_structure_from_file_descriptor, METH_VARARGS, NULL},
 	 { "CADScore_add_target_structure_from_atoms", _wrap_CADScore_add_target_structure_from_atoms, METH_VARARGS, NULL},
 	 { "CADScore_add_model_structure_from_file_descriptor", _wrap_CADScore_add_model_structure_from_file_descriptor, METH_VARARGS, NULL},
@@ -32341,6 +32452,9 @@ static PyMethodDef SwigMethods[] = {
 	 { "CADScore_swiginit", CADScore_swiginit, METH_VARARGS, NULL},
 	 { "enable_considering_residue_names", _wrap_enable_considering_residue_names, METH_NOARGS, NULL},
 	 { "disable_considering_residue_names", _wrap_disable_considering_residue_names, METH_NOARGS, NULL},
+	 { "reset_atom_names_conflation_rules", _wrap_reset_atom_names_conflation_rules, METH_NOARGS, NULL},
+	 { "add_atom_names_conflation_rule", _wrap_add_atom_names_conflation_rule, METH_VARARGS, NULL},
+	 { "add_atom_names_conflation_rules_from_file", _wrap_add_atom_names_conflation_rules_from_file, METH_O, NULL},
 	 { "reset_molecular_radii_assignment_rules", _wrap_reset_molecular_radii_assignment_rules, METH_NOARGS, NULL},
 	 { "configure_molecular_radii_assignment_rules", _wrap_configure_molecular_radii_assignment_rules, METH_O, NULL},
 	 { NULL, NULL, 0, NULL }
