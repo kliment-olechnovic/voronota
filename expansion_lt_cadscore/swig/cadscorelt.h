@@ -247,7 +247,7 @@ class CADScore
 public:
 	CADScoreParameters params;
 
-	CADScore(const CADScoreParameters& init_params)
+	CADScore(const CADScoreParameters& init_params) : need_to_reset_global_scores_(false)
 	{
 		params=init_params;
 
@@ -303,32 +303,32 @@ public:
 
 	void add_target_structure_from_file_descriptor(const MolecularFileInput& input_file_info, const std::string& name)
 	{
-		add_structure_from_file(input_file_info, std::vector<MolecularAtomBall>(), true, false, name);
+		add_structure(input_file_info, std::vector<MolecularAtomBall>(), true, false, name);
 	}
 
 	void add_target_structure_from_atoms(const std::vector<MolecularAtomBall>& input_atom_balls, const std::string& name)
 	{
-		add_structure_from_file(MolecularFileInput(), input_atom_balls, true, false, name);
+		add_structure(MolecularFileInput(), input_atom_balls, true, false, name);
 	}
 
 	void add_model_structure_from_file_descriptor(const MolecularFileInput& input_file_info, const std::string& name)
 	{
-		add_structure_from_file(input_file_info, std::vector<MolecularAtomBall>(), false, true, name);
+		add_structure(input_file_info, std::vector<MolecularAtomBall>(), false, true, name);
 	}
 
 	void add_model_structure_from_atoms(const std::vector<MolecularAtomBall>& input_atom_balls, const std::string& name)
 	{
-		add_structure_from_file(MolecularFileInput(), input_atom_balls, false, true, name);
+		add_structure(MolecularFileInput(), input_atom_balls, false, true, name);
 	}
 
 	void add_structure_from_file_descriptor(const MolecularFileInput& input_file_info, const std::string& name)
 	{
-		add_structure_from_file(input_file_info, std::vector<MolecularAtomBall>(), true, true, name);
+		add_structure(input_file_info, std::vector<MolecularAtomBall>(), true, true, name);
 	}
 
 	void add_structure_from_atoms(const std::vector<MolecularAtomBall>& input_atom_balls, const std::string& name)
 	{
-		add_structure_from_file(MolecularFileInput(), input_atom_balls, true, true, name);
+		add_structure(MolecularFileInput(), input_atom_balls, true, true, name);
 	}
 
 	const std::vector<GlobalScore>* get_all_cadscores_atom_atom_summarized_globally()
@@ -764,6 +764,15 @@ private:
 		std::vector<GlobalScore> cadscores_residue_site_summarized_globally;
 		std::vector<GlobalScore> cadscores_chain_site_summarized_globally;
 
+		static void sort_vector_of_global_scores_by_cadscore(std::vector<GlobalScore>& v)
+		{
+			std::sort(v.begin(), v.end(),
+			[](const GlobalScore& a, const GlobalScore& b)
+			{
+				return a.cadscore > b.cadscore;
+			});
+		}
+
 		void clear()
 		{
 			cadscores_atom_atom_summarized_globally.clear();
@@ -1026,16 +1035,7 @@ private:
 		}
 	}
 
-	static void sort_vector_of_global_scores_by_cadscore(std::vector<GlobalScore>& v)
-	{
-		std::sort(v.begin(), v.end(),
-		[](const GlobalScore& a, const GlobalScore& b)
-		{
-			return a.cadscore > b.cadscore;
-		});
-	}
-
-	void add_structure_from_file(const MolecularFileInput& input_file_info, const std::vector<MolecularAtomBall>& input_atom_balls, const bool as_target, const bool as_model, const std::string& name)
+	void add_structure(const MolecularFileInput& input_file_info, const std::vector<MolecularAtomBall>& input_atom_balls, const bool as_target, const bool as_model, const std::string& name)
 	{
 		if(!as_target && !as_model)
 		{
@@ -1106,6 +1106,8 @@ private:
 		{
 			model_names_.insert(name);
 		}
+
+		need_to_reset_global_scores_=true;
 	}
 
 	std::map< std::pair<std::string, std::string>, PairScoringResult >::const_iterator calculate_pair_scores(const std::string& target_name, const std::string& model_name)
@@ -1237,6 +1239,7 @@ private:
 
 	const GlobalScoringResult& calculate_all_global_scores()
 	{
+		global_scoring_result_.clear();
 		for(std::set<std::string>::const_iterator it1=target_names_.begin();it1!=target_names_.end();++it1)
 		{
 			for(std::set<std::string>::const_iterator it2=model_names_.begin();it2!=model_names_.end();++it2)
@@ -1244,7 +1247,6 @@ private:
 				calculate_pair_scores(*it1, *it2);
 			}
 		}
-		global_scoring_result_.clear();
 		for(std::map< std::pair<std::string, std::string>, PairScoringResult >::const_iterator it=full_scoring_results_.begin();it!=full_scoring_results_.end();++it)
 		{
 			const PairScoringResult& psr=it->second;
@@ -1299,13 +1301,15 @@ private:
 		{
 			throw std::runtime_error(std::string("No models available."));
 		}
-		if(full_scoring_results_.size()!=(target_names_.size()*model_names_.size()))
+		if(need_to_reset_global_scores_)
 		{
 			calculate_all_global_scores();
+			need_to_reset_global_scores_=false;
 		}
 		return global_scoring_result_;
 	}
 
+	bool need_to_reset_global_scores_;
 	cadscorelt::ScorableData::ConstructionParameters scorable_data_construction_parameters_;
 	cadscorelt::ScoringResult::ConstructionParameters scoring_result_construction_parameters_;
 	std::set<std::string> target_names_;
