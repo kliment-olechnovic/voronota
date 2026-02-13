@@ -949,7 +949,8 @@ public:
 		bool record_residue_site_summaries;
 		bool record_chain_site_summaries;
 		bool conflate_equivalent_atom_types;
-		voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_input_balls;
+		voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_raw_input_balls;
+		voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_processed_input_balls;
 		voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_contact_descriptors;
 		voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_atom_descriptors;
 		std::vector<std::string> reference_sequences;
@@ -1193,6 +1194,26 @@ private:
 			return false;
 		}
 		
+		if(!params.filtering_expression_for_restricting_raw_input_balls.allow_all())
+		{
+			voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=params.filtering_expression_for_restricting_raw_input_balls.filter_vector(spheres_input_result.sphere_labels);
+			if(!ver.expression_valid)
+			{
+				error_log << "Restricting raw input by applying filtering expression failed.\n";
+				return false;
+			}
+			if(!ver.expression_matched())
+			{
+				error_log << "No raw input satisfied restricting filtering expression.\n";
+				return false;
+			}
+			if(!spheres_input_result.restrict_spheres(ver.expression_matched_all, ver.expression_matched_ids))
+			{
+				error_log << "Failed to restrict raw input.\n";
+				return false;
+			}
+		}
+
 		if(params.record_atom_balls || params.record_graphics || !params.reference_sequences.empty())
 		{
 			collect_input_atom_balls_from_spheres_input_result(spheres_input_result, params.probe, atom_balls);
@@ -1212,22 +1233,22 @@ private:
 			}
 		}
 
-		if(!params.filtering_expression_for_restricting_input_balls.allow_all())
+		if(!params.filtering_expression_for_restricting_processed_input_balls.allow_all())
 		{
-			voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=params.filtering_expression_for_restricting_input_balls.filter_vector(spheres_input_result.sphere_labels);
+			voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=params.filtering_expression_for_restricting_processed_input_balls.filter_vector(spheres_input_result.sphere_labels);
 			if(!ver.expression_valid)
 			{
-				error_log << "Restricting input by applying filtering expression failed.\n";
+				error_log << "Restricting processed input by applying filtering expression failed.\n";
 				return false;
 			}
 			if(!ver.expression_matched())
 			{
-				error_log << "No input satisfied restricting filtering expression.\n";
+				error_log << "No processed input satisfied restricting filtering expression.\n";
 				return false;
 			}
 			if(!spheres_input_result.restrict_spheres(ver.expression_matched_all, ver.expression_matched_ids))
 			{
-				error_log << "Failed to restrict input.\n";
+				error_log << "Failed to restrict processed input.\n";
 				return false;
 			}
 			if(!atom_balls.empty())

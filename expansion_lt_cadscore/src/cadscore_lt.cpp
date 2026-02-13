@@ -7,34 +7,35 @@ namespace app_cadscore
 
 void print_help(std::ostream& output)
 {
-	output << "Voronota-LT-CAD-score version " << cadscorelt::version() << "\n";
+	output << "CAD-score-LT version " << cadscorelt::version() << "\n";
 	output << R"(
-'voronota-lt-cadscore' calculates CAD-score (Contact Area Difference score).
+'cadscore-lt' calculates CAD-score (Contact Area Difference score).
 
 Options:
     --targets | -t                                   string     input file or directory paths for target (reference) structure files
     --models | -m                                    string     input file or directory paths for model structure files
+    --processors                                     number     maximum number of OpenMP threads to use, default is 2 if OpenMP is enabled, 1 if disabled
     --recursive-directory-search                                flag to search directories recursively
     --include-heteroatoms                                       flag to include heteroatoms when reading input in PDB or mmCIF format
     --read-inputs-as-assemblies                                 flag to join multiple models into an assembly when reading a file in PDB or mmCIF format
     --radii-config-file                              string     input file path for reading atom radii assignment rules
-    --processors                                     number     maximum number of OpenMP threads to use, default is 2 if OpenMP is enabled, 1 if disabled
     --probe                                          number     rolling probe radius, default is 1.4
+    --restrict-raw-input                             string     selection expression to restrict input atoms before any chain renaming or residue renumbering
     --reference-sequences-file                       string     input file path for reference sequences in FASTA format
-    --stoichiometry-list                             numbers    list of stoichiometry values to apply when mapping chains to reference sequences
-    --restrict-input-atoms                           string     selection expression to restrict input balls
+    --reference-stoichiometry                        numbers    list of stoichiometry values to apply when mapping chains to reference sequences
+    --restrict-processed-input                       string     selection expression to restrict input atoms after all chain renaming and residue renumbering
     --subselect-contacts                             string     selection expression to restrict contact area descriptors to score, default is '[-min-sep 1]'
     --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score, default is '[]'
     --conflate-atom-types                                       flag to conflate known equivalent atom types
     --conflation-config-file                         string     input file path for reading atom name conflation rules
     --scoring-types                                  strings    scoring types ('contacts', 'SAS', 'sites'), default is 'contacts'
     --scoring-levels                                 strings    scoring levels ('atom', 'residue', 'chain'), default is 'residue'
-    --local-output-formats                           strings    list of local output formats (can include 'table', 'pdb', 'mmcif', 'contactmap')
-    --local-output-levels                            strings    list of local output levels (can include 'atom', 'residue', 'chain'), default is 'residue'
+    --local-output-formats                           strings    list of formats (can include 'table', 'pdb', 'mmcif', 'contactmap', 'graphics-pymol', 'graphics-chimera')
+    --local-output-levels                            strings    list of output levels (can include 'atom', 'residue', 'chain'), default is 'residue'
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
-    --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts score 
+    --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score 
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
-    --log-sequence-alignments                                   flag to write chosen alignments with reference sequences into a file in the output directory
+    --log-sequence-alignments                                   flag to write best alignments with reference sequences into a file in the output directory
     --output-with-f1                                            flag to output area-based F1 scores along with CAD-scores
     --output-all-details                                        flag to output all details in tables of global and local scores
     --compact-output                                            flag to reduce size of output global scores table without removing rows
@@ -50,9 +51,9 @@ Standard error output stream:
 
 Usage examples:
 
-    voronota-lt-cadscore -t ./target.pdb -m ./model1.pdb ./model2.pdb --scoring-types contacts --scoring-levels residue chain
+    cadscore-lt -t ./target.pdb -m ./model1.pdb ./model2.pdb
 
-    voronota-lt-cadscore -t ./target.pdb -m ./model1.pdb --restrict-input-atoms '[-chain A,B]' --subselect-contacts '[-inter-chain]' --scoring-types contacts
+    cadscore-lt -t ./target.pdb -m ./model1.pdb ./model2.pdb --subselect-contacts '[-inter-chain]'
 
 )";
 }
@@ -96,10 +97,12 @@ public:
 	std::string radii_config_file;
 	std::string conflation_config_file;
 	std::string reference_sequences_file;
-	std::string restrict_input_atoms;
+	std::string restrict_raw_input_atoms;
+	std::string restrict_processed_input_atoms;
 	std::string restrict_contact_descriptors;
 	std::string restrict_atom_descriptors;
-	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_input_balls;
+	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_raw_input_balls;
+	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_processed_input_balls;
 	voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_contact_descriptors;
 	voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_atom_descriptors;
 	std::string output_global_scores;
@@ -229,13 +232,17 @@ public:
 				{
 					reference_sequences_file=opt.args_strings.front();
 				}
-				else if(opt.name=="stoichiometry-list" && !opt.args_ints.empty())
+				else if(opt.name=="reference-stoichiometry" && !opt.args_ints.empty())
 				{
 					stoichiometry_list=opt.args_ints;
 				}
-				else if(opt.name=="restrict-input-atoms" && opt.args_strings.size()==1)
+				else if(opt.name=="restrict-raw-input" && opt.args_strings.size()==1)
 				{
-					restrict_input_atoms=opt.args_strings.front();
+					restrict_raw_input_atoms=opt.args_strings.front();
+				}
+				else if(opt.name=="restrict-processed-input" && opt.args_strings.size()==1)
+				{
+					restrict_processed_input_atoms=opt.args_strings.front();
 				}
 				else if(opt.name=="subselect-contacts" && opt.args_strings.size()==1)
 				{
@@ -483,12 +490,21 @@ public:
 			error_log_for_options_parsing << "Error: no output directory provided to files enabling compact output of global scores.\n";
 		}
 
-		if(!restrict_input_atoms.empty())
+		if(!restrict_raw_input_atoms.empty())
 		{
-			filtering_expression_for_restricting_input_balls=voronotalt::FilteringBySphereLabels::ExpressionForSingle(restrict_input_atoms);
-			if(!filtering_expression_for_restricting_input_balls.valid())
+			filtering_expression_for_restricting_raw_input_balls=voronotalt::FilteringBySphereLabels::ExpressionForSingle(restrict_raw_input_atoms);
+			if(!filtering_expression_for_restricting_raw_input_balls.valid())
 			{
-				error_log_for_options_parsing << "Error: invalid input balls filtering expression.\n";
+				error_log_for_options_parsing << "Error: invalid raw input balls filtering expression.\n";
+			}
+		}
+
+		if(!restrict_processed_input_atoms.empty())
+		{
+			filtering_expression_for_restricting_processed_input_balls=voronotalt::FilteringBySphereLabels::ExpressionForSingle(restrict_processed_input_atoms);
+			if(!filtering_expression_for_restricting_processed_input_balls.valid())
+			{
+				error_log_for_options_parsing << "Error: invalid processed input balls filtering expression.\n";
 			}
 		}
 
@@ -583,7 +599,8 @@ bool run(const ApplicationParameters& app_params)
 	scorable_data_construction_parameters.record_residue_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_residue);
 	scorable_data_construction_parameters.record_chain_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_chain);
 	scorable_data_construction_parameters.conflate_equivalent_atom_types=app_params.conflate_equivalent_atom_types;
-	scorable_data_construction_parameters.filtering_expression_for_restricting_input_balls=app_params.filtering_expression_for_restricting_input_balls;
+	scorable_data_construction_parameters.filtering_expression_for_restricting_raw_input_balls=app_params.filtering_expression_for_restricting_raw_input_balls;
+	scorable_data_construction_parameters.filtering_expression_for_restricting_processed_input_balls=app_params.filtering_expression_for_restricting_processed_input_balls;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_contact_descriptors=app_params.filtering_expression_for_restricting_contact_descriptors;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_atom_descriptors=app_params.filtering_expression_for_restricting_atom_descriptors;
 
