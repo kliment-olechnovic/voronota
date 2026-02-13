@@ -253,8 +253,8 @@ public:
 
 		if(!init_params.restrict_input_atoms.empty())
 		{
-			scorable_data_construction_parameters_.filtering_expression_for_restricting_input_balls=voronotalt::FilteringBySphereLabels::ExpressionForSingle(init_params.restrict_input_atoms);
-			if(!scorable_data_construction_parameters_.filtering_expression_for_restricting_input_balls.valid())
+			scorable_data_construction_parameters_.filtering_expression_for_restricting_raw_input_balls=voronotalt::FilteringBySphereLabels::ExpressionForSingle(init_params.restrict_input_atoms);
+			if(!scorable_data_construction_parameters_.filtering_expression_for_restricting_raw_input_balls.valid())
 			{
 				throw std::runtime_error("Invalid input balls filtering expression.");
 			}
