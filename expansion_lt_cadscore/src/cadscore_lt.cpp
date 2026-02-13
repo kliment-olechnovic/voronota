@@ -35,7 +35,10 @@ Options:
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score 
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
-    --log-sequence-alignments                                   flag to write best alignments with reference sequences into a file in the output directory
+    --save-processed-inputs-mmcif                               flag to save processed input structures in mmCIF format to the output directory
+    --save-processed-inputs-pdb                                 flag to save processed input structures in PDB format to the output directory
+    --save-sequence-alignments                                  flag to save best alignments with reference sequences into a file in the output directory
+    --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
     --output-with-f1                                            flag to output area-based F1 scores along with CAD-scores
     --output-all-details                                        flag to output all details in tables of global and local scores
     --compact-output                                            flag to reduce size of output global scores table without removing rows
@@ -87,7 +90,10 @@ public:
 	bool local_output_format_graphicspymol;
 	bool local_output_format_graphicschimera;
 	bool print_paths_in_output;
-	bool log_sequence_alignments;
+	bool save_processed_inputs_mmcif;
+	bool save_processed_inputs_pdb;
+	bool save_sequence_alignments;
+	bool quit_before_scoring;
 	bool compact_output;
 	bool local_scores_requested;
 	bool read_successfuly;
@@ -136,7 +142,10 @@ public:
 		local_output_format_graphicspymol(false),
 		local_output_format_graphicschimera(false),
 		print_paths_in_output(false),
-		log_sequence_alignments(false),
+		save_processed_inputs_mmcif(false),
+		save_processed_inputs_pdb(false),
+		save_sequence_alignments(false),
+		quit_before_scoring(false),
 		compact_output(false),
 		local_scores_requested(false),
 		read_successfuly(false),
@@ -292,9 +301,21 @@ public:
 				{
 					print_paths_in_output=opt.is_flag_and_true();
 				}
-				else if(opt.name=="log-sequence-alignments" && opt.is_flag())
+				else if(opt.name=="save-processed-inputs-mmcif" && opt.is_flag())
 				{
-					log_sequence_alignments=opt.is_flag_and_true();
+					save_processed_inputs_mmcif=opt.is_flag_and_true();
+				}
+				else if(opt.name=="save-processed-inputs-pdb" && opt.is_flag())
+				{
+					save_processed_inputs_pdb=opt.is_flag_and_true();
+				}
+				else if(opt.name=="save-sequence-alignments" && opt.is_flag())
+				{
+					save_sequence_alignments=opt.is_flag_and_true();
+				}
+				else if(opt.name=="quit-before-scoring" && opt.is_flag())
+				{
+					quit_before_scoring=opt.is_flag_and_true();
 				}
 				else if(opt.name=="compact-output" && opt.is_flag())
 				{
@@ -475,14 +496,19 @@ public:
 			error_log_for_options_parsing << "Error: no output directory provided to write local scores.\n";
 		}
 
-		if(log_sequence_alignments && reference_sequences_file.empty())
+		if((save_processed_inputs_mmcif || save_processed_inputs_pdb) && output_dir.empty())
+		{
+			error_log_for_options_parsing << "Error: no output directory provided to save processed inputs.\n";
+		}
+
+		if(save_sequence_alignments && reference_sequences_file.empty())
 		{
 			error_log_for_options_parsing << "Error: log of sequence alignments requested, but no reference sequences provided.\n";
 		}
 
-		if(log_sequence_alignments && output_dir.empty())
+		if(save_sequence_alignments && output_dir.empty())
 		{
-			error_log_for_options_parsing << "Error: no output directory provided to write log of sequence alignments.\n";
+			error_log_for_options_parsing << "Error: no output directory provided to save sequence alignments.\n";
 		}
 
 		if(compact_output && output_dir.empty())
@@ -586,8 +612,8 @@ bool run(const ApplicationParameters& app_params)
 
 	cadscorelt::ScorableData::ConstructionParameters scorable_data_construction_parameters;
 	scorable_data_construction_parameters.probe=app_params.probe;
-	scorable_data_construction_parameters.record_atom_balls=app_params.local_scores_requested;
-	scorable_data_construction_parameters.record_sequence_alignments=app_params.log_sequence_alignments;
+	scorable_data_construction_parameters.record_atom_balls=(app_params.local_scores_requested || app_params.save_processed_inputs_mmcif || app_params.save_processed_inputs_pdb);
+	scorable_data_construction_parameters.record_sequence_alignments=app_params.save_sequence_alignments;
 	scorable_data_construction_parameters.record_graphics=(app_params.local_scores_requested && (app_params.local_output_format_graphicspymol|| app_params.local_output_format_graphicschimera));
 	scorable_data_construction_parameters.record_atom_atom_contact_summaries=(app_params.scoring_type_contacts && app_params.scoring_level_atom);
 	scorable_data_construction_parameters.record_residue_residue_contact_summaries=(app_params.scoring_type_contacts && app_params.scoring_level_residue) || app_params.remap_chains;
@@ -599,6 +625,7 @@ bool run(const ApplicationParameters& app_params)
 	scorable_data_construction_parameters.record_residue_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_residue);
 	scorable_data_construction_parameters.record_chain_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_chain);
 	scorable_data_construction_parameters.conflate_equivalent_atom_types=app_params.conflate_equivalent_atom_types;
+	scorable_data_construction_parameters.quit_before_constructing_tessellation=app_params.quit_before_scoring;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_raw_input_balls=app_params.filtering_expression_for_restricting_raw_input_balls;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_processed_input_balls=app_params.filtering_expression_for_restricting_processed_input_balls;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_contact_descriptors=app_params.filtering_expression_for_restricting_contact_descriptors;
@@ -758,13 +785,39 @@ bool run(const ApplicationParameters& app_params)
 		}
 	}
 
+	if((app_params.save_processed_inputs_mmcif || app_params.save_processed_inputs_pdb) && !app_params.output_dir.empty())
+	{
+#ifdef CADSCORELT_OPENMP
+#pragma omp parallel for
+#endif
+		for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
+		{
+			if(app_params.save_processed_inputs_mmcif)
+			{
+				const std::string outfilepath=app_params.output_dir+"/processed_inputs_as_mmcif/i"+std::to_string(i)+".cif";
+				if(!cadscorelt::FileSystemUtilities::write_file(outfilepath, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(list_of_unique_scorable_data[i].atom_balls)))
+				{
+					std::cerr << "Error (non-terminating): failed to write processed input to file '" << outfilepath << "'.\n";
+				}
+			}
+			if(app_params.save_processed_inputs_pdb)
+			{
+				const std::string outfilepath=app_params.output_dir+"/processed_inputs_as_pdb/i"+std::to_string(i)+".pdb";
+				if(!cadscorelt::FileSystemUtilities::write_file(outfilepath, cadscorelt::MolecularFileWritingUtilities::PDB::print(list_of_unique_scorable_data[i].atom_balls)))
+				{
+					std::cerr << "Error (non-terminating): failed to write processed input to file '" << outfilepath << "'.\n";
+				}
+			}
+		}
+	}
+
 	if(!scorable_data_construction_parameters.reference_sequences.empty() && !app_params.output_dir.empty())
 	{
 		{
-			std::string output_string="index\tfile\trenaming_of_chains";
+			std::string output_string="index\tfile\trenaming_of_chains\n";
 			for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
 			{
-				cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
+				const cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
 				output_string+=std::to_string(i);
 				output_string+="\t";
 				output_string+=list_of_unique_file_display_names[i];
@@ -772,18 +825,18 @@ bool run(const ApplicationParameters& app_params)
 				output_string+=(sd.chain_sequences_mapping_result.chain_renaming_label.empty() ? std::string(".") : sd.chain_sequences_mapping_result.chain_renaming_label);
 				output_string+="\n";
 			}
-			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/sequence_alignments.txt", output_string))
+			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/reference_based_chain_renamings.tsv", output_string))
 			{
 				std::cerr << "Error: failed to write table of chain renamings based on reference sequences.\n";
 				return false;
 			}
 		}
-		if(app_params.log_sequence_alignments)
+		if(app_params.save_sequence_alignments)
 		{
 			std::string output_string;
 			for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
 			{
-				cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
+				const cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
 				if(sd.valid())
 				{
 					output_string+="file: ";
@@ -810,12 +863,17 @@ bool run(const ApplicationParameters& app_params)
 					}
 				}
 			}
-			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/sequence_alignments.txt", output_string))
+			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/reference_based_sequence_alignments.txt", output_string))
 			{
-				std::cerr << "Error: failed to write log of sequence alignments.\n";
+				std::cerr << "Error: failed to write log of best per-chain sequence alignments with reference sequences.\n";
 				return false;
 			}
 		}
+	}
+
+	if(app_params.quit_before_scoring)
+	{
+		return true;
 	}
 
 	std::vector< std::pair<std::size_t, std::size_t> > list_of_pairs_of_target_model_indices;

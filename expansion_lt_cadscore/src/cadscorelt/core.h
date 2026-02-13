@@ -949,6 +949,7 @@ public:
 		bool record_residue_site_summaries;
 		bool record_chain_site_summaries;
 		bool conflate_equivalent_atom_types;
+		bool quit_before_constructing_tessellation;
 		voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_raw_input_balls;
 		voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_processed_input_balls;
 		voronotalt::FilteringBySphereLabels::ExpressionForPair filtering_expression_for_restricting_contact_descriptors;
@@ -970,7 +971,8 @@ public:
 			record_atom_site_summaries(false),
 			record_residue_site_summaries(false),
 			record_chain_site_summaries(false),
-			conflate_equivalent_atom_types(false)
+			conflate_equivalent_atom_types(false),
+			quit_before_constructing_tessellation(false)
 		{
 		}
 
@@ -1255,6 +1257,12 @@ private:
 			{
 				collect_input_atom_balls_from_spheres_input_result(spheres_input_result, params.probe, atom_balls);
 			}
+		}
+
+		if(params.quit_before_constructing_tessellation)
+		{
+			valid_=true;
+			return true;
 		}
 
 		voronotalt::RadicalTessellation::Result result;
@@ -1547,7 +1555,6 @@ private:
 		}
 
 		valid_=true;
-
 		return true;
 	}
 
