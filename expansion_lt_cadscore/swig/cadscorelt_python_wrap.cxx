@@ -27466,6 +27466,67 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_MolecularFileInput_data_blob_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularFileInput *arg1 = (MolecularFileInput *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "MolecularFileInput_data_blob_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularFileInput, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularFileInput_data_blob_set" "', argument " "1"" of type '" "MolecularFileInput *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularFileInput * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MolecularFileInput_data_blob_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MolecularFileInput_data_blob_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->data_blob = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MolecularFileInput_data_blob_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  MolecularFileInput *arg1 = (MolecularFileInput *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_MolecularFileInput, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MolecularFileInput_data_blob_get" "', argument " "1"" of type '" "MolecularFileInput *""'"); 
+  }
+  arg1 = reinterpret_cast< MolecularFileInput * >(argp1);
+  result = (std::string *) & ((arg1)->data_blob);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_MolecularFileInput_include_heteroatoms_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   MolecularFileInput *arg1 = (MolecularFileInput *) 0 ;
@@ -27653,13 +27714,83 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_new_MolecularFileInput__SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::string *arg1 = 0 ;
+  std::string *arg2 = 0 ;
+  bool arg3 ;
+  bool arg4 ;
+  int res1 = SWIG_OLDOBJ ;
+  int res2 = SWIG_OLDOBJ ;
+  bool val3 ;
+  int ecode3 = 0 ;
+  bool val4 ;
+  int ecode4 = 0 ;
+  MolecularFileInput *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  {
+    std::string *ptr = (std::string *)0;
+    res1 = SWIG_AsPtr_std_string(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_MolecularFileInput" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularFileInput" "', argument " "1"" of type '" "std::string const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_MolecularFileInput" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_MolecularFileInput" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  ecode3 = SWIG_AsVal_bool(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_MolecularFileInput" "', argument " "3"" of type '" "bool""'");
+  } 
+  arg3 = static_cast< bool >(val3);
+  ecode4 = SWIG_AsVal_bool(swig_obj[3], &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "new_MolecularFileInput" "', argument " "4"" of type '" "bool""'");
+  } 
+  arg4 = static_cast< bool >(val4);
+  {
+    try
+    {
+      result = (MolecularFileInput *)new MolecularFileInput((std::string const &)*arg1,(std::string const &)*arg2,arg3,arg4);
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_MolecularFileInput, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_MolecularFileInput(PyObject *self, PyObject *args) {
   Py_ssize_t argc;
-  PyObject *argv[4] = {
+  PyObject *argv[5] = {
     0
   };
   
-  if (!(argc = SWIG_Python_UnpackTuple(args, "new_MolecularFileInput", 0, 3, argv))) SWIG_fail;
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_MolecularFileInput", 0, 4, argv))) SWIG_fail;
   --argc;
   if (argc == 0) {
     return _wrap_new_MolecularFileInput__SWIG_0(self, argc, argv);
@@ -27684,12 +27815,37 @@ SWIGINTERN PyObject *_wrap_new_MolecularFileInput(PyObject *self, PyObject *args
       }
     }
   }
+  if (argc == 4) {
+    int _v = 0;
+    int res = SWIG_AsPtr_std_string(argv[0], (std::string**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      int res = SWIG_AsPtr_std_string(argv[1], (std::string**)(0));
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        {
+          int res = SWIG_AsVal_bool(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          {
+            int res = SWIG_AsVal_bool(argv[3], NULL);
+            _v = SWIG_CheckState(res);
+          }
+          if (_v) {
+            return _wrap_new_MolecularFileInput__SWIG_2(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
   
 fail:
   SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_MolecularFileInput'.\n"
     "  Possible C/C++ prototypes are:\n"
     "    MolecularFileInput::MolecularFileInput()\n"
-    "    MolecularFileInput::MolecularFileInput(std::string const &,bool const,bool const)\n");
+    "    MolecularFileInput::MolecularFileInput(std::string const &,bool const,bool const)\n"
+    "    MolecularFileInput::MolecularFileInput(std::string const &,std::string const &,bool const,bool const)\n");
   return 0;
 }
 
@@ -32351,6 +32507,8 @@ static PyMethodDef SwigMethods[] = {
 	 { "ChainChainScore_swiginit", ChainChainScore_swiginit, METH_VARARGS, NULL},
 	 { "MolecularFileInput_input_file_path_set", _wrap_MolecularFileInput_input_file_path_set, METH_VARARGS, NULL},
 	 { "MolecularFileInput_input_file_path_get", _wrap_MolecularFileInput_input_file_path_get, METH_O, NULL},
+	 { "MolecularFileInput_data_blob_set", _wrap_MolecularFileInput_data_blob_set, METH_VARARGS, NULL},
+	 { "MolecularFileInput_data_blob_get", _wrap_MolecularFileInput_data_blob_get, METH_O, NULL},
 	 { "MolecularFileInput_include_heteroatoms_set", _wrap_MolecularFileInput_include_heteroatoms_set, METH_VARARGS, NULL},
 	 { "MolecularFileInput_include_heteroatoms_get", _wrap_MolecularFileInput_include_heteroatoms_get, METH_O, NULL},
 	 { "MolecularFileInput_read_as_assembly_set", _wrap_MolecularFileInput_read_as_assembly_set, METH_VARARGS, NULL},

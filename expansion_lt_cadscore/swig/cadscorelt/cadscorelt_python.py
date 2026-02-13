@@ -1128,6 +1128,7 @@ class MolecularFileInput(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
     __repr__ = _swig_repr
     input_file_path = property(_cadscorelt_python.MolecularFileInput_input_file_path_get, _cadscorelt_python.MolecularFileInput_input_file_path_set)
+    data_blob = property(_cadscorelt_python.MolecularFileInput_data_blob_get, _cadscorelt_python.MolecularFileInput_data_blob_set)
     include_heteroatoms = property(_cadscorelt_python.MolecularFileInput_include_heteroatoms_get, _cadscorelt_python.MolecularFileInput_include_heteroatoms_set)
     read_as_assembly = property(_cadscorelt_python.MolecularFileInput_read_as_assembly_get, _cadscorelt_python.MolecularFileInput_read_as_assembly_set)
 

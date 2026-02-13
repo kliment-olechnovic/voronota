@@ -73,10 +73,40 @@ def _add_structure_from_file(
     mfi = MolecularFileInput(input_file, include_heteroatoms, read_as_assembly)
     return self.add_structure_from_file_descriptor(mfi, structure_name)
 
+def _add_target_structure_from_string(
+        self,
+        input_string_data,
+        structure_name,
+        include_heteroatoms=True,
+        read_as_assembly=False):
+    mfi = MolecularFileInput("_data_blob", input_string_data, include_heteroatoms, read_as_assembly)
+    return self.add_target_structure_from_file_descriptor(mfi, structure_name)
+
+def _add_model_structure_from_string(
+        self,
+        input_string_data,
+        structure_name,
+        include_heteroatoms=True,
+        read_as_assembly=False):
+    mfi = MolecularFileInput("_data_blob", input_string_data, include_heteroatoms, read_as_assembly)
+    return self.add_model_structure_from_file_descriptor(mfi, structure_name)
+
+def _add_structure_from_string(
+        self,
+        input_string_data,
+        structure_name,
+        include_heteroatoms=True,
+        read_as_assembly=False):
+    mfi = MolecularFileInput("_data_blob", input_string_data, include_heteroatoms, read_as_assembly)
+    return self.add_structure_from_file_descriptor(mfi, structure_name)
+
 CADScore.init = classmethod(_initialize)
 CADScore.add_target_structure_from_file = _add_target_structure_from_file
 CADScore.add_model_structure_from_file = _add_model_structure_from_file
 CADScore.add_structure_from_file = _add_structure_from_file
+CADScore.add_target_structure_from_string = _add_structure_from_string
+CADScore.add_model_structure_from_string = _add_structure_from_string
+CADScore.add_structure_from_string = _add_structure_from_string
 
 __all__ = []
 

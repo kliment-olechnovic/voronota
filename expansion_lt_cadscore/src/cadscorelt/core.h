@@ -906,6 +906,7 @@ private:
 struct MolecularFileInput
 {
 	std::string input_file_path;
+	std::string data_blob;
 	bool include_heteroatoms;
 	bool read_as_assembly;
 
@@ -924,6 +925,14 @@ struct MolecularFileInput
 
 	MolecularFileInput(const std::string& input_file, const bool include_heteroatoms, const bool read_as_assembly) noexcept :
 		input_file_path(input_file),
+		include_heteroatoms(include_heteroatoms),
+		read_as_assembly(read_as_assembly)
+	{
+	}
+
+	MolecularFileInput(const std::string& input_file, const std::string& data_blob, const bool include_heteroatoms, const bool read_as_assembly) noexcept :
+		input_file_path(input_file),
+		data_blob(data_blob),
 		include_heteroatoms(include_heteroatoms),
 		read_as_assembly(read_as_assembly)
 	{
@@ -1165,28 +1174,43 @@ private:
 		}
 		else
 		{
-			std::string input_data;
-
-			if(!voronotalt::read_whole_file_or_pipe_or_stdin_to_string(molecular_file_input.input_file_path, input_data))
+			if(molecular_file_input.input_file_path=="_data_blob")
 			{
-				error_log << "Failed to open file '" << molecular_file_input.input_file_path << "'.\n";
-				return false;
+				const voronotalt::MolecularFileReading::Parameters molecular_file_reading_parameters(molecular_file_input.include_heteroatoms, false, molecular_file_input.read_as_assembly);
+
+				std::ostringstream err_stream;
+
+				if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_string(molecular_file_input.data_blob, molecular_file_reading_parameters, params.probe, spheres_input_result, err_stream, time_recorder))
+				{
+					error_log << "Failed to parse in-memory data blob: " << err_stream.str() << "\n";
+					return false;
+				}
 			}
-
-			if(input_data.empty())
+			else
 			{
-				error_log << "No data in file '" << molecular_file_input.input_file_path << "'.\n";
-				return false;
-			}
+				std::string input_data;
 
-			const voronotalt::MolecularFileReading::Parameters molecular_file_reading_parameters(molecular_file_input.include_heteroatoms, false, molecular_file_input.read_as_assembly);
+				if(!voronotalt::read_whole_file_or_pipe_or_stdin_to_string(molecular_file_input.input_file_path, input_data))
+				{
+					error_log << "Failed to open file '" << molecular_file_input.input_file_path << "'.\n";
+					return false;
+				}
 
-			std::ostringstream err_stream;
+				if(input_data.empty())
+				{
+					error_log << "No data in file '" << molecular_file_input.input_file_path << "'.\n";
+					return false;
+				}
 
-			if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_string(input_data, molecular_file_reading_parameters, params.probe, spheres_input_result, err_stream, time_recorder))
-			{
-				error_log << "Failed to parse file '" << molecular_file_input.input_file_path << "': " << err_stream.str() << "\n";
-				return false;
+				const voronotalt::MolecularFileReading::Parameters molecular_file_reading_parameters(molecular_file_input.include_heteroatoms, false, molecular_file_input.read_as_assembly);
+
+				std::ostringstream err_stream;
+
+				if(!voronotalt::SpheresInput::read_labeled_or_unlabeled_spheres_from_string(input_data, molecular_file_reading_parameters, params.probe, spheres_input_result, err_stream, time_recorder))
+				{
+					error_log << "Failed to parse file '" << molecular_file_input.input_file_path << "': " << err_stream.str() << "\n";
+					return false;
+				}
 			}
 		}
 

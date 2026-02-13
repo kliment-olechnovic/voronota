@@ -187,6 +187,7 @@ struct ChainChainScore
 struct MolecularFileInput
 {
 	std::string input_file_path;
+	std::string data_blob;
 	bool include_heteroatoms;
 	bool read_as_assembly;
 
@@ -198,6 +199,14 @@ struct MolecularFileInput
 
 	MolecularFileInput(const std::string& input_file, const bool include_heteroatoms, const bool read_as_assembly) :
 		input_file_path(input_file),
+		include_heteroatoms(include_heteroatoms),
+		read_as_assembly(read_as_assembly)
+	{
+	}
+
+	MolecularFileInput(const std::string& input_file, const std::string& data_blob, const bool include_heteroatoms, const bool read_as_assembly) :
+		input_file_path(input_file),
+		data_blob(data_blob),
 		include_heteroatoms(include_heteroatoms),
 		read_as_assembly(read_as_assembly)
 	{
@@ -1069,7 +1078,7 @@ private:
 		std::ostringstream local_error_stream;
 		if(!input_file_info.input_file_path.empty())
 		{
-			sd.construct(scorable_data_construction_parameters_, cadscorelt::MolecularFileInput(input_file_info.input_file_path, input_file_info.include_heteroatoms, input_file_info.read_as_assembly), local_error_stream);
+			sd.construct(scorable_data_construction_parameters_, cadscorelt::MolecularFileInput(input_file_info.input_file_path, input_file_info.data_blob, input_file_info.include_heteroatoms, input_file_info.read_as_assembly), local_error_stream);
 		}
 		else if(!input_atom_balls.empty())
 		{
