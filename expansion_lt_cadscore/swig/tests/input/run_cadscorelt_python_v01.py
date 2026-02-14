@@ -1,6 +1,6 @@
 import cadscorelt
 
-cs = cadscorelt.CADScore.init(subselect_contacts="[-inter-chain]", remap_chains=True, record_local_scores=True, score_atom_atom_contacts=True)
+cs = cadscorelt.CADScoreComputer.init(subselect_contacts="[-inter-chain]", remap_chains=True, record_local_scores=True, score_atom_atom_contacts=True)
 
 cs.add_structure_from_file("./input/data/protein_homodimer1/target.pdb")
 cs.add_structure_from_file("./input/data/protein_homodimer1/model1.pdb")

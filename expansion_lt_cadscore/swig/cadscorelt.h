@@ -213,7 +213,7 @@ struct MolecularFileInput
 	}
 };
 
-struct CADScoreParameters
+struct CADScoreComputerParameters
 {
 	double probe;
 	bool conflate_atom_names;
@@ -233,7 +233,7 @@ struct CADScoreParameters
 	std::string subselect_contacts;
 	std::string subselect_atoms;
 
-	CADScoreParameters() :
+	CADScoreComputerParameters() :
 		probe(1.4),
 		conflate_atom_names(true),
 		remap_chains(false),
@@ -253,10 +253,10 @@ struct CADScoreParameters
 	}
 };
 
-class CADScore
+class CADScoreComputer
 {
 public:
-	CADScore(const CADScoreParameters& init_params) : need_to_reset_global_scores_(false)
+	CADScoreComputer(const CADScoreComputerParameters& init_params) : need_to_reset_global_scores_(false)
 	{
 		params_=init_params;
 
@@ -310,7 +310,7 @@ public:
 		scoring_result_construction_parameters_.record_compatible_model_atom_balls=false;
 	}
 
-	CADScoreParameters get_parameters() const
+	CADScoreComputerParameters get_parameters() const
 	{
 		return params_;
 	}
@@ -1336,7 +1336,7 @@ private:
 	}
 
 	bool need_to_reset_global_scores_;
-	CADScoreParameters params_;
+	CADScoreComputerParameters params_;
 	cadscorelt::ScorableData::ConstructionParameters scorable_data_construction_parameters_;
 	cadscorelt::ScoringResult::ConstructionParameters scoring_result_construction_parameters_;
 	std::set<std::string> target_names_;

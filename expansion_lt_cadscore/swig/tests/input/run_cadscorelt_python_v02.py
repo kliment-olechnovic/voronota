@@ -5,7 +5,7 @@ structure_target = biotite.structure.io.load_structure("./input/data/protein_hom
 structure_model1 = biotite.structure.io.load_structure("./input/data/protein_homodimer1/model1.pdb")
 structure_model2 = biotite.structure.io.load_structure("./input/data/protein_homodimer1/model2.pdb")
 
-cs = cadscorelt.CADScore.init(subselect_contacts="[-inter-chain]", remap_chains=True, record_local_scores=True, score_atom_atom_contacts=True)
+cs = cadscorelt.CADScoreComputer.init(subselect_contacts="[-inter-chain]", remap_chains=True, record_local_scores=True, score_atom_atom_contacts=True)
 
 cs.add_structure_from_biotite(structure_target, "target")
 cs.add_structure_from_biotite(structure_model1, "model1")

@@ -3153,8 +3153,8 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 
 #define SWIGTYPE_p_AtomAtomScore swig_types[0]
 #define SWIGTYPE_p_AtomScore swig_types[1]
-#define SWIGTYPE_p_CADScore swig_types[2]
-#define SWIGTYPE_p_CADScoreParameters swig_types[3]
+#define SWIGTYPE_p_CADScoreComputer swig_types[2]
+#define SWIGTYPE_p_CADScoreComputerParameters swig_types[3]
 #define SWIGTYPE_p_ChainChainScore swig_types[4]
 #define SWIGTYPE_p_ChainScore swig_types[5]
 #define SWIGTYPE_p_GlobalScore swig_types[6]
@@ -27894,9 +27894,9 @@ SWIGINTERN PyObject *MolecularFileInput_swiginit(PyObject *SWIGUNUSEDPARM(self),
   return SWIG_Python_InitShadowInstance(args);
 }
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_probe_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_probe_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   double arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -27905,15 +27905,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_probe_set(PyObject *self, PyObject
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_probe_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_probe_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_probe_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_probe_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_probe_set" "', argument " "2"" of type '" "double""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_probe_set" "', argument " "2"" of type '" "double""'");
   } 
   arg2 = static_cast< double >(val2);
   if (arg1) (arg1)->probe = arg2;
@@ -27924,9 +27924,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_probe_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_probe_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -27935,11 +27935,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_probe_get(PyObject *self, PyObject
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_probe_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_probe_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (double) ((arg1)->probe);
   resultobj = SWIG_From_double(static_cast< double >(result));
   return resultobj;
@@ -27948,9 +27948,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_conflate_atom_names_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_conflate_atom_names_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -27959,15 +27959,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_conflate_atom_names_set(PyObject *
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_conflate_atom_names_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_conflate_atom_names_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_conflate_atom_names_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_conflate_atom_names_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_conflate_atom_names_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_conflate_atom_names_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->conflate_atom_names = arg2;
@@ -27978,9 +27978,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_conflate_atom_names_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_conflate_atom_names_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -27989,11 +27989,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_conflate_atom_names_get(PyObject *
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_conflate_atom_names_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_conflate_atom_names_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->conflate_atom_names);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28002,9 +28002,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_remap_chains_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_remap_chains_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28013,15 +28013,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_remap_chains_set(PyObject *self, P
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_remap_chains_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_remap_chains_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_remap_chains_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_remap_chains_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_remap_chains_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_remap_chains_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->remap_chains = arg2;
@@ -28032,9 +28032,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_remap_chains_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_remap_chains_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28043,11 +28043,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_remap_chains_get(PyObject *self, P
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_remap_chains_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_remap_chains_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->remap_chains);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28056,9 +28056,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_atom_atom_contacts_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_atom_atom_contacts_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28067,15 +28067,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_atom_atom_contacts_set(PyObj
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_score_atom_atom_contacts_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_score_atom_atom_contacts_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_atom_atom_contacts_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_atom_atom_contacts_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_score_atom_atom_contacts_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_score_atom_atom_contacts_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->score_atom_atom_contacts = arg2;
@@ -28086,9 +28086,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_atom_atom_contacts_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_atom_atom_contacts_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28097,11 +28097,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_atom_atom_contacts_get(PyObj
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_atom_atom_contacts_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_atom_atom_contacts_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->score_atom_atom_contacts);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28110,9 +28110,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_residue_residue_contacts_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_residue_residue_contacts_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28121,15 +28121,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_residue_residue_contacts_set
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_score_residue_residue_contacts_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_score_residue_residue_contacts_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_residue_residue_contacts_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_residue_residue_contacts_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_score_residue_residue_contacts_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_score_residue_residue_contacts_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->score_residue_residue_contacts = arg2;
@@ -28140,9 +28140,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_residue_residue_contacts_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_residue_residue_contacts_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28151,11 +28151,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_residue_residue_contacts_get
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_residue_residue_contacts_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_residue_residue_contacts_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->score_residue_residue_contacts);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28164,9 +28164,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_chain_chain_contacts_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_chain_chain_contacts_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28175,15 +28175,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_chain_chain_contacts_set(PyO
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_score_chain_chain_contacts_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_score_chain_chain_contacts_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_chain_chain_contacts_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_chain_chain_contacts_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_score_chain_chain_contacts_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_score_chain_chain_contacts_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->score_chain_chain_contacts = arg2;
@@ -28194,9 +28194,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_chain_chain_contacts_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_chain_chain_contacts_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28205,11 +28205,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_chain_chain_contacts_get(PyO
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_chain_chain_contacts_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_chain_chain_contacts_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->score_chain_chain_contacts);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28218,9 +28218,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_atom_sas_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_atom_sas_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28229,15 +28229,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_atom_sas_set(PyObject *self,
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_score_atom_sas_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_score_atom_sas_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_atom_sas_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_atom_sas_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_score_atom_sas_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_score_atom_sas_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->score_atom_sas = arg2;
@@ -28248,9 +28248,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_atom_sas_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_atom_sas_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28259,11 +28259,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_atom_sas_get(PyObject *self,
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_atom_sas_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_atom_sas_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->score_atom_sas);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28272,9 +28272,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_residue_sas_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_residue_sas_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28283,15 +28283,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_residue_sas_set(PyObject *se
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_score_residue_sas_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_score_residue_sas_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_residue_sas_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_residue_sas_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_score_residue_sas_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_score_residue_sas_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->score_residue_sas = arg2;
@@ -28302,9 +28302,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_residue_sas_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_residue_sas_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28313,11 +28313,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_residue_sas_get(PyObject *se
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_residue_sas_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_residue_sas_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->score_residue_sas);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28326,9 +28326,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_chain_sas_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_chain_sas_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28337,15 +28337,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_chain_sas_set(PyObject *self
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_score_chain_sas_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_score_chain_sas_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_chain_sas_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_chain_sas_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_score_chain_sas_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_score_chain_sas_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->score_chain_sas = arg2;
@@ -28356,9 +28356,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_chain_sas_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_chain_sas_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28367,11 +28367,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_chain_sas_get(PyObject *self
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_chain_sas_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_chain_sas_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->score_chain_sas);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28380,9 +28380,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_atom_sites_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_atom_sites_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28391,15 +28391,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_atom_sites_set(PyObject *sel
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_score_atom_sites_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_score_atom_sites_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_atom_sites_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_atom_sites_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_score_atom_sites_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_score_atom_sites_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->score_atom_sites = arg2;
@@ -28410,9 +28410,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_atom_sites_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_atom_sites_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28421,11 +28421,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_atom_sites_get(PyObject *sel
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_atom_sites_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_atom_sites_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->score_atom_sites);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28434,9 +28434,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_residue_sites_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_residue_sites_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28445,15 +28445,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_residue_sites_set(PyObject *
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_score_residue_sites_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_score_residue_sites_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_residue_sites_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_residue_sites_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_score_residue_sites_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_score_residue_sites_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->score_residue_sites = arg2;
@@ -28464,9 +28464,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_residue_sites_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_residue_sites_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28475,11 +28475,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_residue_sites_get(PyObject *
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_residue_sites_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_residue_sites_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->score_residue_sites);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28488,9 +28488,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_chain_sites_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_chain_sites_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28499,15 +28499,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_chain_sites_set(PyObject *se
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_score_chain_sites_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_score_chain_sites_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_chain_sites_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_chain_sites_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_score_chain_sites_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_score_chain_sites_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->score_chain_sites = arg2;
@@ -28518,9 +28518,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_score_chain_sites_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_score_chain_sites_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28529,11 +28529,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_score_chain_sites_get(PyObject *se
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_score_chain_sites_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_score_chain_sites_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->score_chain_sites);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28542,9 +28542,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_record_local_scores_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_record_local_scores_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28553,15 +28553,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_record_local_scores_set(PyObject *
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_record_local_scores_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_record_local_scores_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_record_local_scores_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_record_local_scores_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_record_local_scores_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_record_local_scores_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->record_local_scores = arg2;
@@ -28572,9 +28572,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_record_local_scores_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_record_local_scores_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28583,11 +28583,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_record_local_scores_get(PyObject *
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_record_local_scores_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_record_local_scores_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->record_local_scores);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28596,9 +28596,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_include_self_to_self_scores_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_include_self_to_self_scores_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   bool arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28607,15 +28607,15 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_include_self_to_self_scores_set(Py
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_include_self_to_self_scores_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_include_self_to_self_scores_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_include_self_to_self_scores_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_include_self_to_self_scores_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreParameters_include_self_to_self_scores_set" "', argument " "2"" of type '" "bool""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_include_self_to_self_scores_set" "', argument " "2"" of type '" "bool""'");
   } 
   arg2 = static_cast< bool >(val2);
   if (arg1) (arg1)->include_self_to_self_scores = arg2;
@@ -28626,9 +28626,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_include_self_to_self_scores_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_include_self_to_self_scores_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28637,11 +28637,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_include_self_to_self_scores_get(Py
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_include_self_to_self_scores_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_include_self_to_self_scores_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (bool) ((arg1)->include_self_to_self_scores);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -28650,9 +28650,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_restrict_input_atoms_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_restrict_input_atoms_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   std::string *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28660,20 +28660,20 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_restrict_input_atoms_set(PyObject 
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_restrict_input_atoms_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_restrict_input_atoms_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_restrict_input_atoms_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_restrict_input_atoms_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreParameters_restrict_input_atoms_set" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputerParameters_restrict_input_atoms_set" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreParameters_restrict_input_atoms_set" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputerParameters_restrict_input_atoms_set" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -28687,9 +28687,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_restrict_input_atoms_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_restrict_input_atoms_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28698,11 +28698,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_restrict_input_atoms_get(PyObject 
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_restrict_input_atoms_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_restrict_input_atoms_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (std::string *) & ((arg1)->restrict_input_atoms);
   resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
   return resultobj;
@@ -28711,9 +28711,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_subselect_contacts_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_subselect_contacts_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   std::string *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28721,20 +28721,20 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_subselect_contacts_set(PyObject *s
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_subselect_contacts_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_subselect_contacts_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_subselect_contacts_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_subselect_contacts_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreParameters_subselect_contacts_set" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputerParameters_subselect_contacts_set" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreParameters_subselect_contacts_set" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputerParameters_subselect_contacts_set" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -28748,9 +28748,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_subselect_contacts_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_subselect_contacts_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28759,11 +28759,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_subselect_contacts_get(PyObject *s
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_subselect_contacts_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_subselect_contacts_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (std::string *) & ((arg1)->subselect_contacts);
   resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
   return resultobj;
@@ -28772,9 +28772,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_subselect_atoms_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_subselect_atoms_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   std::string *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28782,20 +28782,20 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_subselect_atoms_set(PyObject *self
   PyObject *swig_obj[2] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScoreParameters_subselect_atoms_set", 2, 2, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_subselect_atoms_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_subselect_atoms_set" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_subselect_atoms_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreParameters_subselect_atoms_set" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputerParameters_subselect_atoms_set" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreParameters_subselect_atoms_set" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputerParameters_subselect_atoms_set" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -28809,9 +28809,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScoreParameters_subselect_atoms_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_subselect_atoms_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28820,11 +28820,11 @@ SWIGINTERN PyObject *_wrap_CADScoreParameters_subselect_atoms_get(PyObject *self
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreParameters_subselect_atoms_get" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_subselect_atoms_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   result = (std::string *) & ((arg1)->subselect_atoms);
   resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
   return resultobj;
@@ -28833,16 +28833,16 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_CADScoreParameters(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_CADScoreComputerParameters(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *result = 0 ;
+  CADScoreComputerParameters *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "new_CADScoreParameters", 0, 0, 0)) SWIG_fail;
+  if (!SWIG_Python_UnpackTuple(args, "new_CADScoreComputerParameters", 0, 0, 0)) SWIG_fail;
   {
     try
     {
-      result = (CADScoreParameters *)new CADScoreParameters();
+      result = (CADScoreComputerParameters *)new CADScoreComputerParameters();
     }
     catch (const std::exception& e)
     {
@@ -28850,16 +28850,16 @@ SWIGINTERN PyObject *_wrap_new_CADScoreParameters(PyObject *self, PyObject *args
       return NULL;
     }
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_CADScoreParameters, SWIG_POINTER_NEW |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_CADScoreComputerParameters, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_CADScoreParameters(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_delete_CADScoreComputerParameters(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = (CADScoreParameters *) 0 ;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -28867,11 +28867,11 @@ SWIGINTERN PyObject *_wrap_delete_CADScoreParameters(PyObject *self, PyObject *a
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreParameters, SWIG_POINTER_DISOWN |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CADScoreParameters" "', argument " "1"" of type '" "CADScoreParameters *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CADScoreComputerParameters" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   {
     try
     {
@@ -28890,40 +28890,40 @@ fail:
 }
 
 
-SWIGINTERN PyObject *CADScoreParameters_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *CADScoreComputerParameters_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_CADScoreParameters, SWIG_NewClientData(obj));
+  SWIG_TypeNewClientData(SWIGTYPE_p_CADScoreComputerParameters, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
-SWIGINTERN PyObject *CADScoreParameters_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *CADScoreComputerParameters_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   return SWIG_Python_InitShadowInstance(args);
 }
 
-SWIGINTERN PyObject *_wrap_new_CADScore(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_CADScoreComputer(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScoreParameters *arg1 = 0 ;
+  CADScoreComputerParameters *arg1 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
-  CADScore *result = 0 ;
+  CADScoreComputer *result = 0 ;
   
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1, SWIGTYPE_p_CADScoreParameters,  0  | 0);
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1, SWIGTYPE_p_CADScoreComputerParameters,  0  | 0);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_CADScore" "', argument " "1"" of type '" "CADScoreParameters const &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_CADScoreComputer" "', argument " "1"" of type '" "CADScoreComputerParameters const &""'"); 
   }
   if (!argp1) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_CADScore" "', argument " "1"" of type '" "CADScoreParameters const &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_CADScoreComputer" "', argument " "1"" of type '" "CADScoreComputerParameters const &""'"); 
   }
-  arg1 = reinterpret_cast< CADScoreParameters * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
   {
     try
     {
-      result = (CADScore *)new CADScore((CADScoreParameters const &)*arg1);
+      result = (CADScoreComputer *)new CADScoreComputer((CADScoreComputerParameters const &)*arg1);
     }
     catch (const std::exception& e)
     {
@@ -28931,33 +28931,33 @@ SWIGINTERN PyObject *_wrap_new_CADScore(PyObject *self, PyObject *args) {
       return NULL;
     }
   }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_CADScore, SWIG_POINTER_NEW |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_CADScoreComputer, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_parameters(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_parameters(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
-  CADScoreParameters result;
+  CADScoreComputerParameters result;
   
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_parameters" "', argument " "1"" of type '" "CADScore const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_parameters" "', argument " "1"" of type '" "CADScoreComputer const *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     try
     {
-      result = ((CADScore const *)arg1)->get_parameters();
+      result = ((CADScoreComputer const *)arg1)->get_parameters();
     }
     catch (const std::exception& e)
     {
@@ -28965,16 +28965,16 @@ SWIGINTERN PyObject *_wrap_CADScore_get_parameters(PyObject *self, PyObject *arg
       return NULL;
     }
   }
-  resultobj = SWIG_NewPointerObj((new CADScoreParameters(result)), SWIGTYPE_p_CADScoreParameters, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new CADScoreComputerParameters(result)), SWIGTYPE_p_CADScoreComputerParameters, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_add_target_structure_from_file_descriptor(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_add_target_structure_from_file_descriptor(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   MolecularFileInput *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -28985,28 +28985,28 @@ SWIGINTERN PyObject *_wrap_CADScore_add_target_structure_from_file_descriptor(Py
   PyObject *swig_obj[3] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_add_target_structure_from_file_descriptor", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_add_target_structure_from_file_descriptor", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_target_structure_from_file_descriptor" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_add_target_structure_from_file_descriptor" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularFileInput,  0  | 0);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_target_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_add_target_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
   }
   if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_target_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_add_target_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
   }
   arg2 = reinterpret_cast< MolecularFileInput * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_target_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_add_target_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_target_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_add_target_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -29030,9 +29030,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_add_target_structure_from_atoms(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_add_target_structure_from_atoms(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -29042,20 +29042,20 @@ SWIGINTERN PyObject *_wrap_CADScore_add_target_structure_from_atoms(PyObject *se
   PyObject *swig_obj[3] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_add_target_structure_from_atoms", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_add_target_structure_from_atoms", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_target_structure_from_atoms" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_add_target_structure_from_atoms" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *ptr = (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *)0;
     res2 = swig::asptr(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_target_structure_from_atoms" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_add_target_structure_from_atoms" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_target_structure_from_atoms" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_add_target_structure_from_atoms" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
     }
     arg2 = ptr;
   }
@@ -29063,10 +29063,10 @@ SWIGINTERN PyObject *_wrap_CADScore_add_target_structure_from_atoms(PyObject *se
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_target_structure_from_atoms" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_add_target_structure_from_atoms" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_target_structure_from_atoms" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_add_target_structure_from_atoms" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -29092,9 +29092,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_add_model_structure_from_file_descriptor(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_add_model_structure_from_file_descriptor(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   MolecularFileInput *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -29105,28 +29105,28 @@ SWIGINTERN PyObject *_wrap_CADScore_add_model_structure_from_file_descriptor(PyO
   PyObject *swig_obj[3] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_add_model_structure_from_file_descriptor", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_add_model_structure_from_file_descriptor", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_model_structure_from_file_descriptor" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_add_model_structure_from_file_descriptor" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularFileInput,  0  | 0);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_model_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_add_model_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
   }
   if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_model_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_add_model_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
   }
   arg2 = reinterpret_cast< MolecularFileInput * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_model_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_add_model_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_model_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_add_model_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -29150,9 +29150,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_add_model_structure_from_atoms(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_add_model_structure_from_atoms(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -29162,20 +29162,20 @@ SWIGINTERN PyObject *_wrap_CADScore_add_model_structure_from_atoms(PyObject *sel
   PyObject *swig_obj[3] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_add_model_structure_from_atoms", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_add_model_structure_from_atoms", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_model_structure_from_atoms" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_add_model_structure_from_atoms" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *ptr = (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *)0;
     res2 = swig::asptr(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_model_structure_from_atoms" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_add_model_structure_from_atoms" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_model_structure_from_atoms" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_add_model_structure_from_atoms" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
     }
     arg2 = ptr;
   }
@@ -29183,10 +29183,10 @@ SWIGINTERN PyObject *_wrap_CADScore_add_model_structure_from_atoms(PyObject *sel
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_model_structure_from_atoms" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_add_model_structure_from_atoms" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_model_structure_from_atoms" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_add_model_structure_from_atoms" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -29212,9 +29212,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_add_structure_from_file_descriptor(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_add_structure_from_file_descriptor(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   MolecularFileInput *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -29225,28 +29225,28 @@ SWIGINTERN PyObject *_wrap_CADScore_add_structure_from_file_descriptor(PyObject 
   PyObject *swig_obj[3] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_add_structure_from_file_descriptor", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_add_structure_from_file_descriptor", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_structure_from_file_descriptor" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_add_structure_from_file_descriptor" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_MolecularFileInput,  0  | 0);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_add_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
   }
   if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_add_structure_from_file_descriptor" "', argument " "2"" of type '" "MolecularFileInput const &""'"); 
   }
   arg2 = reinterpret_cast< MolecularFileInput * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_add_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_add_structure_from_file_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -29270,9 +29270,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_add_structure_from_atoms(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_add_structure_from_atoms(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -29282,20 +29282,20 @@ SWIGINTERN PyObject *_wrap_CADScore_add_structure_from_atoms(PyObject *self, PyO
   PyObject *swig_obj[3] ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_add_structure_from_atoms", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_add_structure_from_atoms", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_add_structure_from_atoms" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_add_structure_from_atoms" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *ptr = (std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *)0;
     res2 = swig::asptr(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_add_structure_from_atoms" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_add_structure_from_atoms" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_structure_from_atoms" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_add_structure_from_atoms" "', argument " "2"" of type '" "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > const &""'"); 
     }
     arg2 = ptr;
   }
@@ -29303,10 +29303,10 @@ SWIGINTERN PyObject *_wrap_CADScore_add_structure_from_atoms(PyObject *self, PyO
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_add_structure_from_atoms" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_add_structure_from_atoms" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_add_structure_from_atoms" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_add_structure_from_atoms" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -29332,9 +29332,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_atom_atom_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_all_cadscores_atom_atom_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -29343,11 +29343,11 @@ SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_atom_atom_summarized_globa
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_all_cadscores_atom_atom_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_all_cadscores_atom_atom_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     try
     {
@@ -29366,9 +29366,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_residue_residue_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_all_cadscores_residue_residue_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -29377,11 +29377,11 @@ SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_residue_residue_summarized
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_all_cadscores_residue_residue_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_all_cadscores_residue_residue_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     try
     {
@@ -29400,9 +29400,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_chain_chain_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_all_cadscores_chain_chain_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -29411,11 +29411,11 @@ SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_chain_chain_summarized_glo
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_all_cadscores_chain_chain_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_all_cadscores_chain_chain_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     try
     {
@@ -29434,9 +29434,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_atom_sas_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_all_cadscores_atom_sas_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -29445,11 +29445,11 @@ SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_atom_sas_summarized_global
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_all_cadscores_atom_sas_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_all_cadscores_atom_sas_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     try
     {
@@ -29468,9 +29468,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_residue_sas_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_all_cadscores_residue_sas_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -29479,11 +29479,11 @@ SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_residue_sas_summarized_glo
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_all_cadscores_residue_sas_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_all_cadscores_residue_sas_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     try
     {
@@ -29502,9 +29502,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_chain_sas_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_all_cadscores_chain_sas_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -29513,11 +29513,11 @@ SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_chain_sas_summarized_globa
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_all_cadscores_chain_sas_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_all_cadscores_chain_sas_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     try
     {
@@ -29536,9 +29536,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_atom_site_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_all_cadscores_atom_site_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -29547,11 +29547,11 @@ SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_atom_site_summarized_globa
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_all_cadscores_atom_site_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_all_cadscores_atom_site_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     try
     {
@@ -29570,9 +29570,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_residue_site_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_all_cadscores_residue_site_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -29581,11 +29581,11 @@ SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_residue_site_summarized_gl
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_all_cadscores_residue_site_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_all_cadscores_residue_site_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     try
     {
@@ -29604,9 +29604,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_chain_site_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_all_cadscores_chain_site_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -29615,11 +29615,11 @@ SWIGINTERN PyObject *_wrap_CADScore_get_all_cadscores_chain_site_summarized_glob
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_all_cadscores_chain_site_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_all_cadscores_chain_site_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     try
     {
@@ -29638,9 +29638,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_atom_atom(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -29651,20 +29651,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom(PyObject *self
   std::vector< AtomAtomScore,std::allocator< AtomAtomScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_atom_atom", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_atom_atom", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_atom_atom" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_atom_atom" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_atom" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_atom" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -29672,10 +29672,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom(PyObject *self
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_atom_atom" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_atom" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_atom" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -29701,9 +29701,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per_residue_residue(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue_residue(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -29714,20 +29714,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per
   std::vector< ResidueResidueScore,std::allocator< ResidueResidueScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_atom_atom_summarized_per_residue_residue", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue_residue", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_residue_residue" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue_residue" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_residue_residue" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue_residue" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_residue_residue" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue_residue" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -29735,10 +29735,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_residue_residue" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue_residue" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_residue_residue" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue_residue" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -29764,9 +29764,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per_chain_chain(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain_chain(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -29777,20 +29777,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per
   std::vector< ChainChainScore,std::allocator< ChainChainScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_atom_atom_summarized_per_chain_chain", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain_chain", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_chain_chain" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain_chain" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_chain_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_chain_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -29798,10 +29798,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_chain_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_chain_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -29827,9 +29827,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per_atom(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_atom(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -29840,20 +29840,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per
   std::vector< AtomScore,std::allocator< AtomScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_atom_atom_summarized_per_atom", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_atom", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_atom" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_atom" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_atom" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_atom" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_atom" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_atom" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -29861,10 +29861,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_atom" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_atom" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_atom" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_atom" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -29890,9 +29890,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per_residue(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -29903,20 +29903,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per
   std::vector< ResidueScore,std::allocator< ResidueScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_atom_atom_summarized_per_residue", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_residue" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -29924,10 +29924,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -29953,9 +29953,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per_chain(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -29966,20 +29966,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per
   std::vector< ChainScore,std::allocator< ChainScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_atom_atom_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_chain" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -29987,10 +29987,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_atom_summarized_per
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_atom_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30016,9 +30016,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_residue(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_residue_residue(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30029,20 +30029,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_residue(PyObject
   std::vector< ResidueResidueScore,std::allocator< ResidueResidueScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_residue_residue", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_residue_residue", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_residue_residue" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_residue_residue" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_residue_residue" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_residue_residue" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_residue" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_residue" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30050,10 +30050,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_residue(PyObject
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_residue_residue" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_residue_residue" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_residue" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_residue" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30079,9 +30079,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_residue_summarized_per_chain_chain(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain_chain(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30092,20 +30092,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_residue_summariz
   std::vector< ChainChainScore,std::allocator< ChainChainScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_residue_residue_summarized_per_chain_chain", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain_chain", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_chain_chain" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain_chain" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_chain_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_chain_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30113,10 +30113,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_residue_summariz
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_chain_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_chain_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30142,9 +30142,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_residue_summarized_per_residue(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_residue(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30155,20 +30155,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_residue_summariz
   std::vector< ResidueScore,std::allocator< ResidueScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_residue_residue_summarized_per_residue", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_residue", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_residue" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_residue" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30176,10 +30176,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_residue_summariz
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30205,9 +30205,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_residue_summarized_per_chain(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30218,20 +30218,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_residue_summariz
   std::vector< ChainScore,std::allocator< ChainScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_residue_residue_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_chain" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30239,10 +30239,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_residue_summariz
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_residue_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30268,9 +30268,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_chain_chain(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_chain_chain(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30281,20 +30281,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_chain_chain(PyObject *se
   std::vector< ChainChainScore,std::allocator< ChainChainScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_chain_chain", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_chain_chain", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_chain_chain" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_chain_chain" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_chain_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_chain_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_chain_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_chain_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30302,10 +30302,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_chain_chain(PyObject *se
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_chain_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_chain_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_chain_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_chain_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30331,9 +30331,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_chain_chain_contact_summarized_per_chain(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_chain_chain_contact_summarized_per_chain(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30344,20 +30344,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_chain_chain_contact_summ
   std::vector< ChainScore,std::allocator< ChainScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_chain_chain_contact_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_chain_chain_contact_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_chain_chain_contact_summarized_per_chain" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_chain_chain_contact_summarized_per_chain" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_chain_chain_contact_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_chain_chain_contact_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_chain_chain_contact_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_chain_chain_contact_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30365,10 +30365,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_chain_chain_contact_summ
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_chain_chain_contact_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_chain_chain_contact_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_chain_chain_contact_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_chain_chain_contact_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30394,9 +30394,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_sas(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_atom_sas(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30407,20 +30407,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_sas(PyObject *self,
   std::vector< AtomScore,std::allocator< AtomScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_atom_sas", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_atom_sas", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_atom_sas" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_atom_sas" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_atom_sas" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_atom_sas" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_sas" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_sas" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30428,10 +30428,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_sas(PyObject *self,
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_atom_sas" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_atom_sas" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_sas" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_sas" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30457,9 +30457,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_sas_summarized_per_residue(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_residue(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30470,20 +30470,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_sas_summarized_per_
   std::vector< ResidueScore,std::allocator< ResidueScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_atom_sas_summarized_per_residue", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_residue", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_atom_sas_summarized_per_residue" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_residue" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_atom_sas_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_sas_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30491,10 +30491,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_sas_summarized_per_
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_atom_sas_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_sas_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30520,9 +30520,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_sas_summarized_per_chain(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_chain(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30533,20 +30533,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_sas_summarized_per_
   std::vector< ChainScore,std::allocator< ChainScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_atom_sas_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_atom_sas_summarized_per_chain" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_chain" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_atom_sas_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_sas_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30554,10 +30554,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_sas_summarized_per_
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_atom_sas_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_sas_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30583,9 +30583,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_sas(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_residue_sas(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30596,20 +30596,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_sas(PyObject *se
   std::vector< ResidueScore,std::allocator< ResidueScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_residue_sas", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_residue_sas", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_residue_sas" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_residue_sas" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_residue_sas" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_residue_sas" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_sas" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_sas" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30617,10 +30617,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_sas(PyObject *se
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_residue_sas" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_residue_sas" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_sas" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_sas" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30646,9 +30646,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_sas_summarized_per_chain(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_residue_sas_summarized_per_chain(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30659,20 +30659,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_sas_summarized_p
   std::vector< ChainScore,std::allocator< ChainScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_residue_sas_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_residue_sas_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_residue_sas_summarized_per_chain" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_residue_sas_summarized_per_chain" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_residue_sas_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_residue_sas_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_sas_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_sas_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30680,10 +30680,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_sas_summarized_p
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_residue_sas_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_residue_sas_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_sas_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_sas_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30709,9 +30709,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_chain_sas(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_chain_sas(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30722,20 +30722,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_chain_sas(PyObject *self
   std::vector< ChainScore,std::allocator< ChainScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_chain_sas", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_chain_sas", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_chain_sas" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_chain_sas" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_chain_sas" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_chain_sas" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_chain_sas" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_chain_sas" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30743,10 +30743,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_chain_sas(PyObject *self
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_chain_sas" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_chain_sas" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_chain_sas" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_chain_sas" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30772,9 +30772,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_site(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_atom_site(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30785,20 +30785,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_site(PyObject *self
   std::vector< AtomScore,std::allocator< AtomScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_atom_site", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_atom_site", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_atom_site" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_atom_site" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_atom_site" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_atom_site" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_site" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_site" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30806,10 +30806,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_site(PyObject *self
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_atom_site" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_atom_site" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_site" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_site" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30835,9 +30835,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_site_summarized_per_residue(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_atom_site_summarized_per_residue(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30848,20 +30848,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_site_summarized_per
   std::vector< ResidueScore,std::allocator< ResidueScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_atom_site_summarized_per_residue", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_residue", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_atom_site_summarized_per_residue" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_residue" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_atom_site_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_site_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_residue" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30869,10 +30869,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_site_summarized_per
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_atom_site_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_site_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_residue" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30898,9 +30898,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_site_summarized_per_chain(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_atom_site_summarized_per_chain(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30911,20 +30911,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_site_summarized_per
   std::vector< ChainScore,std::allocator< ChainScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_atom_site_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_atom_site_summarized_per_chain" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_chain" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_atom_site_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_site_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30932,10 +30932,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_atom_site_summarized_per
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_atom_site_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_atom_site_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -30961,9 +30961,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_site(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_residue_site(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -30974,20 +30974,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_site(PyObject *s
   std::vector< ResidueScore,std::allocator< ResidueScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_residue_site", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_residue_site", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_residue_site" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_residue_site" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_residue_site" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_residue_site" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_site" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_site" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -30995,10 +30995,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_site(PyObject *s
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_residue_site" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_residue_site" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_site" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_site" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -31024,9 +31024,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_site_summarized_per_chain(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_residue_site_summarized_per_chain(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -31037,20 +31037,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_site_summarized_
   std::vector< ChainScore,std::allocator< ChainScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_residue_site_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_residue_site_summarized_per_chain", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_residue_site_summarized_per_chain" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_residue_site_summarized_per_chain" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_residue_site_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_residue_site_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_site_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_site_summarized_per_chain" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -31058,10 +31058,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_residue_site_summarized_
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_residue_site_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_residue_site_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_residue_site_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_residue_site_summarized_per_chain" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -31087,9 +31087,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_chain_site(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_local_cadscores_chain_site(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -31100,20 +31100,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_chain_site(PyObject *sel
   std::vector< ChainScore,std::allocator< ChainScore > > *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_local_cadscores_chain_site", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_local_cadscores_chain_site", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_local_cadscores_chain_site" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_local_cadscores_chain_site" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_local_cadscores_chain_site" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_local_cadscores_chain_site" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_chain_site" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_chain_site" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -31121,10 +31121,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_local_cadscores_chain_site(PyObject *sel
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_local_cadscores_chain_site" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_local_cadscores_chain_site" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_local_cadscores_chain_site" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_local_cadscores_chain_site" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -31150,9 +31150,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_atom_atom_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_cadscores_atom_atom_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -31163,20 +31163,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_atom_atom_summarized_globally(
   GlobalScore *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_cadscores_atom_atom_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_cadscores_atom_atom_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_cadscores_atom_atom_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_cadscores_atom_atom_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_cadscores_atom_atom_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_cadscores_atom_atom_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_atom_atom_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_atom_atom_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -31184,10 +31184,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_atom_atom_summarized_globally(
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_cadscores_atom_atom_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_cadscores_atom_atom_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_atom_atom_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_atom_atom_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -31213,9 +31213,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_residue_residue_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_cadscores_residue_residue_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -31226,20 +31226,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_residue_residue_summarized_glo
   GlobalScore *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_cadscores_residue_residue_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_cadscores_residue_residue_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_cadscores_residue_residue_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_cadscores_residue_residue_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_cadscores_residue_residue_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_cadscores_residue_residue_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_residue_residue_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_residue_residue_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -31247,10 +31247,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_residue_residue_summarized_glo
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_cadscores_residue_residue_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_cadscores_residue_residue_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_residue_residue_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_residue_residue_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -31276,9 +31276,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_chain_chain_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_cadscores_chain_chain_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -31289,20 +31289,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_chain_chain_summarized_globall
   GlobalScore *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_cadscores_chain_chain_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_cadscores_chain_chain_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_cadscores_chain_chain_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_cadscores_chain_chain_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_cadscores_chain_chain_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_cadscores_chain_chain_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_chain_chain_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_chain_chain_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -31310,10 +31310,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_chain_chain_summarized_globall
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_cadscores_chain_chain_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_cadscores_chain_chain_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_chain_chain_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_chain_chain_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -31339,9 +31339,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_atom_sas_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_cadscores_atom_sas_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -31352,20 +31352,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_atom_sas_summarized_globally(P
   GlobalScore *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_cadscores_atom_sas_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_cadscores_atom_sas_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_cadscores_atom_sas_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_cadscores_atom_sas_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_cadscores_atom_sas_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_cadscores_atom_sas_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_atom_sas_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_atom_sas_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -31373,10 +31373,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_atom_sas_summarized_globally(P
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_cadscores_atom_sas_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_cadscores_atom_sas_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_atom_sas_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_atom_sas_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -31402,9 +31402,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_residue_sas_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_cadscores_residue_sas_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -31415,20 +31415,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_residue_sas_summarized_globall
   GlobalScore *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_cadscores_residue_sas_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_cadscores_residue_sas_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_cadscores_residue_sas_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_cadscores_residue_sas_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_cadscores_residue_sas_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_cadscores_residue_sas_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_residue_sas_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_residue_sas_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -31436,10 +31436,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_residue_sas_summarized_globall
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_cadscores_residue_sas_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_cadscores_residue_sas_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_residue_sas_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_residue_sas_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -31465,9 +31465,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_chain_sas_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_cadscores_chain_sas_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -31478,20 +31478,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_chain_sas_summarized_globally(
   GlobalScore *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_cadscores_chain_sas_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_cadscores_chain_sas_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_cadscores_chain_sas_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_cadscores_chain_sas_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_cadscores_chain_sas_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_cadscores_chain_sas_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_chain_sas_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_chain_sas_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -31499,10 +31499,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_chain_sas_summarized_globally(
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_cadscores_chain_sas_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_cadscores_chain_sas_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_chain_sas_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_chain_sas_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -31528,9 +31528,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_atom_site_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_cadscores_atom_site_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -31541,20 +31541,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_atom_site_summarized_globally(
   GlobalScore *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_cadscores_atom_site_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_cadscores_atom_site_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_cadscores_atom_site_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_cadscores_atom_site_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_cadscores_atom_site_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_cadscores_atom_site_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_atom_site_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_atom_site_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -31562,10 +31562,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_atom_site_summarized_globally(
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_cadscores_atom_site_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_cadscores_atom_site_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_atom_site_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_atom_site_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -31591,9 +31591,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_residue_site_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_cadscores_residue_site_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -31604,20 +31604,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_residue_site_summarized_global
   GlobalScore *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_cadscores_residue_site_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_cadscores_residue_site_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_cadscores_residue_site_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_cadscores_residue_site_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_cadscores_residue_site_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_cadscores_residue_site_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_residue_site_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_residue_site_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -31625,10 +31625,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_residue_site_summarized_global
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_cadscores_residue_site_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_cadscores_residue_site_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_residue_site_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_residue_site_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -31654,9 +31654,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_chain_site_summarized_globally(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_cadscores_chain_site_summarized_globally(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -31667,20 +31667,20 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_chain_site_summarized_globally
   GlobalScore *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_UnpackTuple(args, "CADScore_get_cadscores_chain_site_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, 0 |  0 );
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_cadscores_chain_site_summarized_globally", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScore_get_cadscores_chain_site_summarized_globally" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_cadscores_chain_site_summarized_globally" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScore_get_cadscores_chain_site_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_cadscores_chain_site_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_chain_site_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_chain_site_summarized_globally" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -31688,10 +31688,10 @@ SWIGINTERN PyObject *_wrap_CADScore_get_cadscores_chain_site_summarized_globally
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScore_get_cadscores_chain_site_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_cadscores_chain_site_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScore_get_cadscores_chain_site_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_cadscores_chain_site_summarized_globally" "', argument " "3"" of type '" "std::string const &""'"); 
     }
     arg3 = ptr;
   }
@@ -31717,9 +31717,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_CADScore(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_delete_CADScoreComputer(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  CADScore *arg1 = (CADScore *) 0 ;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject *swig_obj[1] ;
@@ -31727,11 +31727,11 @@ SWIGINTERN PyObject *_wrap_delete_CADScore(PyObject *self, PyObject *args) {
   (void)self;
   if (!args) SWIG_fail;
   swig_obj[0] = args;
-  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScore, SWIG_POINTER_DISOWN |  0 );
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CADScore" "', argument " "1"" of type '" "CADScore *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CADScoreComputer" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
   }
-  arg1 = reinterpret_cast< CADScore * >(argp1);
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
   {
     try
     {
@@ -31750,14 +31750,14 @@ fail:
 }
 
 
-SWIGINTERN PyObject *CADScore_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *CADScoreComputer_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_CADScore, SWIG_NewClientData(obj));
+  SWIG_TypeNewClientData(SWIGTYPE_p_CADScoreComputer, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
-SWIGINTERN PyObject *CADScore_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *CADScoreComputer_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   return SWIG_Python_InitShadowInstance(args);
 }
 
@@ -32517,97 +32517,97 @@ static PyMethodDef SwigMethods[] = {
 	 { "delete_MolecularFileInput", _wrap_delete_MolecularFileInput, METH_O, NULL},
 	 { "MolecularFileInput_swigregister", MolecularFileInput_swigregister, METH_O, NULL},
 	 { "MolecularFileInput_swiginit", MolecularFileInput_swiginit, METH_VARARGS, NULL},
-	 { "CADScoreParameters_probe_set", _wrap_CADScoreParameters_probe_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_probe_get", _wrap_CADScoreParameters_probe_get, METH_O, NULL},
-	 { "CADScoreParameters_conflate_atom_names_set", _wrap_CADScoreParameters_conflate_atom_names_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_conflate_atom_names_get", _wrap_CADScoreParameters_conflate_atom_names_get, METH_O, NULL},
-	 { "CADScoreParameters_remap_chains_set", _wrap_CADScoreParameters_remap_chains_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_remap_chains_get", _wrap_CADScoreParameters_remap_chains_get, METH_O, NULL},
-	 { "CADScoreParameters_score_atom_atom_contacts_set", _wrap_CADScoreParameters_score_atom_atom_contacts_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_score_atom_atom_contacts_get", _wrap_CADScoreParameters_score_atom_atom_contacts_get, METH_O, NULL},
-	 { "CADScoreParameters_score_residue_residue_contacts_set", _wrap_CADScoreParameters_score_residue_residue_contacts_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_score_residue_residue_contacts_get", _wrap_CADScoreParameters_score_residue_residue_contacts_get, METH_O, NULL},
-	 { "CADScoreParameters_score_chain_chain_contacts_set", _wrap_CADScoreParameters_score_chain_chain_contacts_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_score_chain_chain_contacts_get", _wrap_CADScoreParameters_score_chain_chain_contacts_get, METH_O, NULL},
-	 { "CADScoreParameters_score_atom_sas_set", _wrap_CADScoreParameters_score_atom_sas_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_score_atom_sas_get", _wrap_CADScoreParameters_score_atom_sas_get, METH_O, NULL},
-	 { "CADScoreParameters_score_residue_sas_set", _wrap_CADScoreParameters_score_residue_sas_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_score_residue_sas_get", _wrap_CADScoreParameters_score_residue_sas_get, METH_O, NULL},
-	 { "CADScoreParameters_score_chain_sas_set", _wrap_CADScoreParameters_score_chain_sas_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_score_chain_sas_get", _wrap_CADScoreParameters_score_chain_sas_get, METH_O, NULL},
-	 { "CADScoreParameters_score_atom_sites_set", _wrap_CADScoreParameters_score_atom_sites_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_score_atom_sites_get", _wrap_CADScoreParameters_score_atom_sites_get, METH_O, NULL},
-	 { "CADScoreParameters_score_residue_sites_set", _wrap_CADScoreParameters_score_residue_sites_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_score_residue_sites_get", _wrap_CADScoreParameters_score_residue_sites_get, METH_O, NULL},
-	 { "CADScoreParameters_score_chain_sites_set", _wrap_CADScoreParameters_score_chain_sites_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_score_chain_sites_get", _wrap_CADScoreParameters_score_chain_sites_get, METH_O, NULL},
-	 { "CADScoreParameters_record_local_scores_set", _wrap_CADScoreParameters_record_local_scores_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_record_local_scores_get", _wrap_CADScoreParameters_record_local_scores_get, METH_O, NULL},
-	 { "CADScoreParameters_include_self_to_self_scores_set", _wrap_CADScoreParameters_include_self_to_self_scores_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_include_self_to_self_scores_get", _wrap_CADScoreParameters_include_self_to_self_scores_get, METH_O, NULL},
-	 { "CADScoreParameters_restrict_input_atoms_set", _wrap_CADScoreParameters_restrict_input_atoms_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_restrict_input_atoms_get", _wrap_CADScoreParameters_restrict_input_atoms_get, METH_O, NULL},
-	 { "CADScoreParameters_subselect_contacts_set", _wrap_CADScoreParameters_subselect_contacts_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_subselect_contacts_get", _wrap_CADScoreParameters_subselect_contacts_get, METH_O, NULL},
-	 { "CADScoreParameters_subselect_atoms_set", _wrap_CADScoreParameters_subselect_atoms_set, METH_VARARGS, NULL},
-	 { "CADScoreParameters_subselect_atoms_get", _wrap_CADScoreParameters_subselect_atoms_get, METH_O, NULL},
-	 { "new_CADScoreParameters", _wrap_new_CADScoreParameters, METH_NOARGS, NULL},
-	 { "delete_CADScoreParameters", _wrap_delete_CADScoreParameters, METH_O, NULL},
-	 { "CADScoreParameters_swigregister", CADScoreParameters_swigregister, METH_O, NULL},
-	 { "CADScoreParameters_swiginit", CADScoreParameters_swiginit, METH_VARARGS, NULL},
-	 { "new_CADScore", _wrap_new_CADScore, METH_O, NULL},
-	 { "CADScore_get_parameters", _wrap_CADScore_get_parameters, METH_O, NULL},
-	 { "CADScore_add_target_structure_from_file_descriptor", _wrap_CADScore_add_target_structure_from_file_descriptor, METH_VARARGS, NULL},
-	 { "CADScore_add_target_structure_from_atoms", _wrap_CADScore_add_target_structure_from_atoms, METH_VARARGS, NULL},
-	 { "CADScore_add_model_structure_from_file_descriptor", _wrap_CADScore_add_model_structure_from_file_descriptor, METH_VARARGS, NULL},
-	 { "CADScore_add_model_structure_from_atoms", _wrap_CADScore_add_model_structure_from_atoms, METH_VARARGS, NULL},
-	 { "CADScore_add_structure_from_file_descriptor", _wrap_CADScore_add_structure_from_file_descriptor, METH_VARARGS, NULL},
-	 { "CADScore_add_structure_from_atoms", _wrap_CADScore_add_structure_from_atoms, METH_VARARGS, NULL},
-	 { "CADScore_get_all_cadscores_atom_atom_summarized_globally", _wrap_CADScore_get_all_cadscores_atom_atom_summarized_globally, METH_O, NULL},
-	 { "CADScore_get_all_cadscores_residue_residue_summarized_globally", _wrap_CADScore_get_all_cadscores_residue_residue_summarized_globally, METH_O, NULL},
-	 { "CADScore_get_all_cadscores_chain_chain_summarized_globally", _wrap_CADScore_get_all_cadscores_chain_chain_summarized_globally, METH_O, NULL},
-	 { "CADScore_get_all_cadscores_atom_sas_summarized_globally", _wrap_CADScore_get_all_cadscores_atom_sas_summarized_globally, METH_O, NULL},
-	 { "CADScore_get_all_cadscores_residue_sas_summarized_globally", _wrap_CADScore_get_all_cadscores_residue_sas_summarized_globally, METH_O, NULL},
-	 { "CADScore_get_all_cadscores_chain_sas_summarized_globally", _wrap_CADScore_get_all_cadscores_chain_sas_summarized_globally, METH_O, NULL},
-	 { "CADScore_get_all_cadscores_atom_site_summarized_globally", _wrap_CADScore_get_all_cadscores_atom_site_summarized_globally, METH_O, NULL},
-	 { "CADScore_get_all_cadscores_residue_site_summarized_globally", _wrap_CADScore_get_all_cadscores_residue_site_summarized_globally, METH_O, NULL},
-	 { "CADScore_get_all_cadscores_chain_site_summarized_globally", _wrap_CADScore_get_all_cadscores_chain_site_summarized_globally, METH_O, NULL},
-	 { "CADScore_get_local_cadscores_atom_atom", _wrap_CADScore_get_local_cadscores_atom_atom, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_atom_atom_summarized_per_residue_residue", _wrap_CADScore_get_local_cadscores_atom_atom_summarized_per_residue_residue, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_atom_atom_summarized_per_chain_chain", _wrap_CADScore_get_local_cadscores_atom_atom_summarized_per_chain_chain, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_atom_atom_summarized_per_atom", _wrap_CADScore_get_local_cadscores_atom_atom_summarized_per_atom, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_atom_atom_summarized_per_residue", _wrap_CADScore_get_local_cadscores_atom_atom_summarized_per_residue, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_atom_atom_summarized_per_chain", _wrap_CADScore_get_local_cadscores_atom_atom_summarized_per_chain, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_residue_residue", _wrap_CADScore_get_local_cadscores_residue_residue, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_residue_residue_summarized_per_chain_chain", _wrap_CADScore_get_local_cadscores_residue_residue_summarized_per_chain_chain, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_residue_residue_summarized_per_residue", _wrap_CADScore_get_local_cadscores_residue_residue_summarized_per_residue, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_residue_residue_summarized_per_chain", _wrap_CADScore_get_local_cadscores_residue_residue_summarized_per_chain, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_chain_chain", _wrap_CADScore_get_local_cadscores_chain_chain, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_chain_chain_contact_summarized_per_chain", _wrap_CADScore_get_local_cadscores_chain_chain_contact_summarized_per_chain, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_atom_sas", _wrap_CADScore_get_local_cadscores_atom_sas, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_atom_sas_summarized_per_residue", _wrap_CADScore_get_local_cadscores_atom_sas_summarized_per_residue, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_atom_sas_summarized_per_chain", _wrap_CADScore_get_local_cadscores_atom_sas_summarized_per_chain, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_residue_sas", _wrap_CADScore_get_local_cadscores_residue_sas, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_residue_sas_summarized_per_chain", _wrap_CADScore_get_local_cadscores_residue_sas_summarized_per_chain, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_chain_sas", _wrap_CADScore_get_local_cadscores_chain_sas, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_atom_site", _wrap_CADScore_get_local_cadscores_atom_site, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_atom_site_summarized_per_residue", _wrap_CADScore_get_local_cadscores_atom_site_summarized_per_residue, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_atom_site_summarized_per_chain", _wrap_CADScore_get_local_cadscores_atom_site_summarized_per_chain, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_residue_site", _wrap_CADScore_get_local_cadscores_residue_site, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_residue_site_summarized_per_chain", _wrap_CADScore_get_local_cadscores_residue_site_summarized_per_chain, METH_VARARGS, NULL},
-	 { "CADScore_get_local_cadscores_chain_site", _wrap_CADScore_get_local_cadscores_chain_site, METH_VARARGS, NULL},
-	 { "CADScore_get_cadscores_atom_atom_summarized_globally", _wrap_CADScore_get_cadscores_atom_atom_summarized_globally, METH_VARARGS, NULL},
-	 { "CADScore_get_cadscores_residue_residue_summarized_globally", _wrap_CADScore_get_cadscores_residue_residue_summarized_globally, METH_VARARGS, NULL},
-	 { "CADScore_get_cadscores_chain_chain_summarized_globally", _wrap_CADScore_get_cadscores_chain_chain_summarized_globally, METH_VARARGS, NULL},
-	 { "CADScore_get_cadscores_atom_sas_summarized_globally", _wrap_CADScore_get_cadscores_atom_sas_summarized_globally, METH_VARARGS, NULL},
-	 { "CADScore_get_cadscores_residue_sas_summarized_globally", _wrap_CADScore_get_cadscores_residue_sas_summarized_globally, METH_VARARGS, NULL},
-	 { "CADScore_get_cadscores_chain_sas_summarized_globally", _wrap_CADScore_get_cadscores_chain_sas_summarized_globally, METH_VARARGS, NULL},
-	 { "CADScore_get_cadscores_atom_site_summarized_globally", _wrap_CADScore_get_cadscores_atom_site_summarized_globally, METH_VARARGS, NULL},
-	 { "CADScore_get_cadscores_residue_site_summarized_globally", _wrap_CADScore_get_cadscores_residue_site_summarized_globally, METH_VARARGS, NULL},
-	 { "CADScore_get_cadscores_chain_site_summarized_globally", _wrap_CADScore_get_cadscores_chain_site_summarized_globally, METH_VARARGS, NULL},
-	 { "delete_CADScore", _wrap_delete_CADScore, METH_O, NULL},
-	 { "CADScore_swigregister", CADScore_swigregister, METH_O, NULL},
-	 { "CADScore_swiginit", CADScore_swiginit, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_probe_set", _wrap_CADScoreComputerParameters_probe_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_probe_get", _wrap_CADScoreComputerParameters_probe_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_conflate_atom_names_set", _wrap_CADScoreComputerParameters_conflate_atom_names_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_conflate_atom_names_get", _wrap_CADScoreComputerParameters_conflate_atom_names_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_remap_chains_set", _wrap_CADScoreComputerParameters_remap_chains_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_remap_chains_get", _wrap_CADScoreComputerParameters_remap_chains_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_score_atom_atom_contacts_set", _wrap_CADScoreComputerParameters_score_atom_atom_contacts_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_score_atom_atom_contacts_get", _wrap_CADScoreComputerParameters_score_atom_atom_contacts_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_score_residue_residue_contacts_set", _wrap_CADScoreComputerParameters_score_residue_residue_contacts_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_score_residue_residue_contacts_get", _wrap_CADScoreComputerParameters_score_residue_residue_contacts_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_score_chain_chain_contacts_set", _wrap_CADScoreComputerParameters_score_chain_chain_contacts_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_score_chain_chain_contacts_get", _wrap_CADScoreComputerParameters_score_chain_chain_contacts_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_score_atom_sas_set", _wrap_CADScoreComputerParameters_score_atom_sas_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_score_atom_sas_get", _wrap_CADScoreComputerParameters_score_atom_sas_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_score_residue_sas_set", _wrap_CADScoreComputerParameters_score_residue_sas_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_score_residue_sas_get", _wrap_CADScoreComputerParameters_score_residue_sas_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_score_chain_sas_set", _wrap_CADScoreComputerParameters_score_chain_sas_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_score_chain_sas_get", _wrap_CADScoreComputerParameters_score_chain_sas_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_score_atom_sites_set", _wrap_CADScoreComputerParameters_score_atom_sites_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_score_atom_sites_get", _wrap_CADScoreComputerParameters_score_atom_sites_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_score_residue_sites_set", _wrap_CADScoreComputerParameters_score_residue_sites_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_score_residue_sites_get", _wrap_CADScoreComputerParameters_score_residue_sites_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_score_chain_sites_set", _wrap_CADScoreComputerParameters_score_chain_sites_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_score_chain_sites_get", _wrap_CADScoreComputerParameters_score_chain_sites_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_record_local_scores_set", _wrap_CADScoreComputerParameters_record_local_scores_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_record_local_scores_get", _wrap_CADScoreComputerParameters_record_local_scores_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_include_self_to_self_scores_set", _wrap_CADScoreComputerParameters_include_self_to_self_scores_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_include_self_to_self_scores_get", _wrap_CADScoreComputerParameters_include_self_to_self_scores_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_restrict_input_atoms_set", _wrap_CADScoreComputerParameters_restrict_input_atoms_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_restrict_input_atoms_get", _wrap_CADScoreComputerParameters_restrict_input_atoms_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_subselect_contacts_set", _wrap_CADScoreComputerParameters_subselect_contacts_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_subselect_contacts_get", _wrap_CADScoreComputerParameters_subselect_contacts_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_subselect_atoms_set", _wrap_CADScoreComputerParameters_subselect_atoms_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_subselect_atoms_get", _wrap_CADScoreComputerParameters_subselect_atoms_get, METH_O, NULL},
+	 { "new_CADScoreComputerParameters", _wrap_new_CADScoreComputerParameters, METH_NOARGS, NULL},
+	 { "delete_CADScoreComputerParameters", _wrap_delete_CADScoreComputerParameters, METH_O, NULL},
+	 { "CADScoreComputerParameters_swigregister", CADScoreComputerParameters_swigregister, METH_O, NULL},
+	 { "CADScoreComputerParameters_swiginit", CADScoreComputerParameters_swiginit, METH_VARARGS, NULL},
+	 { "new_CADScoreComputer", _wrap_new_CADScoreComputer, METH_O, NULL},
+	 { "CADScoreComputer_get_parameters", _wrap_CADScoreComputer_get_parameters, METH_O, NULL},
+	 { "CADScoreComputer_add_target_structure_from_file_descriptor", _wrap_CADScoreComputer_add_target_structure_from_file_descriptor, METH_VARARGS, NULL},
+	 { "CADScoreComputer_add_target_structure_from_atoms", _wrap_CADScoreComputer_add_target_structure_from_atoms, METH_VARARGS, NULL},
+	 { "CADScoreComputer_add_model_structure_from_file_descriptor", _wrap_CADScoreComputer_add_model_structure_from_file_descriptor, METH_VARARGS, NULL},
+	 { "CADScoreComputer_add_model_structure_from_atoms", _wrap_CADScoreComputer_add_model_structure_from_atoms, METH_VARARGS, NULL},
+	 { "CADScoreComputer_add_structure_from_file_descriptor", _wrap_CADScoreComputer_add_structure_from_file_descriptor, METH_VARARGS, NULL},
+	 { "CADScoreComputer_add_structure_from_atoms", _wrap_CADScoreComputer_add_structure_from_atoms, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_all_cadscores_atom_atom_summarized_globally", _wrap_CADScoreComputer_get_all_cadscores_atom_atom_summarized_globally, METH_O, NULL},
+	 { "CADScoreComputer_get_all_cadscores_residue_residue_summarized_globally", _wrap_CADScoreComputer_get_all_cadscores_residue_residue_summarized_globally, METH_O, NULL},
+	 { "CADScoreComputer_get_all_cadscores_chain_chain_summarized_globally", _wrap_CADScoreComputer_get_all_cadscores_chain_chain_summarized_globally, METH_O, NULL},
+	 { "CADScoreComputer_get_all_cadscores_atom_sas_summarized_globally", _wrap_CADScoreComputer_get_all_cadscores_atom_sas_summarized_globally, METH_O, NULL},
+	 { "CADScoreComputer_get_all_cadscores_residue_sas_summarized_globally", _wrap_CADScoreComputer_get_all_cadscores_residue_sas_summarized_globally, METH_O, NULL},
+	 { "CADScoreComputer_get_all_cadscores_chain_sas_summarized_globally", _wrap_CADScoreComputer_get_all_cadscores_chain_sas_summarized_globally, METH_O, NULL},
+	 { "CADScoreComputer_get_all_cadscores_atom_site_summarized_globally", _wrap_CADScoreComputer_get_all_cadscores_atom_site_summarized_globally, METH_O, NULL},
+	 { "CADScoreComputer_get_all_cadscores_residue_site_summarized_globally", _wrap_CADScoreComputer_get_all_cadscores_residue_site_summarized_globally, METH_O, NULL},
+	 { "CADScoreComputer_get_all_cadscores_chain_site_summarized_globally", _wrap_CADScoreComputer_get_all_cadscores_chain_site_summarized_globally, METH_O, NULL},
+	 { "CADScoreComputer_get_local_cadscores_atom_atom", _wrap_CADScoreComputer_get_local_cadscores_atom_atom, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue_residue", _wrap_CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue_residue, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain_chain", _wrap_CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain_chain, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_atom", _wrap_CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_atom, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue", _wrap_CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain", _wrap_CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_residue_residue", _wrap_CADScoreComputer_get_local_cadscores_residue_residue, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain_chain", _wrap_CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain_chain, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_residue", _wrap_CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_residue, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain", _wrap_CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_chain_chain", _wrap_CADScoreComputer_get_local_cadscores_chain_chain, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_chain_chain_contact_summarized_per_chain", _wrap_CADScoreComputer_get_local_cadscores_chain_chain_contact_summarized_per_chain, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_atom_sas", _wrap_CADScoreComputer_get_local_cadscores_atom_sas, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_residue", _wrap_CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_residue, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_chain", _wrap_CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_chain, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_residue_sas", _wrap_CADScoreComputer_get_local_cadscores_residue_sas, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_residue_sas_summarized_per_chain", _wrap_CADScoreComputer_get_local_cadscores_residue_sas_summarized_per_chain, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_chain_sas", _wrap_CADScoreComputer_get_local_cadscores_chain_sas, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_atom_site", _wrap_CADScoreComputer_get_local_cadscores_atom_site, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_residue", _wrap_CADScoreComputer_get_local_cadscores_atom_site_summarized_per_residue, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_atom_site_summarized_per_chain", _wrap_CADScoreComputer_get_local_cadscores_atom_site_summarized_per_chain, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_residue_site", _wrap_CADScoreComputer_get_local_cadscores_residue_site, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_residue_site_summarized_per_chain", _wrap_CADScoreComputer_get_local_cadscores_residue_site_summarized_per_chain, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_local_cadscores_chain_site", _wrap_CADScoreComputer_get_local_cadscores_chain_site, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_cadscores_atom_atom_summarized_globally", _wrap_CADScoreComputer_get_cadscores_atom_atom_summarized_globally, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_cadscores_residue_residue_summarized_globally", _wrap_CADScoreComputer_get_cadscores_residue_residue_summarized_globally, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_cadscores_chain_chain_summarized_globally", _wrap_CADScoreComputer_get_cadscores_chain_chain_summarized_globally, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_cadscores_atom_sas_summarized_globally", _wrap_CADScoreComputer_get_cadscores_atom_sas_summarized_globally, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_cadscores_residue_sas_summarized_globally", _wrap_CADScoreComputer_get_cadscores_residue_sas_summarized_globally, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_cadscores_chain_sas_summarized_globally", _wrap_CADScoreComputer_get_cadscores_chain_sas_summarized_globally, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_cadscores_atom_site_summarized_globally", _wrap_CADScoreComputer_get_cadscores_atom_site_summarized_globally, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_cadscores_residue_site_summarized_globally", _wrap_CADScoreComputer_get_cadscores_residue_site_summarized_globally, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_cadscores_chain_site_summarized_globally", _wrap_CADScoreComputer_get_cadscores_chain_site_summarized_globally, METH_VARARGS, NULL},
+	 { "delete_CADScoreComputer", _wrap_delete_CADScoreComputer, METH_O, NULL},
+	 { "CADScoreComputer_swigregister", CADScoreComputer_swigregister, METH_O, NULL},
+	 { "CADScoreComputer_swiginit", CADScoreComputer_swiginit, METH_VARARGS, NULL},
 	 { "enable_considering_residue_names", _wrap_enable_considering_residue_names, METH_NOARGS, NULL},
 	 { "disable_considering_residue_names", _wrap_disable_considering_residue_names, METH_NOARGS, NULL},
 	 { "reset_atom_names_conflation_rules", _wrap_reset_atom_names_conflation_rules, METH_NOARGS, NULL},
@@ -32623,8 +32623,8 @@ static PyMethodDef SwigMethods[] = {
 
 static swig_type_info _swigt__p_AtomAtomScore = {"_p_AtomAtomScore", "std::vector< AtomAtomScore >::value_type *|AtomAtomScore *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_AtomScore = {"_p_AtomScore", "std::vector< AtomScore >::value_type *|AtomScore *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CADScore = {"_p_CADScore", "CADScore *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CADScoreParameters = {"_p_CADScoreParameters", "CADScoreParameters *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_CADScoreComputer = {"_p_CADScoreComputer", "CADScoreComputer *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_CADScoreComputerParameters = {"_p_CADScoreComputerParameters", "CADScoreComputerParameters *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_ChainChainScore = {"_p_ChainChainScore", "std::vector< ChainChainScore >::value_type *|ChainChainScore *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_ChainScore = {"_p_ChainScore", "std::vector< ChainScore >::value_type *|ChainScore *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GlobalScore = {"_p_GlobalScore", "std::vector< GlobalScore >::value_type *|GlobalScore *", 0, 0, (void*)0, 0};
@@ -32660,8 +32660,8 @@ static swig_type_info _swigt__p_value_type = {"_p_value_type", "value_type *", 0
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_AtomAtomScore,
   &_swigt__p_AtomScore,
-  &_swigt__p_CADScore,
-  &_swigt__p_CADScoreParameters,
+  &_swigt__p_CADScoreComputer,
+  &_swigt__p_CADScoreComputerParameters,
   &_swigt__p_ChainChainScore,
   &_swigt__p_ChainScore,
   &_swigt__p_GlobalScore,
@@ -32697,8 +32697,8 @@ static swig_type_info *swig_type_initial[] = {
 
 static swig_cast_info _swigc__p_AtomAtomScore[] = {  {&_swigt__p_AtomAtomScore, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_AtomScore[] = {  {&_swigt__p_AtomScore, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CADScore[] = {  {&_swigt__p_CADScore, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CADScoreParameters[] = {  {&_swigt__p_CADScoreParameters, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_CADScoreComputer[] = {  {&_swigt__p_CADScoreComputer, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_CADScoreComputerParameters[] = {  {&_swigt__p_CADScoreComputerParameters, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ChainChainScore[] = {  {&_swigt__p_ChainChainScore, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ChainScore[] = {  {&_swigt__p_ChainScore, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GlobalScore[] = {  {&_swigt__p_GlobalScore, 0, 0, 0},{0, 0, 0, 0}};
@@ -32734,8 +32734,8 @@ static swig_cast_info _swigc__p_value_type[] = {  {&_swigt__p_value_type, 0, 0, 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_AtomAtomScore,
   _swigc__p_AtomScore,
-  _swigc__p_CADScore,
-  _swigc__p_CADScoreParameters,
+  _swigc__p_CADScoreComputer,
+  _swigc__p_CADScoreComputerParameters,
   _swigc__p_ChainChainScore,
   _swigc__p_ChainScore,
   _swigc__p_GlobalScore,

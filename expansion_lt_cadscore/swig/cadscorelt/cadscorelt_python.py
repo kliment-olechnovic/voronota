@@ -1138,190 +1138,190 @@ class MolecularFileInput(object):
 
 # Register MolecularFileInput in _cadscorelt_python:
 _cadscorelt_python.MolecularFileInput_swigregister(MolecularFileInput)
-class CADScoreParameters(object):
+class CADScoreComputerParameters(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
     __repr__ = _swig_repr
-    probe = property(_cadscorelt_python.CADScoreParameters_probe_get, _cadscorelt_python.CADScoreParameters_probe_set)
-    conflate_atom_names = property(_cadscorelt_python.CADScoreParameters_conflate_atom_names_get, _cadscorelt_python.CADScoreParameters_conflate_atom_names_set)
-    remap_chains = property(_cadscorelt_python.CADScoreParameters_remap_chains_get, _cadscorelt_python.CADScoreParameters_remap_chains_set)
-    score_atom_atom_contacts = property(_cadscorelt_python.CADScoreParameters_score_atom_atom_contacts_get, _cadscorelt_python.CADScoreParameters_score_atom_atom_contacts_set)
-    score_residue_residue_contacts = property(_cadscorelt_python.CADScoreParameters_score_residue_residue_contacts_get, _cadscorelt_python.CADScoreParameters_score_residue_residue_contacts_set)
-    score_chain_chain_contacts = property(_cadscorelt_python.CADScoreParameters_score_chain_chain_contacts_get, _cadscorelt_python.CADScoreParameters_score_chain_chain_contacts_set)
-    score_atom_sas = property(_cadscorelt_python.CADScoreParameters_score_atom_sas_get, _cadscorelt_python.CADScoreParameters_score_atom_sas_set)
-    score_residue_sas = property(_cadscorelt_python.CADScoreParameters_score_residue_sas_get, _cadscorelt_python.CADScoreParameters_score_residue_sas_set)
-    score_chain_sas = property(_cadscorelt_python.CADScoreParameters_score_chain_sas_get, _cadscorelt_python.CADScoreParameters_score_chain_sas_set)
-    score_atom_sites = property(_cadscorelt_python.CADScoreParameters_score_atom_sites_get, _cadscorelt_python.CADScoreParameters_score_atom_sites_set)
-    score_residue_sites = property(_cadscorelt_python.CADScoreParameters_score_residue_sites_get, _cadscorelt_python.CADScoreParameters_score_residue_sites_set)
-    score_chain_sites = property(_cadscorelt_python.CADScoreParameters_score_chain_sites_get, _cadscorelt_python.CADScoreParameters_score_chain_sites_set)
-    record_local_scores = property(_cadscorelt_python.CADScoreParameters_record_local_scores_get, _cadscorelt_python.CADScoreParameters_record_local_scores_set)
-    include_self_to_self_scores = property(_cadscorelt_python.CADScoreParameters_include_self_to_self_scores_get, _cadscorelt_python.CADScoreParameters_include_self_to_self_scores_set)
-    restrict_input_atoms = property(_cadscorelt_python.CADScoreParameters_restrict_input_atoms_get, _cadscorelt_python.CADScoreParameters_restrict_input_atoms_set)
-    subselect_contacts = property(_cadscorelt_python.CADScoreParameters_subselect_contacts_get, _cadscorelt_python.CADScoreParameters_subselect_contacts_set)
-    subselect_atoms = property(_cadscorelt_python.CADScoreParameters_subselect_atoms_get, _cadscorelt_python.CADScoreParameters_subselect_atoms_set)
+    probe = property(_cadscorelt_python.CADScoreComputerParameters_probe_get, _cadscorelt_python.CADScoreComputerParameters_probe_set)
+    conflate_atom_names = property(_cadscorelt_python.CADScoreComputerParameters_conflate_atom_names_get, _cadscorelt_python.CADScoreComputerParameters_conflate_atom_names_set)
+    remap_chains = property(_cadscorelt_python.CADScoreComputerParameters_remap_chains_get, _cadscorelt_python.CADScoreComputerParameters_remap_chains_set)
+    score_atom_atom_contacts = property(_cadscorelt_python.CADScoreComputerParameters_score_atom_atom_contacts_get, _cadscorelt_python.CADScoreComputerParameters_score_atom_atom_contacts_set)
+    score_residue_residue_contacts = property(_cadscorelt_python.CADScoreComputerParameters_score_residue_residue_contacts_get, _cadscorelt_python.CADScoreComputerParameters_score_residue_residue_contacts_set)
+    score_chain_chain_contacts = property(_cadscorelt_python.CADScoreComputerParameters_score_chain_chain_contacts_get, _cadscorelt_python.CADScoreComputerParameters_score_chain_chain_contacts_set)
+    score_atom_sas = property(_cadscorelt_python.CADScoreComputerParameters_score_atom_sas_get, _cadscorelt_python.CADScoreComputerParameters_score_atom_sas_set)
+    score_residue_sas = property(_cadscorelt_python.CADScoreComputerParameters_score_residue_sas_get, _cadscorelt_python.CADScoreComputerParameters_score_residue_sas_set)
+    score_chain_sas = property(_cadscorelt_python.CADScoreComputerParameters_score_chain_sas_get, _cadscorelt_python.CADScoreComputerParameters_score_chain_sas_set)
+    score_atom_sites = property(_cadscorelt_python.CADScoreComputerParameters_score_atom_sites_get, _cadscorelt_python.CADScoreComputerParameters_score_atom_sites_set)
+    score_residue_sites = property(_cadscorelt_python.CADScoreComputerParameters_score_residue_sites_get, _cadscorelt_python.CADScoreComputerParameters_score_residue_sites_set)
+    score_chain_sites = property(_cadscorelt_python.CADScoreComputerParameters_score_chain_sites_get, _cadscorelt_python.CADScoreComputerParameters_score_chain_sites_set)
+    record_local_scores = property(_cadscorelt_python.CADScoreComputerParameters_record_local_scores_get, _cadscorelt_python.CADScoreComputerParameters_record_local_scores_set)
+    include_self_to_self_scores = property(_cadscorelt_python.CADScoreComputerParameters_include_self_to_self_scores_get, _cadscorelt_python.CADScoreComputerParameters_include_self_to_self_scores_set)
+    restrict_input_atoms = property(_cadscorelt_python.CADScoreComputerParameters_restrict_input_atoms_get, _cadscorelt_python.CADScoreComputerParameters_restrict_input_atoms_set)
+    subselect_contacts = property(_cadscorelt_python.CADScoreComputerParameters_subselect_contacts_get, _cadscorelt_python.CADScoreComputerParameters_subselect_contacts_set)
+    subselect_atoms = property(_cadscorelt_python.CADScoreComputerParameters_subselect_atoms_get, _cadscorelt_python.CADScoreComputerParameters_subselect_atoms_set)
 
     def __init__(self):
-        _cadscorelt_python.CADScoreParameters_swiginit(self, _cadscorelt_python.new_CADScoreParameters())
-    __swig_destroy__ = _cadscorelt_python.delete_CADScoreParameters
+        _cadscorelt_python.CADScoreComputerParameters_swiginit(self, _cadscorelt_python.new_CADScoreComputerParameters())
+    __swig_destroy__ = _cadscorelt_python.delete_CADScoreComputerParameters
 
-# Register CADScoreParameters in _cadscorelt_python:
-_cadscorelt_python.CADScoreParameters_swigregister(CADScoreParameters)
-class CADScore(object):
+# Register CADScoreComputerParameters in _cadscorelt_python:
+_cadscorelt_python.CADScoreComputerParameters_swigregister(CADScoreComputerParameters)
+class CADScoreComputer(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
     __repr__ = _swig_repr
 
     def __init__(self, init_params):
-        _cadscorelt_python.CADScore_swiginit(self, _cadscorelt_python.new_CADScore(init_params))
+        _cadscorelt_python.CADScoreComputer_swiginit(self, _cadscorelt_python.new_CADScoreComputer(init_params))
 
     def get_parameters(self):
-        return _cadscorelt_python.CADScore_get_parameters(self)
+        return _cadscorelt_python.CADScoreComputer_get_parameters(self)
 
     def add_target_structure_from_file_descriptor(self, input_file_info, name):
-        return _cadscorelt_python.CADScore_add_target_structure_from_file_descriptor(self, input_file_info, name)
+        return _cadscorelt_python.CADScoreComputer_add_target_structure_from_file_descriptor(self, input_file_info, name)
 
     def add_target_structure_from_atoms(self, input_atom_balls, name):
-        return _cadscorelt_python.CADScore_add_target_structure_from_atoms(self, input_atom_balls, name)
+        return _cadscorelt_python.CADScoreComputer_add_target_structure_from_atoms(self, input_atom_balls, name)
 
     def add_model_structure_from_file_descriptor(self, input_file_info, name):
-        return _cadscorelt_python.CADScore_add_model_structure_from_file_descriptor(self, input_file_info, name)
+        return _cadscorelt_python.CADScoreComputer_add_model_structure_from_file_descriptor(self, input_file_info, name)
 
     def add_model_structure_from_atoms(self, input_atom_balls, name):
-        return _cadscorelt_python.CADScore_add_model_structure_from_atoms(self, input_atom_balls, name)
+        return _cadscorelt_python.CADScoreComputer_add_model_structure_from_atoms(self, input_atom_balls, name)
 
     def add_structure_from_file_descriptor(self, input_file_info, name):
-        return _cadscorelt_python.CADScore_add_structure_from_file_descriptor(self, input_file_info, name)
+        return _cadscorelt_python.CADScoreComputer_add_structure_from_file_descriptor(self, input_file_info, name)
 
     def add_structure_from_atoms(self, input_atom_balls, name):
-        return _cadscorelt_python.CADScore_add_structure_from_atoms(self, input_atom_balls, name)
+        return _cadscorelt_python.CADScoreComputer_add_structure_from_atoms(self, input_atom_balls, name)
 
     def get_all_cadscores_atom_atom_summarized_globally(self):
-        return _cadscorelt_python.CADScore_get_all_cadscores_atom_atom_summarized_globally(self)
+        return _cadscorelt_python.CADScoreComputer_get_all_cadscores_atom_atom_summarized_globally(self)
 
     def get_all_cadscores_residue_residue_summarized_globally(self):
-        return _cadscorelt_python.CADScore_get_all_cadscores_residue_residue_summarized_globally(self)
+        return _cadscorelt_python.CADScoreComputer_get_all_cadscores_residue_residue_summarized_globally(self)
 
     def get_all_cadscores_chain_chain_summarized_globally(self):
-        return _cadscorelt_python.CADScore_get_all_cadscores_chain_chain_summarized_globally(self)
+        return _cadscorelt_python.CADScoreComputer_get_all_cadscores_chain_chain_summarized_globally(self)
 
     def get_all_cadscores_atom_sas_summarized_globally(self):
-        return _cadscorelt_python.CADScore_get_all_cadscores_atom_sas_summarized_globally(self)
+        return _cadscorelt_python.CADScoreComputer_get_all_cadscores_atom_sas_summarized_globally(self)
 
     def get_all_cadscores_residue_sas_summarized_globally(self):
-        return _cadscorelt_python.CADScore_get_all_cadscores_residue_sas_summarized_globally(self)
+        return _cadscorelt_python.CADScoreComputer_get_all_cadscores_residue_sas_summarized_globally(self)
 
     def get_all_cadscores_chain_sas_summarized_globally(self):
-        return _cadscorelt_python.CADScore_get_all_cadscores_chain_sas_summarized_globally(self)
+        return _cadscorelt_python.CADScoreComputer_get_all_cadscores_chain_sas_summarized_globally(self)
 
     def get_all_cadscores_atom_site_summarized_globally(self):
-        return _cadscorelt_python.CADScore_get_all_cadscores_atom_site_summarized_globally(self)
+        return _cadscorelt_python.CADScoreComputer_get_all_cadscores_atom_site_summarized_globally(self)
 
     def get_all_cadscores_residue_site_summarized_globally(self):
-        return _cadscorelt_python.CADScore_get_all_cadscores_residue_site_summarized_globally(self)
+        return _cadscorelt_python.CADScoreComputer_get_all_cadscores_residue_site_summarized_globally(self)
 
     def get_all_cadscores_chain_site_summarized_globally(self):
-        return _cadscorelt_python.CADScore_get_all_cadscores_chain_site_summarized_globally(self)
+        return _cadscorelt_python.CADScoreComputer_get_all_cadscores_chain_site_summarized_globally(self)
 
     def get_local_cadscores_atom_atom(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_atom_atom(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_atom(self, target_name, model_name)
 
     def get_local_cadscores_atom_atom_summarized_per_residue_residue(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_atom_atom_summarized_per_residue_residue(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue_residue(self, target_name, model_name)
 
     def get_local_cadscores_atom_atom_summarized_per_chain_chain(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_atom_atom_summarized_per_chain_chain(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain_chain(self, target_name, model_name)
 
     def get_local_cadscores_atom_atom_summarized_per_atom(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_atom_atom_summarized_per_atom(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_atom(self, target_name, model_name)
 
     def get_local_cadscores_atom_atom_summarized_per_residue(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_atom_atom_summarized_per_residue(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue(self, target_name, model_name)
 
     def get_local_cadscores_atom_atom_summarized_per_chain(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_atom_atom_summarized_per_chain(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain(self, target_name, model_name)
 
     def get_local_cadscores_residue_residue(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_residue_residue(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_residue_residue(self, target_name, model_name)
 
     def get_local_cadscores_residue_residue_summarized_per_chain_chain(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_residue_residue_summarized_per_chain_chain(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain_chain(self, target_name, model_name)
 
     def get_local_cadscores_residue_residue_summarized_per_residue(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_residue_residue_summarized_per_residue(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_residue(self, target_name, model_name)
 
     def get_local_cadscores_residue_residue_summarized_per_chain(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_residue_residue_summarized_per_chain(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_residue_residue_summarized_per_chain(self, target_name, model_name)
 
     def get_local_cadscores_chain_chain(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_chain_chain(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_chain_chain(self, target_name, model_name)
 
     def get_local_cadscores_chain_chain_contact_summarized_per_chain(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_chain_chain_contact_summarized_per_chain(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_chain_chain_contact_summarized_per_chain(self, target_name, model_name)
 
     def get_local_cadscores_atom_sas(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_atom_sas(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_sas(self, target_name, model_name)
 
     def get_local_cadscores_atom_sas_summarized_per_residue(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_atom_sas_summarized_per_residue(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_residue(self, target_name, model_name)
 
     def get_local_cadscores_atom_sas_summarized_per_chain(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_atom_sas_summarized_per_chain(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_sas_summarized_per_chain(self, target_name, model_name)
 
     def get_local_cadscores_residue_sas(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_residue_sas(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_residue_sas(self, target_name, model_name)
 
     def get_local_cadscores_residue_sas_summarized_per_chain(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_residue_sas_summarized_per_chain(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_residue_sas_summarized_per_chain(self, target_name, model_name)
 
     def get_local_cadscores_chain_sas(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_chain_sas(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_chain_sas(self, target_name, model_name)
 
     def get_local_cadscores_atom_site(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_atom_site(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_site(self, target_name, model_name)
 
     def get_local_cadscores_atom_site_summarized_per_residue(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_atom_site_summarized_per_residue(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_site_summarized_per_residue(self, target_name, model_name)
 
     def get_local_cadscores_atom_site_summarized_per_chain(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_atom_site_summarized_per_chain(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_site_summarized_per_chain(self, target_name, model_name)
 
     def get_local_cadscores_residue_site(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_residue_site(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_residue_site(self, target_name, model_name)
 
     def get_local_cadscores_residue_site_summarized_per_chain(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_residue_site_summarized_per_chain(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_residue_site_summarized_per_chain(self, target_name, model_name)
 
     def get_local_cadscores_chain_site(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_local_cadscores_chain_site(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_local_cadscores_chain_site(self, target_name, model_name)
 
     def get_cadscores_atom_atom_summarized_globally(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_cadscores_atom_atom_summarized_globally(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_cadscores_atom_atom_summarized_globally(self, target_name, model_name)
 
     def get_cadscores_residue_residue_summarized_globally(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_cadscores_residue_residue_summarized_globally(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_cadscores_residue_residue_summarized_globally(self, target_name, model_name)
 
     def get_cadscores_chain_chain_summarized_globally(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_cadscores_chain_chain_summarized_globally(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_cadscores_chain_chain_summarized_globally(self, target_name, model_name)
 
     def get_cadscores_atom_sas_summarized_globally(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_cadscores_atom_sas_summarized_globally(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_cadscores_atom_sas_summarized_globally(self, target_name, model_name)
 
     def get_cadscores_residue_sas_summarized_globally(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_cadscores_residue_sas_summarized_globally(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_cadscores_residue_sas_summarized_globally(self, target_name, model_name)
 
     def get_cadscores_chain_sas_summarized_globally(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_cadscores_chain_sas_summarized_globally(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_cadscores_chain_sas_summarized_globally(self, target_name, model_name)
 
     def get_cadscores_atom_site_summarized_globally(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_cadscores_atom_site_summarized_globally(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_cadscores_atom_site_summarized_globally(self, target_name, model_name)
 
     def get_cadscores_residue_site_summarized_globally(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_cadscores_residue_site_summarized_globally(self, target_name, model_name)
+        return _cadscorelt_python.CADScoreComputer_get_cadscores_residue_site_summarized_globally(self, target_name, model_name)
 
     def get_cadscores_chain_site_summarized_globally(self, target_name, model_name):
-        return _cadscorelt_python.CADScore_get_cadscores_chain_site_summarized_globally(self, target_name, model_name)
-    __swig_destroy__ = _cadscorelt_python.delete_CADScore
+        return _cadscorelt_python.CADScoreComputer_get_cadscores_chain_site_summarized_globally(self, target_name, model_name)
+    __swig_destroy__ = _cadscorelt_python.delete_CADScoreComputer
 
-# Register CADScore in _cadscorelt_python:
-_cadscorelt_python.CADScore_swigregister(CADScore)
+# Register CADScoreComputer in _cadscorelt_python:
+_cadscorelt_python.CADScoreComputer_swigregister(CADScoreComputer)
 
 def enable_considering_residue_names():
     return _cadscorelt_python.enable_considering_residue_names()

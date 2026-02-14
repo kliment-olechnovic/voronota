@@ -20,7 +20,7 @@ def _initialize(
         restrict_input_atoms="",
         subselect_contacts="[-min-sep 1]",
         subselect_atoms=""):
-    params=CADScoreParameters()
+    params=CADScoreComputerParameters()
     params.probe=probe
     params.conflate_atom_names=conflate_atom_names
     params.remap_chains=remap_chains
@@ -100,13 +100,13 @@ def _add_structure_from_string(
     mfi = MolecularFileInput("_data_blob", input_string_data, include_heteroatoms, read_as_assembly)
     return self.add_structure_from_file_descriptor(mfi, structure_name)
 
-CADScore.init = classmethod(_initialize)
-CADScore.add_target_structure_from_file = _add_target_structure_from_file
-CADScore.add_model_structure_from_file = _add_model_structure_from_file
-CADScore.add_structure_from_file = _add_structure_from_file
-CADScore.add_target_structure_from_string = _add_structure_from_string
-CADScore.add_model_structure_from_string = _add_structure_from_string
-CADScore.add_structure_from_string = _add_structure_from_string
+CADScoreComputer.init = classmethod(_initialize)
+CADScoreComputer.add_target_structure_from_file = _add_target_structure_from_file
+CADScoreComputer.add_model_structure_from_file = _add_model_structure_from_file
+CADScoreComputer.add_structure_from_file = _add_structure_from_file
+CADScoreComputer.add_target_structure_from_string = _add_structure_from_string
+CADScoreComputer.add_model_structure_from_string = _add_structure_from_string
+CADScoreComputer.add_structure_from_string = _add_structure_from_string
 
 __all__ = []
 
