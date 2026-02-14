@@ -33320,6 +33320,39 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CADScoreComputer_clear_reference_sequences(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_clear_reference_sequences" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
+  }
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
+  {
+    try
+    {
+      (arg1)->clear_reference_sequences();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CADScoreComputer_set_reference_sequences_from_file(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
@@ -37245,6 +37278,7 @@ static PyMethodDef SwigMethods[] = {
 	 { "CADScoreComputerParameters_swiginit", CADScoreComputerParameters_swiginit, METH_VARARGS, NULL},
 	 { "new_CADScoreComputer", _wrap_new_CADScoreComputer, METH_O, NULL},
 	 { "CADScoreComputer_get_parameters", _wrap_CADScoreComputer_get_parameters, METH_O, NULL},
+	 { "CADScoreComputer_clear_reference_sequences", _wrap_CADScoreComputer_clear_reference_sequences, METH_O, NULL},
 	 { "CADScoreComputer_set_reference_sequences_from_file", _wrap_CADScoreComputer_set_reference_sequences_from_file, METH_VARARGS, NULL},
 	 { "CADScoreComputer_set_reference_sequences_from_string", _wrap_CADScoreComputer_set_reference_sequences_from_string, METH_VARARGS, NULL},
 	 { "CADScoreComputer_clear_reference_stoichiometry", _wrap_CADScoreComputer_clear_reference_stoichiometry, METH_O, NULL},

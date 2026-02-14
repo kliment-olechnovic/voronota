@@ -1400,6 +1400,9 @@ class CADScoreComputer(object):
     def get_parameters(self):
         return _cadscorelt_python.CADScoreComputer_get_parameters(self)
 
+    def clear_reference_sequences(self):
+        return _cadscorelt_python.CADScoreComputer_clear_reference_sequences(self)
+
     def set_reference_sequences_from_file(self, reference_sequences_file):
         return _cadscorelt_python.CADScoreComputer_set_reference_sequences_from_file(self, reference_sequences_file)
 

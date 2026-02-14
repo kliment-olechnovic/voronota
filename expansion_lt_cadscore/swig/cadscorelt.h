@@ -328,6 +328,11 @@ public:
 		return params_;
 	}
 
+	void clear_reference_sequences()
+	{
+		scorable_data_construction_parameters_.reference_sequences.clear();
+	}
+
 	void set_reference_sequences_from_file(const std::string& reference_sequences_file)
 	{
 		std::vector<std::string> reference_sequences=cadscorelt::SequenceInputUtilities::read_sequences_from_file(reference_sequences_file, true);
