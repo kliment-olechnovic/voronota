@@ -1,0 +1,85 @@
+
+--------------------------------------------------------------------------------
+--- results 1                                                                ---
+--------------------------------------------------------------------------------
+                                                    name  is_target  is_model renamed_chains reference_alignment
+                   afm_basic_model_5_multimer_v1_pred_35       True      True              .                   .
+            afm_dropout_full_model_1_multimer_v2_pred_42       True      True              .                   .
+            afm_dropout_full_model_2_multimer_v1_pred_65       True      True              .                   .
+            afm_dropout_full_model_3_multimer_v3_pred_64       True      True              .                   .
+            afm_dropout_full_model_3_multimer_v3_pred_66       True      True              .                   .
+ afm_dropout_full_woTemplates_model_3_multimer_v1_pred_4       True      True              .                   .
+afm_dropout_full_woTemplates_model_3_multimer_v1_pred_45       True      True              .                   .
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50       True      True              .                   .
+              cf_woTemplates_model_2_multimer_v3_pred_26       True      True              .                   .
+              cf_woTemplates_model_3_multimer_v3_pred_47       True      True              .                   .
+--------------------------------------------------------------------------------
+                                             target_name                                               model_name  CAD_score  F1_of_areas  target_area  model_area     TP_area      FP_area     FN_area renamed_chains
+              cf_woTemplates_model_3_multimer_v3_pred_47               cf_woTemplates_model_2_multimer_v3_pred_26   0.704666     0.781187  7483.973156 6878.084004 5914.330867  1743.612487 1569.642289              .
+              cf_woTemplates_model_2_multimer_v3_pred_26               cf_woTemplates_model_3_multimer_v3_pred_47   0.699040     0.781187  7657.943354 6855.599895 5914.330867  1569.642289 1743.612487              .
+            afm_dropout_full_model_3_multimer_v3_pred_66             afm_dropout_full_model_3_multimer_v3_pred_64   0.657842     0.675283  7313.203511 5519.154809 5124.561234  2739.763621 2188.642277              .
+            afm_dropout_full_model_3_multimer_v3_pred_64             afm_dropout_full_model_3_multimer_v3_pred_66   0.620764     0.675283  7864.324855 5420.088717 5124.561234  2188.642277 2739.763621              .
+            afm_dropout_full_model_3_multimer_v3_pred_66                    afm_basic_model_5_multimer_v1_pred_35   0.460031     0.322678  7313.203511 4577.197986 3819.766723 12542.474120 3493.436788              .
+            afm_dropout_full_model_3_multimer_v3_pred_64                    afm_basic_model_5_multimer_v1_pred_35   0.432138     0.315395  7864.324855 4507.314891 3820.463253 12541.777590 4043.861601              .
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50             afm_dropout_full_model_3_multimer_v3_pred_66   0.422924     0.431031  6246.994756 3308.474685 2922.436198  4390.767313 3324.558558              .
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50             afm_dropout_full_model_3_multimer_v3_pred_64   0.420682     0.417181  6246.994756 3363.696521 2943.485199  4920.839656 3303.509557              .
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50 afm_dropout_full_woTemplates_model_3_multimer_v1_pred_45   0.406353     0.164933  6246.994756 3262.876342 2867.526482 25657.497807 3379.468273              .
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50                    afm_basic_model_5_multimer_v1_pred_35   0.400944     0.268093  6246.994756 3820.453138 3030.688725 13331.552118 3216.306031              .
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+--- results 2                                                                ---
+--------------------------------------------------------------------------------
+                                                    name  is_target  is_model          renamed_chains reference_alignment
+                   afm_basic_model_5_multimer_v1_pred_35       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+            afm_dropout_full_model_1_multimer_v2_pred_42       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+            afm_dropout_full_model_2_multimer_v1_pred_65       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+            afm_dropout_full_model_3_multimer_v3_pred_64       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+            afm_dropout_full_model_3_multimer_v3_pred_66       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+ afm_dropout_full_woTemplates_model_3_multimer_v1_pred_4       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+afm_dropout_full_woTemplates_model_3_multimer_v1_pred_45       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+              cf_woTemplates_model_2_multimer_v3_pred_26       True      True A=A,B=D,C=B,D=E,E=C,F=F           available
+              cf_woTemplates_model_3_multimer_v3_pred_47       True      True A=A,B=D,C=B,D=E,E=C,F=F           available
+--------------------------------------------------------------------------------
+                                             target_name                                   model_name  CAD_score  F1_of_areas  target_area  model_area     TP_area      FP_area     FN_area renamed_chains
+              cf_woTemplates_model_3_multimer_v3_pred_47   cf_woTemplates_model_2_multimer_v3_pred_26   0.704666     0.781187  7483.973156 6878.084004 5914.330867  1743.612487 1569.642289              .
+              cf_woTemplates_model_2_multimer_v3_pred_26   cf_woTemplates_model_3_multimer_v3_pred_47   0.699040     0.781187  7657.943354 6855.599895 5914.330867  1569.642289 1743.612487              .
+            afm_dropout_full_model_3_multimer_v3_pred_66 afm_dropout_full_model_3_multimer_v3_pred_64   0.657842     0.675283  7313.203511 5519.154809 5124.561234  2739.763621 2188.642277              .
+            afm_dropout_full_model_3_multimer_v3_pred_64 afm_dropout_full_model_3_multimer_v3_pred_66   0.620764     0.675283  7864.324855 5420.088717 5124.561234  2188.642277 2739.763621              .
+            afm_dropout_full_model_1_multimer_v2_pred_42   cf_woTemplates_model_3_multimer_v3_pred_47   0.473788     0.355261  3970.007175 2217.688549 2034.574003  5449.399153 1935.433171              .
+            afm_dropout_full_model_1_multimer_v2_pred_42   cf_woTemplates_model_2_multimer_v3_pred_26   0.469084     0.349134  3970.007175 2222.008739 2029.859289  5628.084065 1940.147885              .
+            afm_dropout_full_model_3_multimer_v3_pred_66        afm_basic_model_5_multimer_v1_pred_35   0.460031     0.322678  7313.203511 4577.197986 3819.766723 12542.474120 3493.436788              .
+            afm_dropout_full_model_3_multimer_v3_pred_64        afm_basic_model_5_multimer_v1_pred_35   0.432138     0.315395  7864.324855 4507.314891 3820.463253 12541.777590 4043.861601              .
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50 afm_dropout_full_model_3_multimer_v3_pred_66   0.422924     0.431031  6246.994756 3308.474685 2922.436198  4390.767313 3324.558558              .
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50 afm_dropout_full_model_3_multimer_v3_pred_64   0.420682     0.417181  6246.994756 3363.696521 2943.485199  4920.839656 3303.509557              .
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+--- results 3                                                                ---
+--------------------------------------------------------------------------------
+                                                    name  is_target  is_model          renamed_chains reference_alignment
+                   afm_basic_model_5_multimer_v1_pred_35       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+            afm_dropout_full_model_1_multimer_v2_pred_42       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+            afm_dropout_full_model_2_multimer_v1_pred_65       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+            afm_dropout_full_model_3_multimer_v3_pred_64       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+            afm_dropout_full_model_3_multimer_v3_pred_66       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+ afm_dropout_full_woTemplates_model_3_multimer_v1_pred_4       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+afm_dropout_full_woTemplates_model_3_multimer_v1_pred_45       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+              cf_woTemplates_model_2_multimer_v3_pred_26       True      True A=A,B=D,C=B,D=E,E=C,F=F           available
+              cf_woTemplates_model_3_multimer_v3_pred_47       True      True A=A,B=D,C=B,D=E,E=C,F=F           available
+--------------------------------------------------------------------------------
+                                 target_name                                               model_name  CAD_score  F1_of_areas  target_area  model_area     TP_area     FP_area     FN_area          renamed_chains
+afm_dropout_full_model_1_multimer_v2_pred_42 afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50   0.847662     0.701359  3970.007175 3836.593118 3582.890995 2664.103761  387.116180 A=A;B=B;C=F;D=D;E=E;F=C
+  cf_woTemplates_model_3_multimer_v3_pred_47               cf_woTemplates_model_2_multimer_v3_pred_26   0.704688     0.780891  7483.973156 6871.838277 5912.094425 1745.848929 1571.878730 A=D;B=E;C=F;D=A;E=B;F=C
+  cf_woTemplates_model_2_multimer_v3_pred_26               cf_woTemplates_model_3_multimer_v3_pred_47   0.699040     0.781187  7657.943354 6855.599895 5914.330867 1569.642289 1743.612487 A=A;B=B;C=C;D=D;E=E;F=F
+afm_dropout_full_model_3_multimer_v3_pred_66             afm_dropout_full_model_3_multimer_v3_pred_64   0.657842     0.675283  7313.203511 5519.154809 5124.561234 2739.763621 2188.642277 A=A;B=B;C=C;D=D;E=E;F=F
+afm_dropout_full_model_3_multimer_v3_pred_64             afm_dropout_full_model_3_multimer_v3_pred_66   0.620764     0.675283  7864.324855 5420.088717 5124.561234 2188.642277 2739.763621 A=A;B=B;C=C;D=D;E=E;F=F
+afm_dropout_full_model_3_multimer_v3_pred_66               cf_woTemplates_model_2_multimer_v3_pred_26   0.575097     0.645935  7313.203511 5696.007986 4835.195167 2822.748187 2478.008344 A=A;B=E;C=C;D=D;E=B;F=F
+  cf_woTemplates_model_2_multimer_v3_pred_26             afm_dropout_full_model_3_multimer_v3_pred_66   0.573808     0.645935  7657.943354 5446.078054 4835.195167 2478.008344 2822.748187 A=A;B=E;C=C;D=D;E=B;F=F
+afm_dropout_full_model_3_multimer_v3_pred_66               cf_woTemplates_model_3_multimer_v3_pred_47   0.566239     0.627281  7313.203511 5493.415167 4640.996876 2842.976280 2672.206635 A=D;B=B;C=F;D=A;E=E;F=C
+  cf_woTemplates_model_3_multimer_v3_pred_47             afm_dropout_full_model_3_multimer_v3_pred_66   0.561418     0.627332  7483.973156 5252.699687 4641.373085 2671.830426 2842.600071 A=A;B=E;C=C;D=D;E=B;F=F
+  cf_woTemplates_model_2_multimer_v3_pred_26             afm_dropout_full_model_3_multimer_v3_pred_64   0.550970     0.603414  7657.943354 5255.694013 4683.177891 3181.146964 2974.765463 A=A;B=E;C=C;D=D;E=B;F=F
+--------------------------------------------------------------------------------
+
