@@ -118,6 +118,111 @@ class SwigPyIterator(object):
 
 # Register SwigPyIterator in _cadscorelt_python:
 _cadscorelt_python.SwigPyIterator_swigregister(SwigPyIterator)
+class VectorInt(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def iterator(self):
+        return _cadscorelt_python.VectorInt_iterator(self)
+    def __iter__(self):
+        return self.iterator()
+
+    def __nonzero__(self):
+        return _cadscorelt_python.VectorInt___nonzero__(self)
+
+    def __bool__(self):
+        return _cadscorelt_python.VectorInt___bool__(self)
+
+    def __len__(self):
+        return _cadscorelt_python.VectorInt___len__(self)
+
+    def __getslice__(self, i, j):
+        return _cadscorelt_python.VectorInt___getslice__(self, i, j)
+
+    def __setslice__(self, *args):
+        return _cadscorelt_python.VectorInt___setslice__(self, *args)
+
+    def __delslice__(self, i, j):
+        return _cadscorelt_python.VectorInt___delslice__(self, i, j)
+
+    def __delitem__(self, *args):
+        return _cadscorelt_python.VectorInt___delitem__(self, *args)
+
+    def __getitem__(self, *args):
+        return _cadscorelt_python.VectorInt___getitem__(self, *args)
+
+    def __setitem__(self, *args):
+        return _cadscorelt_python.VectorInt___setitem__(self, *args)
+
+    def pop(self):
+        return _cadscorelt_python.VectorInt_pop(self)
+
+    def append(self, x):
+        return _cadscorelt_python.VectorInt_append(self, x)
+
+    def empty(self):
+        return _cadscorelt_python.VectorInt_empty(self)
+
+    def size(self):
+        return _cadscorelt_python.VectorInt_size(self)
+
+    def swap(self, v):
+        return _cadscorelt_python.VectorInt_swap(self, v)
+
+    def begin(self):
+        return _cadscorelt_python.VectorInt_begin(self)
+
+    def end(self):
+        return _cadscorelt_python.VectorInt_end(self)
+
+    def rbegin(self):
+        return _cadscorelt_python.VectorInt_rbegin(self)
+
+    def rend(self):
+        return _cadscorelt_python.VectorInt_rend(self)
+
+    def clear(self):
+        return _cadscorelt_python.VectorInt_clear(self)
+
+    def get_allocator(self):
+        return _cadscorelt_python.VectorInt_get_allocator(self)
+
+    def pop_back(self):
+        return _cadscorelt_python.VectorInt_pop_back(self)
+
+    def erase(self, *args):
+        return _cadscorelt_python.VectorInt_erase(self, *args)
+
+    def __init__(self, *args):
+        _cadscorelt_python.VectorInt_swiginit(self, _cadscorelt_python.new_VectorInt(*args))
+
+    def push_back(self, x):
+        return _cadscorelt_python.VectorInt_push_back(self, x)
+
+    def front(self):
+        return _cadscorelt_python.VectorInt_front(self)
+
+    def back(self):
+        return _cadscorelt_python.VectorInt_back(self)
+
+    def assign(self, n, x):
+        return _cadscorelt_python.VectorInt_assign(self, n, x)
+
+    def resize(self, *args):
+        return _cadscorelt_python.VectorInt_resize(self, *args)
+
+    def insert(self, *args):
+        return _cadscorelt_python.VectorInt_insert(self, *args)
+
+    def reserve(self, n):
+        return _cadscorelt_python.VectorInt_reserve(self, n)
+
+    def capacity(self):
+        return _cadscorelt_python.VectorInt_capacity(self)
+    __swig_destroy__ = _cadscorelt_python.delete_VectorInt
+
+# Register VectorInt in _cadscorelt_python:
+_cadscorelt_python.VectorInt_swigregister(VectorInt)
 class VectorMolecularAtomBall(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
     __repr__ = _swig_repr
@@ -223,6 +328,111 @@ class VectorMolecularAtomBall(object):
 
 # Register VectorMolecularAtomBall in _cadscorelt_python:
 _cadscorelt_python.VectorMolecularAtomBall_swigregister(VectorMolecularAtomBall)
+class VectorStructureDescriptor(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def iterator(self):
+        return _cadscorelt_python.VectorStructureDescriptor_iterator(self)
+    def __iter__(self):
+        return self.iterator()
+
+    def __nonzero__(self):
+        return _cadscorelt_python.VectorStructureDescriptor___nonzero__(self)
+
+    def __bool__(self):
+        return _cadscorelt_python.VectorStructureDescriptor___bool__(self)
+
+    def __len__(self):
+        return _cadscorelt_python.VectorStructureDescriptor___len__(self)
+
+    def __getslice__(self, i, j):
+        return _cadscorelt_python.VectorStructureDescriptor___getslice__(self, i, j)
+
+    def __setslice__(self, *args):
+        return _cadscorelt_python.VectorStructureDescriptor___setslice__(self, *args)
+
+    def __delslice__(self, i, j):
+        return _cadscorelt_python.VectorStructureDescriptor___delslice__(self, i, j)
+
+    def __delitem__(self, *args):
+        return _cadscorelt_python.VectorStructureDescriptor___delitem__(self, *args)
+
+    def __getitem__(self, *args):
+        return _cadscorelt_python.VectorStructureDescriptor___getitem__(self, *args)
+
+    def __setitem__(self, *args):
+        return _cadscorelt_python.VectorStructureDescriptor___setitem__(self, *args)
+
+    def pop(self):
+        return _cadscorelt_python.VectorStructureDescriptor_pop(self)
+
+    def append(self, x):
+        return _cadscorelt_python.VectorStructureDescriptor_append(self, x)
+
+    def empty(self):
+        return _cadscorelt_python.VectorStructureDescriptor_empty(self)
+
+    def size(self):
+        return _cadscorelt_python.VectorStructureDescriptor_size(self)
+
+    def swap(self, v):
+        return _cadscorelt_python.VectorStructureDescriptor_swap(self, v)
+
+    def begin(self):
+        return _cadscorelt_python.VectorStructureDescriptor_begin(self)
+
+    def end(self):
+        return _cadscorelt_python.VectorStructureDescriptor_end(self)
+
+    def rbegin(self):
+        return _cadscorelt_python.VectorStructureDescriptor_rbegin(self)
+
+    def rend(self):
+        return _cadscorelt_python.VectorStructureDescriptor_rend(self)
+
+    def clear(self):
+        return _cadscorelt_python.VectorStructureDescriptor_clear(self)
+
+    def get_allocator(self):
+        return _cadscorelt_python.VectorStructureDescriptor_get_allocator(self)
+
+    def pop_back(self):
+        return _cadscorelt_python.VectorStructureDescriptor_pop_back(self)
+
+    def erase(self, *args):
+        return _cadscorelt_python.VectorStructureDescriptor_erase(self, *args)
+
+    def __init__(self, *args):
+        _cadscorelt_python.VectorStructureDescriptor_swiginit(self, _cadscorelt_python.new_VectorStructureDescriptor(*args))
+
+    def push_back(self, x):
+        return _cadscorelt_python.VectorStructureDescriptor_push_back(self, x)
+
+    def front(self):
+        return _cadscorelt_python.VectorStructureDescriptor_front(self)
+
+    def back(self):
+        return _cadscorelt_python.VectorStructureDescriptor_back(self)
+
+    def assign(self, n, x):
+        return _cadscorelt_python.VectorStructureDescriptor_assign(self, n, x)
+
+    def resize(self, *args):
+        return _cadscorelt_python.VectorStructureDescriptor_resize(self, *args)
+
+    def insert(self, *args):
+        return _cadscorelt_python.VectorStructureDescriptor_insert(self, *args)
+
+    def reserve(self, n):
+        return _cadscorelt_python.VectorStructureDescriptor_reserve(self, n)
+
+    def capacity(self):
+        return _cadscorelt_python.VectorStructureDescriptor_capacity(self)
+    __swig_destroy__ = _cadscorelt_python.delete_VectorStructureDescriptor
+
+# Register VectorStructureDescriptor in _cadscorelt_python:
+_cadscorelt_python.VectorStructureDescriptor_swigregister(VectorStructureDescriptor)
 class VectorGlobalScore(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
     __repr__ = _swig_repr
@@ -978,6 +1188,21 @@ class MolecularAtomBall(object):
 
 # Register MolecularAtomBall in _cadscorelt_python:
 _cadscorelt_python.MolecularAtomBall_swigregister(MolecularAtomBall)
+class StructureDescriptor(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    name = property(_cadscorelt_python.StructureDescriptor_name_get, _cadscorelt_python.StructureDescriptor_name_set)
+    is_target = property(_cadscorelt_python.StructureDescriptor_is_target_get, _cadscorelt_python.StructureDescriptor_is_target_set)
+    is_model = property(_cadscorelt_python.StructureDescriptor_is_model_get, _cadscorelt_python.StructureDescriptor_is_model_set)
+    renaming_of_chains = property(_cadscorelt_python.StructureDescriptor_renaming_of_chains_get, _cadscorelt_python.StructureDescriptor_renaming_of_chains_set)
+    reference_alignment_info = property(_cadscorelt_python.StructureDescriptor_reference_alignment_info_get, _cadscorelt_python.StructureDescriptor_reference_alignment_info_set)
+
+    def __init__(self):
+        _cadscorelt_python.StructureDescriptor_swiginit(self, _cadscorelt_python.new_StructureDescriptor())
+    __swig_destroy__ = _cadscorelt_python.delete_StructureDescriptor
+
+# Register StructureDescriptor in _cadscorelt_python:
+_cadscorelt_python.StructureDescriptor_swigregister(StructureDescriptor)
 class GlobalScore(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
     __repr__ = _swig_repr
@@ -1175,6 +1400,18 @@ class CADScoreComputer(object):
     def get_parameters(self):
         return _cadscorelt_python.CADScoreComputer_get_parameters(self)
 
+    def set_reference_sequences_from_file(self, reference_sequences_file):
+        return _cadscorelt_python.CADScoreComputer_set_reference_sequences_from_file(self, reference_sequences_file)
+
+    def set_reference_sequences_from_string(self, reference_sequences_string):
+        return _cadscorelt_python.CADScoreComputer_set_reference_sequences_from_string(self, reference_sequences_string)
+
+    def clear_reference_stoichiometry(self):
+        return _cadscorelt_python.CADScoreComputer_clear_reference_stoichiometry(self)
+
+    def set_reference_stoichiometry(self, reference_stoichiometry):
+        return _cadscorelt_python.CADScoreComputer_set_reference_stoichiometry(self, reference_stoichiometry)
+
     def add_target_structure_from_file_descriptor(self, input_file_info, name):
         return _cadscorelt_python.CADScoreComputer_add_target_structure_from_file_descriptor(self, input_file_info, name)
 
@@ -1192,6 +1429,12 @@ class CADScoreComputer(object):
 
     def add_structure_from_atoms(self, input_atom_balls, name):
         return _cadscorelt_python.CADScoreComputer_add_structure_from_atoms(self, input_atom_balls, name)
+
+    def get_structure_descriptor(self, name):
+        return _cadscorelt_python.CADScoreComputer_get_structure_descriptor(self, name)
+
+    def get_all_structure_descriptors(self):
+        return _cadscorelt_python.CADScoreComputer_get_all_structure_descriptors(self)
 
     def get_all_cadscores_atom_atom_summarized_globally(self):
         return _cadscorelt_python.CADScoreComputer_get_all_cadscores_atom_atom_summarized_globally(self)

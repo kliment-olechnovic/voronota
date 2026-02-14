@@ -29,6 +29,23 @@ def _molecular_atom_balls_vector_to_df(vec):
         "r":                     [c.r                            for c in vec],
     })
 
+def _structure_descriptors_vector_to_df(vec):
+    if len(vec) == 0:
+        return _pd.DataFrame(columns=[
+            "name",
+            "is_target",
+            "is_model",
+            "renamed_chains",
+            "reference_alignment",
+        ])
+    return _pd.DataFrame({
+        "name":                     [c.name or "."                       for c in vec],
+        "is_target":                [c.is_target                         for c in vec],
+        "is_model":                 [c.is_model                          for c in vec],
+        "renamed_chains":           [c.renaming_of_chains or "."         for c in vec],
+        "reference_alignment":      [c.reference_alignment_info or "."   for c in vec],
+    })
+
 def _global_scores_vector_to_df(vec):
     if len(vec) == 0:
         return _pd.DataFrame(columns=[
@@ -233,6 +250,9 @@ def _chain_chain_scores_vector_to_df(vec):
 def _attach_methods():
     if hasattr(_cadscorelt_backend, "VectorMolecularAtomBall"):
         _cadscorelt_backend.VectorMolecularAtomBall.to_pandas = _molecular_atom_balls_vector_to_df
+
+    if hasattr(_cadscorelt_backend, "VectorStructureDescriptor"):
+        _cadscorelt_backend.VectorStructureDescriptor.to_pandas = _structure_descriptors_vector_to_df
 
     if hasattr(_cadscorelt_backend, "VectorGlobalScore"):
         _cadscorelt_backend.VectorGlobalScore.to_pandas = _global_scores_vector_to_df

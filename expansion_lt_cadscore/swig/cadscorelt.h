@@ -52,6 +52,19 @@ struct MolecularAtomBall
 	}
 };
 
+struct StructureDescriptor
+{
+	std::string name;
+	bool is_target;
+	bool is_model;
+	std::string renaming_of_chains;
+	std::string reference_alignment_info;
+
+	StructureDescriptor() : is_target(false), is_model(false)
+	{
+	}
+};
+
 struct GlobalScore
 {
 	std::string target_name;
@@ -289,7 +302,7 @@ public:
 
 		scorable_data_construction_parameters_.probe=init_params.probe;
 		scorable_data_construction_parameters_.record_atom_balls=false;
-		scorable_data_construction_parameters_.record_sequence_alignments=false;
+		scorable_data_construction_parameters_.record_sequence_alignments=true;
 		scorable_data_construction_parameters_.record_graphics=false;
 		scorable_data_construction_parameters_.record_atom_atom_contact_summaries=init_params.score_atom_atom_contacts;
 		scorable_data_construction_parameters_.record_residue_residue_contact_summaries=(init_params.score_residue_residue_contacts || init_params.remap_chains);
@@ -313,6 +326,40 @@ public:
 	CADScoreComputerParameters get_parameters() const
 	{
 		return params_;
+	}
+
+	void set_reference_sequences_from_file(const std::string& reference_sequences_file)
+	{
+		std::vector<std::string> reference_sequences=cadscorelt::SequenceInputUtilities::read_sequences_from_file(reference_sequences_file, true);
+		if(reference_sequences.empty())
+		{
+			throw std::runtime_error(std::string("Failed to read reference sequences from file '")+reference_sequences_file+"'.");
+		}
+		scorable_data_construction_parameters_.reference_sequences.swap(reference_sequences);
+	}
+
+	void set_reference_sequences_from_string(const std::string& reference_sequences_string)
+	{
+		std::vector<std::string> reference_sequences=cadscorelt::SequenceInputUtilities::read_sequences_from_string(reference_sequences_string, true);
+		if(reference_sequences.empty())
+		{
+			throw std::runtime_error(std::string("Failed to read reference sequences from string '")+(reference_sequences_string.size()<35 ? reference_sequences_string : reference_sequences_string.substr(0, 30)+std::string(" ..."))+"'.");
+		}
+		scorable_data_construction_parameters_.reference_sequences.swap(reference_sequences);
+	}
+
+	void clear_reference_stoichiometry()
+	{
+		scorable_data_construction_parameters_.reference_stoichiometry.clear();
+	}
+
+	void set_reference_stoichiometry(const std::vector<int>& reference_stoichiometry)
+	{
+		if(!reference_stoichiometry.empty() && reference_stoichiometry.size()!=scorable_data_construction_parameters_.reference_sequences.size())
+		{
+			throw std::runtime_error(std::string("Invalid stoichiometry list length ("+std::to_string(reference_stoichiometry.size())+"), must be equal to the number of reference sequences ("+std::to_string(scorable_data_construction_parameters_.reference_sequences.size())+")"));
+		}
+		scorable_data_construction_parameters_.reference_stoichiometry=reference_stoichiometry;
 	}
 
 	void add_target_structure_from_file_descriptor(const MolecularFileInput& input_file_info, const std::string& name)
@@ -343,6 +390,73 @@ public:
 	void add_structure_from_atoms(const std::vector<MolecularAtomBall>& input_atom_balls, const std::string& name)
 	{
 		add_structure(MolecularFileInput(), input_atom_balls, true, true, name);
+	}
+
+	const StructureDescriptor* get_structure_descriptor(const std::string& name)
+	{
+		std::map<std::string, StructureDescriptor>::iterator it=set_of_structure_descriptors_.map_of_descriptors.find(name);
+		if(it==set_of_structure_descriptors_.map_of_descriptors.end())
+		{
+			std::map<std::string, cadscorelt::ScorableData>::const_iterator sd_it=scorable_objects_.find(name);
+			if(sd_it==scorable_objects_.end())
+			{
+				throw std::runtime_error(std::string("No structure named '")+name+"'.");
+			}
+			it=set_of_structure_descriptors_.map_of_descriptors.emplace_hint(set_of_structure_descriptors_.map_of_descriptors.end(), name, StructureDescriptor());
+			StructureDescriptor& d=it->second;
+			d.name=name;
+			d.is_target=target_names_.count(name)>0;
+			d.is_model=model_names_.count(name)>0;
+			const cadscorelt::ScorableData& sd=sd_it->second;
+			d.renaming_of_chains=sd.chain_sequences_mapping_result.chain_renaming_label;
+			std::string& output_string=d.reference_alignment_info;
+			for(std::map<std::string, cadscorelt::ChainsSequencesMapping::ChainSummary>::const_iterator it=sd.chain_sequences_mapping_result.chain_summaries.begin();it!=sd.chain_sequences_mapping_result.chain_summaries.end();++it)
+			{
+				const cadscorelt::ChainsSequencesMapping::ChainSummary& cs=it->second;
+				output_string+="original_chain_name: ";
+				output_string+=cs.old_name;
+				output_string+="\n";
+				output_string+="assigned_chain_name: ";
+				output_string+=cs.current_name;
+				output_string+="\n";
+				output_string+="reference_index: ";
+				output_string+=std::to_string(cs.reference_sequence_id);
+				output_string+="\n";
+				output_string+="reference_identity: ";
+				output_string+=std::to_string(cs.reference_sequence_identity);
+				output_string+="\n";
+				output_string+="sequence_alignment:\n";
+				output_string+=cs.printed_alignment;
+				output_string+="\n";
+			}
+		}
+		if(it==set_of_structure_descriptors_.map_of_descriptors.end())
+		{
+			throw std::runtime_error(std::string("No structure descriptor for name '")+name+"'.");
+		}
+		return &(it->second);
+	}
+
+	const std::vector<StructureDescriptor>* get_all_structure_descriptors()
+	{
+		if(set_of_structure_descriptors_.map_of_descriptors.size()!=scorable_objects_.size() || set_of_structure_descriptors_.vector_of_compacted_descriptors.size()!=set_of_structure_descriptors_.map_of_descriptors.size())
+		{
+			set_of_structure_descriptors_.vector_of_compacted_descriptors.clear();
+			set_of_structure_descriptors_.vector_of_compacted_descriptors.resize(scorable_objects_.size());
+			std::size_t i=0;
+			for(std::map<std::string, cadscorelt::ScorableData>::const_iterator sd_it=scorable_objects_.begin();sd_it!=scorable_objects_.end();++sd_it)
+			{
+				const StructureDescriptor& full_d=*(get_structure_descriptor(sd_it->first));
+				StructureDescriptor& compacted_d=set_of_structure_descriptors_.vector_of_compacted_descriptors[i];
+				compacted_d.name=full_d.name;
+				compacted_d.is_target=full_d.is_target;
+				compacted_d.is_model=full_d.is_model;
+				compacted_d.renaming_of_chains=full_d.renaming_of_chains;
+				compacted_d.reference_alignment_info=(full_d.reference_alignment_info.empty() ? std::string("") : std::string("available"));
+				i++;
+			}
+		}
+		return &set_of_structure_descriptors_.vector_of_compacted_descriptors;
 	}
 
 	const std::vector<GlobalScore>* get_all_cadscores_atom_atom_summarized_globally()
@@ -766,6 +880,12 @@ public:
 	}
 
 private:
+	struct SetOfStructureDescriptors
+	{
+		std::map<std::string, StructureDescriptor> map_of_descriptors;
+		std::vector<StructureDescriptor> vector_of_compacted_descriptors;
+	};
+
 	struct GlobalScoringResult
 	{
 		std::vector<GlobalScore> cadscores_atom_atom_summarized_globally;
@@ -1344,6 +1464,7 @@ private:
 	std::map<std::string, cadscorelt::ScorableData> scorable_objects_;
 	std::map< std::pair<std::string, std::string>, PairScoringResult > full_scoring_results_;
 	GlobalScoringResult global_scoring_result_;
+	SetOfStructureDescriptors set_of_structure_descriptors_;
 };
 
 void enable_considering_residue_names()

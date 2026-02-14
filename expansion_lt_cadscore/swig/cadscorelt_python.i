@@ -8,7 +8,13 @@
 %include <std_vector.i>
 %include <std_except.i>
 
+namespace std
+{
+    %template(VectorInt) vector<int>;
+}
+
 %template(VectorMolecularAtomBall) std::vector<MolecularAtomBall>;
+%template(VectorStructureDescriptor) std::vector<StructureDescriptor>;
 %template(VectorGlobalScore) std::vector<GlobalScore>;
 %template(VectorAtomScore) std::vector<AtomScore>;
 %template(VectorResidueScore) std::vector<ResidueScore>;

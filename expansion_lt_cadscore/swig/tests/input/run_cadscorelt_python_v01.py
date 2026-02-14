@@ -64,3 +64,15 @@ df_local_scores_atom_atom_per_residue = cs.get_local_cadscores_atom_atom_summari
 cadscorelt.print_head_of_pandas_data_frame(df_local_scores_atom_atom_per_residue)
 print("--------------------------------------------------------------------------------")
 
+print("")
+
+print("--------------------------------------------------------------------------------")
+print("--- other info                                                               ---")
+print("--------------------------------------------------------------------------------")
+
+print("get_all_structure_descriptors:")
+print("--------------------------------------------------------------------------------")
+df_structure_descriptors = cs.get_all_structure_descriptors().to_pandas()
+cadscorelt.print_head_of_pandas_data_frame(df_structure_descriptors)
+print("--------------------------------------------------------------------------------")
+

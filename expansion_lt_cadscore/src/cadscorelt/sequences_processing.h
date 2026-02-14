@@ -51,22 +51,22 @@ public:
 		return result;
 	}
 
-	static std::vector<std::string> read_sequences_from_file(const std::string& filename) noexcept
+	static std::vector<std::string> read_sequences_from_file(const std::string& filename, const bool allow_special_symbols) noexcept
 	{
 		if(!filename.empty())
 		{
 			std::ifstream finput(filename.c_str(), std::ios::in);
-			return read_sequences_from_stream(finput, false);
+			return read_sequences_from_stream(finput, allow_special_symbols);
 		}
 		return std::vector<std::string>();
 	}
 
-	static std::vector<std::string> read_sequences_from_string(const std::string& data) noexcept
+	static std::vector<std::string> read_sequences_from_string(const std::string& data, const bool allow_special_symbols) noexcept
 	{
 		if(!data.empty())
 		{
 			std::istringstream input(data);
-			return read_sequences_from_stream(input, false);
+			return read_sequences_from_stream(input, allow_special_symbols);
 		}
 		return std::vector<std::string>();
 	}

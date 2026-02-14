@@ -633,7 +633,7 @@ bool run(const ApplicationParameters& app_params)
 
 	if(!app_params.reference_sequences_file.empty())
 	{
-		scorable_data_construction_parameters.reference_sequences=cadscorelt::SequenceInputUtilities::read_sequences_from_file(app_params.reference_sequences_file);
+		scorable_data_construction_parameters.reference_sequences=cadscorelt::SequenceInputUtilities::read_sequences_from_file(app_params.reference_sequences_file, true);
 		if(scorable_data_construction_parameters.reference_sequences.empty())
 		{
 			std::cerr << "Error: failed to read sequences from file '" << app_params.reference_sequences_file << "'\n";
@@ -857,7 +857,7 @@ bool run(const ApplicationParameters& app_params)
 						output_string+="reference_identity: ";
 						output_string+=std::to_string(cs.reference_sequence_identity);
 						output_string+="\n";
-						output_string+="sequence_alinment:\n";
+						output_string+="sequence_alignment:\n";
 						output_string+=cs.printed_alignment;
 						output_string+="\n";
 					}
