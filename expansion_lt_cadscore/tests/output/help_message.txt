@@ -24,6 +24,7 @@ Options:
     --local-output-formats                           strings    list of formats (can include 'table', 'pdb', 'mmcif', 'contactmap', 'graphics-pymol', 'graphics-chimera')
     --local-output-levels                            strings    list of output levels (can include 'atom', 'residue', 'chain'), default is 'residue'
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
+    --binarize-areas                                            flag to binarize (convert to 0 or 1) all area values before scoring
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score 
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
     --save-processed-inputs-mmcif                               flag to save processed input structures in mmCIF format to the output directory

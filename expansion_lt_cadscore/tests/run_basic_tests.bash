@@ -103,6 +103,20 @@ cadscore-lt \
 
 ####################################################################
 
+cadscore-lt \
+  -t './input/protein_homodimer1/target.pdb' \
+  -m './input/protein_homodimer1/model1.pdb' \
+  --subselect-contacts '[-inter-chain]' \
+  --output-all-details \
+  --output-global-scores _none \
+  --scoring-levels residue \
+  --local-output-formats table pdb mmcif contactmap graphics-pymol graphics-chimera \
+  --local-output-levels residue \
+  --binarize-areas \
+  --output-dir ./output/protein_homodimer1/output_dir_v11
+
+####################################################################
+
 find ./input/rna_monomer1 -type f -name '*.pdb' | sort \
 | cadscore-lt \
   --output-global-scores ./output/rna_monomer1/global_scores_v01.txt

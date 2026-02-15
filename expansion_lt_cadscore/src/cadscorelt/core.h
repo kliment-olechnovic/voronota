@@ -1621,8 +1621,13 @@ struct CADDescriptor
 		add(target_area, model_area);
 	}
 
-	inline void add(const double target_area, const double model_area) noexcept
+	inline void add(double target_area, double model_area) noexcept
 	{
+		if(binarize_areas())
+		{
+			target_area=(target_area>0.0 ? 1.0 : 0.0);
+			model_area=(model_area>0.0 ? 1.0 : 0.0);
+		}
 		target_area_sum+=target_area;
 		model_area_sum+=model_area;
 		raw_differences_sum+=std::abs(target_area-model_area);
@@ -1653,6 +1658,12 @@ struct CADDescriptor
 	inline double score_F1() const noexcept
 	{
 		return ((confusion_TP>0.0) ? (confusion_TP/(0.5*(confusion_FP+confusion_FN)+confusion_TP)) : 0.0);
+	}
+
+	static bool& binarize_areas() noexcept
+	{
+		static bool status=false;
+		return status;
 	}
 };
 

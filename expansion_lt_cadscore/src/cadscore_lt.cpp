@@ -33,6 +33,7 @@ Options:
     --local-output-formats                           strings    list of formats (can include 'table', 'pdb', 'mmcif', 'contactmap', 'graphics-pymol', 'graphics-chimera')
     --local-output-levels                            strings    list of output levels (can include 'atom', 'residue', 'chain'), default is 'residue'
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
+    --binarize-areas                                            flag to binarize (convert to 0 or 1) all area values before scoring
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score 
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
     --save-processed-inputs-mmcif                               flag to save processed input structures in mmCIF format to the output directory
@@ -72,6 +73,7 @@ public:
 	bool include_heteroatoms;
 	bool read_inputs_as_assemblies;
 	bool consider_residue_names;
+	bool binarize_areas;
 	bool conflate_equivalent_atom_types;
 	bool remap_chains;
 	bool scoring_type_contacts;
@@ -124,6 +126,7 @@ public:
 		include_heteroatoms(false),
 		read_inputs_as_assemblies(false),
 		consider_residue_names(false),
+		binarize_areas(false),
 		conflate_equivalent_atom_types(false),
 		remap_chains(false),
 		scoring_type_contacts(false),
@@ -280,6 +283,10 @@ public:
 				else if(opt.name=="consider-residue-names" && opt.is_flag())
 				{
 					consider_residue_names=opt.is_flag_and_true();
+				}
+				else if(opt.name=="binarize-areas" && opt.is_flag())
+				{
+					binarize_areas=opt.is_flag_and_true();
 				}
 				else if(opt.name=="conflate-atom-types" && opt.is_flag())
 				{
@@ -609,6 +616,7 @@ bool run(const ApplicationParameters& app_params)
 	}
 
 	cadscorelt::IDResidue::consider_residue_names()=app_params.consider_residue_names;
+	cadscorelt::CADDescriptor::binarize_areas()=app_params.binarize_areas;
 
 	cadscorelt::ScorableData::ConstructionParameters scorable_data_construction_parameters;
 	scorable_data_construction_parameters.probe=app_params.probe;

@@ -36444,6 +36444,52 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_enable_binarizing_areas(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "enable_binarizing_areas", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      enable_binarizing_areas();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_disable_binarizing_areas(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "disable_binarizing_areas", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      disable_binarizing_areas();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_reset_atom_names_conflation_rules(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   
@@ -37338,6 +37384,8 @@ static PyMethodDef SwigMethods[] = {
 	 { "CADScoreComputer_swiginit", CADScoreComputer_swiginit, METH_VARARGS, NULL},
 	 { "enable_considering_residue_names", _wrap_enable_considering_residue_names, METH_NOARGS, NULL},
 	 { "disable_considering_residue_names", _wrap_disable_considering_residue_names, METH_NOARGS, NULL},
+	 { "enable_binarizing_areas", _wrap_enable_binarizing_areas, METH_NOARGS, NULL},
+	 { "disable_binarizing_areas", _wrap_disable_binarizing_areas, METH_NOARGS, NULL},
 	 { "reset_atom_names_conflation_rules", _wrap_reset_atom_names_conflation_rules, METH_NOARGS, NULL},
 	 { "add_atom_names_conflation_rule", _wrap_add_atom_names_conflation_rule, METH_VARARGS, NULL},
 	 { "add_atom_names_conflation_rules_from_file", _wrap_add_atom_names_conflation_rules_from_file, METH_O, NULL},

@@ -1575,6 +1575,12 @@ def enable_considering_residue_names():
 def disable_considering_residue_names():
     return _cadscorelt_python.disable_considering_residue_names()
 
+def enable_binarizing_areas():
+    return _cadscorelt_python.enable_binarizing_areas()
+
+def disable_binarizing_areas():
+    return _cadscorelt_python.disable_binarizing_areas()
+
 def reset_atom_names_conflation_rules():
     return _cadscorelt_python.reset_atom_names_conflation_rules()
 

@@ -1482,6 +1482,16 @@ void disable_considering_residue_names()
 	cadscorelt::IDResidue::consider_residue_names()=false;
 }
 
+void enable_binarizing_areas()
+{
+	cadscorelt::CADDescriptor::binarize_areas()=true;
+}
+
+void disable_binarizing_areas()
+{
+	cadscorelt::CADDescriptor::binarize_areas()=false;
+}
+
 void reset_atom_names_conflation_rules()
 {
 	cadscorelt::ConflationOfAtomNames::reset_conflation_rules();
