@@ -1,0 +1,28 @@
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/T0860o.pdb" \
+  -m "./input/T0860TS203_1o" \
+  --subselect-contacts "[-inter-chain]" \
+  --output-dir ./results_basic \
+  --local-output-formats pdb contactmap graphics-pymol \
+| column -t
+target      model          target_id  model_id  residue_residue_cadscore
+T0860o.pdb  T0860TS203_1o  1          0         0.032812
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/T0860o.pdb" \
+  -m "./input/T0860TS203_1o" \
+  --subselect-contacts "[-inter-chain]" \
+  --remap-chains \
+  --output-dir ./results_after_remapping \
+  --local-output-formats pdb contactmap graphics-pymol \
+| column -t
+target      model          target_id  model_id  residue_residue_cadscore  renaming_of_model_chains
+T0860o.pdb  T0860TS203_1o  1          0         0.397704                  A=B,B=A,C=C
+
+####################################################################
+

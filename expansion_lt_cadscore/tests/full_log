@@ -1,0 +1,22 @@
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/T0860o.pdb" \
+  -m "./input/T0860TS203_1o" \
+  --subselect-contacts "[-inter-chain]" \
+| column -t
+Error: no target input files found.
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/T0860o.pdb" \
+  -m "./input/T0860TS203_1o" \
+  --subselect-contacts "[-inter-chain]" \
+  --remap-chains \
+| column -t
+Error: no target input files found.
+
+####################################################################
+

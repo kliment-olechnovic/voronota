@@ -1,0 +1,242 @@
+
+####################################################################
+
+cadscore-lt -h
+CAD-score-LT version 0.8
+
+'cadscore-lt' calculates CAD-score (Contact Area Difference score).
+
+Options:
+    --targets | -t                                   string     input file or directory paths for target (reference) structure files
+    --models | -m                                    string     input file or directory paths for model structure files
+    --processors                                     number     maximum number of OpenMP threads to use, default is 2 if OpenMP is enabled, 1 if disabled
+    --recursive-directory-search                                flag to search directories recursively
+    --include-heteroatoms                                       flag to include heteroatoms when reading input in PDB or mmCIF format
+    --read-inputs-as-assemblies                                 flag to join multiple models into an assembly when reading a file in PDB or mmCIF format
+    --radii-config-file                              string     input file path for reading atom radii assignment rules
+    --probe                                          number     rolling probe radius, default is 1.4
+    --restrict-raw-input                             string     selection expression to restrict input atoms before any chain renaming or residue renumbering
+    --reference-sequences-file                       string     input file path for reference sequences in FASTA format
+    --reference-stoichiometry                        numbers    list of stoichiometry values to apply when mapping chains to reference sequences
+    --restrict-processed-input                       string     selection expression to restrict input atoms after all chain renaming and residue renumbering
+    --subselect-contacts                             string     selection expression to restrict contact area descriptors to score, default is '[-min-sep 1]'
+    --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score, default is '[]'
+    --conflate-atom-types                                       flag to conflate known equivalent atom types
+    --conflation-config-file                         string     input file path for reading atom name conflation rules
+    --scoring-types                                  strings    scoring types ('contacts', 'SAS', 'sites'), default is 'contacts'
+    --scoring-levels                                 strings    scoring levels ('atom', 'residue', 'chain'), default is 'residue'
+    --local-output-formats                           strings    list of formats (can include 'table', 'pdb', 'mmcif', 'contactmap', 'graphics-pymol', 'graphics-chimera')
+    --local-output-levels                            strings    list of output levels (can include 'atom', 'residue', 'chain'), default is 'residue'
+    --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
+    --binarize-areas                                            flag to binarize (convert to 0 or 1) all area values before scoring
+    --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score 
+    --print-paths-in-output                                     flag to print file paths instead of file base names in output
+    --save-processed-inputs-mmcif                               flag to save processed input structures in mmCIF format to the output directory
+    --save-processed-inputs-pdb                                 flag to save processed input structures in PDB format to the output directory
+    --save-sequence-alignments                                  flag to save best alignments with reference sequences into a file in the output directory
+    --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
+    --output-with-f1                                            flag to output area-based F1 scores along with CAD-scores
+    --output-all-details                                        flag to output all details in tables of global and local scores
+    --compact-output                                            flag to reduce size of output global scores table without removing rows
+    --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
+    --output-dir                                     string     path to output directory for all result files
+    --help | -h                                                 flag to print help info to stderr and exit
+
+Standard output stream:
+    Global scores
+
+Standard error output stream:
+    Error messages
+
+Usage examples:
+
+    cadscore-lt -t ./target.pdb -m ./model1.pdb ./model2.pdb
+
+    cadscore-lt -t ./target.pdb -m ./model1.pdb ./model2.pdb --subselect-contacts '[-inter-chain]'
+
+
+
+####################################################################
+
+cadscore-lt -t "./input/target.pdb" -m "./input/model1.pdb" | column -t
+target      model       target_id  model_id  residue_residue_cadscore
+target.pdb  model1.pdb  1          0         0.406431
+
+####################################################################
+
+cadscore-lt -t "./input/target.pdb" -m "./input/model1.pdb" "./input/model2.pdb" | column -t
+target      model       target_id  model_id  residue_residue_cadscore
+target.pdb  model2.pdb  2          1         0.502326
+target.pdb  model1.pdb  2          0         0.406431
+
+####################################################################
+
+find ./input/ -name 'model*.pdb' | cadscore-lt -t "./input/target.pdb" | column -t
+target      model       target_id  model_id  residue_residue_cadscore
+target.pdb  model2.pdb  2          1         0.502326
+target.pdb  model1.pdb  2          0         0.406431
+
+####################################################################
+
+cadscore-lt -m "./input/target.pdb" "./input/model1.pdb" "./input/model2.pdb" | column -t
+target      model       target_id  model_id  residue_residue_cadscore
+target.pdb  model2.pdb  2          1         0.502326
+model1.pdb  target.pdb  0          2         0.491238
+model2.pdb  target.pdb  1          2         0.468816
+model1.pdb  model2.pdb  0          1         0.457324
+target.pdb  model1.pdb  2          0         0.406431
+model2.pdb  model1.pdb  1          0         0.348281
+
+####################################################################
+
+find ./input/ -name '*.pdb' | cadscore-lt | column -t
+target      model       target_id  model_id  residue_residue_cadscore
+target.pdb  model2.pdb  2          1         0.502326
+model1.pdb  target.pdb  0          2         0.491238
+model2.pdb  target.pdb  1          2         0.468816
+model1.pdb  model2.pdb  0          1         0.457324
+target.pdb  model1.pdb  2          0         0.406431
+model2.pdb  model1.pdb  1          0         0.348281
+
+####################################################################
+
+find ./input/ -name '*.pdb' | cadscore-lt | column -t
+target      model       target_id  model_id  residue_residue_cadscore
+target.pdb  model2.pdb  2          1         0.502326
+model1.pdb  target.pdb  0          2         0.491238
+model2.pdb  target.pdb  1          2         0.468816
+model1.pdb  model2.pdb  0          1         0.457324
+target.pdb  model1.pdb  2          0         0.406431
+model2.pdb  model1.pdb  1          0         0.348281
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --output-with-f1 \
+| column -t
+target      model       target_id  model_id  residue_residue_cadscore  residue_residue_F1_of_areas
+target.pdb  model2.pdb  2          1         0.502326                  0.568942
+target.pdb  model1.pdb  2          0         0.406431                  0.541159
+
+##################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --output-all-details \
+| column -t
+target      model       target_id  model_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
+target.pdb  model2.pdb  2          1         0.502326                  0.568942                     14769.508316                 11327.634615                9016.869600              7910.617973              5752.638717
+target.pdb  model1.pdb  2          0         0.406431                  0.541159                     14769.508316                 9639.408972                 7459.134359              5338.631244              7310.373957
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --output-all-details \
+  --restrict-raw-input "[-chain A]" \
+| column -t
+target      model       target_id  model_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
+target.pdb  model2.pdb  2          1         0.483141                  0.565762                     9533.873186                  7195.741748                 5627.447587              4732.006129              3906.425600
+target.pdb  model1.pdb  2          0         0.432078                  0.547392                     9533.873186                  6242.633644                 4962.367710              3634.720626              4571.505476
+
+##################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --output-all-details \
+  --restrict-raw-input "[-chain B]" \
+| column -t
+target      model       target_id  model_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
+target.pdb  model2.pdb  2          1         0.635763                  0.654108                     4794.815801                  4201.015753                 3547.870969              2505.279745              1246.944833
+target.pdb  model1.pdb  2          0         0.414462                  0.592804                     4794.815801                  3376.248281                 2543.548036              1243.048216              2251.267765
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --output-all-details \
+  --subselect-contacts "[-min-sep 1 -atom1 [-protein-sidechain] -atom2 [-protein-sidechain]]" \
+| column -t
+target      model       target_id  model_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
+target.pdb  model2.pdb  2          1         0.270068                  0.346866                     5011.147838                  2607.094276                 1835.848508              3738.345067              3175.299330
+target.pdb  model1.pdb  2          0         0.201023                  0.304286                     5011.147838                  2106.929987                 1398.713226              2783.538193              3612.434613
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --output-all-details \
+  --subselect-contacts "[-a1 [-chain A] -a2 [-chain B]]" \
+| column -t
+target      model       target_id  model_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
+target.pdb  model1.pdb  2          0         0.178444                  0.272939                     897.572551                   356.171805                  240.254073               622.671578               657.318478
+target.pdb  model2.pdb  2          1         0.070722                  0.117955                     897.572551                   172.722779                  106.084828               795.082970               791.487723
+
+##################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --output-all-details \
+  --subselect-contacts "[-inter-chain]" \
+| column -t
+target      model       target_id  model_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
+target.pdb  model1.pdb  2          0         0.178444                  0.272939                     897.572551                   356.171805                  240.254073               622.671578               657.318478
+target.pdb  model2.pdb  2          1         0.070722                  0.117955                     897.572551                   172.722779                  106.084828               795.082970               791.487723
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --output-all-details \
+  --subselect-contacts "[-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66,75:87]]" \
+| column -t
+target      model       target_id  model_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
+target.pdb  model2.pdb  2          1         0.672564                  0.819846                     915.167149                   880.353180                  738.877381               148.433835               176.289768
+target.pdb  model1.pdb  2          0         0.429427                  0.612731                     915.167149                   680.130906                  512.407673               244.962282               402.759475
+
+##################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --output-all-details \
+  --subselect-contacts "(([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66]]) or ([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 75:87]]))" \
+| column -t
+target      model       target_id  model_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
+target.pdb  model2.pdb  2          1         0.672564                  0.819846                     915.167149                   880.353180                  738.877381               148.433835               176.289768
+target.pdb  model1.pdb  2          0         0.429427                  0.612731                     915.167149                   680.130906                  512.407673               244.962282               402.759475
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --output-dir ./results_basic \
+  --local-output-formats table pdb \
+| column -t
+target      model       target_id  model_id  residue_residue_cadscore
+target.pdb  model2.pdb  2          1         0.502326
+target.pdb  model1.pdb  2          0         0.406431
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --subselect-contacts "[-inter-chain]" \
+  --output-dir ./results_inter_chain \
+  --local-output-formats table mmcif contactmap graphics-pymol \
+| column -t
+target      model       target_id  model_id  residue_residue_cadscore
+target.pdb  model1.pdb  2          0         0.178444
+target.pdb  model2.pdb  2          1         0.070722
+
+####################################################################
+

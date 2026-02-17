@@ -23,6 +23,10 @@ cd - &> /dev/null
 
 ./run_basic_tests.bash
 
+./run_tutorial_part1_tests.bash
+
+./run_tutorial_part2_tests.bash
+
 git status -s ./output/
 
 ################################################################################
