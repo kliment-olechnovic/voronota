@@ -217,26 +217,70 @@ target.pdb  model1.pdb  2          0         0.429427                  0.612731 
 
 ####################################################################
 
+cp ../../input/protein_heterodimer1/TS188_1_aligned.pdb ./input/model1_aligned.pdb
+cp ../../input/protein_heterodimer1/TS208_1_aligned.pdb  ./input/model2_aligned.pdb
+
 cadscore-lt \
   -t "./input/target.pdb" \
-  -m "./input/model1.pdb" "./input/model2.pdb" \
+  -m "./input/model1_aligned.pdb" "./input/model2_aligned.pdb" \
   --output-dir ./results_basic \
   --local-output-formats table pdb \
 | column -t
-target      model       target_id  model_id  residue_residue_cadscore
-target.pdb  model2.pdb  2          1         0.502326
-target.pdb  model1.pdb  2          0         0.406431
+target      model               target_id  model_id  residue_residue_cadscore
+target.pdb  model2_aligned.pdb  2          1         0.502323
+target.pdb  model1_aligned.pdb  2          0         0.406434
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1_aligned.pdb" "./input/model2_aligned.pdb" \
+  --subselect-contacts "[-inter-chain]" \
+  --output-dir ./results_inter_chain \
+  --local-output-formats table mmcif contactmap graphics-pymol \
+| column -t
+target      model               target_id  model_id  residue_residue_cadscore
+target.pdb  model1_aligned.pdb  2          0         0.178443
+target.pdb  model2_aligned.pdb  2          1         0.070731
+
+####################################################################
 
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
   --subselect-contacts "[-inter-chain]" \
-  --output-dir ./results_inter_chain \
-  --local-output-formats table mmcif contactmap graphics-pymol \
+  --scoring-types "sites" \
+  --output-all-details \
 | column -t
-target      model       target_id  model_id  residue_residue_cadscore
-target.pdb  model1.pdb  2          0         0.178444
-target.pdb  model2.pdb  2          1         0.070722
+target      model       target_id  model_id  residue_sites_cadscore  residue_sites_F1_of_areas  residue_sites_target_area  residue_sites_model_area  residue_sites_TP_area  residue_sites_FP_area  residue_sites_FN_area
+target.pdb  model1.pdb  2          0         0.445569                0.616924                   1795.145103                1474.777770               1086.093889            639.757412             709.051214
+target.pdb  model2.pdb  2          1         0.400217                0.546136                   1795.145103                1363.906751               982.356652             819.978944             812.788451
+
+##################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --subselect-contacts "[-inter-chain]" \
+  --scoring-types "sites" \
+  --subselect-atoms "[-chain A]" \
+  --output-all-details \
+| column -t
+target      model       target_id  model_id  residue_sites_cadscore  residue_sites_F1_of_areas  residue_sites_target_area  residue_sites_model_area  residue_sites_TP_area  residue_sites_FP_area  residue_sites_FN_area
+target.pdb  model1.pdb  2          0         0.445569                0.616924                   1795.145103                1474.777770               1086.093889            639.757412             709.051214
+target.pdb  model2.pdb  2          1         0.400217                0.546136                   1795.145103                1363.906751               982.356652             819.978944             812.788451
+
+##################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --subselect-contacts "[-inter-chain]" \
+  --scoring-types "sites" \
+  --subselect-atoms "[-chain B]" \
+  --output-all-details \
+| column -t
+target      model       target_id  model_id  residue_sites_cadscore  residue_sites_F1_of_areas  residue_sites_target_area  residue_sites_model_area  residue_sites_TP_area  residue_sites_FP_area  residue_sites_FN_area
+target.pdb  model1.pdb  2          0         0.445569                0.616924                   1795.145103                1474.777770               1086.093889            639.757412             709.051214
+target.pdb  model2.pdb  2          1         0.400217                0.546136                   1795.145103                1363.906751               982.356652             819.978944             812.788451
 
 ####################################################################
 

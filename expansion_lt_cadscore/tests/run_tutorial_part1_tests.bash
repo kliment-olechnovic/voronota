@@ -126,19 +126,54 @@ cadscore-lt \
 
 ####################################################################
 
+cp ../../input/protein_heterodimer1/TS188_1_aligned.pdb ./input/model1_aligned.pdb
+cp ../../input/protein_heterodimer1/TS208_1_aligned.pdb  ./input/model2_aligned.pdb
+
 cadscore-lt \
   -t "./input/target.pdb" \
-  -m "./input/model1.pdb" "./input/model2.pdb" \
+  -m "./input/model1_aligned.pdb" "./input/model2_aligned.pdb" \
   --output-dir ./results_basic \
   --local-output-formats table pdb \
 | column -t
 
 cadscore-lt \
   -t "./input/target.pdb" \
-  -m "./input/model1.pdb" "./input/model2.pdb" \
+  -m "./input/model1_aligned.pdb" "./input/model2_aligned.pdb" \
   --subselect-contacts "[-inter-chain]" \
   --output-dir ./results_inter_chain \
   --local-output-formats table mmcif contactmap graphics-pymol \
+| column -t
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --subselect-contacts "[-inter-chain]" \
+  --scoring-types "sites" \
+  --output-all-details \
+| column -t
+
+##################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --subselect-contacts "[-inter-chain]" \
+  --scoring-types "sites" \
+  --subselect-atoms "[-chain A]" \
+  --output-all-details \
+| column -t
+
+##################################
+
+cadscore-lt \
+  -t "./input/target.pdb" \
+  -m "./input/model1.pdb" "./input/model2.pdb" \
+  --subselect-contacts "[-inter-chain]" \
+  --scoring-types "sites" \
+  --subselect-atoms "[-chain B]" \
+  --output-all-details \
 | column -t
 
 ####################################################################
