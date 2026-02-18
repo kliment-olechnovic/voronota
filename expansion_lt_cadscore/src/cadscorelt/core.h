@@ -1347,6 +1347,16 @@ private:
 					return false;
 				}
 			}
+
+			if(!result.sites_summaries.empty() && !params.filtering_expression_for_restricting_atom_descriptors.allow_all())
+			{
+				const voronotalt::FilteringBySphereLabels::VectorExpressionResult ver=params.filtering_expression_for_restricting_atom_descriptors.filter_vector(spheres_input_result.sphere_labels);
+				if(!ver.expression_matched() || !voronotalt::RadicalTessellation::restrict_result_sites(ver.expression_matched_all, ver.expression_matched_ids, result))
+				{
+					error_log << "Failed to restrict sites for output.\n";
+					return false;
+				}
+			}
 		}
 
 		voronotalt::RadicalTessellation::GroupedResult result_grouped_by_residue;

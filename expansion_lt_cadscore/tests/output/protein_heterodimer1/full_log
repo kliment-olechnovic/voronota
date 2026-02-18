@@ -265,8 +265,8 @@ cadscore-lt \
   --output-all-details \
 | column -t
 target      model       t_id  m_id  residue_sites_cadscore  residue_sites_F1_of_areas  residue_sites_target_area  residue_sites_model_area  residue_sites_TP_area  residue_sites_FP_area  residue_sites_FN_area
-target.pdb  model1.pdb  2     0     0.445569                0.616924                   1795.145103                1474.77777                1086.093889            639.757412             709.051214
-target.pdb  model2.pdb  2     1     0.400217                0.546136                   1795.145103                1363.906751               982.356652             819.978944             812.788451
+target.pdb  model1.pdb  2     0     0.338114                0.502546                   897.572551                 677.82669                 442.365424             420.560227             455.207128
+target.pdb  model2.pdb  2     1     0.267061                0.445132                   897.572551                 678.172483                400.338193             500.829605             497.234358
 
 ##################################
 
@@ -279,8 +279,8 @@ cadscore-lt \
   --output-all-details \
 | column -t
 target      model       t_id  m_id  residue_sites_cadscore  residue_sites_F1_of_areas  residue_sites_target_area  residue_sites_model_area  residue_sites_TP_area  residue_sites_FP_area  residue_sites_FN_area
-target.pdb  model1.pdb  2     0     0.445569                0.616924                   1795.145103                1474.77777                1086.093889            639.757412             709.051214
-target.pdb  model2.pdb  2     1     0.400217                0.546136                   1795.145103                1363.906751               982.356652             819.978944             812.788451
+target.pdb  model1.pdb  2     0     0.553023                0.731303                   897.572551                 796.95108                 643.728465             219.197186             253.844086
+target.pdb  model2.pdb  2     1     0.533374                0.64714                    897.572551                 685.734269                582.018459             319.149339             315.554093
 
 ####################################################################
 
