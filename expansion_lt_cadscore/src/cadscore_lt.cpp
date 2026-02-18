@@ -1339,7 +1339,7 @@ bool run(const ApplicationParameters& app_params)
 
 	if((!app_params.output_global_scores.empty() && app_params.output_global_scores!="_none") || !app_params.output_dir.empty())
 	{
-		std::string output_string=(app_params.compact_output ? "target_id\tmodel_id" : "target\tmodel\ttarget_id\tmodel_id");
+		std::string output_string=(app_params.compact_output ? "t_id\t_id" : "target\tmodel\tt_id\tm_id");
 
 		for(const std::string& sname : output_score_names)
 		{

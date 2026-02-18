@@ -6,6 +6,23 @@
 namespace cadscorelt
 {
 
+std::string to_string_compact(const double v)
+{
+	if(v==0.0)
+	{
+		return std::string("0");
+	}
+	else if(v==-1.0)
+	{
+		return std::string("-1");
+	}
+	else if(v==1.0)
+	{
+		return std::string("1");
+	}
+	return std::to_string(v);
+}
+
 class PrintingUtilites
 {
 public:
@@ -110,23 +127,23 @@ public:
 		}
 		else
 		{
-			output+=std::to_string(cadd.score());
+			output+=to_string_compact(cadd.score());
 			if(level_of_details>=1)
 			{
 				output+="\t";
-				output+=std::to_string(cadd.score_F1());
+				output+=to_string_compact(cadd.score_F1());
 				if(level_of_details>=2)
 				{
 					output+="\t";
-					output+=std::to_string(cadd.target_area_sum);
+					output+=to_string_compact(cadd.target_area_sum);
 					output+="\t";
-					output+=std::to_string(cadd.model_target_area_sum);
+					output+=to_string_compact(cadd.model_target_area_sum);
 					output+="\t";
-					output+=std::to_string(cadd.confusion_TP);
+					output+=to_string_compact(cadd.confusion_TP);
 					output+="\t";
-					output+=std::to_string(cadd.confusion_FP);
+					output+=to_string_compact(cadd.confusion_FP);
 					output+="\t";
-					output+=std::to_string(cadd.confusion_FN);
+					output+=to_string_compact(cadd.confusion_FN);
 				}
 			}
 		}

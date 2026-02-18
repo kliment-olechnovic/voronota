@@ -1,4 +1,4 @@
-target	model	target_id	model_id	residue_residue_cadscore	residue_residue_F1_of_areas	atom_atom_cadscore	atom_atom_F1_of_areas	chain_chain_cadscore	chain_chain_F1_of_areas	renaming_of_model_chains
+target	model	t_id	m_id	residue_residue_cadscore	residue_residue_F1_of_areas	atom_atom_cadscore	atom_atom_F1_of_areas	chain_chain_cadscore	chain_chain_F1_of_areas	renaming_of_model_chains
 model2.pdb	target.pdb	1	2	0.720340	0.775800	0.392245	0.478977	0.928580	0.965521	A=B,B=A
 model2.pdb	model1.pdb	1	0	0.658071	0.722125	0.338704	0.435361	0.998022	0.999012	A=A,B=B
 model1.pdb	model2.pdb	0	1	0.630742	0.722125	0.354609	0.435361	0.998026	0.999012	A=A,B=B

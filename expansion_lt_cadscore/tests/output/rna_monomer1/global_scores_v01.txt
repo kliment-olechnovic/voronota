@@ -1,4 +1,4 @@
-target	model	target_id	model_id	residue_residue_cadscore
+target	model	t_id	m_id	residue_residue_cadscore
 target.pdb	model1.pdb	2	0	0.974032
 model1.pdb	target.pdb	0	2	0.973063
 target.pdb	model2.pdb	2	1	0.788314

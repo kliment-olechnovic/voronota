@@ -1,2 +1,2 @@
-target	model	target_id	model_id	residue_residue_cadscore	renaming_of_model_chains
+target	model	t_id	m_id	residue_residue_cadscore	renaming_of_model_chains
 T0860o.pdb	T0860TS203_1o	1	0	0.397704	A=B,B=A,C=C
