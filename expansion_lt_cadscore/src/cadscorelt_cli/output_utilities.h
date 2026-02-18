@@ -20,7 +20,16 @@ std::string to_string_compact(const double v)
 	{
 		return std::string("1");
 	}
-	return std::to_string(v);
+	std::string str=std::to_string(v);
+	if(str.find('.')!=std::string::npos)
+	{
+		str.erase(str.find_last_not_of('0')+1);
+		if(str.back()=='.')
+		{
+			str.pop_back();
+		}
+	}
+	return str;
 }
 
 class PrintingUtilites

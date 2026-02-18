@@ -128,7 +128,7 @@ cadscore-lt \
   --output-all-details \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
-target.pdb  model2.pdb  2     1     0.502326                  0.568942                     14769.508316                 11327.634615                9016.869600              7910.617973              5752.638717
+target.pdb  model2.pdb  2     1     0.502326                  0.568942                     14769.508316                 11327.634615                9016.8696                7910.617973              5752.638717
 target.pdb  model1.pdb  2     0     0.406431                  0.541159                     14769.508316                 9639.408972                 7459.134359              5338.631244              7310.373957
 
 ####################################################################
@@ -140,8 +140,8 @@ cadscore-lt \
   --restrict-raw-input "[-chain A]" \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
-target.pdb  model2.pdb  2     1     0.483141                  0.565762                     9533.873186                  7195.741748                 5627.447587              4732.006129              3906.425600
-target.pdb  model1.pdb  2     0     0.432078                  0.547392                     9533.873186                  6242.633644                 4962.367710              3634.720626              4571.505476
+target.pdb  model2.pdb  2     1     0.483141                  0.565762                     9533.873186                  7195.741748                 5627.447587              4732.006129              3906.4256
+target.pdb  model1.pdb  2     0     0.432078                  0.547392                     9533.873186                  6242.633644                 4962.36771               3634.720626              4571.505476
 
 ##################################
 
@@ -164,7 +164,7 @@ cadscore-lt \
   --subselect-contacts "[-min-sep 1 -atom1 [-protein-sidechain] -atom2 [-protein-sidechain]]" \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
-target.pdb  model2.pdb  2     1     0.270068                  0.346866                     5011.147838                  2607.094276                 1835.848508              3738.345067              3175.299330
+target.pdb  model2.pdb  2     1     0.270068                  0.346866                     5011.147838                  2607.094276                 1835.848508              3738.345067              3175.29933
 target.pdb  model1.pdb  2     0     0.201023                  0.304286                     5011.147838                  2106.929987                 1398.713226              2783.538193              3612.434613
 
 ####################################################################
@@ -177,7 +177,7 @@ cadscore-lt \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
 target.pdb  model1.pdb  2     0     0.178444                  0.272939                     897.572551                   356.171805                  240.254073               622.671578               657.318478
-target.pdb  model2.pdb  2     1     0.070722                  0.117955                     897.572551                   172.722779                  106.084828               795.082970               791.487723
+target.pdb  model2.pdb  2     1     0.070722                  0.117955                     897.572551                   172.722779                  106.084828               795.08297                791.487723
 
 ##################################
 
@@ -189,7 +189,7 @@ cadscore-lt \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
 target.pdb  model1.pdb  2     0     0.178444                  0.272939                     897.572551                   356.171805                  240.254073               622.671578               657.318478
-target.pdb  model2.pdb  2     1     0.070722                  0.117955                     897.572551                   172.722779                  106.084828               795.082970               791.487723
+target.pdb  model2.pdb  2     1     0.070722                  0.117955                     897.572551                   172.722779                  106.084828               795.08297                791.487723
 
 ####################################################################
 
@@ -200,7 +200,7 @@ cadscore-lt \
   --subselect-contacts "[-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66,75:87]]" \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
-target.pdb  model2.pdb  2     1     0.672564                  0.819846                     915.167149                   880.353180                  738.877381               148.433835               176.289768
+target.pdb  model2.pdb  2     1     0.672564                  0.819846                     915.167149                   880.35318                   738.877381               148.433835               176.289768
 target.pdb  model1.pdb  2     0     0.429427                  0.612731                     915.167149                   680.130906                  512.407673               244.962282               402.759475
 
 ##################################
@@ -212,7 +212,7 @@ cadscore-lt \
   --subselect-contacts "(([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66]]) or ([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 75:87]]))" \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area
-target.pdb  model2.pdb  2     1     0.672564                  0.819846                     915.167149                   880.353180                  738.877381               148.433835               176.289768
+target.pdb  model2.pdb  2     1     0.672564                  0.819846                     915.167149                   880.35318                   738.877381               148.433835               176.289768
 target.pdb  model1.pdb  2     0     0.429427                  0.612731                     915.167149                   680.130906                  512.407673               244.962282               402.759475
 
 ####################################################################
@@ -251,7 +251,7 @@ cadscore-lt \
   --output-all-details \
 | column -t
 target      model       t_id  m_id  residue_sites_cadscore  residue_sites_F1_of_areas  residue_sites_target_area  residue_sites_model_area  residue_sites_TP_area  residue_sites_FP_area  residue_sites_FN_area
-target.pdb  model1.pdb  2     0     0.445569                0.616924                   1795.145103                1474.777770               1086.093889            639.757412             709.051214
+target.pdb  model1.pdb  2     0     0.445569                0.616924                   1795.145103                1474.77777                1086.093889            639.757412             709.051214
 target.pdb  model2.pdb  2     1     0.400217                0.546136                   1795.145103                1363.906751               982.356652             819.978944             812.788451
 
 ##################################
@@ -265,7 +265,7 @@ cadscore-lt \
   --output-all-details \
 | column -t
 target      model       t_id  m_id  residue_sites_cadscore  residue_sites_F1_of_areas  residue_sites_target_area  residue_sites_model_area  residue_sites_TP_area  residue_sites_FP_area  residue_sites_FN_area
-target.pdb  model1.pdb  2     0     0.445569                0.616924                   1795.145103                1474.777770               1086.093889            639.757412             709.051214
+target.pdb  model1.pdb  2     0     0.445569                0.616924                   1795.145103                1474.77777                1086.093889            639.757412             709.051214
 target.pdb  model2.pdb  2     1     0.400217                0.546136                   1795.145103                1363.906751               982.356652             819.978944             812.788451
 
 ##################################
@@ -279,7 +279,7 @@ cadscore-lt \
   --output-all-details \
 | column -t
 target      model       t_id  m_id  residue_sites_cadscore  residue_sites_F1_of_areas  residue_sites_target_area  residue_sites_model_area  residue_sites_TP_area  residue_sites_FP_area  residue_sites_FN_area
-target.pdb  model1.pdb  2     0     0.445569                0.616924                   1795.145103                1474.777770               1086.093889            639.757412             709.051214
+target.pdb  model1.pdb  2     0     0.445569                0.616924                   1795.145103                1474.77777                1086.093889            639.757412             709.051214
 target.pdb  model2.pdb  2     1     0.400217                0.546136                   1795.145103                1363.906751               982.356652             819.978944             812.788451
 
 ####################################################################
