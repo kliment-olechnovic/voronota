@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CAD-score-LT version 0.8</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style type="text/css">
+  a { color: #0000CC; }
+  td { padding-right: 1em; }
+  pre { background-color: #DDDDDD; padding: 1em; }
+  div#TOC > ul > li > ul > li ul { display: none; }
+  </style>
+  <script>window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] } };</script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">CAD-score-LT version 0.8</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#introduction-to-cad-score-lt" id="toc-introduction-to-cad-score-lt">Introduction to CAD-score-LT</a>
+<ul>
+<li><a href="#cad-score-definition-for-residue-residue-contacts" id="toc-cad-score-definition-for-residue-residue-contacts">CAD-score definition for residue-residue contacts</a></li>
+<li><a href="#cad-score-definition-for-various-types-of-areas" id="toc-cad-score-definition-for-various-types-of-areas">CAD-score definition for various types of areas</a></li>
+</ul></li>
+<li><a href="#basic-usage" id="toc-basic-usage">Basic usage</a>
+<ul>
+<li><a href="#listing-command-line-options" id="toc-listing-command-line-options">Listing command-line options</a></li>
+<li><a href="#choosing-scoring-types-and-scoring-levels" id="toc-choosing-scoring-types-and-scoring-levels">Choosing scoring types and scoring levels</a></li>
+<li><a href="#providing-inputs" id="toc-providing-inputs">Providing inputs</a></li>
+<li><a href="#outputting-a-global-scores-table" id="toc-outputting-a-global-scores-table">Outputting a global scores table</a></li>
+<li><a href="#restricting-what-to-score" id="toc-restricting-what-to-score">Restricting what to score</a></li>
+<li><a href="#local-scoring-outputs" id="toc-local-scoring-outputs">Local scoring outputs</a></li>
+<li><a href="#chain-remapping-for-complexes" id="toc-chain-remapping-for-complexes">Chain remapping for complexes</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="introduction-to-cad-score-lt">Introduction to CAD-score-LT</h1>
+<p>CAD-score-LT software computes CAD-score (Contact Area Difference score): a superposition-free similarity measure based on contact areas. CAD-score-LT is based on the Voronota-LT software. CAD-score-LT is much faster and more versatile than the previous CAD-score implementations. It is designed to work for both global comparisons and for localized analyses such as interfaces and binding sites.</p>
+<h2 id="cad-score-definition-for-residue-residue-contacts">CAD-score definition for residue-residue contacts</h2>
+<p>Given reference structure <span class="math inline"><em>T</em></span> (target) and structure to be compared, <span class="math inline"><em>M</em></span> (model), let <span class="math inline"><em>G</em></span> denote the set of all the pairs of residues <span class="math inline">(<em>i</em>,<em>j</em>)</span> that have a non-zero contact area <span class="math inline"><em>T</em><sub>(<em>i</em>,<em>j</em>)</sub></span> in the target structure. Then for every residue pair <span class="math inline">(<em>i</em>,<em>j</em>) ∈ <em>G</em></span> the corresponding contact area <span class="math inline"><em>M</em><sub>(<em>i</em>,<em>j</em>)</sub></span> in the model is calculated. <span class="math inline"><em>M</em><sub>(<em>i</em>,<em>j</em>)</sub></span> is assigned zero if there is no contact between residues <span class="math inline"><em>i</em></span> and <span class="math inline"><em>j</em></span> in the model or if either residue (<span class="math inline"><em>i</em></span> or <span class="math inline"><em>j</em></span>) is missing from the model. The CAD-score for the model structure is then defined as:</p>
+<p><span class="math display">$$CADscore(G)=1-\frac {\sum_{(i,j) \in G} \min(|T_{(i,j)}-M_{(i,j)}|,T_{(i,j)})} {\sum_{(i,j) \in G}T_{(i,j)} }$$</span></p>
+<p>CAD-score values are always within the <span class="math inline">[0,1]</span> range. If model and target structures are identical, <span class="math inline"><em>C</em><em>A</em><em>D</em><em>s</em><em>c</em><em>o</em><em>r</em><em>e</em>(<em>G</em>) = 1</span>. At the other extreme, if not a single contact is reproduced with sufficient accuracy, <span class="math inline"><em>C</em><em>A</em><em>D</em><em>s</em><em>c</em><em>o</em><em>r</em><em>e</em>(<em>G</em>) = 0</span>.</p>
+<p>More local scores (e.g. interface-scores or per-residue scores) are calculated by applying the CAD-score formula to a restricted subset of <span class="math inline"><em>G</em></span>.</p>
+<h2 id="cad-score-definition-for-various-types-of-areas">CAD-score definition for various types of areas</h2>
+<p>If areas in a target and in a model have identifiers, and those identifiers can be matched, then CAD-score can be calculated. For example, if we want to compare solvent-accessible (SAS) areas, we can assign identifiers to such areas. Let us formulate the CAD-score definition for per-residue SAS areas in a manner similar to the CAD-score definition for residue-residue contacts.</p>
+<p>Given reference structure <span class="math inline"><em>T</em></span> (target) and structure to be compared, <span class="math inline"><em>M</em></span> (model), let <span class="math inline"><em>G</em></span> denote the set of all the residues <span class="math inline"><em>i</em></span> that have a non-zero SAS area <span class="math inline"><em>T</em><sub>(<em>i</em>)</sub></span> in the target structure. Then for every residue <span class="math inline"><em>i</em> ∈ <em>G</em></span> the corresponding SAS area <span class="math inline"><em>M</em><sub>(<em>i</em>)</sub></span> in the model is calculated. <span class="math inline"><em>M</em><sub>(<em>i</em>)</sub></span> is assigned zero if there is no SAS for residue <span class="math inline"><em>i</em></span> in the model or if residue <span class="math inline"><em>i</em></span> is missing from the model. The SAS-based CAD-score for the model structure is then defined as:</p>
+<p><span class="math display">$$CADscore(G)=1-\frac {\sum_{i \in G} \min(|T_{(i)}-M_{(i)}|,T_{(i)})} {\sum_{i \in G}T_{(i)} }$$</span></p>
+<p>Similarly we can calculate CAD-score for per-residue binding site areas produced by accumulating contact areas.</p>
+<p>Overall, on CAD-score-LT, three types of areas can be analyzed:</p>
+<ul>
+<li><em>“contact”</em> - Voronoi tessellation-derived iteratomic contact areas.</li>
+<li><em>“SAS”</em> - solvent-accessible surface areas.</li>
+<li><em>“site”</em> - Voronoi tessellation-derived binding site areas.</li>
+</ul>
+<p>Areas of every type can be assessed on three levels of detail:</p>
+<ul>
+<li><em>“atom”</em> - atom-atom contact areas, atom-level site areas, atom-level SAS areas</li>
+<li><em>“residue”</em> - residue-residue contact areas, residue-level site areas, residue-level SAS areas</li>
+<li><em>“chain”</em> - chain-chain contact areas, residue-level site areas, residue-level SAS areas</li>
+</ul>
+<p>All the areas are intitially computed on the atom level. Then, if needed, the atom-level areas are aggregated on residue or/and chain levels.</p>
+<h1 id="basic-usage">Basic usage</h1>
+<h2 id="listing-command-line-options">Listing command-line options</h2>
+<p>Running</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-h</span></span></code></pre></div>
+<p>prints an overview of the command line interface:</p>
+<pre><code>CAD-score-LT version 0.8
+
+&#39;cadscore-lt&#39; calculates CAD-score (Contact Area Difference score).
+
+Options:
+    --targets | -t                                   string     input file or directory paths for target (reference) structure files
+    --models | -m                                    string     input file or directory paths for model structure files
+    --processors                                     number     maximum number of OpenMP threads to use, default is 2 if OpenMP is enabled, 1 if disabled
+    --recursive-directory-search                                flag to search directories recursively
+    --include-heteroatoms                                       flag to include heteroatoms when reading input in PDB or mmCIF format
+    --read-inputs-as-assemblies                                 flag to join multiple models into an assembly when reading a file in PDB or mmCIF format
+    --radii-config-file                              string     input file path for reading atom radii assignment rules
+    --probe                                          number     rolling probe radius, default is 1.4
+    --restrict-raw-input                             string     selection expression to restrict input atoms before any chain renaming or residue renumbering
+    --reference-sequences-file                       string     input file path for reference sequences in FASTA format
+    --reference-stoichiometry                        numbers    list of stoichiometry values to apply when mapping chains to reference sequences
+    --restrict-processed-input                       string     selection expression to restrict input atoms after all chain renaming and residue renumbering
+    --subselect-contacts                             string     selection expression to restrict contact area descriptors to score, default is &#39;[-min-sep 1]&#39;
+    --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score, default is &#39;[]&#39;
+    --conflate-atom-types                                       flag to conflate known equivalent atom types
+    --conflation-config-file                         string     input file path for reading atom name conflation rules
+    --scoring-types                                  strings    scoring types (&#39;contacts&#39;, &#39;SAS&#39;, &#39;sites&#39;), default is &#39;contacts&#39;
+    --scoring-levels                                 strings    scoring levels (&#39;atom&#39;, &#39;residue&#39;, &#39;chain&#39;), default is &#39;residue&#39;
+    --local-output-formats                           strings    list of formats (can include &#39;table&#39;, &#39;pdb&#39;, &#39;mmcif&#39;, &#39;contactmap&#39;, &#39;graphics-pymol&#39;, &#39;graphics-chimera&#39;)
+    --local-output-levels                            strings    list of output levels (can include &#39;atom&#39;, &#39;residue&#39;, &#39;chain&#39;), default is &#39;residue&#39;
+    --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
+    --binarize-areas                                            flag to binarize (convert to 0 or 1) all area values before scoring
+    --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score 
+    --print-paths-in-output                                     flag to print file paths instead of file base names in output
+    --save-processed-inputs-mmcif                               flag to save processed input structures in mmCIF format to the output directory
+    --save-processed-inputs-pdb                                 flag to save processed input structures in PDB format to the output directory
+    --save-sequence-alignments                                  flag to save best alignments with reference sequences into a file in the output directory
+    --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
+    --output-with-f1                                            flag to output area-based F1 scores along with CAD-scores
+    --output-all-details                                        flag to output all details in tables of global and local scores
+    --compact-output                                            flag to reduce size of output global scores table without removing rows
+    --output-global-scores                           string     path to output table of global scores, default is &#39;_stdout&#39; to print to standard output 
+    --output-dir                                     string     path to output directory for all result files
+    --help | -h                                                 flag to print help info to stderr and exit
+
+Standard output stream:
+    Global scores
+
+Standard error output stream:
+    Error messages
+
+Usage examples:
+
+    cadscore-lt -t ./target.pdb -m ./model1.pdb ./model2.pdb
+
+    cadscore-lt -t ./target.pdb -m ./model1.pdb ./model2.pdb --subselect-contacts &#39;[-inter-chain]&#39;</code></pre>
+<h2 id="choosing-scoring-types-and-scoring-levels">Choosing scoring types and scoring levels</h2>
+<p>CAD-score-LT supports several scoring types and scoring levels.</p>
+<p>Scoring types (<code>--scoring-types</code>):</p>
+<ul>
+<li><code>contacts</code> (default): contact-area-based CAD-score (the classic CAD-score concept)</li>
+<li><code>sas</code>: solvent-accessible surface area descriptors</li>
+<li><code>sites</code>: binding site area descriptors</li>
+</ul>
+<p>Scoring levels (<code>--scoring-levels</code>):</p>
+<ul>
+<li><code>atom</code></li>
+<li><code>residue</code> (default)</li>
+<li><code>chain</code></li>
+</ul>
+<p>Residue-level contacts is the default mode. That is, running</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-t</span> ./target.pdb <span class="dt">\</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-m</span> ./model1.pdb</span></code></pre></div>
+<p>is equivalent to running:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-t</span> ./target.pdb <span class="dt">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-m</span> ./model1.pdb <span class="dt">\</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--scoring-types</span> contacts <span class="dt">\</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--scoring-levels</span> residue</span></code></pre></div>
+<p>Multiple options (even all of them) can be used together, for example:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="dt">\</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-t</span> ./target.pdb <span class="dt">\</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-m</span> ./model1.pdb <span class="dt">\</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--scoring-types</span> contacts sas sites <span class="dt">\</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--scoring-levels</span> atom residue chain</span></code></pre></div>
+<h2 id="providing-inputs">Providing inputs</h2>
+<p>For input, CAD-score-LT accepts files in PDB or mmCIF formats.</p>
+<p>Basic usage (one target, one model):</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb</span></code></pre></div>
+<p>One target, multiple models:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb</span></code></pre></div>
+<p>Read models from stdin (convenient for <code>find</code>):</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> ./input/ <span class="at">-name</span> <span class="st">&#39;model*.pdb&#39;</span> <span class="kw">|</span> <span class="ex">cadscore-lt</span> <span class="at">-t</span> ./input/target.pdb</span></code></pre></div>
+<p>All-vs-all mode (no <code>--target</code> or <code>-t</code> given) is entered when no targets are provided, then CAD-score-LT sets targets = models and compares all pairs (excluding self-pairs). For example:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> ./input/ <span class="at">-name</span> <span class="st">&#39;*.pdb&#39;</span> <span class="kw">|</span> <span class="ex">cadscore-lt</span></span></code></pre></div>
+<p>All-vs-all mode is convenient for clustering structures or their parts (e.g. inter-chain interfaces).</p>
+<h2 id="outputting-a-global-scores-table">Outputting a global scores table</h2>
+<p>By default, <code>cadscore-lt</code> prints a tab-separated table of global scores to stdout.</p>
+<p>Useful flags:</p>
+<ul>
+<li><code>--output-with-f1</code> - adds area-based F1-like metrics alongside CAD scores.</li>
+<li><code>--output-all-details</code> - produces a more verbose table (more columns / details).</li>
+<li><code>--compact-output</code> - keeps the table smaller (without removing rows), writing auxiliary files into the directoru specified by <code>--output-dir</code>.</li>
+</ul>
+<p>Useful tip: use <code>column -t</code> command to align column value in a pretty way.</p>
+<p>Examples:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="at">--output-with-f1</span> <span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="at">--output-all-details</span> <span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<h2 id="restricting-what-to-score">Restricting what to score</h2>
+<p>CAD-score-LT lets you restrict:</p>
+<ul>
+<li>raw input atoms (atoms before any optional chain renaming and residue renumbering)</li>
+<li>processed input atoms ( atoms after optional chain renaming and residue renumbering)</li>
+<li>which contacts contribute to the contacts score</li>
+<li>which atoms contribute to SAS and sites scoring</li>
+</ul>
+<p>Both atom-focused and contact focused expressions should be provided in the format of the Voronota-LT selection expressions.</p>
+<h3 id="restricting-raw-input-atoms">Restricting raw input atoms</h3>
+<p>This limits atoms before any chain renaming and residue renumbering:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-raw-input</span> <span class="st">&quot;[-chain A]&quot;</span> <span class="dt">\</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<h3 id="restrict-contacts">Restrict contacts</h3>
+<p>Using <code>--subselect-contacts</code> is the most common way to focus CAD-score.</p>
+<p>Default contact restriction is <code>[-min-sep 1]</code> (to discard contacts between atoms in the same residue).</p>
+<p>Example of sidechain–sidechain contact scoring:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-min-sep 1 -atom1 [-protein-sidechain] -atom2 [-protein-sidechain]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<p>Example of scoring contacts between chain A and chain B:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-a1 [-chain A] -a2 [-chain B]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<p>Example of scoring contacts between any different chains:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<p>Example of scoring contacts between residue sets (example with ranges):</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66,75:87]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<p>Selections can be combined with boolean expressions, as shown below:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;(([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66]]) or ([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 75:87]]))&quot;</span> <span class="dt">\</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<h3 id="restrict-atoms-for-sassites">Restrict atoms for SAS/sites</h3>
+<p>When scoring SAS or binding sites, you can restrict which atoms are considered using the <code>--subselect-atoms</code> optiom:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--scoring-types</span> <span class="st">&quot;sites&quot;</span> <span class="dt">\</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-atoms</span> <span class="st">&quot;[-chain A]&quot;</span> <span class="dt">\</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<h2 id="local-scoring-outputs">Local scoring outputs</h2>
+<p>CAD-score-LT can write local scores and visualization helpers into an output directory.</p>
+<p>Options to use:</p>
+<ul>
+<li><code>--output-dir</code> DIR</li>
+<li><code>--local-output-formats</code> …</li>
+</ul>
+<p>Formats (<code>--local-output-formats</code>) can include:</p>
+<ul>
+<li><code>table</code></li>
+<li><code>pdb</code></li>
+<li><code>mmcif</code></li>
+<li><code>contactmap</code></li>
+<li><code>graphics-pymol</code></li>
+<li><code>graphics-chimera</code></li>
+</ul>
+<p>Example of writing local per-residue scores as as tables and as PDB B-factors:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-dir</span> ./results <span class="dt">\</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--local-output-formats</span> table pdb <span class="dt">\</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<p>Example of writing interface local scores:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-dir</span> ./results_inter_chain <span class="dt">\</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--local-output-formats</span> table mmcif contactmap graphics-pymol <span class="dt">\</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<p>PDB/mmCIF outputs are typically easiest to inspect in molecular viewers by coloring residues by B-factor. CAD-score also sets occupancy values - 1 for every atom that contributed to any areas involved in scoring, 0 for all the other atoms. For example, when scoring an inter-chain interface only atoms involved in inter-chain contacts will have occupancy value of 1.</p>
+<h2 id="chain-remapping-for-complexes">Chain remapping for complexes</h2>
+<p>When scoring multimeric complexes, model chain IDs may not match target chain IDs (especially homomers).</p>
+<p>CAD-score-LT can automatically rename chains in models to try to maximize the global residue–residue contacts score. For that, use the <code>--remap-chains</code> flag:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--remap-chains</span> <span class="dt">\</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+</body>
+</html>
