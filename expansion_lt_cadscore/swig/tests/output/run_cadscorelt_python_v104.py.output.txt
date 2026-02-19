@@ -1,0 +1,60 @@
+
+ # Table of structure decriptors:
+
+                                                    name  is_target  is_model          renamed_chains reference_alignment
+                   afm_basic_model_5_multimer_v1_pred_35       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+            afm_dropout_full_model_1_multimer_v2_pred_42       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+            afm_dropout_full_model_2_multimer_v1_pred_65       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+            afm_dropout_full_model_3_multimer_v3_pred_64       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+            afm_dropout_full_model_3_multimer_v3_pred_66       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+ afm_dropout_full_woTemplates_model_3_multimer_v1_pred_4       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+afm_dropout_full_woTemplates_model_3_multimer_v1_pred_45       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50       True      True B=A,C=D,D=B,E=E,F=C,G=F           available
+              cf_woTemplates_model_2_multimer_v3_pred_26       True      True A=A,B=D,C=B,D=E,E=C,F=F           available
+              cf_woTemplates_model_3_multimer_v3_pred_47       True      True A=A,B=D,C=B,D=E,E=C,F=F           available
+
+
+ # Table of globals scores based on atom-atom contacts:
+
+                                 target_name                                               model_name  CAD_score  F1_of_areas  target_area  model_area     TP_area     FP_area     FN_area          renamed_chains
+afm_dropout_full_model_1_multimer_v2_pred_42 afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50   0.694870     0.612790  3970.007175 3631.663716 3130.437751 3116.557004  839.569423 A=A;B=B;C=F;D=D;E=E;F=C
+afm_dropout_full_model_3_multimer_v3_pred_66             afm_dropout_full_model_3_multimer_v3_pred_64   0.600300     0.630986  7313.203511 5287.148112 4788.403033 3075.921822 2524.800478 A=A;B=B;C=C;D=D;E=E;F=F
+afm_dropout_full_model_3_multimer_v3_pred_64             afm_dropout_full_model_3_multimer_v3_pred_66   0.566073     0.630986  7864.324855 5222.053418 4788.403033 2524.800478 3075.921822 A=A;B=B;C=C;D=D;E=E;F=F
+  cf_woTemplates_model_3_multimer_v3_pred_47               cf_woTemplates_model_2_multimer_v3_pred_26   0.559002     0.635331  7483.973156 5931.794420 4810.063036 2847.880319 2673.910120 A=D;B=E;C=F;D=A;E=B;F=C
+  cf_woTemplates_model_2_multimer_v3_pred_26               cf_woTemplates_model_3_multimer_v3_pred_47   0.550378     0.635281  7657.943354 5972.073003 4809.683681 2674.289475 2848.259673 A=A;B=B;C=C;D=D;E=E;F=F
+afm_dropout_full_model_3_multimer_v3_pred_66               cf_woTemplates_model_2_multimer_v3_pred_26   0.455307     0.527325  7313.203511 5000.847832 3947.330056 3710.613299 3365.873455 A=A;B=E;C=C;D=D;E=B;F=F
+  cf_woTemplates_model_2_multimer_v3_pred_26             afm_dropout_full_model_3_multimer_v3_pred_66   0.446372     0.527325  7657.943354 4761.917277 3947.330056 3365.873455 3710.613299 A=A;B=E;C=C;D=D;E=B;F=F
+  cf_woTemplates_model_2_multimer_v3_pred_26             afm_dropout_full_model_3_multimer_v3_pred_64   0.445539     0.506868  7657.943354 4677.771912 3933.871243 3930.453612 3724.072111 A=A;B=E;C=C;D=D;E=B;F=F
+  cf_woTemplates_model_3_multimer_v3_pred_47             afm_dropout_full_model_3_multimer_v3_pred_64   0.439929     0.489985  7483.973156 4453.132335 3760.215370 4104.109485 3723.757786 A=D;B=B;C=F;D=A;E=E;F=C
+afm_dropout_full_model_3_multimer_v3_pred_66               cf_woTemplates_model_3_multimer_v3_pred_47   0.439601     0.499394  7313.203511 4526.494827 3694.810365 3789.162791 3618.393146 A=D;B=B;C=F;D=A;E=E;F=C
+
+
+ # Table of per-atom scores based on atom-atom contacts (CAD-score values of -1 idicate that the atom had no relevant contacts in the target structure):
+
+ID_chain  ID_rnum ID_icode ID_atom_name  CAD_score  F1_of_areas  target_area  model_area  TP_area   FP_area   FN_area
+       A        4        .           CD  -1.000000     0.000000     0.000000    0.000000 0.000000  0.589435  0.000000
+       A        4        .           CE  -1.000000     0.000000     0.000000    0.000000 0.000000  6.218582  0.000000
+       A        4        .           CG  -1.000000     0.000000     0.000000    0.000000 0.000000  0.040717  0.000000
+       A        4        .           NZ   0.000000     0.000000     5.723360    0.000000 0.000000  7.274641  5.723360
+       A        6        .           CB  -1.000000     0.000000     0.000000    0.000000 0.000000  0.005776  0.000000
+       A        6        .          CG1  -1.000000     0.000000     0.000000    0.000000 0.000000 10.924598  0.000000
+       A        6        .          CG2   0.315134     0.527725     7.178632    8.956361 4.610766  5.684717  2.567866
+       A       15        .           CB  -1.000000     0.000000     0.000000    0.000000 0.000000  1.960049  0.000000
+       A       15        .            O   0.000000     0.000000     1.346514    0.000000 0.000000  0.091335  1.346514
+       A       17        .           CB   0.057452     0.097769    25.529513    1.466721 1.466721  3.007595 24.062792
+
+
+ # Table of scores for every atom-atom contact (CAD-score values of -1 idicate that the contact was not present in the target structure):
+
+ID1_chain  ID1_rnum ID1_icode ID1_atom_name ID2_chain  ID2_rnum ID2_icode ID2_atom_name  CAD_score  F1_of_areas  target_area  model_area  TP_area  FP_area  FN_area
+        A         4         .            CD         D       206         .           OE1       -1.0          0.0     0.000000         0.0      0.0 0.589435 0.000000
+        A         4         .            CE         D       206         .           NE2       -1.0          0.0     0.000000         0.0      0.0 1.398847 0.000000
+        A         4         .            CE         D       206         .           OE1       -1.0          0.0     0.000000         0.0      0.0 4.819735 0.000000
+        A         4         .            CG         D       206         .           OE1       -1.0          0.0     0.000000         0.0      0.0 0.040717 0.000000
+        A         4         .            NZ         D         6         .           CG2        0.0          0.0     0.043450         0.0      0.0 0.000000 0.043450
+        A         4         .            NZ         D        61         .            CZ        0.0          0.0     0.413695         0.0      0.0 0.000000 0.413695
+        A         4         .            NZ         D        61         .            OH        0.0          0.0     5.266215         0.0      0.0 0.000000 5.266215
+        A         4         .            NZ         D       206         .            CD       -1.0          0.0     0.000000         0.0      0.0 0.008074 0.000000
+        A         4         .            NZ         D       206         .           NE2       -1.0          0.0     0.000000         0.0      0.0 5.372747 0.000000
+        A         4         .            NZ         D       206         .           OE1       -1.0          0.0     0.000000         0.0      0.0 1.893820 0.000000
+
