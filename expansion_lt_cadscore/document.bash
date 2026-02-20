@@ -26,7 +26,18 @@ EOF
 
 DOCUMENTTITLE="$(./version.bash major | sed 's/^/CAD-score-LT version /')"
 
-pandoc $TMPLDIR/documentation.markdown -f markdown -t html --metadata title="$DOCUMENTTITLE" -M document-css=false --wrap=none --toc-depth 2 --toc -H $TMPLDIR/include_in_header.html -s -o ./index.html
+pandoc $TMPLDIR/documentation.markdown \
+  -f markdown \
+  -t html \
+  --metadata title="$DOCUMENTTITLE" \
+  -M document-css=false \
+  --wrap=none \
+  --toc-depth 2 \
+  --toc \
+  -H $TMPLDIR/include_in_header.html \
+  -s \
+  -o ./index.html 2>&1 \
+| grep -v 'Could not convert TeX math'
 
 ################################################################################
 

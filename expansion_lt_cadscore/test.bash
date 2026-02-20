@@ -6,3 +6,5 @@ MODE="$1"
 
 ./tests/run_all_tests.bash "$MODE"
 
+./swig/tests/run_all_tests.bash "$MODE"
+

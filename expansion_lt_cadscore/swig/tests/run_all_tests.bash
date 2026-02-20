@@ -2,6 +2,8 @@
 
 cd $(dirname "$0")
 
+MODE="$1"
+
 rm -rf "./output"
 mkdir -p "./output"
 
@@ -12,7 +14,10 @@ fi
 
 cd ../
 
-./compile_cadscorelt_python.bash
+if [ ! -f "./cadscorelt/_cadscorelt_python.so" ] || [ "$MODE" != "skip-building" ]
+then
+	./compile_cadscorelt_python.bash
+fi
 
 SWIGDIR="$(pwd)"
 
