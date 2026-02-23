@@ -77,19 +77,17 @@ In case of a PowerShell environment in Windows 8, the setup can be done with a s
 Invoke-WebRequest -Uri 'https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4602/cosmopolitan_cadscore-lt_v0.8.105.exe' -OutFile cadscore-lt.exe
 ```
 
-# Getting the latest version
+# Building the command-line tool from source code
 
 Download the latest CAD-score-LT source archive from the official downloads page:
 [https://github.com/kliment-olechnovic/voronota/releases](https://github.com/kliment-olechnovic/voronota/releases).
 
-The cadscore-lt executable can be built from the provided
-source code to work on any modern Linux, macOS or Windows operating systems.
-
-# Building the command-line tool from source code
-
 ## Requirements
 
-CAD-score-LT has no required external dependencies, only
+The CAD-score-LT executable can be built from the provided
+source code to work on any modern Linux, macOS or Windows operating systems.
+
+CAD-score-LT has no required external library dependencies, only
 a C++17-compliant compiler is needed to build it.
 
 ## Using CMake
@@ -121,13 +119,13 @@ For example, "cadscore-lt" executable can be built using GNU C++ compiler.
 Then run the CAD-score-LT directory and run the compilation command:
 
 ```bash
-g++ -std=c++14 -O3 -fopenmp -I ./src -o ./cadscore-lt ./src/cadscore_lt.cpp
+g++ -std=c++17 -O3 -fopenmp -I ./src -o ./cadscore-lt ./src/cadscore_lt.cpp
 ```
 
 Performance-boosting compiler flags can be included:
 
 ```bash
-g++ -std=c++14 -Ofast -march=native -fopenmp -I ./src -o ./cadscore-lt ./src/voronota_lt.cpp
+g++ -std=c++17 -Ofast -march=native -fopenmp -I ./src -o ./cadscore-lt ./src/cadscore_lt.cpp
 ```
 
 # Basic usage

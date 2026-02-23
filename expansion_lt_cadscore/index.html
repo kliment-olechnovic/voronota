@@ -107,7 +107,6 @@
 <li><a href="#cad-score-definition-for-other-types-of-areas" id="toc-cad-score-definition-for-other-types-of-areas">CAD-score definition for other types of areas</a></li>
 </ul></li>
 <li><a href="#quickest-install-guide" id="toc-quickest-install-guide">Quickest install guide</a></li>
-<li><a href="#getting-the-latest-version" id="toc-getting-the-latest-version">Getting the latest version</a></li>
 <li><a href="#building-the-command-line-tool-from-source-code" id="toc-building-the-command-line-tool-from-source-code">Building the command-line tool from source code</a>
 <ul>
 <li><a href="#requirements" id="toc-requirements">Requirements</a></li>
@@ -164,12 +163,11 @@
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x cadscore-lt</span></code></pre></div>
 <p>In case of a PowerShell environment in Windows 8, the setup can be done with a single command:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Invoke-WebRequest</span> <span class="at">-Uri</span> <span class="st">&#39;https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4602/cosmopolitan_cadscore-lt_v0.8.105.exe&#39;</span> <span class="at">-OutFile</span> cadscore-lt.exe</span></code></pre></div>
-<h1 id="getting-the-latest-version">Getting the latest version</h1>
-<p>Download the latest CAD-score-LT source archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
-<p>The cadscore-lt executable can be built from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>
 <h1 id="building-the-command-line-tool-from-source-code">Building the command-line tool from source code</h1>
+<p>Download the latest CAD-score-LT source archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
 <h2 id="requirements">Requirements</h2>
-<p>CAD-score-LT has no required external dependencies, only a C++17-compliant compiler is needed to build it.</p>
+<p>The CAD-score-LT executable can be built from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>
+<p>CAD-score-LT has no required external library dependencies, only a C++17-compliant compiler is needed to build it.</p>
 <h2 id="using-cmake">Using CMake</h2>
 <p>You can build using CMake for makefile generation.</p>
 <p>Change to the CAD-score-LT directory with <code>CMakeLists.txt</code> file, then run the sequence of commands:</p>
@@ -184,9 +182,9 @@
 <h2 id="using-c-compiler-directly">Using C++ compiler directly</h2>
 <p>For example, “cadscore-lt” executable can be built using GNU C++ compiler.</p>
 <p>Then run the CAD-score-LT directory and run the compilation command:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">g++</span> <span class="at">-std</span><span class="op">=</span>c++14 <span class="at">-O3</span> <span class="at">-fopenmp</span> <span class="at">-I</span> ./src <span class="at">-o</span> ./cadscore-lt ./src/cadscore_lt.cpp</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">g++</span> <span class="at">-std</span><span class="op">=</span>c++17 <span class="at">-O3</span> <span class="at">-fopenmp</span> <span class="at">-I</span> ./src <span class="at">-o</span> ./cadscore-lt ./src/cadscore_lt.cpp</span></code></pre></div>
 <p>Performance-boosting compiler flags can be included:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">g++</span> <span class="at">-std</span><span class="op">=</span>c++14 <span class="at">-Ofast</span> <span class="at">-march</span><span class="op">=</span>native <span class="at">-fopenmp</span> <span class="at">-I</span> ./src <span class="at">-o</span> ./cadscore-lt ./src/voronota_lt.cpp</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">g++</span> <span class="at">-std</span><span class="op">=</span>c++17 <span class="at">-Ofast</span> <span class="at">-march</span><span class="op">=</span>native <span class="at">-fopenmp</span> <span class="at">-I</span> ./src <span class="at">-o</span> ./cadscore-lt ./src/cadscore_lt.cpp</span></code></pre></div>
 <h1 id="basic-usage">Basic usage</h1>
 <h2 id="listing-command-line-options">Listing command-line options</h2>
 <p>Running</p>
