@@ -79,8 +79,9 @@ Invoke-WebRequest -Uri 'https://github.com/kliment-olechnovic/voronota/releases/
 
 # Building the command-line tool from source code
 
-Download the latest CAD-score-LT source archive from the official downloads page:
-[https://github.com/kliment-olechnovic/voronota/releases](https://github.com/kliment-olechnovic/voronota/releases).
+Download the latest CAD-score-LT source archive from the official downloads page at
+[https://github.com/kliment-olechnovic/voronota/releases](https://github.com/kliment-olechnovic/voronota/releases),
+namely [cadscore-lt_v0.8.105.tar.gz]('https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4602/cadscore-lt_v0.8.105.tar.gz').
 
 ## Requirements
 
