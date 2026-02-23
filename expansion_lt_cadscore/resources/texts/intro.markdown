@@ -1,7 +1,7 @@
 # Introduction to CAD-score-LT
 
 CAD-score-LT software computes CAD-score (Contact Area Difference score): a superposition-free similarity measure based on contact areas.
-CAD-score-LT is based on the Voronota-LT software.
+CAD-score-LT is based on the [Voronota-LT software](../expansion_lt/index.html).
 CAD-score-LT is much faster and more versatile than the previous CAD-score implementations.
 It is designed to work for both global comparisons and for localized analyses such as interfaces and binding sites.
 
@@ -16,16 +16,16 @@ $M_{(i,j)}$ is assigned zero if there is no contact between residues $i$ and $j$
 or if either residue ($i$ or $j$) is missing from the model.
 The CAD-score for the model structure is then defined as:
 
-$$CADscore(G)=1-\frac {\sum_{(i,j) \in G} \min(|T_{(i,j)}-M_{(i,j)}|,T_{(i,j)})} {\sum_{(i,j) \in G}T_{(i,j)} }$$
+$$\text{CAD-score}(G)=1-\frac {\sum_{(i,j) \in G} \min(|T_{(i,j)}-M_{(i,j)}|,T_{(i,j)})} {\sum_{(i,j) \in G}T_{(i,j)} }$$
 
 CAD-score values are always within the $[0,1]$ range.
-If model and target structures are identical, $CADscore(G)=1$.
-At the other extreme, if not a single contact is reproduced with sufficient accuracy, $CADscore(G)=0$.
+If model and target structures are identical, $\text{CAD-score}(G)=1$.
+At the other extreme, if not a single contact is reproduced with sufficient accuracy, $\text{CAD-score}(G)=0$.
 
 More local scores (e.g. interface-scores or per-residue scores) are calculated by applying the CAD-score formula
 to a restricted subset of $G$.
 
-## CAD-score definition for various types of areas
+## CAD-score definition for other types of areas
 
 If areas in a target and in a model have identifiers, and those identifiers can be matched, then CAD-score can be calculated.
 For example, if we want to compare solvent-accessible (SAS) areas, we can assign identifiers to such areas.
@@ -40,7 +40,7 @@ $M_{(i)}$ is assigned zero if there is no SAS for residue $i$ in the model
 or if residue $i$ is missing from the model.
 The SAS-based CAD-score for the model structure is then defined as:
 
-$$CADscore(G)=1-\frac {\sum_{i \in G} \min(|T_{(i)}-M_{(i)}|,T_{(i)})} {\sum_{i \in G}T_{(i)} }$$
+$$\text{CAD-score}(G)=1-\frac {\sum_{i \in G} \min(|T_{(i)}-M_{(i)}|,T_{(i)})} {\sum_{i \in G}T_{(i)} }$$
 
 Similarly we can calculate CAD-score for per-residue binding site areas produced by accumulating contact areas.
 
@@ -57,6 +57,78 @@ Areas of every type can be assessed on three levels of detail:
 * _"chain"_ - chain-chain contact areas, residue-level site areas, residue-level SAS areas
 
 All the areas are intitially computed on the atom level. Then, if needed, the atom-level areas are aggregated on residue or/and chain levels.
+
+# Quickest install guide
+
+Since CAD-score-LT version 0.8.106, universal binary execuitables of CAD-score-LT
+built with the [Cosmopolitan Libc toolkit](https://github.com/jart/cosmopolitan) are provided.
+
+To download and prepare the latest released cosmopolitan executable, run the following commands in a shell environment (e.g. a Bash shell):
+
+```bash
+wget 'https://github.com/kliment-olechnovic/voronota/releases/download/vLATEST_VORONOTA_RELEASE_VERSION/cosmopolitan_cadscore-lt_vLATEST_CADSCORELT_RELEASE_VERSION.exe'
+mv cosmopolitan_cadscore-lt_vLATEST_CADSCORELT_RELEASE_VERSION.exe cadscore-lt
+chmod +x cadscore-lt
+```
+
+In case of a PowerShell environment in Windows 8, the setup can be done with a single command:
+
+```bash
+Invoke-WebRequest -Uri 'https://github.com/kliment-olechnovic/voronota/releases/download/vLATEST_VORONOTA_RELEASE_VERSION/cosmopolitan_cadscore-lt_vLATEST_CADSCORELT_RELEASE_VERSION.exe' -OutFile cadscore-lt.exe
+```
+
+# Getting the latest version
+
+Download the latest CAD-score-LT source archive from the official downloads page:
+[https://github.com/kliment-olechnovic/voronota/releases](https://github.com/kliment-olechnovic/voronota/releases).
+
+The cadscore-lt executable can be built from the provided
+source code to work on any modern Linux, macOS or Windows operating systems.
+
+# Building the command-line tool from source code
+
+## Requirements
+
+CAD-score-LT has no required external dependencies, only
+a C++17-compliant compiler is needed to build it.
+
+## Using CMake
+
+You can build using CMake for makefile generation.
+
+Change to the CAD-score-LT directory with ``CMakeLists.txt`` file,
+then run the sequence of commands:
+
+```bash
+cmake ./
+make
+```
+
+Alternatively, to keep files more organized, CMake can be run in a separate "build" directory:
+
+```bash
+mkdir build
+cd build
+cmake ../
+make
+cp ./cadscore-lt ../cadscore-lt
+```
+
+## Using C++ compiler directly
+
+For example, "cadscore-lt" executable can be built using GNU C++ compiler.
+
+Then run the CAD-score-LT directory and run the compilation command:
+
+```bash
+g++ -std=c++14 -O3 -fopenmp -I ./src -o ./cadscore-lt ./src/cadscore_lt.cpp
+```
+
+Performance-boosting compiler flags can be included:
+
+```bash
+g++ -std=c++14 -Ofast -march=native -fopenmp -I ./src -o ./cadscore-lt ./src/voronota_lt.cpp
+```
 
 # Basic usage
 

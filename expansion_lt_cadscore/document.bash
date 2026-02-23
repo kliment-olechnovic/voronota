@@ -8,7 +8,15 @@ trap "rm -r $TMPLDIR" EXIT
 ################################################################################
 
 {
-cat ./resources/texts/intro.markdown
+
+cat ./resources/texts/intro.markdown \
+| sed "s/LATEST_VORONOTA_RELEASE_VERSION/$(cat ../latest_release_version.txt | tr -d '\n')/g" \
+| sed "s/LATEST_CADSCORELT_RELEASE_VERSION/$(cat ./latest_release_version.txt | tr -d '\n')/g"
+
+echo
+
+cat ./swig/README.md
+
 } > $TMPLDIR/documentation.markdown
 
 ################################################################################
@@ -42,7 +50,7 @@ pandoc $TMPLDIR/documentation.markdown \
 ################################################################################
 
 cat $TMPLDIR/documentation.markdown \
-| sed 's|\./index.html|./README.md|g' \
+| sed 's|/index.html|/README.md|g' \
 > ./README.md
 
 ################################################################################
