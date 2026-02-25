@@ -1,2 +1,2 @@
-target	model	t_id	m_id	residue_residue_cadscore	residue_residue_F1_of_areas	residue_residue_target_area	residue_residue_model_area	residue_residue_TP_area	residue_residue_FP_area	residue_residue_FN_area
-target.pdb	model2.pdb	1	0	0.788314	0.8769	9173.342319	8647.013157	7882.306197	922.006115	1291.036121
+target	model	t_id	m_id	residue_residue_cadscore	residue_residue_F1_of_areas	residue_residue_target_area	residue_residue_model_area	residue_residue_TP_area	residue_residue_FP_area	residue_residue_FN_area	identity_of_residues
+target.pdb	model2.pdb	1	0	0.788314	0.8769	9173.342319	8647.013157	7882.306197	922.006115	1291.036121	100

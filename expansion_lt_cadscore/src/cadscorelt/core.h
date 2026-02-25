@@ -957,6 +957,9 @@ public:
 		bool record_atom_site_summaries;
 		bool record_residue_site_summaries;
 		bool record_chain_site_summaries;
+		bool record_atom_availabilities;
+		bool record_residue_availabilities;
+		bool record_chain_availabilities;
 		bool conflate_equivalent_atom_types;
 		bool quit_before_constructing_tessellation;
 		voronotalt::FilteringBySphereLabels::ExpressionForSingle filtering_expression_for_restricting_raw_input_balls;
@@ -980,6 +983,9 @@ public:
 			record_atom_site_summaries(false),
 			record_residue_site_summaries(false),
 			record_chain_site_summaries(false),
+			record_atom_availabilities(false),
+			record_residue_availabilities(false),
+			record_chain_availabilities(false),
 			conflate_equivalent_atom_types(false),
 			quit_before_constructing_tessellation(false)
 		{
@@ -1004,6 +1010,9 @@ public:
 	std::map<IDAtom, AreaValue> atom_site_areas;
 	std::map<IDResidue, AreaValue> residue_site_areas;
 	std::map<IDChain, AreaValue> chain_site_areas;
+	std::map<IDAtom, AreaValue> atom_availabilities;
+	std::map<IDResidue, AreaValue> residue_availabilities;
+	std::map<IDChain, AreaValue> chain_availabilities;
 	std::set<std::string> all_chain_ids;
 	std::map< std::string, std::set<std::string> > involved_chain_adjacencies;
 
@@ -1029,6 +1038,9 @@ public:
 		atom_site_areas.clear();
 		residue_site_areas.clear();
 		chain_site_areas.clear();
+		atom_availabilities.clear();
+		residue_availabilities.clear();
+		chain_availabilities.clear();
 		all_chain_ids.clear();
 		involved_chain_adjacencies.clear();
 	}
@@ -1058,6 +1070,9 @@ public:
 			modified_data.atom_site_areas=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(atom_site_areas, renaming_map);
 			modified_data.residue_site_areas=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(residue_site_areas, renaming_map);
 			modified_data.chain_site_areas=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(chain_site_areas, renaming_map);
+			modified_data.atom_availabilities=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(atom_availabilities, renaming_map);
+			modified_data.residue_availabilities=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(residue_availabilities, renaming_map);
+			modified_data.chain_availabilities=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(chain_availabilities, renaming_map);
 			modified_data.all_chain_ids=ChainNamingUtilities::rename_chains(all_chain_ids, renaming_map);
 			modified_data.involved_chain_adjacencies=ChainNamingUtilities::rename_chains(involved_chain_adjacencies, renaming_map);
 			modified_data.valid_=true;
@@ -1537,6 +1552,36 @@ private:
 			}
 		}
 
+		if(params.record_atom_availabilities)
+		{
+			for(std::size_t i=0;i<spheres_input_result.sphere_labels.size();i++)
+			{
+				const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[i];
+				IDAtom full_id(sl);
+				full_id.id_residue.residue_name=sl.expanded_residue_id.rname;
+				atom_availabilities.emplace_hint(atom_availabilities.end(), full_id, AreaValue(1.0));
+			}
+		}
+
+		if(params.record_residue_availabilities)
+		{
+			for(std::size_t i=0;i<spheres_input_result.sphere_labels.size();i++)
+			{
+				const voronotalt::SphereLabeling::SphereLabel& sl=spheres_input_result.sphere_labels[i];
+				IDResidue full_id(sl);
+				full_id.residue_name=sl.expanded_residue_id.rname;
+				residue_availabilities.emplace_hint(residue_availabilities.end(), full_id, AreaValue(1.0));
+			}
+		}
+
+		if(params.record_chain_availabilities)
+		{
+			for(std::size_t i=0;i<spheres_input_result.sphere_labels.size();i++)
+			{
+				chain_availabilities.emplace_hint(chain_availabilities.end(), IDChain(spheres_input_result.sphere_labels[i]), AreaValue(1.0));
+			}
+		}
+
 		for(std::size_t i=0;i<spheres_input_result.sphere_labels.size();i++)
 		{
 			all_chain_ids.emplace_hint(all_chain_ids.end(), spheres_input_result.sphere_labels[i].chain_id);
@@ -1739,6 +1784,10 @@ public:
 	std::map<IDChain, CADDescriptor> cadscores_chain_site;
 	CADDescriptor cadscores_chain_site_summarized_globally;
 
+	CADDescriptor identity_of_atoms;
+	CADDescriptor identity_of_residues;
+	CADDescriptor identity_of_chains;
+
 	std::vector<AtomBall> compatible_model_atom_balls;
 
 	ScoringResult() noexcept : valid_(false)
@@ -1797,6 +1846,12 @@ public:
 
 		cadscores_chain_site.clear();
 		cadscores_chain_site_summarized_globally=CADDescriptor();
+
+		identity_of_atoms=CADDescriptor();
+		identity_of_residues=CADDescriptor();
+		identity_of_chains=CADDescriptor();
+
+		compatible_model_atom_balls.clear();
 	}
 
 	bool construct(const ConstructionParameters& init_params, const ScorableData& target_data, const ScorableData& model_data, std::ostream& error_log) noexcept
@@ -2103,6 +2158,21 @@ private:
 			{
 				cadscores_chain_site_summarized_globally=construct_global_cad_descriptor(target_data.chain_site_areas, model_data.chain_site_areas);
 			}
+		}
+
+		if(!target_data.atom_availabilities.empty())
+		{
+			identity_of_atoms=construct_global_cad_descriptor(target_data.atom_availabilities, model_data.atom_availabilities);
+		}
+
+		if(!target_data.residue_availabilities.empty())
+		{
+			identity_of_residues=construct_global_cad_descriptor(target_data.residue_availabilities, model_data.residue_availabilities);
+		}
+
+		if(!target_data.chain_availabilities.empty())
+		{
+			identity_of_chains=construct_global_cad_descriptor(target_data.chain_availabilities, model_data.chain_availabilities);
 		}
 
 		if(params.record_compatible_model_atom_balls)

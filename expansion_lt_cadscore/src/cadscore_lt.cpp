@@ -632,6 +632,9 @@ bool run(const ApplicationParameters& app_params)
 	scorable_data_construction_parameters.record_atom_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_atom);
 	scorable_data_construction_parameters.record_residue_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_residue);
 	scorable_data_construction_parameters.record_chain_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_chain);
+	scorable_data_construction_parameters.record_atom_availabilities=(app_params.table_depth>=2 && app_params.scoring_level_atom);
+	scorable_data_construction_parameters.record_residue_availabilities=(app_params.table_depth>=2 && app_params.scoring_level_residue);
+	scorable_data_construction_parameters.record_chain_availabilities=(app_params.table_depth>=2 && app_params.scoring_level_chain);
 	scorable_data_construction_parameters.conflate_equivalent_atom_types=app_params.conflate_equivalent_atom_types;
 	scorable_data_construction_parameters.quit_before_constructing_tessellation=app_params.quit_before_scoring;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_raw_input_balls=app_params.filtering_expression_for_restricting_raw_input_balls;
@@ -920,6 +923,9 @@ bool run(const ApplicationParameters& app_params)
 	std::vector<std::string> list_of_output_error_messages(list_of_pairs_of_target_model_indices.size());
 
 	std::vector<std::string> list_of_chain_remapping_summaries((!app_params.compact_output && (app_params.remap_chains || !scorable_data_construction_parameters.reference_sequences.empty())) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
+	std::vector<double> list_of_identities_of_atoms((app_params.table_depth>=2 && app_params.scoring_level_atom) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
+	std::vector<double> list_of_identities_of_residues((app_params.table_depth>=2 && app_params.scoring_level_residue) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
+	std::vector<double> list_of_identities_of_chains((app_params.table_depth>=2 && app_params.scoring_level_chain) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
 
 	bool success_writing_local_scores=true;
 
@@ -1288,6 +1294,18 @@ bool run(const ApplicationParameters& app_params)
 					summary=".";
 				}
 			}
+			if(!list_of_identities_of_atoms.empty())
+			{
+				list_of_identities_of_atoms[i]=sr.identity_of_atoms.score()*100.0;
+			}
+			if(!list_of_identities_of_residues.empty())
+			{
+				list_of_identities_of_residues[i]=sr.identity_of_residues.score()*100.0;
+			}
+			if(!list_of_identities_of_chains.empty())
+			{
+				list_of_identities_of_chains[i]=sr.identity_of_chains.score()*100.0;
+			}
 		}
 	}
 
@@ -1356,6 +1374,18 @@ bool run(const ApplicationParameters& app_params)
 		{
 			output_string+="\trenaming_of_model_chains";
 		}
+		if(!list_of_identities_of_residues.empty())
+		{
+			output_string+="\tidentity_of_residues";
+		}
+		if(!list_of_identities_of_atoms.empty())
+		{
+			output_string+="\tidentity_of_atoms";
+		}
+		if(!list_of_identities_of_chains.empty())
+		{
+			output_string+="\tidentity_of_chains";
+		}
 		output_string+="\n";
 
 		for(const std::size_t i : ordered_pair_ids_for_output)
@@ -1382,6 +1412,21 @@ bool run(const ApplicationParameters& app_params)
 			{
 				output_string+="\t";
 				output_string+=list_of_chain_remapping_summaries[i];
+			}
+			if(!list_of_identities_of_residues.empty())
+			{
+				output_string+="\t";
+				output_string+=cadscorelt::to_string_compact(list_of_identities_of_residues[i]);
+			}
+			if(!list_of_identities_of_atoms.empty())
+			{
+				output_string+="\t";
+				output_string+=cadscorelt::to_string_compact(list_of_identities_of_atoms[i]);
+			}
+			if(!list_of_identities_of_chains.empty())
+			{
+				output_string+="\t";
+				output_string+=cadscorelt::to_string_compact(list_of_identities_of_chains[i]);
 			}
 			output_string+="\n";
 		}
