@@ -119,7 +119,7 @@
 <li><a href="#choosing-scoring-types-and-scoring-levels" id="toc-choosing-scoring-types-and-scoring-levels">Choosing scoring types and scoring levels</a></li>
 <li><a href="#providing-inputs" id="toc-providing-inputs">Providing inputs</a></li>
 <li><a href="#outputting-a-global-scores-table" id="toc-outputting-a-global-scores-table">Outputting a global scores table</a></li>
-<li><a href="#restricting-what-to-score" id="toc-restricting-what-to-score">Restricting what to score</a></li>
+<li><a href="#selecting-what-to-score" id="toc-selecting-what-to-score">Selecting what to score</a></li>
 <li><a href="#local-scoring-outputs" id="toc-local-scoring-outputs">Local scoring outputs</a></li>
 <li><a href="#chain-remapping-for-complexes" id="toc-chain-remapping-for-complexes">Chain remapping for complexes</a></li>
 </ul></li>
@@ -294,57 +294,64 @@ Usage examples:
 <p>Examples:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="at">--output-with-f1</span> <span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="at">--output-all-details</span> <span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
-<h2 id="restricting-what-to-score">Restricting what to score</h2>
-<p>CAD-score-LT lets you restrict:</p>
+<h2 id="selecting-what-to-score">Selecting what to score</h2>
+<p>CAD-score-LT lets you:</p>
 <ul>
-<li>raw input atoms (atoms before any optional chain renaming and residue renumbering)</li>
-<li>processed input atoms ( atoms after optional chain renaming and residue renumbering)</li>
-<li>which contacts contribute to the contacts score</li>
-<li>which atoms contribute to SAS and sites scoring</li>
+<li>restrict raw input atoms (atoms before any optional chain renaming and residue renumbering)</li>
+<li>restrict processed input atoms ( atoms after optional chain renaming and residue renumbering)</li>
+<li>select which contacts contribute to the contacts score</li>
+<li>select which atoms contribute to SAS and sites scoring</li>
 </ul>
-<p>Both atom-focused and contact focused expressions should be provided in the format of the Voronota-LT selection expressions.</p>
-<h3 id="restricting-raw-input-atoms">Restricting raw input atoms</h3>
-<p>This limits atoms before any chain renaming and residue renumbering:</p>
+<p>Both atom-focused and contact focused expressions should be provided in the format of the Voronota-LT selection expressions, described on the <a href="../expansion_lt/index.html#filtering-selection-system">Voronota-LT software page</a>.</p>
+<h3 id="restricting-input-atoms">Restricting input atoms</h3>
+<p>Example of restricting atoms before any chain renaming and residue renumbering:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-raw-input</span> <span class="st">&quot;[-chain A]&quot;</span> <span class="dt">\</span></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
-<h3 id="restrict-contacts">Restrict contacts</h3>
-<p>Using <code>--subselect-contacts</code> is the most common way to focus CAD-score.</p>
-<p>Default contact restriction is <code>[-min-sep 1]</code> (to discard contacts between atoms in the same residue).</p>
-<p>Example of sidechain–sidechain contact scoring:</p>
+<p>Example of restricting atoms after any chain renaming and residue renumbering:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-min-sep 1 -atom1 [-protein-sidechain] -atom2 [-protein-sidechain]]&quot;</span> <span class="dt">\</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
-<p>Example of scoring contacts between chain A and chain B:</p>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--reference-sequences-file</span> ./sequences.fasta <span class="dt">\</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--reference-stoichiometry</span> 2 2 1 <span class="dt">\</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-processed-input</span> <span class="st">&quot;[-chain A,B]&quot;</span> <span class="dt">\</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<h3 id="selecting-contacts">Selecting contacts</h3>
+<p>Using <code>--subselect-contacts</code> is the most common way to focus CAD-score.</p>
+<p>Default contact selection is <code>[-min-sep 1]</code> (to discard contacts between atoms in the same residue).</p>
+<p>Example of sidechain–sidechain contact scoring:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-a1 [-chain A] -a2 [-chain B]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-min-sep 1 -atom1 [-protein-sidechain] -atom2 [-protein-sidechain]]&quot;</span> <span class="dt">\</span></span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
-<p>Example of scoring contacts between any different chains:</p>
+<p>Example of scoring contacts between chain A and chain B:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-a1 [-chain A] -a2 [-chain B]]&quot;</span> <span class="dt">\</span></span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
-<p>Example of scoring contacts between residue sets (example with ranges):</p>
+<p>Example of scoring contacts between any different chains:</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66,75:87]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
-<p>Selections can be combined with boolean expressions, as shown below:</p>
+<p>Example of scoring contacts between residue sets (example with ranges):</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;(([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66]]) or ([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 75:87]]))&quot;</span> <span class="dt">\</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66,75:87]]&quot;</span> <span class="dt">\</span></span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
-<h3 id="restrict-atoms-for-sassites">Restrict atoms for SAS/sites</h3>
-<p>When scoring SAS or binding sites, you can restrict which atoms are considered using the <code>--subselect-atoms</code> optiom:</p>
+<p>Selections can be combined with boolean expressions, as shown below:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--scoring-types</span> <span class="st">&quot;sites&quot;</span> <span class="dt">\</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-atoms</span> <span class="st">&quot;[-chain A]&quot;</span> <span class="dt">\</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;(([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66]]) or ([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 75:87]]))&quot;</span> <span class="dt">\</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<h3 id="select-atoms-for-sassites">Select atoms for SAS/sites</h3>
+<p>When scoring SAS or binding sites, you can select which atoms are considered using the <code>--subselect-atoms</code> option:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--scoring-types</span> <span class="st">&quot;sites&quot;</span> <span class="dt">\</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-atoms</span> <span class="st">&quot;[-chain A]&quot;</span> <span class="dt">\</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-all-details</span> <span class="dt">\</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
 <h2 id="local-scoring-outputs">Local scoring outputs</h2>
 <p>CAD-score-LT can write local scores and visualization helpers into an output directory.</p>
 <p>Options to use:</p>
@@ -362,87 +369,87 @@ Usage examples:
 <li><code>graphics-chimera</code></li>
 </ul>
 <p>Example of writing local per-residue scores as as tables and as PDB B-factors:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-dir</span> ./results <span class="dt">\</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--local-output-formats</span> table pdb <span class="dt">\</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
-<p>Example of writing interface local scores:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-dir</span> ./results_inter_chain <span class="dt">\</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--local-output-formats</span> table mmcif contactmap graphics-pymol <span class="dt">\</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-dir</span> ./results <span class="dt">\</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--local-output-formats</span> table pdb <span class="dt">\</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<p>Example of writing interface local scores:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-dir</span> ./results_inter_chain <span class="dt">\</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--local-output-formats</span> table mmcif contactmap graphics-pymol <span class="dt">\</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
 <p>PDB/mmCIF outputs are typically easiest to inspect in molecular viewers by coloring residues by B-factor. CAD-score also sets occupancy values - 1 for every atom that contributed to any areas involved in scoring, 0 for all the other atoms. For example, when scoring an inter-chain interface only atoms involved in inter-chain contacts will have occupancy value of 1.</p>
 <h2 id="chain-remapping-for-complexes">Chain remapping for complexes</h2>
 <p>When scoring multimeric complexes, model chain IDs may not match target chain IDs (especially homomers).</p>
 <p>CAD-score-LT can automatically rename chains in models to try to maximize the global residue–residue contacts score. For that, use the <code>--remap-chains</code> flag:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--remap-chains</span> <span class="dt">\</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cadscore-lt</span> <span class="at">-t</span> target.pdb <span class="at">-m</span> model1.pdb model2.pdb <span class="dt">\</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subselect-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--remap-chains</span> <span class="dt">\</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
 <h1 id="cad-score-lt-python-bindings">CAD-score-LT Python bindings</h1>
 <p>The CAD-score-LT Python interface PyPI package is hosted at <a href="https://pypi.org/project/cadscorelt/">https://pypi.org/project/cadscorelt/</a>.</p>
 <h2 id="installation">Installation</h2>
 <p>Install with pip using this command:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install cadscorelt</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install cadscorelt</span></code></pre></div>
 <p>Additionally, it is recommended to have the <a href="https://pandas.pydata.org/">pandas</a> library for data analysis available in the Python environment. This allows the CAD-score result tables to be converted to <a href="https://pandas.pydata.org/docs/reference/frame.html">pandas data frames</a>. The <code>pandas</code> library can also be installed using <code>pip</code>:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pandas</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pandas</span></code></pre></div>
 <p>CAD-score-LT also provides integration with some common libraries for reading macromolecular files - <a href="https://www.biotite-python.org/">Biotite</a>, <a href="https://gemmi.readthedocs.io/">Gemmi</a>, <a href="https://biopython.org/">Biopython</a>, if those libraries are available in the Python environment. They can be installed via <code>pip</code>:</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install biotite</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install gemmi</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install biopython</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install biotite</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install gemmi</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install biopython</span></code></pre></div>
 <h2 id="usage-examples">Usage examples</h2>
 <h3 id="basic-example">Basic example</h3>
 <p>Below is an example script that calculates CAD-scores for inter-chain residue-residue contact areas, produces a table of global scores, converts that table to <code>pandas</code> data frame, and preints the top rows of the data frame:</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cadscorelt</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co"># init a CAD-score computation object</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>css <span class="op">=</span> cadscorelt.CADScoreComputer.init(subselect_contacts<span class="op">=</span><span class="st">&quot;[-inter-chain]&quot;</span>)</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co"># add a target structure</span></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>css.add_target_structure_from_file(<span class="st">&quot;./input/data/protein_homodimer1/target.pdb&quot;</span>)</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co"># add a target structure</span></span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>css.add_model_structure_from_file(<span class="st">&quot;./input/data/protein_homodimer1/model1.pdb&quot;</span>)</span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>css.add_model_structure_from_file(<span class="st">&quot;./input/data/protein_homodimer1/model2.pdb&quot;</span>)</span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="co"># get a list of global scores and convert it to pandas data frame</span></span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>df_global_scores_residue_residue <span class="op">=</span> css.get_all_cadscores_residue_residue_summarized_globally().to_pandas()</span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a><span class="co"># print the first rows of the data frame</span></span>
-<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_global_scores_residue_residue)</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cadscorelt</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="co"># init a CAD-score computation object</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>css <span class="op">=</span> cadscorelt.CADScoreComputer.init(subselect_contacts<span class="op">=</span><span class="st">&quot;[-inter-chain]&quot;</span>)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="co"># add a target structure</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>css.add_target_structure_from_file(<span class="st">&quot;./input/data/protein_homodimer1/target.pdb&quot;</span>)</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="co"># add a target structure</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>css.add_model_structure_from_file(<span class="st">&quot;./input/data/protein_homodimer1/model1.pdb&quot;</span>)</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>css.add_model_structure_from_file(<span class="st">&quot;./input/data/protein_homodimer1/model2.pdb&quot;</span>)</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a><span class="co"># get a list of global scores and convert it to pandas data frame</span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>df_global_scores_residue_residue <span class="op">=</span> css.get_all_cadscores_residue_residue_summarized_globally().to_pandas()</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="co"># print the first rows of the data frame</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_global_scores_residue_residue)</span></code></pre></div>
 <p>Below is an example of the printed output:</p>
 <pre><code>target_name model_name  CAD_score  F1_of_areas  target_area  model_area    TP_area    FP_area    FN_area renamed_chains
      target     model2   0.621922     0.774894  1047.807935  941.514533 784.870893 193.071031 262.937041              .
      target     model1   0.507319     0.639249  1047.807935  792.834440 648.098138 331.779276 399.709796              .</code></pre>
 <h3 id="basic-example-using-different-structure-readers">Basic example using different structure readers</h3>
 <p>Below is an example script that is similar to the previous example script, but it shows how to input structures from different sources:</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cadscorelt</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="co"># init a CAD-score computation object</span></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>csc <span class="op">=</span> cadscorelt.CADScoreComputer.init(subselect_contacts<span class="op">=</span><span class="st">&quot;[-inter-chain]&quot;</span>)</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="co"># add a target structure read by Biotite</span></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> biotite.structure.io</span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>structure_target <span class="op">=</span> biotite.structure.io.load_structure(<span class="st">&quot;./input/data/protein_homodimer1/target.pdb&quot;</span>)</span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>csc.add_target_structure_from_biotite(structure_target, <span class="st">&quot;target&quot;</span>)</span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a><span class="co"># add a model structure read by Gemmi </span></span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gemmi</span>
-<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>structure_model1 <span class="op">=</span> gemmi.read_structure(<span class="st">&quot;./input/data/protein_homodimer1/model1.pdb&quot;</span>)</span>
-<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>csc.add_model_structure_from_gemmi(structure_model1[<span class="dv">0</span>], <span class="st">&quot;model1&quot;</span>)</span>
-<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a><span class="co"># add a model structure read by Biopython </span></span>
-<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> Bio.PDB</span>
-<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>parser <span class="op">=</span> Bio.PDB.PDBParser(QUIET<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>structure_model2 <span class="op">=</span> parser.get_structure(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;./input/data/protein_homodimer1/model2.pdb&quot;</span>).get_atoms()</span>
-<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>csc.add_model_structure_from_biopython(structure_model2, <span class="st">&quot;model2&quot;</span>)</span>
-<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a><span class="co"># get a list of global scores and convert it to pandas data frame</span></span>
-<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>df_global_scores_residue_residue <span class="op">=</span> csc.get_all_cadscores_residue_residue_summarized_globally().to_pandas()</span>
-<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a><span class="co"># print the first rows of the data frame</span></span>
-<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_global_scores_residue_residue)</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cadscorelt</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co"># init a CAD-score computation object</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>csc <span class="op">=</span> cadscorelt.CADScoreComputer.init(subselect_contacts<span class="op">=</span><span class="st">&quot;[-inter-chain]&quot;</span>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="co"># add a target structure read by Biotite</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> biotite.structure.io</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>structure_target <span class="op">=</span> biotite.structure.io.load_structure(<span class="st">&quot;./input/data/protein_homodimer1/target.pdb&quot;</span>)</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>csc.add_target_structure_from_biotite(structure_target, <span class="st">&quot;target&quot;</span>)</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="co"># add a model structure read by Gemmi </span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gemmi</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>structure_model1 <span class="op">=</span> gemmi.read_structure(<span class="st">&quot;./input/data/protein_homodimer1/model1.pdb&quot;</span>)</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>csc.add_model_structure_from_gemmi(structure_model1[<span class="dv">0</span>], <span class="st">&quot;model1&quot;</span>)</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a><span class="co"># add a model structure read by Biopython </span></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> Bio.PDB</span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>parser <span class="op">=</span> Bio.PDB.PDBParser(QUIET<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>structure_model2 <span class="op">=</span> parser.get_structure(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;./input/data/protein_homodimer1/model2.pdb&quot;</span>).get_atoms()</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>csc.add_model_structure_from_biopython(structure_model2, <span class="st">&quot;model2&quot;</span>)</span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a><span class="co"># get a list of global scores and convert it to pandas data frame</span></span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>df_global_scores_residue_residue <span class="op">=</span> csc.get_all_cadscores_residue_residue_summarized_globally().to_pandas()</span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a><span class="co"># print the first rows of the data frame</span></span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_global_scores_residue_residue)</span></code></pre></div>
 <p>Below is an example of the printed output:</p>
 <pre><code>target_name model_name  CAD_score  F1_of_areas  target_area  model_area    TP_area    FP_area    FN_area renamed_chains
      target     model2   0.621922     0.774894  1047.808013  941.514579 784.870926 193.071041 262.937087              .
@@ -455,84 +462,84 @@ Usage examples:
 <li>automatic chain remapping to maximize grobal similarity;</li>
 <li>recording local scores.</li>
 </ul>
-<div class="sourceCode" id="cb35"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cadscorelt</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co"># to make comparison more strict, globally enable inclusion of residue names into atom and residue identifiers</span></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>cadscorelt.enable_considering_residue_names()</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># init a CAD-score computation object, enable atom-atom contact scoring, enable automatic chain remapping to maximize grobal similarity, enable recording local scores</span></span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>csc <span class="op">=</span> cadscorelt.CADScoreComputer.init(subselect_contacts<span class="op">=</span><span class="st">&quot;[-inter-chain]&quot;</span>, score_atom_atom_contacts<span class="op">=</span><span class="va">True</span>, remap_chains<span class="op">=</span><span class="va">True</span>, record_local_scores<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="co"># set reference sequences and stoichiometry for automatic residue renumbering and chain namne assignment</span></span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>csc.set_reference_sequences_from_file(<span class="st">&quot;./input/data/protein_heteromer1/sequences.fasta&quot;</span>)</span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>csc.set_reference_stoichiometry([<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>])</span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="co"># input structures from all the files in a directory</span></span>
-<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>input_directory <span class="op">=</span> Path(<span class="st">&quot;./input/data/protein_heteromer1/structures&quot;</span>)</span>
-<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file_path <span class="kw">in</span> input_directory.iterdir():</span>
-<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> file_path.is_file():</span>
-<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>        csc.add_structure_from_file(<span class="bu">str</span>(file_path))</span>
-<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of structure decriptors and print its top rows</span></span>
-<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>df_structure_descriptors <span class="op">=</span> csc.get_all_structure_descriptors().to_pandas()</span>
-<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of structure decriptors:&quot;</span>)</span>
-<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_structure_descriptors)</span>
-<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of globals scores based on residue-residue contacts, print top rows</span></span>
-<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a>df_global_scores_residue_residue <span class="op">=</span> csc.get_all_cadscores_residue_residue_summarized_globally().to_pandas()</span>
-<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-31"><a href="#cb35-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of globals scores based on residue-residue contacts:&quot;</span>)</span>
-<span id="cb35-32"><a href="#cb35-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-33"><a href="#cb35-33" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_global_scores_residue_residue)</span>
-<span id="cb35-34"><a href="#cb35-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-35"><a href="#cb35-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-36"><a href="#cb35-36" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of globals scores based on atom-atom contacts, print top rows</span></span>
-<span id="cb35-37"><a href="#cb35-37" aria-hidden="true" tabindex="-1"></a>df_global_scores_atom_atom <span class="op">=</span> csc.get_all_cadscores_atom_atom_summarized_globally().to_pandas()</span>
-<span id="cb35-38"><a href="#cb35-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-39"><a href="#cb35-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of globals scores based on atom-atom contacts:&quot;</span>)</span>
-<span id="cb35-40"><a href="#cb35-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-41"><a href="#cb35-41" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_global_scores_atom_atom)</span>
-<span id="cb35-42"><a href="#cb35-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-43"><a href="#cb35-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-44"><a href="#cb35-44" aria-hidden="true" tabindex="-1"></a><span class="co"># set placeholder variable for structure names</span></span>
-<span id="cb35-45"><a href="#cb35-45" aria-hidden="true" tabindex="-1"></a>target_name<span class="op">=</span><span class="st">&quot;cf_woTemplates_model_3_multimer_v3_pred_47&quot;</span></span>
-<span id="cb35-46"><a href="#cb35-46" aria-hidden="true" tabindex="-1"></a>model_name<span class="op">=</span><span class="st">&quot;cf_woTemplates_model_2_multimer_v3_pred_26&quot;</span></span>
-<span id="cb35-47"><a href="#cb35-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-48"><a href="#cb35-48" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of per-residue scores based on residue-residue contacts, print top rows</span></span>
-<span id="cb35-49"><a href="#cb35-49" aria-hidden="true" tabindex="-1"></a>df_local_scores_per_residue <span class="op">=</span> csc.get_local_cadscores_residue_residue_summarized_per_residue(target_name, model_name).to_pandas()</span>
-<span id="cb35-50"><a href="#cb35-50" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-51"><a href="#cb35-51" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of per-residue scores based on residue-residue contacts:&quot;</span>)</span>
-<span id="cb35-52"><a href="#cb35-52" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-53"><a href="#cb35-53" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_local_scores_per_residue)</span>
-<span id="cb35-54"><a href="#cb35-54" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-55"><a href="#cb35-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-56"><a href="#cb35-56" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of scores for every residue-residue contact, print top rows</span></span>
-<span id="cb35-57"><a href="#cb35-57" aria-hidden="true" tabindex="-1"></a>df_local_scores_residue_residue <span class="op">=</span> csc.get_local_cadscores_residue_residue(target_name, model_name).to_pandas()</span>
-<span id="cb35-58"><a href="#cb35-58" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-59"><a href="#cb35-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of scores for every residue-residue contact (CAD-score values of -1 idicate that the contact was not present in the target structure):&quot;</span>)</span>
-<span id="cb35-60"><a href="#cb35-60" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-61"><a href="#cb35-61" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_local_scores_residue_residue)</span>
-<span id="cb35-62"><a href="#cb35-62" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-63"><a href="#cb35-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-64"><a href="#cb35-64" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of per-atom scores based on atom-atom contacts, print top rows</span></span>
-<span id="cb35-65"><a href="#cb35-65" aria-hidden="true" tabindex="-1"></a>df_local_scores_per_atom <span class="op">=</span> csc.get_local_cadscores_atom_atom_summarized_per_atom(target_name, model_name).to_pandas()</span>
-<span id="cb35-66"><a href="#cb35-66" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-67"><a href="#cb35-67" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of per-atom scores based on atom-atom contacts (CAD-score values of -1 idicate that the atom had no relevant contacts in the target structure):&quot;</span>)</span>
-<span id="cb35-68"><a href="#cb35-68" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-69"><a href="#cb35-69" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_local_scores_per_atom)</span>
-<span id="cb35-70"><a href="#cb35-70" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-71"><a href="#cb35-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-72"><a href="#cb35-72" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of scores for every atom-atom contact, print top rows</span></span>
-<span id="cb35-73"><a href="#cb35-73" aria-hidden="true" tabindex="-1"></a>df_local_scores_atom_atom <span class="op">=</span> csc.get_local_cadscores_atom_atom(target_name, model_name).to_pandas()</span>
-<span id="cb35-74"><a href="#cb35-74" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-75"><a href="#cb35-75" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of scores for every atom-atom contact (CAD-score values of -1 idicate that the contact was not present in the target structure):&quot;</span>)</span>
-<span id="cb35-76"><a href="#cb35-76" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
-<span id="cb35-77"><a href="#cb35-77" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_local_scores_atom_atom)</span>
-<span id="cb35-78"><a href="#cb35-78" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cadscorelt</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co"># to make comparison more strict, globally enable inclusion of residue names into atom and residue identifiers</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>cadscorelt.enable_considering_residue_names()</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co"># init a CAD-score computation object, enable atom-atom contact scoring, enable automatic chain remapping to maximize grobal similarity, enable recording local scores</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>csc <span class="op">=</span> cadscorelt.CADScoreComputer.init(subselect_contacts<span class="op">=</span><span class="st">&quot;[-inter-chain]&quot;</span>, score_atom_atom_contacts<span class="op">=</span><span class="va">True</span>, remap_chains<span class="op">=</span><span class="va">True</span>, record_local_scores<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="co"># set reference sequences and stoichiometry for automatic residue renumbering and chain namne assignment</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>csc.set_reference_sequences_from_file(<span class="st">&quot;./input/data/protein_heteromer1/sequences.fasta&quot;</span>)</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>csc.set_reference_stoichiometry([<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>])</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="co"># input structures from all the files in a directory</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>input_directory <span class="op">=</span> Path(<span class="st">&quot;./input/data/protein_heteromer1/structures&quot;</span>)</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file_path <span class="kw">in</span> input_directory.iterdir():</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> file_path.is_file():</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>        csc.add_structure_from_file(<span class="bu">str</span>(file_path))</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of structure decriptors and print its top rows</span></span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>df_structure_descriptors <span class="op">=</span> csc.get_all_structure_descriptors().to_pandas()</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of structure decriptors:&quot;</span>)</span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_structure_descriptors)</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of globals scores based on residue-residue contacts, print top rows</span></span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>df_global_scores_residue_residue <span class="op">=</span> csc.get_all_cadscores_residue_residue_summarized_globally().to_pandas()</span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of globals scores based on residue-residue contacts:&quot;</span>)</span>
+<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_global_scores_residue_residue)</span>
+<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of globals scores based on atom-atom contacts, print top rows</span></span>
+<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a>df_global_scores_atom_atom <span class="op">=</span> csc.get_all_cadscores_atom_atom_summarized_globally().to_pandas()</span>
+<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of globals scores based on atom-atom contacts:&quot;</span>)</span>
+<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_global_scores_atom_atom)</span>
+<span id="cb36-42"><a href="#cb36-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-43"><a href="#cb36-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-44"><a href="#cb36-44" aria-hidden="true" tabindex="-1"></a><span class="co"># set placeholder variable for structure names</span></span>
+<span id="cb36-45"><a href="#cb36-45" aria-hidden="true" tabindex="-1"></a>target_name<span class="op">=</span><span class="st">&quot;cf_woTemplates_model_3_multimer_v3_pred_47&quot;</span></span>
+<span id="cb36-46"><a href="#cb36-46" aria-hidden="true" tabindex="-1"></a>model_name<span class="op">=</span><span class="st">&quot;cf_woTemplates_model_2_multimer_v3_pred_26&quot;</span></span>
+<span id="cb36-47"><a href="#cb36-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-48"><a href="#cb36-48" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of per-residue scores based on residue-residue contacts, print top rows</span></span>
+<span id="cb36-49"><a href="#cb36-49" aria-hidden="true" tabindex="-1"></a>df_local_scores_per_residue <span class="op">=</span> csc.get_local_cadscores_residue_residue_summarized_per_residue(target_name, model_name).to_pandas()</span>
+<span id="cb36-50"><a href="#cb36-50" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-51"><a href="#cb36-51" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of per-residue scores based on residue-residue contacts:&quot;</span>)</span>
+<span id="cb36-52"><a href="#cb36-52" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-53"><a href="#cb36-53" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_local_scores_per_residue)</span>
+<span id="cb36-54"><a href="#cb36-54" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-55"><a href="#cb36-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-56"><a href="#cb36-56" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of scores for every residue-residue contact, print top rows</span></span>
+<span id="cb36-57"><a href="#cb36-57" aria-hidden="true" tabindex="-1"></a>df_local_scores_residue_residue <span class="op">=</span> csc.get_local_cadscores_residue_residue(target_name, model_name).to_pandas()</span>
+<span id="cb36-58"><a href="#cb36-58" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-59"><a href="#cb36-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of scores for every residue-residue contact (CAD-score values of -1 idicate that the contact was not present in the target structure):&quot;</span>)</span>
+<span id="cb36-60"><a href="#cb36-60" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-61"><a href="#cb36-61" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_local_scores_residue_residue)</span>
+<span id="cb36-62"><a href="#cb36-62" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-63"><a href="#cb36-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-64"><a href="#cb36-64" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of per-atom scores based on atom-atom contacts, print top rows</span></span>
+<span id="cb36-65"><a href="#cb36-65" aria-hidden="true" tabindex="-1"></a>df_local_scores_per_atom <span class="op">=</span> csc.get_local_cadscores_atom_atom_summarized_per_atom(target_name, model_name).to_pandas()</span>
+<span id="cb36-66"><a href="#cb36-66" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-67"><a href="#cb36-67" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of per-atom scores based on atom-atom contacts (CAD-score values of -1 idicate that the atom had no relevant contacts in the target structure):&quot;</span>)</span>
+<span id="cb36-68"><a href="#cb36-68" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-69"><a href="#cb36-69" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_local_scores_per_atom)</span>
+<span id="cb36-70"><a href="#cb36-70" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-71"><a href="#cb36-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-72"><a href="#cb36-72" aria-hidden="true" tabindex="-1"></a><span class="co"># get the table of scores for every atom-atom contact, print top rows</span></span>
+<span id="cb36-73"><a href="#cb36-73" aria-hidden="true" tabindex="-1"></a>df_local_scores_atom_atom <span class="op">=</span> csc.get_local_cadscores_atom_atom(target_name, model_name).to_pandas()</span>
+<span id="cb36-74"><a href="#cb36-74" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-75"><a href="#cb36-75" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot; # Table of scores for every atom-atom contact (CAD-score values of -1 idicate that the contact was not present in the target structure):&quot;</span>)</span>
+<span id="cb36-76"><a href="#cb36-76" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb36-77"><a href="#cb36-77" aria-hidden="true" tabindex="-1"></a>cadscorelt.print_head_of_pandas_data_frame(df_local_scores_atom_atom)</span>
+<span id="cb36-78"><a href="#cb36-78" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</span></code></pre></div>
 <p>Below is an example of the printed output:</p>
 <pre><code>
  # Table of structure decriptors:

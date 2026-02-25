@@ -293,20 +293,21 @@ cadscore-lt -t target.pdb -m model1.pdb model2.pdb --output-with-f1 | column -t
 cadscore-lt -t target.pdb -m model1.pdb model2.pdb --output-all-details | column -t
 ```
 
-## Restricting what to score
+## Selecting what to score
 
-CAD-score-LT lets you restrict:
+CAD-score-LT lets you:
 
-* raw input atoms (atoms before any optional chain renaming and residue renumbering)
-* processed input atoms ( atoms after optional chain renaming and residue renumbering)
-* which contacts contribute to the contacts score
-* which atoms contribute to SAS and sites scoring
+* restrict raw input atoms (atoms before any optional chain renaming and residue renumbering)
+* restrict processed input atoms ( atoms after optional chain renaming and residue renumbering)
+* select which contacts contribute to the contacts score
+* select which atoms contribute to SAS and sites scoring
 
-Both atom-focused and contact focused expressions should be provided in the format of the Voronota-LT selection expressions.
+Both atom-focused and contact focused expressions should be provided in the format of the Voronota-LT selection expressions,
+described on the [Voronota-LT software page](../expansion_lt/index.html#filtering-selection-system).
 
-### Restricting raw input atoms
+### Restricting input atoms
 
-This limits atoms before any chain renaming and residue renumbering:
+Example of restricting atoms before any chain renaming and residue renumbering:
 
 ```bash
 cadscore-lt -t target.pdb -m model1.pdb model2.pdb \
@@ -315,11 +316,22 @@ cadscore-lt -t target.pdb -m model1.pdb model2.pdb \
 | column -t
 ```
 
-### Restrict contacts
+Example of restricting atoms after any chain renaming and residue renumbering:
+
+```bash
+cadscore-lt -t target.pdb -m model1.pdb model2.pdb \
+  --output-all-details \
+  --reference-sequences-file ./sequences.fasta \
+  --reference-stoichiometry 2 2 1 \
+  --restrict-processed-input "[-chain A,B]" \
+| column -t
+```
+
+### Selecting contacts
 
 Using ``--subselect-contacts`` is the most common way to focus CAD-score.
 
-Default contact restriction is ``[-min-sep 1]`` (to discard contacts between atoms in the same residue).
+Default contact selection is ``[-min-sep 1]`` (to discard contacts between atoms in the same residue).
 
 Example of sidechain–sidechain contact scoring:
 
@@ -366,9 +378,9 @@ cadscore-lt -t target.pdb -m model1.pdb model2.pdb \
 | column -t
 ```
 
-### Restrict atoms for SAS/sites
+### Select atoms for SAS/sites
 
-When scoring SAS or binding sites, you can restrict which atoms are considered using the ``--subselect-atoms`` optiom:
+When scoring SAS or binding sites, you can select which atoms are considered using the ``--subselect-atoms`` option:
 
 ```bash
 cadscore-lt -t target.pdb -m model1.pdb model2.pdb \
