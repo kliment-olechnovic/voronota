@@ -48,7 +48,7 @@ print("")
 # get the table of scores for every residue-residue contact, print top rows
 df_local_scores_residue_residue = csc.get_local_cadscores_residue_residue(target_name, model_name).to_pandas()
 print("")
-print(" # Table of scores for every residue-residue contact (CAD-score values of -1 idicate that the contact was not present in the target structure):")
+print(" # Table of scores for every residue-residue contact (CAD-score values of -1 indicate that the contact was not present in the target structure):")
 print("")
 cadscorelt.print_head_of_pandas_data_frame(df_local_scores_residue_residue)
 print("")

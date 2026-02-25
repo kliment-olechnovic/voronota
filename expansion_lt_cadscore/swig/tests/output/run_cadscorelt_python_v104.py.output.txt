@@ -29,7 +29,7 @@ afm_dropout_full_model_3_multimer_v3_pred_66               cf_woTemplates_model_
 afm_dropout_full_model_3_multimer_v3_pred_66               cf_woTemplates_model_3_multimer_v3_pred_47   0.439601     0.499394  7313.203511 4526.494827 3694.810365 3789.162791 3618.393146 A=D;B=B;C=F;D=A;E=E;F=C
 
 
- # Table of per-atom scores based on atom-atom contacts (CAD-score values of -1 idicate that the atom had no relevant contacts in the target structure):
+ # Table of per-atom scores based on atom-atom contacts (CAD-score values of -1 indicate that the atom had no relevant contacts in the target structure):
 
 ID_chain  ID_rnum ID_icode ID_atom_name  CAD_score  F1_of_areas  target_area  model_area  TP_area   FP_area   FN_area
        A        4        .           CD  -1.000000     0.000000     0.000000    0.000000 0.000000  0.589435  0.000000
@@ -44,7 +44,7 @@ ID_chain  ID_rnum ID_icode ID_atom_name  CAD_score  F1_of_areas  target_area  mo
        A       17        .           CB   0.057452     0.097769    25.529513    1.466721 1.466721  3.007595 24.062792
 
 
- # Table of scores for every atom-atom contact (CAD-score values of -1 idicate that the contact was not present in the target structure):
+ # Table of scores for every atom-atom contact (CAD-score values of -1 indicate that the contact was not present in the target structure):
 
 ID1_chain  ID1_rnum ID1_icode ID1_atom_name ID2_chain  ID2_rnum ID2_icode ID2_atom_name  CAD_score  F1_of_areas  target_area  model_area  TP_area  FP_area  FN_area
         A         4         .            CD         D       206         .           OE1       -1.0          0.0     0.000000         0.0      0.0 0.589435 0.000000

@@ -59,7 +59,7 @@ ID_chain  ID_rnum ID_icode  CAD_score  F1_of_areas  target_area  model_area   TP
        A       23        .   0.406606     0.631095    34.355429   20.906229 17.437673  3.468556 16.917756
 
 
- # Table of scores for every residue-residue contact (CAD-score values of -1 idicate that the contact was not present in the target structure):
+ # Table of scores for every residue-residue contact (CAD-score values of -1 indicate that the contact was not present in the target structure):
 
 ID1_chain  ID1_rnum ID1_icode ID2_chain  ID2_rnum ID2_icode  CAD_score  F1_of_areas  target_area  model_area  TP_area   FP_area   FN_area
         A         4         .         D         6         .   0.000000     0.000000     0.043450    0.000000 0.000000  0.000000  0.043450
@@ -74,7 +74,7 @@ ID1_chain  ID1_rnum ID1_icode ID2_chain  ID2_rnum ID2_icode  CAD_score  F1_of_ar
         A        17         .         C        32         .   0.557286     0.715714     5.396860    3.007595 3.007595  0.000000  2.389265
 
 
- # Table of per-atom scores based on atom-atom contacts (CAD-score values of -1 idicate that the atom had no relevant contacts in the target structure):
+ # Table of per-atom scores based on atom-atom contacts (CAD-score values of -1 indicate that the atom had no relevant contacts in the target structure):
 
 ID_chain  ID_rnum ID_icode ID_atom_name  CAD_score  F1_of_areas  target_area  model_area  TP_area   FP_area   FN_area
        A        4        .           CD  -1.000000     0.000000     0.000000    0.000000 0.000000  0.589435  0.000000
@@ -89,7 +89,7 @@ ID_chain  ID_rnum ID_icode ID_atom_name  CAD_score  F1_of_areas  target_area  mo
        A       17        .           CB   0.057452     0.097769    25.529513    1.466721 1.466721  3.007595 24.062792
 
 
- # Table of scores for every atom-atom contact (CAD-score values of -1 idicate that the contact was not present in the target structure):
+ # Table of scores for every atom-atom contact (CAD-score values of -1 indicate that the contact was not present in the target structure):
 
 ID1_chain  ID1_rnum ID1_icode ID1_atom_name ID2_chain  ID2_rnum ID2_icode ID2_atom_name  CAD_score  F1_of_areas  target_area  model_area  TP_area  FP_area  FN_area
         A         4         .            CD         D       206         .           OE1       -1.0          0.0     0.000000         0.0      0.0 0.589435 0.000000

@@ -40,7 +40,7 @@ model_name="cf_woTemplates_model_2_multimer_v3_pred_26"
 # get the table of per-atom scores based on atom-atom contacts, print top rows
 df_local_scores_per_atom = csc.get_local_cadscores_atom_atom_summarized_per_atom(target_name, model_name).to_pandas()
 print("")
-print(" # Table of per-atom scores based on atom-atom contacts (CAD-score values of -1 idicate that the atom had no relevant contacts in the target structure):")
+print(" # Table of per-atom scores based on atom-atom contacts (CAD-score values of -1 indicate that the atom had no relevant contacts in the target structure):")
 print("")
 cadscorelt.print_head_of_pandas_data_frame(df_local_scores_per_atom)
 print("")
@@ -48,7 +48,7 @@ print("")
 # get the table of scores for every atom-atom contact, print top rows
 df_local_scores_atom_atom = csc.get_local_cadscores_atom_atom(target_name, model_name).to_pandas()
 print("")
-print(" # Table of scores for every atom-atom contact (CAD-score values of -1 idicate that the contact was not present in the target structure):")
+print(" # Table of scores for every atom-atom contact (CAD-score values of -1 indicate that the contact was not present in the target structure):")
 print("")
 cadscorelt.print_head_of_pandas_data_frame(df_local_scores_atom_atom)
 print("")

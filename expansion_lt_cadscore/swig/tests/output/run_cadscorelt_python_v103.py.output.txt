@@ -44,7 +44,7 @@ ID_chain  ID_rnum ID_icode  CAD_score  F1_of_areas  target_area  model_area   TP
        A       23        .   0.406606     0.631095    34.355429   20.906229 17.437673  3.468556 16.917756
 
 
- # Table of scores for every residue-residue contact (CAD-score values of -1 idicate that the contact was not present in the target structure):
+ # Table of scores for every residue-residue contact (CAD-score values of -1 indicate that the contact was not present in the target structure):
 
 ID1_chain  ID1_rnum ID1_icode ID2_chain  ID2_rnum ID2_icode  CAD_score  F1_of_areas  target_area  model_area  TP_area   FP_area   FN_area
         A         4         .         D         6         .   0.000000     0.000000     0.043450    0.000000 0.000000  0.000000  0.043450
