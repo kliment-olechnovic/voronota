@@ -1,0 +1,52 @@
+
+ # Table of structure decriptors:
+
+             name  is_target  is_model renamed_chains reference_alignment
+1ktz_A_1-1ktz_B_1       True      True        A=A,B=B           available
+2pjy_A_1-2pjy_B_1       True      True        A=A,B=B           available
+
+
+ # Table of globals scores based on residue-residue contacts:
+
+      target_name        model_name  CAD_score  F1_of_areas  target_area  model_area    TP_area   FP_area   FN_area renamed_chains
+2pjy_A_1-2pjy_B_1 1ktz_A_1-1ktz_B_1   0.834504     0.907578   469.187423  473.563920 431.326857 49.986344 37.860566              .
+1ktz_A_1-1ktz_B_1 2pjy_A_1-2pjy_B_1   0.830485     0.907578   481.313201  465.043041 431.326857 37.860566 49.986344              .
+
+ # Reference_alignment_info for '1ktz_A_1-1ktz_B_1':
+original_chain_name: A
+assigned_chain_name: A
+reference_index: 0
+reference_identity: 0.732143
+sequence_alignment:
+ALDTNYCFRNLEENCCVRPLYIDFRQDLGWKWVHEPKGYYANFCSGPCPYLRSADTTHSTVLGLYNTLNPEASASPCCVPQDLEPLTILYYVGRTPKVEQLSNMVVKSCKCS
+------------ENCCVRPLYIDFRQDLGWKWVHEPKGYYANFCSGPCPYLRSA------------------SASPCCVPQDLEPLTILYYVGRTPKVEQLSNMVVKSCKCS
+
+original_chain_name: B
+assigned_chain_name: B
+reference_index: 1
+reference_identity: 0.868852
+sequence_alignment:
+VTDNNGAVKFPQLCKFCDVRFSTCDNQKSCMSNCSITSICEKPQEVCVAVWRKNDENITLETVCHDPKLPYHDFILEDAASPKCIMKEKKKPGETFFMCSCSSDECNDNIIFSEEYNTSNPD
+----------PQLCKFCDVRFSTCDNQKSCMSNCSITSICEKPQEVCVAVWRKNDENITLETVCHDPKLPYHDFILEDAASPKCIMKEKKKPGETFFMCSCSSDECNDNIIFSEEY------
+
+
+
+ # Reference_alignment_info for '2pjy_A_1-2pjy_B_1':
+original_chain_name: A
+assigned_chain_name: A
+reference_index: 0
+reference_identity: 1.000000
+sequence_alignment:
+ALDTNYCFRNLEENCCVRPLYIDFRQDLGWKWVHEPKGYYANFCSGPCPYLRSADTTHSTVLGLYNTLNPEASASPCCVPQDLEPLTILYYVGRTPKVEQLSNMVVKSCKCS
+ALDTNYCFRNLEENCCVRPLYIDFRQDLGWKWVHEPKGYYANFCSGPCPYLRSADTTHSTVLGLYNTLNPEASASPCCVPQDLEPLTILYYVGRTPKVEQLSNMVVKSCKCS
+
+original_chain_name: B
+assigned_chain_name: B
+reference_index: 1
+reference_identity: 1.000000
+sequence_alignment:
+A----GAVKFPQLCKFCDVRFSTCDNQKSCMSNCSITSICEKPQEVCVAVWRKNDENITLETVCHDPKLPYHDFILEDAASPKCIMKEKKKPGETFFMCSCSSDECNDNIIF----------
+A----GAVKFPQLCKFCDVRFSTCDNQKSCMSNCSITSICEKPQEVCVAVWRKNDENITLETVCHDPKLPYHDFILEDAASPKCIMKEKKKPGETFFMCSCSSDECNDNIIF----------
+
+
+

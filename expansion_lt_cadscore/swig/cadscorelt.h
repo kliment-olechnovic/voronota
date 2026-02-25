@@ -350,6 +350,10 @@ public:
 		{
 			throw std::runtime_error(std::string("Failed to read reference sequences from string '")+(reference_sequences_string.size()<35 ? reference_sequences_string : reference_sequences_string.substr(0, 30)+std::string(" ..."))+"'.");
 		}
+		if(!scorable_data_construction_parameters_.reference_stoichiometry.empty() && reference_sequences.size()!=scorable_data_construction_parameters_.reference_stoichiometry.size())
+		{
+			throw std::runtime_error(std::string("Invalid number of reference sequences ("+std::to_string(reference_sequences.size())+"), must be equal to the stoichiometry list length ("+std::to_string(scorable_data_construction_parameters_.reference_stoichiometry.size())+")"));
+		}
 		scorable_data_construction_parameters_.reference_sequences.swap(reference_sequences);
 	}
 
@@ -360,7 +364,7 @@ public:
 
 	void set_reference_stoichiometry(const std::vector<int>& reference_stoichiometry)
 	{
-		if(!reference_stoichiometry.empty() && reference_stoichiometry.size()!=scorable_data_construction_parameters_.reference_sequences.size())
+		if(!reference_stoichiometry.empty() && !scorable_data_construction_parameters_.reference_sequences.empty() && reference_stoichiometry.size()!=scorable_data_construction_parameters_.reference_sequences.size())
 		{
 			throw std::runtime_error(std::string("Invalid stoichiometry list length ("+std::to_string(reference_stoichiometry.size())+"), must be equal to the number of reference sequences ("+std::to_string(scorable_data_construction_parameters_.reference_sequences.size())+")"));
 		}
