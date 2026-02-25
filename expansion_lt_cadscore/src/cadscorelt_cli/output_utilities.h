@@ -228,23 +228,23 @@ public:
 		}
 
 		template<class MapContainer>
-		static void print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds, std::string& output) noexcept
+		static void print(const std::vector<AtomBall>& atom_balls, const std::map<std::string, std::string>& chain_renaming_map, const MapContainer& map_of_cadds, std::string& output) noexcept
 		{
 			if(check_compatability_with_pdb_format(atom_balls))
 			{
 				for(std::size_t i=0;i<atom_balls.size();i++)
 				{
-					output+=print_atom_line(atom_balls[i], static_cast<int>(i+1), map_of_cadds);
+					output+=print_atom_line(atom_balls[i], static_cast<int>(i+1), chain_renaming_map, map_of_cadds);
 					output+="\n";
 				}
 			}
 		}
 
 		template<class MapContainer>
-		static std::string print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds) noexcept
+		static std::string print(const std::vector<AtomBall>& atom_balls, const std::map<std::string, std::string>& chain_renaming_map, const MapContainer& map_of_cadds) noexcept
 		{
 			std::string output;
-			print(atom_balls, map_of_cadds, output);
+			print(atom_balls, chain_renaming_map, map_of_cadds, output);
 			return output;
 		}
 
@@ -292,27 +292,27 @@ public:
 			return print_atom_line(atom_ball, serial, (cadd.target_area_sum>0.0 ? 1.0 : 0.0), (cadd.target_area_sum>0.0 ? cadd.score() : 0.0));
 		}
 
-		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
+		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
 		{
-			std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom);
+			std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.with_renamed_chains(chain_renaming_map));
 			if(it==map_of_cadds.end() && !atom_ball.conflated_atom_name.empty())
 			{
 				IDAtom conflated_id_atom=atom_ball.id_atom;
 				conflated_id_atom.atom_name=atom_ball.conflated_atom_name;
-				it=map_of_cadds.find(conflated_id_atom);
+				it=map_of_cadds.find(conflated_id_atom.with_renamed_chains(chain_renaming_map));
 			}
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 		}
 
-		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
+		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
 		{
-			std::map<IDResidue, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue);
+			std::map<IDResidue, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.with_renamed_chains(chain_renaming_map));
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 		}
 
-		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
+		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
 		{
-			std::map<IDChain, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.id_chain);
+			std::map<IDChain, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.id_chain.with_renamed_chains(chain_renaming_map));
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 		}
 	};
@@ -371,14 +371,14 @@ _atom_site.pdbx_PDB_model_num
 		}
 
 		template<class MapContainer>
-		static void print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds, std::string& output) noexcept
+		static void print(const std::vector<AtomBall>& atom_balls, const std::map<std::string, std::string>& chain_renaming_map, const MapContainer& map_of_cadds, std::string& output) noexcept
 		{
 			if(!atom_balls.empty())
 			{
 				output=minimal_header();
 				for(std::size_t i=0;i<atom_balls.size();i++)
 				{
-					output+=print_atom_line(atom_balls[i], static_cast<int>(i+1), map_of_cadds);
+					output+=print_atom_line(atom_balls[i], static_cast<int>(i+1), chain_renaming_map, map_of_cadds);
 					output+="\n";
 				}
 				output+="#\n";
@@ -386,10 +386,10 @@ _atom_site.pdbx_PDB_model_num
 		}
 
 		template<class MapContainer>
-		static std::string print(const std::vector<AtomBall>& atom_balls, const MapContainer& map_of_cadds) noexcept
+		static std::string print(const std::vector<AtomBall>& atom_balls, const std::map<std::string, std::string>& chain_renaming_map, const MapContainer& map_of_cadds) noexcept
 		{
 			std::string output;
-			print(atom_balls, map_of_cadds, output);
+			print(atom_balls, chain_renaming_map, map_of_cadds, output);
 			return output;
 		}
 
@@ -437,27 +437,27 @@ _atom_site.pdbx_PDB_model_num
 			return print_atom_line(atom_ball, serial, (cadd.target_area_sum>0.0 ? 1.0 : 0.0), (cadd.target_area_sum>0.0 ? cadd.score() : 0.0));
 		}
 
-		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
+		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
 		{
-			std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom);
+			std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.with_renamed_chains(chain_renaming_map));
 			if(it==map_of_cadds.end() && !atom_ball.conflated_atom_name.empty())
 			{
 				IDAtom conflated_id_atom=atom_ball.id_atom;
 				conflated_id_atom.atom_name=atom_ball.conflated_atom_name;
-				it=map_of_cadds.find(conflated_id_atom);
+				it=map_of_cadds.find(conflated_id_atom.with_renamed_chains(chain_renaming_map));
 			}
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 		}
 
-		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
+		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
 		{
-			std::map<IDResidue, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue);
+			std::map<IDResidue, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.with_renamed_chains(chain_renaming_map));
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 		}
 
-		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
+		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
 		{
-			std::map<IDChain, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.id_chain);
+			std::map<IDChain, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.id_chain.with_renamed_chains(chain_renaming_map));
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 		}
 	};
@@ -569,7 +569,7 @@ public:
 	};
 
 	template<class Container>
-	static std::string print_contacts_graphics(const ScorableData& sd, const Container& map_of_cadds, const OutputFormat::ID output_format, const std::string& title) noexcept
+	static std::string print_contacts_graphics(const ScorableData& sd, const std::map<std::string, std::string>& chain_renaming_map, const Container& map_of_cadds, const OutputFormat::ID output_format, const std::string& title) noexcept
 	{
 		if(sd.rt_result_graphics.contacts_graphics.empty() || sd.atom_balls.empty())
 		{
@@ -582,7 +582,7 @@ public:
 		graphics_writer.add_color(category_name, "", base_color);
 		for(std::size_t i=0;i<sd.rt_result_graphics.contacts_graphics.size() && i<sd.rt_result.contacts_summaries.size();i++)
 		{
-			typename Container::const_iterator it=find_in_map_of_cadds(sd, sd.rt_result.contacts_summaries[i], map_of_cadds);
+			typename Container::const_iterator it=find_in_map_of_cadds(sd, sd.rt_result.contacts_summaries[i], chain_renaming_map, map_of_cadds);
 			if(it!=map_of_cadds.end())
 			{
 				graphics_writer.add_color(category_name, group_name, color_from_cadd(it->second, base_color));
@@ -601,7 +601,7 @@ public:
 	}
 
 	template<class Container>
-	static std::string print_site_graphics(const ScorableData& sd, const Container& map_of_cadds, const OutputFormat::ID output_format, const std::string& title) noexcept
+	static std::string print_site_graphics(const ScorableData& sd, const std::map<std::string, std::string>& chain_renaming_map, const Container& map_of_cadds, const OutputFormat::ID output_format, const std::string& title) noexcept
 	{
 		if(sd.rt_result_graphics.contacts_graphics.empty() || sd.atom_balls.empty())
 		{
@@ -622,7 +622,7 @@ public:
 				if(ball_ids[t]<sd.atom_balls.size())
 				{
 					const AtomBall& ball=sd.atom_balls[ball_ids[t]];
-					typename Container::const_iterator it=find_in_map_of_cadds(ball, map_of_cadds);
+					typename Container::const_iterator it=find_in_map_of_cadds(ball, chain_renaming_map, map_of_cadds);
 					if(it!=map_of_cadds.end())
 					{
 						found_statuses[t]=true;
@@ -649,7 +649,7 @@ public:
 	}
 
 	template<class Container>
-	static std::string print_sas_graphics(const ScorableData& sd, const Container& map_of_cadds, const OutputFormat::ID output_format, const std::string& title) noexcept
+	static std::string print_sas_graphics(const ScorableData& sd, const std::map<std::string, std::string>& chain_renaming_map, const Container& map_of_cadds, const OutputFormat::ID output_format, const std::string& title) noexcept
 	{
 		if(sd.rt_result_graphics.sas_graphics.empty() || sd.atom_balls.empty())
 		{
@@ -667,7 +667,7 @@ public:
 			if(ball_id<sd.atom_balls.size())
 			{
 				const AtomBall& ball=sd.atom_balls[ball_id];
-				typename Container::const_iterator it=find_in_map_of_cadds(ball, map_of_cadds);
+				typename Container::const_iterator it=find_in_map_of_cadds(ball, chain_renaming_map, map_of_cadds);
 				if(it!=map_of_cadds.end())
 				{
 					graphics_writer.add_color(category_name, group_name, color_from_cadd(it->second, base_color));
@@ -690,14 +690,14 @@ public:
 	}
 
 private:
-	static std::map<IDAtomAtom, CADDescriptor>::const_iterator find_in_map_of_cadds(const ScorableData& sd, const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary, const std::map<IDAtomAtom, CADDescriptor>& map_of_cadds) noexcept
+	static std::map<IDAtomAtom, CADDescriptor>::const_iterator find_in_map_of_cadds(const ScorableData& sd, const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDAtomAtom, CADDescriptor>& map_of_cadds) noexcept
 	{
 		std::map<IDAtomAtom, CADDescriptor>::const_iterator it=map_of_cadds.end();
 		if(pair_summary.id_a<sd.atom_balls.size() && pair_summary.id_b<sd.atom_balls.size())
 		{
 			const AtomBall& ball_a=sd.atom_balls[pair_summary.id_a];
 			const AtomBall& ball_b=sd.atom_balls[pair_summary.id_b];
-			it=map_of_cadds.find(IDAtomAtom(ball_a.id_atom, ball_b.id_atom));
+			it=map_of_cadds.find(IDAtomAtom(ball_a.id_atom, ball_b.id_atom).with_renamed_chains(chain_renaming_map));
 			if(it==map_of_cadds.end() && (!ball_a.conflated_atom_name.empty() || !ball_b.conflated_atom_name.empty()))
 			{
 				IDAtom conflated_id_a=ball_a.id_atom;
@@ -710,56 +710,56 @@ private:
 				{
 					conflated_id_b.atom_name=ball_b.conflated_atom_name;
 				}
-				it=map_of_cadds.find(IDAtomAtom(conflated_id_a, conflated_id_b));
+				it=map_of_cadds.find(IDAtomAtom(conflated_id_a, conflated_id_b).with_renamed_chains(chain_renaming_map));
 			}
 		}
 		return it;
 	}
 
-	static std::map<IDResidueResidue, CADDescriptor>::const_iterator find_in_map_of_cadds(const ScorableData& sd, const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary, const std::map<IDResidueResidue, CADDescriptor>& map_of_cadds)
+	static std::map<IDResidueResidue, CADDescriptor>::const_iterator find_in_map_of_cadds(const ScorableData& sd, const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDResidueResidue, CADDescriptor>& map_of_cadds)
 	{
 		std::map<IDResidueResidue, CADDescriptor>::const_iterator it=map_of_cadds.end();
 		if(pair_summary.id_a<sd.atom_balls.size() && pair_summary.id_b<sd.atom_balls.size())
 		{
 			const AtomBall& ball_a=sd.atom_balls[pair_summary.id_a];
 			const AtomBall& ball_b=sd.atom_balls[pair_summary.id_b];
-			it=map_of_cadds.find(IDResidueResidue(ball_a.id_atom.id_residue, ball_b.id_atom.id_residue));
+			it=map_of_cadds.find(IDResidueResidue(ball_a.id_atom.id_residue, ball_b.id_atom.id_residue).with_renamed_chains(chain_renaming_map));
 		}
 		return it;
 	}
 
-	static std::map<IDChainChain, CADDescriptor>::const_iterator find_in_map_of_cadds(const ScorableData& sd, const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary, const std::map<IDChainChain, CADDescriptor>& map_of_cadds) noexcept
+	static std::map<IDChainChain, CADDescriptor>::const_iterator find_in_map_of_cadds(const ScorableData& sd, const voronotalt::RadicalTessellation::ContactDescriptorSummary& pair_summary, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDChainChain, CADDescriptor>& map_of_cadds) noexcept
 	{
 		std::map<IDChainChain, CADDescriptor>::const_iterator it=map_of_cadds.end();
 		if(pair_summary.id_a<sd.atom_balls.size() && pair_summary.id_b<sd.atom_balls.size())
 		{
 			const AtomBall& ball_a=sd.atom_balls[pair_summary.id_a];
 			const AtomBall& ball_b=sd.atom_balls[pair_summary.id_b];
-			it=map_of_cadds.find(IDChainChain(ball_a.id_atom.id_residue.id_chain, ball_b.id_atom.id_residue.id_chain));
+			it=map_of_cadds.find(IDChainChain(ball_a.id_atom.id_residue.id_chain, ball_b.id_atom.id_residue.id_chain).with_renamed_chains(chain_renaming_map));
 		}
 		return it;
 	}
 
-	static std::map<IDAtom, CADDescriptor>::const_iterator find_in_map_of_cadds(const AtomBall& ball, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
+	static std::map<IDAtom, CADDescriptor>::const_iterator find_in_map_of_cadds(const AtomBall& ball, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
 	{
-		std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(ball.id_atom);
+		std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(ball.id_atom.with_renamed_chains(chain_renaming_map));
 		if(it==map_of_cadds.end() && !ball.conflated_atom_name.empty())
 		{
 			IDAtom conflated_id=ball.id_atom;
 			conflated_id.atom_name=ball.conflated_atom_name;
-			it=map_of_cadds.find(conflated_id);
+			it=map_of_cadds.find(conflated_id.with_renamed_chains(chain_renaming_map));
 		}
 		return it;
 	}
 
-	static std::map<IDResidue, CADDescriptor>::const_iterator find_in_map_of_cadds(const AtomBall& ball, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
+	static std::map<IDResidue, CADDescriptor>::const_iterator find_in_map_of_cadds(const AtomBall& ball, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
 	{
-		return map_of_cadds.find(ball.id_atom.id_residue);
+		return map_of_cadds.find(ball.id_atom.id_residue.with_renamed_chains(chain_renaming_map));
 	}
 
-	static std::map<IDChain, CADDescriptor>::const_iterator find_in_map_of_cadds(const AtomBall& ball, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
+	static std::map<IDChain, CADDescriptor>::const_iterator find_in_map_of_cadds(const AtomBall& ball, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
 	{
-		return map_of_cadds.find(ball.id_atom.id_residue.id_chain);
+		return map_of_cadds.find(ball.id_atom.id_residue.id_chain.with_renamed_chains(chain_renaming_map));
 	}
 
 	static unsigned int color_from_value(const double value) noexcept
