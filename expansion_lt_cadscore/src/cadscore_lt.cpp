@@ -632,9 +632,9 @@ bool run(const ApplicationParameters& app_params)
 	scorable_data_construction_parameters.record_atom_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_atom);
 	scorable_data_construction_parameters.record_residue_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_residue);
 	scorable_data_construction_parameters.record_chain_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_chain);
-	scorable_data_construction_parameters.record_atom_availabilities=(app_params.table_depth>=2 && app_params.scoring_level_atom);
-	scorable_data_construction_parameters.record_residue_availabilities=(app_params.table_depth>=2 && app_params.scoring_level_residue);
-	scorable_data_construction_parameters.record_chain_availabilities=(app_params.table_depth>=2 && app_params.scoring_level_chain);
+	scorable_data_construction_parameters.record_atom_availabilities=(app_params.table_depth>=2);
+	scorable_data_construction_parameters.record_residue_availabilities=(app_params.table_depth>=2);
+	scorable_data_construction_parameters.record_chain_availabilities=(app_params.table_depth>=2);
 	scorable_data_construction_parameters.conflate_equivalent_atom_types=app_params.conflate_equivalent_atom_types;
 	scorable_data_construction_parameters.quit_before_constructing_tessellation=app_params.quit_before_scoring;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_raw_input_balls=app_params.filtering_expression_for_restricting_raw_input_balls;
@@ -923,9 +923,9 @@ bool run(const ApplicationParameters& app_params)
 	std::vector<std::string> list_of_output_error_messages(list_of_pairs_of_target_model_indices.size());
 
 	std::vector<std::string> list_of_chain_remapping_summaries((!app_params.compact_output && (app_params.remap_chains || !scorable_data_construction_parameters.reference_sequences.empty())) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
-	std::vector<double> list_of_identities_of_atoms((app_params.table_depth>=2 && app_params.scoring_level_atom) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
-	std::vector<double> list_of_identities_of_residues((app_params.table_depth>=2 && app_params.scoring_level_residue) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
-	std::vector<double> list_of_identities_of_chains((app_params.table_depth>=2 && app_params.scoring_level_chain) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
+	std::vector<double> list_of_identities_of_atoms((app_params.table_depth>=2) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
+	std::vector<double> list_of_identities_of_residues((app_params.table_depth>=2) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
+	std::vector<double> list_of_identities_of_chains((app_params.table_depth>=2) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
 
 	bool success_writing_local_scores=true;
 
