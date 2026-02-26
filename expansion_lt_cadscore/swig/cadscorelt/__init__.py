@@ -15,7 +15,7 @@ def _initialize(
         score_atom_sites=False,
         score_residue_sites=False,
         score_chain_sites=False,
-        calculate_identities=True,
+        calculate_identities=False,
         record_local_scores=False,
         include_self_to_self_scores=False,
         restrict_input_atoms="",

@@ -5,7 +5,7 @@ from pathlib import Path
 cadscorelt.enable_considering_residue_names()
 
 # init a CAD-score computation object, enable atom-atom contact scoring, enable automatic chain remapping to maximize grobal similarity, enable recording local scores
-csc = cadscorelt.CADScoreComputer.init(subselect_contacts="[-inter-chain]", score_atom_atom_contacts=True, remap_chains=True, record_local_scores=True)
+csc = cadscorelt.CADScoreComputer.init(subselect_contacts="[-inter-chain]", score_atom_atom_contacts=True, remap_chains=True, record_local_scores=True, calculate_identities=True)
 
 # set reference sequences and stoichiometry for automatic residue renumbering and chain namne assignment
 csc.set_reference_sequences_from_file("./input/data/protein_heteromer1/sequences.fasta")

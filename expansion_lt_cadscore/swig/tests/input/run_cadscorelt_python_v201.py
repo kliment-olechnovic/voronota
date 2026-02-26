@@ -3,7 +3,7 @@ from pathlib import Path
 
 cadscorelt.disable_considering_residue_names()
 
-csc = cadscorelt.CADScoreComputer.init(subselect_contacts="[-inter-chain]")
+csc = cadscorelt.CADScoreComputer.init(subselect_contacts="[-inter-chain]", calculate_identities=True)
 
 csc.set_reference_stoichiometry([1, 1])
 
