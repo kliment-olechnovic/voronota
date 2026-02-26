@@ -100,6 +100,7 @@ public:
 	bool output_with_areas;
 	bool output_with_identities;
 	bool compact_output;
+	bool extremely_compact_output;
 	bool local_scores_requested;
 	bool read_successfuly;
 	std::vector<std::string> target_input_files;
@@ -155,6 +156,7 @@ public:
 		output_with_areas(false),
 		output_with_identities(false),
 		compact_output(false),
+		extremely_compact_output(false),
 		local_scores_requested(false),
 		read_successfuly(false),
 		restrict_contact_descriptors("[-min-sep 1]"),
@@ -332,6 +334,10 @@ public:
 				else if(opt.name=="compact-output" && opt.is_flag())
 				{
 					compact_output=opt.is_flag_and_true();
+				}
+				else if(opt.name=="extremely-compact-output" && opt.is_flag())
+				{
+					extremely_compact_output=opt.is_flag_and_true();
 				}
 				else if(opt.name=="output-with-f1" && opt.is_flag())
 				{
@@ -529,7 +535,12 @@ public:
 
 		if(compact_output && output_dir.empty())
 		{
-			error_log_for_options_parsing << "Error: no output directory provided to files enabling compact output of global scores.\n";
+			error_log_for_options_parsing << "Error: no output directory provided to enable compact output of global scores.\n";
+		}
+
+		if(extremely_compact_output && output_dir.empty())
+		{
+			error_log_for_options_parsing << "Error: no output directory provided to enable extremely compact output of global scores.\n";
 		}
 
 		if(!restrict_raw_input_atoms.empty())
@@ -645,11 +656,11 @@ bool run(const ApplicationParameters& app_params)
 	scorable_data_construction_parameters.record_residue_availabilities=(app_params.output_with_identities);
 	scorable_data_construction_parameters.record_chain_availabilities=(app_params.output_with_identities);
 	scorable_data_construction_parameters.conflate_equivalent_atom_types=app_params.conflate_equivalent_atom_types;
-	scorable_data_construction_parameters.quit_before_constructing_tessellation=app_params.quit_before_scoring;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_raw_input_balls=app_params.filtering_expression_for_restricting_raw_input_balls;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_processed_input_balls=app_params.filtering_expression_for_restricting_processed_input_balls;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_contact_descriptors=app_params.filtering_expression_for_restricting_contact_descriptors;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_atom_descriptors=app_params.filtering_expression_for_restricting_atom_descriptors;
+	scorable_data_construction_parameters.quit_before_constructing_tessellation=app_params.quit_before_scoring;
 
 	if(!app_params.reference_sequences_file.empty())
 	{
@@ -672,6 +683,16 @@ bool run(const ApplicationParameters& app_params)
 		{
 			scorable_data_construction_parameters.reference_stoichiometry=app_params.stoichiometry_list;
 		}
+	}
+
+	if(app_params.extremely_compact_output)
+	{
+		scorable_data_construction_parameters.record_atom_balls=false;
+		scorable_data_construction_parameters.record_sequence_alignments=false;
+		scorable_data_construction_parameters.record_graphics=false;
+		scorable_data_construction_parameters.record_atom_availabilities=false;
+		scorable_data_construction_parameters.record_residue_availabilities=false;
+		scorable_data_construction_parameters.record_chain_availabilities=false;
 	}
 
 	if(!scorable_data_construction_parameters.valid())
@@ -787,7 +808,7 @@ bool run(const ApplicationParameters& app_params)
 		return false;
 	}
 
-	if(!app_params.output_dir.empty())
+	if(!app_params.output_dir.empty() && !app_params.extremely_compact_output)
 	{
 		std::string output_string;
 		for(std::size_t i=0;i<list_of_unique_file_display_names.size();i++)
@@ -805,7 +826,7 @@ bool run(const ApplicationParameters& app_params)
 		}
 	}
 
-	if((app_params.save_processed_inputs_mmcif || app_params.save_processed_inputs_pdb) && !app_params.output_dir.empty())
+	if((app_params.save_processed_inputs_mmcif || app_params.save_processed_inputs_pdb) && !app_params.output_dir.empty() && !app_params.extremely_compact_output)
 	{
 #ifdef CADSCORELT_OPENMP
 #pragma omp parallel for
@@ -831,7 +852,7 @@ bool run(const ApplicationParameters& app_params)
 		}
 	}
 
-	if(!scorable_data_construction_parameters.reference_sequences.empty() && !app_params.output_dir.empty())
+	if(!scorable_data_construction_parameters.reference_sequences.empty() && !app_params.output_dir.empty() && !app_params.extremely_compact_output)
 	{
 		{
 			std::string output_string="index\tfile\trenaming_of_chains\n";
@@ -889,6 +910,122 @@ bool run(const ApplicationParameters& app_params)
 				return false;
 			}
 		}
+	}
+
+	if(app_params.extremely_compact_output)
+	{
+		for(int j=0;j<2;j++)
+		{
+			const std::vector<std::size_t>& relevant_sd_indices=(j==0 ? target_sd_indices : model_sd_indices);
+			std::string output_string;
+			for(const std::size_t& i : relevant_sd_indices)
+			{
+				output_string+=list_of_unique_file_display_names[i];
+				output_string+="\n";
+			}
+			const std::string outfile=app_params.output_dir+(j==0 ? "/input_target_files.tsv" : "/input_model_files.tsv");
+			if(!cadscorelt::FileSystemUtilities::write_file(outfile, output_string))
+			{
+				std::cerr << "Error: failed to write file '" << outfile << "'.\n";
+				return false;
+			}
+		}
+
+		std::string output_score_name;
+		{
+			if(app_params.scoring_type_contacts && app_params.scoring_level_residue){output_score_name="residue_residue";}
+			else if(app_params.scoring_type_contacts && app_params.scoring_level_atom){output_score_name="atom_atom";}
+			else if(app_params.scoring_type_contacts && app_params.scoring_level_chain){output_score_name="chain_chain";}
+			else if(app_params.scoring_type_sas && app_params.scoring_level_residue){output_score_name="residue_sas";}
+			else if(app_params.scoring_type_sas && app_params.scoring_level_atom){output_score_name="atom_sas";}
+			else if(app_params.scoring_type_sas && app_params.scoring_level_chain){output_score_name="chain_sas";}
+			else if(app_params.scoring_type_sites && app_params.scoring_level_residue){output_score_name="residue_sites";}
+			else if(app_params.scoring_type_sites && app_params.scoring_level_atom){output_score_name="atom_sites";}
+			else if(app_params.scoring_type_sites && app_params.scoring_level_chain){output_score_name="chain_sites";}
+		}
+
+		cadscorelt::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
+		scoring_result_construction_parameters.remap_chains=app_params.remap_chains;
+		scoring_result_construction_parameters.max_permutations_to_check_exhaustively=app_params.max_permutations_to_check_exhaustively;
+		scoring_result_construction_parameters.record_local_scores_on_atom_level=false;
+		scoring_result_construction_parameters.record_local_scores_on_residue_level=false;
+		scoring_result_construction_parameters.record_local_scores_on_chain_level=false;
+		scoring_result_construction_parameters.record_compatible_model_atom_balls=false;
+
+		std::vector<std::int8_t> list_of_global_scores(target_sd_indices.size()*model_sd_indices.size());
+
+#ifdef CADSCORELT_OPENMP
+#pragma omp parallel for
+#endif
+		for(std::size_t gi=0;gi<list_of_global_scores.size();gi++)
+		{
+			const std::size_t ti=gi/model_sd_indices.size();
+			const std::size_t mi=gi%model_sd_indices.size();
+			if(ti==mi)
+			{
+				list_of_global_scores[gi]=static_cast<std::int8_t>(1);
+			}
+			else
+			{
+				const cadscorelt::ScorableData& target_sd=list_of_unique_scorable_data[ti];
+				const cadscorelt::ScorableData& model_sd=list_of_unique_scorable_data[mi];
+				cadscorelt::ScoringResult sr;
+				std::ostringstream local_err_stream;
+				sr.construct(scoring_result_construction_parameters, target_sd, model_sd, local_err_stream);
+				double real_score=-1.0;
+				if(sr.valid() && local_err_stream.str().empty())
+				{
+					if(app_params.scoring_type_contacts && app_params.scoring_level_residue){real_score=sr.cadscores_residue_residue_summarized_globally.score();}
+					else if(app_params.scoring_type_contacts && app_params.scoring_level_atom){real_score=sr.cadscores_atom_atom_summarized_globally.score();}
+					else if(app_params.scoring_type_contacts && app_params.scoring_level_chain){real_score=sr.cadscores_chain_chain_summarized_globally.score();}
+					else if(app_params.scoring_type_sas && app_params.scoring_level_residue){real_score=sr.cadscores_residue_sas_summarized_globally.score();}
+					else if(app_params.scoring_type_sas && app_params.scoring_level_atom){real_score=sr.cadscores_atom_sas_summarized_globally.score();}
+					else if(app_params.scoring_type_sas && app_params.scoring_level_chain){real_score=sr.cadscores_chain_sas_summarized_globally.score();}
+					else if(app_params.scoring_type_sites && app_params.scoring_level_residue){real_score=sr.cadscores_residue_site_summarized_globally.score();}
+					else if(app_params.scoring_type_sites && app_params.scoring_level_atom){real_score=sr.cadscores_atom_site_summarized_globally.score();}
+					else if(app_params.scoring_type_sites && app_params.scoring_level_chain){real_score=sr.cadscores_chain_site_summarized_globally.score();}
+				}
+				if(real_score>=0.0)
+				{
+					real_score=std::min(real_score*100.0+0.5, 100.0);
+					list_of_global_scores[gi]=static_cast<std::int8_t>(real_score);
+				}
+				else
+				{
+					list_of_global_scores[gi]=static_cast<std::int8_t>(-1);
+				}
+			}
+		}
+
+		{
+			const std::string outfile=app_params.output_dir+std::string("/global_cadscores_")+output_score_name+std::string(".tsv");
+			std::ofstream outstream(outfile, std::ios::binary);
+			if(outstream.fail())
+			{
+				std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
+				return false;
+			}
+			std::string buf;
+			const std::size_t flush_threshold=11222333;
+			buf.reserve(flush_threshold/10);
+			for(std::size_t gi=0;gi<list_of_global_scores.size();gi++)
+			{
+				buf.append(std::to_string(list_of_global_scores[gi]));
+				buf.push_back(((gi+1)%model_sd_indices.size()==0) ? '\n' : '\t');
+				if(buf.size()>flush_threshold || (gi+1==list_of_global_scores.size() && !buf.empty()))
+				{
+					outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
+					if(outstream.fail())
+					{
+						std::cerr << "Error: failed to write global scores to file '" << outfile << "'.\n";
+						return false;
+					}
+					buf.clear();
+				}
+			}
+		}
+
+		return true;
 	}
 
 	if(app_params.quit_before_scoring)

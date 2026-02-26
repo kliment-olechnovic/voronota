@@ -117,6 +117,24 @@ cadscore-lt \
 
 ####################################################################
 
+cadscore-lt \
+  -m './input/protein_homodimer1' \
+  --scoring-levels residue \
+  --scoring-types contacts \
+  --subselect-contacts '[-inter-chain]' \
+  --output-dir ./output/protein_homodimer1/output_dir_v12 \
+  --extremely-compact-output
+
+cadscore-lt \
+  -m './input/protein_homodimer1' \
+  --scoring-levels atom \
+  --scoring-types contacts \
+  --subselect-contacts '[-inter-chain]' \
+  --output-dir ./output/protein_homodimer1/output_dir_v13 \
+  --extremely-compact-output
+
+####################################################################
+
 find ./input/rna_monomer1 -type f -name '*.pdb' | sort \
 | cadscore-lt \
   --output-global-scores ./output/rna_monomer1/global_scores_v01.txt

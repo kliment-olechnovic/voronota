@@ -5,6 +5,7 @@
 #include <map>
 #include <set>
 #include <limits>
+#include <cstdint>
 
 #ifdef CADSCORELT_OPENMP
 #include "voronotalt/parallelization_configuration.h"
