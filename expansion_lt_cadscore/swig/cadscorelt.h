@@ -1117,6 +1117,11 @@ private:
 
 	static void record_global_cad_descriptor(const std::string& target_name, const std::string& model_name, const std::string& renaming_of_model_chains, const cadscorelt::CADDescriptor& cadd, GlobalScore& s)
 	{
+		if(cadd.target_area_sum<=0.0)
+		{
+			s=GlobalScore();
+			return;
+		}
 		s.target_name=target_name;
 		s.model_name=model_name;
 		s.renaming_of_model_chains=renaming_of_model_chains;
@@ -1125,6 +1130,11 @@ private:
 
 	static void record_global_identity_descriptor(const std::string& target_name, const std::string& model_name, const std::string& renaming_of_model_chains, const cadscorelt::ScoringResult& sr, GlobalIdentityDescriptor& gid)
 	{
+		if(sr.identity_of_atoms.target_area_sum<=0.0 && sr.identity_of_residues.target_area_sum<=0.0 && sr.identity_of_chains.target_area_sum<=0.0)
+		{
+			gid=GlobalIdentityDescriptor();
+			return;
+		}
 		gid.target_name=target_name;
 		gid.model_name=model_name;
 		gid.renaming_of_model_chains=renaming_of_model_chains;
@@ -1475,6 +1485,46 @@ private:
 		if(num_of_pair_scores==0)
 		{
 			throw std::runtime_error(std::string("No valid pairs of structures to calculate scores."));
+		}
+		if(params_.score_atom_atom_contacts)
+		{
+			global_scoring_result_.cadscores_atom_atom_summarized_globally.reserve(full_scoring_results_.size());
+		}
+		if(params_.score_residue_residue_contacts)
+		{
+			global_scoring_result_.cadscores_residue_residue_summarized_globally.reserve(full_scoring_results_.size());
+		}
+		if(params_.score_chain_chain_contacts)
+		{
+			global_scoring_result_.cadscores_chain_chain_summarized_globally.reserve(full_scoring_results_.size());
+		}
+		if(params_.score_atom_sas)
+		{
+			global_scoring_result_.cadscores_atom_sas_summarized_globally.reserve(full_scoring_results_.size());
+		}
+		if(params_.score_residue_sas)
+		{
+			global_scoring_result_.cadscores_residue_sas_summarized_globally.reserve(full_scoring_results_.size());
+		}
+		if(params_.score_chain_sas)
+		{
+			global_scoring_result_.cadscores_chain_sas_summarized_globally.reserve(full_scoring_results_.size());
+		}
+		if(params_.score_atom_sites)
+		{
+			global_scoring_result_.cadscores_atom_site_summarized_globally.reserve(full_scoring_results_.size());
+		}
+		if(params_.score_residue_sites)
+		{
+			global_scoring_result_.cadscores_residue_site_summarized_globally.reserve(full_scoring_results_.size());
+		}
+		if(params_.score_chain_sites)
+		{
+			global_scoring_result_.cadscores_chain_site_summarized_globally.reserve(full_scoring_results_.size());
+		}
+		if(params_.calculate_identities)
+		{
+			global_scoring_result_.identity_descriptors.reserve(full_scoring_results_.size());
 		}
 		for(std::map< std::pair<std::string, std::string>, PairScoringResult >::const_iterator it=full_scoring_results_.begin();it!=full_scoring_results_.end();++it)
 		{
