@@ -538,6 +538,111 @@ class VectorGlobalScore(object):
 
 # Register VectorGlobalScore in _cadscorelt_python:
 _cadscorelt_python.VectorGlobalScore_swigregister(VectorGlobalScore)
+class VectorGlobalIdentityDescriptor(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+
+    def iterator(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_iterator(self)
+    def __iter__(self):
+        return self.iterator()
+
+    def __nonzero__(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor___nonzero__(self)
+
+    def __bool__(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor___bool__(self)
+
+    def __len__(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor___len__(self)
+
+    def __getslice__(self, i, j):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor___getslice__(self, i, j)
+
+    def __setslice__(self, *args):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor___setslice__(self, *args)
+
+    def __delslice__(self, i, j):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor___delslice__(self, i, j)
+
+    def __delitem__(self, *args):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor___delitem__(self, *args)
+
+    def __getitem__(self, *args):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor___getitem__(self, *args)
+
+    def __setitem__(self, *args):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor___setitem__(self, *args)
+
+    def pop(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_pop(self)
+
+    def append(self, x):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_append(self, x)
+
+    def empty(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_empty(self)
+
+    def size(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_size(self)
+
+    def swap(self, v):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_swap(self, v)
+
+    def begin(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_begin(self)
+
+    def end(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_end(self)
+
+    def rbegin(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_rbegin(self)
+
+    def rend(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_rend(self)
+
+    def clear(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_clear(self)
+
+    def get_allocator(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_get_allocator(self)
+
+    def pop_back(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_pop_back(self)
+
+    def erase(self, *args):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_erase(self, *args)
+
+    def __init__(self, *args):
+        _cadscorelt_python.VectorGlobalIdentityDescriptor_swiginit(self, _cadscorelt_python.new_VectorGlobalIdentityDescriptor(*args))
+
+    def push_back(self, x):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_push_back(self, x)
+
+    def front(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_front(self)
+
+    def back(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_back(self)
+
+    def assign(self, n, x):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_assign(self, n, x)
+
+    def resize(self, *args):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_resize(self, *args)
+
+    def insert(self, *args):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_insert(self, *args)
+
+    def reserve(self, n):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_reserve(self, n)
+
+    def capacity(self):
+        return _cadscorelt_python.VectorGlobalIdentityDescriptor_capacity(self)
+    __swig_destroy__ = _cadscorelt_python.delete_VectorGlobalIdentityDescriptor
+
+# Register VectorGlobalIdentityDescriptor in _cadscorelt_python:
+_cadscorelt_python.VectorGlobalIdentityDescriptor_swigregister(VectorGlobalIdentityDescriptor)
 class VectorAtomScore(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
     __repr__ = _swig_repr
@@ -1203,6 +1308,28 @@ class StructureDescriptor(object):
 
 # Register StructureDescriptor in _cadscorelt_python:
 _cadscorelt_python.StructureDescriptor_swigregister(StructureDescriptor)
+class GlobalIdentityDescriptor(object):
+    thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
+    __repr__ = _swig_repr
+    target_name = property(_cadscorelt_python.GlobalIdentityDescriptor_target_name_get, _cadscorelt_python.GlobalIdentityDescriptor_target_name_set)
+    model_name = property(_cadscorelt_python.GlobalIdentityDescriptor_model_name_get, _cadscorelt_python.GlobalIdentityDescriptor_model_name_set)
+    renaming_of_model_chains = property(_cadscorelt_python.GlobalIdentityDescriptor_renaming_of_model_chains_get, _cadscorelt_python.GlobalIdentityDescriptor_renaming_of_model_chains_set)
+    target_atoms = property(_cadscorelt_python.GlobalIdentityDescriptor_target_atoms_get, _cadscorelt_python.GlobalIdentityDescriptor_target_atoms_set)
+    target_residues = property(_cadscorelt_python.GlobalIdentityDescriptor_target_residues_get, _cadscorelt_python.GlobalIdentityDescriptor_target_residues_set)
+    target_chains = property(_cadscorelt_python.GlobalIdentityDescriptor_target_chains_get, _cadscorelt_python.GlobalIdentityDescriptor_target_chains_set)
+    model_atoms = property(_cadscorelt_python.GlobalIdentityDescriptor_model_atoms_get, _cadscorelt_python.GlobalIdentityDescriptor_model_atoms_set)
+    model_residues = property(_cadscorelt_python.GlobalIdentityDescriptor_model_residues_get, _cadscorelt_python.GlobalIdentityDescriptor_model_residues_set)
+    model_chains = property(_cadscorelt_python.GlobalIdentityDescriptor_model_chains_get, _cadscorelt_python.GlobalIdentityDescriptor_model_chains_set)
+    identity_of_atoms = property(_cadscorelt_python.GlobalIdentityDescriptor_identity_of_atoms_get, _cadscorelt_python.GlobalIdentityDescriptor_identity_of_atoms_set)
+    identity_of_residues = property(_cadscorelt_python.GlobalIdentityDescriptor_identity_of_residues_get, _cadscorelt_python.GlobalIdentityDescriptor_identity_of_residues_set)
+    identity_of_chains = property(_cadscorelt_python.GlobalIdentityDescriptor_identity_of_chains_get, _cadscorelt_python.GlobalIdentityDescriptor_identity_of_chains_set)
+
+    def __init__(self):
+        _cadscorelt_python.GlobalIdentityDescriptor_swiginit(self, _cadscorelt_python.new_GlobalIdentityDescriptor())
+    __swig_destroy__ = _cadscorelt_python.delete_GlobalIdentityDescriptor
+
+# Register GlobalIdentityDescriptor in _cadscorelt_python:
+_cadscorelt_python.GlobalIdentityDescriptor_swigregister(GlobalIdentityDescriptor)
 class GlobalScore(object):
     thisown = property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc="The membership flag")
     __repr__ = _swig_repr
@@ -1378,6 +1505,7 @@ class CADScoreComputerParameters(object):
     score_atom_sites = property(_cadscorelt_python.CADScoreComputerParameters_score_atom_sites_get, _cadscorelt_python.CADScoreComputerParameters_score_atom_sites_set)
     score_residue_sites = property(_cadscorelt_python.CADScoreComputerParameters_score_residue_sites_get, _cadscorelt_python.CADScoreComputerParameters_score_residue_sites_set)
     score_chain_sites = property(_cadscorelt_python.CADScoreComputerParameters_score_chain_sites_get, _cadscorelt_python.CADScoreComputerParameters_score_chain_sites_set)
+    calculate_identities = property(_cadscorelt_python.CADScoreComputerParameters_calculate_identities_get, _cadscorelt_python.CADScoreComputerParameters_calculate_identities_set)
     record_local_scores = property(_cadscorelt_python.CADScoreComputerParameters_record_local_scores_get, _cadscorelt_python.CADScoreComputerParameters_record_local_scores_set)
     include_self_to_self_scores = property(_cadscorelt_python.CADScoreComputerParameters_include_self_to_self_scores_get, _cadscorelt_python.CADScoreComputerParameters_include_self_to_self_scores_set)
     restrict_input_atoms = property(_cadscorelt_python.CADScoreComputerParameters_restrict_input_atoms_get, _cadscorelt_python.CADScoreComputerParameters_restrict_input_atoms_set)
@@ -1465,6 +1593,9 @@ class CADScoreComputer(object):
 
     def get_all_cadscores_chain_site_summarized_globally(self):
         return _cadscorelt_python.CADScoreComputer_get_all_cadscores_chain_site_summarized_globally(self)
+
+    def get_all_identity_descriptors(self):
+        return _cadscorelt_python.CADScoreComputer_get_all_identity_descriptors(self)
 
     def get_local_cadscores_atom_atom(self, target_name, model_name):
         return _cadscorelt_python.CADScoreComputer_get_local_cadscores_atom_atom(self, target_name, model_name)
@@ -1564,6 +1695,9 @@ class CADScoreComputer(object):
 
     def get_cadscores_chain_site_summarized_globally(self, target_name, model_name):
         return _cadscorelt_python.CADScoreComputer_get_cadscores_chain_site_summarized_globally(self, target_name, model_name)
+
+    def get_identity_descriptor(self, target_name, model_name):
+        return _cadscorelt_python.CADScoreComputer_get_identity_descriptor(self, target_name, model_name)
     __swig_destroy__ = _cadscorelt_python.delete_CADScoreComputer
 
 # Register CADScoreComputer in _cadscorelt_python:

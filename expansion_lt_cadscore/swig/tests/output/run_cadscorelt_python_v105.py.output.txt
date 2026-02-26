@@ -14,6 +14,21 @@ afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50       True      True B=
               cf_woTemplates_model_3_multimer_v3_pred_47       True      True A=A,B=D,C=B,D=E,E=C,F=F           available
 
 
+ # Table of identity descriptors:
+
+                                             target_name                                               model_name  ident_atoms  ident_residues  ident_chains  t_atoms  m_atoms  t_residues  m_residues  t_chains  m_chains          renamed_chains
+afm_dropout_full_woTemplates_model_3_multimer_v1_pred_45             afm_dropout_full_model_2_multimer_v1_pred_65        100.0           100.0         100.0     9712     9712        1316        1316         6         6 A=A;B=B;C=C;D=D;E=E;F=F
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50             afm_dropout_full_model_3_multimer_v3_pred_66        100.0           100.0         100.0     9712     9712        1316        1316         6         6 A=D;B=B;C=C;D=A;E=E;F=F
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50             afm_dropout_full_model_3_multimer_v3_pred_64        100.0           100.0         100.0     9712     9712        1316        1316         6         6 A=D;B=B;C=C;D=A;E=E;F=F
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50             afm_dropout_full_model_2_multimer_v1_pred_65        100.0           100.0         100.0     9712     9712        1316        1316         6         6 A=D;B=B;C=C;D=A;E=E;F=F
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50             afm_dropout_full_model_1_multimer_v2_pred_42        100.0           100.0         100.0     9712     9712        1316        1316         6         6 A=A;B=B;C=F;D=D;E=E;F=C
+afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50                    afm_basic_model_5_multimer_v1_pred_35        100.0           100.0         100.0     9712     9712        1316        1316         6         6 A=A;B=B;C=C;D=D;E=E;F=F
+afm_dropout_full_woTemplates_model_3_multimer_v1_pred_45               cf_woTemplates_model_3_multimer_v3_pred_47        100.0           100.0         100.0     9712     9712        1316        1316         6         6 A=D;B=E;C=C;D=A;E=B;F=F
+afm_dropout_full_woTemplates_model_3_multimer_v1_pred_45               cf_woTemplates_model_2_multimer_v3_pred_26        100.0           100.0         100.0     9712     9712        1316        1316         6         6 A=D;B=E;C=C;D=A;E=B;F=F
+afm_dropout_full_woTemplates_model_3_multimer_v1_pred_45 afm_dropout_full_woTemplates_model_4_multimer_v3_pred_50        100.0           100.0         100.0     9712     9712        1316        1316         6         6 A=D;B=B;C=C;D=A;E=E;F=F
+afm_dropout_full_woTemplates_model_3_multimer_v1_pred_45  afm_dropout_full_woTemplates_model_3_multimer_v1_pred_4        100.0           100.0         100.0     9712     9712        1316        1316         6         6 A=D;B=E;C=F;D=A;E=B;F=C
+
+
  # Table of globals scores based on residue-residue contacts:
 
                                  target_name                                               model_name  CAD_score  F1_of_areas  target_area  model_area     TP_area     FP_area     FN_area          renamed_chains

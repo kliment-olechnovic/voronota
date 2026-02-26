@@ -20,6 +20,14 @@ print("")
 cadscorelt.print_head_of_pandas_data_frame(df_structure_descriptors)
 print("")
 
+df_identity_descriptors = csc.get_all_identity_descriptors().to_pandas()
+print("")
+print(" # Table of identity descriptors:")
+print("")
+cadscorelt.print_head_of_pandas_data_frame(df_identity_descriptors)
+print("")
+
+
 df_global_scores_residue_residue = csc.get_all_cadscores_residue_residue_summarized_globally().to_pandas()
 print("")
 print(" # Table of globals scores based on residue-residue contacts:")

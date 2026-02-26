@@ -6,6 +6,13 @@
 2pjy_A_1-2pjy_B_1       True      True        A=A,B=B           available
 
 
+ # Table of identity descriptors:
+
+      target_name        model_name  ident_atoms  ident_residues  ident_chains  t_atoms  m_atoms  t_residues  m_residues  t_chains  m_chains renamed_chains
+1ktz_A_1-1ktz_B_1 2pjy_A_1-2pjy_B_1    97.552448       97.872340         100.0     1430     1656         188         220         2         2              .
+2pjy_A_1-2pjy_B_1 1ktz_A_1-1ktz_B_1    84.239130       83.636364         100.0     1656     1430         220         188         2         2              .
+
+
  # Table of globals scores based on residue-residue contacts:
 
       target_name        model_name  CAD_score  F1_of_areas  target_area  model_area    TP_area   FP_area   FN_area renamed_chains

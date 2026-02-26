@@ -16,6 +16,7 @@ namespace std
 %template(VectorMolecularAtomBall) std::vector<MolecularAtomBall>;
 %template(VectorStructureDescriptor) std::vector<StructureDescriptor>;
 %template(VectorGlobalScore) std::vector<GlobalScore>;
+%template(VectorGlobalIdentityDescriptor) std::vector<GlobalIdentityDescriptor>;
 %template(VectorAtomScore) std::vector<AtomScore>;
 %template(VectorResidueScore) std::vector<ResidueScore>;
 %template(VectorChainScore) std::vector<ChainScore>;

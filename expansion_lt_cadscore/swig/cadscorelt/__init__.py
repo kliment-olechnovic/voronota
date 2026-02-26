@@ -15,6 +15,7 @@ def _initialize(
         score_atom_sites=False,
         score_residue_sites=False,
         score_chain_sites=False,
+        calculate_identities=True,
         record_local_scores=False,
         include_self_to_self_scores=False,
         restrict_input_atoms="",
@@ -33,6 +34,7 @@ def _initialize(
     params.score_atom_sites=score_atom_sites
     params.score_residue_sites=score_residue_sites
     params.score_chain_sites=score_chain_sites
+    params.calculate_identities=calculate_identities
     params.record_local_scores=record_local_scores
     params.include_self_to_self_scores=include_self_to_self_scores
     params.restrict_input_atoms=restrict_input_atoms

@@ -3157,42 +3157,45 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_CADScoreComputerParameters swig_types[3]
 #define SWIGTYPE_p_ChainChainScore swig_types[4]
 #define SWIGTYPE_p_ChainScore swig_types[5]
-#define SWIGTYPE_p_GlobalScore swig_types[6]
-#define SWIGTYPE_p_MolecularAtomBall swig_types[7]
-#define SWIGTYPE_p_MolecularFileInput swig_types[8]
-#define SWIGTYPE_p_ResidueResidueScore swig_types[9]
-#define SWIGTYPE_p_ResidueScore swig_types[10]
-#define SWIGTYPE_p_StructureDescriptor swig_types[11]
-#define SWIGTYPE_p_allocator_type swig_types[12]
-#define SWIGTYPE_p_char swig_types[13]
-#define SWIGTYPE_p_difference_type swig_types[14]
-#define SWIGTYPE_p_p_PyObject swig_types[15]
-#define SWIGTYPE_p_size_type swig_types[16]
-#define SWIGTYPE_p_std__allocatorT_AtomAtomScore_t swig_types[17]
-#define SWIGTYPE_p_std__allocatorT_AtomScore_t swig_types[18]
-#define SWIGTYPE_p_std__allocatorT_ChainChainScore_t swig_types[19]
-#define SWIGTYPE_p_std__allocatorT_ChainScore_t swig_types[20]
-#define SWIGTYPE_p_std__allocatorT_GlobalScore_t swig_types[21]
-#define SWIGTYPE_p_std__allocatorT_MolecularAtomBall_t swig_types[22]
-#define SWIGTYPE_p_std__allocatorT_ResidueResidueScore_t swig_types[23]
-#define SWIGTYPE_p_std__allocatorT_ResidueScore_t swig_types[24]
-#define SWIGTYPE_p_std__allocatorT_StructureDescriptor_t swig_types[25]
-#define SWIGTYPE_p_std__allocatorT_int_t swig_types[26]
-#define SWIGTYPE_p_std__invalid_argument swig_types[27]
-#define SWIGTYPE_p_std__vectorT_AtomAtomScore_t swig_types[28]
-#define SWIGTYPE_p_std__vectorT_AtomScore_t swig_types[29]
-#define SWIGTYPE_p_std__vectorT_ChainChainScore_t swig_types[30]
-#define SWIGTYPE_p_std__vectorT_ChainScore_t swig_types[31]
-#define SWIGTYPE_p_std__vectorT_GlobalScore_t swig_types[32]
-#define SWIGTYPE_p_std__vectorT_MolecularAtomBall_t swig_types[33]
-#define SWIGTYPE_p_std__vectorT_ResidueResidueScore_t swig_types[34]
-#define SWIGTYPE_p_std__vectorT_ResidueScore_t swig_types[35]
-#define SWIGTYPE_p_std__vectorT_StructureDescriptor_t swig_types[36]
-#define SWIGTYPE_p_std__vectorT_int_t swig_types[37]
-#define SWIGTYPE_p_swig__SwigPyIterator swig_types[38]
-#define SWIGTYPE_p_value_type swig_types[39]
-static swig_type_info *swig_types[41];
-static swig_module_info swig_module = {swig_types, 40, 0, 0, 0, 0};
+#define SWIGTYPE_p_GlobalIdentityDescriptor swig_types[6]
+#define SWIGTYPE_p_GlobalScore swig_types[7]
+#define SWIGTYPE_p_MolecularAtomBall swig_types[8]
+#define SWIGTYPE_p_MolecularFileInput swig_types[9]
+#define SWIGTYPE_p_ResidueResidueScore swig_types[10]
+#define SWIGTYPE_p_ResidueScore swig_types[11]
+#define SWIGTYPE_p_StructureDescriptor swig_types[12]
+#define SWIGTYPE_p_allocator_type swig_types[13]
+#define SWIGTYPE_p_char swig_types[14]
+#define SWIGTYPE_p_difference_type swig_types[15]
+#define SWIGTYPE_p_p_PyObject swig_types[16]
+#define SWIGTYPE_p_size_type swig_types[17]
+#define SWIGTYPE_p_std__allocatorT_AtomAtomScore_t swig_types[18]
+#define SWIGTYPE_p_std__allocatorT_AtomScore_t swig_types[19]
+#define SWIGTYPE_p_std__allocatorT_ChainChainScore_t swig_types[20]
+#define SWIGTYPE_p_std__allocatorT_ChainScore_t swig_types[21]
+#define SWIGTYPE_p_std__allocatorT_GlobalIdentityDescriptor_t swig_types[22]
+#define SWIGTYPE_p_std__allocatorT_GlobalScore_t swig_types[23]
+#define SWIGTYPE_p_std__allocatorT_MolecularAtomBall_t swig_types[24]
+#define SWIGTYPE_p_std__allocatorT_ResidueResidueScore_t swig_types[25]
+#define SWIGTYPE_p_std__allocatorT_ResidueScore_t swig_types[26]
+#define SWIGTYPE_p_std__allocatorT_StructureDescriptor_t swig_types[27]
+#define SWIGTYPE_p_std__allocatorT_int_t swig_types[28]
+#define SWIGTYPE_p_std__invalid_argument swig_types[29]
+#define SWIGTYPE_p_std__vectorT_AtomAtomScore_t swig_types[30]
+#define SWIGTYPE_p_std__vectorT_AtomScore_t swig_types[31]
+#define SWIGTYPE_p_std__vectorT_ChainChainScore_t swig_types[32]
+#define SWIGTYPE_p_std__vectorT_ChainScore_t swig_types[33]
+#define SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t swig_types[34]
+#define SWIGTYPE_p_std__vectorT_GlobalScore_t swig_types[35]
+#define SWIGTYPE_p_std__vectorT_MolecularAtomBall_t swig_types[36]
+#define SWIGTYPE_p_std__vectorT_ResidueResidueScore_t swig_types[37]
+#define SWIGTYPE_p_std__vectorT_ResidueScore_t swig_types[38]
+#define SWIGTYPE_p_std__vectorT_StructureDescriptor_t swig_types[39]
+#define SWIGTYPE_p_std__vectorT_int_t swig_types[40]
+#define SWIGTYPE_p_swig__SwigPyIterator swig_types[41]
+#define SWIGTYPE_p_value_type swig_types[42]
+static swig_type_info *swig_types[44];
+static swig_module_info swig_module = {swig_types, 43, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -5384,6 +5387,115 @@ SWIGINTERN std::vector< GlobalScore >::iterator std_vector_Sl_GlobalScore_Sg__er
 SWIGINTERN std::vector< GlobalScore >::iterator std_vector_Sl_GlobalScore_Sg__erase__SWIG_1(std::vector< GlobalScore > *self,std::vector< GlobalScore >::iterator first,std::vector< GlobalScore >::iterator last){ return self->erase(first, last); }
 SWIGINTERN std::vector< GlobalScore >::iterator std_vector_Sl_GlobalScore_Sg__insert__SWIG_0(std::vector< GlobalScore > *self,std::vector< GlobalScore >::iterator pos,std::vector< GlobalScore >::value_type const &x){ return self->insert(pos, x); }
 SWIGINTERN void std_vector_Sl_GlobalScore_Sg__insert__SWIG_1(std::vector< GlobalScore > *self,std::vector< GlobalScore >::iterator pos,std::vector< GlobalScore >::size_type n,std::vector< GlobalScore >::value_type const &x){ self->insert(pos, n, x); }
+
+  namespace swig {
+    template <>  struct traits< GlobalIdentityDescriptor > {
+      typedef pointer_category category;
+      static const char* type_name() { return"GlobalIdentityDescriptor"; }
+    };
+  }
+
+
+      namespace swig {
+	template <>  struct traits<std::vector< GlobalIdentityDescriptor, std::allocator< GlobalIdentityDescriptor > > > {
+	  typedef pointer_category category;
+	  static const char* type_name() {
+	    return "std::vector<" "GlobalIdentityDescriptor" "," "std::allocator< GlobalIdentityDescriptor >" " >";
+	  }
+	};
+      }
+    
+SWIGINTERN swig::SwigPyIterator *std_vector_Sl_GlobalIdentityDescriptor_Sg__iterator(std::vector< GlobalIdentityDescriptor > *self,PyObject **PYTHON_SELF){
+      return swig::make_output_iterator(self->begin(), self->begin(), self->end(), *PYTHON_SELF);
+    }
+SWIGINTERN bool std_vector_Sl_GlobalIdentityDescriptor_Sg____nonzero__(std::vector< GlobalIdentityDescriptor > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN bool std_vector_Sl_GlobalIdentityDescriptor_Sg____bool__(std::vector< GlobalIdentityDescriptor > const *self){
+      return !(self->empty());
+    }
+SWIGINTERN std::vector< GlobalIdentityDescriptor >::size_type std_vector_Sl_GlobalIdentityDescriptor_Sg____len__(std::vector< GlobalIdentityDescriptor > const *self){
+      return self->size();
+    }
+SWIGINTERN std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *std_vector_Sl_GlobalIdentityDescriptor_Sg____getslice__(std::vector< GlobalIdentityDescriptor > *self,std::vector< GlobalIdentityDescriptor >::difference_type i,std::vector< GlobalIdentityDescriptor >::difference_type j){
+      return swig::getslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_GlobalIdentityDescriptor_Sg____setslice____SWIG_0(std::vector< GlobalIdentityDescriptor > *self,std::vector< GlobalIdentityDescriptor >::difference_type i,std::vector< GlobalIdentityDescriptor >::difference_type j){
+      swig::setslice(self, i, j, 1, std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >());
+    }
+SWIGINTERN void std_vector_Sl_GlobalIdentityDescriptor_Sg____setslice____SWIG_1(std::vector< GlobalIdentityDescriptor > *self,std::vector< GlobalIdentityDescriptor >::difference_type i,std::vector< GlobalIdentityDescriptor >::difference_type j,std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > const &v){
+      swig::setslice(self, i, j, 1, v);
+    }
+SWIGINTERN void std_vector_Sl_GlobalIdentityDescriptor_Sg____delslice__(std::vector< GlobalIdentityDescriptor > *self,std::vector< GlobalIdentityDescriptor >::difference_type i,std::vector< GlobalIdentityDescriptor >::difference_type j){
+      swig::delslice(self, i, j, 1);
+    }
+SWIGINTERN void std_vector_Sl_GlobalIdentityDescriptor_Sg____delitem____SWIG_0(std::vector< GlobalIdentityDescriptor > *self,std::vector< GlobalIdentityDescriptor >::difference_type i){
+      swig::erase(self, swig::getpos(self, i));
+    }
+SWIGINTERN std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *std_vector_Sl_GlobalIdentityDescriptor_Sg____getitem____SWIG_0(std::vector< GlobalIdentityDescriptor > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return NULL;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >::difference_type id = i;
+      std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >::difference_type jd = j;
+      return swig::getslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_GlobalIdentityDescriptor_Sg____setitem____SWIG_0(std::vector< GlobalIdentityDescriptor > *self,PySliceObject *slice,std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > const &v){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >::difference_type id = i;
+      std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >::difference_type jd = j;
+      swig::setslice(self, id, jd, step, v);
+    }
+SWIGINTERN void std_vector_Sl_GlobalIdentityDescriptor_Sg____setitem____SWIG_1(std::vector< GlobalIdentityDescriptor > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >::difference_type id = i;
+      std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN void std_vector_Sl_GlobalIdentityDescriptor_Sg____delitem____SWIG_1(std::vector< GlobalIdentityDescriptor > *self,PySliceObject *slice){
+      Py_ssize_t i, j, step;
+      if( !PySlice_Check(slice) ) {
+        SWIG_Error(SWIG_TypeError, "Slice object expected.");
+        return;
+      }
+      PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), (Py_ssize_t)self->size(), &i, &j, &step);
+      std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >::difference_type id = i;
+      std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >::difference_type jd = j;
+      swig::delslice(self, id, jd, step);
+    }
+SWIGINTERN std::vector< GlobalIdentityDescriptor >::value_type const &std_vector_Sl_GlobalIdentityDescriptor_Sg____getitem____SWIG_1(std::vector< GlobalIdentityDescriptor > const *self,std::vector< GlobalIdentityDescriptor >::difference_type i){
+      return *(swig::cgetpos(self, i));
+    }
+SWIGINTERN void std_vector_Sl_GlobalIdentityDescriptor_Sg____setitem____SWIG_2(std::vector< GlobalIdentityDescriptor > *self,std::vector< GlobalIdentityDescriptor >::difference_type i,std::vector< GlobalIdentityDescriptor >::value_type const &x){
+      *(swig::getpos(self,i)) = x;
+    }
+SWIGINTERN std::vector< GlobalIdentityDescriptor >::value_type std_vector_Sl_GlobalIdentityDescriptor_Sg__pop(std::vector< GlobalIdentityDescriptor > *self){
+      if (self->size() == 0)
+	throw std::out_of_range("pop from empty container");
+      std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >::value_type x = self->back();
+      self->pop_back();
+      return x;
+    }
+SWIGINTERN void std_vector_Sl_GlobalIdentityDescriptor_Sg__append(std::vector< GlobalIdentityDescriptor > *self,std::vector< GlobalIdentityDescriptor >::value_type const &x){
+      self->push_back(x);
+    }
+SWIGINTERN std::vector< GlobalIdentityDescriptor >::iterator std_vector_Sl_GlobalIdentityDescriptor_Sg__erase__SWIG_0(std::vector< GlobalIdentityDescriptor > *self,std::vector< GlobalIdentityDescriptor >::iterator pos){ return self->erase(pos); }
+SWIGINTERN std::vector< GlobalIdentityDescriptor >::iterator std_vector_Sl_GlobalIdentityDescriptor_Sg__erase__SWIG_1(std::vector< GlobalIdentityDescriptor > *self,std::vector< GlobalIdentityDescriptor >::iterator first,std::vector< GlobalIdentityDescriptor >::iterator last){ return self->erase(first, last); }
+SWIGINTERN std::vector< GlobalIdentityDescriptor >::iterator std_vector_Sl_GlobalIdentityDescriptor_Sg__insert__SWIG_0(std::vector< GlobalIdentityDescriptor > *self,std::vector< GlobalIdentityDescriptor >::iterator pos,std::vector< GlobalIdentityDescriptor >::value_type const &x){ return self->insert(pos, x); }
+SWIGINTERN void std_vector_Sl_GlobalIdentityDescriptor_Sg__insert__SWIG_1(std::vector< GlobalIdentityDescriptor > *self,std::vector< GlobalIdentityDescriptor >::iterator pos,std::vector< GlobalIdentityDescriptor >::size_type n,std::vector< GlobalIdentityDescriptor >::value_type const &x){ self->insert(pos, n, x); }
 
   namespace swig {
     template <>  struct traits< AtomScore > {
@@ -14565,6 +14677,1882 @@ SWIGINTERN PyObject *VectorGlobalScore_swigregister(PyObject *SWIGUNUSEDPARM(sel
 }
 
 SWIGINTERN PyObject *VectorGlobalScore_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_iterator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  PyObject **arg2 = (PyObject **) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  swig::SwigPyIterator *result = 0 ;
+  
+  arg2 = &swig_obj[0];
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_iterator" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = (swig::SwigPyIterator *)std_vector_Sl_GlobalIdentityDescriptor_Sg__iterator(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_swig__SwigPyIterator, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___nonzero__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___nonzero__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = (bool)std_vector_Sl_GlobalIdentityDescriptor_Sg____nonzero__((std::vector< GlobalIdentityDescriptor > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___bool__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___bool__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = (bool)std_vector_Sl_GlobalIdentityDescriptor_Sg____bool__((std::vector< GlobalIdentityDescriptor > const *)arg1);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___len__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< GlobalIdentityDescriptor >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___len__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = std_vector_Sl_GlobalIdentityDescriptor_Sg____len__((std::vector< GlobalIdentityDescriptor > const *)arg1);
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___getslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::difference_type arg2 ;
+  std::vector< GlobalIdentityDescriptor >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor___getslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___getslice__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorGlobalIdentityDescriptor___getslice__" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< GlobalIdentityDescriptor >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorGlobalIdentityDescriptor___getslice__" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< GlobalIdentityDescriptor >::difference_type >(val3);
+  try {
+    result = (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *)std_vector_Sl_GlobalIdentityDescriptor_Sg____getslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___setslice____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::difference_type arg2 ;
+  std::vector< GlobalIdentityDescriptor >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___setslice__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorGlobalIdentityDescriptor___setslice__" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< GlobalIdentityDescriptor >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorGlobalIdentityDescriptor___setslice__" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< GlobalIdentityDescriptor >::difference_type >(val3);
+  try {
+    std_vector_Sl_GlobalIdentityDescriptor_Sg____setslice____SWIG_0(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___setslice____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::difference_type arg2 ;
+  std::vector< GlobalIdentityDescriptor >::difference_type arg3 ;
+  std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  int res4 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___setslice__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorGlobalIdentityDescriptor___setslice__" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< GlobalIdentityDescriptor >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorGlobalIdentityDescriptor___setslice__" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< GlobalIdentityDescriptor >::difference_type >(val3);
+  {
+    std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *ptr = (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *)0;
+    res4 = swig::asptr(swig_obj[3], &ptr);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorGlobalIdentityDescriptor___setslice__" "', argument " "4"" of type '" "std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorGlobalIdentityDescriptor___setslice__" "', argument " "4"" of type '" "std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > const &""'"); 
+    }
+    arg4 = ptr;
+  }
+  try {
+    std_vector_Sl_GlobalIdentityDescriptor_Sg____setslice____SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > const &)*arg4);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res4)) delete arg4;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___setslice__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor___setslice__", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_VectorGlobalIdentityDescriptor___setslice____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_ptrdiff_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = swig::asptr(argv[3], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorGlobalIdentityDescriptor___setslice____SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorGlobalIdentityDescriptor___setslice__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< GlobalIdentityDescriptor >::__setslice__(std::vector< GlobalIdentityDescriptor >::difference_type,std::vector< GlobalIdentityDescriptor >::difference_type)\n"
+    "    std::vector< GlobalIdentityDescriptor >::__setslice__(std::vector< GlobalIdentityDescriptor >::difference_type,std::vector< GlobalIdentityDescriptor >::difference_type,std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___delslice__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::difference_type arg2 ;
+  std::vector< GlobalIdentityDescriptor >::difference_type arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  ptrdiff_t val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor___delslice__", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___delslice__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorGlobalIdentityDescriptor___delslice__" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< GlobalIdentityDescriptor >::difference_type >(val2);
+  ecode3 = SWIG_AsVal_ptrdiff_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorGlobalIdentityDescriptor___delslice__" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::difference_type""'");
+  } 
+  arg3 = static_cast< std::vector< GlobalIdentityDescriptor >::difference_type >(val3);
+  try {
+    std_vector_Sl_GlobalIdentityDescriptor_Sg____delslice__(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___delitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___delitem__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorGlobalIdentityDescriptor___delitem__" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< GlobalIdentityDescriptor >::difference_type >(val2);
+  try {
+    std_vector_Sl_GlobalIdentityDescriptor_Sg____delitem____SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___getitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___getitem__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor___getitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    result = (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *)std_vector_Sl_GlobalIdentityDescriptor_Sg____getitem____SWIG_0(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___setitem____SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res3 = SWIG_OLDOBJ ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___setitem__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  {
+    std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *ptr = (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *)0;
+    res3 = swig::asptr(swig_obj[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorGlobalIdentityDescriptor___setitem__" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorGlobalIdentityDescriptor___setitem__" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  try {
+    std_vector_Sl_GlobalIdentityDescriptor_Sg____setitem____SWIG_0(arg1,arg2,(std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___setitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___setitem__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_GlobalIdentityDescriptor_Sg____setitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___delitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  PySliceObject *arg2 = (PySliceObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___delitem__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  {
+    if (!PySlice_Check(swig_obj[1])) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor___delitem__" "', argument " "2"" of type '" "PySliceObject *""'");
+    }
+    arg2 = (PySliceObject *) swig_obj[1];
+  }
+  try {
+    std_vector_Sl_GlobalIdentityDescriptor_Sg____delitem____SWIG_1(arg1,arg2);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  } catch(std::invalid_argument &_e) {
+    SWIG_exception_fail(SWIG_ValueError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___delitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor___delitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorGlobalIdentityDescriptor___delitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorGlobalIdentityDescriptor___delitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorGlobalIdentityDescriptor___delitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< GlobalIdentityDescriptor >::__delitem__(std::vector< GlobalIdentityDescriptor >::difference_type)\n"
+    "    std::vector< GlobalIdentityDescriptor >::__delitem__(PySliceObject *)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___getitem____SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::difference_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  std::vector< GlobalIdentityDescriptor >::value_type *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___getitem__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorGlobalIdentityDescriptor___getitem__" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< GlobalIdentityDescriptor >::difference_type >(val2);
+  try {
+    result = (std::vector< GlobalIdentityDescriptor >::value_type *) &std_vector_Sl_GlobalIdentityDescriptor_Sg____getitem____SWIG_1((std::vector< GlobalIdentityDescriptor > const *)arg1,SWIG_STD_MOVE(arg2));
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< GlobalIdentityDescriptor >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___getitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor___getitem__", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorGlobalIdentityDescriptor___getitem____SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorGlobalIdentityDescriptor___getitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorGlobalIdentityDescriptor___getitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< GlobalIdentityDescriptor >::__getitem__(PySliceObject *)\n"
+    "    std::vector< GlobalIdentityDescriptor >::__getitem__(std::vector< GlobalIdentityDescriptor >::difference_type) const\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___setitem____SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::difference_type arg2 ;
+  std::vector< GlobalIdentityDescriptor >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  ptrdiff_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor___setitem__" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  ecode2 = SWIG_AsVal_ptrdiff_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorGlobalIdentityDescriptor___setitem__" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::difference_type""'");
+  } 
+  arg2 = static_cast< std::vector< GlobalIdentityDescriptor >::difference_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_GlobalIdentityDescriptor,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorGlobalIdentityDescriptor___setitem__" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorGlobalIdentityDescriptor___setitem__" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< GlobalIdentityDescriptor >::value_type * >(argp3);
+  try {
+    std_vector_Sl_GlobalIdentityDescriptor_Sg____setitem____SWIG_2(arg1,SWIG_STD_MOVE(arg2),(GlobalIdentityDescriptor const &)*arg3);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor___setitem__(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor___setitem__", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        return _wrap_VectorGlobalIdentityDescriptor___setitem____SWIG_1(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        _v = PySlice_Check(argv[1]);
+      }
+      if (_v) {
+        int res = swig::asptr(argv[2], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorGlobalIdentityDescriptor___setitem____SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_ptrdiff_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_GlobalIdentityDescriptor, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorGlobalIdentityDescriptor___setitem____SWIG_2(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorGlobalIdentityDescriptor___setitem__'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< GlobalIdentityDescriptor >::__setitem__(PySliceObject *,std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > const &)\n"
+    "    std::vector< GlobalIdentityDescriptor >::__setitem__(PySliceObject *)\n"
+    "    std::vector< GlobalIdentityDescriptor >::__setitem__(std::vector< GlobalIdentityDescriptor >::difference_type,std::vector< GlobalIdentityDescriptor >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_pop(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< GlobalIdentityDescriptor >::value_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_pop" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  try {
+    result = std_vector_Sl_GlobalIdentityDescriptor_Sg__pop(arg1);
+  } catch(std::out_of_range &_e) {
+    SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
+  }
+  resultobj = SWIG_NewPointerObj((new std::vector< GlobalIdentityDescriptor >::value_type(result)), SWIGTYPE_p_GlobalIdentityDescriptor, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_append(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor_append", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_append" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_GlobalIdentityDescriptor,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorGlobalIdentityDescriptor_append" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorGlobalIdentityDescriptor_append" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< GlobalIdentityDescriptor >::value_type * >(argp2);
+  std_vector_Sl_GlobalIdentityDescriptor_Sg__append(arg1,(GlobalIdentityDescriptor const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorGlobalIdentityDescriptor__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **SWIGUNUSEDPARM(swig_obj)) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 0) || (nobjs > 0)) SWIG_fail;
+  result = (std::vector< GlobalIdentityDescriptor > *)new std::vector< GlobalIdentityDescriptor >();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorGlobalIdentityDescriptor__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = 0 ;
+  int res1 = SWIG_OLDOBJ ;
+  std::vector< GlobalIdentityDescriptor > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  {
+    std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *ptr = (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *)0;
+    res1 = swig::asptr(swig_obj[0], &ptr);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_VectorGlobalIdentityDescriptor" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorGlobalIdentityDescriptor" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > const &""'"); 
+    }
+    arg1 = ptr;
+  }
+  result = (std::vector< GlobalIdentityDescriptor > *)new std::vector< GlobalIdentityDescriptor >((std::vector< GlobalIdentityDescriptor > const &)*arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, SWIG_POINTER_NEW |  0 );
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res1)) delete arg1;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_empty(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_empty" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = (bool)((std::vector< GlobalIdentityDescriptor > const *)arg1)->empty();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_size(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< GlobalIdentityDescriptor >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_size" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = ((std::vector< GlobalIdentityDescriptor > const *)arg1)->size();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_swap(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor > *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor_swap", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_swap" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorGlobalIdentityDescriptor_swap" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor > &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorGlobalIdentityDescriptor_swap" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor > &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp2);
+  (arg1)->swap(*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_begin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< GlobalIdentityDescriptor >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_begin" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = (arg1)->begin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< GlobalIdentityDescriptor >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_end(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< GlobalIdentityDescriptor >::iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_end" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = (arg1)->end();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< GlobalIdentityDescriptor >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_rbegin(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< GlobalIdentityDescriptor >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_rbegin" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = (arg1)->rbegin();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< GlobalIdentityDescriptor >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_rend(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< GlobalIdentityDescriptor >::reverse_iterator result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_rend" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = (arg1)->rend();
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< GlobalIdentityDescriptor >::reverse_iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_clear(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_clear" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  (arg1)->clear();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_get_allocator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  SwigValueWrapper< std::allocator< GlobalIdentityDescriptor > > result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_get_allocator" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = ((std::vector< GlobalIdentityDescriptor > const *)arg1)->get_allocator();
+  resultobj = SWIG_NewPointerObj((new std::vector< GlobalIdentityDescriptor >::allocator_type(result)), SWIGTYPE_p_std__allocatorT_GlobalIdentityDescriptor_t, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorGlobalIdentityDescriptor__SWIG_2(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor >::size_type arg1 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  std::vector< GlobalIdentityDescriptor > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 1) || (nobjs > 1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorGlobalIdentityDescriptor" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< GlobalIdentityDescriptor >::size_type >(val1);
+  result = (std::vector< GlobalIdentityDescriptor > *)new std::vector< GlobalIdentityDescriptor >(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_pop_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_pop_back" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  (arg1)->pop_back();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_resize__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_resize" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorGlobalIdentityDescriptor_resize" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< GlobalIdentityDescriptor >::size_type >(val2);
+  (arg1)->resize(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_erase__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::iterator arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  std::vector< GlobalIdentityDescriptor >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_erase" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor_erase" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor_erase" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_GlobalIdentityDescriptor_Sg__erase__SWIG_0(arg1,SWIG_STD_MOVE(arg2));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< GlobalIdentityDescriptor >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_erase__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::iterator arg2 ;
+  std::vector< GlobalIdentityDescriptor >::iterator arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  swig::SwigPyIterator *iter3 = 0 ;
+  int res3 ;
+  std::vector< GlobalIdentityDescriptor >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_erase" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor_erase" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor_erase" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], SWIG_as_voidptrptr(&iter3), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res3) || !iter3) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor_erase" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *>(iter3);
+    if (iter_t) {
+      arg3 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor_erase" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::iterator""'");
+    }
+  }
+  result = std_vector_Sl_GlobalIdentityDescriptor_Sg__erase__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3));
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< GlobalIdentityDescriptor >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_erase(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor_erase", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *>(iter) != 0));
+      if (_v) {
+        return _wrap_VectorGlobalIdentityDescriptor_erase__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *>(iter) != 0));
+      if (_v) {
+        swig::SwigPyIterator *iter = 0;
+        int res = SWIG_ConvertPtr(argv[2], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *>(iter) != 0));
+        if (_v) {
+          return _wrap_VectorGlobalIdentityDescriptor_erase__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorGlobalIdentityDescriptor_erase'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< GlobalIdentityDescriptor >::erase(std::vector< GlobalIdentityDescriptor >::iterator)\n"
+    "    std::vector< GlobalIdentityDescriptor >::erase(std::vector< GlobalIdentityDescriptor >::iterator,std::vector< GlobalIdentityDescriptor >::iterator)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorGlobalIdentityDescriptor__SWIG_3(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor >::size_type arg1 ;
+  std::vector< GlobalIdentityDescriptor >::value_type *arg2 = 0 ;
+  size_t val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  std::vector< GlobalIdentityDescriptor > *result = 0 ;
+  
+  (void)self;
+  if ((nobjs < 2) || (nobjs > 2)) SWIG_fail;
+  ecode1 = SWIG_AsVal_size_t(swig_obj[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_VectorGlobalIdentityDescriptor" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor >::size_type""'");
+  } 
+  arg1 = static_cast< std::vector< GlobalIdentityDescriptor >::size_type >(val1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_GlobalIdentityDescriptor,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_VectorGlobalIdentityDescriptor" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_VectorGlobalIdentityDescriptor" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< GlobalIdentityDescriptor >::value_type * >(argp2);
+  result = (std::vector< GlobalIdentityDescriptor > *)new std::vector< GlobalIdentityDescriptor >(arg1,(std::vector< GlobalIdentityDescriptor >::value_type const &)*arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_VectorGlobalIdentityDescriptor(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "new_VectorGlobalIdentityDescriptor", 0, 2, argv))) SWIG_fail;
+  --argc;
+  if (argc == 0) {
+    return _wrap_new_VectorGlobalIdentityDescriptor__SWIG_0(self, argc, argv);
+  }
+  if (argc == 1) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      return _wrap_new_VectorGlobalIdentityDescriptor__SWIG_2(self, argc, argv);
+    }
+  }
+  if (argc == 1) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_VectorGlobalIdentityDescriptor__SWIG_1(self, argc, argv);
+    }
+  }
+  if (argc == 2) {
+    int _v = 0;
+    {
+      int res = SWIG_AsVal_size_t(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      int res = SWIG_ConvertPtr(argv[1], 0, SWIGTYPE_p_GlobalIdentityDescriptor, SWIG_POINTER_NO_NULL | 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_VectorGlobalIdentityDescriptor__SWIG_3(self, argc, argv);
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_VectorGlobalIdentityDescriptor'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< GlobalIdentityDescriptor >::vector()\n"
+    "    std::vector< GlobalIdentityDescriptor >::vector(std::vector< GlobalIdentityDescriptor > const &)\n"
+    "    std::vector< GlobalIdentityDescriptor >::vector(std::vector< GlobalIdentityDescriptor >::size_type)\n"
+    "    std::vector< GlobalIdentityDescriptor >::vector(std::vector< GlobalIdentityDescriptor >::size_type,std::vector< GlobalIdentityDescriptor >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_push_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::value_type *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor_push_back", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_push_back" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], &argp2, SWIGTYPE_p_GlobalIdentityDescriptor,  0  | 0);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "VectorGlobalIdentityDescriptor_push_back" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorGlobalIdentityDescriptor_push_back" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  arg2 = reinterpret_cast< std::vector< GlobalIdentityDescriptor >::value_type * >(argp2);
+  (arg1)->push_back((std::vector< GlobalIdentityDescriptor >::value_type const &)*arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_front(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< GlobalIdentityDescriptor >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_front" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = (std::vector< GlobalIdentityDescriptor >::value_type *) &((std::vector< GlobalIdentityDescriptor > const *)arg1)->front();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< GlobalIdentityDescriptor >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_back(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< GlobalIdentityDescriptor >::value_type *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_back" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = (std::vector< GlobalIdentityDescriptor >::value_type *) &((std::vector< GlobalIdentityDescriptor > const *)arg1)->back();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  (void)swig::container_owner<swig::traits<std::vector< GlobalIdentityDescriptor >::value_type>::category>::back_reference(resultobj, swig_obj[0]);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_assign(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::size_type arg2 ;
+  std::vector< GlobalIdentityDescriptor >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject *swig_obj[3] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor_assign", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_assign" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorGlobalIdentityDescriptor_assign" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< GlobalIdentityDescriptor >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_GlobalIdentityDescriptor,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorGlobalIdentityDescriptor_assign" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorGlobalIdentityDescriptor_assign" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< GlobalIdentityDescriptor >::value_type * >(argp3);
+  (arg1)->assign(arg2,(std::vector< GlobalIdentityDescriptor >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_resize__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::size_type arg2 ;
+  std::vector< GlobalIdentityDescriptor >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_resize" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorGlobalIdentityDescriptor_resize" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< GlobalIdentityDescriptor >::size_type >(val2);
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_GlobalIdentityDescriptor,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorGlobalIdentityDescriptor_resize" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorGlobalIdentityDescriptor_resize" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< GlobalIdentityDescriptor >::value_type * >(argp3);
+  (arg1)->resize(arg2,(std::vector< GlobalIdentityDescriptor >::value_type const &)*arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_resize(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[4] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor_resize", 0, 3, argv))) SWIG_fail;
+  --argc;
+  if (argc == 2) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_VectorGlobalIdentityDescriptor_resize__SWIG_0(self, argc, argv);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_size_t(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_GlobalIdentityDescriptor, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorGlobalIdentityDescriptor_resize__SWIG_1(self, argc, argv);
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorGlobalIdentityDescriptor_resize'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< GlobalIdentityDescriptor >::resize(std::vector< GlobalIdentityDescriptor >::size_type)\n"
+    "    std::vector< GlobalIdentityDescriptor >::resize(std::vector< GlobalIdentityDescriptor >::size_type,std::vector< GlobalIdentityDescriptor >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_insert__SWIG_0(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::iterator arg2 ;
+  std::vector< GlobalIdentityDescriptor >::value_type *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  std::vector< GlobalIdentityDescriptor >::iterator result;
+  
+  (void)self;
+  if ((nobjs < 3) || (nobjs > 3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_insert" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor_insert" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor_insert" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::iterator""'");
+    }
+  }
+  res3 = SWIG_ConvertPtr(swig_obj[2], &argp3, SWIGTYPE_p_GlobalIdentityDescriptor,  0  | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "VectorGlobalIdentityDescriptor_insert" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  if (!argp3) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorGlobalIdentityDescriptor_insert" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  arg3 = reinterpret_cast< std::vector< GlobalIdentityDescriptor >::value_type * >(argp3);
+  result = std_vector_Sl_GlobalIdentityDescriptor_Sg__insert__SWIG_0(arg1,SWIG_STD_MOVE(arg2),(GlobalIdentityDescriptor const &)*arg3);
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const std::vector< GlobalIdentityDescriptor >::iterator & >(result)),
+    swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_insert__SWIG_1(PyObject *self, Py_ssize_t nobjs, PyObject **swig_obj) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::iterator arg2 ;
+  std::vector< GlobalIdentityDescriptor >::size_type arg3 ;
+  std::vector< GlobalIdentityDescriptor >::value_type *arg4 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  swig::SwigPyIterator *iter2 = 0 ;
+  int res2 ;
+  size_t val3 ;
+  int ecode3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  
+  (void)self;
+  if ((nobjs < 4) || (nobjs > 4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_insert" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  res2 = SWIG_ConvertPtr(swig_obj[1], SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
+  if (!SWIG_IsOK(res2) || !iter2) {
+    SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor_insert" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::iterator""'");
+  } else {
+    swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *>(iter2);
+    if (iter_t) {
+      arg2 = iter_t->get_current();
+    } else {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "VectorGlobalIdentityDescriptor_insert" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::iterator""'");
+    }
+  }
+  ecode3 = SWIG_AsVal_size_t(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "VectorGlobalIdentityDescriptor_insert" "', argument " "3"" of type '" "std::vector< GlobalIdentityDescriptor >::size_type""'");
+  } 
+  arg3 = static_cast< std::vector< GlobalIdentityDescriptor >::size_type >(val3);
+  res4 = SWIG_ConvertPtr(swig_obj[3], &argp4, SWIGTYPE_p_GlobalIdentityDescriptor,  0  | 0);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "VectorGlobalIdentityDescriptor_insert" "', argument " "4"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  if (!argp4) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "VectorGlobalIdentityDescriptor_insert" "', argument " "4"" of type '" "std::vector< GlobalIdentityDescriptor >::value_type const &""'"); 
+  }
+  arg4 = reinterpret_cast< std::vector< GlobalIdentityDescriptor >::value_type * >(argp4);
+  std_vector_Sl_GlobalIdentityDescriptor_Sg__insert__SWIG_1(arg1,SWIG_STD_MOVE(arg2),SWIG_STD_MOVE(arg3),(GlobalIdentityDescriptor const &)*arg4);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_insert(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[5] = {
+    0
+  };
+  
+  if (!(argc = SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor_insert", 0, 4, argv))) SWIG_fail;
+  --argc;
+  if (argc == 3) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *>(iter) != 0));
+      if (_v) {
+        int res = SWIG_ConvertPtr(argv[2], 0, SWIGTYPE_p_GlobalIdentityDescriptor, SWIG_POINTER_NO_NULL | 0);
+        _v = SWIG_CheckState(res);
+        if (_v) {
+          return _wrap_VectorGlobalIdentityDescriptor_insert__SWIG_0(self, argc, argv);
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v = 0;
+    int res = swig::asptr(argv[0], (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > >**)(0));
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      swig::SwigPyIterator *iter = 0;
+      int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<std::vector< GlobalIdentityDescriptor >::iterator > *>(iter) != 0));
+      if (_v) {
+        {
+          int res = SWIG_AsVal_size_t(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          int res = SWIG_ConvertPtr(argv[3], 0, SWIGTYPE_p_GlobalIdentityDescriptor, SWIG_POINTER_NO_NULL | 0);
+          _v = SWIG_CheckState(res);
+          if (_v) {
+            return _wrap_VectorGlobalIdentityDescriptor_insert__SWIG_1(self, argc, argv);
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'VectorGlobalIdentityDescriptor_insert'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    std::vector< GlobalIdentityDescriptor >::insert(std::vector< GlobalIdentityDescriptor >::iterator,std::vector< GlobalIdentityDescriptor >::value_type const &)\n"
+    "    std::vector< GlobalIdentityDescriptor >::insert(std::vector< GlobalIdentityDescriptor >::iterator,std::vector< GlobalIdentityDescriptor >::size_type,std::vector< GlobalIdentityDescriptor >::value_type const &)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_reserve(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  std::vector< GlobalIdentityDescriptor >::size_type arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "VectorGlobalIdentityDescriptor_reserve", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_reserve" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "VectorGlobalIdentityDescriptor_reserve" "', argument " "2"" of type '" "std::vector< GlobalIdentityDescriptor >::size_type""'");
+  } 
+  arg2 = static_cast< std::vector< GlobalIdentityDescriptor >::size_type >(val2);
+  (arg1)->reserve(arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_VectorGlobalIdentityDescriptor_capacity(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< GlobalIdentityDescriptor >::size_type result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "VectorGlobalIdentityDescriptor_capacity" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > const *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  result = ((std::vector< GlobalIdentityDescriptor > const *)arg1)->capacity();
+  resultobj = SWIG_From_size_t(static_cast< size_t >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_VectorGlobalIdentityDescriptor(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< GlobalIdentityDescriptor > *arg1 = (std::vector< GlobalIdentityDescriptor > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_VectorGlobalIdentityDescriptor" "', argument " "1"" of type '" "std::vector< GlobalIdentityDescriptor > *""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< GlobalIdentityDescriptor > * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *VectorGlobalIdentityDescriptor_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *VectorGlobalIdentityDescriptor_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   return SWIG_Python_InitShadowInstance(args);
 }
 
@@ -27026,6 +29014,743 @@ SWIGINTERN PyObject *StructureDescriptor_swiginit(PyObject *SWIGUNUSEDPARM(self)
   return SWIG_Python_InitShadowInstance(args);
 }
 
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_target_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "GlobalIdentityDescriptor_target_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_target_name_set" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GlobalIdentityDescriptor_target_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "GlobalIdentityDescriptor_target_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->target_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_target_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_target_name_get" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  result = (std::string *) & ((arg1)->target_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_model_name_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "GlobalIdentityDescriptor_model_name_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_model_name_set" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GlobalIdentityDescriptor_model_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "GlobalIdentityDescriptor_model_name_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->model_name = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_model_name_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_model_name_get" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  result = (std::string *) & ((arg1)->model_name);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_renaming_of_model_chains_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "GlobalIdentityDescriptor_renaming_of_model_chains_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_renaming_of_model_chains_set" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GlobalIdentityDescriptor_renaming_of_model_chains_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "GlobalIdentityDescriptor_renaming_of_model_chains_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->renaming_of_model_chains = *arg2;
+  resultobj = SWIG_Py_Void();
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_renaming_of_model_chains_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::string *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_renaming_of_model_chains_get" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  result = (std::string *) & ((arg1)->renaming_of_model_chains);
+  resultobj = SWIG_From_std_string(static_cast< std::string >(*result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_target_atoms_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "GlobalIdentityDescriptor_target_atoms_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_target_atoms_set" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GlobalIdentityDescriptor_target_atoms_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->target_atoms = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_target_atoms_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_target_atoms_get" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  result = (int) ((arg1)->target_atoms);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_target_residues_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "GlobalIdentityDescriptor_target_residues_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_target_residues_set" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GlobalIdentityDescriptor_target_residues_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->target_residues = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_target_residues_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_target_residues_get" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  result = (int) ((arg1)->target_residues);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_target_chains_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "GlobalIdentityDescriptor_target_chains_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_target_chains_set" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GlobalIdentityDescriptor_target_chains_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->target_chains = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_target_chains_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_target_chains_get" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  result = (int) ((arg1)->target_chains);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_model_atoms_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "GlobalIdentityDescriptor_model_atoms_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_model_atoms_set" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GlobalIdentityDescriptor_model_atoms_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->model_atoms = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_model_atoms_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_model_atoms_get" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  result = (int) ((arg1)->model_atoms);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_model_residues_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "GlobalIdentityDescriptor_model_residues_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_model_residues_set" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GlobalIdentityDescriptor_model_residues_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->model_residues = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_model_residues_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_model_residues_get" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  result = (int) ((arg1)->model_residues);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_model_chains_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "GlobalIdentityDescriptor_model_chains_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_model_chains_set" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  ecode2 = SWIG_AsVal_int(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GlobalIdentityDescriptor_model_chains_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->model_chains = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_model_chains_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  int result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_model_chains_get" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  result = (int) ((arg1)->model_chains);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_identity_of_atoms_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "GlobalIdentityDescriptor_identity_of_atoms_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_identity_of_atoms_set" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GlobalIdentityDescriptor_identity_of_atoms_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->identity_of_atoms = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_identity_of_atoms_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_identity_of_atoms_get" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  result = (double) ((arg1)->identity_of_atoms);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_identity_of_residues_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "GlobalIdentityDescriptor_identity_of_residues_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_identity_of_residues_set" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GlobalIdentityDescriptor_identity_of_residues_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->identity_of_residues = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_identity_of_residues_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_identity_of_residues_get" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  result = (double) ((arg1)->identity_of_residues);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_identity_of_chains_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "GlobalIdentityDescriptor_identity_of_chains_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_identity_of_chains_set" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  ecode2 = SWIG_AsVal_double(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GlobalIdentityDescriptor_identity_of_chains_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->identity_of_chains = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GlobalIdentityDescriptor_identity_of_chains_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  double result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GlobalIdentityDescriptor_identity_of_chains_get" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  result = (double) ((arg1)->identity_of_chains);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_GlobalIdentityDescriptor(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "new_GlobalIdentityDescriptor", 0, 0, 0)) SWIG_fail;
+  {
+    try
+    {
+      result = (GlobalIdentityDescriptor *)new GlobalIdentityDescriptor();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GlobalIdentityDescriptor, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_GlobalIdentityDescriptor(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GlobalIdentityDescriptor *arg1 = (GlobalIdentityDescriptor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_GlobalIdentityDescriptor, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_GlobalIdentityDescriptor" "', argument " "1"" of type '" "GlobalIdentityDescriptor *""'"); 
+  }
+  arg1 = reinterpret_cast< GlobalIdentityDescriptor * >(argp1);
+  {
+    try
+    {
+      delete arg1;
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *GlobalIdentityDescriptor_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!SWIG_Python_UnpackTuple(args, "swigregister", 1, 1, &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_GlobalIdentityDescriptor, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *GlobalIdentityDescriptor_swiginit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  return SWIG_Python_InitShadowInstance(args);
+}
+
 SWIGINTERN PyObject *_wrap_GlobalScore_target_name_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   GlobalScore *arg1 = (GlobalScore *) 0 ;
@@ -32890,6 +35615,60 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_calculate_identities_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
+  bool arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool val2 ;
+  int ecode2 = 0 ;
+  PyObject *swig_obj[2] ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputerParameters_calculate_identities_set", 2, 2, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_calculate_identities_set" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
+  ecode2 = SWIG_AsVal_bool(swig_obj[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CADScoreComputerParameters_calculate_identities_set" "', argument " "2"" of type '" "bool""'");
+  } 
+  arg2 = static_cast< bool >(val2);
+  if (arg1) (arg1)->calculate_identities = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_calculate_identities_get(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  bool result;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputerParameters, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputerParameters_calculate_identities_get" "', argument " "1"" of type '" "CADScoreComputerParameters *""'"); 
+  }
+  arg1 = reinterpret_cast< CADScoreComputerParameters * >(argp1);
+  result = (bool) ((arg1)->calculate_identities);
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CADScoreComputerParameters_record_local_scores_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CADScoreComputerParameters *arg1 = (CADScoreComputerParameters *) 0 ;
@@ -34269,6 +37048,40 @@ SWIGINTERN PyObject *_wrap_CADScoreComputer_get_all_cadscores_chain_site_summari
     }
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_GlobalScore_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_all_identity_descriptors(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *result = 0 ;
+  
+  (void)self;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_all_identity_descriptors" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
+  }
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
+  {
+    try
+    {
+      result = (std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *)(arg1)->get_all_identity_descriptors();
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_GlobalIdentityDescriptor_t, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -36354,6 +39167,69 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CADScoreComputer_get_identity_descriptor(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string *arg3 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  int res3 = SWIG_OLDOBJ ;
+  PyObject *swig_obj[3] ;
+  GlobalIdentityDescriptor *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_UnpackTuple(args, "CADScoreComputer_get_identity_descriptor", 3, 3, swig_obj)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(swig_obj[0], &argp1,SWIGTYPE_p_CADScoreComputer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CADScoreComputer_get_identity_descriptor" "', argument " "1"" of type '" "CADScoreComputer *""'"); 
+  }
+  arg1 = reinterpret_cast< CADScoreComputer * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(swig_obj[1], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CADScoreComputer_get_identity_descriptor" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_identity_descriptor" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  {
+    std::string *ptr = (std::string *)0;
+    res3 = SWIG_AsPtr_std_string(swig_obj[2], &ptr);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CADScoreComputer_get_identity_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "CADScoreComputer_get_identity_descriptor" "', argument " "3"" of type '" "std::string const &""'"); 
+    }
+    arg3 = ptr;
+  }
+  {
+    try
+    {
+      result = (GlobalIdentityDescriptor *)(arg1)->get_identity_descriptor((std::string const &)*arg2,(std::string const &)*arg3);
+    }
+    catch (const std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, e.what());
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GlobalIdentityDescriptor, 0 |  0 );
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return resultobj;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  if (SWIG_IsNewObj(res3)) delete arg3;
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_delete_CADScoreComputer(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CADScoreComputer *arg1 = (CADScoreComputer *) 0 ;
@@ -36844,6 +39720,41 @@ static PyMethodDef SwigMethods[] = {
 	 { "delete_VectorGlobalScore", _wrap_delete_VectorGlobalScore, METH_O, NULL},
 	 { "VectorGlobalScore_swigregister", VectorGlobalScore_swigregister, METH_O, NULL},
 	 { "VectorGlobalScore_swiginit", VectorGlobalScore_swiginit, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor_iterator", _wrap_VectorGlobalIdentityDescriptor_iterator, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor___nonzero__", _wrap_VectorGlobalIdentityDescriptor___nonzero__, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor___bool__", _wrap_VectorGlobalIdentityDescriptor___bool__, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor___len__", _wrap_VectorGlobalIdentityDescriptor___len__, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor___getslice__", _wrap_VectorGlobalIdentityDescriptor___getslice__, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor___setslice__", _wrap_VectorGlobalIdentityDescriptor___setslice__, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor___delslice__", _wrap_VectorGlobalIdentityDescriptor___delslice__, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor___delitem__", _wrap_VectorGlobalIdentityDescriptor___delitem__, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor___getitem__", _wrap_VectorGlobalIdentityDescriptor___getitem__, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor___setitem__", _wrap_VectorGlobalIdentityDescriptor___setitem__, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor_pop", _wrap_VectorGlobalIdentityDescriptor_pop, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_append", _wrap_VectorGlobalIdentityDescriptor_append, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor_empty", _wrap_VectorGlobalIdentityDescriptor_empty, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_size", _wrap_VectorGlobalIdentityDescriptor_size, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_swap", _wrap_VectorGlobalIdentityDescriptor_swap, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor_begin", _wrap_VectorGlobalIdentityDescriptor_begin, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_end", _wrap_VectorGlobalIdentityDescriptor_end, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_rbegin", _wrap_VectorGlobalIdentityDescriptor_rbegin, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_rend", _wrap_VectorGlobalIdentityDescriptor_rend, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_clear", _wrap_VectorGlobalIdentityDescriptor_clear, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_get_allocator", _wrap_VectorGlobalIdentityDescriptor_get_allocator, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_pop_back", _wrap_VectorGlobalIdentityDescriptor_pop_back, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_erase", _wrap_VectorGlobalIdentityDescriptor_erase, METH_VARARGS, NULL},
+	 { "new_VectorGlobalIdentityDescriptor", _wrap_new_VectorGlobalIdentityDescriptor, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor_push_back", _wrap_VectorGlobalIdentityDescriptor_push_back, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor_front", _wrap_VectorGlobalIdentityDescriptor_front, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_back", _wrap_VectorGlobalIdentityDescriptor_back, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_assign", _wrap_VectorGlobalIdentityDescriptor_assign, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor_resize", _wrap_VectorGlobalIdentityDescriptor_resize, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor_insert", _wrap_VectorGlobalIdentityDescriptor_insert, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor_reserve", _wrap_VectorGlobalIdentityDescriptor_reserve, METH_VARARGS, NULL},
+	 { "VectorGlobalIdentityDescriptor_capacity", _wrap_VectorGlobalIdentityDescriptor_capacity, METH_O, NULL},
+	 { "delete_VectorGlobalIdentityDescriptor", _wrap_delete_VectorGlobalIdentityDescriptor, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_swigregister", VectorGlobalIdentityDescriptor_swigregister, METH_O, NULL},
+	 { "VectorGlobalIdentityDescriptor_swiginit", VectorGlobalIdentityDescriptor_swiginit, METH_VARARGS, NULL},
 	 { "VectorAtomScore_iterator", _wrap_VectorAtomScore_iterator, METH_O, NULL},
 	 { "VectorAtomScore___nonzero__", _wrap_VectorAtomScore___nonzero__, METH_O, NULL},
 	 { "VectorAtomScore___bool__", _wrap_VectorAtomScore___bool__, METH_O, NULL},
@@ -37092,6 +40003,34 @@ static PyMethodDef SwigMethods[] = {
 	 { "delete_StructureDescriptor", _wrap_delete_StructureDescriptor, METH_O, NULL},
 	 { "StructureDescriptor_swigregister", StructureDescriptor_swigregister, METH_O, NULL},
 	 { "StructureDescriptor_swiginit", StructureDescriptor_swiginit, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_target_name_set", _wrap_GlobalIdentityDescriptor_target_name_set, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_target_name_get", _wrap_GlobalIdentityDescriptor_target_name_get, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_model_name_set", _wrap_GlobalIdentityDescriptor_model_name_set, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_model_name_get", _wrap_GlobalIdentityDescriptor_model_name_get, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_renaming_of_model_chains_set", _wrap_GlobalIdentityDescriptor_renaming_of_model_chains_set, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_renaming_of_model_chains_get", _wrap_GlobalIdentityDescriptor_renaming_of_model_chains_get, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_target_atoms_set", _wrap_GlobalIdentityDescriptor_target_atoms_set, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_target_atoms_get", _wrap_GlobalIdentityDescriptor_target_atoms_get, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_target_residues_set", _wrap_GlobalIdentityDescriptor_target_residues_set, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_target_residues_get", _wrap_GlobalIdentityDescriptor_target_residues_get, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_target_chains_set", _wrap_GlobalIdentityDescriptor_target_chains_set, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_target_chains_get", _wrap_GlobalIdentityDescriptor_target_chains_get, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_model_atoms_set", _wrap_GlobalIdentityDescriptor_model_atoms_set, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_model_atoms_get", _wrap_GlobalIdentityDescriptor_model_atoms_get, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_model_residues_set", _wrap_GlobalIdentityDescriptor_model_residues_set, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_model_residues_get", _wrap_GlobalIdentityDescriptor_model_residues_get, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_model_chains_set", _wrap_GlobalIdentityDescriptor_model_chains_set, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_model_chains_get", _wrap_GlobalIdentityDescriptor_model_chains_get, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_identity_of_atoms_set", _wrap_GlobalIdentityDescriptor_identity_of_atoms_set, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_identity_of_atoms_get", _wrap_GlobalIdentityDescriptor_identity_of_atoms_get, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_identity_of_residues_set", _wrap_GlobalIdentityDescriptor_identity_of_residues_set, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_identity_of_residues_get", _wrap_GlobalIdentityDescriptor_identity_of_residues_get, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_identity_of_chains_set", _wrap_GlobalIdentityDescriptor_identity_of_chains_set, METH_VARARGS, NULL},
+	 { "GlobalIdentityDescriptor_identity_of_chains_get", _wrap_GlobalIdentityDescriptor_identity_of_chains_get, METH_O, NULL},
+	 { "new_GlobalIdentityDescriptor", _wrap_new_GlobalIdentityDescriptor, METH_NOARGS, NULL},
+	 { "delete_GlobalIdentityDescriptor", _wrap_delete_GlobalIdentityDescriptor, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_swigregister", GlobalIdentityDescriptor_swigregister, METH_O, NULL},
+	 { "GlobalIdentityDescriptor_swiginit", GlobalIdentityDescriptor_swiginit, METH_VARARGS, NULL},
 	 { "GlobalScore_target_name_set", _wrap_GlobalScore_target_name_set, METH_VARARGS, NULL},
 	 { "GlobalScore_target_name_get", _wrap_GlobalScore_target_name_get, METH_O, NULL},
 	 { "GlobalScore_model_name_set", _wrap_GlobalScore_model_name_set, METH_VARARGS, NULL},
@@ -37308,6 +40247,8 @@ static PyMethodDef SwigMethods[] = {
 	 { "CADScoreComputerParameters_score_residue_sites_get", _wrap_CADScoreComputerParameters_score_residue_sites_get, METH_O, NULL},
 	 { "CADScoreComputerParameters_score_chain_sites_set", _wrap_CADScoreComputerParameters_score_chain_sites_set, METH_VARARGS, NULL},
 	 { "CADScoreComputerParameters_score_chain_sites_get", _wrap_CADScoreComputerParameters_score_chain_sites_get, METH_O, NULL},
+	 { "CADScoreComputerParameters_calculate_identities_set", _wrap_CADScoreComputerParameters_calculate_identities_set, METH_VARARGS, NULL},
+	 { "CADScoreComputerParameters_calculate_identities_get", _wrap_CADScoreComputerParameters_calculate_identities_get, METH_O, NULL},
 	 { "CADScoreComputerParameters_record_local_scores_set", _wrap_CADScoreComputerParameters_record_local_scores_set, METH_VARARGS, NULL},
 	 { "CADScoreComputerParameters_record_local_scores_get", _wrap_CADScoreComputerParameters_record_local_scores_get, METH_O, NULL},
 	 { "CADScoreComputerParameters_include_self_to_self_scores_set", _wrap_CADScoreComputerParameters_include_self_to_self_scores_set, METH_VARARGS, NULL},
@@ -37346,6 +40287,7 @@ static PyMethodDef SwigMethods[] = {
 	 { "CADScoreComputer_get_all_cadscores_atom_site_summarized_globally", _wrap_CADScoreComputer_get_all_cadscores_atom_site_summarized_globally, METH_O, NULL},
 	 { "CADScoreComputer_get_all_cadscores_residue_site_summarized_globally", _wrap_CADScoreComputer_get_all_cadscores_residue_site_summarized_globally, METH_O, NULL},
 	 { "CADScoreComputer_get_all_cadscores_chain_site_summarized_globally", _wrap_CADScoreComputer_get_all_cadscores_chain_site_summarized_globally, METH_O, NULL},
+	 { "CADScoreComputer_get_all_identity_descriptors", _wrap_CADScoreComputer_get_all_identity_descriptors, METH_O, NULL},
 	 { "CADScoreComputer_get_local_cadscores_atom_atom", _wrap_CADScoreComputer_get_local_cadscores_atom_atom, METH_VARARGS, NULL},
 	 { "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue_residue", _wrap_CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_residue_residue, METH_VARARGS, NULL},
 	 { "CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain_chain", _wrap_CADScoreComputer_get_local_cadscores_atom_atom_summarized_per_chain_chain, METH_VARARGS, NULL},
@@ -37379,6 +40321,7 @@ static PyMethodDef SwigMethods[] = {
 	 { "CADScoreComputer_get_cadscores_atom_site_summarized_globally", _wrap_CADScoreComputer_get_cadscores_atom_site_summarized_globally, METH_VARARGS, NULL},
 	 { "CADScoreComputer_get_cadscores_residue_site_summarized_globally", _wrap_CADScoreComputer_get_cadscores_residue_site_summarized_globally, METH_VARARGS, NULL},
 	 { "CADScoreComputer_get_cadscores_chain_site_summarized_globally", _wrap_CADScoreComputer_get_cadscores_chain_site_summarized_globally, METH_VARARGS, NULL},
+	 { "CADScoreComputer_get_identity_descriptor", _wrap_CADScoreComputer_get_identity_descriptor, METH_VARARGS, NULL},
 	 { "delete_CADScoreComputer", _wrap_delete_CADScoreComputer, METH_O, NULL},
 	 { "CADScoreComputer_swigregister", CADScoreComputer_swigregister, METH_O, NULL},
 	 { "CADScoreComputer_swiginit", CADScoreComputer_swiginit, METH_VARARGS, NULL},
@@ -37403,6 +40346,7 @@ static swig_type_info _swigt__p_CADScoreComputer = {"_p_CADScoreComputer", "CADS
 static swig_type_info _swigt__p_CADScoreComputerParameters = {"_p_CADScoreComputerParameters", "CADScoreComputerParameters *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_ChainChainScore = {"_p_ChainChainScore", "std::vector< ChainChainScore >::value_type *|ChainChainScore *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_ChainScore = {"_p_ChainScore", "std::vector< ChainScore >::value_type *|ChainScore *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_GlobalIdentityDescriptor = {"_p_GlobalIdentityDescriptor", "std::vector< GlobalIdentityDescriptor >::value_type *|GlobalIdentityDescriptor *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GlobalScore = {"_p_GlobalScore", "std::vector< GlobalScore >::value_type *|GlobalScore *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_MolecularAtomBall = {"_p_MolecularAtomBall", "std::vector< MolecularAtomBall >::value_type *|MolecularAtomBall *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_MolecularFileInput = {"_p_MolecularFileInput", "MolecularFileInput *", 0, 0, (void*)0, 0};
@@ -37418,6 +40362,7 @@ static swig_type_info _swigt__p_std__allocatorT_AtomAtomScore_t = {"_p_std__allo
 static swig_type_info _swigt__p_std__allocatorT_AtomScore_t = {"_p_std__allocatorT_AtomScore_t", "std::vector< AtomScore >::allocator_type *|std::allocator< AtomScore > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__allocatorT_ChainChainScore_t = {"_p_std__allocatorT_ChainChainScore_t", "std::vector< ChainChainScore >::allocator_type *|std::allocator< ChainChainScore > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__allocatorT_ChainScore_t = {"_p_std__allocatorT_ChainScore_t", "std::vector< ChainScore >::allocator_type *|std::allocator< ChainScore > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__allocatorT_GlobalIdentityDescriptor_t = {"_p_std__allocatorT_GlobalIdentityDescriptor_t", "std::vector< GlobalIdentityDescriptor >::allocator_type *|std::allocator< GlobalIdentityDescriptor > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__allocatorT_GlobalScore_t = {"_p_std__allocatorT_GlobalScore_t", "std::vector< GlobalScore >::allocator_type *|std::allocator< GlobalScore > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__allocatorT_MolecularAtomBall_t = {"_p_std__allocatorT_MolecularAtomBall_t", "std::vector< MolecularAtomBall >::allocator_type *|std::allocator< MolecularAtomBall > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__allocatorT_ResidueResidueScore_t = {"_p_std__allocatorT_ResidueResidueScore_t", "std::vector< ResidueResidueScore >::allocator_type *|std::allocator< ResidueResidueScore > *", 0, 0, (void*)0, 0};
@@ -37429,6 +40374,7 @@ static swig_type_info _swigt__p_std__vectorT_AtomAtomScore_t = {"_p_std__vectorT
 static swig_type_info _swigt__p_std__vectorT_AtomScore_t = {"_p_std__vectorT_AtomScore_t", "std::vector< AtomScore,std::allocator< AtomScore > > *|std::vector< AtomScore > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_ChainChainScore_t = {"_p_std__vectorT_ChainChainScore_t", "std::vector< ChainChainScore,std::allocator< ChainChainScore > > *|std::vector< ChainChainScore > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_ChainScore_t = {"_p_std__vectorT_ChainScore_t", "std::vector< ChainScore,std::allocator< ChainScore > > *|std::vector< ChainScore > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_GlobalIdentityDescriptor_t = {"_p_std__vectorT_GlobalIdentityDescriptor_t", "std::vector< GlobalIdentityDescriptor,std::allocator< GlobalIdentityDescriptor > > *|std::vector< GlobalIdentityDescriptor > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_GlobalScore_t = {"_p_std__vectorT_GlobalScore_t", "std::vector< GlobalScore,std::allocator< GlobalScore > > *|std::vector< GlobalScore > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_MolecularAtomBall_t = {"_p_std__vectorT_MolecularAtomBall_t", "std::vector< MolecularAtomBall,std::allocator< MolecularAtomBall > > *|std::vector< MolecularAtomBall > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__vectorT_ResidueResidueScore_t = {"_p_std__vectorT_ResidueResidueScore_t", "std::vector< ResidueResidueScore,std::allocator< ResidueResidueScore > > *|std::vector< ResidueResidueScore > *", 0, 0, (void*)0, 0};
@@ -37445,6 +40391,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_CADScoreComputerParameters,
   &_swigt__p_ChainChainScore,
   &_swigt__p_ChainScore,
+  &_swigt__p_GlobalIdentityDescriptor,
   &_swigt__p_GlobalScore,
   &_swigt__p_MolecularAtomBall,
   &_swigt__p_MolecularFileInput,
@@ -37460,6 +40407,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_std__allocatorT_AtomScore_t,
   &_swigt__p_std__allocatorT_ChainChainScore_t,
   &_swigt__p_std__allocatorT_ChainScore_t,
+  &_swigt__p_std__allocatorT_GlobalIdentityDescriptor_t,
   &_swigt__p_std__allocatorT_GlobalScore_t,
   &_swigt__p_std__allocatorT_MolecularAtomBall_t,
   &_swigt__p_std__allocatorT_ResidueResidueScore_t,
@@ -37471,6 +40419,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_std__vectorT_AtomScore_t,
   &_swigt__p_std__vectorT_ChainChainScore_t,
   &_swigt__p_std__vectorT_ChainScore_t,
+  &_swigt__p_std__vectorT_GlobalIdentityDescriptor_t,
   &_swigt__p_std__vectorT_GlobalScore_t,
   &_swigt__p_std__vectorT_MolecularAtomBall_t,
   &_swigt__p_std__vectorT_ResidueResidueScore_t,
@@ -37487,6 +40436,7 @@ static swig_cast_info _swigc__p_CADScoreComputer[] = {  {&_swigt__p_CADScoreComp
 static swig_cast_info _swigc__p_CADScoreComputerParameters[] = {  {&_swigt__p_CADScoreComputerParameters, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ChainChainScore[] = {  {&_swigt__p_ChainChainScore, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ChainScore[] = {  {&_swigt__p_ChainScore, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_GlobalIdentityDescriptor[] = {  {&_swigt__p_GlobalIdentityDescriptor, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GlobalScore[] = {  {&_swigt__p_GlobalScore, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MolecularAtomBall[] = {  {&_swigt__p_MolecularAtomBall, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MolecularFileInput[] = {  {&_swigt__p_MolecularFileInput, 0, 0, 0},{0, 0, 0, 0}};
@@ -37502,6 +40452,7 @@ static swig_cast_info _swigc__p_std__allocatorT_AtomAtomScore_t[] = {  {&_swigt_
 static swig_cast_info _swigc__p_std__allocatorT_AtomScore_t[] = {  {&_swigt__p_std__allocatorT_AtomScore_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__allocatorT_ChainChainScore_t[] = {  {&_swigt__p_std__allocatorT_ChainChainScore_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__allocatorT_ChainScore_t[] = {  {&_swigt__p_std__allocatorT_ChainScore_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__allocatorT_GlobalIdentityDescriptor_t[] = {  {&_swigt__p_std__allocatorT_GlobalIdentityDescriptor_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__allocatorT_GlobalScore_t[] = {  {&_swigt__p_std__allocatorT_GlobalScore_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__allocatorT_MolecularAtomBall_t[] = {  {&_swigt__p_std__allocatorT_MolecularAtomBall_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__allocatorT_ResidueResidueScore_t[] = {  {&_swigt__p_std__allocatorT_ResidueResidueScore_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -37513,6 +40464,7 @@ static swig_cast_info _swigc__p_std__vectorT_AtomAtomScore_t[] = {  {&_swigt__p_
 static swig_cast_info _swigc__p_std__vectorT_AtomScore_t[] = {  {&_swigt__p_std__vectorT_AtomScore_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_ChainChainScore_t[] = {  {&_swigt__p_std__vectorT_ChainChainScore_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_ChainScore_t[] = {  {&_swigt__p_std__vectorT_ChainScore_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_GlobalIdentityDescriptor_t[] = {  {&_swigt__p_std__vectorT_GlobalIdentityDescriptor_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_GlobalScore_t[] = {  {&_swigt__p_std__vectorT_GlobalScore_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_MolecularAtomBall_t[] = {  {&_swigt__p_std__vectorT_MolecularAtomBall_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__vectorT_ResidueResidueScore_t[] = {  {&_swigt__p_std__vectorT_ResidueResidueScore_t, 0, 0, 0},{0, 0, 0, 0}};
@@ -37529,6 +40481,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_CADScoreComputerParameters,
   _swigc__p_ChainChainScore,
   _swigc__p_ChainScore,
+  _swigc__p_GlobalIdentityDescriptor,
   _swigc__p_GlobalScore,
   _swigc__p_MolecularAtomBall,
   _swigc__p_MolecularFileInput,
@@ -37544,6 +40497,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_std__allocatorT_AtomScore_t,
   _swigc__p_std__allocatorT_ChainChainScore_t,
   _swigc__p_std__allocatorT_ChainScore_t,
+  _swigc__p_std__allocatorT_GlobalIdentityDescriptor_t,
   _swigc__p_std__allocatorT_GlobalScore_t,
   _swigc__p_std__allocatorT_MolecularAtomBall_t,
   _swigc__p_std__allocatorT_ResidueResidueScore_t,
@@ -37555,6 +40509,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_std__vectorT_AtomScore_t,
   _swigc__p_std__vectorT_ChainChainScore_t,
   _swigc__p_std__vectorT_ChainScore_t,
+  _swigc__p_std__vectorT_GlobalIdentityDescriptor_t,
   _swigc__p_std__vectorT_GlobalScore_t,
   _swigc__p_std__vectorT_MolecularAtomBall_t,
   _swigc__p_std__vectorT_ResidueResidueScore_t,

@@ -46,6 +46,37 @@ def _structure_descriptors_vector_to_df(vec):
         "reference_alignment":      [c.reference_alignment_info or "."   for c in vec],
     })
 
+def _global_identity_descriptors_vector_to_df(vec):
+    if len(vec) == 0:
+        return _pd.DataFrame(columns=[
+            "target_name",
+            "model_name",
+            "identity_of_atoms",
+            "identity_of_residues",
+            "identity_of_chains",
+            "target_atoms",
+            "target_residues",
+            "target_chains",
+            "model_atoms",
+            "model_residues",
+            "model_chains",
+            "renamed_chains",
+        ])
+    return _pd.DataFrame({
+        "target_name":              [c.target_name or "."                for c in vec],
+        "model_name":               [c.model_name or "."                 for c in vec],
+        "ident_atoms":              [c.identity_of_atoms                 for c in vec],
+        "ident_residues":           [c.identity_of_residues              for c in vec],
+        "ident_chains":             [c.identity_of_chains                for c in vec],
+        "t_atoms":                  [c.target_atoms                      for c in vec],
+        "m_atoms":                  [c.model_atoms                       for c in vec],
+        "t_residues":               [c.target_residues                   for c in vec],
+        "m_residues":               [c.model_residues                    for c in vec],
+        "t_chains":                 [c.target_chains                     for c in vec],
+        "m_chains":                 [c.model_chains                      for c in vec],
+        "renamed_chains":           [c.renaming_of_model_chains or "."   for c in vec],
+    })
+
 def _global_scores_vector_to_df(vec):
     if len(vec) == 0:
         return _pd.DataFrame(columns=[
@@ -253,6 +284,9 @@ def _attach_methods():
 
     if hasattr(_cadscorelt_backend, "VectorStructureDescriptor"):
         _cadscorelt_backend.VectorStructureDescriptor.to_pandas = _structure_descriptors_vector_to_df
+
+    if hasattr(_cadscorelt_backend, "VectorGlobalIdentityDescriptor"):
+        _cadscorelt_backend.VectorGlobalIdentityDescriptor.to_pandas = _global_identity_descriptors_vector_to_df
 
     if hasattr(_cadscorelt_backend, "VectorGlobalScore"):
         _cadscorelt_backend.VectorGlobalScore.to_pandas = _global_scores_vector_to_df

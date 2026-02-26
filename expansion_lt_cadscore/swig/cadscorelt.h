@@ -65,6 +65,26 @@ struct StructureDescriptor
 	}
 };
 
+struct GlobalIdentityDescriptor
+{
+	std::string target_name;
+	std::string model_name;
+	std::string renaming_of_model_chains;
+	int target_atoms;
+	int target_residues;
+	int target_chains;
+	int model_atoms;
+	int model_residues;
+	int model_chains;
+	double identity_of_atoms;
+	double identity_of_residues;
+	double identity_of_chains;
+
+	GlobalIdentityDescriptor() : target_atoms(0), target_residues(0), target_chains(0), model_atoms(0), model_residues(0), model_chains(0), identity_of_atoms(0.0), identity_of_residues(0.0), identity_of_chains(0.0)
+	{
+	}
+};
+
 struct GlobalScore
 {
 	std::string target_name;
@@ -240,6 +260,7 @@ struct CADScoreComputerParameters
 	bool score_atom_sites;
 	bool score_residue_sites;
 	bool score_chain_sites;
+	bool calculate_identities;
 	bool record_local_scores;
 	bool include_self_to_self_scores;
 	std::string restrict_input_atoms;
@@ -259,6 +280,7 @@ struct CADScoreComputerParameters
 		score_atom_sites(false),
 		score_residue_sites(false),
 		score_chain_sites(false),
+		calculate_identities(false),
 		record_local_scores(false),
 		include_self_to_self_scores(false),
 		subselect_contacts("[-min-sep 1]")
@@ -313,6 +335,9 @@ public:
 		scorable_data_construction_parameters_.record_atom_site_summaries=init_params.score_atom_sites;
 		scorable_data_construction_parameters_.record_residue_site_summaries=init_params.score_residue_sites;
 		scorable_data_construction_parameters_.record_chain_site_summaries=init_params.score_chain_sites;
+		scorable_data_construction_parameters_.record_atom_availabilities=init_params.calculate_identities;
+		scorable_data_construction_parameters_.record_residue_availabilities=init_params.calculate_identities;
+		scorable_data_construction_parameters_.record_chain_availabilities=init_params.calculate_identities;
 		scorable_data_construction_parameters_.conflate_equivalent_atom_types=init_params.conflate_atom_names;
 
 		scoring_result_construction_parameters_.remap_chains=init_params.remap_chains;
@@ -556,6 +581,16 @@ public:
 			throw std::runtime_error("Chain site contact global scores were not requested to compute.");
 		}
 		return &gsr.cadscores_chain_site_summarized_globally;
+	}
+
+	const std::vector<GlobalIdentityDescriptor>* get_all_identity_descriptors()
+	{
+		const GlobalScoringResult& gsr=get_all_global_scores();
+		if(gsr.identity_descriptors.empty())
+		{
+			throw std::runtime_error("Identity descriptors were not requested to compute.");
+		}
+		return &gsr.identity_descriptors;
 	}
 
 	const std::vector<AtomAtomScore>* get_local_cadscores_atom_atom(const std::string& target_name, const std::string& model_name)
@@ -888,6 +923,16 @@ public:
 		return &psr.cadscores_chain_site_summarized_globally;
 	}
 
+	const GlobalIdentityDescriptor* get_identity_descriptor(const std::string& target_name, const std::string& model_name)
+	{
+		const PairScoringResult& psr=get_pair_scores(target_name, model_name);
+		if(psr.identity_descriptor.target_atoms<=0 && psr.identity_descriptor.target_residues<=0 && psr.identity_descriptor.target_chains<=0)
+		{
+			throw std::runtime_error("Identities were not requested to compute.");
+		}
+		return &psr.identity_descriptor;
+	}
+
 private:
 	struct SetOfStructureDescriptors
 	{
@@ -906,13 +951,23 @@ private:
 		std::vector<GlobalScore> cadscores_atom_site_summarized_globally;
 		std::vector<GlobalScore> cadscores_residue_site_summarized_globally;
 		std::vector<GlobalScore> cadscores_chain_site_summarized_globally;
+		std::vector<GlobalIdentityDescriptor> identity_descriptors;
 
-		static void sort_vector_of_global_scores_by_cadscore(std::vector<GlobalScore>& v)
+		static void sort_vector_of_global_scores(std::vector<GlobalScore>& v)
 		{
 			std::sort(v.begin(), v.end(),
 			[](const GlobalScore& a, const GlobalScore& b)
 			{
-				return a.cadscore > b.cadscore;
+				return (a.cadscore>b.cadscore);
+			});
+		}
+
+		static void sort_vector_of_global_identity_descriptors(std::vector<GlobalIdentityDescriptor>& v)
+		{
+			std::sort(v.begin(), v.end(),
+			[](const GlobalIdentityDescriptor& a, const GlobalIdentityDescriptor& b)
+			{
+				return (a.identity_of_atoms>b.identity_of_atoms || (a.identity_of_atoms==b.identity_of_atoms && (a.identity_of_residues>b.identity_of_residues || (a.identity_of_residues==b.identity_of_residues && a.identity_of_chains>b.identity_of_chains))));
 			});
 		}
 
@@ -927,19 +982,21 @@ private:
 			cadscores_atom_site_summarized_globally.clear();
 			cadscores_residue_site_summarized_globally.clear();
 			cadscores_chain_site_summarized_globally.clear();
+			identity_descriptors.clear();
 		}
 
-		void sort_by_cadscore()
+		void sort()
 		{
-			sort_vector_of_global_scores_by_cadscore(cadscores_atom_atom_summarized_globally);
-			sort_vector_of_global_scores_by_cadscore(cadscores_residue_residue_summarized_globally);
-			sort_vector_of_global_scores_by_cadscore(cadscores_chain_chain_summarized_globally);
-			sort_vector_of_global_scores_by_cadscore(cadscores_atom_sas_summarized_globally);
-			sort_vector_of_global_scores_by_cadscore(cadscores_residue_sas_summarized_globally);
-			sort_vector_of_global_scores_by_cadscore(cadscores_chain_sas_summarized_globally);
-			sort_vector_of_global_scores_by_cadscore(cadscores_atom_site_summarized_globally);
-			sort_vector_of_global_scores_by_cadscore(cadscores_residue_site_summarized_globally);
-			sort_vector_of_global_scores_by_cadscore(cadscores_chain_site_summarized_globally);
+			sort_vector_of_global_scores(cadscores_atom_atom_summarized_globally);
+			sort_vector_of_global_scores(cadscores_residue_residue_summarized_globally);
+			sort_vector_of_global_scores(cadscores_chain_chain_summarized_globally);
+			sort_vector_of_global_scores(cadscores_atom_sas_summarized_globally);
+			sort_vector_of_global_scores(cadscores_residue_sas_summarized_globally);
+			sort_vector_of_global_scores(cadscores_chain_sas_summarized_globally);
+			sort_vector_of_global_scores(cadscores_atom_site_summarized_globally);
+			sort_vector_of_global_scores(cadscores_residue_site_summarized_globally);
+			sort_vector_of_global_scores(cadscores_chain_site_summarized_globally);
+			sort_vector_of_global_identity_descriptors(identity_descriptors);
 		}
 	};
 
@@ -986,6 +1043,8 @@ private:
 
 		std::vector<ChainScore> cadscores_chain_site;
 		GlobalScore cadscores_chain_site_summarized_globally;
+
+		GlobalIdentityDescriptor identity_descriptor;
 
 		std::string renaming_of_model_chains;
 	};
@@ -1062,6 +1121,22 @@ private:
 		s.model_name=model_name;
 		s.renaming_of_model_chains=renaming_of_model_chains;
 		record_cad_descriptor(cadd, s);
+	}
+
+	static void record_global_identity_descriptor(const std::string& target_name, const std::string& model_name, const std::string& renaming_of_model_chains, const cadscorelt::ScoringResult& sr, GlobalIdentityDescriptor& gid)
+	{
+		gid.target_name=target_name;
+		gid.model_name=model_name;
+		gid.renaming_of_model_chains=renaming_of_model_chains;
+		gid.target_atoms=static_cast<int>(sr.identity_of_atoms.target_area_sum);
+		gid.target_residues=static_cast<int>(sr.identity_of_residues.target_area_sum);
+		gid.target_chains=static_cast<int>(sr.identity_of_chains.target_area_sum);
+		gid.model_atoms=static_cast<int>(sr.identity_of_atoms.model_area_sum);
+		gid.model_residues=static_cast<int>(sr.identity_of_residues.model_area_sum);
+		gid.model_chains=static_cast<int>(sr.identity_of_chains.model_area_sum);
+		gid.identity_of_atoms=sr.identity_of_atoms.score()*100.0;
+		gid.identity_of_residues=sr.identity_of_residues.score()*100.0;
+		gid.identity_of_chains=sr.identity_of_chains.score()*100.0;
 	}
 
 	static void record_vector(const std::map<cadscorelt::IDAtom, cadscorelt::CADDescriptor>& source, std::vector<AtomScore>& dest)
@@ -1347,6 +1422,8 @@ private:
 		record_vector(sr.cadscores_chain_site, psr.cadscores_chain_site);
 		record_global_cad_descriptor(target_name, model_name, psr.renaming_of_model_chains, sr.cadscores_chain_site_summarized_globally, psr.cadscores_chain_site_summarized_globally);
 
+		record_global_identity_descriptor(target_name, model_name, psr.renaming_of_model_chains, sr, psr.identity_descriptor);
+
 		return pair_it;
 	}
 
@@ -1440,9 +1517,13 @@ private:
 				{
 					global_scoring_result_.cadscores_chain_site_summarized_globally.push_back(psr.cadscores_chain_site_summarized_globally);
 				}
+				if(params_.calculate_identities)
+				{
+					global_scoring_result_.identity_descriptors.push_back(psr.identity_descriptor);
+				}
 			}
 		}
-		global_scoring_result_.sort_by_cadscore();
+		global_scoring_result_.sort();
 		return global_scoring_result_;
 	}
 
