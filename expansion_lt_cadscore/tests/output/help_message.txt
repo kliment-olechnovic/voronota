@@ -33,6 +33,7 @@ Options:
     --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
     --output-with-f1                                            flag to output area-based F1 scores along with CAD-scores
     --output-all-details                                        flag to output all details in tables of global and local scores
+    --output-with-identities                                    flag to output identity percentages (for input atoms, residues, chains) along with CAD-scores
     --compact-output                                            flag to reduce size of output global scores table without removing rows
     --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
     --output-dir                                     string     path to output directory for all result files

@@ -42,6 +42,7 @@ Options:
     --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
     --output-with-f1                                            flag to output area-based F1 scores along with CAD-scores
     --output-all-details                                        flag to output all details in tables of global and local scores
+    --output-with-identities                                    flag to output identity percentages (for input atoms, residues, chains) along with CAD-scores
     --compact-output                                            flag to reduce size of output global scores table without removing rows
     --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
     --output-dir                                     string     path to output directory for all result files
@@ -96,6 +97,7 @@ public:
 	bool save_processed_inputs_pdb;
 	bool save_sequence_alignments;
 	bool quit_before_scoring;
+	bool output_with_identities;
 	bool compact_output;
 	bool local_scores_requested;
 	bool read_successfuly;
@@ -149,6 +151,7 @@ public:
 		save_processed_inputs_pdb(false),
 		save_sequence_alignments(false),
 		quit_before_scoring(false),
+		output_with_identities(false),
 		compact_output(false),
 		local_scores_requested(false),
 		read_successfuly(false),
@@ -335,6 +338,10 @@ public:
 				else if(opt.name=="output-all-details" && opt.is_flag())
 				{
 					table_depth=std::max(table_depth, 2);
+				}
+				else if(opt.name=="output-with-identities" && opt.is_flag())
+				{
+					output_with_identities=opt.is_flag_and_true();
 				}
 				else if(opt.name=="output-global-scores" && opt.args_strings.size()==1)
 				{
@@ -632,9 +639,9 @@ bool run(const ApplicationParameters& app_params)
 	scorable_data_construction_parameters.record_atom_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_atom);
 	scorable_data_construction_parameters.record_residue_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_residue);
 	scorable_data_construction_parameters.record_chain_site_summaries=(app_params.scoring_type_sites && app_params.scoring_level_chain);
-	scorable_data_construction_parameters.record_atom_availabilities=(app_params.table_depth>=2);
-	scorable_data_construction_parameters.record_residue_availabilities=(app_params.table_depth>=2);
-	scorable_data_construction_parameters.record_chain_availabilities=(app_params.table_depth>=2);
+	scorable_data_construction_parameters.record_atom_availabilities=(app_params.output_with_identities);
+	scorable_data_construction_parameters.record_residue_availabilities=(app_params.output_with_identities);
+	scorable_data_construction_parameters.record_chain_availabilities=(app_params.output_with_identities);
 	scorable_data_construction_parameters.conflate_equivalent_atom_types=app_params.conflate_equivalent_atom_types;
 	scorable_data_construction_parameters.quit_before_constructing_tessellation=app_params.quit_before_scoring;
 	scorable_data_construction_parameters.filtering_expression_for_restricting_raw_input_balls=app_params.filtering_expression_for_restricting_raw_input_balls;
@@ -923,9 +930,7 @@ bool run(const ApplicationParameters& app_params)
 	std::vector<std::string> list_of_output_error_messages(list_of_pairs_of_target_model_indices.size());
 
 	std::vector<std::string> list_of_chain_remapping_summaries((!app_params.compact_output && (app_params.remap_chains || !scorable_data_construction_parameters.reference_sequences.empty())) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
-	std::vector<double> list_of_identities_of_atoms((app_params.table_depth>=2) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
-	std::vector<double> list_of_identities_of_residues((app_params.table_depth>=2) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
-	std::vector<double> list_of_identities_of_chains((app_params.table_depth>=2) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
+	std::vector< std::vector<double> > list_of_identities(app_params.output_with_identities ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0), std::vector<double>(3, 0.0));
 
 	bool success_writing_local_scores=true;
 
@@ -1294,17 +1299,11 @@ bool run(const ApplicationParameters& app_params)
 					summary=".";
 				}
 			}
-			if(!list_of_identities_of_atoms.empty())
+			if(!list_of_identities.empty())
 			{
-				list_of_identities_of_atoms[i]=sr.identity_of_atoms.score()*100.0;
-			}
-			if(!list_of_identities_of_residues.empty())
-			{
-				list_of_identities_of_residues[i]=sr.identity_of_residues.score()*100.0;
-			}
-			if(!list_of_identities_of_chains.empty())
-			{
-				list_of_identities_of_chains[i]=sr.identity_of_chains.score()*100.0;
+				list_of_identities[i][0]=sr.identity_of_residues.score()*100.0;
+				list_of_identities[i][1]=sr.identity_of_atoms.score()*100.0;
+				list_of_identities[i][2]=sr.identity_of_chains.score()*100.0;
 			}
 		}
 	}
@@ -1374,17 +1373,9 @@ bool run(const ApplicationParameters& app_params)
 		{
 			output_string+="\trenaming_of_model_chains";
 		}
-		if(!list_of_identities_of_residues.empty())
+		if(!list_of_identities.empty())
 		{
-			output_string+="\tidentity_of_residues";
-		}
-		if(!list_of_identities_of_atoms.empty())
-		{
-			output_string+="\tidentity_of_atoms";
-		}
-		if(!list_of_identities_of_chains.empty())
-		{
-			output_string+="\tidentity_of_chains";
+			output_string+="\tidentity_of_residues\tidentity_of_atoms\tidentity_of_chains";
 		}
 		output_string+="\n";
 
@@ -1413,20 +1404,14 @@ bool run(const ApplicationParameters& app_params)
 				output_string+="\t";
 				output_string+=list_of_chain_remapping_summaries[i];
 			}
-			if(!list_of_identities_of_residues.empty())
+			if(!list_of_identities.empty())
 			{
 				output_string+="\t";
-				output_string+=cadscorelt::to_string_compact(list_of_identities_of_residues[i]);
-			}
-			if(!list_of_identities_of_atoms.empty())
-			{
+				output_string+=cadscorelt::to_string_compact(list_of_identities[i][0]);
 				output_string+="\t";
-				output_string+=cadscorelt::to_string_compact(list_of_identities_of_atoms[i]);
-			}
-			if(!list_of_identities_of_chains.empty())
-			{
+				output_string+=cadscorelt::to_string_compact(list_of_identities[i][1]);
 				output_string+="\t";
-				output_string+=cadscorelt::to_string_compact(list_of_identities_of_chains[i]);
+				output_string+=cadscorelt::to_string_compact(list_of_identities[i][2]);
 			}
 			output_string+="\n";
 		}
