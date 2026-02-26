@@ -58,7 +58,7 @@ cadscore-lt \
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
 | column -t
 
 ####################################################################
@@ -66,7 +66,7 @@ cadscore-lt \
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --restrict-raw-input "[-chain A]" \
 | column -t
 
@@ -75,7 +75,7 @@ cadscore-lt \
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --restrict-raw-input "[-chain B]" \
 | column -t
 
@@ -84,7 +84,7 @@ cadscore-lt \
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --subselect-contacts "[-min-sep 1 -atom1 [-protein-sidechain] -atom2 [-protein-sidechain]]" \
 | column -t
 
@@ -93,7 +93,7 @@ cadscore-lt \
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --subselect-contacts "[-a1 [-chain A] -a2 [-chain B]]" \
 | column -t
 
@@ -102,7 +102,7 @@ cadscore-lt \
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --subselect-contacts "[-inter-chain]" \
 | column -t
 
@@ -111,7 +111,7 @@ cadscore-lt \
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --subselect-contacts "[-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66,75:87]]" \
 | column -t
 
@@ -120,7 +120,7 @@ cadscore-lt \
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --subselect-contacts "(([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66]]) or ([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 75:87]]))" \
 | column -t
 
@@ -151,7 +151,7 @@ cadscore-lt \
   -m "./input/model1.pdb" "./input/model2.pdb" \
   --subselect-contacts "[-inter-chain]" \
   --scoring-types "sites" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
 | column -t
 
 ##################################
@@ -162,7 +162,7 @@ cadscore-lt \
   --subselect-contacts "[-inter-chain]" \
   --scoring-types "sites" \
   --subselect-atoms "[-chain A]" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
 | column -t
 
 ##################################
@@ -173,7 +173,7 @@ cadscore-lt \
   --subselect-contacts "[-inter-chain]" \
   --scoring-types "sites" \
   --subselect-atoms "[-chain B]" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
 | column -t
 
 ####################################################################

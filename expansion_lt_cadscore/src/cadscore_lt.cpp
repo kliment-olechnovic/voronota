@@ -41,7 +41,7 @@ Options:
     --save-sequence-alignments                                  flag to save best alignments with reference sequences into a file in the output directory
     --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
     --output-with-f1                                            flag to output area-based F1 scores along with CAD-scores
-    --output-all-details                                        flag to output all details in tables of global and local scores
+    --output-with-areas                                         flag to output all recorded types of areas in tables of global and local scores
     --output-with-identities                                    flag to output identity percentages (for input atoms, residues, chains) along with CAD-scores
     --compact-output                                            flag to reduce size of output global scores table without removing rows
     --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
@@ -69,7 +69,6 @@ public:
 	double probe;
 	unsigned int max_number_of_processors;
 	int max_permutations_to_check_exhaustively;
-	int table_depth;
 	bool recursive_directory_search;
 	bool include_heteroatoms;
 	bool read_inputs_as_assemblies;
@@ -97,6 +96,8 @@ public:
 	bool save_processed_inputs_pdb;
 	bool save_sequence_alignments;
 	bool quit_before_scoring;
+	bool output_with_f1;
+	bool output_with_areas;
 	bool output_with_identities;
 	bool compact_output;
 	bool local_scores_requested;
@@ -123,7 +124,6 @@ public:
 		probe(1.4),
 		max_number_of_processors(cadscorelt::openmp_enabled() ? 2 : 1),
 		max_permutations_to_check_exhaustively(200),
-		table_depth(0),
 		recursive_directory_search(false),
 		include_heteroatoms(false),
 		read_inputs_as_assemblies(false),
@@ -151,6 +151,8 @@ public:
 		save_processed_inputs_pdb(false),
 		save_sequence_alignments(false),
 		quit_before_scoring(false),
+		output_with_f1(false),
+		output_with_areas(false),
 		output_with_identities(false),
 		compact_output(false),
 		local_scores_requested(false),
@@ -333,11 +335,11 @@ public:
 				}
 				else if(opt.name=="output-with-f1" && opt.is_flag())
 				{
-					table_depth=std::max(table_depth, 1);
+					output_with_f1=opt.is_flag_and_true();
 				}
-				else if(opt.name=="output-all-details" && opt.is_flag())
+				else if(opt.name=="output-with-areas" && opt.is_flag())
 				{
-					table_depth=std::max(table_depth, 2);
+					output_with_areas=opt.is_flag_and_true();
 				}
 				else if(opt.name=="output-with-identities" && opt.is_flag())
 				{
@@ -926,6 +928,10 @@ bool run(const ApplicationParameters& app_params)
 		if(app_params.scoring_type_sites && app_params.scoring_level_chain){output_score_names.push_back("chain_sites");}
 	}
 
+	cadscorelt::PrintingUtilites::DetalizationParameters printing_detalization_params;
+	printing_detalization_params.with_f1=app_params.output_with_f1;
+	printing_detalization_params.with_areas=app_params.output_with_areas;
+
 	std::vector< std::vector<cadscorelt::CADDescriptor> > list_of_output_cad_descriptors(list_of_pairs_of_target_model_indices.size(), std::vector<cadscorelt::CADDescriptor>(output_score_names.size()));
 	std::vector<std::string> list_of_output_error_messages(list_of_pairs_of_target_model_indices.size());
 
@@ -980,60 +986,60 @@ bool run(const ApplicationParameters& app_params)
 						{
 							if(app_params.scoring_level_atom)
 							{
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_atom.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom_summarized_per_residue_residue.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_atom_summarized_per_residue_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_residue_residue)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom_summarized_per_chain_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_atom_summarized_per_chain_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_chain_chain)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom_summarized_per_atom.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_atom_summarized_per_atom.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_atom)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom_summarized_per_residue.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_atom_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_residue)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_atom_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_atom_summarized_per_chain)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_atom.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_atom_atom)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom_summarized_per_residue_residue.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_atom_summarized_per_residue_residue.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_atom_atom_summarized_per_residue_residue)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom_summarized_per_chain_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_atom_summarized_per_chain_chain.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_atom_atom_summarized_per_chain_chain)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom_summarized_per_atom.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_atom_summarized_per_atom.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_atom_atom_summarized_per_atom)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom_summarized_per_residue.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_atom_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_atom_atom_summarized_per_residue)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_atom_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_atom_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_atom_atom_summarized_per_chain)));
 							}
 							if(app_params.scoring_level_residue)
 							{
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_residue.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_residue)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_residue_summarized_per_chain_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_residue_summarized_per_chain_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_residue_summarized_per_chain_chain)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_residue_summarized_per_residue.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_residue_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_residue_summarized_per_residue)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_residue_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_residue_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_residue_summarized_per_chain)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_residue.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_residue.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_residue_residue)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_residue_summarized_per_chain_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_residue_summarized_per_chain_chain.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_residue_residue_summarized_per_chain_chain)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_residue_summarized_per_residue.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_residue_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_residue_residue_summarized_per_residue)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_residue_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_residue_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_residue_residue_summarized_per_chain)));
 							}
 							if(app_params.scoring_level_chain)
 							{
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_chain_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_chain_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_chain_chain)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_chain_chain_contact_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_chain_chain_contact_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_chain_chain_contact_summarized_per_chain)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_chain_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_chain_chain.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_chain_chain)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_chain_chain_contact_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_chain_chain_contact_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_chain_chain_contact_summarized_per_chain)));
 							}
 						}
 						if(app_params.scoring_type_sas)
 						{
 							if(app_params.scoring_level_atom)
 							{
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_sas.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_sas.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_sas)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_sas_summarized_per_residue.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_sas_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_sas_summarized_per_residue)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_sas_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_sas_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_sas_summarized_per_chain)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_sas.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_sas.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_atom_sas)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_sas_summarized_per_residue.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_sas_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_atom_sas_summarized_per_residue)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_sas_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_sas_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_atom_sas_summarized_per_chain)));
 							}
 							if(app_params.scoring_level_residue)
 							{
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_sas.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_sas.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_sas)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_sas_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_sas_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_sas_summarized_per_chain)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_sas.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_sas.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_residue_sas)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_sas_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_sas_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_residue_sas_summarized_per_chain)));
 							}
 							if(app_params.scoring_level_chain)
 							{
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_chain_sas.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_chain_sas.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_chain_sas)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_chain_sas.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_chain_sas.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_chain_sas)));
 							}
 						}
 						if(app_params.scoring_type_sites)
 						{
 							if(app_params.scoring_level_atom)
 							{
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_site.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_site.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_site)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_site_summarized_per_residue.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_site_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_site_summarized_per_residue)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_site_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_site_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_atom_site_summarized_per_chain)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_site.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_site.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_atom_site)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_site_summarized_per_residue.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_site_summarized_per_residue.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_atom_site_summarized_per_residue)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_atom_site_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_atom_site_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_atom_site_summarized_per_chain)));
 							}
 							if(app_params.scoring_level_residue)
 							{
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_site.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_site.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_site)));
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_site_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_site_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_residue_site_summarized_per_chain)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_site.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_site.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_residue_site)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_residue_site_summarized_per_chain.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_residue_site_summarized_per_chain.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_residue_site_summarized_per_chain)));
 							}
 							if(app_params.scoring_level_chain)
 							{
-								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_chain_site.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_chain_site.tsv", cadscorelt::PrintingUtilites::print(app_params.table_depth, sr.cadscores_chain_site)));
+								success_writing_local_scores=success_writing_local_scores && (sr.cadscores_chain_site.empty() || cadscorelt::FileSystemUtilities::write_file(odir+"/cadscores_chain_site.tsv", cadscorelt::PrintingUtilites::print(printing_detalization_params, sr.cadscores_chain_site)));
 							}
 						}
 					}
@@ -1367,7 +1373,7 @@ bool run(const ApplicationParameters& app_params)
 		for(const std::string& sname : output_score_names)
 		{
 			output_string+="\t";
-			cadscorelt::PrintingUtilites::print(app_params.table_depth, cadscorelt::CADDescriptor(), true, sname+std::string("_"), output_string);
+			cadscorelt::PrintingUtilites::print(printing_detalization_params, cadscorelt::CADDescriptor(), true, sname+std::string("_"), output_string);
 		}
 		if(!list_of_chain_remapping_summaries.empty())
 		{
@@ -1397,7 +1403,7 @@ bool run(const ApplicationParameters& app_params)
 			for(const cadscorelt::CADDescriptor& cadd : output_cad_descriptors)
 			{
 				output_string+="\t";
-				cadscorelt::PrintingUtilites::print(app_params.table_depth, cadd, false, std::string(), output_string);
+				cadscorelt::PrintingUtilites::print(printing_detalization_params, cadd, false, std::string(), output_string);
 			}
 			if(!list_of_chain_remapping_summaries.empty())
 			{

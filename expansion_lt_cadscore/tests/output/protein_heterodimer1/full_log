@@ -36,7 +36,7 @@ Options:
     --save-sequence-alignments                                  flag to save best alignments with reference sequences into a file in the output directory
     --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
     --output-with-f1                                            flag to output area-based F1 scores along with CAD-scores
-    --output-all-details                                        flag to output all details in tables of global and local scores
+    --output-with-areas                                         flag to output all recorded types of areas in tables of global and local scores
     --output-with-identities                                    flag to output identity percentages (for input atoms, residues, chains) along with CAD-scores
     --compact-output                                            flag to reduce size of output global scores table without removing rows
     --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
@@ -126,7 +126,7 @@ target.pdb  model1.pdb  2     0     0.406431                  0.541159
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area  identity_of_residues  identity_of_atoms  identity_of_chains
 target.pdb  model2.pdb  2     1     0.502326                  0.568942                     14769.508316                 11327.634615                9016.8696                7910.617973              5752.638717              100                   100                100
@@ -137,7 +137,7 @@ target.pdb  model1.pdb  2     0     0.406431                  0.541159          
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --restrict-raw-input "[-chain A]" \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area  identity_of_residues  identity_of_atoms  identity_of_chains
@@ -149,7 +149,7 @@ target.pdb  model1.pdb  2     0     0.432078                  0.547392          
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --restrict-raw-input "[-chain B]" \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area  identity_of_residues  identity_of_atoms  identity_of_chains
@@ -161,7 +161,7 @@ target.pdb  model1.pdb  2     0     0.414462                  0.592804          
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --subselect-contacts "[-min-sep 1 -atom1 [-protein-sidechain] -atom2 [-protein-sidechain]]" \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area  identity_of_residues  identity_of_atoms  identity_of_chains
@@ -173,7 +173,7 @@ target.pdb  model1.pdb  2     0     0.201023                  0.304286          
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --subselect-contacts "[-a1 [-chain A] -a2 [-chain B]]" \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area  identity_of_residues  identity_of_atoms  identity_of_chains
@@ -185,7 +185,7 @@ target.pdb  model2.pdb  2     1     0.070722                  0.117955          
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --subselect-contacts "[-inter-chain]" \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area  identity_of_residues  identity_of_atoms  identity_of_chains
@@ -197,7 +197,7 @@ target.pdb  model2.pdb  2     1     0.070722                  0.117955          
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --subselect-contacts "[-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66,75:87]]" \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area  identity_of_residues  identity_of_atoms  identity_of_chains
@@ -209,7 +209,7 @@ target.pdb  model1.pdb  2     0     0.429427                  0.612731          
 cadscore-lt \
   -t "./input/target.pdb" \
   -m "./input/model1.pdb" "./input/model2.pdb" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --subselect-contacts "(([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 39:66]]) or ([-a1 [-chain B -rnum 39:51] -a2 [-chain B -rnum 75:87]]))" \
 | column -t
 target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  residue_residue_target_area  residue_residue_model_area  residue_residue_TP_area  residue_residue_FP_area  residue_residue_FN_area  identity_of_residues  identity_of_atoms  identity_of_chains
@@ -249,7 +249,7 @@ cadscore-lt \
   -m "./input/model1.pdb" "./input/model2.pdb" \
   --subselect-contacts "[-inter-chain]" \
   --scoring-types "sites" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
 | column -t
 target      model       t_id  m_id  residue_sites_cadscore  residue_sites_F1_of_areas  residue_sites_target_area  residue_sites_model_area  residue_sites_TP_area  residue_sites_FP_area  residue_sites_FN_area  identity_of_residues  identity_of_atoms  identity_of_chains
 target.pdb  model1.pdb  2     0     0.445569                0.616924                   1795.145103                1474.77777                1086.093889            639.757412             709.051214             88.679245             87.539333          100
@@ -263,7 +263,7 @@ cadscore-lt \
   --subselect-contacts "[-inter-chain]" \
   --scoring-types "sites" \
   --subselect-atoms "[-chain A]" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
 | column -t
 target      model       t_id  m_id  residue_sites_cadscore  residue_sites_F1_of_areas  residue_sites_target_area  residue_sites_model_area  residue_sites_TP_area  residue_sites_FP_area  residue_sites_FN_area  identity_of_residues  identity_of_atoms  identity_of_chains
 target.pdb  model1.pdb  2     0     0.338114                0.502546                   897.572551                 677.82669                 442.365424             420.560227             455.207128             88.679245             87.539333          100
@@ -277,7 +277,7 @@ cadscore-lt \
   --subselect-contacts "[-inter-chain]" \
   --scoring-types "sites" \
   --subselect-atoms "[-chain B]" \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
 | column -t
 target      model       t_id  m_id  residue_sites_cadscore  residue_sites_F1_of_areas  residue_sites_target_area  residue_sites_model_area  residue_sites_TP_area  residue_sites_FP_area  residue_sites_FN_area  identity_of_residues  identity_of_atoms  identity_of_chains
 target.pdb  model1.pdb  2     0     0.553023                0.731303                   897.572551                 796.95108                 643.728465             219.197186             253.844086             88.679245             87.539333          100

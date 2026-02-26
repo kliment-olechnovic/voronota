@@ -35,6 +35,16 @@ std::string to_string_compact(const double v)
 class PrintingUtilites
 {
 public:
+	struct DetalizationParameters
+	{
+		bool with_f1;
+		bool with_areas;
+
+		DetalizationParameters() : with_f1(false), with_areas(false)
+		{
+		}
+	};
+
 	static void print(const IDChain& id, const bool header, const std::string& header_prefix, std::string& output) noexcept
 	{
 		if(header)
@@ -107,80 +117,80 @@ public:
 		print(id.id_b, header, (header ? header_prefix+"id2_" : header_prefix), output);
 	}
 
-	static void print(const int level_of_details, const CADDescriptor& cadd, const bool header, const std::string& header_prefix, std::string& output) noexcept
+	static void print(const DetalizationParameters& d_params, const CADDescriptor& cadd, const bool header, const std::string& header_prefix, std::string& output) noexcept
 	{
 		if(header)
 		{
 			output+=header_prefix;
 			output+="cadscore";
-			if(level_of_details>=1)
+			if(d_params.with_f1)
 			{
 				output+="\t";
 				output+=header_prefix;
 				output+="F1_of_areas";
-				if(level_of_details>=2)
-				{
-					output+="\t";
-					output+=header_prefix;
-					output+="target_area\t";
-					output+=header_prefix;
-					output+="model_area\t";
-					output+=header_prefix;
-					output+="TP_area\t";
-					output+=header_prefix;
-					output+="FP_area\t";
-					output+=header_prefix;
-					output+="FN_area";
-				}
+			}
+			if(d_params.with_areas)
+			{
+				output+="\t";
+				output+=header_prefix;
+				output+="target_area\t";
+				output+=header_prefix;
+				output+="model_area\t";
+				output+=header_prefix;
+				output+="TP_area\t";
+				output+=header_prefix;
+				output+="FP_area\t";
+				output+=header_prefix;
+				output+="FN_area";
 			}
 		}
 		else
 		{
 			output+=to_string_compact(cadd.score());
-			if(level_of_details>=1)
+			if(d_params.with_f1)
 			{
 				output+="\t";
 				output+=to_string_compact(cadd.score_F1());
-				if(level_of_details>=2)
-				{
-					output+="\t";
-					output+=to_string_compact(cadd.target_area_sum);
-					output+="\t";
-					output+=to_string_compact(cadd.model_target_area_sum);
-					output+="\t";
-					output+=to_string_compact(cadd.confusion_TP);
-					output+="\t";
-					output+=to_string_compact(cadd.confusion_FP);
-					output+="\t";
-					output+=to_string_compact(cadd.confusion_FN);
-				}
+			}
+			if(d_params.with_areas)
+			{
+				output+="\t";
+				output+=to_string_compact(cadd.target_area_sum);
+				output+="\t";
+				output+=to_string_compact(cadd.model_target_area_sum);
+				output+="\t";
+				output+=to_string_compact(cadd.confusion_TP);
+				output+="\t";
+				output+=to_string_compact(cadd.confusion_FP);
+				output+="\t";
+				output+=to_string_compact(cadd.confusion_FN);
 			}
 		}
 	}
 
 	template<class MapContainer>
-	static void print(const int level_of_details, const MapContainer& container, std::string& output) noexcept
+	static void print(const DetalizationParameters& d_params, const MapContainer& container, std::string& output) noexcept
 	{
 		typedef typename MapContainer::key_type ID;
 		typedef typename MapContainer::mapped_type Value;
 		print(ID(), true, std::string(), output);
 		output+="\t";
-		print(level_of_details, Value(), true, std::string(), output);
+		print(d_params, Value(), true, std::string(), output);
 		output+="\n";
 		for(typename MapContainer::const_iterator it=container.begin();it!=container.end();++it)
 		{
 			print(it->first, false, std::string(), output);
 			output+="\t";
-			print(level_of_details, it->second, false, std::string(), output);
+			print(d_params, it->second, false, std::string(), output);
 			output+="\n";
 		}
 	}
 
 	template<class MapContainer>
-	static std::string print(const int level_of_details, const MapContainer& container) noexcept
+	static std::string print(const DetalizationParameters& d_params, const MapContainer& container) noexcept
 	{
 		std::string output;
-		print(level_of_details, container, output);
+		print(d_params, container, output);
 		return output;
 	}
 };

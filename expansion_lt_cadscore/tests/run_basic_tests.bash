@@ -32,7 +32,7 @@ cadscore-lt \
   -t './input/protein_homodimer1/target.pdb' \
   -m './input/protein_homodimer1' \
   --subselect-contacts '[-inter-chain]' \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
 | column -t \
 > ./output/protein_homodimer1/global_scores_v04.txt
 
@@ -83,7 +83,7 @@ cadscore-lt \
   -t './input/protein_homodimer1/target.pdb' \
   -m './input/protein_homodimer1/model1.pdb' \
   --subselect-contacts '[-inter-chain]' \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --output-global-scores _none \
   --local-output-formats table pdb mmcif contactmap graphics-pymol graphics-chimera \
   --output-dir ./output/protein_homodimer1/output_dir_v09
@@ -94,7 +94,7 @@ cadscore-lt \
   -t './input/protein_homodimer1/target.pdb' \
   -m './input/protein_homodimer1/model1.pdb' \
   --subselect-contacts '[-inter-chain]' \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --output-global-scores _none \
   --scoring-levels atom \
   --local-output-formats table pdb mmcif contactmap graphics-pymol graphics-chimera \
@@ -107,7 +107,7 @@ cadscore-lt \
   -t './input/protein_homodimer1/target.pdb' \
   -m './input/protein_homodimer1/model1.pdb' \
   --subselect-contacts '[-inter-chain]' \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --output-global-scores _none \
   --scoring-levels residue \
   --local-output-formats table pdb mmcif contactmap graphics-pymol graphics-chimera \
@@ -126,7 +126,7 @@ find ./input/rna_monomer1 -type f -name '*.pdb' | sort \
 cadscore-lt \
   -t './input/rna_monomer1/target.pdb' \
   -m './input/rna_monomer1/model2.pdb' \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --local-output-formats table pdb mmcif contactmap \
   --output-dir ./output/rna_monomer1/output_dir_v02 \
 > ./output/rna_monomer1/global_scores_v02.txt
@@ -136,7 +136,7 @@ cadscore-lt \
 cadscore-lt \
   -t './input/rna_monomer1/target.pdb' \
   -m './input/rna_monomer1/model2.pdb' \
-  --output-all-details --output-with-identities \
+  --output-with-f1 --output-with-areas --output-with-identities \
   --output-global-scores ./output/rna_monomer1/global_scores_v03.txt \
   --scoring-levels atom \
   --local-output-levels atom \
