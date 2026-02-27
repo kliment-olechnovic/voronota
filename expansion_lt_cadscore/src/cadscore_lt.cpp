@@ -963,7 +963,7 @@ bool run(const ApplicationParameters& app_params)
 			const std::size_t mi=gi%model_sd_indices.size();
 			if(ti==mi)
 			{
-				list_of_global_scores[gi]=static_cast<std::int8_t>(1);
+				list_of_global_scores[gi]=static_cast<std::int8_t>(100);
 			}
 			else
 			{
