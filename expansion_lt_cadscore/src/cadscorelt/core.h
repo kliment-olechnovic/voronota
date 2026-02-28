@@ -2780,12 +2780,45 @@ private:
 				}
 				final_chain_renaming_map.swap(map_of_renamings_in_model);
 				{
-					const double final_score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, final_chain_renaming_map)).score();
 					std::map<std::string, std::string> default_chain_renaming_map=ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(chain_names_in_model, chain_names_in_target);
-					const double default_score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, default_chain_renaming_map)).score();
-					if(default_score>final_score)
+					if(default_chain_renaming_map!=final_chain_renaming_map)
 					{
-						final_chain_renaming_map.swap(default_chain_renaming_map);
+						double final_score=-1.0;
+						{
+							const std::map<IDResidueResidue, AreaValue>* renamed_map_ptr=0;
+							if(cache_ptr!=0)
+							{
+								renamed_map_ptr=cache_ptr->get_residue_residue_contact_areas_with_chains_renamed(model_data, final_chain_renaming_map);
+							}
+							if(renamed_map_ptr!=0)
+							{
+								final_score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, *renamed_map_ptr).score();
+							}
+							else
+							{
+								final_score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, final_chain_renaming_map)).score();
+							}
+						}
+						double default_score=-1.0;
+						{
+							const std::map<IDResidueResidue, AreaValue>* renamed_map_ptr=0;
+							if(cache_ptr!=0)
+							{
+								renamed_map_ptr=cache_ptr->get_residue_residue_contact_areas_with_chains_renamed(model_data, final_chain_renaming_map);
+							}
+							if(renamed_map_ptr!=0)
+							{
+								default_score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, *renamed_map_ptr).score();
+							}
+							else
+							{
+								default_score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, default_chain_renaming_map)).score();
+							}
+						}
+						if(default_score>final_score)
+						{
+							final_chain_renaming_map.swap(default_chain_renaming_map);
+						}
 					}
 				}
 				return true;
