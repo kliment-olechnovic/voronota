@@ -46,14 +46,19 @@ struct IDChain
 		return chain_name<v.chain_name;
 	}
 
+	inline void swap(IDChain& v) noexcept
+	{
+		chain_name.swap(v.chain_name);
+	}
+
 	inline IDChain with_renamed_chains(const std::map<std::string, std::string>& renaming_map) const noexcept
 	{
 		std::map<std::string, std::string>::const_iterator it=renaming_map.find(chain_name);
-		if(it!=renaming_map.end())
+		if(it!=renaming_map.end() && chain_name!=it->second)
 		{
-			IDChain result;
-			result.chain_name=it->second;
-			return result;
+			IDChain v;
+			v.chain_name=it->second;
+			return v;
 		}
 		return (*this);
 	}
@@ -111,11 +116,24 @@ struct IDResidue
 		return false;
 	}
 
+	inline void swap(IDResidue& v) noexcept
+	{
+		id_chain.swap(v.id_chain);
+		std::swap(residue_seq_number, v.residue_seq_number);
+		residue_icode.swap(v.residue_icode);
+		residue_name.swap(v.residue_name);
+	}
+
 	inline IDResidue with_renamed_chains(const std::map<std::string, std::string>& renaming_map) const noexcept
 	{
-		IDResidue v=(*this);
-		v.id_chain=id_chain.with_renamed_chains(renaming_map);
-		return v;
+		std::map<std::string, std::string>::const_iterator it=renaming_map.find(id_chain.chain_name);
+		if(it!=renaming_map.end() && id_chain.chain_name!=it->second)
+		{
+			IDResidue v=(*this);
+			v.id_chain.chain_name=it->second;
+			return v;
+		}
+		return (*this);
 	}
 
 	inline bool match_chain_name(const std::string& query_chain_name) const noexcept
@@ -165,11 +183,22 @@ struct IDAtom
 		return false;
 	}
 
+	inline void swap(IDAtom& v) noexcept
+	{
+		id_residue.swap(v.id_residue);
+		atom_name.swap(v.atom_name);
+	}
+
 	inline IDAtom with_renamed_chains(const std::map<std::string, std::string>& renaming_map) const noexcept
 	{
-		IDAtom v=(*this);
-		v.id_residue=id_residue.with_renamed_chains(renaming_map);
-		return v;
+		std::map<std::string, std::string>::const_iterator it=renaming_map.find(id_residue.id_chain.chain_name);
+		if(it!=renaming_map.end() && id_residue.id_chain.chain_name!=it->second)
+		{
+			IDAtom v=(*this);
+			v.id_residue.id_chain.chain_name=it->second;
+			return v;
+		}
+		return (*this);
 	}
 
 	inline bool match_chain_name(const std::string& query_chain_name) const noexcept
@@ -211,7 +240,22 @@ struct IDChainChain
 
 	inline IDChainChain with_renamed_chains(const std::map<std::string, std::string>& renaming_map) const noexcept
 	{
-		return IDChainChain(id_a.with_renamed_chains(renaming_map), id_b.with_renamed_chains(renaming_map));
+		std::map<std::string, std::string>::const_iterator it_a=renaming_map.find(id_a.chain_name);
+		std::map<std::string, std::string>::const_iterator it_b=renaming_map.find(id_b.chain_name);
+		const bool r_a=(it_a!=renaming_map.end() && id_a.chain_name!=it_a->second);
+		const bool r_b=(it_b!=renaming_map.end() && id_b.chain_name!=it_b->second);
+		if(r_a || r_b)
+		{
+			IDChainChain v;
+			v.id_a.chain_name=it_a->second;
+			v.id_b.chain_name=it_b->second;
+			if(v.id_b<v.id_a)
+			{
+				v.id_a.swap(v.id_b);
+			}
+			return v;
+		}
+		return (*this);
 	}
 
 	inline bool match_chain_name(const std::string& query_chain_name) const noexcept
@@ -253,7 +297,28 @@ struct IDResidueResidue
 
 	inline IDResidueResidue with_renamed_chains(const std::map<std::string, std::string>& renaming_map) const noexcept
 	{
-		return IDResidueResidue(id_a.with_renamed_chains(renaming_map), id_b.with_renamed_chains(renaming_map));
+		std::map<std::string, std::string>::const_iterator it_a=renaming_map.find(id_a.id_chain.chain_name);
+		std::map<std::string, std::string>::const_iterator it_b=renaming_map.find(id_b.id_chain.chain_name);
+		const bool r_a=(it_a!=renaming_map.end() && id_a.id_chain.chain_name!=it_a->second);
+		const bool r_b=(it_b!=renaming_map.end() && id_b.id_chain.chain_name!=it_b->second);
+		if(r_a || r_b)
+		{
+			IDResidueResidue v=(*this);
+			if(r_a)
+			{
+				v.id_a.id_chain.chain_name=it_a->second;
+			}
+			if(r_b)
+			{
+				v.id_b.id_chain.chain_name=it_b->second;
+			}
+			if(v.id_b<v.id_a)
+			{
+				v.id_a.swap(v.id_b);
+			}
+			return v;
+		}
+		return (*this);
 	}
 
 	inline bool match_chain_name(const std::string& query_chain_name) const noexcept
@@ -295,7 +360,28 @@ struct IDAtomAtom
 
 	inline IDAtomAtom with_renamed_chains(const std::map<std::string, std::string>& renaming_map) const noexcept
 	{
-		return IDAtomAtom(id_a.with_renamed_chains(renaming_map), id_b.with_renamed_chains(renaming_map));
+		std::map<std::string, std::string>::const_iterator it_a=renaming_map.find(id_a.id_residue.id_chain.chain_name);
+		std::map<std::string, std::string>::const_iterator it_b=renaming_map.find(id_b.id_residue.id_chain.chain_name);
+		const bool r_a=(it_a!=renaming_map.end() && id_a.id_residue.id_chain.chain_name!=it_a->second);
+		const bool r_b=(it_b!=renaming_map.end() && id_b.id_residue.id_chain.chain_name!=it_b->second);
+		if(r_a || r_b)
+		{
+			IDAtomAtom v=(*this);
+			if(r_a)
+			{
+				v.id_a.id_residue.id_chain.chain_name=it_a->second;
+			}
+			if(r_b)
+			{
+				v.id_b.id_residue.id_chain.chain_name=it_b->second;
+			}
+			if(v.id_b<v.id_a)
+			{
+				v.id_a.swap(v.id_b);
+			}
+			return v;
+		}
+		return (*this);
 	}
 
 	inline bool match_chain_name(const std::string& query_chain_name) const noexcept
@@ -303,6 +389,7 @@ struct IDAtomAtom
 		return (id_a.match_chain_name(query_chain_name) || id_b.match_chain_name(query_chain_name));
 	}
 };
+
 
 struct AreaValue
 {
