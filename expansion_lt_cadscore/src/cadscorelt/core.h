@@ -364,18 +364,51 @@ public:
 	template<class MapContainer>
 	static MapContainer rename_chains_in_map_container_with_additive_values(const MapContainer& input_container, const std::map<std::string, std::string>& renaming_map) noexcept
 	{
-		MapContainer result;
-		typename MapContainer::iterator hint=result.end();
-		for(typename MapContainer::const_iterator it=input_container.begin();it!=input_container.end();++it)
+		if(input_container.empty() || renaming_map.empty())
 		{
-			const std::size_t old_size=result.size();
-			hint=result.emplace_hint(hint, it->first.with_renamed_chains(renaming_map), it->second);
-			if(old_size==result.size())
-			{
-				hint->second.add(it->second);
-			}
+			return input_container;
 		}
-		return result;
+		std::size_t identities=0;
+		for(typename std::map<std::string, std::string>::const_iterator it=renaming_map.begin();it!=renaming_map.end();++it)
+		{
+			identities+=(it->second==it->first ? 1 : 0);
+		}
+		if(identities==renaming_map.size())
+		{
+			return input_container;
+		}
+		if(identities==0)
+		{
+			return straight_rename_chains_in_map_container_with_additive_values(input_container, renaming_map);
+		}
+		std::map<std::string, std::string> smaller_renaming_map;
+		init_smaller_renaming_map(renaming_map, smaller_renaming_map);
+		return straight_rename_chains_in_map_container_with_additive_values(input_container, smaller_renaming_map);
+	}
+
+	template<class VectorContainer>
+	static VectorContainer rename_chains_in_vector_container(const VectorContainer& input_container, const std::map<std::string, std::string>& renaming_map) noexcept
+	{
+		if(input_container.empty() || renaming_map.empty())
+		{
+			return input_container;
+		}
+		std::size_t identities=0;
+		for(typename std::map<std::string, std::string>::const_iterator it=renaming_map.begin();it!=renaming_map.end();++it)
+		{
+			identities+=(it->second==it->first ? 1 : 0);
+		}
+		if(identities==renaming_map.size())
+		{
+			return input_container;
+		}
+		if(identities==0)
+		{
+			return straight_rename_chains_in_vector_container(input_container, renaming_map);
+		}
+		std::map<std::string, std::string> smaller_renaming_map;
+		init_smaller_renaming_map(renaming_map, smaller_renaming_map);
+		return straight_rename_chains_in_vector_container(input_container, smaller_renaming_map);
 	}
 
 	template<class MapContainer>
@@ -389,18 +422,6 @@ public:
 			{
 				hint=result.emplace_hint(hint, it->first, it->second);
 			}
-		}
-		return result;
-	}
-
-	template<class VectorContainer>
-	static VectorContainer rename_chains_in_vector_container(const VectorContainer& input_container, const std::map<std::string, std::string>& renaming_map) noexcept
-	{
-		VectorContainer result;
-		result.reserve(input_container.size());
-		for(typename VectorContainer::const_iterator it=input_container.begin();it!=input_container.end();++it)
-		{
-			result.push_back(it->with_renamed_chains(renaming_map));
 		}
 		return result;
 	}
@@ -457,6 +478,49 @@ public:
 			}
 		}
 		return result;
+	}
+
+private:
+	template<class MapContainer>
+	static MapContainer straight_rename_chains_in_map_container_with_additive_values(const MapContainer& input_container, const std::map<std::string, std::string>& renaming_map) noexcept
+	{
+		MapContainer result;
+		typename MapContainer::iterator hint=result.end();
+		for(typename MapContainer::const_iterator it=input_container.begin();it!=input_container.end();++it)
+		{
+			const std::size_t old_size=result.size();
+			hint=result.emplace_hint(hint, it->first.with_renamed_chains(renaming_map), it->second);
+			if(old_size==result.size())
+			{
+				hint->second.add(it->second);
+			}
+		}
+		return result;
+	}
+
+	template<class VectorContainer>
+	static VectorContainer straight_rename_chains_in_vector_container(const VectorContainer& input_container, const std::map<std::string, std::string>& renaming_map) noexcept
+	{
+		VectorContainer result;
+		result.reserve(input_container.size());
+		for(typename VectorContainer::const_iterator it=input_container.begin();it!=input_container.end();++it)
+		{
+			result.emplace_back(it->with_renamed_chains(renaming_map));
+		}
+		return result;
+	}
+
+	static void init_smaller_renaming_map(const std::map<std::string, std::string>& renaming_map, std::map<std::string, std::string>& smaller_renaming_map) noexcept
+	{
+		smaller_renaming_map.clear();
+		std::map<std::string, std::string>::iterator hint=smaller_renaming_map.end();
+		for(typename std::map<std::string, std::string>::const_iterator it=renaming_map.begin();it!=renaming_map.end();++it)
+		{
+			if(it->first!=it->second)
+			{
+				hint=smaller_renaming_map.emplace_hint(hint, it->first, it->second);
+			}
+		}
 	}
 };
 
