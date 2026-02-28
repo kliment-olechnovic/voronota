@@ -1874,6 +1874,44 @@ struct CADDescriptor
 	}
 };
 
+class CacheForRemappingOfChains
+{
+public:
+	CacheForRemappingOfChains() noexcept : sd_ptr_(0), max_entries_(0)
+	{
+	}
+
+	void init(const ScorableData& sd, const std::size_t max_entries) noexcept
+	{
+		sd_ptr_=&sd;
+		max_entries_=max_entries;
+		map_of_renamed_maps_.clear();
+	}
+
+	const std::map<IDResidueResidue, AreaValue>* get_residue_residue_contact_areas_with_chains_renamed(const ScorableData& sd, const std::map<std::string, std::string>& renaming_map) noexcept
+	{
+		if(sd_ptr_==0 || max_entries_==0 || (&sd)!=sd_ptr_)
+		{
+			return 0;
+		}
+		std::map<IDResidueResidue, AreaValue>& renamed_map=map_of_renamed_maps_[renaming_map];
+		if(renamed_map.empty())
+		{
+			if(map_of_renamed_maps_.size()>max_entries_)
+			{
+				map_of_renamed_maps_.clear();
+				renamed_map=map_of_renamed_maps_[renaming_map];
+			}
+			renamed_map=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(sd.residue_residue_contact_areas, renaming_map);
+		}
+		return &renamed_map;
+	}
+private:
+	const ScorableData* sd_ptr_;
+	std::size_t max_entries_;
+	std::map< std::map<std::string, std::string>, std::map<IDResidueResidue, AreaValue> > map_of_renamed_maps_;
+};
+
 class ScoringResult
 {
 public:
@@ -1942,7 +1980,7 @@ public:
 
 	std::vector<AtomBall> compatible_model_atom_balls;
 
-	ScoringResult() noexcept : valid_(false)
+	ScoringResult() noexcept : valid_(false), cache_for_remapping_of_chains_ptr_(0)
 	{
 	}
 
@@ -2004,6 +2042,16 @@ public:
 		identity_of_chains=CADDescriptor();
 
 		compatible_model_atom_balls.clear();
+	}
+
+	void set_cache_for_remapping_of_chains(CacheForRemappingOfChains& cache_for_remapping_of_chains) noexcept
+	{
+		cache_for_remapping_of_chains_ptr_=&cache_for_remapping_of_chains;
+	}
+
+	void unset_cache_for_remapping_of_chains() noexcept
+	{
+		cache_for_remapping_of_chains_ptr_=0;
 	}
 
 	bool construct(const ConstructionParameters& init_params, const ScorableData& target_data, const ScorableData& model_data, std::ostream& error_log) noexcept
@@ -2074,7 +2122,7 @@ private:
 			if(init_params.remap_chains)
 			{
 				ConstructionParameters adjusted_init_params=init_params;
-				if(!remap_chains_optimally(target_data, model_data, adjusted_init_params.max_permutations_to_check_exhaustively, adjusted_init_params.chain_renaming_map, error_log))
+				if(!remap_chains_optimally(target_data, model_data, adjusted_init_params.max_permutations_to_check_exhaustively, adjusted_init_params.chain_renaming_map, error_log, cache_for_remapping_of_chains_ptr_))
 				{
 					error_log << "Automatic chain remapping failed.\n";
 					return false;
@@ -2481,7 +2529,7 @@ private:
 		return result;
 	}
 
-	static bool remap_chains_optimally(const ScorableData& target_data, const ScorableData& model_data, const int max_permutations_to_check_exhaustively, std::map<std::string, std::string>& final_chain_renaming_map, std::ostream& error_log) noexcept
+	static bool remap_chains_optimally(const ScorableData& target_data, const ScorableData& model_data, const int max_permutations_to_check_exhaustively, std::map<std::string, std::string>& final_chain_renaming_map, std::ostream& error_log, CacheForRemappingOfChains* cache_ptr) noexcept
 	{
 		final_chain_renaming_map.clear();
 
@@ -2532,7 +2580,20 @@ private:
 					const bool consistent_with_reference_sequence_ids=target_data.chain_sequences_mapping_result.empty() || model_data.chain_sequences_mapping_result.empty() || (target_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(mapped_value)==model_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(chain_names_in_model[0]));
 					if(consistent_with_reference_sequence_ids)
 					{
-						const double score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, renaming_map)).score();
+						double score=-1.0;
+						const std::map<IDResidueResidue, AreaValue>* renamed_map_ptr=0;
+						if(cache_ptr!=0)
+						{
+							renamed_map_ptr=cache_ptr->get_residue_residue_contact_areas_with_chains_renamed(model_data, renaming_map);
+						}
+						if(renamed_map_ptr!=0)
+						{
+							score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, *renamed_map_ptr).score();
+						}
+						else
+						{
+							score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, renaming_map)).score();
+						}
 						if(score>best_score)
 						{
 							best_score=score;
@@ -2587,7 +2648,20 @@ private:
 						if(consistent_with_reference_sequence_ids)
 						{
 							std::map<std::string, std::string> renaming_map=ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(actual_model_chain_names, actual_target_chain_names);
-							const double score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, renaming_map)).score();
+							double score=-1.0;
+							const std::map<IDResidueResidue, AreaValue>* renamed_map_ptr=0;
+							if(cache_ptr!=0)
+							{
+								renamed_map_ptr=cache_ptr->get_residue_residue_contact_areas_with_chains_renamed(model_data, renaming_map);
+							}
+							if(renamed_map_ptr!=0)
+							{
+								score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, *renamed_map_ptr).score();
+							}
+							else
+							{
+								score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, renaming_map)).score();
+							}
 							if(score>best_score)
 							{
 								best_score=score;
@@ -2723,6 +2797,7 @@ private:
 	}
 
 	bool valid_;
+	CacheForRemappingOfChains* cache_for_remapping_of_chains_ptr_;
 };
 
 }

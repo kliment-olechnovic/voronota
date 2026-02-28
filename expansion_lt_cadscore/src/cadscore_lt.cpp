@@ -952,47 +952,53 @@ bool run(const ApplicationParameters& app_params)
 		scoring_result_construction_parameters.record_local_scores_on_chain_level=false;
 		scoring_result_construction_parameters.record_compatible_model_atom_balls=false;
 
-		std::vector<std::int8_t> list_of_global_scores(target_sd_indices.size()*model_sd_indices.size());
+		std::vector<std::int8_t> list_of_global_scores(model_sd_indices.size()*target_sd_indices.size());
 
 #ifdef CADSCORELT_OPENMP
 #pragma omp parallel for
 #endif
-		for(std::size_t gi=0;gi<list_of_global_scores.size();gi++)
+		for(std::size_t i_mi=0;i_mi<model_sd_indices.size();i_mi++)
 		{
-			const std::size_t ti=gi/model_sd_indices.size();
-			const std::size_t mi=gi%model_sd_indices.size();
-			if(ti==mi)
+			const std::size_t mi=model_sd_indices[i_mi];
+			const cadscorelt::ScorableData& model_sd=list_of_unique_scorable_data[mi];
+			cadscorelt::CacheForRemappingOfChains cache_for_remapping_of_chains;
+			cache_for_remapping_of_chains.init(model_sd, 100);
+			for(const std::size_t ti : target_sd_indices)
 			{
-				list_of_global_scores[gi]=static_cast<std::int8_t>(100);
-			}
-			else
-			{
-				const cadscorelt::ScorableData& target_sd=list_of_unique_scorable_data[ti];
-				const cadscorelt::ScorableData& model_sd=list_of_unique_scorable_data[mi];
-				cadscorelt::ScoringResult sr;
-				std::ostringstream local_err_stream;
-				sr.construct(scoring_result_construction_parameters, target_sd, model_sd, local_err_stream);
-				double real_score=-1.0;
-				if(sr.valid() && local_err_stream.str().empty())
+				const std::size_t gi=mi*target_sd_indices.size()+ti;
+				if(ti==mi)
 				{
-					if(app_params.scoring_type_contacts && app_params.scoring_level_residue){real_score=sr.cadscores_residue_residue_summarized_globally.score();}
-					else if(app_params.scoring_type_contacts && app_params.scoring_level_atom){real_score=sr.cadscores_atom_atom_summarized_globally.score();}
-					else if(app_params.scoring_type_contacts && app_params.scoring_level_chain){real_score=sr.cadscores_chain_chain_summarized_globally.score();}
-					else if(app_params.scoring_type_sas && app_params.scoring_level_residue){real_score=sr.cadscores_residue_sas_summarized_globally.score();}
-					else if(app_params.scoring_type_sas && app_params.scoring_level_atom){real_score=sr.cadscores_atom_sas_summarized_globally.score();}
-					else if(app_params.scoring_type_sas && app_params.scoring_level_chain){real_score=sr.cadscores_chain_sas_summarized_globally.score();}
-					else if(app_params.scoring_type_sites && app_params.scoring_level_residue){real_score=sr.cadscores_residue_site_summarized_globally.score();}
-					else if(app_params.scoring_type_sites && app_params.scoring_level_atom){real_score=sr.cadscores_atom_site_summarized_globally.score();}
-					else if(app_params.scoring_type_sites && app_params.scoring_level_chain){real_score=sr.cadscores_chain_site_summarized_globally.score();}
-				}
-				if(real_score>=0.0)
-				{
-					real_score=std::min(real_score*100.0+0.5, 100.0);
-					list_of_global_scores[gi]=static_cast<std::int8_t>(real_score);
+					list_of_global_scores[gi]=static_cast<std::int8_t>(100);
 				}
 				else
 				{
-					list_of_global_scores[gi]=static_cast<std::int8_t>(-1);
+					const cadscorelt::ScorableData& target_sd=list_of_unique_scorable_data[ti];
+					cadscorelt::ScoringResult sr;
+					sr.set_cache_for_remapping_of_chains(cache_for_remapping_of_chains);
+					std::ostringstream local_err_stream;
+					sr.construct(scoring_result_construction_parameters, target_sd, model_sd, local_err_stream);
+					double real_score=-1.0;
+					if(sr.valid() && local_err_stream.str().empty())
+					{
+						if(app_params.scoring_type_contacts && app_params.scoring_level_residue){real_score=sr.cadscores_residue_residue_summarized_globally.score();}
+						else if(app_params.scoring_type_contacts && app_params.scoring_level_atom){real_score=sr.cadscores_atom_atom_summarized_globally.score();}
+						else if(app_params.scoring_type_contacts && app_params.scoring_level_chain){real_score=sr.cadscores_chain_chain_summarized_globally.score();}
+						else if(app_params.scoring_type_sas && app_params.scoring_level_residue){real_score=sr.cadscores_residue_sas_summarized_globally.score();}
+						else if(app_params.scoring_type_sas && app_params.scoring_level_atom){real_score=sr.cadscores_atom_sas_summarized_globally.score();}
+						else if(app_params.scoring_type_sas && app_params.scoring_level_chain){real_score=sr.cadscores_chain_sas_summarized_globally.score();}
+						else if(app_params.scoring_type_sites && app_params.scoring_level_residue){real_score=sr.cadscores_residue_site_summarized_globally.score();}
+						else if(app_params.scoring_type_sites && app_params.scoring_level_atom){real_score=sr.cadscores_atom_site_summarized_globally.score();}
+						else if(app_params.scoring_type_sites && app_params.scoring_level_chain){real_score=sr.cadscores_chain_site_summarized_globally.score();}
+					}
+					if(real_score>=0.0)
+					{
+						real_score=std::min(real_score*100.0+0.5, 100.0);
+						list_of_global_scores[gi]=static_cast<std::int8_t>(real_score);
+					}
+					else
+					{
+						list_of_global_scores[gi]=static_cast<std::int8_t>(-1);
+					}
 				}
 			}
 		}
@@ -1011,7 +1017,7 @@ bool run(const ApplicationParameters& app_params)
 			for(std::size_t gi=0;gi<list_of_global_scores.size();gi++)
 			{
 				buf.append(std::to_string(list_of_global_scores[gi]));
-				buf.push_back(((gi+1)%model_sd_indices.size()==0) ? '\n' : '\t');
+				buf.push_back(((gi+1)%target_sd_indices.size()==0) ? '\n' : '\t');
 				if(buf.size()>flush_threshold || (gi+1==list_of_global_scores.size() && !buf.empty()))
 				{
 					outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
