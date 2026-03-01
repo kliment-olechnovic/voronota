@@ -996,7 +996,7 @@ bool run(const ApplicationParameters& app_params)
 				{
 					list_of_global_scores[gi]=static_cast<std::int8_t>(100);
 				}
-				else if(symmetric_f1_matrix && mi>ti)
+				else if(symmetric_f1_matrix && (gi%2==0 ? mi>ti : mi<ti))
 				{
 					list_of_global_scores[gi]=static_cast<std::int8_t>(-1);
 				}
@@ -1059,7 +1059,7 @@ bool run(const ApplicationParameters& app_params)
 			{
 				const std::size_t mi=gi/total_number_of_targets;
 				const std::size_t ti=gi%total_number_of_targets;
-				if(mi>ti)
+				if(gi%2==0 ? mi>ti : mi<ti)
 				{
 					const std::size_t equivalent_gi=ti*total_number_of_targets+mi;
 					list_of_global_scores[gi]=list_of_global_scores[equivalent_gi];
