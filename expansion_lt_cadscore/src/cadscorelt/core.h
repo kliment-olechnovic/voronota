@@ -1881,7 +1881,7 @@ public:
 	{
 	}
 
-	void enable(const ScorableData& sd, const std::size_t max_entries) noexcept
+	void enable(const ScorableData& sd, const int max_entries) noexcept
 	{
 		const ScorableData* sd_ptr=&sd;
 		if(sd_ptr_!=sd_ptr)
@@ -1889,7 +1889,7 @@ public:
 			map_of_renamed_maps_.clear();
 			sd_ptr_=sd_ptr;
 		}
-		max_entries_=max_entries;
+		max_entries_=static_cast<std::size_t>(std::max(0, max_entries));
 	}
 
 	void disable() noexcept
