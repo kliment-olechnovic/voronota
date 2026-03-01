@@ -944,6 +944,8 @@ bool run(const ApplicationParameters& app_params)
 			}
 		}
 
+		const bool symmetric_f1_matrix=(app_params.output_with_f1 && target_sd_indices==model_sd_indices);
+
 		std::string output_score_name;
 		{
 			if(app_params.scoring_type_contacts && app_params.scoring_level_residue){output_score_name="residue_residue";}
@@ -955,6 +957,15 @@ bool run(const ApplicationParameters& app_params)
 			else if(app_params.scoring_type_sites && app_params.scoring_level_residue){output_score_name="residue_sites";}
 			else if(app_params.scoring_type_sites && app_params.scoring_level_atom){output_score_name="atom_sites";}
 			else if(app_params.scoring_type_sites && app_params.scoring_level_chain){output_score_name="chain_sites";}
+
+			if(app_params.output_with_f1)
+			{
+				output_score_name+="_F1_of_areas";
+			}
+			else
+			{
+				output_score_name+="_cadscore";
+			}
 		}
 
 		cadscorelt::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
@@ -985,6 +996,10 @@ bool run(const ApplicationParameters& app_params)
 				{
 					list_of_global_scores[gi]=static_cast<std::int8_t>(100);
 				}
+				else if(symmetric_f1_matrix && mi>ti)
+				{
+					list_of_global_scores[gi]=static_cast<std::int8_t>(-1);
+				}
 				else
 				{
 					const cadscorelt::ScorableData& model_sd=list_of_unique_scorable_data[mi];
@@ -1000,15 +1015,30 @@ bool run(const ApplicationParameters& app_params)
 					double real_score=-1.0;
 					if(sr.valid() && local_err_stream.str().empty())
 					{
-						if(app_params.scoring_type_contacts && app_params.scoring_level_residue){real_score=sr.cadscores_residue_residue_summarized_globally.score();}
-						else if(app_params.scoring_type_contacts && app_params.scoring_level_atom){real_score=sr.cadscores_atom_atom_summarized_globally.score();}
-						else if(app_params.scoring_type_contacts && app_params.scoring_level_chain){real_score=sr.cadscores_chain_chain_summarized_globally.score();}
-						else if(app_params.scoring_type_sas && app_params.scoring_level_residue){real_score=sr.cadscores_residue_sas_summarized_globally.score();}
-						else if(app_params.scoring_type_sas && app_params.scoring_level_atom){real_score=sr.cadscores_atom_sas_summarized_globally.score();}
-						else if(app_params.scoring_type_sas && app_params.scoring_level_chain){real_score=sr.cadscores_chain_sas_summarized_globally.score();}
-						else if(app_params.scoring_type_sites && app_params.scoring_level_residue){real_score=sr.cadscores_residue_site_summarized_globally.score();}
-						else if(app_params.scoring_type_sites && app_params.scoring_level_atom){real_score=sr.cadscores_atom_site_summarized_globally.score();}
-						else if(app_params.scoring_type_sites && app_params.scoring_level_chain){real_score=sr.cadscores_chain_site_summarized_globally.score();}
+						if(app_params.output_with_f1)
+						{
+							if(app_params.scoring_type_contacts && app_params.scoring_level_residue){real_score=sr.cadscores_residue_residue_summarized_globally.score_F1();}
+							else if(app_params.scoring_type_contacts && app_params.scoring_level_atom){real_score=sr.cadscores_atom_atom_summarized_globally.score_F1();}
+							else if(app_params.scoring_type_contacts && app_params.scoring_level_chain){real_score=sr.cadscores_chain_chain_summarized_globally.score_F1();}
+							else if(app_params.scoring_type_sas && app_params.scoring_level_residue){real_score=sr.cadscores_residue_sas_summarized_globally.score_F1();}
+							else if(app_params.scoring_type_sas && app_params.scoring_level_atom){real_score=sr.cadscores_atom_sas_summarized_globally.score_F1();}
+							else if(app_params.scoring_type_sas && app_params.scoring_level_chain){real_score=sr.cadscores_chain_sas_summarized_globally.score_F1();}
+							else if(app_params.scoring_type_sites && app_params.scoring_level_residue){real_score=sr.cadscores_residue_site_summarized_globally.score_F1();}
+							else if(app_params.scoring_type_sites && app_params.scoring_level_atom){real_score=sr.cadscores_atom_site_summarized_globally.score_F1();}
+							else if(app_params.scoring_type_sites && app_params.scoring_level_chain){real_score=sr.cadscores_chain_site_summarized_globally.score_F1();}
+						}
+						else
+						{
+							if(app_params.scoring_type_contacts && app_params.scoring_level_residue){real_score=sr.cadscores_residue_residue_summarized_globally.score();}
+							else if(app_params.scoring_type_contacts && app_params.scoring_level_atom){real_score=sr.cadscores_atom_atom_summarized_globally.score();}
+							else if(app_params.scoring_type_contacts && app_params.scoring_level_chain){real_score=sr.cadscores_chain_chain_summarized_globally.score();}
+							else if(app_params.scoring_type_sas && app_params.scoring_level_residue){real_score=sr.cadscores_residue_sas_summarized_globally.score();}
+							else if(app_params.scoring_type_sas && app_params.scoring_level_atom){real_score=sr.cadscores_atom_sas_summarized_globally.score();}
+							else if(app_params.scoring_type_sas && app_params.scoring_level_chain){real_score=sr.cadscores_chain_sas_summarized_globally.score();}
+							else if(app_params.scoring_type_sites && app_params.scoring_level_residue){real_score=sr.cadscores_residue_site_summarized_globally.score();}
+							else if(app_params.scoring_type_sites && app_params.scoring_level_atom){real_score=sr.cadscores_atom_site_summarized_globally.score();}
+							else if(app_params.scoring_type_sites && app_params.scoring_level_chain){real_score=sr.cadscores_chain_site_summarized_globally.score();}
+						}
 					}
 					if(real_score>=0.0)
 					{
@@ -1023,8 +1053,22 @@ bool run(const ApplicationParameters& app_params)
 			}
 		}
 
+		if(symmetric_f1_matrix)
 		{
-			const std::string outfile=app_params.output_dir+std::string("/global_cadscores_")+output_score_name+std::string(".tsv");
+			for(std::size_t gi=0;gi<list_of_global_scores.size();gi++)
+			{
+				const std::size_t mi=gi/total_number_of_targets;
+				const std::size_t ti=gi%total_number_of_targets;
+				if(mi>ti)
+				{
+					const std::size_t equivalent_gi=ti*total_number_of_targets+mi;
+					list_of_global_scores[gi]=list_of_global_scores[equivalent_gi];
+				}
+			}
+		}
+
+		{
+			const std::string outfile=app_params.output_dir+std::string("/")+output_score_name+std::string("_global.tsv");
 			std::ofstream outstream(outfile, std::ios::binary);
 			if(outstream.fail())
 			{
