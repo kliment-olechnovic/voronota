@@ -955,23 +955,25 @@ bool run(const ApplicationParameters& app_params)
 		std::vector<std::int8_t> list_of_global_scores(model_sd_indices.size()*target_sd_indices.size());
 
 #ifdef CADSCORELT_OPENMP
-#pragma omp parallel for
+#pragma omp parallel
 #endif
-		for(std::size_t i_mi=0;i_mi<model_sd_indices.size();i_mi++)
 		{
-			const std::size_t mi=model_sd_indices[i_mi];
-			const cadscorelt::ScorableData& model_sd=list_of_unique_scorable_data[mi];
 			cadscorelt::CacheForRemappingOfChains cache_for_remapping_of_chains;
-			cache_for_remapping_of_chains.init(model_sd, 100);
-			for(const std::size_t ti : target_sd_indices)
+#ifdef CADSCORELT_OPENMP
+#pragma omp for
+#endif
+			for(std::size_t gi=0;gi<list_of_global_scores.size();gi++)
 			{
-				const std::size_t gi=mi*target_sd_indices.size()+ti;
+				const std::size_t mi=gi/target_sd_indices.size();
+				const std::size_t ti=gi%target_sd_indices.size();
 				if(ti==mi)
 				{
 					list_of_global_scores[gi]=static_cast<std::int8_t>(100);
 				}
 				else
 				{
+					const cadscorelt::ScorableData& model_sd=list_of_unique_scorable_data[mi];
+					cache_for_remapping_of_chains.enable(model_sd, 100);
 					const cadscorelt::ScorableData& target_sd=list_of_unique_scorable_data[ti];
 					cadscorelt::ScoringResult sr;
 					sr.set_cache_for_remapping_of_chains(cache_for_remapping_of_chains);
