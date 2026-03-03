@@ -1,0 +1,88 @@
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/protein_amyloids1/7LNA-assembly1.cif" \
+  -m "./input/protein_amyloids1/7QIG-assembly1.cif" "./input/protein_amyloids1/8EFU-assembly1.cif" \
+  --reference-sequences-file "./input/protein_amyloids1/7LNA.fasta" \
+  --save-sequence-alignments \
+  --subselect-contacts "[-inter-chain -a1 [-chain A] -a2 [-chain B]]" \
+  --output-dir ./output/protein_amyloids1/results_AB_t_7LNA \
+  --local-output-formats pdb \
+| column -t
+target              model               t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
+7LNA-assembly1.cif  8EFU-assembly1.cif  0     2     0.651417                  .
+7LNA-assembly1.cif  7QIG-assembly1.cif  0     1     0.537692                  .
+
+
+cadscore-lt \
+  -t "./input/protein_amyloids1/7LNA-assembly1.cif" \
+  -m "./input/protein_amyloids1/7QIG-assembly1.cif" "./input/protein_amyloids1/8EFU-assembly1.cif" \
+  --reference-sequences-file "./input/protein_amyloids1/7LNA.fasta" \
+  --save-sequence-alignments \
+  --subselect-contacts "[-a1 [-chain A] -a2 [-chain A]]" \
+  --output-dir ./output/protein_amyloids1/results_AA_t_7LNA \
+  --local-output-formats pdb \
+| column -t
+target              model               t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
+7LNA-assembly1.cif  7QIG-assembly1.cif  0     1     0.658944                  .
+7LNA-assembly1.cif  8EFU-assembly1.cif  0     2     0.656729                  .
+  
+####################################################################
+
+cadscore-lt \
+  -t "./input/protein_amyloids1/7QIG-assembly1.cif" \
+  -m "./input/protein_amyloids1/7LNA-assembly1.cif" "./input/protein_amyloids1/8EFU-assembly1.cif" \
+  --reference-sequences-file "./input/protein_amyloids1/7QIG.fasta" \
+  --save-sequence-alignments \
+  --subselect-contacts "[-inter-chain -a1 [-chain A] -a2 [-chain B]]" \
+  --output-dir ./output/protein_amyloids1/results_AB_t_7QIG \
+  --local-output-formats pdb \
+| column -t
+target              model               t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
+7QIG-assembly1.cif  8EFU-assembly1.cif  1     2     0.550869                  .
+7QIG-assembly1.cif  7LNA-assembly1.cif  1     0     0.511706                  .
+
+cadscore-lt \
+  -t "./input/protein_amyloids1/7QIG-assembly1.cif" \
+  -m "./input/protein_amyloids1/7LNA-assembly1.cif" "./input/protein_amyloids1/8EFU-assembly1.cif" \
+  --reference-sequences-file "./input/protein_amyloids1/7QIG.fasta" \
+  --save-sequence-alignments \
+  --subselect-contacts "[-a1 [-chain A] -a2 [-chain A]]" \
+  --output-dir ./output/protein_amyloids1/results_AA_t_7QIG \
+  --local-output-formats pdb \
+| column -t
+target              model               t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
+7QIG-assembly1.cif  8EFU-assembly1.cif  1     2     0.709116                  .
+7QIG-assembly1.cif  7LNA-assembly1.cif  1     0     0.637093                  .
+
+####################################################################
+
+cadscore-lt \
+  -t "./input/protein_amyloids1/8EFU-assembly1.cif" \
+  -m "./input/protein_amyloids1/7LNA-assembly1.cif" "./input/protein_amyloids1/7QIG-assembly1.cif" \
+  --reference-sequences-file "./input/protein_amyloids1/8EFU.fasta" \
+  --save-sequence-alignments \
+  --subselect-contacts "[-inter-chain -a1 [-chain A] -a2 [-chain B]]" \
+  --output-dir ./output/protein_amyloids1/results_AB_t_8EFU \
+  --local-output-formats pdb graphics-pymol \
+| column -t
+target              model               t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
+8EFU-assembly1.cif  7LNA-assembly1.cif  2     0     0.621511                  .
+8EFU-assembly1.cif  7QIG-assembly1.cif  2     1     0.546664                  .
+
+cadscore-lt \
+  -t "./input/protein_amyloids1/8EFU-assembly1.cif" \
+  -m "./input/protein_amyloids1/7LNA-assembly1.cif" "./input/protein_amyloids1/7QIG-assembly1.cif" \
+  --reference-sequences-file "./input/protein_amyloids1/8EFU.fasta" \
+  --save-sequence-alignments \
+  --subselect-contacts "[-a1 [-chain A] -a2 [-chain A]]" \
+  --output-dir ./output/protein_amyloids1/results_AA_t_8EFU \
+  --local-output-formats pdb graphics-pymol \
+| column -t
+target              model               t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
+8EFU-assembly1.cif  7QIG-assembly1.cif  2     1     0.70051                   .
+8EFU-assembly1.cif  7LNA-assembly1.cif  2     0     0.612129                  .
+
+####################################################################
+

@@ -27,6 +27,8 @@ cd - &> /dev/null
 
 ./run_tutorial_part2_tests.bash
 
+./run_polymorphic_tests.bash
+
 git status -s ./output/
 
 ################################################################################

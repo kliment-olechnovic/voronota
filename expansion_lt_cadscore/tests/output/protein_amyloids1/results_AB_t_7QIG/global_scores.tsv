@@ -1,0 +1,3 @@
+target	model	t_id	m_id	residue_residue_cadscore	renaming_of_model_chains
+7QIG-assembly1.cif	8EFU-assembly1.cif	1	2	0.550869	.
+7QIG-assembly1.cif	7LNA-assembly1.cif	1	0	0.511706	.
