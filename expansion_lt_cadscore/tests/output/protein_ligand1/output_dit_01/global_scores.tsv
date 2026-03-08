@@ -1,0 +1,5 @@
+target	model	t_id	m_id	atom_atom_cadscore	atom_atom_F1_of_areas	atom_atom_target_area	atom_atom_model_area	atom_atom_TP_area	atom_atom_FP_area	atom_atom_FN_area	identity_of_residues	identity_of_atoms	identity_of_chains
+1a30_target.cif	1a30_model2.cif	4	1	0.468029	0.61711	377.407683	310.204839	234.191802	147.396062	143.215881	100	100	100
+1a30_target.cif	1a30_model3.cif	4	2	0.35366	0.476373	377.407683	254.791682	178.512831	193.546205	198.894852	100	100	100
+1a30_target.cif	1a30_model4.cif	4	3	0.230513	0.304661	377.407683	184.052817	117.927722	278.822145	259.479961	100	100	100
+1a30_target.cif	1a30_model1.cif	4	0	0.058834	0.074674	377.407683	49.54308	29.486256	382.833971	347.921427	100	100	100

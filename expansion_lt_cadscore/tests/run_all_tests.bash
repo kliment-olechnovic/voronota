@@ -29,6 +29,8 @@ cd - &> /dev/null
 
 ./run_polymorphic_tests.bash
 
+./run_protein_ligand_tests.bash
+
 git status -s ./output/
 
 ################################################################################
