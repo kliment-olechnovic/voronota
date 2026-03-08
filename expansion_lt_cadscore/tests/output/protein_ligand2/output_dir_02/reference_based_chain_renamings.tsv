@@ -1,0 +1,11 @@
+index	file	renaming_of_chains
+0	model0.cif.pdb	1=A,B=B,X=C
+1	model1.cif.pdb	A=A,B=B,X=C
+2	model2.cif.pdb	A=A,B=B,X=C
+3	model3.cif.pdb	A=A,C=B,X=C
+4	model4.cif.pdb	A=A,C=B,X=C
+5	model5.cif.pdb	A=A,C=B,X=C
+6	model6.cif.pdb	A=A,D=B,X=C
+7	model7.cif.pdb	A=A,D=B,X=C
+8	model8.cif.pdb	A=A,D=B,X=C
+9	model9.cif.pdb	A=A,E=B,X=C

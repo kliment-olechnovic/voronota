@@ -29,7 +29,9 @@ cd - &> /dev/null
 
 ./run_polymorphic_tests.bash
 
-./run_protein_ligand_tests.bash
+./run_protein_ligand_part1_tests.bash
+
+./run_protein_ligand_part2_tests.bash
 
 ./run_protein_rna_tests.bash
 

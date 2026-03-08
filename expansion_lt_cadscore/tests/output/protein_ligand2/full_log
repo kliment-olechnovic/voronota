@@ -1,0 +1,424 @@
+
+####################################################################
+
+cadscore-lt \
+  --include-heteroatoms \
+  --models "./input/protein_ligand2/models" \
+  --scoring-levels atom residue \
+  --scoring-types contacts \
+  --subselect-contacts "[-a1 [-protein] -a2! [-protein]]" \
+  --subselect-atoms "[-protein]" \
+  --output-with-f1 \
+  --output-with-identities \
+| column -t
+target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  atom_atom_cadscore  atom_atom_F1_of_areas  identity_of_residues  identity_of_atoms  identity_of_chains
+model4.cif  model9.cif  4     9     0.981944                  0.990965                     0.916999            0.957394               100                   100                100
+model9.cif  model4.cif  9     4     0.981918                  0.990965                     0.918363            0.957394               100                   100                100
+model6.cif  model7.cif  6     7     0.96494                   0.982433                     0.883619            0.93901                100                   100                100
+model7.cif  model6.cif  7     6     0.964935                  0.982433                     0.888179            0.93901                100                   100                100
+model6.cif  model8.cif  6     8     0.954115                  0.976118                     0.725678            0.770773               100                   100                100
+model8.cif  model6.cif  8     6     0.95257                   0.976118                     0.727225            0.770773               100                   100                100
+model1.cif  model2.cif  1     2     0.951196                  0.975266                     0.676461            0.72713                100                   100                100
+model2.cif  model1.cif  2     1     0.950744                  0.975266                     0.675432            0.72713                100                   100                100
+model7.cif  model8.cif  7     8     0.944772                  0.971612                     0.703083            0.757973               100                   100                100
+model8.cif  model7.cif  8     7     0.943375                  0.971612                     0.703519            0.757973               100                   100                100
+model1.cif  model3.cif  1     3     0.938444                  0.968286                     0.518               0.576335               100                   99.961449          100
+model1.cif  model5.cif  1     5     0.937379                  0.968042                     0.694977            0.741246               100                   100                100
+model3.cif  model1.cif  3     1     0.936909                  0.968286                     0.514852            0.576335               100                   100                100
+model5.cif  model1.cif  5     1     0.936316                  0.968042                     0.688004            0.741246               100                   100                100
+model2.cif  model5.cif  2     5     0.935723                  0.967824                     0.81679             0.870986               100                   100                100
+model5.cif  model2.cif  5     2     0.935693                  0.967824                     0.817433            0.870986               100                   100                100
+model3.cif  model2.cif  3     2     0.928002                  0.962815                     0.525695            0.608036               100                   100                100
+model3.cif  model5.cif  3     5     0.926262                  0.96234                      0.603758            0.680811               100                   100                100
+model2.cif  model3.cif  2     3     0.926008                  0.962815                     0.528944            0.608036               100                   99.961449          100
+model5.cif  model3.cif  5     3     0.924511                  0.96234                      0.603397            0.680811               100                   99.961449          100
+model5.cif  model8.cif  5     8     0.903701                  0.934685                     0.702245            0.782748               100                   99.961449          100
+model5.cif  model7.cif  5     7     0.902311                  0.939622                     0.529471            0.609445               100                   99.961449          100
+model5.cif  model6.cif  5     6     0.899242                  0.933725                     0.52023             0.59702                100                   99.961449          100
+model3.cif  model8.cif  3     8     0.891615                  0.928731                     0.573395            0.668037               100                   100                100
+model3.cif  model6.cif  3     6     0.890573                  0.929376                     0.443771            0.527254               100                   100                100
+model3.cif  model7.cif  3     7     0.888398                  0.932637                     0.430817            0.523904               100                   100                100
+model2.cif  model6.cif  2     6     0.887437                  0.927937                     0.507049            0.581892               100                   99.961449          100
+model1.cif  model6.cif  1     6     0.882159                  0.92536                      0.651299            0.736149               100                   99.961449          100
+model7.cif  model5.cif  7     5     0.879969                  0.939622                     0.523127            0.609445               100                   100                100
+model2.cif  model7.cif  2     7     0.879966                  0.928467                     0.508834            0.59187                100                   99.961449          100
+model2.cif  model8.cif  2     8     0.879066                  0.922499                     0.613532            0.700494               100                   99.961449          100
+model1.cif  model8.cif  1     8     0.878532                  0.921981                     0.526789            0.595348               100                   99.961449          100
+model1.cif  model7.cif  1     7     0.875919                  0.92637                      0.656453            0.741023               100                   99.961449          100
+model8.cif  model5.cif  8     5     0.870679                  0.934685                     0.683042            0.782748               100                   100                100
+model6.cif  model5.cif  6     5     0.86991                   0.933725                     0.496798            0.59702                100                   100                100
+model7.cif  model3.cif  7     3     0.866106                  0.932637                     0.448523            0.523904               100                   100                100
+model6.cif  model3.cif  6     3     0.859982                  0.929376                     0.444658            0.527254               100                   100                100
+model6.cif  model2.cif  6     2     0.858419                  0.927937                     0.486263            0.581892               100                   100                100
+model7.cif  model2.cif  7     2     0.858055                  0.928467                     0.505719            0.59187                100                   100                100
+model8.cif  model3.cif  8     3     0.857822                  0.928731                     0.572349            0.668037               100                   100                100
+model7.cif  model1.cif  7     1     0.853292                  0.92637                      0.640622            0.741023               100                   100                100
+model6.cif  model1.cif  6     1     0.850986                  0.92536                      0.62268             0.736149               100                   100                100
+model8.cif  model2.cif  8     2     0.847047                  0.922499                     0.596793            0.700494               100                   100                100
+model8.cif  model1.cif  8     1     0.844699                  0.921981                     0.499736            0.595348               100                   100                100
+model1.cif  model0.cif  1     0     0                         0                            0                   0                      0.310559              1.156515           50
+model2.cif  model0.cif  2     0     0                         0                            0                   0                      0.310559              1.156515           50
+model3.cif  model0.cif  3     0     0                         0                            0                   0                      0.310559              1.156961           50
+model4.cif  model0.cif  4     0     0                         0                            0                   0                      0.310559              1.156515           50
+model5.cif  model0.cif  5     0     0                         0                            0                   0                      0.310559              1.156515           50
+model6.cif  model0.cif  6     0     0                         0                            0                   0                      0.310559              1.156961           50
+model7.cif  model0.cif  7     0     0                         0                            0                   0                      0.310559              1.156961           50
+model8.cif  model0.cif  8     0     0                         0                            0                   0                      0.310559              1.156961           50
+model9.cif  model0.cif  9     0     0                         0                            0                   0                      0.310559              1.156515           50
+model0.cif  model1.cif  0     1     0                         0                            0                   0                      0.348432              1.295896           50
+model4.cif  model1.cif  4     1     0                         0                            0                   0                      0.310559              1.156515           50
+model9.cif  model1.cif  9     1     0                         0                            0                   0                      0.310559              1.156515           50
+model0.cif  model2.cif  0     2     0                         0                            0                   0                      0.348432              1.295896           50
+model4.cif  model2.cif  4     2     0                         0                            0                   0                      0.310559              1.156515           50
+model9.cif  model2.cif  9     2     0                         0                            0                   0                      0.310559              1.156515           50
+model0.cif  model3.cif  0     3     0                         0                            0                   0                      0.348432              1.295896           50
+model4.cif  model3.cif  4     3     0                         0                            0                   0                      0.310559              1.156515           50
+model9.cif  model3.cif  9     3     0                         0                            0                   0                      0.310559              1.156515           50
+model0.cif  model4.cif  0     4     0                         0                            0                   0                      0.348432              1.295896           50
+model1.cif  model4.cif  1     4     0                         0                            0                   0                      0.310559              1.156515           50
+model2.cif  model4.cif  2     4     0                         0                            0                   0                      0.310559              1.156515           50
+model3.cif  model4.cif  3     4     0                         0                            0                   0                      0.310559              1.156961           50
+model5.cif  model4.cif  5     4     0                         0                            0                   0                      0.310559              1.156515           50
+model6.cif  model4.cif  6     4     0                         0                            0                   0                      0.310559              1.156961           50
+model7.cif  model4.cif  7     4     0                         0                            0                   0                      0.310559              1.156961           50
+model8.cif  model4.cif  8     4     0                         0                            0                   0                      0.310559              1.156961           50
+model0.cif  model5.cif  0     5     0                         0                            0                   0                      0.348432              1.295896           50
+model4.cif  model5.cif  4     5     0                         0                            0                   0                      0.310559              1.156515           50
+model9.cif  model5.cif  9     5     0                         0                            0                   0                      0.310559              1.156515           50
+model0.cif  model6.cif  0     6     0                         0                            0                   0                      0.348432              1.295896           50
+model4.cif  model6.cif  4     6     0                         0                            0                   0                      0.310559              1.156515           50
+model9.cif  model6.cif  9     6     0                         0                            0                   0                      0.310559              1.156515           50
+model0.cif  model7.cif  0     7     0                         0                            0                   0                      0.348432              1.295896           50
+model4.cif  model7.cif  4     7     0                         0                            0                   0                      0.310559              1.156515           50
+model9.cif  model7.cif  9     7     0                         0                            0                   0                      0.310559              1.156515           50
+model0.cif  model8.cif  0     8     0                         0                            0                   0                      0.348432              1.295896           50
+model4.cif  model8.cif  4     8     0                         0                            0                   0                      0.310559              1.156515           50
+model9.cif  model8.cif  9     8     0                         0                            0                   0                      0.310559              1.156515           50
+model0.cif  model9.cif  0     9     0                         0                            0                   0                      0.348432              1.295896           50
+model1.cif  model9.cif  1     9     0                         0                            0                   0                      0.310559              1.156515           50
+model2.cif  model9.cif  2     9     0                         0                            0                   0                      0.310559              1.156515           50
+model3.cif  model9.cif  3     9     0                         0                            0                   0                      0.310559              1.156961           50
+model5.cif  model9.cif  5     9     0                         0                            0                   0                      0.310559              1.156515           50
+model6.cif  model9.cif  6     9     0                         0                            0                   0                      0.310559              1.156961           50
+model7.cif  model9.cif  7     9     0                         0                            0                   0                      0.310559              1.156961           50
+model8.cif  model9.cif  8     9     0                         0                            0                   0                      0.310559              1.156961           50
+
+####################################################################
+
+cadscore-lt \
+  --include-heteroatoms \
+  --models "./input/protein_ligand2/models" \
+  --scoring-levels atom residue \
+  --scoring-types contacts \
+  --subselect-contacts "[-a1 [-protein] -a2! [-protein]]" \
+  --subselect-atoms "[-protein]" \
+  --output-with-f1 \
+  --output-with-identities \
+  --reference-sequences-file "./input/protein_ligand2/sequences.fasta" \
+  --output-dir ./output/protein_ligand2/output_dir_01 \
+  --save-sequence-alignments \
+| column -t
+target      model       t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  atom_atom_cadscore  atom_atom_F1_of_areas  renaming_of_model_chains  identity_of_residues  identity_of_atoms  identity_of_chains
+model4.cif  model9.cif  4     9     0.981944                  0.990965                     0.916999            0.957394               .                         100                   100                100
+model9.cif  model4.cif  9     4     0.981918                  0.990965                     0.918363            0.957394               .                         100                   100                100
+model6.cif  model7.cif  6     7     0.96494                   0.982433                     0.883619            0.93901                .                         100                   100                100
+model7.cif  model6.cif  7     6     0.964935                  0.982433                     0.888179            0.93901                .                         100                   100                100
+model6.cif  model8.cif  6     8     0.954115                  0.976118                     0.725678            0.770773               .                         100                   100                100
+model8.cif  model6.cif  8     6     0.95257                   0.976118                     0.727225            0.770773               .                         100                   100                100
+model1.cif  model2.cif  1     2     0.951196                  0.975266                     0.676461            0.72713                .                         100                   100                100
+model2.cif  model1.cif  2     1     0.950744                  0.975266                     0.675432            0.72713                .                         100                   100                100
+model7.cif  model8.cif  7     8     0.944772                  0.971612                     0.703083            0.757973               .                         100                   100                100
+model8.cif  model7.cif  8     7     0.943375                  0.971612                     0.703519            0.757973               .                         100                   100                100
+model9.cif  model5.cif  9     5     0.939954                  0.969701                     0.595962            0.675987               .                         100                   100                100
+model5.cif  model9.cif  5     9     0.939625                  0.969701                     0.604331            0.675987               .                         100                   100                100
+model1.cif  model3.cif  1     3     0.938444                  0.968286                     0.518               0.576335               .                         100                   99.961449          100
+model1.cif  model5.cif  1     5     0.937379                  0.968042                     0.694977            0.741246               .                         100                   100                100
+model3.cif  model1.cif  3     1     0.936909                  0.968286                     0.514852            0.576335               .                         100                   100                100
+model4.cif  model5.cif  4     5     0.936629                  0.968                        0.600516            0.681217               .                         100                   100                100
+model5.cif  model1.cif  5     1     0.936316                  0.968042                     0.688004            0.741246               .                         100                   100                100
+model4.cif  model3.cif  4     3     0.936306                  0.967909                     0.502375            0.569943               .                         100                   99.961449          100
+model2.cif  model5.cif  2     5     0.935723                  0.967824                     0.81679             0.870986               .                         100                   100                100
+model5.cif  model2.cif  5     2     0.935693                  0.967824                     0.817433            0.870986               .                         100                   100                100
+model5.cif  model4.cif  5     4     0.935387                  0.968                        0.605923            0.681217               .                         100                   100                100
+model3.cif  model4.cif  3     4     0.935349                  0.967909                     0.509828            0.569943               .                         100                   100                100
+model9.cif  model3.cif  9     3     0.93013                   0.964822                     0.481276            0.556756               .                         100                   99.961449          100
+model3.cif  model9.cif  3     9     0.929188                  0.964822                     0.491506            0.556756               .                         100                   100                100
+model3.cif  model2.cif  3     2     0.928002                  0.962815                     0.525695            0.608036               .                         100                   100                100
+model3.cif  model5.cif  3     5     0.926262                  0.96234                      0.603758            0.680811               .                         100                   100                100
+model2.cif  model3.cif  2     3     0.926008                  0.962815                     0.528944            0.608036               .                         100                   99.961449          100
+model5.cif  model3.cif  5     3     0.924511                  0.96234                      0.603397            0.680811               .                         100                   99.961449          100
+model1.cif  model9.cif  1     9     0.920983                  0.95911                      0.663279            0.751846               .                         100                   100                100
+model1.cif  model4.cif  1     4     0.920156                  0.959332                     0.683456            0.768738               .                         100                   100                100
+model4.cif  model1.cif  4     1     0.919711                  0.959332                     0.667158            0.768738               .                         100                   100                100
+model9.cif  model1.cif  9     1     0.919216                  0.95911                      0.643565            0.751846               .                         100                   100                100
+model2.cif  model9.cif  2     9     0.906482                  0.952618                     0.544837            0.620792               .                         100                   100                100
+model9.cif  model2.cif  9     2     0.906054                  0.952618                     0.53846             0.620792               .                         100                   100                100
+model4.cif  model0.cif  4     0     0.903796                  0.947803                     0.358113            0.419474               .                         89.130435             89.24441           100
+model5.cif  model8.cif  5     8     0.903701                  0.934685                     0.702245            0.782748               .                         100                   99.961449          100
+model2.cif  model0.cif  2     0     0.903669                  0.947779                     0.29654             0.344994               .                         89.130435             89.24441           100
+model1.cif  model0.cif  1     0     0.902794                  0.94685                      0.320921            0.37913                .                         89.130435             89.24441           100
+model5.cif  model7.cif  5     7     0.902311                  0.939622                     0.529471            0.609445               .                         100                   99.961449          100
+model4.cif  model2.cif  4     2     0.902234                  0.950689                     0.543319            0.62527                .                         100                   100                100
+model2.cif  model4.cif  2     4     0.901314                  0.950689                     0.550819            0.62527                .                         100                   100                100
+model9.cif  model8.cif  9     8     0.900783                  0.933115                     0.540387            0.627353               .                         100                   99.961449          100
+model5.cif  model6.cif  5     6     0.899242                  0.933725                     0.52023             0.59702                .                         100                   99.961449          100
+model4.cif  model8.cif  4     8     0.89911                   0.932248                     0.557344            0.638706               .                         100                   99.961449          100
+model9.cif  model0.cif  9     0     0.898236                  0.945162                     0.355812            0.417638               .                         89.130435             89.24441           100
+model0.cif  model2.cif  0     2     0.896953                  0.947779                     0.284592            0.344994               .                         100                   100                100
+model3.cif  model0.cif  3     0     0.896472                  0.943178                     0.272009            0.323283               .                         89.130435             89.278828          100
+model0.cif  model4.cif  0     4     0.895955                  0.947803                     0.371499            0.419474               .                         100                   100                100
+model0.cif  model1.cif  0     1     0.895472                  0.94685                      0.322735            0.37913                .                         100                   100                100
+model9.cif  model7.cif  9     7     0.892722                  0.934508                     0.62246             0.730949               .                         100                   99.961449          100
+model4.cif  model7.cif  4     7     0.892007                  0.934147                     0.638727            0.745221               .                         100                   99.961449          100
+model0.cif  model9.cif  0     9     0.891662                  0.945162                     0.368439            0.417638               .                         100                   100                100
+model3.cif  model8.cif  3     8     0.891615                  0.928731                     0.573395            0.668037               .                         100                   100                100
+model3.cif  model6.cif  3     6     0.890573                  0.929376                     0.443771            0.527254               .                         100                   100                100
+model9.cif  model6.cif  9     6     0.889383                  0.928491                     0.621697            0.722858               .                         100                   99.961449          100
+model4.cif  model6.cif  4     6     0.889173                  0.928435                     0.64224             0.740444               .                         100                   99.961449          100
+model3.cif  model7.cif  3     7     0.888398                  0.932637                     0.430817            0.523904               .                         100                   100                100
+model0.cif  model3.cif  0     3     0.887541                  0.943178                     0.269186            0.323283               .                         100                   100                100
+model2.cif  model6.cif  2     6     0.887437                  0.927937                     0.507049            0.581892               .                         100                   99.961449          100
+model5.cif  model0.cif  5     0     0.882657                  0.937164                     0.290169            0.340612               .                         89.130435             89.24441           100
+model1.cif  model6.cif  1     6     0.882159                  0.92536                      0.651299            0.736149               .                         100                   99.961449          100
+model7.cif  model5.cif  7     5     0.879969                  0.939622                     0.523127            0.609445               .                         100                   100                100
+model2.cif  model7.cif  2     7     0.879966                  0.928467                     0.508834            0.59187                .                         100                   99.961449          100
+model2.cif  model8.cif  2     8     0.879066                  0.922499                     0.613532            0.700494               .                         100                   99.961449          100
+model1.cif  model8.cif  1     8     0.878532                  0.921981                     0.526789            0.595348               .                         100                   99.961449          100
+model1.cif  model7.cif  1     7     0.875919                  0.92637                      0.656453            0.741023               .                         100                   99.961449          100
+model0.cif  model5.cif  0     5     0.875817                  0.937164                     0.290499            0.340612               .                         100                   100                100
+model8.cif  model5.cif  8     5     0.870679                  0.934685                     0.683042            0.782748               .                         100                   100                100
+model7.cif  model9.cif  7     9     0.870452                  0.934508                     0.633123            0.730949               .                         100                   100                100
+model6.cif  model5.cif  6     5     0.86991                   0.933725                     0.496798            0.59702                .                         100                   100                100
+model7.cif  model4.cif  7     4     0.868428                  0.934147                     0.651127            0.745221               .                         100                   100                100
+model8.cif  model9.cif  8     9     0.867174                  0.933115                     0.549753            0.627353               .                         100                   100                100
+model7.cif  model3.cif  7     3     0.866106                  0.932637                     0.448523            0.523904               .                         100                   100                100
+model8.cif  model4.cif  8     4     0.864131                  0.932248                     0.561933            0.638706               .                         100                   100                100
+model6.cif  model3.cif  6     3     0.859982                  0.929376                     0.444658            0.527254               .                         100                   100                100
+model6.cif  model9.cif  6     9     0.858723                  0.928491                     0.62434             0.722858               .                         100                   100                100
+model6.cif  model2.cif  6     2     0.858419                  0.927937                     0.486263            0.581892               .                         100                   100                100
+model7.cif  model2.cif  7     2     0.858055                  0.928467                     0.505719            0.59187                .                         100                   100                100
+model8.cif  model3.cif  8     3     0.857822                  0.928731                     0.572349            0.668037               .                         100                   100                100
+model6.cif  model4.cif  6     4     0.857301                  0.928435                     0.646143            0.740444               .                         100                   100                100
+model7.cif  model1.cif  7     1     0.853292                  0.92637                      0.640622            0.741023               .                         100                   100                100
+model6.cif  model1.cif  6     1     0.850986                  0.92536                      0.62268             0.736149               .                         100                   100                100
+model0.cif  model6.cif  0     6     0.849203                  0.907926                     0.323741            0.381724               .                         100                   100                100
+model8.cif  model2.cif  8     2     0.847047                  0.922499                     0.596793            0.700494               .                         100                   100                100
+model8.cif  model1.cif  8     1     0.844699                  0.921981                     0.499736            0.595348               .                         100                   100                100
+model0.cif  model8.cif  0     8     0.842283                  0.903435                     0.289933            0.343251               .                         100                   100                100
+model0.cif  model7.cif  0     7     0.840233                  0.907817                     0.319072            0.381756               .                         100                   100                100
+model6.cif  model0.cif  6     0     0.825183                  0.907926                     0.32908             0.381724               .                         89.130435             89.278828          100
+model7.cif  model0.cif  7     0     0.822891                  0.907817                     0.324406            0.381756               .                         89.130435             89.278828          100
+model8.cif  model0.cif  8     0     0.813979                  0.903435                     0.301685            0.343251               .                         89.130435             89.278828          100
+
+####################################################################
+
+cadscore-lt \
+  --include-heteroatoms \
+  --models "./input/protein_ligand2/models_as" \
+  --scoring-levels atom residue \
+  --scoring-types contacts \
+  --subselect-contacts "[-a1 [-protein] -a2! [-protein]]" \
+  --subselect-atoms "[-protein]" \
+  --output-with-f1 \
+  --output-with-identities \
+| column -t
+target          model           t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  atom_atom_cadscore  atom_atom_F1_of_areas  identity_of_residues  identity_of_atoms  identity_of_chains
+model7.cif.pdb  model6.cif.pdb  7     6     0.964975                  0.982453                     0.888205            0.939017               100                   100                100
+model6.cif.pdb  model7.cif.pdb  6     7     0.964974                  0.982453                     0.88364             0.939017               100                   100                100
+model6.cif.pdb  model8.cif.pdb  6     8     0.954093                  0.976112                     0.725602            0.770728               100                   100                100
+model8.cif.pdb  model6.cif.pdb  8     6     0.952555                  0.976112                     0.727153            0.770728               100                   100                100
+model1.cif.pdb  model2.cif.pdb  1     2     0.951196                  0.975266                     0.676461            0.72713                100                   100                100
+model2.cif.pdb  model1.cif.pdb  2     1     0.950744                  0.975266                     0.675432            0.72713                100                   100                100
+model7.cif.pdb  model8.cif.pdb  7     8     0.944758                  0.971607                     0.703029            0.757931               100                   100                100
+model8.cif.pdb  model7.cif.pdb  8     7     0.943368                  0.971607                     0.703404            0.757931               100                   100                100
+model4.cif.pdb  model5.cif.pdb  4     5     0.936635                  0.968003                     0.600529            0.681246               100                   100                100
+model4.cif.pdb  model3.cif.pdb  4     3     0.936312                  0.967912                     0.502409            0.569961               100                   99.961449          100
+model5.cif.pdb  model4.cif.pdb  5     4     0.935393                  0.968003                     0.605939            0.681246               100                   100                100
+model3.cif.pdb  model4.cif.pdb  3     4     0.935355                  0.967912                     0.509842            0.569961               100                   100                100
+model3.cif.pdb  model5.cif.pdb  3     5     0.926262                  0.96234                      0.603758            0.680811               100                   100                100
+model5.cif.pdb  model3.cif.pdb  5     3     0.924511                  0.96234                      0.603397            0.680811               100                   99.961449          100
+model4.cif.pdb  model9.cif.pdb  4     9     0.653367                  0.659507                     0.610202            0.637041               40.68323              40.593678          66.666667
+model9.cif.pdb  model4.cif.pdb  9     4     0.653327                  0.659507                     0.611312            0.637041               40.68323              40.593678          66.666667
+model9.cif.pdb  model5.cif.pdb  9     5     0.627643                  0.643497                     0.449159            0.511819               40.68323              40.593678          66.666667
+model5.cif.pdb  model9.cif.pdb  5     9     0.621718                  0.643497                     0.457616            0.511819               40.68323              40.593678          66.666667
+model9.cif.pdb  model3.cif.pdb  9     3     0.61376                   0.633064                     0.371764            0.424049               40.68323              40.593678          66.666667
+model1.cif.pdb  model3.cif.pdb  1     3     0.613116                  0.631882                     0.374656            0.413358               40.68323              40.593678          66.666667
+model5.cif.pdb  model2.cif.pdb  5     2     0.611046                  0.632943                     0.509351            0.548013               40.68323              40.593678          66.666667
+model2.cif.pdb  model3.cif.pdb  2     3     0.610538                  0.631382                     0.34111             0.387125               40.68323              40.593678          66.666667
+model3.cif.pdb  model1.cif.pdb  3     1     0.610381                  0.631882                     0.374226            0.413358               40.68323              40.609333          66.666667
+model3.cif.pdb  model2.cif.pdb  3     2     0.610195                  0.631382                     0.339197            0.387125               40.68323              40.609333          66.666667
+model5.cif.pdb  model1.cif.pdb  5     1     0.60683                   0.630132                     0.483792            0.520794               40.68323              40.593678          66.666667
+model2.cif.pdb  model5.cif.pdb  2     5     0.606303                  0.632943                     0.508732            0.548013               40.68323              40.593678          66.666667
+model4.cif.pdb  model1.cif.pdb  4     1     0.60434                   0.628656                     0.451832            0.516204               40.68323              40.593678          66.666667
+model1.cif.pdb  model5.cif.pdb  1     5     0.601929                  0.630132                     0.484963            0.520794               40.68323              40.593678          66.666667
+model3.cif.pdb  model9.cif.pdb  3     9     0.600052                  0.633064                     0.375356            0.424049               40.68323              40.609333          66.666667
+model4.cif.pdb  model2.cif.pdb  4     2     0.599777                  0.627103                     0.402892            0.462142               40.68323              40.593678          66.666667
+model5.cif.pdb  model8.cif.pdb  5     8     0.599341                  0.621616                     0.459517            0.51216                40.68323              40.593678          66.666667
+model9.cif.pdb  model1.cif.pdb  9     1     0.599083                  0.626013                     0.434967            0.504957               40.68323              40.593678          66.666667
+model9.cif.pdb  model2.cif.pdb  9     2     0.598659                  0.626526                     0.39756             0.458951               40.68323              40.593678          66.666667
+model9.cif.pdb  model8.cif.pdb  9     8     0.598542                  0.621194                     0.398762            0.466365               40.68323              40.593678          66.666667
+model4.cif.pdb  model8.cif.pdb  4     8     0.595203                  0.619494                     0.409847            0.473422               40.68323              40.593678          66.666667
+model1.cif.pdb  model4.cif.pdb  1     4     0.593224                  0.628656                     0.455798            0.516204               40.68323              40.593678          66.666667
+model1.cif.pdb  model9.cif.pdb  1     9     0.589166                  0.626013                     0.44285             0.504957               40.68323              40.593678          66.666667
+model2.cif.pdb  model9.cif.pdb  2     9     0.588779                  0.626526                     0.401018            0.458951               40.68323              40.593678          66.666667
+model2.cif.pdb  model4.cif.pdb  2     4     0.588656                  0.627103                     0.407015            0.462142               40.68323              40.593678          66.666667
+model5.cif.pdb  model7.cif.pdb  5     7     0.588407                  0.617309                     0.367054            0.427453               40.68323              40.593678          66.666667
+model5.cif.pdb  model6.cif.pdb  5     6     0.588146                  0.6147                       0.360977            0.422714               40.68323              40.593678          66.666667
+model9.cif.pdb  model6.cif.pdb  9     6     0.587572                  0.614229                     0.406933            0.477215               40.68323              40.593678          66.666667
+model9.cif.pdb  model7.cif.pdb  9     7     0.586482                  0.616136                     0.414512            0.484388               40.68323              40.593678          66.666667
+model3.cif.pdb  model8.cif.pdb  3     8     0.58499                   0.61455                      0.403304            0.461864               40.68323              40.609333          66.666667
+model4.cif.pdb  model6.cif.pdb  4     6     0.584843                  0.612911                     0.418596            0.487787               40.68323              40.593678          66.666667
+model8.cif.pdb  model5.cif.pdb  8     5     0.584809                  0.621616                     0.458776            0.51216                40.68323              40.609333          66.666667
+model2.cif.pdb  model6.cif.pdb  2     6     0.583506                  0.612513                     0.351339            0.409057               40.68323              40.593678          66.666667
+model4.cif.pdb  model7.cif.pdb  4     7     0.583276                  0.614528                     0.420534            0.491111               40.68323              40.593678          66.666667
+model3.cif.pdb  model6.cif.pdb  3     6     0.581067                  0.611166                     0.329833            0.3913                 40.68323              40.609333          66.666667
+model2.cif.pdb  model8.cif.pdb  2     8     0.580081                  0.612128                     0.378804            0.435286               40.68323              40.593678          66.666667
+model8.cif.pdb  model9.cif.pdb  8     9     0.578027                  0.621194                     0.409988            0.466365               40.68323              40.609333          66.666667
+model8.cif.pdb  model3.cif.pdb  8     3     0.576868                  0.61455                      0.404998            0.461864               40.68323              40.609333          66.666667
+model3.cif.pdb  model7.cif.pdb  3     7     0.576002                  0.611099                     0.317266            0.385134               40.68323              40.609333          66.666667
+model7.cif.pdb  model5.cif.pdb  7     5     0.575684                  0.617309                     0.367605            0.427453               40.68323              40.609333          66.666667
+model2.cif.pdb  model7.cif.pdb  2     7     0.574926                  0.610599                     0.350095            0.412105               40.68323              40.593678          66.666667
+model8.cif.pdb  model4.cif.pdb  8     4     0.573314                  0.619494                     0.418438            0.473422               40.68323              40.609333          66.666667
+model6.cif.pdb  model2.cif.pdb  6     2     0.572806                  0.612513                     0.35521             0.409057               40.68323              40.609333          66.666667
+model6.cif.pdb  model5.cif.pdb  6     5     0.572267                  0.6147                       0.360613            0.422714               40.68323              40.609333          66.666667
+model8.cif.pdb  model2.cif.pdb  8     2     0.571365                  0.612128                     0.382675            0.435286               40.68323              40.609333          66.666667
+model6.cif.pdb  model3.cif.pdb  6     3     0.571135                  0.611166                     0.342717            0.3913                 40.68323              40.609333          66.666667
+model1.cif.pdb  model6.cif.pdb  1     6     0.570746                  0.606152                     0.408885            0.469147               40.68323              40.593678          66.666667
+model7.cif.pdb  model3.cif.pdb  7     3     0.570478                  0.611099                     0.334592            0.385134               40.68323              40.609333          66.666667
+model1.cif.pdb  model8.cif.pdb  1     8     0.569795                  0.60671                      0.362299            0.416177               40.68323              40.593678          66.666667
+model7.cif.pdb  model9.cif.pdb  7     9     0.568336                  0.616136                     0.417343            0.484388               40.68323              40.609333          66.666667
+model7.cif.pdb  model2.cif.pdb  7     2     0.567443                  0.610599                     0.35645             0.412105               40.68323              40.609333          66.666667
+model6.cif.pdb  model9.cif.pdb  6     9     0.564974                  0.614229                     0.410193            0.477215               40.68323              40.609333          66.666667
+model7.cif.pdb  model4.cif.pdb  7     4     0.563795                  0.614528                     0.425795            0.491111               40.68323              40.609333          66.666667
+model1.cif.pdb  model7.cif.pdb  1     7     0.561007                  0.60353                      0.409253            0.466025               40.68323              40.593678          66.666667
+model6.cif.pdb  model4.cif.pdb  6     4     0.561006                  0.612911                     0.423487            0.487787               40.68323              40.609333          66.666667
+model8.cif.pdb  model1.cif.pdb  8     1     0.560248                  0.60671                      0.360505            0.416177               40.68323              40.609333          66.666667
+model6.cif.pdb  model1.cif.pdb  6     1     0.55886                   0.606152                     0.410498            0.469147               40.68323              40.609333          66.666667
+model7.cif.pdb  model1.cif.pdb  7     1     0.553823                  0.60353                      0.407664            0.466025               40.68323              40.609333          66.666667
+model0.cif.pdb  model2.cif.pdb  0     2     0.308481                  0.326608                     0.065935            0.091219               62.369338             63.455724          66.666667
+model2.cif.pdb  model0.cif.pdb  2     0     0.307476                  0.326608                     0.074025            0.091219               55.590062             56.630686          66.666667
+model0.cif.pdb  model1.cif.pdb  0     1     0.304872                  0.325339                     0.114936            0.148469               62.369338             63.455724          66.666667
+model1.cif.pdb  model0.cif.pdb  1     0     0.304738                  0.325339                     0.123179            0.148469               55.590062             56.630686          66.666667
+model3.cif.pdb  model0.cif.pdb  3     0     0                         0                            0                   0                      0.310559              1.156961           33.333333
+model4.cif.pdb  model0.cif.pdb  4     0     0                         0                            0                   0                      0.310559              1.156515           33.333333
+model5.cif.pdb  model0.cif.pdb  5     0     0                         0                            0                   0                      0.310559              1.156515           33.333333
+model6.cif.pdb  model0.cif.pdb  6     0     0                         0                            0                   0                      0.310559              1.156961           33.333333
+model7.cif.pdb  model0.cif.pdb  7     0     0                         0                            0                   0                      0.310559              1.156961           33.333333
+model8.cif.pdb  model0.cif.pdb  8     0     0                         0                            0                   0                      0.310559              1.156961           33.333333
+model9.cif.pdb  model0.cif.pdb  9     0     0                         0                            0                   0                      0.310559              1.156515           33.333333
+model0.cif.pdb  model3.cif.pdb  0     3     0                         0                            0                   0                      0.348432              1.295896           33.333333
+model0.cif.pdb  model4.cif.pdb  0     4     0                         0                            0                   0                      0.348432              1.295896           33.333333
+model0.cif.pdb  model5.cif.pdb  0     5     0                         0                            0                   0                      0.348432              1.295896           33.333333
+model0.cif.pdb  model6.cif.pdb  0     6     0                         0                            0                   0                      0.348432              1.295896           33.333333
+model0.cif.pdb  model7.cif.pdb  0     7     0                         0                            0                   0                      0.348432              1.295896           33.333333
+model0.cif.pdb  model8.cif.pdb  0     8     0                         0                            0                   0                      0.348432              1.295896           33.333333
+model0.cif.pdb  model9.cif.pdb  0     9     0                         0                            0                   0                      0.348432              1.295896           33.333333
+
+####################################################################
+
+cadscore-lt \
+  --include-heteroatoms \
+  --models "./input/protein_ligand2/models_as" \
+  --scoring-levels atom residue \
+  --scoring-types contacts \
+  --subselect-contacts "[-a1 [-protein] -a2! [-protein]]" \
+  --subselect-atoms "[-protein]" \
+  --output-with-f1 \
+  --output-with-identities \
+  --reference-sequences-file "./input/protein_ligand2/sequences_as.fasta" \
+  --output-dir ./output/protein_ligand2/output_dir_02 \
+  --save-sequence-alignments \
+| column -t
+target          model           t_id  m_id  residue_residue_cadscore  residue_residue_F1_of_areas  atom_atom_cadscore  atom_atom_F1_of_areas  renaming_of_model_chains  identity_of_residues  identity_of_atoms  identity_of_chains
+model4.cif.pdb  model9.cif.pdb  4     9     0.981961                  0.990974                     0.916811            0.957301               .                         100                   100                100
+model9.cif.pdb  model4.cif.pdb  9     4     0.981935                  0.990974                     0.918191            0.957301               .                         100                   100                100
+model7.cif.pdb  model6.cif.pdb  7     6     0.964975                  0.982453                     0.888205            0.939017               .                         100                   100                100
+model6.cif.pdb  model7.cif.pdb  6     7     0.964974                  0.982453                     0.88364             0.939017               .                         100                   100                100
+model6.cif.pdb  model8.cif.pdb  6     8     0.954093                  0.976112                     0.725602            0.770728               .                         100                   100                100
+model8.cif.pdb  model6.cif.pdb  8     6     0.952555                  0.976112                     0.727153            0.770728               .                         100                   100                100
+model1.cif.pdb  model2.cif.pdb  1     2     0.951196                  0.975266                     0.676461            0.72713                .                         100                   100                100
+model2.cif.pdb  model1.cif.pdb  2     1     0.950744                  0.975266                     0.675432            0.72713                .                         100                   100                100
+model7.cif.pdb  model8.cif.pdb  7     8     0.944758                  0.971607                     0.703029            0.757931               .                         100                   100                100
+model8.cif.pdb  model7.cif.pdb  8     7     0.943368                  0.971607                     0.703404            0.757931               .                         100                   100                100
+model9.cif.pdb  model5.cif.pdb  9     5     0.939926                  0.969686                     0.595956            0.675984               .                         100                   100                100
+model5.cif.pdb  model9.cif.pdb  5     9     0.939599                  0.969686                     0.604353            0.675984               .                         100                   100                100
+model1.cif.pdb  model3.cif.pdb  1     3     0.938444                  0.968286                     0.518               0.576335               .                         100                   99.961449          100
+model1.cif.pdb  model5.cif.pdb  1     5     0.937379                  0.968042                     0.694977            0.741246               .                         100                   100                100
+model3.cif.pdb  model1.cif.pdb  3     1     0.936909                  0.968286                     0.514852            0.576335               .                         100                   100                100
+model4.cif.pdb  model5.cif.pdb  4     5     0.936635                  0.968003                     0.600529            0.681246               .                         100                   100                100
+model5.cif.pdb  model1.cif.pdb  5     1     0.936316                  0.968042                     0.688004            0.741246               .                         100                   100                100
+model4.cif.pdb  model3.cif.pdb  4     3     0.936312                  0.967912                     0.502409            0.569961               .                         100                   99.961449          100
+model2.cif.pdb  model5.cif.pdb  2     5     0.935723                  0.967824                     0.81679             0.870986               .                         100                   100                100
+model5.cif.pdb  model2.cif.pdb  5     2     0.935693                  0.967824                     0.817433            0.870986               .                         100                   100                100
+model5.cif.pdb  model4.cif.pdb  5     4     0.935393                  0.968003                     0.605939            0.681246               .                         100                   100                100
+model3.cif.pdb  model4.cif.pdb  3     4     0.935355                  0.967912                     0.509842            0.569961               .                         100                   100                100
+model9.cif.pdb  model3.cif.pdb  9     3     0.930125                  0.964819                     0.481288            0.55675                .                         100                   99.961449          100
+model3.cif.pdb  model9.cif.pdb  3     9     0.929182                  0.964819                     0.491498            0.55675                .                         100                   100                100
+model3.cif.pdb  model2.cif.pdb  3     2     0.928002                  0.962815                     0.525695            0.608036               .                         100                   100                100
+model3.cif.pdb  model5.cif.pdb  3     5     0.926262                  0.96234                      0.603758            0.680811               .                         100                   100                100
+model2.cif.pdb  model3.cif.pdb  2     3     0.926008                  0.962815                     0.528944            0.608036               .                         100                   99.961449          100
+model5.cif.pdb  model3.cif.pdb  5     3     0.924511                  0.96234                      0.603397            0.680811               .                         100                   99.961449          100
+model1.cif.pdb  model9.cif.pdb  1     9     0.920965                  0.9591                       0.663223            0.751816               .                         100                   100                100
+model1.cif.pdb  model4.cif.pdb  1     4     0.92015                   0.959328                     0.683626            0.768825               .                         100                   100                100
+model4.cif.pdb  model1.cif.pdb  4     1     0.919703                  0.959328                     0.667289            0.768825               .                         100                   100                100
+model9.cif.pdb  model1.cif.pdb  9     1     0.919196                  0.9591                       0.643538            0.751816               .                         100                   100                100
+model2.cif.pdb  model9.cif.pdb  2     9     0.906472                  0.952612                     0.544863            0.620795               .                         100                   100                100
+model9.cif.pdb  model2.cif.pdb  9     2     0.906044                  0.952612                     0.538472            0.620795               .                         100                   100                100
+model4.cif.pdb  model0.cif.pdb  4     0     0.903776                  0.947788                     0.358152            0.419482               .                         89.130435             89.24441           100
+model5.cif.pdb  model8.cif.pdb  5     8     0.903685                  0.934679                     0.702233            0.782729               .                         100                   99.961449          100
+model2.cif.pdb  model0.cif.pdb  2     0     0.903669                  0.947779                     0.29654             0.344994               .                         89.130435             89.24441           100
+model1.cif.pdb  model0.cif.pdb  1     0     0.902794                  0.94685                      0.320921            0.37913                .                         89.130435             89.24441           100
+model5.cif.pdb  model7.cif.pdb  5     7     0.902314                  0.939625                     0.529403            0.609414               .                         100                   99.961449          100
+model4.cif.pdb  model2.cif.pdb  4     2     0.902251                  0.950698                     0.543376            0.625319               .                         100                   100                100
+model2.cif.pdb  model4.cif.pdb  2     4     0.901334                  0.950698                     0.550892            0.625319               .                         100                   100                100
+model9.cif.pdb  model8.cif.pdb  9     8     0.900752                  0.933102                     0.540371            0.62734                .                         100                   99.961449          100
+model5.cif.pdb  model6.cif.pdb  5     6     0.899214                  0.933711                     0.520157            0.596979               .                         100                   99.961449          100
+model4.cif.pdb  model8.cif.pdb  4     8     0.899099                  0.932245                     0.55728             0.638668               .                         100                   99.961449          100
+model9.cif.pdb  model0.cif.pdb  9     0     0.898244                  0.945162                     0.355792            0.417618               .                         89.130435             89.24441           100
+model0.cif.pdb  model2.cif.pdb  0     2     0.896953                  0.947779                     0.284592            0.344994               .                         100                   100                100
+model3.cif.pdb  model0.cif.pdb  3     0     0.896472                  0.943178                     0.272009            0.323283               .                         89.130435             89.278828          100
+model0.cif.pdb  model4.cif.pdb  0     4     0.895926                  0.947788                     0.371537            0.419482               .                         100                   100                100
+model0.cif.pdb  model1.cif.pdb  0     1     0.895472                  0.94685                      0.322735            0.37913                .                         100                   100                100
+model9.cif.pdb  model7.cif.pdb  9     7     0.892706                  0.9345                       0.622513            0.730951               .                         100                   99.961449          100
+model4.cif.pdb  model7.cif.pdb  4     7     0.892013                  0.934152                     0.638689            0.745204               .                         100                   99.961449          100
+model0.cif.pdb  model9.cif.pdb  0     9     0.891664                  0.945162                     0.368467            0.417618               .                         100                   100                100
+model3.cif.pdb  model8.cif.pdb  3     8     0.891573                  0.928713                     0.573399            0.668045               .                         100                   100                100
+model3.cif.pdb  model6.cif.pdb  3     6     0.890521                  0.92935                      0.44374             0.527227               .                         100                   100                100
+model9.cif.pdb  model6.cif.pdb  9     6     0.889362                  0.92848                      0.621624            0.722808               .                         100                   99.961449          100
+model4.cif.pdb  model6.cif.pdb  4     6     0.889152                  0.928427                     0.642221            0.74043                .                         100                   99.961449          100
+model3.cif.pdb  model7.cif.pdb  3     7     0.888388                  0.932635                     0.430719            0.523873               .                         100                   100                100
+model0.cif.pdb  model3.cif.pdb  0     3     0.887541                  0.943178                     0.269186            0.323283               .                         100                   100                100
+model2.cif.pdb  model6.cif.pdb  2     6     0.887379                  0.927909                     0.507002            0.581855               .                         100                   99.961449          100
+model5.cif.pdb  model0.cif.pdb  5     0     0.882657                  0.937164                     0.290169            0.340612               .                         89.130435             89.24441           100
+model1.cif.pdb  model6.cif.pdb  1     6     0.882115                  0.925338                     0.651236            0.736115               .                         100                   99.961449          100
+model7.cif.pdb  model5.cif.pdb  7     5     0.879986                  0.939625                     0.523085            0.609414               .                         100                   100                100
+model2.cif.pdb  model7.cif.pdb  2     7     0.879953                  0.928462                     0.50871             0.591811               .                         100                   99.961449          100
+model2.cif.pdb  model8.cif.pdb  2     8     0.879059                  0.922499                     0.613515            0.700467               .                         100                   99.961449          100
+model1.cif.pdb  model8.cif.pdb  1     8     0.878504                  0.921972                     0.526763            0.595317               .                         100                   99.961449          100
+model1.cif.pdb  model7.cif.pdb  1     7     0.875917                  0.926372                     0.656415            0.741                  .                         100                   99.961449          100
+model0.cif.pdb  model5.cif.pdb  0     5     0.875817                  0.937164                     0.290499            0.340612               .                         100                   100                100
+model8.cif.pdb  model5.cif.pdb  8     5     0.870671                  0.934679                     0.683031            0.782729               .                         100                   100                100
+model7.cif.pdb  model9.cif.pdb  7     9     0.870444                  0.9345                       0.633155            0.730951               .                         100                   100                100
+model6.cif.pdb  model5.cif.pdb  6     5     0.869881                  0.933711                     0.496729            0.596979               .                         100                   100                100
+model7.cif.pdb  model4.cif.pdb  7     4     0.868446                  0.934152                     0.651144            0.745204               .                         100                   100                100
+model8.cif.pdb  model9.cif.pdb  8     9     0.867156                  0.933102                     0.549777            0.62734                .                         100                   100                100
+model7.cif.pdb  model3.cif.pdb  7     3     0.866105                  0.932635                     0.448478            0.523873               .                         100                   100                100
+model8.cif.pdb  model4.cif.pdb  8     4     0.864133                  0.932245                     0.561866            0.638668               .                         100                   100                100
+model6.cif.pdb  model3.cif.pdb  6     3     0.859932                  0.92935                      0.444646            0.527227               .                         100                   100                100
+model6.cif.pdb  model9.cif.pdb  6     9     0.858703                  0.92848                      0.624312            0.722808               .                         100                   100                100
+model6.cif.pdb  model2.cif.pdb  6     2     0.85836                   0.927909                     0.486193            0.581855               .                         100                   100                100
+model7.cif.pdb  model2.cif.pdb  7     2     0.858053                  0.928462                     0.505652            0.591811               .                         100                   100                100
+model8.cif.pdb  model3.cif.pdb  8     3     0.857792                  0.928713                     0.572402            0.668045               .                         100                   100                100
+model6.cif.pdb  model4.cif.pdb  6     4     0.857287                  0.928427                     0.646222            0.74043                .                         100                   100                100
+model7.cif.pdb  model1.cif.pdb  7     1     0.853297                  0.926372                     0.640628            0.741                  .                         100                   100                100
+model6.cif.pdb  model1.cif.pdb  6     1     0.850945                  0.925338                     0.622608            0.736115               .                         100                   100                100
+model0.cif.pdb  model6.cif.pdb  0     6     0.849168                  0.90791                      0.323732            0.381709               .                         100                   100                100
+model8.cif.pdb  model2.cif.pdb  8     2     0.84705                   0.922499                     0.59675             0.700467               .                         100                   100                100
+model8.cif.pdb  model1.cif.pdb  8     1     0.844681                  0.921972                     0.499689            0.595317               .                         100                   100                100
+model0.cif.pdb  model8.cif.pdb  0     8     0.842254                  0.903423                     0.289897            0.343241               .                         100                   100                100
+model0.cif.pdb  model7.cif.pdb  0     7     0.840231                  0.907818                     0.319025            0.381725               .                         100                   100                100
+model6.cif.pdb  model0.cif.pdb  6     0     0.825144                  0.90791                      0.329062            0.381709               .                         89.130435             89.278828          100
+model7.cif.pdb  model0.cif.pdb  7     0     0.822909                  0.907818                     0.324375            0.381725               .                         89.130435             89.278828          100
+model8.cif.pdb  model0.cif.pdb  8     0     0.813957                  0.903423                     0.301663            0.343241               .                         89.130435             89.278828          100
+
+####################################################################
