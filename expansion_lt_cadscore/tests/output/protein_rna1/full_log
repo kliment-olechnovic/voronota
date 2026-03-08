@@ -1,0 +1,109 @@
+
+####################################################################
+
+cadscore-lt \
+  --include-heteroatoms \
+  -t "./input/protein_rna1/6FPQ_target.pdb" \
+  -m "./input/protein_rna1" \
+  --scoring-types contacts sites \
+  --subselect-contacts "[-a1 [-chain A] -a2 [-chain B]]" \
+  --subselect-atoms "[-chain A]" \
+  --output-with-identities \
+| column -t
+target           model             t_id  m_id  residue_residue_cadscore  residue_sites_cadscore  identity_of_residues  identity_of_atoms  identity_of_chains
+6FPQ_target.pdb  6FPQ_model1a.pdb  6     0     0.704417                  0.73661                 100                   100                100
+6FPQ_target.pdb  6FPQ_model1b.pdb  6     1     0.659809                  0.710854                100                   100                100
+6FPQ_target.pdb  6FPQ_model2a.pdb  6     2     0.381626                  0.375183                100                   100                100
+6FPQ_target.pdb  6FPQ_model2b.pdb  6     3     0.373695                  0.405748                100                   100                100
+6FPQ_target.pdb  6FPQ_model3a.pdb  6     4     0.113882                  0.451957                100                   100                100
+6FPQ_target.pdb  6FPQ_model3b.pdb  6     5     0.106027                  0.451912                100                   100                100
+
+cadscore-lt \
+  --include-heteroatoms \
+  -t "./input/protein_rna1/6FPQ_target.pdb" \
+  -m "./input/protein_rna1" \
+  --scoring-types contacts sites \
+  --subselect-contacts "[-a1 [-protein] -a2 [-nucleic]]" \
+  --subselect-atoms "[-protein]" \
+  --output-with-identities \
+| column -t
+target           model             t_id  m_id  residue_residue_cadscore  residue_sites_cadscore  identity_of_residues  identity_of_atoms  identity_of_chains
+6FPQ_target.pdb  6FPQ_model1a.pdb  6     0     0.704417                  0.73661                 100                   100                100
+6FPQ_target.pdb  6FPQ_model1b.pdb  6     1     0.659809                  0.710854                100                   100                100
+6FPQ_target.pdb  6FPQ_model2a.pdb  6     2     0.381626                  0.375183                100                   100                100
+6FPQ_target.pdb  6FPQ_model2b.pdb  6     3     0.373695                  0.405748                100                   100                100
+6FPQ_target.pdb  6FPQ_model3a.pdb  6     4     0.113882                  0.451957                100                   100                100
+6FPQ_target.pdb  6FPQ_model3b.pdb  6     5     0.106027                  0.451912                100                   100                100
+
+####################################################################
+
+cadscore-lt \
+  --include-heteroatoms \
+  -t "./input/protein_rna1/6FPQ_target.pdb" \
+  -m "./input/protein_rna1" \
+  --scoring-levels atom residue \
+  --scoring-types contacts sites \
+  --subselect-contacts "[-a1 [-protein] -a2 [-nucleic]]" \
+  --subselect-atoms "[-protein]" \
+| column -t
+target           model             t_id  m_id  residue_residue_cadscore  atom_atom_cadscore  residue_sites_cadscore  atom_sites_cadscore
+6FPQ_target.pdb  6FPQ_model1a.pdb  6     0     0.704417                  0.315272            0.73661                 0.662628
+6FPQ_target.pdb  6FPQ_model1b.pdb  6     1     0.659809                  0.374996            0.710854                0.724907
+6FPQ_target.pdb  6FPQ_model2a.pdb  6     2     0.381626                  0.020043            0.375183                0.38015
+6FPQ_target.pdb  6FPQ_model2b.pdb  6     3     0.373695                  0.017079            0.405748                0.415593
+6FPQ_target.pdb  6FPQ_model3a.pdb  6     4     0.113882                  0.016045            0.451957                0.343089
+6FPQ_target.pdb  6FPQ_model3b.pdb  6     5     0.106027                  0.011168            0.451912                0.374575
+
+cadscore-lt \
+  --include-heteroatoms \
+  -t "./input/protein_rna1/6FPQ_target.pdb" \
+  -m "./input/protein_rna1" \
+  --scoring-levels atom residue \
+  --scoring-types contacts sites \
+  --subselect-contacts "[-a1 [-protein] -a2 [-nucleic]]" \
+  --subselect-atoms "[-protein]" \
+  --conflate-atom-types \
+| column -t
+target           model             t_id  m_id  residue_residue_cadscore  atom_atom_cadscore  residue_sites_cadscore  atom_sites_cadscore
+6FPQ_target.pdb  6FPQ_model1a.pdb  6     0     0.704417                  0.324089            0.73661                 0.656477
+6FPQ_target.pdb  6FPQ_model1b.pdb  6     1     0.659809                  0.392014            0.710854                0.724368
+6FPQ_target.pdb  6FPQ_model2a.pdb  6     2     0.381626                  0.020043            0.375183                0.374615
+6FPQ_target.pdb  6FPQ_model2b.pdb  6     3     0.373695                  0.017079            0.405748                0.420352
+6FPQ_target.pdb  6FPQ_model3a.pdb  6     4     0.113882                  0.016045            0.451957                0.344302
+6FPQ_target.pdb  6FPQ_model3b.pdb  6     5     0.106027                  0.011168            0.451912                0.372483
+
+####################################################################
+
+cadscore-lt \
+  --include-heteroatoms \
+  -t "./input/protein_rna1/6FPQ_target.pdb" \
+  -m "./input/protein_rna1/6FPQ_model1a.pdb" \
+  --scoring-levels residue \
+  --scoring-types contacts \
+  --subselect-contacts "[-a1 [-protein] -a2 [-nucleic]]" \
+  --conflate-atom-types \
+  --local-output-formats pdb contactmap graphics-pymol \
+  --local-output-levels residue atom \
+  --output-dir ./output/protein_rna1/output_dir_01 \
+| column -t
+target           model             t_id  m_id  residue_residue_cadscore
+6FPQ_target.pdb  6FPQ_model1a.pdb  1     0     0.704417
+
+cadscore-lt \
+  --include-heteroatoms \
+  -t "./input/protein_rna1/6FPQ_target.pdb" \
+  -m "./input/protein_rna1/6FPQ_model1a.pdb" \
+  --scoring-levels atom \
+  --scoring-types contacts \
+  --subselect-contacts "[-a1 [-protein] -a2 [-nucleic]]" \
+  --conflate-atom-types \
+  --local-output-formats contactmap \
+  --local-output-levels atom residue chain \
+  --output-dir ./output/protein_rna1/output_dir_02 \
+| column -t
+target           model             t_id  m_id  atom_atom_cadscore
+6FPQ_target.pdb  6FPQ_model1a.pdb  1     0     0.324089
+
+####################################################################
+
+

@@ -31,6 +31,8 @@ cd - &> /dev/null
 
 ./run_protein_ligand_tests.bash
 
+./run_protein_rna_tests.bash
+
 git status -s ./output/
 
 ################################################################################

@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg height="29" style="font-family:monospace;" width="29" xmlns="http://www.w3.org/2000/svg">
+  <rect height="29" style="fill:#000000;" width="29" x="0" y="0"/>
+  <rect height="20" style="fill:#191919;" width="20" x="0" y="9"/>
+  <rect height="10" style="fill:#494949;" width="10" x="0" y="19"/>
+  <rect height="10" style="fill:#494949;" width="10" x="10" y="9"/>
+  <rect height="10" style="fill:#797979;" width="10" x="0" y="19"/>
+  <rect height="10" style="fill:#797979;" width="10" x="10" y="9"/>
+  <rect height="10" style="fill:rgb(212,255,0);" width="10" x="0" y="19"/>
+  <rect height="10" style="fill:rgb(212,255,0);" width="10" x="10" y="9"/>
+  <text style="font-size:10px; fill:#FFFFFF;" transform="rotate(-90 10 8)" x="10" y="8">
+    A
+</text>
+  <text style="font-size:10px; fill:#FFFFFF;" transform="rotate(-90 20 8)" x="20" y="8">
+    B
+</text>
+  <text style="font-size:10px; fill:#FFFFFF;" x="21" y="17">
+    A
+</text>
+  <text style="font-size:10px; fill:#FFFFFF;" x="21" y="27">
+    B
+</text>
+</svg>
