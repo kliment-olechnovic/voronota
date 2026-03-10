@@ -1,0 +1,8 @@
+name	threshold_30	threshold_40	threshold_50	threshold_60	threshold_70	threshold_80	threshold_90	threshold_100
+6FPQ_model1a.pdb	1	1	1	1	1	1	1	1
+6FPQ_model1b.pdb	1	1	1	1	1	1	2	2
+6FPQ_model2a.pdb	1	2	2	2	2	2	3	3
+6FPQ_model2b.pdb	1	2	2	2	2	2	4	4
+6FPQ_model3a.pdb	2	3	3	3	3	3	5	5
+6FPQ_model3b.pdb	2	3	3	3	3	3	6	6
+6FPQ_target.pdb	1	1	1	1	4	4	7	7

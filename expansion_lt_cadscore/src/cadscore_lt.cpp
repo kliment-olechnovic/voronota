@@ -107,6 +107,7 @@ public:
 	std::vector<std::string> target_input_files;
 	std::vector<std::string> model_input_files;
 	std::vector<int> stoichiometry_list;
+	std::vector<double> clustering_thresholds;
 	std::string radii_config_file;
 	std::string conflation_config_file;
 	std::string reference_sequences_file;
@@ -341,6 +342,10 @@ public:
 				{
 					quit_before_scoring=opt.is_flag_and_true();
 				}
+				else if(opt.name=="clustering-thresholds" && !opt.args_doubles.empty())
+				{
+					clustering_thresholds=opt.args_doubles;
+				}
 				else if(opt.name=="compact-output" && opt.is_flag())
 				{
 					compact_output=opt.is_flag_and_true();
@@ -551,6 +556,19 @@ public:
 		if(extremely_compact_output && output_dir.empty())
 		{
 			error_log_for_options_parsing << "Error: no output directory provided to enable extremely compact output of global scores.\n";
+		}
+
+		if(!clustering_thresholds.empty() && output_dir.empty())
+		{
+			error_log_for_options_parsing << "Error: no output directory provided to write requested clustering results.\n";
+		}
+
+		for(const double v : clustering_thresholds)
+		{
+			if(v<=0.0 || v>1.0)
+			{
+				error_log_for_options_parsing << "Error: invalid clustering threshold value (" << v << "), must be in interval (0,1].\n";
+			}
 		}
 
 		if(!restrict_raw_input_atoms.empty())
@@ -1093,6 +1111,55 @@ bool run(const ApplicationParameters& app_params)
 					buf.clear();
 				}
 			}
+		}
+
+		if(!app_params.clustering_thresholds.empty() && (symmetric_f1_matrix || target_sd_indices==model_sd_indices))
+		{
+			if(!cadscorelt::TaylorButinaInspiredClustering<std::int8_t>::symmetrize_matrix_of_similarities_using_min(list_of_global_scores))
+			{
+				std::cerr << "Error: failed to prepare scores matrix clustering.\n";
+				return false;
+			}
+			std::vector<std::int8_t> multiple_thresholds(app_params.clustering_thresholds.size());
+			for(std::size_t i=0;i<app_params.clustering_thresholds.size();i++)
+			{
+				const double real_t=app_params.clustering_thresholds[i];
+				multiple_thresholds[i]=static_cast<std::int8_t>(std::max(0.0, std::min(real_t*100.0+0.5, 100.0)));
+			}
+			std::vector< std::vector<int> > multiple_clusterings;
+			if(!(cadscorelt::TaylorButinaInspiredClustering<std::int8_t>::cluster_using_multiple_thresholds(list_of_global_scores, multiple_thresholds, multiple_clusterings) && !multiple_clusterings.empty() && multiple_clusterings.front().size()==target_sd_indices.size()))
+			{
+				std::cerr << "Error: failed to perform clustering.\n";
+				return false;
+			}
+			const std::string outfile=app_params.output_dir+std::string("/")+output_score_name+std::string("_clusters.tsv");
+			std::ofstream outstream(outfile, std::ios::binary);
+			if(outstream.fail())
+			{
+				std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
+				return false;
+			}
+			std::string buf;
+			{
+				buf+="name";
+				for(std::size_t i=0;i<multiple_thresholds.size();i++)
+				{
+					buf+="\tthreshold_";
+					buf+=std::to_string(multiple_thresholds[i]);
+				}
+				buf+="\n";
+			}
+			for(std::size_t i=0;i<target_sd_indices.size();i++)
+			{
+				buf+=list_of_unique_file_display_names[target_sd_indices[i]];
+				for(std::size_t j=0;j<multiple_clusterings.size();j++)
+				{
+					buf+="\t";
+					buf+=std::to_string(multiple_clusterings[j][i]);
+				}
+				buf+="\n";
+			}
+			outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
 		}
 
 		return true;

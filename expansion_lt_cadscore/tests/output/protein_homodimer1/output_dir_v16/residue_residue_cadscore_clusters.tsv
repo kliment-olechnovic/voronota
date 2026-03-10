@@ -1,0 +1,4 @@
+name	threshold_30	threshold_40	threshold_50	threshold_60	threshold_70	threshold_80	threshold_90	threshold_100
+model1.pdb	1	1	1	1	1	1	1	1
+model2.pdb	1	1	1	1	2	2	2	2
+target.pdb	1	1	1	1	3	3	3	3
