@@ -714,7 +714,7 @@ public:
 
 		atom_balls.swap(new_atom_balls);
 
-		for(ChainDescriptor& cd : cds)
+		for(const ChainDescriptor& cd : cds)
 		{
 			if(cd.closest_reference_sequence_id>=0)
 			{

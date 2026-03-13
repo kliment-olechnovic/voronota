@@ -302,7 +302,7 @@ public:
 			return print_atom_line(atom_ball, serial, (cadd.target_area_sum>0.0 ? 1.0 : 0.0), (cadd.target_area_sum>0.0 ? cadd.score() : 0.0));
 		}
 
-		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
+		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
 		{
 			std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.with_renamed_chains(chain_renaming_map));
 			if(it==map_of_cadds.end() && !atom_ball.conflated_atom_name.empty())
@@ -314,13 +314,13 @@ public:
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 		}
 
-		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
+		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
 		{
 			std::map<IDResidue, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.with_renamed_chains(chain_renaming_map));
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 		}
 
-		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
+		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
 		{
 			std::map<IDChain, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.id_chain.with_renamed_chains(chain_renaming_map));
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
@@ -447,7 +447,7 @@ _atom_site.pdbx_PDB_model_num
 			return print_atom_line(atom_ball, serial, (cadd.target_area_sum>0.0 ? 1.0 : 0.0), (cadd.target_area_sum>0.0 ? cadd.score() : 0.0));
 		}
 
-		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
+		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDAtom, CADDescriptor>& map_of_cadds) noexcept
 		{
 			std::map<IDAtom, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.with_renamed_chains(chain_renaming_map));
 			if(it==map_of_cadds.end() && !atom_ball.conflated_atom_name.empty())
@@ -459,13 +459,13 @@ _atom_site.pdbx_PDB_model_num
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 		}
 
-		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
+		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDResidue, CADDescriptor>& map_of_cadds) noexcept
 		{
 			std::map<IDResidue, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.with_renamed_chains(chain_renaming_map));
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
 		}
 
-		static std::string print_atom_line(const AtomBall atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
+		static std::string print_atom_line(const AtomBall& atom_ball, const int serial, const std::map<std::string, std::string>& chain_renaming_map, const std::map<IDChain, CADDescriptor>& map_of_cadds) noexcept
 		{
 			std::map<IDChain, CADDescriptor>::const_iterator it=map_of_cadds.find(atom_ball.id_atom.id_residue.id_chain.with_renamed_chains(chain_renaming_map));
 			return print_atom_line(atom_ball, serial, (it==map_of_cadds.end() ? CADDescriptor() : it->second));
