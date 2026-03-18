@@ -1186,6 +1186,26 @@ public:
 	{
 	}
 
+	ScorableData(const ScorableData& original_data, const std::map<std::string, std::string>& renaming_map) noexcept :
+			atom_balls(ChainNamingUtilities::rename_chains_in_vector_container(original_data.atom_balls, renaming_map)),
+			atom_atom_contact_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.atom_atom_contact_areas, renaming_map)),
+			residue_residue_contact_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.residue_residue_contact_areas, renaming_map)),
+			chain_chain_contact_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.chain_chain_contact_areas, renaming_map)),
+			atom_sas_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.atom_sas_areas, renaming_map)),
+			residue_sas_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.residue_sas_areas, renaming_map)),
+			chain_sas_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.chain_sas_areas, renaming_map)),
+			atom_site_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.atom_site_areas, renaming_map)),
+			residue_site_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.residue_site_areas, renaming_map)),
+			chain_site_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.chain_site_areas, renaming_map)),
+			atom_availabilities(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.atom_availabilities, renaming_map)),
+			residue_availabilities(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.residue_availabilities, renaming_map)),
+			chain_availabilities(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.chain_availabilities, renaming_map)),
+			all_chain_ids(ChainNamingUtilities::rename_chains(original_data.all_chain_ids, renaming_map)),
+			involved_chain_adjacencies(ChainNamingUtilities::rename_chains(original_data.involved_chain_adjacencies, renaming_map)),
+			valid_(original_data.valid_)
+	{
+	}
+
 	bool valid() const noexcept
 	{
 		return valid_;
@@ -1219,31 +1239,6 @@ public:
 	bool construct(const ConstructionParameters& params, const std::vector<AtomBall>& input_atom_balls, std::ostream& error_log) noexcept
 	{
 		return construct(params, input_atom_balls, MolecularFileInput(), error_log);
-	}
-
-	ScorableData rename_chains(const std::map<std::string, std::string>& renaming_map) const noexcept
-	{
-		ScorableData modified_data;
-		if(valid())
-		{
-			modified_data.atom_balls=ChainNamingUtilities::rename_chains_in_vector_container(atom_balls, renaming_map);
-			modified_data.atom_atom_contact_areas=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(atom_atom_contact_areas, renaming_map);
-			modified_data.residue_residue_contact_areas=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(residue_residue_contact_areas, renaming_map);
-			modified_data.chain_chain_contact_areas=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(chain_chain_contact_areas, renaming_map);
-			modified_data.atom_sas_areas=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(atom_sas_areas, renaming_map);
-			modified_data.residue_sas_areas=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(residue_sas_areas, renaming_map);
-			modified_data.chain_sas_areas=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(chain_sas_areas, renaming_map);
-			modified_data.atom_site_areas=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(atom_site_areas, renaming_map);
-			modified_data.residue_site_areas=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(residue_site_areas, renaming_map);
-			modified_data.chain_site_areas=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(chain_site_areas, renaming_map);
-			modified_data.atom_availabilities=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(atom_availabilities, renaming_map);
-			modified_data.residue_availabilities=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(residue_availabilities, renaming_map);
-			modified_data.chain_availabilities=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(chain_availabilities, renaming_map);
-			modified_data.all_chain_ids=ChainNamingUtilities::rename_chains(all_chain_ids, renaming_map);
-			modified_data.involved_chain_adjacencies=ChainNamingUtilities::rename_chains(involved_chain_adjacencies, renaming_map);
-			modified_data.valid_=true;
-		}
-		return modified_data;
 	}
 
 private:
@@ -2154,7 +2149,7 @@ private:
 				}
 				if(ChainNamingUtilities::check_if_renaming_map_has_effect(adjusted_init_params.chain_renaming_map))
 				{
-					return construct(adjusted_init_params, true, target_data, model_data.rename_chains(adjusted_init_params.chain_renaming_map), error_log);
+					return construct(adjusted_init_params, true, target_data, ScorableData(model_data, adjusted_init_params.chain_renaming_map), error_log);
 				}
 				else
 				{
@@ -2166,7 +2161,7 @@ private:
 			{
 				if(ChainNamingUtilities::check_if_renaming_map_has_effect(init_params.chain_renaming_map))
 				{
-					return construct(init_params, true, target_data, model_data.rename_chains(init_params.chain_renaming_map), error_log);
+					return construct(init_params, true, target_data, ScorableData(model_data, init_params.chain_renaming_map), error_log);
 				}
 				else
 				{
