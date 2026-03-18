@@ -448,6 +448,20 @@ struct AtomBall
 class ChainNamingUtilities
 {
 public:
+	static bool check_if_renaming_map_has_effect(const std::map<std::string, std::string>& renaming_map) noexcept
+	{
+		if(renaming_map.empty())
+		{
+			return false;
+		}
+		std::size_t identities=0;
+		for(typename std::map<std::string, std::string>::const_iterator it=renaming_map.begin();it!=renaming_map.end();++it)
+		{
+			identities+=(it->second==it->first ? 1 : 0);
+		}
+		return (identities!=renaming_map.size());
+	}
+
 	template<class MapContainer>
 	static MapContainer rename_chains_in_map_container_with_additive_values(const MapContainer& input_container, const std::map<std::string, std::string>& renaming_map) noexcept
 	{
@@ -2138,12 +2152,26 @@ private:
 					error_log << "Automatic chain remapping failed.\n";
 					return false;
 				}
-				return construct(adjusted_init_params, true, target_data, model_data.rename_chains(adjusted_init_params.chain_renaming_map), error_log);
+				if(ChainNamingUtilities::check_if_renaming_map_has_effect(adjusted_init_params.chain_renaming_map))
+				{
+					return construct(adjusted_init_params, true, target_data, model_data.rename_chains(adjusted_init_params.chain_renaming_map), error_log);
+				}
+				else
+				{
+					return construct(adjusted_init_params, true, target_data, model_data, error_log);
+				}
 			}
 
 			if(!init_params.chain_renaming_map.empty())
 			{
-				return construct(init_params, true, target_data, model_data.rename_chains(init_params.chain_renaming_map), error_log);
+				if(ChainNamingUtilities::check_if_renaming_map_has_effect(init_params.chain_renaming_map))
+				{
+					return construct(init_params, true, target_data, model_data.rename_chains(init_params.chain_renaming_map), error_log);
+				}
+				else
+				{
+					return construct(init_params, true, target_data, model_data, error_log);
+				}
 			}
 		}
 
