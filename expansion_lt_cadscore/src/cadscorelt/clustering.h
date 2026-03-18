@@ -64,9 +64,10 @@ public:
 		return symmetrize_matrix_of_similarities_using_min(matrix_of_similarities);
 	}
 
-	static bool cluster_using_single_threshold(const std::vector<SimilarityValue>& matrix_of_similarities, const SimilarityValue threshold, std::vector<int>& clusters) noexcept
+	static bool cluster_using_single_threshold(const std::vector<SimilarityValue>& matrix_of_similarities, const SimilarityValue threshold, std::vector<int>& clusters, std::vector< std::pair<std::size_t, int> >& representatives) noexcept
 	{
 		clusters.clear();
+		representatives.clear();
 
 		if(matrix_of_similarities.empty())
 		{
@@ -111,11 +112,13 @@ public:
 					{
 						const std::size_t i=best_it->second;
 						current_cluster_id++;
+						representatives.push_back(std::pair<std::size_t, int>(i, 0));
 						for(std::size_t j=0;j<N;j++)
 						{
 							if(clusters[j]==0 && (i==j || matrix_of_similarities[i*N+j]>=threshold))
 							{
 								clusters[j]=current_cluster_id;
+								representatives.back().second++;
 							}
 						}
 					}
@@ -141,9 +144,10 @@ public:
 							cluster_with_max_similarity.second=similarity_value;
 						}
 					}
-					if(cluster_with_max_similarity.first!=0 && cluster_with_max_similarity.second>=threshold)
+					if(cluster_with_max_similarity.first>0 && cluster_with_max_similarity.second>=threshold)
 					{
 						clusters[i]=cluster_with_max_similarity.first;
+						representatives[cluster_with_max_similarity.first-1].second++;
 					}
 				}
 			}
@@ -153,6 +157,7 @@ public:
 				if(clusters[i]==0)
 				{
 					current_cluster_id++;
+					representatives.push_back(std::pair<std::size_t, int>(i, 1));
 					clusters[i]=current_cluster_id;
 				}
 			}
@@ -161,7 +166,7 @@ public:
 		return true;
 	}
 
-	static bool cluster_using_multiple_thresholds(const std::vector<SimilarityValue>& matrix_of_similarities, const std::vector<SimilarityValue>& multiple_thresholds, std::vector< std::vector<int> >& multiple_clusterings) noexcept
+	static bool cluster_using_multiple_thresholds(const std::vector<SimilarityValue>& matrix_of_similarities, const std::vector<SimilarityValue>& multiple_thresholds, std::vector< std::vector<int> >& multiple_clusterings, std::vector< std::vector< std::pair<std::size_t, int> > >& multiple_representatives) noexcept
 	{
 		multiple_clusterings.clear();
 		if(multiple_thresholds.empty())
@@ -169,9 +174,10 @@ public:
 			return false;
 		}
 		multiple_clusterings.resize(multiple_thresholds.size());
+		multiple_representatives.resize(multiple_thresholds.size());
 		for(std::size_t i=0;i<multiple_thresholds.size();i++)
 		{
-			if(!cluster_using_single_threshold(matrix_of_similarities, multiple_thresholds[i], multiple_clusterings[i]))
+			if(!cluster_using_single_threshold(matrix_of_similarities, multiple_thresholds[i], multiple_clusterings[i], multiple_representatives[i]))
 			{
 				multiple_clusterings.clear();
 				return false;

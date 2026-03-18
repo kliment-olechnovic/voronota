@@ -1121,46 +1121,78 @@ bool run(const ApplicationParameters& app_params)
 				std::cerr << "Error: failed to prepare scores matrix clustering.\n";
 				return false;
 			}
-			std::vector<std::int8_t> multiple_thresholds(app_params.clustering_thresholds.size());
+			std::vector<double> multiple_thresholds(app_params.clustering_thresholds.size());
+			std::vector<std::int8_t> multiple_thresholds_as_percents(app_params.clustering_thresholds.size());
 			for(std::size_t i=0;i<app_params.clustering_thresholds.size();i++)
 			{
 				const double real_t=app_params.clustering_thresholds[i];
-				multiple_thresholds[i]=static_cast<std::int8_t>(std::max(0.0, std::min(real_t*100.0+0.5, 100.0)));
+				multiple_thresholds[i]=static_cast<double>(std::max(0.0, std::min(real_t, 1.0)));
+				multiple_thresholds_as_percents[i]=static_cast<std::int8_t>(std::max(0.0, std::min(real_t*100.0+0.5, 100.0)));
 			}
 			std::vector< std::vector<int> > multiple_clusterings;
-			if(!(cadscorelt::TaylorButinaInspiredClustering<std::int8_t>::cluster_using_multiple_thresholds(list_of_global_scores, multiple_thresholds, multiple_clusterings) && !multiple_clusterings.empty() && multiple_clusterings.front().size()==target_sd_indices.size()))
+			std::vector< std::vector< std::pair<std::size_t, int> > > multiple_representatives;
+			if(!(cadscorelt::TaylorButinaInspiredClustering<std::int8_t>::cluster_using_multiple_thresholds(list_of_global_scores, multiple_thresholds_as_percents, multiple_clusterings, multiple_representatives) && !multiple_clusterings.empty() && multiple_clusterings.front().size()==target_sd_indices.size()))
 			{
 				std::cerr << "Error: failed to perform clustering.\n";
 				return false;
 			}
-			const std::string outfile=app_params.output_dir+std::string("/")+output_score_name+std::string("_clusters.tsv");
-			std::ofstream outstream(outfile, std::ios::binary);
-			if(outstream.fail())
 			{
-				std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
-				return false;
+				const std::string outfile=app_params.output_dir+std::string("/")+output_score_name+std::string("_clusters.tsv");
+				std::ofstream outstream(outfile, std::ios::binary);
+				if(outstream.fail())
+				{
+					std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
+					return false;
+				}
+				std::string buf;
+				{
+					buf+="name";
+					for(std::size_t i=0;i<multiple_thresholds_as_percents.size();i++)
+					{
+						buf+="\tthreshold_";
+						buf+=std::to_string(multiple_thresholds_as_percents[i]);
+					}
+					buf+="\n";
+				}
+				for(std::size_t i=0;i<target_sd_indices.size();i++)
+				{
+					buf+=list_of_unique_file_display_names[target_sd_indices[i]];
+					for(std::size_t j=0;j<multiple_clusterings.size();j++)
+					{
+						buf+="\t";
+						buf+=std::to_string(multiple_clusterings[j][i]);
+					}
+					buf+="\n";
+				}
+				outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
 			}
-			std::string buf;
 			{
-				buf+="name";
+				const std::string outfile=app_params.output_dir+std::string("/")+output_score_name+std::string("_cluster_representatives.tsv");
+				std::ofstream outstream(outfile, std::ios::binary);
+				if(outstream.fail())
+				{
+					std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
+					return false;
+				}
+				std::string buf;
+				buf+="threshold_percents\tcluster_id\trepresentative\tcluster_size\n\n";
 				for(std::size_t i=0;i<multiple_thresholds.size();i++)
 				{
-					buf+="\tthreshold_";
-					buf+=std::to_string(multiple_thresholds[i]);
+					for(std::size_t u=0;u<multiple_representatives[i].size();u++)
+					{
+						buf+=std::to_string(multiple_thresholds_as_percents[i]);
+						buf+="\t";
+						buf+=std::to_string(u+1);
+						buf+="\t";
+						buf+=list_of_unique_file_display_names[target_sd_indices[multiple_representatives[i][u].first]];
+						buf+="\t";
+						buf+=std::to_string(multiple_representatives[i][u].second);
+						buf+="\n";
+					}
+					buf+="\n";
 				}
-				buf+="\n";
+				outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
 			}
-			for(std::size_t i=0;i<target_sd_indices.size();i++)
-			{
-				buf+=list_of_unique_file_display_names[target_sd_indices[i]];
-				for(std::size_t j=0;j<multiple_clusterings.size();j++)
-				{
-					buf+="\t";
-					buf+=std::to_string(multiple_clusterings[j][i]);
-				}
-				buf+="\n";
-			}
-			outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
 		}
 
 		return true;
@@ -1765,39 +1797,69 @@ bool run(const ApplicationParameters& app_params)
 					multiple_thresholds_as_percents[i]=static_cast<int>(std::max(0.0, std::min(real_t*100.0+0.5, 100.0)));
 				}
 				std::vector< std::vector<int> > multiple_clusterings;
-				if(!(cadscorelt::TaylorButinaInspiredClustering<double>::cluster_using_multiple_thresholds(matrix_of_similarities, multiple_thresholds, multiple_clusterings) && !multiple_clusterings.empty() && multiple_clusterings.front().size()==target_sd_indices.size()))
+				std::vector< std::vector< std::pair<std::size_t, int> > > multiple_representatives;
+				if(!(cadscorelt::TaylorButinaInspiredClustering<double>::cluster_using_multiple_thresholds(matrix_of_similarities, multiple_thresholds, multiple_clusterings, multiple_representatives) && !multiple_clusterings.empty() && multiple_clusterings.front().size()==target_sd_indices.size()))
 				{
 					std::cerr << "Error: failed to perform clustering.\n";
 					return false;
 				}
-				const std::string outfile=app_params.output_dir+std::string("/")+output_score_names[j]+score_variant+std::string("_clusters.tsv");
-				std::ofstream outstream(outfile, std::ios::binary);
-				if(outstream.fail())
 				{
-					std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
-					return false;
-				}
-				std::string buf;
-				{
-					buf+="name";
-					for(std::size_t i=0;i<multiple_thresholds_as_percents.size();i++)
+					const std::string outfile=app_params.output_dir+std::string("/")+output_score_names[j]+score_variant+std::string("_clusters.tsv");
+					std::ofstream outstream(outfile, std::ios::binary);
+					if(outstream.fail())
 					{
-						buf+="\tthreshold_";
-						buf+=std::to_string(multiple_thresholds_as_percents[i]);
+						std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
+						return false;
 					}
-					buf+="\n";
-				}
-				for(std::size_t i=0;i<target_sd_indices.size();i++)
-				{
-					buf+=list_of_unique_file_display_names[target_sd_indices[i]];
-					for(std::size_t j=0;j<multiple_clusterings.size();j++)
+					std::string buf;
 					{
-						buf+="\t";
-						buf+=std::to_string(multiple_clusterings[j][i]);
+						buf+="name";
+						for(std::size_t i=0;i<multiple_thresholds_as_percents.size();i++)
+						{
+							buf+="\tthreshold_";
+							buf+=std::to_string(multiple_thresholds_as_percents[i]);
+						}
+						buf+="\n";
 					}
-					buf+="\n";
+					for(std::size_t i=0;i<target_sd_indices.size();i++)
+					{
+						buf+=list_of_unique_file_display_names[target_sd_indices[i]];
+						for(std::size_t j=0;j<multiple_clusterings.size();j++)
+						{
+							buf+="\t";
+							buf+=std::to_string(multiple_clusterings[j][i]);
+						}
+						buf+="\n";
+					}
+					outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
 				}
-				outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
+				{
+					const std::string outfile=app_params.output_dir+std::string("/")+output_score_names[j]+score_variant+std::string("_cluster_representatives.tsv");
+					std::ofstream outstream(outfile, std::ios::binary);
+					if(outstream.fail())
+					{
+						std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
+						return false;
+					}
+					std::string buf;
+					buf+="threshold_percents\tcluster_id\trepresentative\tcluster_size\n\n";
+					for(std::size_t i=0;i<multiple_thresholds.size();i++)
+					{
+						for(std::size_t u=0;u<multiple_representatives[i].size();u++)
+						{
+							buf+=std::to_string(multiple_thresholds_as_percents[i]);
+							buf+="\t";
+							buf+=std::to_string(u+1);
+							buf+="\t";
+							buf+=list_of_unique_file_display_names[target_sd_indices[multiple_representatives[i][u].first]];
+							buf+="\t";
+							buf+=std::to_string(multiple_representatives[i][u].second);
+							buf+="\n";
+						}
+						buf+="\n";
+					}
+					outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
+				}
 			}
 		}
 	}
