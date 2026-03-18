@@ -35,6 +35,7 @@ Options:
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --binarize-areas                                            flag to binarize (convert to 0 or 1) all area values before scoring
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score 
+    --clustering-thresholds                          numbers    clustering thresholds for Taylor-Butina-like clustering if in all-to-all comparison mode
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
     --save-processed-inputs-mmcif                               flag to save processed input structures in mmCIF format to the output directory
     --save-processed-inputs-pdb                                 flag to save processed input structures in PDB format to the output directory
@@ -1732,6 +1733,71 @@ bool run(const ApplicationParameters& app_params)
 					std::cerr << "Error: failed to write table of global scores to file '" << app_params.output_global_scores << "'.\n";
 					return false;
 				}
+			}
+		}
+	}
+
+	if(!app_params.clustering_thresholds.empty() && !app_params.output_dir.empty() && (target_sd_indices==model_sd_indices))
+	{
+		for(int v=0;v<2;v++)
+		{
+			const std::string score_variant=(v==0 ? "_cadscore" : "_F1_of_areas");
+			for(std::size_t j=0;j<output_score_names.size();j++)
+			{
+				std::vector<double> list_of_similarities(list_of_pairs_of_target_model_indices.size(), 0.0);
+				for(std::size_t i=0;i<list_of_pairs_of_target_model_indices.size();i++)
+				{
+					const cadscorelt::CADDescriptor& cadd=list_of_output_cad_descriptors[i][j];
+					list_of_similarities[i]=(v==0 ? cadd.score() : cadd.score_F1());
+				}
+				std::vector<double> matrix_of_similarities;
+				if(!cadscorelt::TaylorButinaInspiredClustering<double>::construct_matrix_of_similarities_from_list_of_similarities(target_sd_indices.size(), 0.0, 1.0, list_of_pairs_of_target_model_indices, list_of_similarities, matrix_of_similarities))
+				{
+					std::cerr << "Error: failed to prepare scores matrix for clustering.\n";
+					return false;
+				}
+				std::vector<double> multiple_thresholds(app_params.clustering_thresholds.size());
+				std::vector<int> multiple_thresholds_as_percents(app_params.clustering_thresholds.size());
+				for(std::size_t i=0;i<app_params.clustering_thresholds.size();i++)
+				{
+					const double real_t=app_params.clustering_thresholds[i];
+					multiple_thresholds[i]=static_cast<double>(std::max(0.0, std::min(real_t, 1.0)));
+					multiple_thresholds_as_percents[i]=static_cast<int>(std::max(0.0, std::min(real_t*100.0+0.5, 100.0)));
+				}
+				std::vector< std::vector<int> > multiple_clusterings;
+				if(!(cadscorelt::TaylorButinaInspiredClustering<double>::cluster_using_multiple_thresholds(matrix_of_similarities, multiple_thresholds, multiple_clusterings) && !multiple_clusterings.empty() && multiple_clusterings.front().size()==target_sd_indices.size()))
+				{
+					std::cerr << "Error: failed to perform clustering.\n";
+					return false;
+				}
+				const std::string outfile=app_params.output_dir+std::string("/")+output_score_names[j]+score_variant+std::string("_clusters.tsv");
+				std::ofstream outstream(outfile, std::ios::binary);
+				if(outstream.fail())
+				{
+					std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
+					return false;
+				}
+				std::string buf;
+				{
+					buf+="name";
+					for(std::size_t i=0;i<multiple_thresholds_as_percents.size();i++)
+					{
+						buf+="\tthreshold_";
+						buf+=std::to_string(multiple_thresholds_as_percents[i]);
+					}
+					buf+="\n";
+				}
+				for(std::size_t i=0;i<target_sd_indices.size();i++)
+				{
+					buf+=list_of_unique_file_display_names[target_sd_indices[i]];
+					for(std::size_t j=0;j<multiple_clusterings.size();j++)
+					{
+						buf+="\t";
+						buf+=std::to_string(multiple_clusterings[j][i]);
+					}
+					buf+="\n";
+				}
+				outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
 			}
 		}
 	}

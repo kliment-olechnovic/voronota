@@ -26,6 +26,7 @@ Options:
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --binarize-areas                                            flag to binarize (convert to 0 or 1) all area values before scoring
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score 
+    --clustering-thresholds                          numbers    clustering thresholds for Taylor-Butina-like clustering if in all-to-all comparison mode
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
     --save-processed-inputs-mmcif                               flag to save processed input structures in mmCIF format to the output directory
     --save-processed-inputs-pdb                                 flag to save processed input structures in PDB format to the output directory

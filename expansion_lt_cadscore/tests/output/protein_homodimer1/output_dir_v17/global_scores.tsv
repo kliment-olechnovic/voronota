@@ -1,0 +1,7 @@
+target	model	t_id	m_id	residue_residue_cadscore
+model2.pdb	target.pdb	1	2	0.719862
+model2.pdb	model1.pdb	1	0	0.658071
+model1.pdb	model2.pdb	0	1	0.630742
+target.pdb	model2.pdb	2	1	0.621885
+model1.pdb	target.pdb	0	2	0.553256
+target.pdb	model1.pdb	2	0	0.507312

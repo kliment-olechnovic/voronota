@@ -93,6 +93,15 @@ cadscore-lt \
   --extremely-compact-output \
   --clustering-thresholds 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
 
+cadscore-lt \
+  -m './input/protein_rna1' \
+  --scoring-levels residue \
+  --scoring-types contacts \
+  --subselect-contacts '[-a1 [-protein] -a2 [-nucleic]]' \
+  --output-dir ./output/protein_rna1/output_dir_v04 \
+  --clustering-thresholds 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 \
+| column -t
+
 ####################################################################
 
 
