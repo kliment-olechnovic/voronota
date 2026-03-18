@@ -1186,10 +1186,10 @@ public:
 	{
 	}
 
-	ScorableData(const ScorableData& original_data, const std::map<std::string, std::string>& renaming_map) noexcept :
+	ScorableData(const ScorableData& original_data, const std::map<std::string, std::string>& renaming_map, const std::map<IDResidueResidue, AreaValue>* renamed_map_ptr) noexcept :
 			atom_balls(ChainNamingUtilities::rename_chains_in_vector_container(original_data.atom_balls, renaming_map)),
 			atom_atom_contact_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.atom_atom_contact_areas, renaming_map)),
-			residue_residue_contact_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.residue_residue_contact_areas, renaming_map)),
+			residue_residue_contact_areas(renamed_map_ptr!=0 ? (*renamed_map_ptr) : ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.residue_residue_contact_areas, renaming_map)),
 			chain_chain_contact_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.chain_chain_contact_areas, renaming_map)),
 			atom_sas_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.atom_sas_areas, renaming_map)),
 			residue_sas_areas(ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(original_data.residue_sas_areas, renaming_map)),
@@ -2149,7 +2149,12 @@ private:
 				}
 				if(ChainNamingUtilities::check_if_renaming_map_has_effect(adjusted_init_params.chain_renaming_map))
 				{
-					return construct(adjusted_init_params, true, target_data, ScorableData(model_data, adjusted_init_params.chain_renaming_map), error_log);
+					const std::map<IDResidueResidue, AreaValue>* renamed_map_ptr=0;
+					if(cache_for_remapping_of_chains_ptr_!=0)
+					{
+						renamed_map_ptr=cache_for_remapping_of_chains_ptr_->get_residue_residue_contact_areas_with_chains_renamed(model_data, adjusted_init_params.chain_renaming_map);
+					}
+					return construct(adjusted_init_params, true, target_data, ScorableData(model_data, adjusted_init_params.chain_renaming_map, renamed_map_ptr), error_log);
 				}
 				else
 				{
@@ -2161,7 +2166,12 @@ private:
 			{
 				if(ChainNamingUtilities::check_if_renaming_map_has_effect(init_params.chain_renaming_map))
 				{
-					return construct(init_params, true, target_data, ScorableData(model_data, init_params.chain_renaming_map), error_log);
+					const std::map<IDResidueResidue, AreaValue>* renamed_map_ptr=0;
+					if(cache_for_remapping_of_chains_ptr_!=0)
+					{
+						renamed_map_ptr=cache_for_remapping_of_chains_ptr_->get_residue_residue_contact_areas_with_chains_renamed(model_data, init_params.chain_renaming_map);
+					}
+					return construct(init_params, true, target_data, ScorableData(model_data, init_params.chain_renaming_map, renamed_map_ptr), error_log);
 				}
 				else
 				{
