@@ -247,8 +247,14 @@ struct IDChainChain
 		if(r_a || r_b)
 		{
 			IDChainChain v;
-			v.id_a.chain_name=it_a->second;
-			v.id_b.chain_name=it_b->second;
+			if(r_a)
+			{
+				v.id_a.chain_name=it_a->second;
+			}
+			if(r_b)
+			{
+				v.id_b.chain_name=it_b->second;
+			}
 			if(v.id_b<v.id_a)
 			{
 				v.id_a.swap(v.id_b);
