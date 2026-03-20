@@ -2848,7 +2848,7 @@ private:
 							const std::map<IDResidueResidue, AreaValue>* renamed_map_ptr=0;
 							if(cache_ptr!=0)
 							{
-								renamed_map_ptr=cache_ptr->get_residue_residue_contact_areas_with_chains_renamed(model_data, final_chain_renaming_map);
+								renamed_map_ptr=cache_ptr->get_residue_residue_contact_areas_with_chains_renamed(model_data, default_chain_renaming_map);
 							}
 							if(renamed_map_ptr!=0)
 							{
