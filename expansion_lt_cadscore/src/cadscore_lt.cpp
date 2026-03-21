@@ -1298,7 +1298,8 @@ bool run(const ApplicationParameters& app_params)
 
 					if(app_params.local_scores_requested && !app_params.output_dir.empty())
 					{
-						const std::string opath=app_params.output_dir+std::string("/local_scores/t")+std::to_string(list_of_pairs_of_target_model_indices[i].first)+std::string("m")+std::to_string(list_of_pairs_of_target_model_indices[i].second)+"/";
+						const std::string ostrid=std::string("t")+std::to_string(list_of_pairs_of_target_model_indices[i].first)+std::string("m")+std::to_string(list_of_pairs_of_target_model_indices[i].second);
+						const std::string opath=app_params.output_dir+std::string("/local_scores/")+ostrid+"/";
 						if(app_params.local_output_format_table)
 						{
 							if(app_params.scoring_type_contacts)
@@ -1536,8 +1537,8 @@ bool run(const ApplicationParameters& app_params)
 										const cadscorelt::ScorableData& relevant_sd=(t==0 ? model_sd : target_sd);
 										const std::map<std::string, std::string> empty_chain_renaming_map;
 										const std::map<std::string, std::string>& relevant_chain_renaming_map=(t==0 ? sr.params.chain_renaming_map : empty_chain_renaming_map);
-										const std::string title_end=(t==0 ? "_on_model" : "_on_target");
-										const std::string filename_end=title_end+(f==0 ? ".py" : ".bild");
+										const std::string title_end=std::string("_")+ostrid+std::string(t==0 ? "_on_model" : "_on_target");
+										const std::string filename_end=std::string(t==0 ? "_on_model" : "_on_target")+(f==0 ? ".py" : ".bild");
 										const cadscorelt::GraphicsPrintingUtilities::OutputFormat::ID output_format=(f==0 ? cadscorelt::GraphicsPrintingUtilities::OutputFormat::pymol : cadscorelt::GraphicsPrintingUtilities::OutputFormat::chimera);
 										if(app_params.scoring_type_contacts)
 										{

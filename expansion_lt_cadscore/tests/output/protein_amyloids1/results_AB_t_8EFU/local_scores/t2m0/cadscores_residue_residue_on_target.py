@@ -32451,6 +32451,6 @@ NORMAL, 0.263613, -0.494814, 0.828051, VERTEX, 214.108, 279.342, 197.131,
 NORMAL, 0.263613, -0.494814, 0.828051, VERTEX, 214.093, 279.366, 197.15, 
 END, 
 ]
-cmd.load_cgo(cgo_graphics_list_contacts_faces, 'cadscores_residue_residue_on_target_contacts_faces')
+cmd.load_cgo(cgo_graphics_list_contacts_faces, 'cadscores_residue_residue_t2m0_on_target_contacts_faces')
 cmd.set('two_sided_lighting', 1)
 cmd.set('cgo_line_width', 1)

@@ -2186,6 +2186,6 @@ NORMAL, -0.466605, -0.838117, 0.28256, VERTEX, 10.3572, 19.2095, 6.98994,
 NORMAL, -0.466605, -0.838117, 0.28256, VERTEX, 10.299, 19.2477, 7.00718, 
 END, 
 ]
-cmd.load_cgo(cgo_graphics_list_contacts_faces, 'cadscores_atom_atom_on_model_contacts_faces')
+cmd.load_cgo(cgo_graphics_list_contacts_faces, 'cadscores_atom_atom_t4m2_on_model_contacts_faces')
 cmd.set('two_sided_lighting', 1)
 cmd.set('cgo_line_width', 1)
