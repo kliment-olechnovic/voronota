@@ -1299,7 +1299,7 @@ bool run(const ApplicationParameters& app_params)
 					if(app_params.local_scores_requested && !app_params.output_dir.empty())
 					{
 						const std::string ostrid=std::string("t")+std::to_string(list_of_pairs_of_target_model_indices[i].first)+std::string("m")+std::to_string(list_of_pairs_of_target_model_indices[i].second);
-						const std::string opath=app_params.output_dir+std::string("/local_scores/")+ostrid+"/";
+						const std::string opath=app_params.output_dir+std::string("/local_scores/")+ostrid+"/"+ostrid+"_";
 						if(app_params.local_output_format_table)
 						{
 							if(app_params.scoring_type_contacts)
