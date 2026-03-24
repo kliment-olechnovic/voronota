@@ -5,6 +5,8 @@ CAD-score-LT is based on the [Voronota-LT software](../expansion_lt/index.html).
 CAD-score-LT is much faster and more versatile than the previous CAD-score implementations.
 It is designed to work for both global comparisons and for localized analyses such as interfaces and binding sites.
 
+CAD-score-LT is open source (MIT license) and hosted [on GitHub as a project in the Voronota monorepo](https://github.com/kliment-olechnovic/voronota/tree/master/expansion_lt_cadscore).
+
 ## CAD-score definition for residue-residue contacts
 
 Given reference structure $T$ (target) and structure to be compared, $M$ (model),
@@ -793,9 +795,9 @@ The available tools are:
 
 The usage of those tools is not required, but suggested in order to ensure appropriate handling of ligand atom names to not penalize atom-level CAD-score.
 
-### Equivalence classes input
+### Equivalence classes data
 
-The folloving optional argument of CAD-score-LT accept atom equivalence information input:
+The folloving optional argument of CAD-score-LT accepts atom equivalence information input:
 
 ```
 --conflation-config-file                         string     input file path for reading atom name conflation rules
