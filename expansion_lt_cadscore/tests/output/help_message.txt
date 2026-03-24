@@ -1,4 +1,4 @@
-CAD-score-LT version 0.8
+CAD-score-LT version 0.9
 
 'cadscore-lt' calculates CAD-score (Contact Area Difference score).
 
@@ -15,6 +15,10 @@ Options:
     --reference-sequences-file                       string     input file path for reference sequences in FASTA format
     --reference-stoichiometry                        numbers    list of stoichiometry values to apply when mapping chains to reference sequences
     --restrict-processed-input                       string     selection expression to restrict input atoms after all chain renaming and residue renumbering
+    --save-processed-inputs-mmcif                               flag to save processed input structures in mmCIF format to the output directory
+    --save-processed-inputs-pdb                                 flag to save processed input structures in PDB format to the output directory
+    --save-sequence-alignments                                  flag to save best alignments with reference sequences into a file in the output directory
+    --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
     --subselect-contacts                             string     selection expression to restrict contact area descriptors to score, default is '[-min-sep 1]'
     --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score, default is '[]'
     --conflate-atom-types                                       flag to conflate known equivalent atom types
@@ -25,17 +29,16 @@ Options:
     --local-output-levels                            strings    list of output levels (can include 'atom', 'residue', 'chain'), default is 'residue'
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --binarize-areas                                            flag to binarize (convert to 0 or 1) all area values before scoring
-    --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score 
+    --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score
+    --max-chains-to-fully-permute                    number     limit of chain combinations to chech exhaustively when remapping chains, default is 200
     --clustering-thresholds                          numbers    clustering thresholds for Taylor-Butina-like clustering if in all-to-all comparison mode
+    --max-renaming-cache-size                        number     max number of contact sets to cache when doing comparisons to multiple targets, default is 400
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
-    --save-processed-inputs-mmcif                               flag to save processed input structures in mmCIF format to the output directory
-    --save-processed-inputs-pdb                                 flag to save processed input structures in PDB format to the output directory
-    --save-sequence-alignments                                  flag to save best alignments with reference sequences into a file in the output directory
-    --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
     --output-with-f1                                            flag to output area-based F1 scores along with CAD-scores
     --output-with-areas                                         flag to output all recorded types of areas in tables of global and local scores
     --output-with-identities                                    flag to output identity percentages (for input atoms, residues, chains) along with CAD-scores
     --compact-output                                            flag to reduce size of output global scores table without removing rows
+    --extremely-compact-output                                  flag to reduce size of output global scores by writing them as an integer matrix
     --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
     --output-dir                                     string     path to output directory for all result files
     --help | -h                                                 flag to print help info to stderr and exit
