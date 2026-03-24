@@ -8,7 +8,7 @@ namespace cadscorelt
 
 inline const std::string& version()
 {
-	static const std::string version_str="0.8";
+	static const std::string version_str="0.9";
 	return version_str;
 }
 
