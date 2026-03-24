@@ -84,22 +84,22 @@ cadscore-lt \
 
 ####################################################################
 
-cadscore-lt \
-  -m './input/protein_rna1' \
+find ./input/protein_rna1/ -type f -name '*model*' \
+| cadscore-lt \
   --scoring-levels residue \
   --scoring-types contacts \
   --subselect-contacts '[-a1 [-protein] -a2 [-nucleic]]' \
   --output-dir ./output/protein_rna1/output_dir_v03 \
   --extremely-compact-output \
-  --clustering-thresholds 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
+  --clustering-thresholds 0.3 0.4 0.5 0.6 0.7 0.8 0.9
 
-cadscore-lt \
-  -m './input/protein_rna1' \
+find ./input/protein_rna1/ -type f -name '*model*' \
+| cadscore-lt \
   --scoring-levels residue \
   --scoring-types contacts \
   --subselect-contacts '[-a1 [-protein] -a2 [-nucleic]]' \
   --output-dir ./output/protein_rna1/output_dir_v04 \
-  --clustering-thresholds 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 \
+  --clustering-thresholds 0.3 0.4 0.5 0.6 0.7 0.8 0.9 \
 | column -t
 
 ####################################################################

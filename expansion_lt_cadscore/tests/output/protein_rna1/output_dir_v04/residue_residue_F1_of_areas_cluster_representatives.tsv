@@ -1,38 +1,28 @@
 threshold_percents	cluster_id	representative	cluster_size
 
-30	1	6FPQ_model1a.pdb	5
+30	1	6FPQ_model1a.pdb	4
 30	2	6FPQ_model3a.pdb	2
 
-40	1	6FPQ_model1a.pdb	5
+40	1	6FPQ_model1a.pdb	4
 40	2	6FPQ_model3a.pdb	2
 
-50	1	6FPQ_model1a.pdb	3
+50	1	6FPQ_model1a.pdb	2
 50	2	6FPQ_model2a.pdb	2
 50	3	6FPQ_model3a.pdb	2
 
-60	1	6FPQ_model1a.pdb	3
+60	1	6FPQ_model1a.pdb	2
 60	2	6FPQ_model2a.pdb	2
 60	3	6FPQ_model3a.pdb	2
 
-70	1	6FPQ_model1a.pdb	3
+70	1	6FPQ_model1a.pdb	2
 70	2	6FPQ_model2a.pdb	2
 70	3	6FPQ_model3a.pdb	2
 
 80	1	6FPQ_model1a.pdb	2
 80	2	6FPQ_model2a.pdb	2
 80	3	6FPQ_model3a.pdb	2
-80	4	6FPQ_target.pdb	1
 
 90	1	6FPQ_model1a.pdb	2
 90	2	6FPQ_model2a.pdb	2
 90	3	6FPQ_model3a.pdb	2
-90	4	6FPQ_target.pdb	1
-
-100	1	6FPQ_model1a.pdb	1
-100	2	6FPQ_model1b.pdb	1
-100	3	6FPQ_model2a.pdb	1
-100	4	6FPQ_model2b.pdb	1
-100	5	6FPQ_model3a.pdb	1
-100	6	6FPQ_model3b.pdb	1
-100	7	6FPQ_target.pdb	1
 

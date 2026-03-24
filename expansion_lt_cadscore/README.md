@@ -144,7 +144,7 @@ cadscore-lt -h
 prints an overview of the command line interface:
 
 ```
-CAD-score-LT version 0.8
+CAD-score-LT version 0.9
 
 'cadscore-lt' calculates CAD-score (Contact Area Difference score).
 
@@ -161,6 +161,10 @@ Options:
     --reference-sequences-file                       string     input file path for reference sequences in FASTA format
     --reference-stoichiometry                        numbers    list of stoichiometry values to apply when mapping chains to reference sequences
     --restrict-processed-input                       string     selection expression to restrict input atoms after all chain renaming and residue renumbering
+    --save-processed-inputs-mmcif                               flag to save processed input structures in mmCIF format to the output directory
+    --save-processed-inputs-pdb                                 flag to save processed input structures in PDB format to the output directory
+    --save-sequence-alignments                                  flag to save best alignments with reference sequences into a file in the output directory
+    --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
     --subselect-contacts                             string     selection expression to restrict contact area descriptors to score, default is '[-min-sep 1]'
     --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score, default is '[]'
     --conflate-atom-types                                       flag to conflate known equivalent atom types
@@ -171,15 +175,16 @@ Options:
     --local-output-levels                            strings    list of output levels (can include 'atom', 'residue', 'chain'), default is 'residue'
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --binarize-areas                                            flag to binarize (convert to 0 or 1) all area values before scoring
-    --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score 
+    --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score
+    --max-chains-to-fully-permute                    number     limit of chain combinations to chech exhaustively when remapping chains, default is 200
+    --clustering-thresholds                          numbers    clustering thresholds for Taylor-Butina-like clustering if in all-to-all comparison mode
+    --max-renaming-cache-size                        number     max number of contact sets to cache when doing comparisons to multiple targets, default is 400
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
-    --save-processed-inputs-mmcif                               flag to save processed input structures in mmCIF format to the output directory
-    --save-processed-inputs-pdb                                 flag to save processed input structures in PDB format to the output directory
-    --save-sequence-alignments                                  flag to save best alignments with reference sequences into a file in the output directory
-    --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
     --output-with-f1                                            flag to output area-based F1 scores along with CAD-scores
-    --output-all-details                                        flag to output all details in tables of global and local scores
+    --output-with-areas                                         flag to output all recorded types of areas in tables of global and local scores
+    --output-with-identities                                    flag to output identity percentages (for input atoms, residues, chains) along with CAD-scores
     --compact-output                                            flag to reduce size of output global scores table without removing rows
+    --extremely-compact-output                                  flag to reduce size of output global scores by writing them as an integer matrix
     --output-global-scores                           string     path to output table of global scores, default is '_stdout' to print to standard output 
     --output-dir                                     string     path to output directory for all result files
     --help | -h                                                 flag to print help info to stderr and exit
@@ -195,6 +200,7 @@ Usage examples:
     cadscore-lt -t ./target.pdb -m ./model1.pdb ./model2.pdb
 
     cadscore-lt -t ./target.pdb -m ./model1.pdb ./model2.pdb --subselect-contacts '[-inter-chain]'
+
 ```
 
 ## Choosing scoring types and scoring levels
@@ -779,6 +785,174 @@ cadscore-lt -t target.pdb -m model1.pdb model2.pdb \
   --subselect-contacts "[-inter-chain]" \
   --remap-chains \
 | column -t
+```
+
+## Clustering of models
+
+When running in all-versus-all comparison mode, CAD-score-LT can cluster models with a Taylor-Butina-like algorithm - the same algorithm as used for clustering in [PPI3D](https://bioinformatics.lt/ppi3d/).
+Multiple CAD-score thresholds can be provided to obtain multiple clusterings in one run.
+
+For example:
+
+```bash
+find ./input/protein_rna/ -type f -name '*model*' \
+| cadscore-lt \
+  --scoring-levels residue \
+  --scoring-types contacts \
+  --subselect-contacts '[-a1 [-protein] -a2 [-nucleic]]' \
+  --output-dir ./output_dir_v1 \
+  --clustering-thresholds 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
+```
+
+This will produce both all-versus-all global scores and clustering info in the following files in the output directory:
+
+* `./output_dir_v1/numbered_input_files.tsv`
+* `./output_dir_v1/global_scores.tsv`
+* `./output_dir_v1/residue_residue_cadscore_clusters.tsv`
+* `./output_dir_v1/residue_residue_cadscore_cluster_representatives.tsv`
+
+An example of a `input_model_files.tsv` file:
+
+```
+0  6FPQ_model1a.pdb
+1  6FPQ_model1b.pdb
+2  6FPQ_model2a.pdb
+3  6FPQ_model2b.pdb
+4  6FPQ_model3a.pdb
+5  6FPQ_model3b.pdb
+```
+
+An example of a `global_scores.tsv` file:
+
+```
+target            model             t_id  m_id  residue_residue_cadscore
+6FPQ_model3a.pdb  6FPQ_model3b.pdb  4     5     0.878349
+6FPQ_model3b.pdb  6FPQ_model3a.pdb  5     4     0.877782
+6FPQ_model1a.pdb  6FPQ_model1b.pdb  0     1     0.854266
+6FPQ_model1b.pdb  6FPQ_model1a.pdb  1     0     0.849624
+6FPQ_model2b.pdb  6FPQ_model2a.pdb  3     2     0.84137
+6FPQ_model2a.pdb  6FPQ_model2b.pdb  2     3     0.837263
+6FPQ_model1a.pdb  6FPQ_model2a.pdb  0     2     0.377615
+6FPQ_model1a.pdb  6FPQ_model2b.pdb  0     3     0.373931
+6FPQ_model2a.pdb  6FPQ_model1a.pdb  2     0     0.368113
+6FPQ_model1b.pdb  6FPQ_model2b.pdb  1     3     0.36464
+6FPQ_model1b.pdb  6FPQ_model2a.pdb  1     2     0.35661
+6FPQ_model2a.pdb  6FPQ_model1b.pdb  2     1     0.344747
+6FPQ_model2b.pdb  6FPQ_model1a.pdb  3     0     0.344366
+6FPQ_model2b.pdb  6FPQ_model1b.pdb  3     1     0.332512
+6FPQ_model3a.pdb  6FPQ_model2a.pdb  4     2     0.201901
+6FPQ_model2b.pdb  6FPQ_model3a.pdb  3     4     0.188873
+6FPQ_model3a.pdb  6FPQ_model2b.pdb  4     3     0.188156
+6FPQ_model3b.pdb  6FPQ_model2a.pdb  5     2     0.183383
+6FPQ_model2a.pdb  6FPQ_model3a.pdb  2     4     0.183358
+6FPQ_model3b.pdb  6FPQ_model2b.pdb  5     3     0.173589
+6FPQ_model2b.pdb  6FPQ_model3b.pdb  3     5     0.16057
+6FPQ_model2a.pdb  6FPQ_model3b.pdb  2     5     0.152587
+6FPQ_model1a.pdb  6FPQ_model3a.pdb  0     4     0.13624
+6FPQ_model1b.pdb  6FPQ_model3b.pdb  1     5     0.129939
+6FPQ_model1b.pdb  6FPQ_model3a.pdb  1     4     0.129754
+6FPQ_model1a.pdb  6FPQ_model3b.pdb  0     5     0.125677
+6FPQ_model3a.pdb  6FPQ_model1a.pdb  4     0     0.089375
+6FPQ_model3b.pdb  6FPQ_model1b.pdb  5     1     0.087488
+6FPQ_model3b.pdb  6FPQ_model1a.pdb  5     0     0.084623
+6FPQ_model3a.pdb  6FPQ_model1b.pdb  4     1     0.078454
+
+```
+
+When dealing with large sets of models (e.g. thousands of models), global scores in the default vebose format may take a lot of space.
+In such cases it is recommended to use the `--extremely-compact-output` output flag, for example:
+
+```bash
+find ./input/protein_rna/ -type f -name '*model*' \
+| cadscore-lt \
+  --scoring-levels residue \
+  --scoring-types contacts \
+  --subselect-contacts '[-a1 [-protein] -a2 [-nucleic]]' \
+  --output-dir ./output_dir_v2 \
+  --extremely-compact-output \
+  --clustering-thresholds 0.3 0.4 0.5 0.6 0.7 0.8 0.9
+```
+
+This will output global 0-1 scores converted to integer 0-100 values and save the in the `output_dir_v2/residue_residue_cadscore_global.tsv` file.
+That file holds a matrix, where rows and columns correspond to model ordering in the `output_dir_v2/input_model_files.tsv` file.
+
+Overall, the "extremely compact" regime will produce the following files relevant to the clustering:
+
+* `./output_dir_v2/input_model_files.tsv`
+* `./output_dir_v2/residue_residue_cadscore_global.tsv`
+* `./output_dir_v2/residue_residue_cadscore_clusters.tsv`
+* `./output_dir_v2/residue_residue_cadscore_cluster_representatives.tsv`
+
+An example of a `input_model_files.tsv` matrix file:
+
+```
+6FPQ_model1a.pdb
+6FPQ_model1b.pdb
+6FPQ_model2a.pdb
+6FPQ_model2b.pdb
+6FPQ_model3a.pdb
+6FPQ_model3b.pdb
+```
+
+An example of a `residue_residue_cadscore_global.tsv` matrix file:
+
+```
+100  85   37   34   9    8
+85   100  34   33   8    9
+38   36   100  84   20   18
+37   36   84   100  19   17
+14   13   18   19   100  88
+13   13   15   16   88   100
+```
+
+The generated clustering data files are the same for both the default and the "extremely compact" regimes.
+
+An example of a `residue_residue_cadscore_clusters.tsv` file:
+
+```
+name              threshold_30  threshold_40  threshold_50  threshold_60  threshold_70  threshold_80  threshold_90
+6FPQ_model1a.pdb  1             1             1             1             1             1             1
+6FPQ_model1b.pdb  1             1             1             1             1             1             2
+6FPQ_model2a.pdb  1             2             2             2             2             2             3
+6FPQ_model2b.pdb  1             2             2             2             2             2             4
+6FPQ_model3a.pdb  2             3             3             3             3             3             5
+6FPQ_model3b.pdb  2             3             3             3             3             3             6
+```
+
+An example of a `residue_residue_cadscore_cluster_representatives.tsv` file:
+
+```
+threshold_percents  cluster_id  representative    cluster_size
+
+30                  1           6FPQ_model1a.pdb  4
+30                  2           6FPQ_model3a.pdb  2
+
+40                  1           6FPQ_model1a.pdb  2
+40                  2           6FPQ_model2a.pdb  2
+40                  3           6FPQ_model3a.pdb  2
+
+50                  1           6FPQ_model1a.pdb  2
+50                  2           6FPQ_model2a.pdb  2
+50                  3           6FPQ_model3a.pdb  2
+
+60                  1           6FPQ_model1a.pdb  2
+60                  2           6FPQ_model2a.pdb  2
+60                  3           6FPQ_model3a.pdb  2
+
+70                  1           6FPQ_model1a.pdb  2
+70                  2           6FPQ_model2a.pdb  2
+70                  3           6FPQ_model3a.pdb  2
+
+80                  1           6FPQ_model1a.pdb  2
+80                  2           6FPQ_model2a.pdb  2
+80                  3           6FPQ_model3a.pdb  2
+
+90                  1           6FPQ_model1a.pdb  1
+90                  2           6FPQ_model1b.pdb  1
+90                  3           6FPQ_model2a.pdb  1
+90                  4           6FPQ_model2b.pdb  1
+90                  5           6FPQ_model3a.pdb  1
+90                  6           6FPQ_model3b.pdb  1
 ```
 
 ## Pre-processing small-molecule ligand input
