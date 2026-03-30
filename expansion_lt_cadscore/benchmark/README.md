@@ -106,7 +106,7 @@ Comparison of symmetry-adjusted protein-ligand CAD-score values with symmetry-ad
 
 #### Plot 3
 
-Histograms of per-target Spearman correlation coefficients for atom--atom contact CAD-score without (a) and with (b) atom symmetry adjustment:
+Histograms of per-target Spearman correlation coefficients for atom-atom contact CAD-score without (a) and with (b) atom symmetry adjustment:
 
 ![](plot_CASF2016_hist_of_spearman_cor_of_atom_atom_cadscores_vs_rmsd.png)
 
