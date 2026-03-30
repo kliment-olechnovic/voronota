@@ -101,10 +101,11 @@
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#introduction-to-cad-score-lt" id="toc-introduction-to-cad-score-lt">Introduction to CAD-score-LT</a>
+<li><a href="#about-cad-score-lt" id="toc-about-cad-score-lt">About CAD-score-LT</a>
 <ul>
 <li><a href="#cad-score-definition-for-residue-residue-contacts" id="toc-cad-score-definition-for-residue-residue-contacts">CAD-score definition for residue-residue contacts</a></li>
 <li><a href="#cad-score-definition-for-other-types-of-areas" id="toc-cad-score-definition-for-other-types-of-areas">CAD-score definition for other types of areas</a></li>
+<li><a href="#benchmarking-data-and-results" id="toc-benchmarking-data-and-results">Benchmarking data and results</a></li>
 </ul></li>
 <li><a href="#quickest-install-guide" id="toc-quickest-install-guide">Quickest install guide</a></li>
 <li><a href="#building-the-command-line-tool-from-source-code" id="toc-building-the-command-line-tool-from-source-code">Building the command-line tool from source code</a>
@@ -136,7 +137,7 @@
 </ul></li>
 </ul>
 </nav>
-<h1 id="introduction-to-cad-score-lt">Introduction to CAD-score-LT</h1>
+<h1 id="about-cad-score-lt">About CAD-score-LT</h1>
 <p>CAD-score-LT software computes CAD-score (Contact Area Difference score): a superposition-free similarity measure based on contact areas. CAD-score-LT is based on the <a href="../expansion_lt/index.html">Voronota-LT software</a>. CAD-score-LT is much faster and more versatile than the previous CAD-score implementations. It is designed to work for both global comparisons and for localized analyses such as interfaces and binding sites.</p>
 <p>CAD-score-LT is open source (MIT license) and hosted <a href="https://github.com/kliment-olechnovic/voronota/tree/master/expansion_lt_cadscore">on GitHub as a project in the Voronota monorepo</a>.</p>
 <h2 id="cad-score-definition-for-residue-residue-contacts">CAD-score definition for residue-residue contacts</h2>
@@ -162,6 +163,8 @@
 <li><em>“chain”</em> - chain-chain contact areas, residue-level site areas, residue-level SAS areas</li>
 </ul>
 <p>All the areas are intitially computed on the atom level. Then, if needed, the atom-level areas are aggregated on residue or/and chain levels.</p>
+<h2 id="benchmarking-data-and-results">Benchmarking data and results</h2>
+<p>Benchmarking data and results are available <a href="./benchmark/index.html">here</a>.</p>
 <h1 id="quickest-install-guide">Quickest install guide</h1>
 <p>Since CAD-score-LT version 0.8.106, universal binary execuitables of CAD-score-LT built with the <a href="https://github.com/jart/cosmopolitan">Cosmopolitan Libc toolkit</a> are provided.</p>
 <p>To download and prepare the latest released cosmopolitan executable, run the following commands in a shell environment (e.g. a Bash shell):</p>

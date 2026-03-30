@@ -20,7 +20,7 @@ options(scipen=8);
 
 #######################################
 
-png("./plot_comparing_CADscoreLT_vs_CADscore2012_scores.png", height=4.5, width=9.0, units="in", res=100);
+png("./plot_comparing_CADscoreLT_vs_CADscore2012_scores.png", height=5.0, width=10.0, units="in", res=100);
 par(mfrow=c(1, 2));
 
 plot(df$CADscore2012_global_score, df$CADscoreLT_global_score, cex=0.6,
@@ -37,7 +37,7 @@ dev.off();
 
 #######################################
 
-png("./plot_comparing_CADscoreLT_vs_CADscore2021_scores.png", height=4.5, width=9.0, units="in", res=100);
+png("./plot_comparing_CADscoreLT_vs_CADscore2021_scores.png", height=5.0, width=10.0, units="in", res=100);
 par(mfrow=c(1, 2));
 
 plot(df$CADscore2021_global_score, df$CADscoreLT_global_score, cex=0.6,
@@ -61,7 +61,7 @@ col_CADscore2021modLT=palette()[8];
 
 #######################################
 
-png("./plot_comparing_times_of_CADscore_versions.png", height=7.0, width=7.0, units="in", res=100);
+png("./plot_comparing_times_of_CADscore_versions.png", height=10.0, width=10.0, units="in", res=100);
 par(mfrow=c(2, 2));
 
 plot(x=c(min(df$total_input_atoms), max(df$total_input_atoms)), y=c(0, max(c(df$CADscore2012_global_time, df$CADscore2021_global_time, df$CADscoreLT_global_time))), type="n",

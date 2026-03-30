@@ -1,4 +1,4 @@
-# Introduction to CAD-score-LT
+# About CAD-score-LT
 
 CAD-score-LT software computes CAD-score (Contact Area Difference score): a superposition-free similarity measure based on contact areas.
 CAD-score-LT is based on the [Voronota-LT software](../expansion_lt/index.html).
@@ -59,6 +59,10 @@ Areas of every type can be assessed on three levels of detail:
 * _"chain"_ - chain-chain contact areas, residue-level site areas, residue-level SAS areas
 
 All the areas are intitially computed on the atom level. Then, if needed, the atom-level areas are aggregated on residue or/and chain levels.
+
+## Benchmarking data and results
+
+Benchmarking data and results are available [here](./benchmark/index.html).
 
 # Quickest install guide
 

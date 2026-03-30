@@ -4,8 +4,8 @@
 
 We compared CAD-score-LT with two previous implementations of CAD-score.
 
-* __CAD-score-2012__: the implementation that computes residue-residue contact areas by summing atom-level contact areas derived from Voronoi tessellation of atomic balls, with atom contact areas estimated by sphere subdivision over tessellation neighbors. The software is hosted at [https://github.com/kliment-olechnovic/old_cadscore](https://github.com/kliment-olechnovic/old_cadscore).
-* __CAD-score-2021__: the implementation in [Voronota-JS](https://www.voronota.com/expansion_js/index.html) that computes residue-residue contact areas by summing atom-level areas corresponding directly to Voronoi cell faces constrained inside the solvent-accessible surface. This contact construction mode is used in the PPI3D server and in the FTDMP framework.
+* _CAD-score-2012_: the implementation that computes residue-residue contact areas by summing atom-level contact areas derived from Voronoi tessellation of atomic balls, with atom contact areas estimated by sphere subdivision over tessellation neighbors. The software is hosted at [https://github.com/kliment-olechnovic/old_cadscore](https://github.com/kliment-olechnovic/old_cadscore).
+* _CAD-score-2021_: the implementation in [Voronota-JS](https://www.voronota.com/expansion_js/index.html) that computes residue-residue contact areas by summing atom-level areas corresponding directly to Voronoi cell faces constrained inside the solvent-accessible surface. This contact construction mode is used in the PPI3D server and in the FTDMP framework.
 
 Benchmarking used data from CASP16.
 We downloaded all collections of oligomeric protein and RNA models from [https://predictioncenter.org/download_area/CASP16/predictions/oligo/](https://predictioncenter.org/download_area/CASP16/predictions/oligo/).
