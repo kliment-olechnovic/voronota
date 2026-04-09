@@ -841,7 +841,7 @@ bool run(const ApplicationParameters& app_params)
 	}
 
 	const std::size_t total_number_of_targets=target_sd_indices.size();
-	const std::size_t total_number_of_models=target_sd_indices.size();
+	const std::size_t total_number_of_models=model_sd_indices.size();
 
 	if(!app_params.output_dir.empty() && !app_params.extremely_compact_output)
 	{
