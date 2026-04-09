@@ -36,26 +36,41 @@ public:
 		return true;
 	}
 
-	static bool construct_matrix_of_similarities_from_list_of_similarities(const std::size_t N, const SimilarityValue min_similarity, const SimilarityValue max_similarity, const std::vector< std::pair<std::size_t, std::size_t> >& list_of_pairs_of_indices, const std::vector<SimilarityValue>& list_of_similarities, std::vector<SimilarityValue>& matrix_of_similarities) noexcept
+	static bool construct_matrix_of_similarities_from_list_of_similarities(const std::vector<std::size_t>& indices, const SimilarityValue min_similarity, const SimilarityValue max_similarity, const std::vector< std::pair<std::size_t, std::size_t> >& list_of_pairs_of_indices, const std::vector<SimilarityValue>& list_of_similarities, std::vector<SimilarityValue>& matrix_of_similarities) noexcept
 	{
 		matrix_of_similarities.clear();
+		if(indices.empty())
+		{
+			return false;
+		}
 		if(list_of_similarities.size()!=list_of_pairs_of_indices.size())
 		{
 			return false;
 		}
+		std::size_t max_index=indices[0];
+		for(std::size_t i=1;i<indices.size();i++)
+		{
+			max_index=std::max(max_index, indices[i]);
+		}
 		for(std::size_t l=0;l<list_of_pairs_of_indices.size();l++)
 		{
 			const std::pair<std::size_t, std::size_t>& p=list_of_pairs_of_indices[l];
-			if(!(p.first<N && p.second<N))
+			if(!(p.first<=max_index && p.second<=max_index))
 			{
 				return false;
 			}
+		}
+		const std::size_t N=indices.size();
+		std::vector<std::size_t> map_of_indices_to_positions(max_index+1, 0);
+		for(std::size_t i=0;i<indices.size();i++)
+		{
+			map_of_indices_to_positions[indices[i]]=i;
 		}
 		matrix_of_similarities.resize(N*N, min_similarity);
 		for(std::size_t l=0;l<list_of_pairs_of_indices.size();l++)
 		{
 			const std::pair<std::size_t, std::size_t>& p=list_of_pairs_of_indices[l];
-			matrix_of_similarities[p.first*N+p.second]=list_of_similarities[l];
+			matrix_of_similarities[map_of_indices_to_positions[p.first]*N+map_of_indices_to_positions[p.second]]=list_of_similarities[l];
 		}
 		for(std::size_t i=0;i<N;i++)
 		{

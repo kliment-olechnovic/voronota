@@ -1024,8 +1024,8 @@ bool run(const ApplicationParameters& app_params)
 				}
 				else
 				{
-					const cadscorelt::ScorableData& model_sd=list_of_unique_scorable_data[mi];
-					const cadscorelt::ScorableData& target_sd=list_of_unique_scorable_data[ti];
+					const cadscorelt::ScorableData& model_sd=list_of_unique_scorable_data[model_sd_indices[mi]];
+					const cadscorelt::ScorableData& target_sd=list_of_unique_scorable_data[target_sd_indices[ti]];
 					cadscorelt::ScoringResult sr;
 					if(need_cache_for_remapping_of_chains)
 					{
@@ -1787,7 +1787,7 @@ bool run(const ApplicationParameters& app_params)
 					list_of_similarities[i]=(v==0 ? cadd.score() : cadd.score_F1());
 				}
 				std::vector<double> matrix_of_similarities;
-				if(!cadscorelt::TaylorButinaInspiredClustering<double>::construct_matrix_of_similarities_from_list_of_similarities(target_sd_indices.size(), 0.0, 1.0, list_of_pairs_of_target_model_indices, list_of_similarities, matrix_of_similarities))
+				if(!cadscorelt::TaylorButinaInspiredClustering<double>::construct_matrix_of_similarities_from_list_of_similarities(target_sd_indices, 0.0, 1.0, list_of_pairs_of_target_model_indices, list_of_similarities, matrix_of_similarities))
 				{
 					std::cerr << "Error: failed to prepare scores matrix for clustering.\n";
 					return false;
