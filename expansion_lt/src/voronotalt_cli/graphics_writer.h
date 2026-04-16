@@ -209,6 +209,11 @@ public:
 		return write_to_string(title, OutputFormat::chimera_bild);
 	}
 
+	std::string write_to_string_for_jmol(const std::string& title) const noexcept
+	{
+		return write_to_string(title, OutputFormat::jmol_spt);
+	}
+
 	bool write_to_file_for_pymol(const std::string& title, const std::string& filename) const noexcept
 	{
 		return write_to_file(title, filename, OutputFormat::pymol_cgo);
@@ -217,6 +222,11 @@ public:
 	bool write_to_file_for_chimera(const std::string& title, const std::string& filename) const noexcept
 	{
 		return write_to_file(title, filename, OutputFormat::chimera_bild);
+	}
+
+	bool write_to_file_for_jmol(const std::string& title, const std::string& filename) const noexcept
+	{
+		return write_to_file(title, filename, OutputFormat::jmol_spt);
 	}
 
 	bool write_to_file(const std::string& title, const std::string& filename) const noexcept
@@ -741,12 +751,223 @@ private:
 		std::string bigsep;
 	};
 
+	class PrinterForJmolSPT
+	{
+	public:
+		PrinterForJmolSPT() : current_object_id(0)
+		{
+		}
+
+		void print(const PrimitivePart::TriangleFan& obj, std::ostream& output) noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			if(obj.outer_points.size()>=2)
+			{
+				current_object_id++;
+				output << "draw g" << current_object_id << " POLYGON " << (obj.outer_points.size()+1);
+				output << " {" << obj.center.x << " " << obj.center.y << " " << obj.center.z << "}";
+				for(std::size_t j=0;j<obj.outer_points.size();j++)
+				{
+					output << " {" << obj.outer_points[j].x << " " << obj.outer_points[j].y << " " << obj.outer_points[j].z << "}";
+				}
+				output << " " << obj.outer_points.size();
+				for(std::size_t j=0;j<obj.outer_points.size();j++)
+				{
+					if((j+1)<obj.outer_points.size())
+					{
+						output << " [0 " << (j+1) << " " << (j+2) << " 0]";
+					}
+					else
+					{
+						output << " [0 " << (j+1) << " 1 0]";
+					}
+				}
+				output << "\n";
+				print_current_color(output);
+			}
+		}
+
+		void print(const PrimitivePart::TriangleStrip& obj, std::ostream& output) noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			if(obj.points.size()>=3)
+			{
+				current_object_id++;
+				output << "draw g" << current_object_id << " polygon " << obj.points.size();
+				for(std::size_t j=0;j<obj.points.size();j++)
+				{
+					output << " {" << obj.points[j].x << " " << obj.points[j].y << " " << obj.points[j].z << "}";
+				}
+				output << " " << (obj.points.size()-2);
+				for(std::size_t j=0;(j+2)<obj.points.size();j++)
+				{
+					output << " [" << j << " " << (j+1) << " " << (j+2) << " 0]";
+				}
+				output << "\n";
+				print_current_color(output);
+			}
+		}
+
+		void print(const PrimitivePart::LineLoop& obj, std::ostream& output) noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			if(obj.outer_points.size()>=2)
+			{
+				for(std::size_t j=0;j<obj.outer_points.size();j++)
+				{
+					current_object_id++;
+					output << "draw g" << current_object_id << " line";
+					output << " {" << obj.outer_points[j].x << " " << obj.outer_points[j].y << " " << obj.outer_points[j].z << "}";
+					if((j+1)<obj.outer_points.size())
+					{
+						output << " {" << obj.outer_points[j+1].x << " " << obj.outer_points[j+1].y << " " << obj.outer_points[j+1].z << "}";
+					}
+					else
+					{
+						output << " {" << obj.outer_points[0].x << " " << obj.outer_points[0].y << " " << obj.outer_points[0].z << "}";
+					}
+					output << "\n";
+					print_current_color(output);
+				}
+			}
+		}
+
+		void print(const PrimitivePart::LineStrip& obj, std::ostream& output) noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			if(obj.points.size()>=2)
+			{
+				for(std::size_t j=0;(j+1)<obj.points.size();j++)
+				{
+					current_object_id++;
+					output << "draw g" << current_object_id << " line";
+					output << " {" << obj.points[j].x << " " << obj.points[j].y << " " << obj.points[j].z << "}";
+					output << " {" << obj.points[j+1].x << " " << obj.points[j+1].y << " " << obj.points[j+1].z << "}";
+					output << "\n";
+					print_current_color(output);
+				}
+			}
+		}
+
+		void print(const PrimitivePart::BasicSphere& obj, std::ostream& output) noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			current_object_id++;
+			output << "draw g" << current_object_id << " sphere";
+			output << " {" << obj.sphere.p.x << " " << obj.sphere.p.y << " " << obj.sphere.p.z << "}";
+			output << " " << obj.sphere.r;
+			output << "\n";
+			print_current_color(output);
+		}
+
+		void print(const PrimitivePart::Color& obj, std::ostream&) noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			current_color=obj;
+		}
+
+		void print(const PrimitivePart::Alpha& obj, std::ostream&) noexcept
+		{
+			if(!obj.active)
+			{
+				return;
+			}
+			current_alpha=obj;
+		}
+
+		void print(const PrimitivePart& part, std::ostream& output) noexcept
+		{
+			print(part.obj_color_, output);
+			print(part.obj_alpha_, output);
+			print(part.obj_triangle_fan, output);
+			print(part.obj_triangle_strip, output);
+			print(part.obj_line_loop, output);
+			print(part.obj_line_strip, output);
+			print(part.obj_basic_sphere, output);
+		}
+
+		bool print(const std::vector<PrimitivePart>& parts, std::ostream& output) noexcept
+		{
+			if(!output.good())
+			{
+				return false;
+			}
+
+			std::set<BundlingID> main_bundling_ids;
+			for(std::size_t i=0;i<parts.size();i++)
+			{
+				if(!parts[i].bundling_id.group_name.empty())
+				{
+					main_bundling_ids.insert(parts[i].bundling_id);
+				}
+			}
+
+			if(main_bundling_ids.empty())
+			{
+				return false;
+			}
+
+			for(std::set<BundlingID>::const_iterator it=main_bundling_ids.begin();it!=main_bundling_ids.end();++it)
+			{
+				const BundlingID& current_bundling_id=(*it);
+				for(std::size_t i=0;i<parts.size();i++)
+				{
+					const PrimitivePart& part=parts[i];
+					if(part.bundling_id.category_name==current_bundling_id.category_name && (part.bundling_id.group_name.empty() || part.bundling_id.group_name==current_bundling_id.group_name))
+					{
+						print(part, output);
+					}
+				}
+			}
+
+			return true;
+		}
+
+	private:
+		int current_object_id;
+		PrimitivePart::Color current_color;
+		PrimitivePart::Alpha current_alpha;
+
+		void print_current_color(std::ostream& output) const noexcept
+		{
+			if(current_color.active)
+			{
+				output << "color $g" << current_object_id;
+				if(current_alpha.active && current_alpha.a>0.0)
+				{
+					output << " translucent " << current_alpha.a;
+				}
+				output << " [" << static_cast<int>(std::min(current_color.r*255.0, 255.0)) << " " << static_cast<int>(std::min(current_color.g*255.0, 255.0)) << " " << static_cast<int>(std::min(current_color.b*255.0, 255.0)) << "]";
+				output << "\n";
+			}
+		}
+	};
+
 	struct OutputFormat
 	{
 		enum ID
 		{
 			pymol_cgo,
 			chimera_bild,
+			jmol_spt,
 			undefined
 		};
 	};
@@ -781,6 +1002,10 @@ private:
 		{
 			return OutputFormat::chimera_bild;
 		}
+		else if(match_name_extension(str, ".spt"))
+		{
+			return OutputFormat::jmol_spt;
+		}
 		return OutputFormat::undefined;
 	}
 
@@ -791,7 +1016,7 @@ private:
 			return false;
 		}
 
-		if(output_format!=OutputFormat::chimera_bild && output_format!=OutputFormat::pymol_cgo)
+		if(output_format!=OutputFormat::chimera_bild && output_format!=OutputFormat::pymol_cgo && output_format!=OutputFormat::jmol_spt)
 		{
 			return false;
 		}
@@ -804,6 +1029,11 @@ private:
 		if(output_format==OutputFormat::chimera_bild)
 		{
 			PrinterForChimeraBILD printer;
+			return printer.print(parts_, output);
+		}
+		else if(output_format==OutputFormat::jmol_spt)
+		{
+			PrinterForJmolSPT printer;
 			return printer.print(parts_, output);
 		}
 		else if(output_format==OutputFormat::pymol_cgo)
@@ -827,7 +1057,7 @@ private:
 			return false;
 		}
 
-		if(output_format!=OutputFormat::chimera_bild && output_format!=OutputFormat::pymol_cgo)
+		if(output_format!=OutputFormat::chimera_bild && output_format!=OutputFormat::pymol_cgo && output_format!=OutputFormat::jmol_spt)
 		{
 			return false;
 		}
@@ -850,7 +1080,7 @@ private:
 			return output_string;
 		}
 
-		if(output_format!=OutputFormat::chimera_bild && output_format!=OutputFormat::pymol_cgo)
+		if(output_format!=OutputFormat::chimera_bild && output_format!=OutputFormat::pymol_cgo && output_format!=OutputFormat::jmol_spt)
 		{
 			return output_string;
 		}

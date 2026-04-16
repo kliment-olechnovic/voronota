@@ -148,7 +148,9 @@ voronota-lt --input ./input/4UN3.cif \
 --restrict-contacts "[-a1 [-chain B] -a2 [-chain C,D]]" \
 --graphics-coloring-config-file "./output/tutorial/part2/coloring_rules.txt" \
 --graphics-title "protein_dna" \
---graphics-output-file-for-pymol ./output/tutorial/part2/draw_protein_dna_contacts.py
+--graphics-output-file-for-pymol ./output/tutorial/part2/draw_protein_dna_contacts.py \
+--graphics-output-file-for-chimera ./output/tutorial/part2/draw_protein_dna_contacts.bild \
+--graphics-output-file-for-jmol ./output/tutorial/part2/draw_protein_dna_contacts.spt
 } &> ./output/tutorial/part2/part2step03.txt
 
 {
@@ -180,6 +182,8 @@ voronota-lt --input ./input/4UN3.cif \
 --graphics-coloring-config-file "./output/tutorial/part2/detailed_coloring_rules.txt" \
 --graphics-title "focused_protein_dna" \
 --graphics-output-file-for-pymol "./output/tutorial/part2/draw_focused_protein_dna_contacts.py" \
+--graphics-output-file-for-chimera "./output/tutorial/part2/draw_focused_protein_dna_contacts.bild" \
+--graphics-output-file-for-jmol "./output/tutorial/part2/draw_focused_protein_dna_contacts.spt" \
 --sites-view-script-for-pymol "./output/tutorial/part2/show_site_atoms.pml"
 } &> ./output/tutorial/part2/part2step06.txt
 
