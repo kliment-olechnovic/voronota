@@ -877,40 +877,80 @@ bool run(const ApplicationParameters& app_params)
 		}
 		if(app_params.save_sequence_alignments)
 		{
-			std::string output_string;
-			for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
 			{
-				const cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
-				if(sd.valid())
+				std::string output_string;
+				for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
 				{
-					output_string+="file: ";
-					output_string+=list_of_unique_file_descriptors[i].path;
-					output_string+="\n\n";
-					for(std::map<std::string, cadscorelt::ChainsSequencesMapping::ChainSummary>::const_iterator it=sd.chain_sequences_mapping_result.chain_summaries.begin();it!=sd.chain_sequences_mapping_result.chain_summaries.end();++it)
+					const cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
+					if(sd.valid())
 					{
-						const cadscorelt::ChainsSequencesMapping::ChainSummary& cs=it->second;
-						output_string+="original_chain_name: ";
-						output_string+=cs.old_name;
-						output_string+="\n";
-						output_string+="assigned_chain_name: ";
-						output_string+=cs.current_name;
-						output_string+="\n";
-						output_string+="reference_index: ";
-						output_string+=std::to_string(cs.reference_sequence_id);
-						output_string+="\n";
-						output_string+="reference_identity: ";
-						output_string+=std::to_string(cs.reference_sequence_identity);
-						output_string+="\n";
-						output_string+="sequence_alignment:\n";
-						output_string+=cs.printed_alignment;
-						output_string+="\n";
+						output_string+="file: ";
+						output_string+=list_of_unique_file_descriptors[i].path;
+						output_string+="\n\n";
+						for(std::map<std::string, cadscorelt::ChainsSequencesMapping::ChainSummary>::const_iterator it=sd.chain_sequences_mapping_result.chain_summaries.begin();it!=sd.chain_sequences_mapping_result.chain_summaries.end();++it)
+						{
+							const cadscorelt::ChainsSequencesMapping::ChainSummary& cs=it->second;
+							output_string+="original_chain_name: ";
+							output_string+=cs.old_name;
+							output_string+="\n";
+							output_string+="assigned_chain_name: ";
+							output_string+=cs.current_name;
+							output_string+="\n";
+							output_string+="reference_index: ";
+							output_string+=std::to_string(cs.reference_sequence_id);
+							output_string+="\n";
+							output_string+="reference_identity: ";
+							output_string+=std::to_string(cs.reference_sequence_identity);
+							output_string+="\n";
+							output_string+="sequence_alignment:\n";
+							output_string+=cs.printed_alignment;
+							output_string+="\n";
+						}
 					}
 				}
+				if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/reference_based_sequence_alignments.txt", output_string))
+				{
+					std::cerr << "Error: failed to write log of best per-chain sequence alignments with reference sequences.\n";
+					return false;
+				}
 			}
-			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/reference_based_sequence_alignments.txt", output_string))
+
 			{
-				std::cerr << "Error: failed to write log of best per-chain sequence alignments with reference sequences.\n";
-				return false;
+				std::string output_string;
+				output_string+="file_path\t";
+				output_string+="file_name\t";
+				output_string+="original_chain_name\t";
+				output_string+="assigned_chain_name\t";
+				output_string+="reference_index\t";
+				output_string+="reference_identity\n";
+				for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
+				{
+					const cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
+					if(sd.valid())
+					{
+						for(std::map<std::string, cadscorelt::ChainsSequencesMapping::ChainSummary>::const_iterator it=sd.chain_sequences_mapping_result.chain_summaries.begin();it!=sd.chain_sequences_mapping_result.chain_summaries.end();++it)
+						{
+							output_string+=list_of_unique_file_descriptors[i].path;
+							output_string+="\t";
+							output_string+=list_of_unique_file_display_names[i];
+							output_string+="\t";
+							const cadscorelt::ChainsSequencesMapping::ChainSummary& cs=it->second;
+							output_string+=cs.old_name;
+							output_string+="\t";
+							output_string+=cs.current_name;
+							output_string+="\t";
+							output_string+=std::to_string(cs.reference_sequence_id);
+							output_string+="\t";
+							output_string+=std::to_string(cs.reference_sequence_identity);
+							output_string+="\n";
+						}
+					}
+				}
+				if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/reference_based_sequence_matchings.tsv", output_string))
+				{
+					std::cerr << "Error: failed to write table of best chain matchings to reference sequences.\n";
+					return false;
+				}
 			}
 		}
 	}

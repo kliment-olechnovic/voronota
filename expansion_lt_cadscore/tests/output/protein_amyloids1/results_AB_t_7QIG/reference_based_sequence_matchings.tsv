@@ -1,0 +1,12 @@
+file_path	file_name	original_chain_name	assigned_chain_name	reference_index	reference_identity
+input/protein_amyloids1/7LNA-assembly1.cif	7LNA-assembly1.cif	A	A	0	0.916667
+input/protein_amyloids1/7LNA-assembly1.cif	7LNA-assembly1.cif	B	B	0	0.916667
+input/protein_amyloids1/7LNA-assembly1.cif	7LNA-assembly1.cif	C	C	0	0.916667
+input/protein_amyloids1/7QIG-assembly1.cif	7QIG-assembly1.cif	A	A	0	1.000000
+input/protein_amyloids1/7QIG-assembly1.cif	7QIG-assembly1.cif	B	B	0	1.000000
+input/protein_amyloids1/7QIG-assembly1.cif	7QIG-assembly1.cif	C	C	0	1.000000
+input/protein_amyloids1/8EFU-assembly1.cif	8EFU-assembly1.cif	A	A	0	0.992481
+input/protein_amyloids1/8EFU-assembly1.cif	8EFU-assembly1.cif	B	B	0	0.992481
+input/protein_amyloids1/8EFU-assembly1.cif	8EFU-assembly1.cif	C	C	0	0.992481
+input/protein_amyloids1/8EFU-assembly1.cif	8EFU-assembly1.cif	D	D	0	0.992481
+input/protein_amyloids1/8EFU-assembly1.cif	8EFU-assembly1.cif	E	E	0	0.992481
