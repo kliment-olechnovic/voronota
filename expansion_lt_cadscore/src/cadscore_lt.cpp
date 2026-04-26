@@ -29,6 +29,7 @@ Options:
     --save-sequence-alignments                                  flag to save best alignments with reference sequences into a file in the output directory
     --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
     --split-input-into-dimers                                   flag to split every input into dimers of contacting chains
+    --fake-split-input-into-dimers                              flag to fake-split every input into dimers of contacting chains
     --subselect-contacts                             string     selection expression to restrict contact area descriptors to score, default is '[-min-sep 1]'
     --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score, default is '[]'
     --conflate-atom-types                                       flag to conflate known equivalent atom types
@@ -107,6 +108,7 @@ public:
 	bool output_with_identities;
 	bool compact_output;
 	bool split_input_into_dimers;
+	bool fake_split_input_into_dimers;
 	bool extremely_compact_output;
 	bool local_scores_requested;
 	bool read_successfuly;
@@ -166,6 +168,7 @@ public:
 		output_with_identities(false),
 		compact_output(false),
 		split_input_into_dimers(false),
+		fake_split_input_into_dimers(false),
 		extremely_compact_output(false),
 		local_scores_requested(false),
 		read_successfuly(false),
@@ -360,6 +363,11 @@ public:
 				else if(opt.name=="split-input-into-dimers" && opt.is_flag())
 				{
 					split_input_into_dimers=opt.is_flag_and_true();
+				}
+				else if(opt.name=="fake-split-input-into-dimers" && opt.is_flag())
+				{
+					fake_split_input_into_dimers=opt.is_flag_and_true();
+					split_input_into_dimers=(fake_split_input_into_dimers || split_input_into_dimers);
 				}
 				else if(opt.name=="extremely-compact-output" && opt.is_flag())
 				{
@@ -950,10 +958,28 @@ bool run(const ApplicationParameters& app_params)
 			for(std::size_t j=0;j<splitting_tasks.size();j++)
 			{
 				const std::pair<std::string, std::string>& chains=splitting_tasks[j].second;
+				const cadscorelt::ScorableData& osd=list_of_unique_scorable_data[splitting_tasks[j].first];
 				virtual_list_of_unique_file_display_names[j]=list_of_unique_file_display_names[splitting_tasks[j].first]+"__subdimer_"+chains.first+"_"+chains.second;
-				std::vector<cadscorelt::AtomBall> task_input_balls;
+				cadscorelt::ScorableData& sd=virtual_list_of_unique_scorable_data[j];
+				std::ostringstream local_error_stream;
+				if(app_params.fake_split_input_into_dimers)
 				{
-					const cadscorelt::ScorableData& osd=list_of_unique_scorable_data[splitting_tasks[j].first];
+					cadscorelt::ScorableData::ConstructionParameters mod_virtual_scorable_data_construction_parameters=virtual_scorable_data_construction_parameters;
+					mod_virtual_scorable_data_construction_parameters.filtering_expression_for_restricting_contact_descriptors=
+							voronotalt::FilteringBySphereLabels::ExpressionForPair(
+									std::string("((")+app_params.restrict_contact_descriptors+") and ([-a1 [-chain "+chains.first+"] -a2 [-chain "+chains.second+"]]))");
+					if(!mod_virtual_scorable_data_construction_parameters.filtering_expression_for_restricting_contact_descriptors.valid())
+					{
+						local_error_stream << "failed to construct additional contact descriptors restriction filtering expression";
+					}
+					else
+					{
+						sd.construct(mod_virtual_scorable_data_construction_parameters, osd.atom_balls, local_error_stream);
+					}
+				}
+				else
+				{
+					std::vector<cadscorelt::AtomBall> task_input_balls;
 					for(const cadscorelt::AtomBall& candidate_atom_ball : osd.atom_balls)
 					{
 						if(candidate_atom_ball.id_atom.id_residue.id_chain.chain_name==chains.first || candidate_atom_ball.id_atom.id_residue.id_chain.chain_name==chains.second)
@@ -961,10 +987,8 @@ bool run(const ApplicationParameters& app_params)
 							task_input_balls.push_back(candidate_atom_ball);
 						}
 					}
+					sd.construct(virtual_scorable_data_construction_parameters, task_input_balls, local_error_stream);
 				}
-				cadscorelt::ScorableData& sd=virtual_list_of_unique_scorable_data[j];
-				std::ostringstream local_error_stream;
-				sd.construct(virtual_scorable_data_construction_parameters, task_input_balls, local_error_stream);
 				std::string& error_message=virtual_list_of_error_messages_for_unique_scorable_data[j];
 				error_message=local_error_stream.str();
 				if(!sd.valid() && error_message.empty())

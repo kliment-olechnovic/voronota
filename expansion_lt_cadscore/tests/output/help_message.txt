@@ -20,6 +20,7 @@ Options:
     --save-sequence-alignments                                  flag to save best alignments with reference sequences into a file in the output directory
     --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
     --split-input-into-dimers                                   flag to split every input into dimers of contacting chains
+    --fake-split-input-into-dimers                              flag to fake-split every input into dimers of contacting chains
     --subselect-contacts                             string     selection expression to restrict contact area descriptors to score, default is '[-min-sep 1]'
     --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score, default is '[]'
     --conflate-atom-types                                       flag to conflate known equivalent atom types

@@ -51,6 +51,17 @@ cadscore-lt \
 ####################################################################
 
 cadscore-lt \
+  -t "./input/T0860o.pdb" \
+  -m "./input/T0860TS203_1o" \
+  --fake-split-input-into-dimers \
+  --subselect-contacts "[-inter-chain]" \
+  --remap-chains \
+  --output-dir ./results_for_fake_subdimers \
+| column -t
+
+####################################################################
+
+cadscore-lt \
   -m "./input/T0860TS203_1o" \
   --split-input-into-dimers \
   --subselect-contacts "[-inter-chain]" \

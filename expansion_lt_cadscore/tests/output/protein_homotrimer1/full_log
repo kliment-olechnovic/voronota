@@ -48,6 +48,27 @@ T0860o.pdb__subdimer_A_B  T0860TS203_1o__subdimer_B_C  3     2     0.392678     
 ####################################################################
 
 cadscore-lt \
+  -t "./input/T0860o.pdb" \
+  -m "./input/T0860TS203_1o" \
+  --fake-split-input-into-dimers \
+  --subselect-contacts "[-inter-chain]" \
+  --remap-chains \
+  --output-dir ./results_for_fake_subdimers \
+| column -t
+target                    model                        t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
+T0860o.pdb__subdimer_B_C  T0860TS203_1o__subdimer_A_B  5     0     0.397704                  A=C,B=B,C=A
+T0860o.pdb__subdimer_B_C  T0860TS203_1o__subdimer_A_C  5     1     0.397704                  A=B,B=A,C=C
+T0860o.pdb__subdimer_A_C  T0860TS203_1o__subdimer_A_C  4     1     0.397704                  A=C,B=B,C=A
+T0860o.pdb__subdimer_B_C  T0860TS203_1o__subdimer_B_C  5     2     0.397704                  A=A,B=C,C=B
+T0860o.pdb__subdimer_A_C  T0860TS203_1o__subdimer_A_B  4     0     0.397704                  A=A,B=C,C=B
+T0860o.pdb__subdimer_A_C  T0860TS203_1o__subdimer_B_C  4     2     0.397704                  A=B,B=A,C=C
+T0860o.pdb__subdimer_A_B  T0860TS203_1o__subdimer_A_B  3     0     0.397704                  A=B,B=A,C=C
+T0860o.pdb__subdimer_A_B  T0860TS203_1o__subdimer_A_C  3     1     0.397704                  A=A,B=C,C=B
+T0860o.pdb__subdimer_A_B  T0860TS203_1o__subdimer_B_C  3     2     0.397704                  A=C,B=B,C=A
+
+####################################################################
+
+cadscore-lt \
   -m "./input/T0860TS203_1o" \
   --split-input-into-dimers \
   --subselect-contacts "[-inter-chain]" \
