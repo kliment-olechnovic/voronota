@@ -947,6 +947,11 @@ bool run(const ApplicationParameters& app_params)
 		}
 	}
 
+	if(app_params.quit_before_scoring)
+	{
+		return true;
+	}
+
 	if(app_params.extremely_compact_output)
 	{
 		for(int j=0;j<2;j++)
@@ -1198,11 +1203,6 @@ bool run(const ApplicationParameters& app_params)
 			}
 		}
 
-		return true;
-	}
-
-	if(app_params.quit_before_scoring)
-	{
 		return true;
 	}
 
