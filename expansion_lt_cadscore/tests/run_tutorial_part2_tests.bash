@@ -39,3 +39,25 @@ cadscore-lt \
 
 ####################################################################
 
+cadscore-lt \
+  -t "./input/T0860o.pdb" \
+  -m "./input/T0860TS203_1o" \
+  --split-input-into-dimers \
+  --subselect-contacts "[-inter-chain]" \
+  --remap-chains \
+  --output-dir ./results_for_subdimers \
+| column -t
+
+####################################################################
+
+cadscore-lt \
+  -m "./input/T0860TS203_1o" \
+  --split-input-into-dimers \
+  --subselect-contacts "[-inter-chain]" \
+  --remap-chains \
+  --clustering-thresholds 0.8 \
+  --output-dir ./results_for_subdimers_self_clustering \
+| column -t
+
+####################################################################
+

@@ -26,3 +26,42 @@ T0860o.pdb  T0860TS203_1o  1     0     0.397704                  A=B,B=A,C=C
 
 ####################################################################
 
+cadscore-lt \
+  -t "./input/T0860o.pdb" \
+  -m "./input/T0860TS203_1o" \
+  --split-input-into-dimers \
+  --subselect-contacts "[-inter-chain]" \
+  --remap-chains \
+  --output-dir ./results_for_subdimers \
+| column -t
+target                    model                        t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
+T0860o.pdb__subdimer_B_C  T0860TS203_1o__subdimer_A_C  5     1     0.392678                  A=B,C=C
+T0860o.pdb__subdimer_B_C  T0860TS203_1o__subdimer_B_C  5     2     0.392678                  B=C,C=B
+T0860o.pdb__subdimer_B_C  T0860TS203_1o__subdimer_A_B  5     0     0.392678                  A=C,B=B
+T0860o.pdb__subdimer_A_C  T0860TS203_1o__subdimer_A_C  4     1     0.392678                  A=C,C=A
+T0860o.pdb__subdimer_A_C  T0860TS203_1o__subdimer_A_B  4     0     0.392678                  A=A,B=C
+T0860o.pdb__subdimer_A_B  T0860TS203_1o__subdimer_A_C  3     1     0.392678                  A=A,C=B
+T0860o.pdb__subdimer_A_B  T0860TS203_1o__subdimer_A_B  3     0     0.392678                  A=B,B=A
+T0860o.pdb__subdimer_A_C  T0860TS203_1o__subdimer_B_C  4     2     0.392678                  B=A,C=C
+T0860o.pdb__subdimer_A_B  T0860TS203_1o__subdimer_B_C  3     2     0.392678                  B=B,C=A
+
+####################################################################
+
+cadscore-lt \
+  -m "./input/T0860TS203_1o" \
+  --split-input-into-dimers \
+  --subselect-contacts "[-inter-chain]" \
+  --remap-chains \
+  --clustering-thresholds 0.8 \
+  --output-dir ./results_for_subdimers_self_clustering \
+| column -t
+target                       model                        t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
+T0860TS203_1o__subdimer_B_C  T0860TS203_1o__subdimer_A_B  2     0     1                         A=B,B=C
+T0860TS203_1o__subdimer_A_B  T0860TS203_1o__subdimer_B_C  0     2     1                         B=A,C=B
+T0860TS203_1o__subdimer_A_C  T0860TS203_1o__subdimer_A_B  1     0     1                         A=C,B=A
+T0860TS203_1o__subdimer_A_B  T0860TS203_1o__subdimer_A_C  0     1     1                         A=B,C=A
+T0860TS203_1o__subdimer_B_C  T0860TS203_1o__subdimer_A_C  2     1     1                         A=C,C=B
+T0860TS203_1o__subdimer_A_C  T0860TS203_1o__subdimer_B_C  1     2     1                         B=C,C=A
+
+####################################################################
+

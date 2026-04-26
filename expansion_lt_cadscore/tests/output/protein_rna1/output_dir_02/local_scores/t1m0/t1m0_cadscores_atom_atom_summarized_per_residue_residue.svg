@@ -108,8 +108,8 @@
   <rect height="10" style="fill:rgb(0,255,0);" width="10" x="310" y="45"/>
   <rect height="10" style="fill:rgb(0,255,0);" width="10" x="0" y="365"/>
   <rect height="10" style="fill:rgb(0,255,0);" width="10" x="320" y="45"/>
-  <rect height="10" style="fill:rgb(0,255,0);" width="10" x="0" y="375"/>
-  <rect height="10" style="fill:rgb(0,255,0);" width="10" x="330" y="45"/>
+  <rect height="10" style="fill:rgb(0,254,0);" width="10" x="0" y="375"/>
+  <rect height="10" style="fill:rgb(0,254,0);" width="10" x="330" y="45"/>
   <rect height="10" style="fill:rgb(0,254,0);" width="10" x="10" y="365"/>
   <rect height="10" style="fill:rgb(0,254,0);" width="10" x="320" y="55"/>
   <rect height="10" style="fill:rgb(199,255,0);" width="10" x="10" y="375"/>
@@ -122,8 +122,8 @@
   <rect height="10" style="fill:rgb(255,223,0);" width="10" x="350" y="65"/>
   <rect height="10" style="fill:rgb(163,255,0);" width="10" x="30" y="375"/>
   <rect height="10" style="fill:rgb(163,255,0);" width="10" x="330" y="75"/>
-  <rect height="10" style="fill:rgb(87,255,0);" width="10" x="30" y="385"/>
-  <rect height="10" style="fill:rgb(87,255,0);" width="10" x="340" y="75"/>
+  <rect height="10" style="fill:rgb(87,254,0);" width="10" x="30" y="385"/>
+  <rect height="10" style="fill:rgb(87,254,0);" width="10" x="340" y="75"/>
   <rect height="10" style="fill:rgb(0,255,0);" width="10" x="40" y="375"/>
   <rect height="10" style="fill:rgb(0,255,0);" width="10" x="330" y="85"/>
   <rect height="10" style="fill:rgb(0,255,0);" width="10" x="50" y="385"/>
@@ -148,8 +148,8 @@
   <rect height="10" style="fill:rgb(0,255,0);" width="10" x="330" y="135"/>
   <rect height="10" style="fill:rgb(255,12,0);" width="10" x="100" y="355"/>
   <rect height="10" style="fill:rgb(255,12,0);" width="10" x="310" y="145"/>
-  <rect height="10" style="fill:rgb(179,254,0);" width="10" x="100" y="365"/>
-  <rect height="10" style="fill:rgb(179,254,0);" width="10" x="320" y="145"/>
+  <rect height="10" style="fill:rgb(179,255,0);" width="10" x="100" y="365"/>
+  <rect height="10" style="fill:rgb(179,255,0);" width="10" x="320" y="145"/>
   <rect height="10" style="fill:rgb(0,255,0);" width="10" x="100" y="375"/>
   <rect height="10" style="fill:rgb(0,255,0);" width="10" x="330" y="145"/>
   <rect height="10" style="fill:rgb(255,247,0);" width="10" x="110" y="355"/>
@@ -162,12 +162,12 @@
   <rect height="10" style="fill:rgb(0,255,0);" width="10" x="290" y="185"/>
   <rect height="10" style="fill:rgb(0,255,0);" width="10" x="140" y="345"/>
   <rect height="10" style="fill:rgb(0,255,0);" width="10" x="300" y="185"/>
-  <rect height="10" style="fill:rgb(205,255,0);" width="10" x="150" y="335"/>
-  <rect height="10" style="fill:rgb(205,255,0);" width="10" x="290" y="195"/>
+  <rect height="10" style="fill:rgb(204,255,0);" width="10" x="150" y="335"/>
+  <rect height="10" style="fill:rgb(204,255,0);" width="10" x="290" y="195"/>
   <rect height="10" style="fill:rgb(83,255,0);" width="10" x="150" y="345"/>
   <rect height="10" style="fill:rgb(83,255,0);" width="10" x="300" y="195"/>
-  <rect height="10" style="fill:rgb(255,198,0);" width="10" x="150" y="355"/>
-  <rect height="10" style="fill:rgb(255,198,0);" width="10" x="310" y="195"/>
+  <rect height="10" style="fill:rgb(255,199,0);" width="10" x="150" y="355"/>
+  <rect height="10" style="fill:rgb(255,199,0);" width="10" x="310" y="195"/>
   <rect height="10" style="fill:rgb(8,255,0);" width="10" x="150" y="365"/>
   <rect height="10" style="fill:rgb(8,255,0);" width="10" x="320" y="195"/>
   <rect height="10" style="fill:rgb(235,255,0);" width="10" x="160" y="335"/>
@@ -176,8 +176,8 @@
   <rect height="10" style="fill:rgb(255,118,0);" width="10" x="300" y="205"/>
   <rect height="10" style="fill:rgb(228,255,0);" width="10" x="160" y="355"/>
   <rect height="10" style="fill:rgb(228,255,0);" width="10" x="310" y="205"/>
-  <rect height="10" style="fill:rgb(243,255,0);" width="10" x="170" y="335"/>
-  <rect height="10" style="fill:rgb(243,255,0);" width="10" x="290" y="215"/>
+  <rect height="10" style="fill:rgb(244,255,0);" width="10" x="170" y="335"/>
+  <rect height="10" style="fill:rgb(244,255,0);" width="10" x="290" y="215"/>
   <rect height="10" style="fill:rgb(255,218,0);" width="10" x="180" y="365"/>
   <rect height="10" style="fill:rgb(255,218,0);" width="10" x="320" y="225"/>
   <rect height="10" style="fill:rgb(125,254,0);" width="10" x="180" y="375"/>
@@ -196,12 +196,12 @@
   <rect height="10" style="fill:rgb(255,203,0);" width="10" x="310" y="275"/>
   <rect height="10" style="fill:rgb(255,205,0);" width="10" x="240" y="335"/>
   <rect height="10" style="fill:rgb(255,205,0);" width="10" x="290" y="285"/>
-  <rect height="10" style="fill:rgb(255,0,0);" width="10" x="250" y="355"/>
-  <rect height="10" style="fill:rgb(255,0,0);" width="10" x="310" y="295"/>
-  <rect height="10" style="fill:rgb(254,176,0);" width="10" x="260" y="335"/>
-  <rect height="10" style="fill:rgb(254,176,0);" width="10" x="290" y="305"/>
-  <rect height="10" style="fill:rgb(255,193,0);" width="10" x="270" y="335"/>
-  <rect height="10" style="fill:rgb(255,193,0);" width="10" x="290" y="315"/>
+  <rect height="10" style="fill:rgb(254,0,0);" width="10" x="250" y="355"/>
+  <rect height="10" style="fill:rgb(254,0,0);" width="10" x="310" y="295"/>
+  <rect height="10" style="fill:rgb(255,177,0);" width="10" x="260" y="335"/>
+  <rect height="10" style="fill:rgb(255,177,0);" width="10" x="290" y="305"/>
+  <rect height="10" style="fill:rgb(255,194,0);" width="10" x="270" y="335"/>
+  <rect height="10" style="fill:rgb(255,194,0);" width="10" x="290" y="315"/>
   <rect height="10" style="fill:rgb(231,255,0);" width="10" x="280" y="335"/>
   <rect height="10" style="fill:rgb(231,255,0);" width="10" x="290" y="325"/>
   <text style="font-size:10px; fill:#FFFFFF;" transform="rotate(-90 10 44)" x="10" y="44">

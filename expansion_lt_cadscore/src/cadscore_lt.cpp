@@ -28,6 +28,7 @@ Options:
     --save-processed-inputs-pdb                                 flag to save processed input structures in PDB format to the output directory
     --save-sequence-alignments                                  flag to save best alignments with reference sequences into a file in the output directory
     --quit-before-scoring                                       flag to exit before scoring but after all the input processing and saving
+    --split-input-into-dimers                                   flag to split every input into dimers of contacting chains
     --subselect-contacts                             string     selection expression to restrict contact area descriptors to score, default is '[-min-sep 1]'
     --subselect-atoms                                string     selection expression to restrict atom SAS and site area descriptors to score, default is '[]'
     --conflate-atom-types                                       flag to conflate known equivalent atom types
@@ -105,6 +106,7 @@ public:
 	bool output_with_areas;
 	bool output_with_identities;
 	bool compact_output;
+	bool split_input_into_dimers;
 	bool extremely_compact_output;
 	bool local_scores_requested;
 	bool read_successfuly;
@@ -163,6 +165,7 @@ public:
 		output_with_areas(false),
 		output_with_identities(false),
 		compact_output(false),
+		split_input_into_dimers(false),
 		extremely_compact_output(false),
 		local_scores_requested(false),
 		read_successfuly(false),
@@ -353,6 +356,10 @@ public:
 				else if(opt.name=="compact-output" && opt.is_flag())
 				{
 					compact_output=opt.is_flag_and_true();
+				}
+				else if(opt.name=="split-input-into-dimers" && opt.is_flag())
+				{
+					split_input_into_dimers=opt.is_flag_and_true();
 				}
 				else if(opt.name=="extremely-compact-output" && opt.is_flag())
 				{
@@ -672,12 +679,12 @@ bool run(const ApplicationParameters& app_params)
 
 	cadscorelt::ScorableData::ConstructionParameters scorable_data_construction_parameters;
 	scorable_data_construction_parameters.probe=app_params.probe;
-	scorable_data_construction_parameters.record_atom_balls=(app_params.local_scores_requested || app_params.save_processed_inputs_mmcif || app_params.save_processed_inputs_pdb);
+	scorable_data_construction_parameters.record_atom_balls=(app_params.local_scores_requested || app_params.save_processed_inputs_mmcif || app_params.save_processed_inputs_pdb || app_params.split_input_into_dimers);
 	scorable_data_construction_parameters.record_sequence_alignments=app_params.save_sequence_alignments;
 	scorable_data_construction_parameters.record_graphics=(app_params.local_scores_requested && (app_params.local_output_format_graphicspymol|| app_params.local_output_format_graphicschimera));
 	scorable_data_construction_parameters.record_atom_atom_contact_summaries=(app_params.scoring_type_contacts && app_params.scoring_level_atom);
 	scorable_data_construction_parameters.record_residue_residue_contact_summaries=(app_params.scoring_type_contacts && app_params.scoring_level_residue) || app_params.remap_chains;
-	scorable_data_construction_parameters.record_chain_chain_contact_summaries=(app_params.scoring_type_contacts && app_params.scoring_level_chain);
+	scorable_data_construction_parameters.record_chain_chain_contact_summaries=(app_params.scoring_type_contacts && app_params.scoring_level_chain) || app_params.split_input_into_dimers;
 	scorable_data_construction_parameters.record_atom_cell_summaries=(app_params.scoring_type_sas && app_params.scoring_level_atom);
 	scorable_data_construction_parameters.record_residue_cell_summaries=(app_params.scoring_type_sas && app_params.scoring_level_residue);
 	scorable_data_construction_parameters.record_chain_cell_summaries=(app_params.scoring_type_sas && app_params.scoring_level_chain);
@@ -840,53 +847,6 @@ bool run(const ApplicationParameters& app_params)
 		return false;
 	}
 
-	const std::size_t total_number_of_targets=target_sd_indices.size();
-	const std::size_t total_number_of_models=model_sd_indices.size();
-
-	if(!app_params.output_dir.empty() && !app_params.extremely_compact_output)
-	{
-		std::string output_string;
-		for(std::size_t i=0;i<list_of_unique_file_display_names.size();i++)
-		{
-			output_string+=std::to_string(i);
-			output_string+="\t";
-			output_string+=list_of_unique_file_display_names[i];
-			output_string+="\n";
-		}
-		const std::string outfile=app_params.output_dir+"/numbered_input_files.tsv";
-		if(!cadscorelt::FileSystemUtilities::write_file(outfile, output_string))
-		{
-			std::cerr << "Error: failed to write numbered list of input files to file '" << outfile << "'.\n";
-			return false;
-		}
-	}
-
-	if((app_params.save_processed_inputs_mmcif || app_params.save_processed_inputs_pdb) && !app_params.output_dir.empty() && !app_params.extremely_compact_output)
-	{
-#ifdef CADSCORELT_OPENMP
-#pragma omp parallel for
-#endif
-		for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
-		{
-			if(app_params.save_processed_inputs_mmcif)
-			{
-				const std::string outfilepath=app_params.output_dir+"/processed_inputs_as_mmcif/i"+std::to_string(i)+".cif";
-				if(!cadscorelt::FileSystemUtilities::write_file(outfilepath, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(list_of_unique_scorable_data[i].atom_balls)))
-				{
-					std::cerr << "Error (non-terminating): failed to write processed input to file '" << outfilepath << "'.\n";
-				}
-			}
-			if(app_params.save_processed_inputs_pdb)
-			{
-				const std::string outfilepath=app_params.output_dir+"/processed_inputs_as_pdb/i"+std::to_string(i)+".pdb";
-				if(!cadscorelt::FileSystemUtilities::write_file(outfilepath, cadscorelt::MolecularFileWritingUtilities::PDB::print(list_of_unique_scorable_data[i].atom_balls)))
-				{
-					std::cerr << "Error (non-terminating): failed to write processed input to file '" << outfilepath << "'.\n";
-				}
-			}
-		}
-	}
-
 	if(!scorable_data_construction_parameters.reference_sequences.empty() && !app_params.output_dir.empty() && !app_params.extremely_compact_output)
 	{
 		{
@@ -943,6 +903,165 @@ bool run(const ApplicationParameters& app_params)
 			{
 				std::cerr << "Error: failed to write log of best per-chain sequence alignments with reference sequences.\n";
 				return false;
+			}
+		}
+	}
+
+	if(app_params.split_input_into_dimers)
+	{
+		std::vector< std::pair<std::size_t, std::pair<std::string, std::string> > > splitting_tasks;
+		for(std::size_t i=0;i<list_of_unique_file_descriptors.size();i++)
+		{
+			const cadscorelt::ScorableData& sd=list_of_unique_scorable_data[i];
+			std::set< std::pair<std::string, std::string> > set_of_chain_pairs;
+			for(std::map<cadscorelt::IDChainChain, cadscorelt::AreaValue>::const_iterator it=sd.chain_chain_contact_areas.begin();it!=sd.chain_chain_contact_areas.end();++it)
+			{
+				std::string a=(it->first.id_a.chain_name);
+				std::string b=(it->first.id_b.chain_name);
+				if(a!=b)
+				{
+					if(a>b)
+					{
+						std::swap(a, b);
+					}
+					set_of_chain_pairs.insert(std::pair<std::string, std::string>(a, b));
+				}
+			}
+			for(std::set< std::pair<std::string, std::string> >::const_iterator it=set_of_chain_pairs.begin();it!=set_of_chain_pairs.end();++it)
+			{
+				splitting_tasks.push_back(std::pair<std::size_t, std::pair<std::string, std::string> >(i, *it));
+			}
+		}
+
+		std::vector<std::string> virtual_list_of_unique_file_display_names(splitting_tasks.size());
+		std::vector<cadscorelt::ScorableData> virtual_list_of_unique_scorable_data(splitting_tasks.size());
+		std::vector<std::string> virtual_list_of_error_messages_for_unique_scorable_data(splitting_tasks.size());
+
+		{
+			cadscorelt::ScorableData::ConstructionParameters virtual_scorable_data_construction_parameters=scorable_data_construction_parameters;
+			virtual_scorable_data_construction_parameters.filtering_expression_for_restricting_raw_input_balls=voronotalt::FilteringBySphereLabels::ExpressionForSingle();
+			virtual_scorable_data_construction_parameters.filtering_expression_for_restricting_processed_input_balls=voronotalt::FilteringBySphereLabels::ExpressionForSingle();
+			virtual_scorable_data_construction_parameters.reference_sequences.clear();
+			virtual_scorable_data_construction_parameters.reference_stoichiometry.clear();
+
+#ifdef CADSCORELT_OPENMP
+#pragma omp parallel for
+#endif
+			for(std::size_t j=0;j<splitting_tasks.size();j++)
+			{
+				const std::pair<std::string, std::string>& chains=splitting_tasks[j].second;
+				virtual_list_of_unique_file_display_names[j]=list_of_unique_file_display_names[splitting_tasks[j].first]+"__subdimer_"+chains.first+"_"+chains.second;
+				std::vector<cadscorelt::AtomBall> task_input_balls;
+				{
+					const cadscorelt::ScorableData& osd=list_of_unique_scorable_data[splitting_tasks[j].first];
+					for(const cadscorelt::AtomBall& candidate_atom_ball : osd.atom_balls)
+					{
+						if(candidate_atom_ball.id_atom.id_residue.id_chain.chain_name==chains.first || candidate_atom_ball.id_atom.id_residue.id_chain.chain_name==chains.second)
+						{
+							task_input_balls.push_back(candidate_atom_ball);
+						}
+					}
+				}
+				cadscorelt::ScorableData& sd=virtual_list_of_unique_scorable_data[j];
+				std::ostringstream local_error_stream;
+				sd.construct(virtual_scorable_data_construction_parameters, task_input_balls, local_error_stream);
+				std::string& error_message=virtual_list_of_error_messages_for_unique_scorable_data[j];
+				error_message=local_error_stream.str();
+				if(!sd.valid() && error_message.empty())
+				{
+					error_message="unrecognized error";
+				}
+			}
+		}
+
+		std::vector<std::size_t> virtual_target_sd_indices;
+		std::vector<std::size_t> virtual_model_sd_indices;
+
+		for(std::size_t j=0;j<splitting_tasks.size();j++)
+		{
+			const std::pair<std::string, std::string>& chains=splitting_tasks[j].second;
+			const cadscorelt::FileSystemUtilities::FileInfo& fi=list_of_unique_file_descriptors[splitting_tasks[j].first];
+			const std::string& error_message=virtual_list_of_error_messages_for_unique_scorable_data[j];
+			if(error_message.empty())
+			{
+				if(set_of_target_file_descriptors.count(fi)>0)
+				{
+					virtual_target_sd_indices.push_back(j);
+				}
+				if(set_of_model_file_descriptors.count(fi)>0)
+				{
+					virtual_model_sd_indices.push_back(j);
+				}
+			}
+			else
+			{
+				std::cerr << "Error (non-terminating): failed to process dimer (" << chains.first << "," << chains.second << ") from input file '" << fi.path << "' due to errors:\n";
+				std::cerr << error_message << "\n";
+			}
+		}
+
+		if(virtual_target_sd_indices.empty())
+		{
+			std::cerr << "Error: no after-split target inputs processed successfully.\n";
+			return false;
+		}
+
+		if(virtual_model_sd_indices.empty())
+		{
+			std::cerr << "Error: no after-split model inputs processed successfully.\n";
+			return false;
+		}
+
+		list_of_unique_file_display_names.swap(virtual_list_of_unique_file_display_names);
+		list_of_unique_scorable_data.swap(virtual_list_of_unique_scorable_data);
+		list_of_error_messages_for_unique_scorable_data.swap(virtual_list_of_error_messages_for_unique_scorable_data);
+		target_sd_indices.swap(virtual_target_sd_indices);
+		model_sd_indices.swap(virtual_model_sd_indices);
+	}
+
+	const std::size_t total_number_of_targets=target_sd_indices.size();
+	const std::size_t total_number_of_models=model_sd_indices.size();
+
+	if(!app_params.output_dir.empty() && !app_params.extremely_compact_output)
+	{
+		std::string output_string;
+		for(std::size_t i=0;i<list_of_unique_file_display_names.size();i++)
+		{
+			output_string+=std::to_string(i);
+			output_string+="\t";
+			output_string+=list_of_unique_file_display_names[i];
+			output_string+="\n";
+		}
+		const std::string outfile=app_params.output_dir+"/numbered_input_files.tsv";
+		if(!cadscorelt::FileSystemUtilities::write_file(outfile, output_string))
+		{
+			std::cerr << "Error: failed to write numbered list of input files to file '" << outfile << "'.\n";
+			return false;
+		}
+	}
+
+	if((app_params.save_processed_inputs_mmcif || app_params.save_processed_inputs_pdb) && !app_params.output_dir.empty() && !app_params.extremely_compact_output)
+	{
+#ifdef CADSCORELT_OPENMP
+#pragma omp parallel for
+#endif
+		for(std::size_t i=0;i<list_of_unique_file_display_names.size();i++)
+		{
+			if(app_params.save_processed_inputs_mmcif)
+			{
+				const std::string outfilepath=app_params.output_dir+"/processed_inputs_as_mmcif/i"+std::to_string(i)+".cif";
+				if(!cadscorelt::FileSystemUtilities::write_file(outfilepath, cadscorelt::MolecularFileWritingUtilities::MMCIF::print(list_of_unique_scorable_data[i].atom_balls)))
+				{
+					std::cerr << "Error (non-terminating): failed to write processed input to file '" << outfilepath << "'.\n";
+				}
+			}
+			if(app_params.save_processed_inputs_pdb)
+			{
+				const std::string outfilepath=app_params.output_dir+"/processed_inputs_as_pdb/i"+std::to_string(i)+".pdb";
+				if(!cadscorelt::FileSystemUtilities::write_file(outfilepath, cadscorelt::MolecularFileWritingUtilities::PDB::print(list_of_unique_scorable_data[i].atom_balls)))
+				{
+					std::cerr << "Error (non-terminating): failed to write processed input to file '" << outfilepath << "'.\n";
+				}
 			}
 		}
 	}
