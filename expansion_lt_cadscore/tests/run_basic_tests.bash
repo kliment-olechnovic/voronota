@@ -167,7 +167,18 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   --output-dir ./output/protein_homodimer1/output_dir_v17 \
   --clustering-thresholds 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 \
+  --output-global-scores _none
+  
+####################################################################
+
+cadscore-lt \
+  -m './input/protein_homodimer1/model1.pdb' \
+  --split-input-into-dimers \
+  --subselect-contacts "[-inter-chain]" \
+  --remap-chains \
+  --clustering-thresholds 0.8 \
   --output-global-scores _none \
+  --output-dir ./output/protein_homodimer1/output_dir_v18
   
 ####################################################################
 

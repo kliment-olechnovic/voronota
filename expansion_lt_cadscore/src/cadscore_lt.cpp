@@ -1395,7 +1395,7 @@ bool run(const ApplicationParameters& app_params)
 	{
 		for(const std::size_t ti : target_sd_indices)
 		{
-			if(mi!=ti)
+			if(mi!=ti || app_params.split_input_into_dimers)
 			{
 				list_of_pairs_of_target_model_indices.emplace_back(std::pair<std::size_t, std::size_t>(ti, mi));
 			}

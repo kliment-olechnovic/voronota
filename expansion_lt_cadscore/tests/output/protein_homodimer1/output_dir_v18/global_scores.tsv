@@ -1,0 +1,2 @@
+target	model	t_id	m_id	residue_residue_cadscore	renaming_of_model_chains
+model1.pdb__subdimer_A_B	model1.pdb__subdimer_A_B	0	0	1	A=A,B=B
