@@ -2941,6 +2941,24 @@ private:
 							}
 						}
 					}
+					if(!best_pair_was_set)
+					{
+						bool fallback_best_pair_was_set=false;
+						for(std::set<std::string>::const_iterator it_right=set_of_free_chains_right.begin();it_right!=set_of_free_chains_right.end() && !fallback_best_pair_was_set;++it_right)
+						{
+							const int right_reference_sequence_id=(available_chain_sequences_mapping_result ? target_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(*it_right) : -1);
+							for(std::set<std::string>::const_iterator it_left=set_of_free_chains_left.begin();it_left!=set_of_free_chains_left.end();++it_left)
+							{
+								const int left_reference_sequence_id=(available_chain_sequences_mapping_result ? model_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(*it_left): -1);
+								const bool consistent_with_reference_sequence_ids=(!available_chain_sequences_mapping_result || right_reference_sequence_id==left_reference_sequence_id);
+								if(consistent_with_reference_sequence_ids)
+								{
+									best_pair=std::make_pair(*it_left, *it_right);
+									fallback_best_pair_was_set=true;
+								}
+							}
+						}
+					}
 					map_of_renamings_in_model[best_pair.first]=best_pair.second;
 					map_of_renamings_in_target[best_pair.second]=best_pair.second;
 					reverse_map_of_renamings[best_pair.second]=best_pair.first;
