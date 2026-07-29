@@ -2660,36 +2660,20 @@ private:
 		else
 		{
 			const bool available_chain_sequences_mapping_result=(!target_data.chain_sequences_mapping_result.empty() && !model_data.chain_sequences_mapping_result.empty());
-			int num_of_permutations_to_check_exhaustively=0;
+
 			if(!available_chain_sequences_mapping_result)
 			{
-				num_of_permutations_to_check_exhaustively=std::max(calculate_number_of_all_permutations_of_chains(chain_names_in_model.size()), calculate_number_of_all_permutations_of_chains(chain_names_in_target.size()));
-			}
-			else
-			{
-				num_of_permutations_to_check_exhaustively=std::max(calculate_number_of_relevant_permutations_of_chains(chain_names_in_model.size(), model_data.chain_sequences_mapping_result.frequencies_of_reference_sequence_ids), calculate_number_of_relevant_permutations_of_chains(chain_names_in_target.size(), target_data.chain_sequences_mapping_result.frequencies_of_reference_sequence_ids));
-			}
-
-			if(num_of_permutations_to_check_exhaustively<=max_permutations_to_check_exhaustively)
-			{
-				double best_score=-1.0;
-				std::map<std::string, std::string> best_score_renaming_map;
+				int num_of_permutations_to_check_exhaustively=std::max(calculate_number_of_all_permutations_of_chains(chain_names_in_model.size()), calculate_number_of_all_permutations_of_chains(chain_names_in_target.size()));
+				if(num_of_permutations_to_check_exhaustively<=max_permutations_to_check_exhaustively)
 				{
-					const bool model_not_shorter=(chain_names_in_model.size()>=chain_names_in_target.size());
-					std::vector<std::string> permutated_chain_names=(model_not_shorter ? chain_names_in_model : chain_names_in_target);
-					const std::vector<std::string>& actual_target_chain_names=(model_not_shorter ? chain_names_in_target : permutated_chain_names);
-					const std::vector<std::string>& actual_model_chain_names=(model_not_shorter ? permutated_chain_names : chain_names_in_model);
-					do
+					double best_score=-1.0;
+					std::map<std::string, std::string> best_score_renaming_map;
 					{
-						bool consistent_with_reference_sequence_ids=true;
-						if(available_chain_sequences_mapping_result)
-						{
-							for(std::size_t i=0;i<actual_target_chain_names.size() && i<actual_model_chain_names.size() && consistent_with_reference_sequence_ids;i++)
-							{
-								consistent_with_reference_sequence_ids=consistent_with_reference_sequence_ids && target_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(actual_target_chain_names[i])==model_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(actual_model_chain_names[i]);
-							}
-						}
-						if(consistent_with_reference_sequence_ids)
+						const bool model_not_shorter=(chain_names_in_model.size()>=chain_names_in_target.size());
+						std::vector<std::string> permutated_chain_names=(model_not_shorter ? chain_names_in_model : chain_names_in_target);
+						const std::vector<std::string>& actual_target_chain_names=(model_not_shorter ? chain_names_in_target : permutated_chain_names);
+						const std::vector<std::string>& actual_model_chain_names=(model_not_shorter ? permutated_chain_names : chain_names_in_model);
+						do
 						{
 							std::map<std::string, std::string> renaming_map=ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(actual_model_chain_names, actual_target_chain_names);
 							double score=-1.0;
@@ -2712,21 +2696,129 @@ private:
 								best_score_renaming_map=renaming_map;
 							}
 						}
+						while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
 					}
-					while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
-				}
-				if(best_score_renaming_map.empty())
-				{
-					error_log << "Failed to perform chain remapping exhaustively.\n";
-					return false;
-				}
-				else
-				{
-					final_chain_renaming_map.swap(best_score_renaming_map);
-					return true;
+					if(best_score_renaming_map.empty())
+					{
+						error_log << "Failed to perform chain remapping exhaustively.\n";
+						return false;
+					}
+					else
+					{
+						final_chain_renaming_map.swap(best_score_renaming_map);
+						return true;
+					}
 				}
 			}
 			else
+			{
+				int num_of_permutations_to_check_exhaustively=std::max(calculate_number_of_relevant_permutations_of_chains(chain_names_in_model.size(), model_data.chain_sequences_mapping_result.frequencies_of_reference_sequence_ids), calculate_number_of_relevant_permutations_of_chains(chain_names_in_target.size(), target_data.chain_sequences_mapping_result.frequencies_of_reference_sequence_ids));
+				if(num_of_permutations_to_check_exhaustively<=max_permutations_to_check_exhaustively)
+				{
+					std::vector< std::vector< std::map<std::string, std::string> > > grouped_sub_renaming_maps;
+					{
+						std::map<int, std::pair< std::vector<std::string>, std::vector<std::string> > > grouped_chain_names_in_target_and_in_model;
+						for(const std::string& cn : chain_names_in_target)
+						{
+							grouped_chain_names_in_target_and_in_model[target_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(cn)].first.push_back(cn);
+						}
+						for(const std::string& cn : chain_names_in_model)
+						{
+							grouped_chain_names_in_target_and_in_model[model_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(cn)].second.push_back(cn);
+						}
+
+						grouped_sub_renaming_maps.reserve(grouped_chain_names_in_target_and_in_model.size());
+						for(std::map<int, std::pair< std::vector<std::string>, std::vector<std::string> > >::const_iterator gcns_it=grouped_chain_names_in_target_and_in_model.begin();gcns_it!=grouped_chain_names_in_target_and_in_model.end();++gcns_it)
+						{
+							grouped_sub_renaming_maps.push_back(std::vector< std::map<std::string, std::string> >());
+							std::vector< std::map<std::string, std::string> >& group_sub_renaming_maps=grouped_sub_renaming_maps.back();
+							const std::vector<std::string>& group_chain_names_in_target=gcns_it->second.first;
+							const std::vector<std::string>& group_chain_names_in_model=gcns_it->second.second;
+							const bool model_not_shorter=(group_chain_names_in_model.size()>=group_chain_names_in_target.size());
+							std::vector<std::string> permutated_chain_names=(model_not_shorter ? group_chain_names_in_model : group_chain_names_in_target);
+							const std::vector<std::string>& actual_target_chain_names=(model_not_shorter ? group_chain_names_in_target : permutated_chain_names);
+							const std::vector<std::string>& actual_model_chain_names=(model_not_shorter ? permutated_chain_names : group_chain_names_in_model);
+							do
+							{
+								group_sub_renaming_maps.push_back(ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(actual_model_chain_names, actual_target_chain_names));
+							}
+							while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
+						}
+					}
+					double best_score=-1.0;
+					std::map<std::string, std::string> best_score_renaming_map;
+					{
+						std::vector<std::size_t> multiindex(grouped_sub_renaming_maps.size(), 0);
+						bool multiindex_valid=!multiindex.empty();
+						while(multiindex_valid)
+						{
+							{
+								std::map<std::string, std::string> renaming_map;
+								for(std::size_t mi=0;mi<multiindex.size();mi++)
+								{
+									const std::map<std::string, std::string>& sub_renaming_map=grouped_sub_renaming_maps[mi][multiindex[mi]];
+									for(std::map<std::string, std::string>::const_iterator srm_it=sub_renaming_map.begin();srm_it!=sub_renaming_map.end();++srm_it)
+									{
+										renaming_map[srm_it->first]=srm_it->second;
+									}
+								}
+								double score=-1.0;
+								const std::map<IDResidueResidue, AreaValue>* renamed_map_ptr=0;
+								if(cache_ptr!=0)
+								{
+									renamed_map_ptr=cache_ptr->get_residue_residue_contact_areas_with_chains_renamed(model_data, renaming_map);
+								}
+								if(renamed_map_ptr!=0)
+								{
+									score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, *renamed_map_ptr).score();
+								}
+								else
+								{
+									score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, renaming_map)).score();
+								}
+								if(score>best_score)
+								{
+									best_score=score;
+									best_score_renaming_map=renaming_map;
+								}
+							}
+
+							{
+								bool progressed=false;
+								std::size_t multiindex_pos=0;
+								while(multiindex_pos<multiindex.size() && !progressed)
+								{
+									multiindex[multiindex_pos]++;
+									if(multiindex[multiindex_pos]<grouped_sub_renaming_maps[multiindex_pos].size())
+									{
+										progressed=true;
+									}
+									else
+									{
+										multiindex[multiindex_pos]=0;
+										multiindex_pos++;
+									}
+								}
+								if(!progressed)
+								{
+									multiindex_valid=false;
+								}
+							}
+						}
+					}
+					if(best_score_renaming_map.empty())
+					{
+						error_log << "Failed to perform chain remapping exhaustively based on the sequence mapping.\n";
+						return false;
+					}
+					else
+					{
+						final_chain_renaming_map.swap(best_score_renaming_map);
+						return true;
+					}
+				}
+			}
+
 			{
 				std::map<std::string, std::string> map_of_renamings_in_model;
 				for(std::size_t i=0;i<chain_names_in_model.size();i++)

@@ -319,9 +319,9 @@ public:
 				else if(opt.name=="max-chains-to-fully-permute" && opt.args_ints.size()==1)
 				{
 					max_permutations_to_check_exhaustively=static_cast<int>(opt.args_ints.front());
-					if(max_permutations_to_check_exhaustively>1000)
+					if(max_permutations_to_check_exhaustively>4000000)
 					{
-						error_log_for_options_parsing << "Error: invalid max number of chains permutations, must be not greater than 1000.\n";
+						error_log_for_options_parsing << "Error: invalid max number of chains permutations, must be not greater than 4000000.\n";
 					}
 				}
 				else if(opt.name=="max-renaming-cache-size" && opt.args_ints.size()==1)
