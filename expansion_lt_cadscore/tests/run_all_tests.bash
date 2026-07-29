@@ -35,6 +35,8 @@ cd - &> /dev/null
 
 ./run_protein_rna_tests.bash
 
+./run_chain_remapping_tests.bash
+
 git status -s ./output/
 
 ################################################################################
