@@ -2867,6 +2867,7 @@ private:
 				while(!set_of_free_chains_left.empty() && !set_of_free_chains_right.empty())
 				{
 					std::pair<std::string, std::string> best_pair(*set_of_free_chains_left.begin(), *set_of_free_chains_right.begin());
+					bool best_pair_was_set=false;
 					double best_score=0.0;
 					for(int adjacency_preference_mode=0;adjacency_preference_mode<2 && best_score<=0.0;adjacency_preference_mode++)
 					{
@@ -2921,12 +2922,16 @@ private:
 											new_map_of_renamings[*it_left]=(*it_right);
 											const CADDescriptor cad_descriptor=construct_global_cad_descriptor(new_submap_of_target_contacts, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(ChainNamingUtilities::restrict_map_container_by_chain_name(model_data.residue_residue_contact_areas, *it_left), new_map_of_renamings));
 											const double score=cad_descriptor.score()*cad_descriptor.target_area_sum;
-											if(score>best_score)
+											if(score>best_score || !best_pair_was_set)
 											{
 												best_pair=std::make_pair(*it_left, *it_right);
-												best_score=score;
+												best_pair_was_set=true;
+												if(score>best_score)
+												{
+													best_score=score;
+												}
 											}
-											else if(cad_descriptor.confusion_TP<=0.0)
+											if(cad_descriptor.confusion_TP<=0.0)
 											{
 												set_of_hopeless_pairs.insert(std::make_pair(*it_left, *it_right));
 											}
