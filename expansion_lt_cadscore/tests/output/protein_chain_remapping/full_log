@@ -5,6 +5,7 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_homooligomer1/T2235TS* \
   --remap-chains false \
+  --processors 8 \
 | column -t
 target         model          t_id  m_id  residue_residue_cadscore
 T2235TS475_1o  T2235TS369_1o  3     1     0.251913
@@ -24,6 +25,7 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_homooligomer1/T2235TS* \
   --remap-chains true \
+  --processors 8 \
 | column -t
 target         model          t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
 T2235TS475_1o  T2235TS369_1o  3     1     0.754574                  A=C,B=D,C=A,D=F,E=E,F=B
@@ -45,6 +47,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_homooligomer1/T2235.fasta" \
   --reference-stoichiometry 6 \
   --remap-chains false \
+  --processors 8 \
 | column -t
 target         model          t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
 T2235TS475_1o  T2235TS369_1o  3     1     0.251913                  .
@@ -66,6 +69,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_homooligomer1/T2235.fasta" \
   --reference-stoichiometry 6 \
   --remap-chains true \
+  --processors 8 \
 | column -t
 target         model          t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
 T2235TS475_1o  T2235TS369_1o  3     1     0.754574                  A=C,B=D,C=A,D=F,E=E,F=B
@@ -87,6 +91,7 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_heterooligomer1/H2227TS* \
   --remap-chains false \
+  --processors 8 \
 | column -t
 target        model         t_id  m_id  residue_residue_cadscore
 H2227TS287_1  H2227TS375_1  0     3     0.84983
@@ -106,6 +111,7 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_heterooligomer1/H2227TS* \
   --remap-chains true \
+  --processors 8 \
 | column -t
 target        model         t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
 H2227TS287_1  H2227TS375_1  0     3     0.84983                   A=A,B=B,C=C,D=D,E=E,F=F,G=G
@@ -127,6 +133,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_heterooligomer1/H2227.fasta" \
   --reference-stoichiometry 1 6 \
   --remap-chains false \
+  --processors 8 \
 | column -t
 target        model         t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
 H2227TS287_1  H2227TS375_1  0     3     0.84983                   .
@@ -148,6 +155,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_heterooligomer1/H2227.fasta" \
   --reference-stoichiometry 1 6 \
   --remap-chains true \
+  --processors 8 \
 | column -t
 target        model         t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
 H2227TS287_1  H2227TS375_1  0     3     0.84983                   A=A,B=B,C=C,D=D,E=E,F=F,G=G
@@ -169,6 +177,7 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_heterooligomer2/H2217TS* \
   --remap-chains false \
+  --processors 8 \
 | column -t
 target        model         t_id  m_id  residue_residue_cadscore
 H2217TS489_1  H2217TS294_1  3     2     0.348766
@@ -188,6 +197,7 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_heterooligomer2/H2217TS* \
   --remap-chains true \
+  --processors 8 \
 | column -t
 target        model         t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
 H2217TS294_1  H2217TS147_1  2     1     0.999847                  A=A,B=C,C=E,D=G,E=I,F=K,G=B,H=D,I=F,J=H,K=J,L=L
@@ -209,6 +219,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_heterooligomer2/H2217.fasta" \
   --reference-stoichiometry 2 2 2 2 2 2 \
   --remap-chains false \
+  --processors 8 \
 | column -t
 target        model         t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
 H2217TS294_1  H2217TS147_1  2     1     0.999847                  .
@@ -224,13 +235,27 @@ H2217TS294_1  H2217TS489_1  2     3     0.253798                  .
 H2217TS147_1  H2217TS014_1  1     0     0.246385                  .
 H2217TS294_1  H2217TS014_1  2     0     0.246385                  .
 
-#cadscore-lt \
-#  --subselect-contacts '[-inter-chain]' \
-#  -m ./input/protein_heterooligomer2/H2217TS* \
-#  --reference-sequences-file "./input/protein_heterooligomer2/H2217.fasta" \
-#  --reference-stoichiometry 2 2 2 2 2 2 \
-#  --remap-chains true \
-#| column -t
+cadscore-lt \
+  --subselect-contacts '[-inter-chain]' \
+  -m ./input/protein_heterooligomer2/H2217TS* \
+  --reference-sequences-file "./input/protein_heterooligomer2/H2217.fasta" \
+  --reference-stoichiometry 2 2 2 2 2 2 \
+  --remap-chains true \
+  --processors 8 \
+| column -t
+target        model         t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
+H2217TS294_1  H2217TS147_1  2     1     0.999847                  A=A,B=B,C=C,D=D,E=E,F=F,G=G,H=H,I=I,J=J,K=K,L=L
+H2217TS147_1  H2217TS294_1  1     2     0.999847                  A=A,B=B,C=C,D=D,E=E,F=F,G=G,H=H,I=I,J=J,K=K,L=L
+H2217TS489_1  H2217TS014_1  3     0     0.805562                  A=A,B=B,C=C,D=D,E=E,F=F,G=G,H=H,I=I,J=J,K=K,L=L
+H2217TS489_1  H2217TS147_1  3     1     0.717072                  A=A,B=B,C=I,D=J,E=E,F=F,G=G,H=H,I=C,J=D,K=K,L=L
+H2217TS489_1  H2217TS294_1  3     2     0.717067                  A=A,B=B,C=I,D=J,E=E,F=F,G=G,H=H,I=C,J=D,K=K,L=L
+H2217TS014_1  H2217TS489_1  0     3     0.708381                  A=A,B=B,C=C,D=D,E=E,F=F,G=G,H=H,I=I,J=J,K=K,L=L
+H2217TS014_1  H2217TS147_1  0     1     0.616741                  A=A,B=B,C=I,D=J,E=E,F=F,G=G,H=H,I=C,J=D,K=K,L=L
+H2217TS014_1  H2217TS294_1  0     2     0.616739                  A=A,B=B,C=I,D=J,E=E,F=F,G=G,H=H,I=C,J=D,K=K,L=L
+H2217TS147_1  H2217TS489_1  1     3     0.514061                  A=G,B=H,C=C,D=D,E=K,F=F,G=A,H=B,I=I,J=J,K=E,L=L
+H2217TS294_1  H2217TS489_1  2     3     0.514057                  A=G,B=H,C=C,D=D,E=K,F=F,G=A,H=B,I=I,J=J,K=E,L=L
+H2217TS294_1  H2217TS014_1  2     0     0.499188                  A=A,B=B,C=I,D=J,E=E,F=F,G=G,H=H,I=C,J=D,K=K,L=L
+H2217TS147_1  H2217TS014_1  1     0     0.499187                  A=A,B=B,C=I,D=J,E=E,F=F,G=G,H=H,I=C,J=D,K=K,L=L
   
 ####################################################################
 
@@ -238,6 +263,7 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_heterooligomer3/H2236TS* \
   --remap-chains false \
+  --processors 8 \
 | column -t
 target        model         t_id  m_id  residue_residue_cadscore
 H2236TS388_1  H2236TS423_1  1     3     0.142197
@@ -265,6 +291,7 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_heterooligomer3/H2236TS* \
   --remap-chains true \
+  --processors 8 \
 | column -t
 target        model         t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
 H2236TS393_1  H2236TS388_1  2     1     0.607372                  A=C,B=D,C=A,D=E,E=B,F=I,G=H,H=G,I=F
@@ -294,6 +321,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_heterooligomer3/H2236.fasta" \
   --reference-stoichiometry 3 6 \
   --remap-chains false \
+  --processors 8 \
 | column -t
 target        model         t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
 H2236TS393_1  H2236TS388_1  2     1     0.239953                  .
@@ -323,6 +351,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_heterooligomer3/H2236.fasta" \
   --reference-stoichiometry 3 6 \
   --remap-chains true \
+  --processors 8 \
 | column -t
 target        model         t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
 H2236TS393_1  H2236TS388_1  2     1     0.607372                  A=E,B=B,C=A,D=D,E=C,F=I,G=H,H=G,I=F

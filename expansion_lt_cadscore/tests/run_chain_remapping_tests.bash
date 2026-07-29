@@ -15,12 +15,14 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_homooligomer1/T2235TS* \
   --remap-chains false \
+  --processors 8 \
 | column -t
 
 cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_homooligomer1/T2235TS* \
   --remap-chains true \
+  --processors 8 \
 | column -t
 
 cadscore-lt \
@@ -29,6 +31,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_homooligomer1/T2235.fasta" \
   --reference-stoichiometry 6 \
   --remap-chains false \
+  --processors 8 \
 | column -t
 
 cadscore-lt \
@@ -37,6 +40,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_homooligomer1/T2235.fasta" \
   --reference-stoichiometry 6 \
   --remap-chains true \
+  --processors 8 \
 | column -t
   
 ####################################################################
@@ -45,12 +49,14 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_heterooligomer1/H2227TS* \
   --remap-chains false \
+  --processors 8 \
 | column -t
 
 cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_heterooligomer1/H2227TS* \
   --remap-chains true \
+  --processors 8 \
 | column -t
 
 cadscore-lt \
@@ -59,6 +65,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_heterooligomer1/H2227.fasta" \
   --reference-stoichiometry 1 6 \
   --remap-chains false \
+  --processors 8 \
 | column -t
 
 cadscore-lt \
@@ -67,6 +74,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_heterooligomer1/H2227.fasta" \
   --reference-stoichiometry 1 6 \
   --remap-chains true \
+  --processors 8 \
 | column -t
   
 ####################################################################
@@ -75,12 +83,14 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_heterooligomer2/H2217TS* \
   --remap-chains false \
+  --processors 8 \
 | column -t
 
 cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_heterooligomer2/H2217TS* \
   --remap-chains true \
+  --processors 8 \
 | column -t
 
 cadscore-lt \
@@ -89,15 +99,17 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_heterooligomer2/H2217.fasta" \
   --reference-stoichiometry 2 2 2 2 2 2 \
   --remap-chains false \
+  --processors 8 \
 | column -t
 
-#cadscore-lt \
-#  --subselect-contacts '[-inter-chain]' \
-#  -m ./input/protein_heterooligomer2/H2217TS* \
-#  --reference-sequences-file "./input/protein_heterooligomer2/H2217.fasta" \
-#  --reference-stoichiometry 2 2 2 2 2 2 \
-#  --remap-chains true \
-#| column -t
+cadscore-lt \
+  --subselect-contacts '[-inter-chain]' \
+  -m ./input/protein_heterooligomer2/H2217TS* \
+  --reference-sequences-file "./input/protein_heterooligomer2/H2217.fasta" \
+  --reference-stoichiometry 2 2 2 2 2 2 \
+  --remap-chains true \
+  --processors 8 \
+| column -t
   
 ####################################################################
 
@@ -105,12 +117,14 @@ cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_heterooligomer3/H2236TS* \
   --remap-chains false \
+  --processors 8 \
 | column -t
 
 cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
   -m ./input/protein_heterooligomer3/H2236TS* \
   --remap-chains true \
+  --processors 8 \
 | column -t
 
 cadscore-lt \
@@ -119,6 +133,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_heterooligomer3/H2236.fasta" \
   --reference-stoichiometry 3 6 \
   --remap-chains false \
+  --processors 8 \
 | column -t
 
 cadscore-lt \
@@ -127,6 +142,7 @@ cadscore-lt \
   --reference-sequences-file "./input/protein_heterooligomer3/H2236.fasta" \
   --reference-stoichiometry 3 6 \
   --remap-chains true \
+  --processors 8 \
 | column -t
   
 ####################################################################
