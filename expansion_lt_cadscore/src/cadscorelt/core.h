@@ -2553,6 +2553,11 @@ private:
 		return result;
 	}
 
+	static int calculate_number_of_all_permutations_of_chains(const int number_of_chains_in_model, const int number_of_chains_in_target) noexcept
+	{
+		return calculate_number_of_all_permutations_of_chains(std::max(number_of_chains_in_model, number_of_chains_in_target));
+	}
+
 	static int calculate_number_of_relevant_permutations_of_chains(const int number_of_chains, const std::map<int, int>& frequencies_of_reference_sequence_ids) noexcept
 	{
 		if(frequencies_of_reference_sequence_ids.empty())
@@ -2571,6 +2576,26 @@ private:
 			result*=mult;
 		}
 		return result;
+	}
+
+	static int calculate_number_of_relevant_permutations_of_chains(const int number_of_chains_in_model, const std::map<int, int>& frequencies_of_reference_sequence_ids_in_model, const int number_of_chains_in_target, const std::map<int, int>& frequencies_of_reference_sequence_ids_in_target) noexcept
+	{
+		if(frequencies_of_reference_sequence_ids_in_model.empty() || frequencies_of_reference_sequence_ids_in_target.empty())
+		{
+			return calculate_number_of_all_permutations_of_chains(number_of_chains_in_model, number_of_chains_in_target);
+		}
+		std::map<int, int> max_frequencies_of_reference_sequence_ids;
+		for(std::map<int, int>::const_iterator it=frequencies_of_reference_sequence_ids_in_model.begin();it!=frequencies_of_reference_sequence_ids_in_model.end();++it)
+		{
+			int& max_freq=max_frequencies_of_reference_sequence_ids[it->first];
+			max_freq=std::max(std::max(max_freq, it->second), 1);
+		}
+		for(std::map<int, int>::const_iterator it=frequencies_of_reference_sequence_ids_in_target.begin();it!=frequencies_of_reference_sequence_ids_in_target.end();++it)
+		{
+			int& max_freq=max_frequencies_of_reference_sequence_ids[it->first];
+			max_freq=std::max(std::max(max_freq, it->second), 1);
+		}
+		return calculate_number_of_relevant_permutations_of_chains(std::max(number_of_chains_in_model, number_of_chains_in_target), max_frequencies_of_reference_sequence_ids);
 	}
 
 	static bool remap_chains_optimally(const ScorableData& target_data, const ScorableData& model_data, const int max_permutations_to_check_exhaustively, std::map<std::string, std::string>& final_chain_renaming_map, std::ostream& error_log, CacheForRemappingOfChains* cache_ptr) noexcept
@@ -2663,7 +2688,7 @@ private:
 
 			if(!available_chain_sequences_mapping_result)
 			{
-				int num_of_permutations_to_check_exhaustively=std::max(calculate_number_of_all_permutations_of_chains(chain_names_in_model.size()), calculate_number_of_all_permutations_of_chains(chain_names_in_target.size()));
+				const int num_of_permutations_to_check_exhaustively=calculate_number_of_all_permutations_of_chains(chain_names_in_model.size(), chain_names_in_target.size());
 				if(num_of_permutations_to_check_exhaustively<=max_permutations_to_check_exhaustively)
 				{
 					double best_score=-1.0;
@@ -2712,7 +2737,7 @@ private:
 			}
 			else
 			{
-				int num_of_permutations_to_check_exhaustively=std::max(calculate_number_of_relevant_permutations_of_chains(chain_names_in_model.size(), model_data.chain_sequences_mapping_result.frequencies_of_reference_sequence_ids), calculate_number_of_relevant_permutations_of_chains(chain_names_in_target.size(), target_data.chain_sequences_mapping_result.frequencies_of_reference_sequence_ids));
+				const int num_of_permutations_to_check_exhaustively=calculate_number_of_relevant_permutations_of_chains(chain_names_in_model.size(), model_data.chain_sequences_mapping_result.frequencies_of_reference_sequence_ids, chain_names_in_target.size(), target_data.chain_sequences_mapping_result.frequencies_of_reference_sequence_ids);
 				if(num_of_permutations_to_check_exhaustively<=max_permutations_to_check_exhaustively)
 				{
 					std::vector< std::vector< std::map<std::string, std::string> > > grouped_sub_renaming_maps;
@@ -2730,19 +2755,22 @@ private:
 						grouped_sub_renaming_maps.reserve(grouped_chain_names_in_target_and_in_model.size());
 						for(std::map<int, std::pair< std::vector<std::string>, std::vector<std::string> > >::const_iterator gcns_it=grouped_chain_names_in_target_and_in_model.begin();gcns_it!=grouped_chain_names_in_target_and_in_model.end();++gcns_it)
 						{
-							grouped_sub_renaming_maps.push_back(std::vector< std::map<std::string, std::string> >());
-							std::vector< std::map<std::string, std::string> >& group_sub_renaming_maps=grouped_sub_renaming_maps.back();
 							const std::vector<std::string>& group_chain_names_in_target=gcns_it->second.first;
 							const std::vector<std::string>& group_chain_names_in_model=gcns_it->second.second;
-							const bool model_not_shorter=(group_chain_names_in_model.size()>=group_chain_names_in_target.size());
-							std::vector<std::string> permutated_chain_names=(model_not_shorter ? group_chain_names_in_model : group_chain_names_in_target);
-							const std::vector<std::string>& actual_target_chain_names=(model_not_shorter ? group_chain_names_in_target : permutated_chain_names);
-							const std::vector<std::string>& actual_model_chain_names=(model_not_shorter ? permutated_chain_names : group_chain_names_in_model);
-							do
+							if(!group_chain_names_in_model.empty())
 							{
-								group_sub_renaming_maps.push_back(ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(actual_model_chain_names, actual_target_chain_names));
+								grouped_sub_renaming_maps.push_back(std::vector< std::map<std::string, std::string> >());
+								std::vector< std::map<std::string, std::string> >& group_sub_renaming_maps=grouped_sub_renaming_maps.back();
+								const bool model_not_shorter=(group_chain_names_in_model.size()>=group_chain_names_in_target.size());
+								std::vector<std::string> permutated_chain_names=(model_not_shorter ? group_chain_names_in_model : group_chain_names_in_target);
+								const std::vector<std::string>& actual_target_chain_names=(model_not_shorter ? group_chain_names_in_target : permutated_chain_names);
+								const std::vector<std::string>& actual_model_chain_names=(model_not_shorter ? permutated_chain_names : group_chain_names_in_model);
+								do
+								{
+									group_sub_renaming_maps.push_back(ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(actual_model_chain_names, actual_target_chain_names));
+								}
+								while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
 							}
-							while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
 						}
 					}
 					double best_score=-1.0;
