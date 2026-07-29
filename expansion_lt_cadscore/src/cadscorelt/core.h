@@ -1914,18 +1914,22 @@ public:
 		{
 			return 0;
 		}
-		std::map<IDResidueResidue, AreaValue>& renamed_map=map_of_renamed_maps_[renaming_map];
-		if(renamed_map.empty())
+
+		std::map< std::map<std::string, std::string>, std::map<IDResidueResidue, AreaValue> >::iterator it=map_of_renamed_maps_.find(renaming_map);
+
+		if(it==map_of_renamed_maps_.end())
 		{
-			if(map_of_renamed_maps_.size()>max_entries_)
+			if(map_of_renamed_maps_.size()>=max_entries_)
 			{
 				map_of_renamed_maps_.clear();
-				renamed_map=map_of_renamed_maps_[renaming_map];
 			}
-			renamed_map=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(sd.residue_residue_contact_areas, renaming_map);
+			it=map_of_renamed_maps_.insert(std::make_pair(renaming_map, std::map<IDResidueResidue, AreaValue>())).first;
+			it->second=ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(sd.residue_residue_contact_areas, renaming_map);
 		}
-		return &renamed_map;
+
+		return &(it->second);
 	}
+
 private:
 	const ScorableData* sd_ptr_;
 	std::size_t max_entries_;
