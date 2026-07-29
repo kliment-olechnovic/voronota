@@ -2806,7 +2806,7 @@ private:
 												best_pair=std::make_pair(*it_left, *it_right);
 												best_score=score;
 											}
-											else if(score==0.0)
+											else if(cad_descriptor.confusion_TP<=0.0)
 											{
 												set_of_hopeless_pairs.insert(std::make_pair(*it_left, *it_right));
 											}
