@@ -202,16 +202,16 @@ cadscore-lt \
 target        model         t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
 H2217TS294_1  H2217TS147_1  2     1     0.999847                  A=A,B=C,C=E,D=G,E=I,F=K,G=B,H=D,I=F,J=H,K=J,L=L
 H2217TS147_1  H2217TS294_1  1     2     0.999847                  A=A,B=G,C=B,D=H,E=C,F=I,G=D,H=J,I=E,J=K,K=F,L=L
-H2217TS489_1  H2217TS014_1  3     0     0.805306                  A=B,B=D,C=F,D=H,E=J,F=L,G=A,H=C,I=E,J=G,K=I,L=K
-H2217TS489_1  H2217TS147_1  3     1     0.717072                  A=A,B=C,C=F,D=H,E=I,F=L,G=B,H=D,I=E,J=G,K=J,L=K
-H2217TS489_1  H2217TS294_1  3     2     0.717067                  A=A,B=B,C=C,D=D,E=F,F=E,G=H,H=G,I=I,J=J,K=L,L=K
-H2217TS014_1  H2217TS489_1  0     3     0.708381                  A=A,B=G,C=B,D=H,E=C,F=I,G=D,H=J,I=E,J=K,K=L,L=F
-H2217TS014_1  H2217TS147_1  0     1     0.616741                  A=A,B=B,C=I,D=J,E=E,F=L,G=G,H=H,I=C,J=D,K=K,L=F
-H2217TS014_1  H2217TS294_1  0     2     0.616739                  A=A,B=G,C=B,D=H,E=I,F=C,G=J,H=D,I=E,J=K,K=L,L=F
-H2217TS147_1  H2217TS489_1  1     3     0.514061                  A=G,B=A,C=H,D=B,E=C,F=I,G=D,H=J,I=K,J=E,K=L,L=F
-H2217TS294_1  H2217TS489_1  2     3     0.514057                  A=B,B=A,C=D,D=C,E=E,F=F,G=G,H=H,I=J,J=I,K=L,L=K
-H2217TS294_1  H2217TS014_1  2     0     0.499188                  A=A,B=C,C=F,D=H,E=I,F=L,G=B,H=D,I=E,J=G,K=J,L=K
-H2217TS147_1  H2217TS014_1  1     0     0.499187                  A=A,B=B,C=I,D=J,E=E,F=L,G=G,H=H,I=C,J=D,K=K,L=F
+H2217TS489_1  H2217TS014_1  3     0     0.805306                  A=B,B=D,C=F,D=H,E=J,F=K,G=A,H=C,I=E,J=G,K=I,L=L
+H2217TS489_1  H2217TS147_1  3     1     0.717072                  A=A,B=C,C=F,D=H,E=I,F=K,G=B,H=D,I=E,J=G,K=J,L=L
+H2217TS489_1  H2217TS294_1  3     2     0.717067                  A=A,B=B,C=C,D=D,E=F,F=E,G=H,H=G,I=I,J=J,K=K,L=L
+H2217TS014_1  H2217TS489_1  0     3     0.708381                  A=A,B=G,C=B,D=H,E=C,F=I,G=D,H=J,I=E,J=K,K=F,L=L
+H2217TS014_1  H2217TS147_1  0     1     0.616741                  A=A,B=B,C=I,D=J,E=E,F=F,G=G,H=H,I=C,J=D,K=K,L=L
+H2217TS014_1  H2217TS294_1  0     2     0.616739                  A=A,B=G,C=B,D=H,E=I,F=C,G=J,H=D,I=E,J=K,K=F,L=L
+H2217TS147_1  H2217TS489_1  1     3     0.514061                  A=G,B=A,C=H,D=B,E=C,F=I,G=D,H=J,I=K,J=E,K=F,L=L
+H2217TS294_1  H2217TS489_1  2     3     0.514057                  A=B,B=A,C=D,D=C,E=E,F=F,G=G,H=H,I=J,J=I,K=K,L=L
+H2217TS294_1  H2217TS014_1  2     0     0.499188                  A=A,B=C,C=F,D=H,E=I,F=K,G=B,H=D,I=E,J=G,K=J,L=L
+H2217TS147_1  H2217TS014_1  1     0     0.499187                  A=A,B=B,C=I,D=J,E=E,F=F,G=G,H=H,I=C,J=D,K=K,L=L
 
 cadscore-lt \
   --subselect-contacts '[-inter-chain]' \
@@ -268,13 +268,13 @@ cadscore-lt \
 target        model         t_id  m_id  residue_residue_cadscore
 H2236TS388_1  H2236TS423_1  1     3     0.142197
 H2236TS393_1  H2236TS294_1  2     0     0.133223
-H2236TS294_1  H2236TS423_1  0     3     0.13184
+H2236TS294_1  H2236TS423_1  0     3     0.131805
 H2236TS423_1  H2236TS388_1  3     1     0.129341
-H2236TS294_1  H2236TS393_1  0     2     0.122044
+H2236TS294_1  H2236TS393_1  0     2     0.122011
 H2236TS423_1  H2236TS294_1  3     0     0.110473
 H2236TS388_1  H2236TS468_1  1     4     0.109268
 H2236TS468_1  H2236TS388_1  4     1     0.092632
-H2236TS294_1  H2236TS468_1  0     4     0.080565
+H2236TS294_1  H2236TS468_1  0     4     0.080543
 H2236TS468_1  H2236TS294_1  4     0     0.072522
 H2236TS468_1  H2236TS423_1  4     3     0.068169
 H2236TS423_1  H2236TS468_1  3     4     0.067909
@@ -282,7 +282,7 @@ H2236TS393_1  H2236TS423_1  2     3     0.053126
 H2236TS393_1  H2236TS468_1  2     4     0.046537
 H2236TS423_1  H2236TS393_1  3     2     0.045238
 H2236TS468_1  H2236TS393_1  4     2     0.039708
-H2236TS294_1  H2236TS388_1  0     1     0.026245
+H2236TS294_1  H2236TS388_1  0     1     0.026238
 H2236TS388_1  H2236TS294_1  1     0     0.026172
 H2236TS393_1  H2236TS388_1  2     1     0.014927
 H2236TS388_1  H2236TS393_1  1     2     0.009528

@@ -2947,7 +2947,7 @@ private:
 						for(std::set<std::string>::const_iterator it_right=set_of_free_chains_right.begin();it_right!=set_of_free_chains_right.end() && !fallback_best_pair_was_set;++it_right)
 						{
 							const int right_reference_sequence_id=(available_chain_sequences_mapping_result ? target_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(*it_right) : -1);
-							for(std::set<std::string>::const_iterator it_left=set_of_free_chains_left.begin();it_left!=set_of_free_chains_left.end();++it_left)
+							for(std::set<std::string>::const_iterator it_left=set_of_free_chains_left.begin();it_left!=set_of_free_chains_left.end() && !fallback_best_pair_was_set;++it_left)
 							{
 								const int left_reference_sequence_id=(available_chain_sequences_mapping_result ? model_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(*it_left): -1);
 								const bool consistent_with_reference_sequence_ids=(!available_chain_sequences_mapping_result || right_reference_sequence_id==left_reference_sequence_id);
