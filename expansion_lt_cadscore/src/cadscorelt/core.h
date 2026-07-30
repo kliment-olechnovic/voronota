@@ -1289,6 +1289,10 @@ public:
 	{
 		valid_=false;
 		atom_balls.clear();
+		rt_result.clear();
+		rt_result_graphics.contacts_graphics.clear();
+		rt_result_graphics.sas_graphics.clear();
+		chain_sequences_mapping_result.clear();
 		atom_atom_contact_areas.clear();
 		residue_residue_contact_areas.clear();
 		chain_chain_contact_areas.clear();

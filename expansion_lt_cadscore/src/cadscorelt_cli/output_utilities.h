@@ -6,7 +6,7 @@
 namespace cadscorelt
 {
 
-std::string to_string_compact(const double v)
+inline std::string to_string_compact(const double v)
 {
 	if(v==0.0)
 	{
