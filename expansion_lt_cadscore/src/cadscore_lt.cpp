@@ -41,7 +41,7 @@ Options:
     --consider-residue-names                                    flag to include residue names in residue and atom identifiers, making mapping more strict
     --binarize-areas                                            flag to binarize (convert to 0 or 1) all area values before scoring
     --remap-chains                                              flag to automatically rename chains in models to maximize residue-residue contacts global score
-    --max-chains-to-fully-permute                    number     limit of chain combinations to chech exhaustively when remapping chains, default is 200
+    --max-exhaustive-remappings                      number     limit of chain combinations to check exhaustively when remapping chains, default is 200
     --clustering-thresholds                          numbers    clustering thresholds for Taylor-Butina-like clustering if in all-to-all comparison mode
     --max-renaming-cache-size                        number     max number of contact sets to cache when doing comparisons to multiple targets, default is 400
     --print-paths-in-output                                     flag to print file paths instead of file base names in output
@@ -74,7 +74,7 @@ class ApplicationParameters
 public:
 	double probe;
 	unsigned int max_number_of_processors;
-	int max_permutations_to_check_exhaustively;
+	int max_exhaustive_remappings;
 	int max_renaming_cache_size;
 	bool recursive_directory_search;
 	bool include_heteroatoms;
@@ -134,7 +134,7 @@ public:
 	ApplicationParameters() :
 		probe(1.4),
 		max_number_of_processors(cadscorelt::openmp_enabled() ? 2 : 1),
-		max_permutations_to_check_exhaustively(200),
+		max_exhaustive_remappings(200),
 		max_renaming_cache_size(400),
 		recursive_directory_search(false),
 		include_heteroatoms(false),
@@ -316,10 +316,10 @@ public:
 				{
 					remap_chains=opt.is_flag_and_true();
 				}
-				else if(opt.name=="max-chains-to-fully-permute" && opt.args_ints.size()==1)
+				else if(opt.name=="max-exhaustive-remappings" && opt.args_ints.size()==1)
 				{
-					max_permutations_to_check_exhaustively=static_cast<int>(opt.args_ints.front());
-					if(max_permutations_to_check_exhaustively>4000000)
+					max_exhaustive_remappings=static_cast<int>(opt.args_ints.front());
+					if(max_exhaustive_remappings>4000000)
 					{
 						error_log_for_options_parsing << "Error: invalid max number of chains permutations, must be not greater than 4000000.\n";
 					}
@@ -1180,7 +1180,7 @@ bool run(const ApplicationParameters& app_params)
 
 		cadscorelt::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
 		scoring_result_construction_parameters.remap_chains=app_params.remap_chains;
-		scoring_result_construction_parameters.max_permutations_to_check_exhaustively=app_params.max_permutations_to_check_exhaustively;
+		scoring_result_construction_parameters.max_permutations_to_check_exhaustively=app_params.max_exhaustive_remappings;
 		scoring_result_construction_parameters.record_local_scores_on_atom_level=false;
 		scoring_result_construction_parameters.record_local_scores_on_residue_level=false;
 		scoring_result_construction_parameters.record_local_scores_on_chain_level=false;
@@ -1436,7 +1436,7 @@ bool run(const ApplicationParameters& app_params)
 	{
 		cadscorelt::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
 		scoring_result_construction_parameters.remap_chains=app_params.remap_chains;
-		scoring_result_construction_parameters.max_permutations_to_check_exhaustively=app_params.max_permutations_to_check_exhaustively;
+		scoring_result_construction_parameters.max_permutations_to_check_exhaustively=app_params.max_exhaustive_remappings;
 		scoring_result_construction_parameters.record_local_scores_on_atom_level=app_params.local_output_level_atom;
 		scoring_result_construction_parameters.record_local_scores_on_residue_level=app_params.local_output_level_residue;
 		scoring_result_construction_parameters.record_local_scores_on_chain_level=app_params.local_output_level_chain;
