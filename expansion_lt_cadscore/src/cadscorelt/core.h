@@ -2672,20 +2672,7 @@ private:
 					const bool consistent_with_reference_sequence_ids=target_data.chain_sequences_mapping_result.empty() || model_data.chain_sequences_mapping_result.empty() || (target_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(mapped_value)==model_data.chain_sequences_mapping_result.get_reference_sequence_id_by_chain_name(chain_names_in_model[0]));
 					if(consistent_with_reference_sequence_ids)
 					{
-						double score=-1.0;
-						const std::map<IDResidueResidue, AreaValue>* renamed_map_ptr=0;
-						if(cache_ptr!=0)
-						{
-							renamed_map_ptr=cache_ptr->get_residue_residue_contact_areas_with_chains_renamed(model_data, renaming_map);
-						}
-						if(renamed_map_ptr!=0)
-						{
-							score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, *renamed_map_ptr).score();
-						}
-						else
-						{
-							score=construct_global_cad_descriptor(target_data.residue_residue_contact_areas, ChainNamingUtilities::rename_chains_in_map_container_with_additive_values(model_data.residue_residue_contact_areas, renaming_map)).score();
-						}
+						const double score=get_remapping_score_possibly_using_cache(target_data, model_data, renaming_map, cache_ptr);
 						if(score>best_score)
 						{
 							best_score=score;
