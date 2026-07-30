@@ -593,6 +593,7 @@ public:
 					    replacement="_"+replacement;
 					}
 					it->second=replacement;
+					set_of_right_values.insert(replacement);
 				}
 			}
 		}
@@ -2615,64 +2616,54 @@ private:
 		return cadd;
 	}
 
-	static int calculate_number_of_all_permutations_of_chains(const int number_of_chains) noexcept
+	static int calculate_number_of_relevant_permutations_of_chains(const int number_of_chains_in_model, const int number_of_chains_in_target) noexcept
 	{
-		int result=1;
-		const int max_limit=std::numeric_limits<int>::max();
-		for(int i=2;i<=number_of_chains;i++)
-		{
-			if(result>(max_limit/i))
-			{
-				return max_limit;
-			}
-			result*=i;
-		}
-		return result;
-	}
-
-	static int calculate_number_of_all_permutations_of_chains(const int number_of_chains_in_model, const int number_of_chains_in_target) noexcept
-	{
-		return calculate_number_of_all_permutations_of_chains(std::max(number_of_chains_in_model, number_of_chains_in_target));
-	}
-
-	static int calculate_number_of_relevant_permutations_of_chains(const int number_of_chains, const std::map<int, int>& frequencies_of_reference_sequence_ids) noexcept
-	{
-		if(frequencies_of_reference_sequence_ids.empty())
-		{
-			return calculate_number_of_all_permutations_of_chains(number_of_chains);
-		}
-		int result=1;
-		const int max_limit=std::numeric_limits<int>::max();
-		for(std::map<int, int>::const_iterator it=frequencies_of_reference_sequence_ids.begin();it!=frequencies_of_reference_sequence_ids.end();++it)
-		{
-			const int mult=calculate_number_of_all_permutations_of_chains(it->second);
-			if(result>(max_limit/mult))
-			{
-				return max_limit;
-			}
-			result*=mult;
-		}
-		return result;
+	    const int larger=std::max(number_of_chains_in_model, number_of_chains_in_target);
+	    const int smaller=std::min(number_of_chains_in_model, number_of_chains_in_target);
+	    int result=1;
+	    const int max_limit=std::numeric_limits<int>::max();
+	    for(int i=0;i<smaller;i++)
+	    {
+	    	const int multiplier=larger-i;
+	    	if(result>max_limit/multiplier)
+	    	{
+	    		return max_limit;
+	    	}
+	    	result*=multiplier;
+	    }
+	    return result;
 	}
 
 	static int calculate_number_of_relevant_permutations_of_chains(const int number_of_chains_in_model, const std::map<int, int>& frequencies_of_reference_sequence_ids_in_model, const int number_of_chains_in_target, const std::map<int, int>& frequencies_of_reference_sequence_ids_in_target) noexcept
 	{
 		if(frequencies_of_reference_sequence_ids_in_model.empty() || frequencies_of_reference_sequence_ids_in_target.empty())
 		{
-			return calculate_number_of_all_permutations_of_chains(number_of_chains_in_model, number_of_chains_in_target);
+			return calculate_number_of_relevant_permutations_of_chains(number_of_chains_in_model, number_of_chains_in_target);
 		}
-		std::map<int, int> max_frequencies_of_reference_sequence_ids;
+		std::map<int, std::pair<int, int> > paired_frequencies_of_reference_sequence_ids;
 		for(std::map<int, int>::const_iterator it=frequencies_of_reference_sequence_ids_in_model.begin();it!=frequencies_of_reference_sequence_ids_in_model.end();++it)
 		{
-			int& max_freq=max_frequencies_of_reference_sequence_ids[it->first];
-			max_freq=std::max(std::max(max_freq, it->second), 1);
+			std::pair<int, int>& paired_freq=paired_frequencies_of_reference_sequence_ids[it->first];
+			paired_freq.first=it->second;
 		}
 		for(std::map<int, int>::const_iterator it=frequencies_of_reference_sequence_ids_in_target.begin();it!=frequencies_of_reference_sequence_ids_in_target.end();++it)
 		{
-			int& max_freq=max_frequencies_of_reference_sequence_ids[it->first];
-			max_freq=std::max(std::max(max_freq, it->second), 1);
+			std::pair<int, int>& paired_freq=paired_frequencies_of_reference_sequence_ids[it->first];
+			paired_freq.second=it->second;
 		}
-		return calculate_number_of_relevant_permutations_of_chains(std::max(number_of_chains_in_model, number_of_chains_in_target), max_frequencies_of_reference_sequence_ids);
+		int result=1;
+		const int max_limit=std::numeric_limits<int>::max();
+		for(std::map< int, std::pair<int, int> >::const_iterator it=paired_frequencies_of_reference_sequence_ids.begin();it!=paired_frequencies_of_reference_sequence_ids.end();++it)
+		{
+			const std::pair<int, int>& paired_freq=it->second;
+			const int multiplier=calculate_number_of_relevant_permutations_of_chains(paired_freq.first, paired_freq.second);
+	    	if(result>max_limit/multiplier)
+	    	{
+	    		return max_limit;
+	    	}
+	    	result*=multiplier;
+		}
+		return result;
 	}
 
 	static double get_remapping_score_possibly_using_cache(const ScorableData& target_data, const ScorableData& model_data, const std::map<std::string, std::string>& renaming_map, CacheForRemappingOfChains* cache_ptr) noexcept
@@ -2771,7 +2762,7 @@ private:
 
 			if(!available_chain_sequences_mapping_result)
 			{
-				const int num_of_permutations_to_check_exhaustively=calculate_number_of_all_permutations_of_chains(chain_names_in_model.size(), chain_names_in_target.size());
+				const int num_of_permutations_to_check_exhaustively=calculate_number_of_relevant_permutations_of_chains(chain_names_in_model.size(), chain_names_in_target.size());
 				if(num_of_permutations_to_check_exhaustively<=max_permutations_to_check_exhaustively)
 				{
 					double best_score=-1.0;
