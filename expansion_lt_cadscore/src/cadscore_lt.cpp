@@ -1431,7 +1431,7 @@ bool run(const ApplicationParameters& app_params)
 	std::vector<std::string> list_of_chain_remapping_summaries((!app_params.compact_output && (app_params.remap_chains || !scorable_data_construction_parameters.reference_sequences.empty())) ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0));
 	std::vector< std::vector<double> > list_of_identities(app_params.output_with_identities ? list_of_pairs_of_target_model_indices.size() : static_cast<std::size_t>(0), std::vector<double>(3, 0.0));
 
-	bool success_writing_local_scores=true;
+	bool total_success_writing_local_scores=true;
 
 	{
 		cadscorelt::ScoringResult::ConstructionParameters scoring_result_construction_parameters;
@@ -1448,6 +1448,7 @@ bool run(const ApplicationParameters& app_params)
 #pragma omp parallel
 #endif
 		{
+			bool success_writing_local_scores=true;
 			cadscorelt::CacheForRemappingOfChains cache_for_remapping_of_chains;
 #ifdef CADSCORELT_OPENMP
 #pragma omp for schedule(static)
@@ -1818,10 +1819,18 @@ bool run(const ApplicationParameters& app_params)
 					list_of_identities[i][2]=sr.identity_of_chains.score()*100.0;
 				}
 			}
+
+			if (!success_writing_local_scores)
+			{
+#ifdef CADSCORELT_OPENMP
+#pragma omp atomic write
+#endif
+				total_success_writing_local_scores=false;
+			}
 		}
 	}
 
-	if(!success_writing_local_scores)
+	if(!total_success_writing_local_scores)
 	{
 		std::cerr << "Error: failed to write local score files to directory '" << app_params.output_dir << "'.\n";
 		return false;

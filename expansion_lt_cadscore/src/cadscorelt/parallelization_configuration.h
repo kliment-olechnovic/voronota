@@ -14,7 +14,7 @@
 namespace cadscorelt
 {
 
-bool openmp_enabled() noexcept
+inline bool openmp_enabled() noexcept
 {
 #ifdef CADSCORELT_OPENMP
 	return true;
@@ -23,7 +23,7 @@ bool openmp_enabled() noexcept
 #endif
 }
 
-unsigned int openmp_setup(const unsigned int max_number_of_processors) noexcept
+inline unsigned int openmp_setup(const unsigned int max_number_of_processors) noexcept
 {
 #ifdef CADSCORELT_OPENMP
 	omp_set_num_threads(max_number_of_processors);

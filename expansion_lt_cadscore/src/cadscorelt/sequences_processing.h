@@ -2,6 +2,7 @@
 #define CADSCORELT_SEQUENCES_PROCESSING_H_
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <sstream>
 #include <vector>
