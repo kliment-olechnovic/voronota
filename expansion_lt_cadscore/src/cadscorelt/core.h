@@ -563,9 +563,43 @@ public:
 		return result;
 	}
 
-	static std::map<std::string, std::string> generate_renaming_map_from_two_vectors_with_padding(const std::vector<std::string>& left, const std::vector<std::string>& right) noexcept
+	static void fix_skipped_assignments_in_renaming_map(std::map<std::string, std::string>& renaming_map) noexcept
 	{
-		const std::set<std::string> set_of_right_values(right.begin(), right.end());
+		bool found_skipped=false;
+		for(std::map<std::string, std::string>::const_iterator it=renaming_map.begin();it!=renaming_map.end() && !found_skipped;++it)
+		{
+			if(it->second=="_s_")
+			{
+				found_skipped=true;
+			}
+		}
+		if(found_skipped)
+		{
+			std::set<std::string> set_of_right_values;
+			for(std::map<std::string, std::string>::const_iterator it=renaming_map.begin();it!=renaming_map.end();++it)
+			{
+				if(it->second!="_s_")
+				{
+					set_of_right_values.insert(it->second);
+				}
+			}
+			for(std::map<std::string, std::string>::iterator it=renaming_map.begin();it!=renaming_map.end();++it)
+			{
+				if(it->second=="_s_")
+				{
+					std::string replacement=it->first;
+					while(set_of_right_values.count(replacement)>0)
+					{
+					    replacement="_"+replacement;
+					}
+					it->second=replacement;
+				}
+			}
+		}
+	}
+
+	static std::map<std::string, std::string> generate_renaming_map_from_two_vectors_with_padding(const std::vector<std::string>& left, const std::vector<std::string>& right, const bool fix_skipped) noexcept
+	{
 		std::map<std::string, std::string> result;
 		for(std::size_t i=0;i<left.size();i++)
 		{
@@ -575,9 +609,48 @@ public:
 			}
 			else
 			{
-				result[left[i]]=(set_of_right_values.count(left[i])==0 ? left[i] : (std::string("_")+left[i]));
+				result[left[i]]="_s_";
 			}
 		}
+		if(fix_skipped)
+		{
+			fix_skipped_assignments_in_renaming_map(result);
+		}
+		return result;
+	}
+
+	static std::map<std::string, std::string> generate_renaming_map_from_two_vectors_and_padded_permuted_indices(const std::vector<std::string>& left, const std::vector<std::string>& right, const std::vector<std::size_t>& padded_permuted_indices_for_left, const std::vector<std::size_t>& padded_permuted_indices_for_right, const bool fix_skipped) noexcept
+	{
+		std::map<std::string, std::string> result;
+
+		std::size_t n=std::max(left.size(), right.size());
+		if(padded_permuted_indices_for_left.size()!=n || padded_permuted_indices_for_right.size()!=n)
+		{
+			return result;
+		}
+
+		for(std::size_t i=0;i<n;i++)
+		{
+			const std::size_t li=padded_permuted_indices_for_left[i];
+			if(li<left.size())
+			{
+				const std::size_t ri=padded_permuted_indices_for_right[i];
+				if(ri<right.size())
+				{
+					result[left[li]]=right[ri];
+				}
+				else
+				{
+					result[left[li]]="_s_";
+				}
+			}
+		}
+
+		if(fix_skipped)
+		{
+			fix_skipped_assignments_in_renaming_map(result);
+		}
+
 		return result;
 	}
 
@@ -2703,14 +2776,20 @@ private:
 				{
 					double best_score=-1.0;
 					std::map<std::string, std::string> best_score_renaming_map;
+
 					{
-						const bool model_not_shorter=(chain_names_in_model.size()>=chain_names_in_target.size());
-						std::vector<std::string> permutated_chain_names=(model_not_shorter ? chain_names_in_model : chain_names_in_target);
-						const std::vector<std::string>& actual_target_chain_names=(model_not_shorter ? chain_names_in_target : permutated_chain_names);
-						const std::vector<std::string>& actual_model_chain_names=(model_not_shorter ? permutated_chain_names : chain_names_in_model);
+						const std::size_t max_n=std::max(chain_names_in_model.size(), chain_names_in_target.size());
+						std::vector<std::size_t> padded_permuted_indices_for_model(max_n, max_n);
+						std::vector<std::size_t> padded_permuted_indices_for_target(max_n, max_n);
+						for(std::size_t i=0;i<max_n;i++)
+						{
+							padded_permuted_indices_for_model[i]=(i<chain_names_in_model.size() ? i : max_n);
+							padded_permuted_indices_for_target[i]=(i<chain_names_in_target.size() ? i : max_n);
+						}
+						std::vector<std::size_t>& permutable_indices=(chain_names_in_model.size()<max_n ? padded_permuted_indices_for_model : padded_permuted_indices_for_target);
 						do
 						{
-							std::map<std::string, std::string> renaming_map=ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(actual_model_chain_names, actual_target_chain_names);
+							const std::map<std::string, std::string> renaming_map=ChainNamingUtilities::generate_renaming_map_from_two_vectors_and_padded_permuted_indices(chain_names_in_model, chain_names_in_target, padded_permuted_indices_for_model, padded_permuted_indices_for_target, true);
 							const double score=get_remapping_score_possibly_using_cache(target_data, model_data, renaming_map, cache_ptr);
 							if(score>best_score)
 							{
@@ -2718,8 +2797,9 @@ private:
 								best_score_renaming_map=renaming_map;
 							}
 						}
-						while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
+						while(std::next_permutation(permutable_indices.begin(), permutable_indices.end()));
 					}
+
 					if(best_score_renaming_map.empty())
 					{
 						error_log << "Failed to perform chain remapping exhaustively.\n";
@@ -2758,15 +2838,34 @@ private:
 							{
 								grouped_sub_renaming_maps.push_back(std::vector< std::map<std::string, std::string> >());
 								std::vector< std::map<std::string, std::string> >& group_sub_renaming_maps=grouped_sub_renaming_maps.back();
-								const bool model_not_shorter=(group_chain_names_in_model.size()>=group_chain_names_in_target.size());
-								std::vector<std::string> permutated_chain_names=(model_not_shorter ? group_chain_names_in_model : group_chain_names_in_target);
-								const std::vector<std::string>& actual_target_chain_names=(model_not_shorter ? group_chain_names_in_target : permutated_chain_names);
-								const std::vector<std::string>& actual_model_chain_names=(model_not_shorter ? permutated_chain_names : group_chain_names_in_model);
-								do
+
+								if(group_chain_names_in_model.size()==1)
 								{
-									group_sub_renaming_maps.push_back(ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(actual_model_chain_names, actual_target_chain_names));
+									const std::string& mcn=group_chain_names_in_model.front();
+									for(const std::string& tcn : group_chain_names_in_target)
+									{
+										std::map<std::string, std::string> minimap;
+										minimap[mcn]=tcn;
+										group_sub_renaming_maps.push_back(minimap);
+									}
 								}
-								while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
+								else
+								{
+									const std::size_t max_n=std::max(group_chain_names_in_model.size(), group_chain_names_in_target.size());
+									std::vector<std::size_t> padded_permuted_indices_for_model(max_n, max_n);
+									std::vector<std::size_t> padded_permuted_indices_for_target(max_n, max_n);
+									for(std::size_t i=0;i<max_n;i++)
+									{
+										padded_permuted_indices_for_model[i]=(i<group_chain_names_in_model.size() ? i : max_n);
+										padded_permuted_indices_for_target[i]=(i<group_chain_names_in_target.size() ? i : max_n);
+									}
+									std::vector<std::size_t>& permutable_indices=(group_chain_names_in_model.size()<max_n ? padded_permuted_indices_for_model : padded_permuted_indices_for_target);
+									do
+									{
+										group_sub_renaming_maps.push_back(ChainNamingUtilities::generate_renaming_map_from_two_vectors_and_padded_permuted_indices(group_chain_names_in_model, group_chain_names_in_target, padded_permuted_indices_for_model, padded_permuted_indices_for_target, false));
+									}
+									while(std::next_permutation(permutable_indices.begin(), permutable_indices.end()));
+								}
 							}
 						}
 					}
@@ -2787,6 +2886,7 @@ private:
 										renaming_map[srm_it->first]=srm_it->second;
 									}
 								}
+								ChainNamingUtilities::fix_skipped_assignments_in_renaming_map(renaming_map);
 								const double score=get_remapping_score_possibly_using_cache(target_data, model_data, renaming_map, cache_ptr);
 								if(score>best_score)
 								{
@@ -2951,7 +3051,7 @@ private:
 				}
 				final_chain_renaming_map.swap(map_of_renamings_in_model);
 				{
-					std::map<std::string, std::string> default_chain_renaming_map=ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(chain_names_in_model, chain_names_in_target);
+					std::map<std::string, std::string> default_chain_renaming_map=ChainNamingUtilities::generate_renaming_map_from_two_vectors_with_padding(chain_names_in_model, chain_names_in_target, true);
 					if(default_chain_renaming_map!=final_chain_renaming_map)
 					{
 						const double final_score=get_remapping_score_possibly_using_cache(target_data, model_data, final_chain_renaming_map, cache_ptr);
