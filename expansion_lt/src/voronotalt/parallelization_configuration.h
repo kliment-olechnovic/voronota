@@ -14,7 +14,7 @@
 namespace voronotalt
 {
 
-bool openmp_enabled() noexcept
+inline bool openmp_enabled() noexcept
 {
 #ifdef VORONOTALT_OPENMP
 	return true;
@@ -23,7 +23,7 @@ bool openmp_enabled() noexcept
 #endif
 }
 
-unsigned int openmp_set_num_threads_if_possible(const unsigned int max_number_of_processors) noexcept
+inline unsigned int openmp_set_num_threads_if_possible(const unsigned int max_number_of_processors) noexcept
 {
 #ifdef VORONOTALT_OPENMP
 	omp_set_num_threads(max_number_of_processors);
@@ -33,7 +33,7 @@ unsigned int openmp_set_num_threads_if_possible(const unsigned int max_number_of
 #endif
 }
 
-int openmp_get_max_threads() noexcept
+inline int openmp_get_max_threads() noexcept
 {
 #ifdef VORONOTALT_OPENMP
 	return omp_get_max_threads();
