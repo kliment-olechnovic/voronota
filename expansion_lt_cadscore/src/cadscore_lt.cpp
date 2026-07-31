@@ -1154,7 +1154,8 @@ bool run(const ApplicationParameters& app_params)
 			}
 		}
 
-		const bool symmetric_f1_matrix=(app_params.output_with_f1 && target_sd_indices==model_sd_indices);
+		const bool all_vs_all_matrix=(target_sd_indices==model_sd_indices);
+		const bool symmetric_f1_matrix=(app_params.output_with_f1 && all_vs_all_matrix);
 
 		std::string output_score_name;
 		{
@@ -1202,11 +1203,13 @@ bool run(const ApplicationParameters& app_params)
 			{
 				const std::size_t mi=gi/total_number_of_targets;
 				const std::size_t ti=gi%total_number_of_targets;
-				if(mi==ti)
+				const bool skip_and_set_to_max=(all_vs_all_matrix && mi==ti);
+				const bool skip_and_set_to_undefined=(symmetric_f1_matrix && ((mi%2==ti%2 && ti>mi) || (mi%2!=ti%2 && ti<mi)));
+				if(skip_and_set_to_max)
 				{
 					list_of_global_scores[gi]=static_cast<std::int8_t>(100);
 				}
-				else if(symmetric_f1_matrix && (gi%2==0 ? mi>ti : mi<ti))
+				else if(skip_and_set_to_undefined)
 				{
 					list_of_global_scores[gi]=static_cast<std::int8_t>(-1);
 				}
@@ -1269,7 +1272,8 @@ bool run(const ApplicationParameters& app_params)
 			{
 				const std::size_t mi=gi/total_number_of_targets;
 				const std::size_t ti=gi%total_number_of_targets;
-				if(gi%2==0 ? mi>ti : mi<ti)
+				const bool skipped_and_set_to_undefined=((mi%2==ti%2 && ti>mi) || (mi%2!=ti%2 && ti<mi));
+				if(skipped_and_set_to_undefined)
 				{
 					const std::size_t equivalent_gi=ti*total_number_of_targets+mi;
 					list_of_global_scores[gi]=list_of_global_scores[equivalent_gi];
