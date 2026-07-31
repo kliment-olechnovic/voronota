@@ -871,7 +871,6 @@ bool run(const ApplicationParameters& app_params)
 			}
 			if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/reference_based_chain_renamings.tsv", output_string))
 			{
-				std::cerr << "Error: failed to write table of chain renamings based on reference sequences.\n";
 				return false;
 			}
 		}
@@ -910,7 +909,6 @@ bool run(const ApplicationParameters& app_params)
 				}
 				if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/reference_based_sequence_alignments.txt", output_string))
 				{
-					std::cerr << "Error: failed to write log of best per-chain sequence alignments with reference sequences.\n";
 					return false;
 				}
 			}
@@ -948,7 +946,6 @@ bool run(const ApplicationParameters& app_params)
 				}
 				if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_dir+"/reference_based_sequence_matchings.tsv", output_string))
 				{
-					std::cerr << "Error: failed to write table of best chain matchings to reference sequences.\n";
 					return false;
 				}
 			}
@@ -1099,7 +1096,6 @@ bool run(const ApplicationParameters& app_params)
 		const std::string outfile=app_params.output_dir+"/numbered_input_files.tsv";
 		if(!cadscorelt::FileSystemUtilities::write_file(outfile, output_string))
 		{
-			std::cerr << "Error: failed to write numbered list of input files to file '" << outfile << "'.\n";
 			return false;
 		}
 	}
@@ -1149,13 +1145,12 @@ bool run(const ApplicationParameters& app_params)
 			const std::string outfile=app_params.output_dir+(j==0 ? "/input_target_files.tsv" : "/input_model_files.tsv");
 			if(!cadscorelt::FileSystemUtilities::write_file(outfile, output_string))
 			{
-				std::cerr << "Error: failed to write file '" << outfile << "'.\n";
 				return false;
 			}
 		}
 
 		const bool all_vs_all_matrix=(target_sd_indices==model_sd_indices);
-		const bool symmetric_f1_matrix=(app_params.output_with_f1 && all_vs_all_matrix);
+		const bool symmetric_f1_matrix=(all_vs_all_matrix && app_params.output_with_f1 && !app_params.remap_chains);
 
 		std::string output_score_name;
 		{
@@ -1307,6 +1302,12 @@ bool run(const ApplicationParameters& app_params)
 					buf.clear();
 				}
 			}
+			outstream.close();
+			if(outstream.fail())
+			{
+				std::cerr << "Error: failed to close global scores output file '" << outfile << "'.\n";
+				return false;
+			}
 		}
 
 		if(!app_params.clustering_thresholds.empty() && (symmetric_f1_matrix || target_sd_indices==model_sd_indices))
@@ -1333,12 +1334,6 @@ bool run(const ApplicationParameters& app_params)
 			}
 			{
 				const std::string outfile=app_params.output_dir+std::string("/")+output_score_name+std::string("_clusters.tsv");
-				std::ofstream outstream(outfile, std::ios::binary);
-				if(outstream.fail())
-				{
-					std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
-					return false;
-				}
 				std::string buf;
 				{
 					buf+="name";
@@ -1359,16 +1354,13 @@ bool run(const ApplicationParameters& app_params)
 					}
 					buf+="\n";
 				}
-				outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
+				if(!cadscorelt::FileSystemUtilities::write_file(outfile, buf))
+				{
+					return false;
+				}
 			}
 			{
 				const std::string outfile=app_params.output_dir+std::string("/")+output_score_name+std::string("_cluster_representatives.tsv");
-				std::ofstream outstream(outfile, std::ios::binary);
-				if(outstream.fail())
-				{
-					std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
-					return false;
-				}
 				std::string buf;
 				buf+="threshold_percents\tcluster_id\trepresentative\tcluster_size\n\n";
 				for(std::size_t i=0;i<multiple_thresholds.size();i++)
@@ -1386,7 +1378,10 @@ bool run(const ApplicationParameters& app_params)
 					}
 					buf+="\n";
 				}
-				outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
+				if(!cadscorelt::FileSystemUtilities::write_file(outfile, buf))
+				{
+					return false;
+				}
 			}
 		}
 
@@ -1947,7 +1942,6 @@ bool run(const ApplicationParameters& app_params)
 			const std::string outfile=app_params.output_dir+"/global_scores.tsv";
 			if(!cadscorelt::FileSystemUtilities::write_file(outfile, output_string))
 			{
-				std::cerr << "Error: failed to write table of global scores to file '" << outfile << "'.\n";
 				return false;
 			}
 		}
@@ -1962,7 +1956,6 @@ bool run(const ApplicationParameters& app_params)
 			{
 				if(!cadscorelt::FileSystemUtilities::write_file(app_params.output_global_scores, output_string))
 				{
-					std::cerr << "Error: failed to write table of global scores to file '" << app_params.output_global_scores << "'.\n";
 					return false;
 				}
 			}
@@ -2005,12 +1998,6 @@ bool run(const ApplicationParameters& app_params)
 				}
 				{
 					const std::string outfile=app_params.output_dir+std::string("/")+output_score_names[j]+score_variant+std::string("_clusters.tsv");
-					std::ofstream outstream(outfile, std::ios::binary);
-					if(outstream.fail())
-					{
-						std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
-						return false;
-					}
 					std::string buf;
 					{
 						buf+="name";
@@ -2031,16 +2018,13 @@ bool run(const ApplicationParameters& app_params)
 						}
 						buf+="\n";
 					}
-					outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
+					if(!cadscorelt::FileSystemUtilities::write_file(outfile, buf))
+					{
+						return false;
+					}
 				}
 				{
 					const std::string outfile=app_params.output_dir+std::string("/")+output_score_names[j]+score_variant+std::string("_cluster_representatives.tsv");
-					std::ofstream outstream(outfile, std::ios::binary);
-					if(outstream.fail())
-					{
-						std::cerr << "Error: failed to open file '" << outfile << "' for writing.\n";
-						return false;
-					}
 					std::string buf;
 					buf+="threshold_percents\tcluster_id\trepresentative\tcluster_size\n\n";
 					for(std::size_t i=0;i<multiple_thresholds.size();i++)
@@ -2058,7 +2042,10 @@ bool run(const ApplicationParameters& app_params)
 						}
 						buf+="\n";
 					}
-					outstream.write(buf.data(), static_cast<std::streamsize>(buf.size()));
+					if(!cadscorelt::FileSystemUtilities::write_file(outfile, buf))
+					{
+						return false;
+					}
 				}
 			}
 		}
