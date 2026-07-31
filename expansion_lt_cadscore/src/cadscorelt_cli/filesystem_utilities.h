@@ -129,13 +129,24 @@ public:
 			std::cerr << "Error: failed to create parent directory for file '" << full_file_path << "'.\n";
 			return false;
 		}
-		std::ofstream output_file_stream(full_file_path.c_str(), std::ios::out);
+		std::ofstream output_file_stream(full_file_path.c_str(), std::ios::out | std::ios::binary);
 		if(!output_file_stream.good())
 		{
-			std::cerr << "Error: failed to open file '" << full_file_path << "' to output table of global scores.\n";
+			std::cerr << "Error: failed to open file '" << full_file_path << "' for writing.\n";
 			return false;
 		}
 		output_file_stream.write(output_string.data(), static_cast<std::streamsize>(output_string.size()));
+		if(output_file_stream.fail())
+		{
+			std::cerr << "Error: failed to write to file '" << full_file_path << "'.\n";
+			return false;
+		}
+		output_file_stream.close();
+		if(output_file_stream.fail())
+		{
+			std::cerr << "Error: failed to close output file '" << full_file_path << "'.\n";
+			return false;
+		}
 		return true;
 	}
 };
