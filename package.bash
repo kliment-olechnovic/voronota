@@ -10,6 +10,10 @@ VORONOTALT_PACKAGE_NAME="$(./expansion_lt/package.bash print-name-and-exit)"
 
 COSMOPOLITAN_VORONOTALT_PACKAGE_NAME="$(./expansion_lt/cosmopolitan/package.bash print-name-and-exit)"
 
+CADSCORELT_PACKAGE_NAME="$(./expansion_lt_cadscore/package.bash print-name-and-exit)"
+
+COSMOPOLITAN_CADSCORELT_PACKAGE_NAME="$(./expansion_lt_cadscore/cosmopolitan/package.bash print-name-and-exit)"
+
 ################################################################################
 
 if [ "$PACKAGE_NAME" == "make-new-release" ]
@@ -21,6 +25,10 @@ then
 	VORONOTALT_PACKAGE_NAME="$(./expansion_lt/package.bash make-new-release)"
 	
 	COSMOPOLITAN_VORONOTALT_PACKAGE_NAME="$(./expansion_lt/cosmopolitan/package.bash)"
+	
+	CADSCORELT_PACKAGE_NAME="$(./expansion_lt_cadscore/package.bash make-new-release)"
+	
+	COSMOPOLITAN_CADSCORELT_PACKAGE_NAME="$(./expansion_lt_cadscore/cosmopolitan/package.bash)"
 fi
 
 ################################################################################
@@ -201,4 +209,8 @@ mv "${PACKAGE_NAME}.tar.gz" "./packages_for_release/"
 cp "./expansion_lt/packages_for_release/${VORONOTALT_PACKAGE_NAME}.tar.gz" "./packages_for_release/"
 
 cp "./expansion_lt/packages_for_release/${COSMOPOLITAN_VORONOTALT_PACKAGE_NAME}" "./packages_for_release/"
+
+cp "./expansion_lt_cadscore/packages_for_release/${CADSCORELT_PACKAGE_NAME}.tar.gz" "./packages_for_release/"
+
+cp "./expansion_lt_cadscore/packages_for_release/${COSMOPOLITAN_CADSCORELT_PACKAGE_NAME}" "./packages_for_release/"
 
