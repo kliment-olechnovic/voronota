@@ -147,3 +147,13 @@ cadscore-lt \
   
 ####################################################################
 
+cadscore-lt \
+  --subselect-contacts '[-inter-chain]' \
+   -m ./input/strange_mixed1/M1239v1TS014_6 ./input/strange_mixed1/M1239v1TS235_1 \
+  --reference-sequences-file ./input/strange_mixed1/sequences.fasta \
+  --reference-stoichiometry 4 2 2 2 2 \
+  --remap-chains true \
+| column -t
+
+####################################################################
+

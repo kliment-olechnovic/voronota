@@ -377,3 +377,16 @@ H2236TS294_1  H2236TS468_1  0     4     0.116823                  A=E,B=B,C=C,D=
   
 ####################################################################
 
+cadscore-lt \
+  --subselect-contacts '[-inter-chain]' \
+   -m ./input/strange_mixed1/M1239v1TS014_6 ./input/strange_mixed1/M1239v1TS235_1 \
+  --reference-sequences-file ./input/strange_mixed1/sequences.fasta \
+  --reference-stoichiometry 4 2 2 2 2 \
+  --remap-chains true \
+| column -t
+target          model           t_id  m_id  residue_residue_cadscore  renaming_of_model_chains
+M1239v1TS014_6  M1239v1TS235_1  0     1     0.468327                  A=D,B=_B,C=_C,D=_D,E=E,F=C,G=B,H=A
+M1239v1TS235_1  M1239v1TS014_6  1     0     0.233572                  A=H,B=G,C=F,D=A
+
+####################################################################
+

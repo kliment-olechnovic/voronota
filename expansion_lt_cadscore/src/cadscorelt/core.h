@@ -2834,17 +2834,6 @@ private:
 								grouped_sub_renaming_maps.push_back(std::vector< std::map<std::string, std::string> >());
 								std::vector< std::map<std::string, std::string> >& group_sub_renaming_maps=grouped_sub_renaming_maps.back();
 
-								if(group_chain_names_in_model.size()==1)
-								{
-									const std::string& mcn=group_chain_names_in_model.front();
-									for(const std::string& tcn : group_chain_names_in_target)
-									{
-										std::map<std::string, std::string> minimap;
-										minimap[mcn]=tcn;
-										group_sub_renaming_maps.push_back(minimap);
-									}
-								}
-								else
 								{
 									const std::size_t max_n=std::max(group_chain_names_in_model.size(), group_chain_names_in_target.size());
 									std::vector<std::size_t> padded_permuted_indices_for_model(max_n, max_n);
