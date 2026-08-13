@@ -72,22 +72,22 @@ built with the [Cosmopolitan Libc toolkit](https://github.com/jart/cosmopolitan)
 To download and prepare the latest released cosmopolitan executable, run the following commands in a shell environment (e.g. a Bash shell):
 
 ```bash
-wget 'https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4812/cosmopolitan_cadscore-lt_v0.9.193.exe'
-mv cosmopolitan_cadscore-lt_v0.9.193.exe cadscore-lt
+wget 'https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4816/cosmopolitan_cadscore-lt_v0.9.196.exe'
+mv cosmopolitan_cadscore-lt_v0.9.196.exe cadscore-lt
 chmod +x cadscore-lt
 ```
 
 In case of a PowerShell environment in Windows 8, the setup can be done with a single command:
 
 ```bash
-Invoke-WebRequest -Uri 'https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4812/cosmopolitan_cadscore-lt_v0.9.193.exe' -OutFile cadscore-lt.exe
+Invoke-WebRequest -Uri 'https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4816/cosmopolitan_cadscore-lt_v0.9.196.exe' -OutFile cadscore-lt.exe
 ```
 
 # Building the command-line tool from source code
 
 Download the latest CAD-score-LT source archive from the official downloads page at
 [https://github.com/kliment-olechnovic/voronota/releases](https://github.com/kliment-olechnovic/voronota/releases),
-e.g. [cadscore-lt_v0.9.193.tar.gz](https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4812/cadscore-lt_v0.9.193.tar.gz).
+e.g. [cadscore-lt_v0.9.196.tar.gz](https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4816/cadscore-lt_v0.9.196.tar.gz).
 
 ## Requirements
 
