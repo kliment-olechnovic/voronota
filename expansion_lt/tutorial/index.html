@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Voronota-LT tutorial</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style type="text/css">
+  a { color: #0000CC; }
+  td { padding-right: 1em; }
+  pre { background-color: #EEEEEE; padding: 1em; }
+  div#TOC > ul > li > ul > li ul { display: none; }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Voronota-LT tutorial</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#abstract" id="toc-abstract">Abstract</a></li>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#using-voronota-lt" id="toc-using-voronota-lt">Using Voronota-LT</a>
+<ul>
+<li><a href="#prerequisites" id="toc-prerequisites">Prerequisites</a></li>
+<li><a href="#setting-up-voronota-lt" id="toc-setting-up-voronota-lt">Setting up Voronota-LT</a></li>
+<li><a href="#exploring-a-protein-ligand-complex-using-voronota-lt" id="toc-exploring-a-protein-ligand-complex-using-voronota-lt">Exploring a protein-ligand complex using Voronota-LT</a></li>
+<li><a href="#exploring-a-protein-dna-interface-using-voronota-lt" id="toc-exploring-a-protein-dna-interface-using-voronota-lt">Exploring a protein-DNA interface using Voronota-LT</a></li>
+<li><a href="#exploring-a-multi-chain-complex-using-voronota-lt" id="toc-exploring-a-multi-chain-complex-using-voronota-lt">Exploring a multi-chain complex using Voronota-LT</a></li>
+<li><a href="#using-voronota-lt-in-python" id="toc-using-voronota-lt-in-python">Using Voronota-LT in Python</a></li>
+</ul></li>
+<li><a href="#concluding-remarks-and-notes" id="toc-concluding-remarks-and-notes">Concluding remarks and notes</a>
+<ul>
+<li><a href="#processing-large-structures" id="toc-processing-large-structures">Processing large structures</a></li>
+<li><a href="#other-notes" id="toc-other-notes">Other notes</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="abstract">Abstract</h1>
+<p>Voronota-LT is a versatile and highly efficient tool for computing Voronoi tessellation-based atom-atom contact areas within molecular solvent-accessible surfaces. It enables robust exploration and description of interatomic interactions, with contact areas summarized at the atom-atom, residue-residue, and chain-chain levels.</p>
+<p>Voronota-LT is freely available at <a href="https://www.voronota.com/expansion_lt/" class="uri">https://www.voronota.com/expansion_lt/</a>.</p>
+<p>This tutorial provides a hands-on, illustrated introduction to using Voronota-LT via command-line scripting.</p>
+<p>The PDF version of this tutorial is available at <a href="https://doi.org/10.5281/zenodo.22296755" class="uri">https://doi.org/10.5281/zenodo.22296755</a>.</p>
+<h1 id="introduction">Introduction</h1>
+<p>In structural biology, it is often important to identify and analyze molecular interactions. Traditionally, most approaches rely on calculating and interpreting atom-atom distances. However, the distance between a pair of atoms does not depend on the surrounding atoms. Alternatively, analysis based on Voronoi tessellation makes it possible to account for all structural neighbors that may affect a given interaction (contact).</p>
+<p>Given a molecular structure, it can be represented as a set of atomic balls, each ball having a van der Waals radius corresponding to the atom type. A ball can be assigned a region of space containing all points closer to that ball than to any other. Such a region is called a Voronoi cell and the partitioning of space into Voronoi cells is called Voronoi tessellation or Voronoi diagram. Two adjacent Voronoi cells share a set of points that form a surface called a Voronoi face. A Voronoi face can be viewed as a geometric representation of a contact between two atoms. The Voronoi cells of atomic balls may be constrained inside the boundaries defined by the solvent accessible surface (SAS) of the same balls.</p>
+<p>With a SAS-constrained Voronoi tessellation, every atom-atom contact can be assigned the area of the corresponding constrained Voronoi face. Unlike distances, contact areas can be summed directly. Therefore, tessellation-based atomic contacts can be efficiently summarized at the residue and chain levels. Importantly, tessellation-derived contact faces and SAS patches can be visualized in 3D alongside the input molecular structures.</p>
+<p>This tutorial provides a practical illustrated introduction to tessellation-based analysis of macromolecules using the recently introduced Voronota-LT software.</p>
+<h1 id="using-voronota-lt">Using Voronota-LT</h1>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>To run the commands presented in the sections below, a Bash-like shell environment is recommended. Most macOS and Linux distributions provide such an environment by default through their terminal applications. For Windows users, the most straightforward way to obtain a Bash-like shell environment is through the Windows Subsystem for Linux (WSL).</p>
+<h2 id="setting-up-voronota-lt">Setting up Voronota-LT</h2>
+<p>A fast and easy way to prepare a Voronota-LT command-line executable is to download a universal executable file built with the “Cosmopolitan Libc” toolkit (<a href="https://github.com/jart/cosmopolitan" class="uri">https://github.com/jart/cosmopolitan</a>). The universal executable can run on all major platforms (Linux, macOS, and Windows). Voronota-LT software is included in the larger Voronota software package. Voronota-LT version 1.1.479 is a part of Voronota release 1.29.4602, the Voronota-LT universal executable file can be downloaded from <a href="https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4602/cosmopolitan_voronota-lt_v1.1.479.exe" class="uri">https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4602/cosmopolitan_voronota-lt_v1.1.479.exe</a> and prepared to use as shown below:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="st">&quot;https://github.com/kliment-olechnovic/voronota/releases/download/v1.29.4602/cosmopolitan_voronota-lt_v1.1.479.exe&quot;</span> <span class="co"># download</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> cosmopolitan_voronota-lt_v1.1.479.exe voronota-lt <span class="co"># rename</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x ./voronota-lt <span class="co"># set permission to execute</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">-h</span> <span class="co"># view the version number and the list of options</span></span></code></pre></div>
+<h2 id="exploring-a-protein-ligand-complex-using-voronota-lt">Exploring a protein-ligand complex using Voronota-LT</h2>
+<h3 id="figure-1">Figure 1</h3>
+<figure>
+<img src="main_figure_dfr.jpg" alt="Exploration of the structure of dihydrofolate reductase (PDB ID 7DFR) using Voronota-LT, illustrated with graphics generated by Voronota-LT and rendered in PyMOL. (a) Dihydrofolate reductase with the ligands NADP (green) and folic acid (magenta), shown as van der Waals balls; (b) The constrained Voronoi cell of the “O2” atom of folic acid, with contact areas colored in yellow, solvent-accessible surface area colored in green, and direct Voronoi neighbors colored in blue; (c) The constrained Voronoi cells of all atoms of folic acid; (d) Yellow line segments represent all virtual collisions with atoms that are close enough to the ligand atoms (colored in magenta and green) to be considered interacting by a distance-based definition, but not necessarily by the tessellation-based definition; (e) Voronoi tessellation-derived contact areas between the ligands and the protein; (f) Voronoi tessellation-derived interface between the two ligands." />
+<figcaption aria-hidden="true">Exploration of the structure of dihydrofolate reductase (PDB ID 7DFR) using Voronota-LT, illustrated with graphics generated by Voronota-LT and rendered in PyMOL. <strong>(a)</strong> Dihydrofolate reductase with the ligands NADP (green) and folic acid (magenta), shown as van der Waals balls; <strong>(b)</strong> The constrained Voronoi cell of the “O2” atom of folic acid, with contact areas colored in yellow, solvent-accessible surface area colored in green, and direct Voronoi neighbors colored in blue; <strong>(c)</strong> The constrained Voronoi cells of all atoms of folic acid; <strong>(d)</strong> Yellow line segments represent all virtual collisions with atoms that are close enough to the ligand atoms (colored in magenta and green) to be considered interacting by a distance-based definition, but not necessarily by the tessellation-based definition; <strong>(e)</strong> Voronoi tessellation-derived contact areas between the ligands and the protein; <strong>(f)</strong> Voronoi tessellation-derived interface between the two ligands.</figcaption>
+</figure>
+<p>Let us explore the structure of dihydrofolate reductase from the Protein Data Bank (PDB) entry 7DFR. It consists of a protein and two ligands, NADP and folic acid (Figure <a href="#figure-1">1</a>a). First, let us download the input file, run Voronota-LT on it, and inspect the output log:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://files.rcsb.org/download/7DFR.cif</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> 7DFR.cif</span></code></pre></div>
+<pre><code>log_total_input_balls ...................... 1309
+log_total_collisions ....................... 29947
+log_total_relevant_collisions .............. 29947
+log_total_contacts_count ................... 8727
+log_total_contacts_area .................... 27697.2
+log_total_cells_count ...................... 1309
+log_total_cells_sas_area ................... 7748.59
+log_total_cells_sas_inside_volume  ......... 31115.8</code></pre>
+<p>In the printed output we can see the total number of atoms (1309 — only heavy, non-hydrogen atoms are considered by default); the number of constructed interatomic contacts (8727), including both intra-residue and inter-residue interactions; the sum of all interatomic contact areas (27697.2); the total area of all per-atom solvent-accessible surface patches (7748.59); and the total volume of all per-atom Voronoi cells (31115.8). The number of collisions (29947) corresponds to all atom-atom pairs that are so close that a solvent-sized sphere cannot fit between them. The actual contacts reported by Voronota-LT are those collisions that are retained after Voronoi tessellation and assigned an area.</p>
+<p>To connect these values with the underlying geometric objects, let us construct the constrained Voronoi cell of a single atom and report its properties:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--input</span> 7DFR.cif <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>--restrict-atom-descriptors-for-output <span class="st">&quot;[-rname FOL -aname O2]&quot;</span> <span class="dt">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>--restrict-contacts-for-output <span class="st">&quot;[-a1 [-rname FOL -aname O2]]&quot;</span></span></code></pre></div>
+<pre><code>log_total_input_balls ...................... 1309
+log_total_collisions ....................... 29947
+log_total_relevant_collisions .............. 29947
+log_total_contacts_count ................... 11
+log_total_contacts_area .................... 38.4227
+log_total_cells_count ...................... 1
+log_total_cells_sas_area ................... 6.8354
+log_total_cells_sas_inside_volume  ......... 21.0889</code></pre>
+<p>We still compute the full tessellation, but constrain the output to involve only a single atom selected by its atom name and residue name. While the numerical output shows that the atom has 11 contacts and is exposed to solvent, we can also generate a graphical representation of the constructed geometric objects for viewing in PyMOL or ChimeraX. The example below generates a drawing script for PyMOL, with the log output suppressed using the <code>--quiet</code> flag:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--quiet</span> <span class="at">--input</span> 7DFR.cif <span class="dt">\</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-atom-descriptors-for-output</span> <span class="st">&quot;[-rname FOL -aname O2]&quot;</span> <span class="dt">\</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts-for-output</span> <span class="st">&quot;[-a1 [-rname FOL -aname O2]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-restrict-representations</span> faces wireframe sas <span class="dt">\</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-title</span> <span class="st">&quot;7DFR_FOL_O2&quot;</span> <span class="dt">\</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-output-file-for-pymol</span> <span class="st">&quot;draw_7DFR_FOL_O2_contacts.py&quot;</span></span></code></pre></div>
+<p>Additionally, we can generate a script to select and display the “binding site” atoms corresponding to the contacts of interest:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--quiet</span> <span class="at">--input</span> 7DFR.cif <span class="dt">\</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts-for-output</span> <span class="st">&quot;[-a1 [-rname FOL -aname O2]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--sites-view-script-for-pymol</span> <span class="st">&quot;show_7DFR_FOL_O2_site.pml&quot;</span></span></code></pre></div>
+<p>Opening the generated files in PyMOL will produce a scene similar to Figure <a href="#figure-1">1</a>b:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pymol</span> 7DFR.cif show_7DFR_FOL_O2_site.pml draw_7DFR_FOL_O2_contacts.py</span></code></pre></div>
+<p>Looking at Figure <a href="#figure-1">1</a>b, we see the main geometric objects: the Voronoi cell defined by interatomic Voronoi faces (yellow), clipped by the solvent-accessible surface (SAS) patch (green). The cell has its own volume and SAS area. Each face (contact) has an associated area and, if it is clipped by the SAS, a corresponding circular arc length resulting from the clipping. We can inspect these values by printing the data tables: the atom-atom contacts table (rows prefixed with “ia”) and the atom cells table (rows prefixed with “ac”):</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--quiet</span> <span class="at">--input</span> 7DFR.cif <span class="dt">\</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-atom-descriptors-for-output</span> <span class="st">&quot;[-rname FOL -aname O2]&quot;</span> <span class="dt">\</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts-for-output</span> <span class="st">&quot;[-a1 [-rname FOL -aname O2]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--print-contacts</span> <span class="dt">\</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--print-cells</span> <span class="dt">\</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<pre><code>ia_header  ID1_chain  ID1_rnum  ID1_rname  ID1_atom  ID2_chain  ID2_rnum  ID2_rname  ID2_atom  ID1_index  ID2_index  area      arc_length  distance
+ia         A          32        LYS        CD        A          161       FOL        O2        241        1260       1.51693   0           3.60708
+ia         A          32        LYS        CE        A          161       FOL        O2        242        1260       3.55563   0           3.56789
+ia         A          32        LYS        NZ        A          161       FOL        O2        243        1260       5.80022   4.12454     3.7691
+ia         A          55        PRO        CG        A          161       FOL        O2        416        1260       1.25185   1.54325     5.39567
+ia         A          55        PRO        CD        A          161       FOL        O2        417        1260       5.24461   2.34552     4.83737
+ia         A          161       FOL        CG        A          161       FOL        O2        1254       1260       0.208765  1.17701     4.27808
+ia         A          161       FOL        CT        A          161       FOL        O2        1258       1260       8.88857   0           1.21842
+ia         A          161       FOL        CA        A          161       FOL        O2        1252       1260       5.85404   3.90097     2.28788
+ia         A          161       FOL        CB        A          161       FOL        O2        1253       1260       0.806395  0.379394    3.22046
+ia         A          57        ARG        NH2       A          161       FOL        O2        432        1260       4.38526   0           3.13174
+ia         A          54        LEU        CD2       A          161       FOL        O2        410        1260       0.910472  0.150728    4.33704
+
+ac_header  ID_chain   ID_rnum   ID_rname   ID_atom   ID_index   sas_area  volume                                                          
+ac         A          161       FOL        O2        1260       6.8354    21.0889</code></pre>
+<p>In the example above, the tables are initially printed using tab characters as separators, and the <code>column</code> command is then used to align the columns by inserting spaces for improved readability. The table header is normally printed on a single line, but in the example above it was manually split into two lines to fit the page width. All the printable tables can also be written to files as tab-separated (.tsv) tables, for example using <code>--write-contacts-to-file</code> and <code>--write-cells-to-file</code> command-line options.</p>
+<p>Let us now analyze the entire folic acid molecule bound to the protein by constructing and summarizing all relevant protein-ligand contacts and the corresponding constrained Voronoi cells:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--input</span> ./7DFR.cif <span class="dt">\</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-atom-descriptors-for-output</span> <span class="st">&quot;[-rname FOL]&quot;</span> <span class="dt">\</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts-for-output</span> <span class="st">&quot;[-a1 [-rname FOL] -a2 [-protein]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-restrict-representations</span> faces wireframe sas <span class="dt">\</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-title</span> <span class="st">&quot;7DFR_FOL&quot;</span> <span class="dt">\</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-output-file-for-pymol</span> <span class="st">&quot;draw_7DFR_FOL_contacts.py&quot;</span></span></code></pre></div>
+<pre><code>log_total_input_balls ...................... 1309
+log_total_collisions ....................... 29947
+log_total_relevant_collisions .............. 29947
+log_total_contacts_count ................... 207
+log_total_contacts_area .................... 373.006
+log_total_cells_count ...................... 32
+log_total_cells_sas_area ................... 138.509
+log_total_cells_sas_inside_volume  ......... 648.291</code></pre>
+<p>The total contact area corresponds to the sum of all relevant protein-ligand contact areas. The total volume is the sum of the volumes of all ligand atom cells, and the total SAS area is the sum of their solvent-accessible surface areas.</p>
+<p>As in the single-atom example, we can additionally generate a script to select and display the “binding site” atoms:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--quiet</span> <span class="at">--input</span> 7DFR.cif <span class="dt">\</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts-for-output</span> <span class="st">&quot;[-a1 [-rname FOL] -a2 [-protein]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--sites-view-script-for-pymol</span> <span class="st">&quot;show_7DFR_FOL_site.pml&quot;</span></span></code></pre></div>
+<p>Opening the generated files in PyMOL will produce a scene similar to Figure <a href="#figure-1">1</a>c:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pymol</span> 7DFR.cif show_7DFR_FOL_site.pml draw_7DFR_FOL_contacts.py</span></code></pre></div>
+<p>Looking at Figure <a href="#figure-1">1</a>c, we see that not all Voronoi cells have solvent-accessible areas. For cells that are not solvent-exposed, the SAS area is set to zero. Let us print the table of cells, sort it in decreasing order by the <code>sas_area</code> column using the <code>csvsort</code> utility, print only the top 15 rows with the <code>head</code> command, and convert the comma-separated output of <code>csvsort</code> into a whitespace-separated table using <code>tr</code>:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--input</span> 7DFR.cif <span class="dt">\</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-atom-descriptors-for-output</span> <span class="st">&quot;[-rname FOL]&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--print-cells</span> <span class="dt">\</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">csvsort</span> <span class="at">-t</span> <span class="at">-c</span> sas_area <span class="at">-r</span> <span class="dt">\</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 15 <span class="dt">\</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">tr</span> <span class="st">&quot;,&quot;</span> <span class="st">&quot;\t&quot;</span> <span class="dt">\</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<pre><code>ac_header  ID_chain  ID_rnum  ID_rname  ID_atom  ID_index  sas_area  volume
+ac         A         161      FOL       OE1      1256      46.2663   46.6389
+ac         A         161      FOL       OE2      1257      23.2247   30.0156
+ac         A         161      FOL       CG       1254      20.7099   41.7968
+ac         A         161      FOL       C12      1244      9.95079   33.0695
+ac         A         161      FOL       C13      1245      9.32997   33.867
+ac         A         161      FOL       CD       1255      7.61197   34.4318
+ac         A         161      FOL       O        1250      7.44125   17.0673
+ac         A         161      FOL       O2       1260      6.8354    21.0889
+ac         A         161      FOL       CA       1252      4.8153    29.2438
+ac         A         161      FOL       N10      1242      1.09339   14.3183
+ac         A         161      FOL       CB       1253      0.78861   25.4645
+ac         A         161      FOL       O4       1234      0.441025  12.7655
+ac         A         161      FOL       N1       1229      0         7.97948
+ac         A         161      FOL       C2       1230      0         22.4478</code></pre>
+<p>Let us now calculate and analyze all contacts between the two ligands and the protein atoms. Voronota-LT defines two atoms as being in contact if the following two conditions are satisfied: a) the atoms are neighbors in the Voronoi tessellation (i.e., they share a Voronoi face); b) the atoms are close enough that a solvent probe cannot fit between them (the default probe radius is 1.4 angstroms, but it can be changed using the <code>--probe</code> command-line option). The second condition (b) depends only on the radii of the involved atoms and the distance between them; therefore, it is fast to check before constructing any tessellation-based contact faces. We can constrain which contacts are constructed from the outset using the <code>--restrict-contacts</code> option, which instructs Voronota-LT to filter potential interactions (called “collisions”) and attempt contact construction only for those. Of course, most collisions do not result in tessellation-based contacts, but they can still be recorded for analysis using the <code>--write-raw-collisions-to-file</code> option. Raw collisions can also be visualized in PyMOL or ChimeraX, producing a scene similar to Figure <a href="#figure-1">1</a>d:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--input</span> 7DFR.cif <span class="dt">\</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-a1 [-rname FOL,NAP] -a2 [-protein]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-title</span> <span class="st">&quot;7DFR_ligands_raw_collisions&quot;</span> <span class="dt">\</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-output-file-for-pymol</span> <span class="st">&quot;draw_7DFR_ligands_raw_collisions.py&quot;</span> <span class="dt">\</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-restrict-representations</span> collisions</span></code></pre></div>
+<pre><code>log_total_input_balls ...................... 1309
+log_total_collisions ....................... 29947
+log_total_relevant_collisions .............. 2284
+log_total_contacts_count ................... 537
+log_total_contacts_area .................... 963.196</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pymol</span> 7DFR.cif draw_7DFR_ligands_raw_collisions.py</span></code></pre></div>
+<p>Because of the <code>--restrict-contacts</code> option, only 2284 out of 29947 possible collisions were considered, and only 537 of these resulted in tessellation-based contacts. These contacts can be visualized to produce a scene similar to Figure <a href="#figure-1">1</a>e:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--input</span> 7DFR.cif <span class="dt">\</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-a1 [-rname FOL,NAP] -a2 [-protein]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-title</span> <span class="st">&quot;7DFR_ligands_contacts&quot;</span> <span class="dt">\</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-output-file-for-pymol</span> <span class="st">&quot;draw_7DFR_ligands_contacts.py&quot;</span> <span class="dt">\</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-restrict-representations</span> faces wireframe</span></code></pre></div>
+<pre><code>log_total_input_balls ...................... 1309
+log_total_collisions ....................... 29947
+log_total_relevant_collisions .............. 2284
+log_total_contacts_count ................... 537
+log_total_contacts_area .................... 963.196</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pymol</span> 7DFR.cif draw_7DFR_ligands_contacts.py</span></code></pre></div>
+<p>This initial restriction dramatically speeds up contact computation — it eliminates the need to construct the full tessellation and allows focusing only on the contacts of interest. Because not all contacts are constructed when using <code>--restrict-contacts</code>, the Voronoi cells are not fully characterized — their volumes and SAS areas are not computed. However, the constructed atom-atom contacts can still be summarized at the residue level. Each residue-residue contact has an area equal to the sum of the corresponding atom-atom contact areas, and its distance is defined as the minimum of the underlying atom-atom distances. Let us output the residue-level contact table, sort it by area, and display the contacts with the five largest areas:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--quiet</span> <span class="at">--input</span> 7DFR.cif <span class="dt">\</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-a1 [-rname FOL,NAP] -a2 [-protein]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--print-contacts-residue-level</span> <span class="dt">\</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">csvsort</span> <span class="at">-t</span> <span class="at">-c</span> area <span class="at">-r</span> <span class="dt">\</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 6 <span class="dt">\</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">tr</span> <span class="st">&quot;,&quot;</span> <span class="st">&quot;\t&quot;</span> <span class="dt">\</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<pre><code>ir_header  ID1_chain  ID1_rnum  ID1_rname  ID2_chain  ID2_rnum  ID2_rname  area     arc_length  distance  count
+ir         A          28        LEU        A          161       FOL        66.5301  13.6603     3.29141   31
+ir         A          45        HIS        A          164       NAP        56.6945  15.47       2.10898   33
+ir         A          31        PHE        A          161       FOL        52.6696  0           3.24318   34
+ir         A          50        ILE        A          161       FOL        36.8353  6.2297      3.56371   24
+ir         A          62        LEU        A          164       NAP        35.7759  0.712174    2.98018   24</code></pre>
+<p>The contacts can also be summarized in terms of binding sites. For example, per-residue binding sites can be defined, with areas equal to the sums of the corresponding atom-atom contact areas. Let us output the residue-level sites table, sort it by area, and display the five largest binding sites on the protein side:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--quiet</span> <span class="at">--input</span> 7DFR.cif <span class="dt">\</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-a1 [-rname FOL,NAP] -a2 [-protein]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-atom-descriptors-for-output</span> <span class="st">&quot;[-protein]&quot;</span> <span class="dt">\</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--print-sites-residue-level</span> <span class="dt">\</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">csvsort</span> <span class="at">-t</span> <span class="at">-c</span> area <span class="at">-r</span> <span class="dt">\</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 6 <span class="dt">\</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">tr</span> <span class="st">&quot;,&quot;</span> <span class="st">&quot;\t&quot;</span> <span class="dt">\</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<pre><code>rs_header  ID_chain  ID_rnum  ID_rname  area     arc_length  distance  count
+rs         A         28       LEU       66.5301  13.6603     3.29141   31
+rs         A         20       MET       58.6823  8.96523     3.38138   22
+rs         A         45       HIS       56.6945  15.47       2.10898   33
+rs         A         31       PHE       52.6696  0           3.24318   34
+rs         A         46       THR       42.0902  0           2.26879   19</code></pre>
+<p>Let us also calculate and visualize the contacts of the interface between the two ligands, producing a scene similar to Figure <a href="#figure-1">1</a>f:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--input</span> 7DFR.cif <span class="dt">\</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-a1 [-rname FOL] -a2 [-rname NAP]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-title</span> <span class="st">&quot;7DFR_inter_ligand&quot;</span> <span class="dt">\</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-output-file-for-pymol</span> <span class="st">&quot;draw_7DFR_inter_ligand_contacts.py&quot;</span></span></code></pre></div>
+<pre><code>log_total_input_balls ...................... 1309
+log_total_collisions ....................... 29947
+log_total_relevant_collisions .............. 101
+log_total_contacts_count ................... 27
+log_total_contacts_area .................... 28.3286</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pymol</span> 7DFR.cif draw_7DFR_inter_ligand_contacts.py</span></code></pre></div>
+<p>The examples presented so far have concentrated on specific queries and output options. However, it is also possible to instruct Voronota-LT to run the full tessellation computation once and produce multiple output tables, which can then be analyzed using specialized data-processing tools such as R or spreadsheet applications. Below is an example of such a “do it all” command:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--input</span> 7DFR.cif <span class="dt">\</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--write-input-balls-to-file</span> <span class="st">&quot;processed_atomic_balls.tsv&quot;</span> <span class="dt">\</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--write-contacts-to-file</span> <span class="st">&quot;atom_atom_contacts.tsv&quot;</span> <span class="dt">\</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--write-contacts-residue-level-to-file</span> <span class="st">&quot;residue_residue_contact_summaries.tsv&quot;</span> <span class="dt">\</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--write-cells-to-file</span> <span class="st">&quot;per_atom_cells.tsv&quot;</span> <span class="dt">\</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--write-cells-residue-level-to-file</span> <span class="st">&quot;per_residue_cells_summaries.tsv&quot;</span> <span class="dt">\</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--write-sites-to-file</span> <span class="st">&quot;per_atom_binding_site.tsv&quot;</span> <span class="dt">\</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--write-sites-residue-level-to-file</span> <span class="st">&quot;per_residue_binding_site_summaries.tsv&quot;</span></span></code></pre></div>
+<pre><code>log_total_input_balls ...................... 1309
+log_total_collisions ....................... 29947
+log_total_relevant_collisions .............. 29947
+log_total_contacts_count ................... 8727
+log_total_contacts_area .................... 27697.2
+log_total_residue_level_contacts_count ..... 842
+log_total_cells_count ...................... 1309
+log_total_cells_sas_area ................... 7748.59
+log_total_cells_sas_inside_volume  ......... 31115.8
+log_total_residue_level_cells_count ........ 161</code></pre>
+<h2 id="exploring-a-protein-dna-interface-using-voronota-lt">Exploring a protein-DNA interface using Voronota-LT</h2>
+<h3 id="figure-2">Figure 2</h3>
+<figure>
+<img src="main_figure_caspam.jpg" alt="Exploration of protein-DNA interactions in the structure of CRISPR-associated protein Cas9 bound to a DNA target (PDB ID 4UN3) using Voronota-LT, illustrated with graphics generated by Voronota-LT and rendered in PyMOL. (a) Full structure; (b) Voronoi tessellation-derived contacts between the protein and the DNA backbone (pale cyan) and DNA bases (yellow); (c) Interactions between specific protein residues (1107, 1333, 1335) and DNA bases, with close contacts between non-carbon atoms colored in magenta." />
+<figcaption aria-hidden="true">Exploration of protein-DNA interactions in the structure of CRISPR-associated protein Cas9 bound to a DNA target (PDB ID 4UN3) using Voronota-LT, illustrated with graphics generated by Voronota-LT and rendered in PyMOL. <strong>(a)</strong> Full structure; <strong>(b)</strong> Voronoi tessellation-derived contacts between the protein and the DNA backbone (pale cyan) and DNA bases (yellow); <strong>(c)</strong> Interactions between specific protein residues (1107, 1333, 1335) and DNA bases, with close contacts between non-carbon atoms colored in magenta.</figcaption>
+</figure>
+<h3 id="figure-3">Figure 3</h3>
+<figure>
+<img src="main_figure_caspamcmaps.jpg" alt="Contact maps of the protein-DNA interface shown in Figure 2c, generated using Voronota-LT. (a) Atom-level contact map of the protein-DNA interface, with plot points colored to match the contacts shown in Figure 2c; (b) Atom-level contact map of the protein-DNA interface, with plot points colored using a yellow-to-red gradient corresponding to values from zero to the maximum observed contact area; (c) Residue-level contact map summarizing the protein-DNA interface, with plot points colored using area-weighted average colors derived from panel (a); (d) Residue-level contact map summarizing the protein-DNA interface, with plot points colored using a yellow-to-red gradient corresponding to values from zero to the maximum observed contact area." />
+<figcaption aria-hidden="true">Contact maps of the protein-DNA interface shown in Figure <a href="#figure-2">2</a>c, generated using Voronota-LT. <strong>(a)</strong> Atom-level contact map of the protein-DNA interface, with plot points colored to match the contacts shown in Figure <a href="#figure-2">2</a>c; <strong>(b)</strong> Atom-level contact map of the protein-DNA interface, with plot points colored using a yellow-to-red gradient corresponding to values from zero to the maximum observed contact area; <strong>(c)</strong> Residue-level contact map summarizing the protein-DNA interface, with plot points colored using area-weighted average colors derived from panel (a); <strong>(d)</strong> Residue-level contact map summarizing the protein-DNA interface, with plot points colored using a yellow-to-red gradient corresponding to values from zero to the maximum observed contact area.</figcaption>
+</figure>
+<p>Let us explore the protein-DNA interface in a protein-nucleic acid complex. Let us take the PDB entry 4UN3 as an example. It is a well-studied structure of the CRISPR-associated Cas9 protein; however, for the sake of this teaching exercise, we will refrain from consulting additional references and instead focus on analyzing it directly with Voronota-LT. Firstly, let us download the structure and run Voronota-LT to summarize the protein-DNA interfaces at the chain level:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://files.rcsb.org/download/4UN3.cif</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--input</span> 4UN3.cif <span class="dt">\</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-a1 [-protein] -a2 [-nucleic-dna]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--print-contacts-chain-level</span> <span class="dt">\</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<pre><code>ic_header  ID1_chain  ID2_chain  area     arc_length  distance  count
+ic         B          C          1495.59  638.557     2.31267   657
+ic         B          D          523.323  164.701     2.32567   236</code></pre>
+<p>From the PDB entry, we know that chain B corresponds to the protein, while chains C and D correspond to DNA. In Figure <a href="#figure-2">2</a>a the protein is colored on pale cyan, chain C in orange, and chain D in red. The Voronota-LT output shows that the contact areas between the protein and the DNA chains are substantial. However, we may be more interested in interactions that are specific to the DNA side chains (bases). Let us examine whether such interactions are present:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--quiet</span> <span class="at">--input</span> 4UN3.cif <span class="dt">\</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-a1 [-protein] -a2 [-nucleic-dna-sidechain]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--print-contacts-chain-level</span> <span class="dt">\</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<pre><code>ic_header  ID1_chain  ID2_chain  area     arc_length  distance  count
+ic         B          C          201.211  91.9088     2.82114   95
+ic         B          D          110.2    25.705      2.59247   62</code></pre>
+<p>We now visualize all protein-DNA contacts, coloring protein-DNA side-chain and protein-DNA backbone interactions differently. For this purpose, we define and use a coloring rules file:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> <span class="st">&quot;coloring_rules.txt&quot;</span> <span class="op">&lt;&lt; EOF</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="st">contact faces 71A4C1 [-a1 [-protein] -a2 [-nucleic-dna-backbone]]</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="st">contact faces FFFF00 [-a1 [-protein] -a2 [-nucleic-dna-sidechain]]</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--quiet</span> <span class="at">--input</span> ./4UN3.cif <span class="dt">\</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-a1 [-chain B] -a2 [-chain C,D]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-coloring-config-file</span> <span class="st">&quot;coloring_rules.txt&quot;</span> <span class="dt">\</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-title</span> <span class="st">&quot;protein_dna&quot;</span> <span class="dt">\</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-output-file-for-pymol</span> draw_protein_dna_contacts.py</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="ex">pymol</span> <span class="st">&quot;4UN3.cif&quot;</span> <span class="st">&quot;draw_protein_dna_contacts.py&quot;</span></span></code></pre></div>
+<p>This allows us to view a scene in PyMOL similar to Figure <a href="#figure-2">2</a>b, where protein-DNA backbone contacts are colored in dark cyan and protein-DNA side chain contacts are colored in yellow. We can see that most of the potentially DNA sequence-specific contacts are located in the region of the structure containing the C and D double helix. Let us look for some interesting contacts at the atomic level. From general biochemical knowledge, specific interactions such as hydrogen bonds in proteins and DNA most often involve non-carbon atoms, primarily oxygen and nitrogen. Such interactions are also typically characterized by short interatomic distances. Let us therefore look for protein-DNA side-chain contacts that involve only non-carbon atoms and have distances shorter than 3.5 angstroms:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--quiet</span> <span class="at">--input</span> ./4UN3.cif <span class="dt">\</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-a1 [-protein -elem N,O] -a2 [-nucleic-dna-sidechain -elem N,O] -max-dist 3.5]&quot;</span> <span class="dt">\</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--print-contacts</span> <span class="dt">\</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<pre><code>ia_header  ID1_chain  ID1_rnum  ID1_rname  ID1_atom  ID2_chain  ID2_rnum  ID2_rname  ID2_atom  ID1_index  ID2_index  area      arc_length  distance
+ia         B          1107      LYS        NZ        C          7         DC         O2        10423      12553      7.62209   0           2.82114
+ia         B          1333      ARG        NH1       D          6         DG         N7        12169      13082      4.19797   0           3.26384
+ia         B          1333      ARG        NH2       D          6         DG         O6        12170      13085      6.6512    0           2.71573
+ia         B          1335      ARG        NH1       D          7         DG         O6        12189      13107      6.91913   0           2.59247
+ia         B          1335      ARG        NH1       C          5         DA         N6        12189      12516      8.84505   1.12351     3.43501
+ia         B          1335      ARG        NH2       D          7         DG         N7        12190      13104      8.22185   0           3.01849
+ia         B          1335      ARG        NH2       D          6         DG         N7        12190      13082      0.252236  0           3.26329</code></pre>
+<p>We can already see that only a few protein residues are involved in likely specific interactions. Let us summarize these interesting contacts as residue-residue contacts (rows prefixed with “ir”) and residue-level sites (rows prefixed with “rs”):</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--quiet</span> <span class="at">--input</span> ./4UN3.cif <span class="dt">\</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-a1 [-protein -elem N,O] -a2 [-nucleic-dna-sidechain -elem N,O] -max-dist 3.5]&quot;</span> <span class="dt">\</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--print-contacts-residue-level</span> <span class="dt">\</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--print-sites-residue-level</span> <span class="dt">\</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code></pre></div>
+<pre><code>ir_header  ID1_chain  ID1_rnum  ID1_rname  ID2_chain  ID2_rnum  ID2_rname  area      arc_length  distance  count
+ir         B          1107      LYS        C          7         DC         7.62209   0           2.82114   1
+ir         B          1333      ARG        D          6         DG         10.8492   0           2.71573   2
+ir         B          1335      ARG        D          7         DG         15.141    0           2.59247   2
+ir         B          1335      ARG        C          5         DA         8.84505   1.12351     3.43501   1
+ir         B          1335      ARG        D          6         DG         0.252236  0           3.26329   1
+
+rs_header  ID_chain  ID_rnum  ID_rname  area     arc_length  distance  count
+rs         B         1107     LYS       7.62209  0           2.82114   1
+rs         B         1333     ARG       10.8492  0           2.71573   2
+rs         B         1335     ARG       24.2383  1.12351     2.59247   4
+rs         C         5        DA        8.84505  1.12351     3.43501   1
+rs         C         7        DC        7.62209  0           2.82114   1
+rs         D         6        DG        11.1014  0           2.71573   3
+rs         D         7        DG        15.141   0           2.59247   2</code></pre>
+<p>Now that we have identified the key protein residues (1107, 1333, and 1335), let us visualize all protein-DNA contacts involving them using more detailed coloring rules:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> <span class="st">&quot;detailed_coloring_rules.txt&quot;</span> <span class="op">&lt;&lt; EOF</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="st">contact faces 71A4C1 [-a1 [-protein] -a2 [-nucleic-dna-backbone]]</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="st">contact faces FFFF00 [-a1 [-protein] -a2 [-nucleic-dna-sidechain]]</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="st">contact faces FF00FF [-a1 [-protein -elem N,O] -a2 [-nucleic -elem N,O] -max-dist 3.5]</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--input</span> ./4UN3.cif <span class="dt">\</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-a1 [-chain B -rnum 1107,1333,1335] -a2 [-nucleic-dna]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-coloring-config-file</span> <span class="st">&quot;detailed_coloring_rules.txt&quot;</span> <span class="dt">\</span></span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-title</span> <span class="st">&quot;focused_protein_dna&quot;</span> <span class="dt">\</span></span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-output-file-for-pymol</span> <span class="st">&quot;draw_focused_protein_dna_contacts.py&quot;</span> <span class="dt">\</span></span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">--sites-view-script-for-pymol</span> <span class="st">&quot;show_site_atoms.pml&quot;</span></span></code></pre></div>
+<pre><code>log_total_input_balls ...................... 13224
+log_total_collisions ....................... 297130
+log_total_relevant_collisions .............. 364
+log_total_contacts_count ................... 98
+log_total_contacts_area .................... 207.446
+log_total_residue_level_contacts_count ..... 18</code></pre>
+<div class="sourceCode" id="cb43"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pymol</span> <span class="st">&quot;4UN3.cif&quot;</span> <span class="st">&quot;draw_focused_protein_dna_contacts.py&quot;</span> <span class="st">&quot;show_site_atoms.pml&quot;</span> </span></code></pre></div>
+<p>The example above produces a scene similar to Figure <a href="#figure-2">2</a>c, in which the key atom-atom contacts are colored in magenta, other protein-DNA side-chain contacts in yellow, and the remaining protein-DNA backbone contacts in dark cyan.</p>
+<p>Another way to visualize contacts in Voronota-LT is by generating two-dimensional contact maps. Let us generate such maps at both the atom and residue levels, reusing the coloring rules from the previous example:</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--quiet</span> <span class="at">--input</span> ./4UN3.cif <span class="dt">\</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-a1 [-chain B -rnum 1107,1333,1335] -a2 [-nucleic-dna]]&quot;</span> <span class="dt">\</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-coloring-config-file</span> <span class="st">&quot;detailed_coloring_rules.txt&quot;</span> <span class="dt">\</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--plot-config-flags</span> compact labeled colored <span class="dt">\</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--plot-contacts-to-file</span> <span class="st">&quot;plot_protein_dna_contacts.svg&quot;</span> <span class="dt">\</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--plot-contacts-residue-level-to-file</span> <span class="st">&quot;plot_protein_dna_contacts_residue_level.svg&quot;</span></span></code></pre></div>
+<p>The <code>--plot-contacts-to-file</code> option will produce the atom-atom contacts plot shown in Figure <a href="#figure-3">3</a>a. The <code>--plot-contacts-residue-level-to-file</code> option will produce a residue-residue contacts plot shown in Figure <a href="#figure-3">3</a>c. Alternatively, replacing the <code>colored</code> configuration flag with <code>gradient</code> produces plots colored using a yellow-to-red gradient corresponding to values from zero to the maximum contact area observed. These plots are shown in Figure <a href="#figure-3">3</a>b and <a href="#figure-3">3</a>d.</p>
+<p>To conclude the analysis of the protein-DNA interface in the 4UN3 structure, let us compare our characterization with previously published results. Indeed, we have identified the same residues and protein-DNA contacts that define specific recognition of the DNA protospacer adjacent motif (PAM). Moreover, we have quantified these interactions using contact areas and visualized the interface in both 3D and 2D.</p>
+<h2 id="exploring-a-multi-chain-complex-using-voronota-lt">Exploring a multi-chain complex using Voronota-LT</h2>
+<h3 id="figure-4">Figure 4</h3>
+<figure>
+<img src="main_figure_chainifacesmap.jpg" alt="Summarizing chain-chain interfaces for the structure of the ssDNA-activated SPARTA complex (PDB ID 8J7S). (a) Full structure with every chain colored differently, rendered in PyMOL; (b) Chain-chain contact map, with plot points colored by interface type; (c) Chain-chain contact map, with plot points colored using a yellow-to-red gradient corresponding to values from zero to the maximum observed contact area." />
+<figcaption aria-hidden="true">Summarizing chain-chain interfaces for the structure of the ssDNA-activated SPARTA complex (PDB ID 8J7S). <strong>(a)</strong> Full structure with every chain colored differently, rendered in PyMOL; <strong>(b)</strong> Chain-chain contact map, with plot points colored by interface type; <strong>(c)</strong> Chain-chain contact map, with plot points colored using a yellow-to-red gradient corresponding to values from zero to the maximum observed contact area.</figcaption>
+</figure>
+<p>In the previous section we mostly looked at atom-atom contacts, or at contacts summarized on residue-residue level. Voronota-LT also allows to summarize and visualize chain-chain interfaces. Let us analyze the Cryo-EM structure of the ssDNA-activated SPARTA complex from the PDB entry 8J7S, shown in Figure <a href="#figure-1">4</a>a. It has 16 chains of three different types (protein, DNA, RNA). Therefore there can be six types of interfaces: protein-protein, protein-DNA, protein-RNA, DNA-DNA, DNA-RNA, RNA-RNA. Let us use Voronota-LT to plot a map of chain-chain interface and color them by type:</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://files.rcsb.org/download/8J7S.cif</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> <span class="st">&quot;coloring_rules.txt&quot;</span> <span class="op">&lt;&lt; EOF</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="st">contact faces FF0000 [-a1 [-protein] -a2 [-protein]]</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="st">contact faces 00FFFF [-a1 [-protein] -a2 [-nucleic-dna]]</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a><span class="st">contact faces FFD700 [-a1 [-protein] -a2 [-nucleic-rna]]</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="st">contact faces FF00FF [-a1 [-nucleic-dna] -a2 [-nucleic-rna]]</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="st">contact faces FFFF00 [-a1 [-nucleic-dna] -a2 [-nucleic-dna]]</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="st">contact faces FFFF7F [-a1 [-nucleic-rna] -a2 [-nucleic-rna]]</span></span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a><span class="ex">./voronota-lt</span> <span class="at">--input</span> 8J7S.cif <span class="dt">\</span></span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restrict-contacts</span> <span class="st">&quot;[-inter-chain]&quot;</span> <span class="dt">\</span></span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">--graphics-coloring-config-file</span> <span class="st">&quot;coloring_rules.txt&quot;</span> <span class="dt">\</span></span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">--plot-config-flags</span> xlabeled ylabeled colored <span class="dt">\</span></span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">--plot-contacts-chain-level-to-file</span> <span class="st">&quot;plot_colored.svg&quot;</span></span></code></pre></div>
+<pre><code>log_total_input_balls ...................... 31812
+log_total_collisions ....................... 716638
+log_total_relevant_collisions .............. 47851
+log_total_contacts_count ................... 13103
+log_total_contacts_area .................... 27947.8
+log_total_chain_level_contacts_count ....... 31</code></pre>
+<p>From the log we learn that there are 31 interfaces. In the produced plot shown in Figure <a href="#figure-1">4</a>b we see that there are interfaces of four types (protein-protein, protein-DNA, protein-RNA, DNA-RNA). We can also color the plot using area-based gradient by replacing <code>colored</code> with <code>gradient</code> in <code>--plot-config-flags</code> option — the result is shown in Figure <a href="#figure-1">4</a>c. This quick analysis allows to rapidly summarize types and relative sizes of the interfaces in multi-chain complexes.</p>
+<h2 id="using-voronota-lt-in-python">Using Voronota-LT in Python</h2>
+<p>Another relatively user-friendly way to use Voronota-LT is via its Python library (<a href="https://pypi.org/project/voronotalt" class="uri">https://pypi.org/project/voronotalt</a>). It can be installed with a single command:</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install voronotalt</span></code></pre></div>
+<p>Then, for example, it can be used to produce tables of contacts and Voronoi cell summaries. If the “pandas” library for data analysis is available in the Python environment, then the Voronota-LT result tables can be converted to “pandas” data frames using <code>.to_pandas()</code> function calls:</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> voronotalt</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>mrt <span class="op">=</span> voronotalt.MolecularRadicalTessellation.from_file(</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    input_file<span class="op">=</span><span class="st">&quot;./4UN3.cif&quot;</span>,</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    restrict_contacts_for_output<span class="op">=</span><span class="st">&quot;[-a1 [-chain B] -a2 [-chain C,D]]&quot;</span>,</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    restrict_cells_for_output<span class="op">=</span><span class="st">&quot;[-chain D]&quot;</span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>df_atoms <span class="op">=</span> mrt.atom_balls.to_pandas()</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>df_inter_atom_contacts <span class="op">=</span> mrt.inter_atom_contact_summaries.to_pandas()</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>df_inter_residue_contacts <span class="op">=</span> mrt.inter_residue_contact_summaries.to_pandas()</span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>df_inter_chain_contacts <span class="op">=</span> mrt.inter_chain_contact_summaries.to_pandas()</span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>df_atom_cells <span class="op">=</span> mrt.atom_cell_summaries.to_pandas()</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>df_residue_cells <span class="op">=</span> mrt.residue_cell_summaries.to_pandas()</span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>df_chain_cells <span class="op">=</span> mrt.chain_cell_summaries.to_pandas()</span></code></pre></div>
+<h1 id="concluding-remarks-and-notes">Concluding remarks and notes</h1>
+<h2 id="processing-large-structures">Processing large structures</h2>
+<p>The examples in this chapter are relatively small in terms of the size of the input and the output — this was done for the clarity of the presentation. In reality, Voronota-LT was made to handle very large molecular structures efficiently. Voronota-LT scales approximately linearly with the number of input atoms, and it is especially efficient when computing just inter-chain contacts. For example, calculating all the inter-chain interface areas of the biological assembly HIV-1 capsid (PDB ID 3J3Q) that has 2440800 atoms in 1356 chains takes less than 13 seconds on a 2019 Intel i9 CPU. In general, Voronota-LT can efficiently process any structure in the Protein Data Bank, most of them in under a second of time.</p>
+<h2 id="other-notes">Other notes</h2>
+<ul>
+<li><p>The scripting examples shown apply to Voronota-LT version 1.1.479.</p></li>
+<li><p>Symbol “<code>\</code>” in a command example indicates that the command continues in the next line, “<code>\</code>” is not needed if a command is written in one line.</p></li>
+<li><p>In Bash shell, command line arguments that start with brackets (that is, “<code>[</code>” or “<code>(</code>”), must always be enclosed in quotes.</p></li>
+<li><p>Voronota-LT can generate graphics not only for PyMOL but also for ChimeraX. The counterpart to <code>--graphics-output-file-for-pymol</code> is <code>--graphics-output-file-for-chimera</code>, which outputs graphics in <code>BILD</code> format (the recommended output file extension is <code>.bld</code> or <code>.bild</code>).</p></li>
+</ul>
+</body>
+</html>
