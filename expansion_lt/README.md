@@ -13,6 +13,8 @@ mainly to enable other Voronota expansions to easily use the Voronota-LT library
 
 The core functionality of Voronota-LT is also available via the [Voronota-LT web application](./web/index.html) built using Emscripten.
 
+There is also an extensive [tutorial](./tutorial/index.html) that provides a hands-on, illustrated introduction to using Voronota-LT via command-line scripting.
+
 ## Benchmarking data and results
 
 Benchmarking data and results are available [here](./benchmark/README.md).

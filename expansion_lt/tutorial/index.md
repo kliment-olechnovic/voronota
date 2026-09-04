@@ -499,6 +499,7 @@ contacts between non-carbon atoms colored in magenta.
 ](main_figure_caspam.jpg)
 
 ### Figure 3
+
 ![ Contact maps of the protein-DNA interface shown in Figure
 [2](#figure-2)c,
 generated using Voronota-LT. **(a)** Atom-level contact map of the
