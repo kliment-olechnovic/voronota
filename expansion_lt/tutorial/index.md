@@ -731,7 +731,7 @@ In the previous section we mostly looked at atom-atom contacts, or at
 contacts summarized on residue-residue level. Voronota-LT also allows to
 summarize and visualize chain-chain interfaces. Let us analyze the
 Cryo-EM structure of the ssDNA-activated SPARTA complex from the PDB entry 8J7S, shown in Figure
-[4](#figure-1)a. It has 16 chains of three different
+[4](#figure-4)a. It has 16 chains of three different
 types (protein, DNA, RNA). Therefore there can be six types of
 interfaces: protein-protein, protein-DNA, protein-RNA, DNA-DNA, DNA-RNA,
 RNA-RNA. Let us use Voronota-LT to plot a map of chain-chain interface
@@ -766,11 +766,11 @@ log_total_chain_level_contacts_count ....... 31
 ```
 
 From the log we learn that there are 31 interfaces. In the produced plot
-shown in Figure [4](#figure-1)b we see that there are interfaces of
+shown in Figure [4](#figure-4)b we see that there are interfaces of
 four types (protein-protein, protein-DNA, protein-RNA, DNA-RNA). We can
 also color the plot using area-based gradient by replacing `colored`
 with `gradient` in `--plot-config-flags` option --- the result is shown
-in Figure [4](#figure-1)c. This quick analysis allows to
+in Figure [4](#figure-4)c. This quick analysis allows to
 rapidly summarize types and relative sizes of the interfaces in
 multi-chain complexes.
 
