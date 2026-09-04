@@ -221,9 +221,7 @@ ac         A          161       FOL        O2        1260       6.8354    21.088
 
 In the example above, the tables are initially printed using tab
 characters as separators, and the `column` command is then used to align
-the columns by inserting spaces for improved readability. The table
-header is normally printed on a single line, but in the example above it
-was manually split into two lines to fit the page width. All the
+the columns by inserting spaces for improved readability. All the
 printable tables can also be written to files as tab-separated (.tsv)
 tables, for example using `--write-contacts-to-file` and
 `--write-cells-to-file` command-line options.
@@ -812,7 +810,7 @@ df_chain_cells = mrt.chain_cell_summaries.to_pandas()
 
 ## Processing large structures
 
-The examples in this chapter are relatively small in terms of the size
+The examples in this tutorial are relatively small in terms of the size
 of the input and the output --- this was done for the clarity of the
 presentation. In reality, Voronota-LT was made to handle very large
 molecular structures efficiently. Voronota-LT scales approximately
